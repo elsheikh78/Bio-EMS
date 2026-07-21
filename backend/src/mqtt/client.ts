@@ -1,0 +1,63 @@
+import mqtt, { MqttClient } from "mqtt";
+import { MQTT } from "../constants/mqtt.constants";
+import { routeMessage } from "./router";
+
+let client: MqttClient | null = null;
+
+export function getMqttClient(): MqttClient {
+
+    if (client) {
+        return client;
+    }
+
+    client = mqtt.connect(`mqtt://${MQTT.HOST}:${MQTT.PORT}`, {
+        clientId: MQTT.CLIENT_ID,
+
+        username: MQTT.USERNAME || undefined,
+        password: MQTT.PASSWORD || undefined,
+
+        keepalive: MQTT.KEEPALIVE,
+        reconnectPeriod: MQTT.RECONNECT_PERIOD,
+        connectTimeout: MQTT.CONNECT_TIMEOUT,
+
+        clean: MQTT.CLEAN,
+    });
+
+    client.on("connect", () => {
+
+        console.log("MQTT Connected");
+
+        client?.subscribe("bioems/+/telemetry/+", (err) => {
+
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+            console.log("Subscribed : bioems/+/telemetry/+");
+        });
+
+    });
+
+    client.on("message", (topic, payload) => {
+        routeMessage(topic, payload);
+    });
+
+    client.on("reconnect", () => {
+        console.log("MQTT Reconnecting...");
+    });
+
+    client.on("offline", () => {
+        console.log("MQTT Offline");
+    });
+
+    client.on("close", () => {
+        console.log("MQTT Connection Closed");
+    });
+
+    client.on("error", (err) => {
+        console.error(err);
+    });
+
+    return client;
+}

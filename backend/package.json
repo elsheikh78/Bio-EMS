@@ -5,7 +5,6 @@
   "private": true,
   "type": "commonjs",
   "main": "dist/server.js",
-
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
@@ -14,21 +13,19 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "echo \"No tests yet\""
   },
-
   "keywords": [
     "bio-ems",
     "temperature-monitoring",
     "cold-room",
     "iot"
   ],
-
   "author": "Ahmed A. Elsheikh",
   "license": "Proprietary",
-
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
     "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.11.1",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -42,9 +39,9 @@
     "yamljs": "^0.3.0",
     "zod": "^4.4.3"
   },
-
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
