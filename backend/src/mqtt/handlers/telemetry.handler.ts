@@ -4,7 +4,7 @@ export async function handleTelemetry(
     siteId: string,
     deviceId: string,
     payload: Buffer
-): void {
+): Promise<void> {
 
     try {
 

@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+
+    "outDir": "./dist",
+
+    "baseUrl": ".",
+
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    "strict": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "resolveJsonModule": true,
+
+    "sourceMap": true,
+
+    "removeComments": false,
+
+    "forceConsistentCasingInFileNames": true,
+
+    "skipLibCheck": true
+  },
+
+  "include": [
+    "src/**/*.ts",
+    "database/**/*.ts"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
