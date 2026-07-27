@@ -130,3 +130,101 @@ Required steps:
 - git add
 - git commit
 - git push
+## 34.
+Never commit runtime files.
+
+Ignored files include:
+- .env
+- *.db
+- *.db-shm
+- *.db-wal
+- node_modules
+- logs
+- build artifacts
+
+## 35.
+No feature or architecture change shall be implemented directly.
+
+Every proposal must follow this lifecycle:
+
+Idea
+
+↓
+
+Discussion
+
+↓
+
+Design Review
+
+↓
+
+Documentation (if needed)
+
+↓
+
+ADR Approval (if architecture is affected)
+
+↓
+
+Implementation
+
+↓
+
+Testing
+
+↓
+
+Documentation Update
+
+↓
+
+Git Commit
+
+↓
+
+Git Push
+
+## 36.
+Ideas and approved architecture decisions are different.
+
+- Ideas must be documented in `docs/project-ideas.md`.
+- Accepted architectural decisions must be documented as ADRs.
+- Only approved ADRs may change the system architecture.
+
+## 37.
+
+Business requirements drive implementation.
+
+Every feature must start with:
+
+- Business Requirement
+- Use Case
+- Domain Review
+
+Only after approval may implementation begin.
+
+## 38.
+
+Business requirements drive implementation.
+
+Every feature must start with:
+
+- Business Requirement
+- Use Case
+- Domain Review
+
+Only after approval may implementation begin.
+
+## 39.
+
+Requirements must be documented before implementation.
+
+Functional requirements, non-functional requirements, use cases and acceptance criteria must be defined when applicable.
+
+## 40.
+
+The product scope must be controlled.
+
+New features outside the approved release scope must be documented and reviewed before implementation.
+

@@ -14,20 +14,18 @@ Site
 
 ↓
 
-Room
+Asset
 
 ↓
+
 
 Monitoring Point
-
 ↓
-
 Sensor
-
 ↓
-
+Device Channel
+↓
 Device
-
 ↓
 
 Telemetry
@@ -53,16 +51,19 @@ Examples
 
 ---
 
-## Room
+## Asset
 
-Represents a monitored physical room.
+Represents any monitored business asset.
 
 Examples
 
 - Cold Room
 - Freezer
+- Warehouse
+- Refrigerator
+- Incubator
 - Clean Room
-- Laboratory
+- Production Area
 
 ---
 
@@ -93,6 +94,25 @@ Examples
 - CO₂
 
 ---
+## Device Channel
+
+Represents a logical communication channel between a Sensor and a Device.
+Each Device Channel belongs to exactly one Device.
+
+Each Device Channel is mapped to exactly one Sensor.
+
+Examples
+
+- GPIO Input
+- Analog Input
+- Digital Input
+- Digital Output
+- RS-485 Register
+- Modbus Register
+- 1-Wire Port
+- I²C Channel
+
+-----
 
 ## Device
 
@@ -131,4 +151,42 @@ Monitoring Points are physical locations.
 
 Telemetry belongs to Sensors.
 
-Rooms never communicate directly with Devices.
+Assets never communicate directly with Devices.
+
+## Device Domain
+
+A Device belongs to one Site.
+
+A Device is responsible for:
+
+- MQTT Communication
+- Telemetry publishing
+- Command handling
+- Firmware reporting
+- Heartbeat reporting
+
+Relationship:
+
+Organization
+ └── Site
+      └── Asset
+           └── Monitoring Point
+                └── Sensor
+                     └── Device Channel
+                          └── Device
+           
+
+A Device represents any hardware capable of communicating with BIO-EMS.
+
+Supported device families include:
+
+- ESP32
+- PLC
+- Raspberry Pi
+- Industrial PC
+- Data Logger
+- MQTT Gateway
+- Modbus Gateway
+
+Each Device belongs to one Site.
+

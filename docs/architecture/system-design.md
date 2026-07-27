@@ -17,82 +17,89 @@ BIO-EMS is an enterprise environmental monitoring system designed for:
 - Clean Rooms
 - Industrial Facilities
 
-The system monitors environmental conditions using ESP32 devices over MQTT.
+The system monitors environmental conditions using BIO-EMS Devices over MQTT.
+
+The first supported device family is ESP32-based Zone Controllers.
 
 ---
 
 # Technology Stack
 
-Backend
+## Backend
 
 - Node.js
 - TypeScript
 - Express
 
-Communication
+## Communication
 
 - MQTT
 - Mosquitto
 
-Databases
+## Databases
 
-SQLite
-- Configuration Data
+### SQLite
+
+Configuration Database
+
+Stores:
+
 - Users
-- Devices
 - Sites
-- Rooms
+- Assets
+- Devices
 - Alarm Rules
+- Notification Settings
+- System Settings
 
-InfluxDB
+### InfluxDB
+
+Time-Series Database
+
+Stores:
+
 - Telemetry
 - Historical Data
 - Events
 - Trends
 
-Visualization
-
-- Grafana
-
 ---
 
 # System Architecture
 
-ESP32
-
-↓
-
+```text
+Sensors
+    │
+    ▼
+Zone Controller (Physical Hardware)
+    │
+    ▼
+Device (Firmware Identity)
+    │
+    ▼
 MQTT Broker
-
-↓
-
+    │
+    ▼
 Backend
-
-↓
-
-Telemetry Service
-
-├── SQLite
-
-├── InfluxDB
-
-├── Alarm Engine
-
-└── Notification Engine
+    │
+    ├── Telemetry Service
+    ├── Alarm Engine
+    ├── Notification Engine
+    ├── SQLite
+    └── InfluxDB
+```
 
 ---
 
 # Folder Structure
 
+```text
 backend/
-
 src/
-
 database/
-
 docs/
-
 testing/
+```
 
 ---
 
@@ -103,7 +110,7 @@ Configuration Database
 Stores:
 
 - Sites
-- Rooms
+- Assets
 - Devices
 - Users
 - Alarm Rules
@@ -129,111 +136,100 @@ Stores:
 
 # Core Layers
 
-Route
-
-↓
-
+```text
+REST API
+    │
+    ▼
 Controller
-
-↓
-
+    │
+    ▼
 Service
-
-↓
-
+    │
+    ▼
 Repository
-
-↓
-
+    │
+    ▼
 SQLite
 
+
 MQTT
-
-↓
-
+    │
+    ▼
 Telemetry Handler
-
-↓
-
+    │
+    ▼
 Telemetry Service
-
-↓
-
-InfluxDB
+    │
+    ├── InfluxDB
+    ├── Alarm Engine
+    └── Notification Engine
+```
 
 ---
 
 # Core Entities
 
+- Site
+- Asset
+- Device
+- Device Channel
+- Sensor
+- Monitoring Point
+- User
+- Alarm Rule
+- Notification
+
+---
+
+# Monitoring Architecture
+
+```text
 Site
+├── Assets
+│      └── Monitoring Points
+│              └── Sensors
+└── Devices
+       └── Device Channels
+```
 
-Room
+---
 
+# Telemetry Flow
+
+```text
+Sensors
+    │
+    ▼
+Zone Controller
+    │
+    ▼
 Device
-
-Sensor
-
-User
-
-Alarm Rule
-
-Notification
+    │
+    ▼
+MQTT
+    │
+    ▼
+Telemetry Handler
+    │
+    ▼
+Telemetry Service
+    ├── InfluxDB
+    ├── Alarm Engine
+    └── Notification Engine
+```
 
 ---
 
 # Project Principles
 
-1. No Controller accesses Database directly.
-
-2. MQTT never writes directly to Database.
-
+1. No Controller accesses the Database directly.
+2. MQTT never writes directly to a Database.
 3. Business Logic belongs to Services.
-
-4. SQLite stores Configuration.
-
-5. InfluxDB stores Time-Series.
-
-6. Every feature must have REST API.
-
+4. SQLite stores configuration data.
+5. InfluxDB stores time-series data.
+6. Every feature must expose a REST API.
 7. Every package must be tested before commit.
 
-## Monitoring Architecture
-
-Site
-
-├── Rooms
-
-│      └── Monitoring Points
-
-│              └── Sensors
-
-└── Devices
-
-        └── Sensor Channels
-
-Telemetry Flow
-
-ESP32
-
-↓
-
-MQTT
-
-↓
-
-Telemetry Handler
-
-↓
-
-Telemetry Service
-
-├── InfluxDB
-
-├── SQLite
-
-├── Alarm Engine
-
-└── Notification Engine
 ---
 
 End of Document

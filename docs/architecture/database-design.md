@@ -6,8 +6,11 @@ SQLite stores configuration and master data.
 
 Current Tables
 
+
 - sites
+- assets (planned)
 - devices (planned)
+- users (planned)
 
 ---
 
@@ -34,7 +37,7 @@ Stores physical monitoring devices.
 Design Decisions
 
 - Every device belongs to exactly one Site.
-- Devices are NOT directly assigned to Rooms.
+- Devices are NOT directly assigned to Assets.
 - Device telemetry is stored in InfluxDB.
 - Configuration is stored in SQLite.
 
