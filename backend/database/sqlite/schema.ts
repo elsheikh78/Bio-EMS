@@ -1,6 +1,6 @@
 import { sqlite } from "./client";
 
-export function createTables() {
+export function createTables(): void {
 
     sqlite.exec(`
         CREATE TABLE IF NOT EXISTS sites (

@@ -25,7 +25,7 @@ export function getMqttClient(): MqttClient {
 
     client.on("connect", () => {
 
-        console.log("MQTT Connected");
+        console.log("MQTT Connected Successfully");
 
         client?.subscribe("bioems/+/telemetry/+", (err) => {
 
@@ -39,10 +39,13 @@ export function getMqttClient(): MqttClient {
 
     });
 
-    client.on("message", (topic, payload) => {
-        routeMessage(topic, payload);
-    });
-
+    client.on("message", async (topic, payload) => {
+    try {
+        await routeMessage(topic, payload);
+    } catch (err) {
+        console.error(err);
+    }
+});
     client.on("reconnect", () => {
         console.log("MQTT Reconnecting...");
     });
@@ -56,8 +59,8 @@ export function getMqttClient(): MqttClient {
     });
 
     client.on("error", (err) => {
-        console.error(err);
-    });
+    console.error("MQTT Error:", err);
+});
 
     return client;
 }
