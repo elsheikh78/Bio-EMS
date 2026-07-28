@@ -1,6 +1,9 @@
 import { handleTelemetry } from "./handlers/telemetry.handler";
 
-export function routeMessage(topic: string, payload: Buffer): void {
+export async function routeMessage(
+    topic: string,
+    payload: Buffer
+): Promise<void> {
 
     const parts = topic.split("/");
 
@@ -14,9 +17,9 @@ export function routeMessage(topic: string, payload: Buffer): void {
     switch (messageType) {
 
         case "telemetry":
-            handleTelemetry(siteId, deviceId, payload);
-            break;
-
+    await handleTelemetry(siteId, deviceId, payload);
+    break;
+    
         default:
             console.warn(`Unhandled message type: ${messageType}`);
     }
