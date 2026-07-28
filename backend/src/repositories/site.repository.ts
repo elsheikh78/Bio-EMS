@@ -11,7 +11,7 @@ export interface Site {
 
 export class SiteRepository {
 
-    create(site: Site): void {
+    create(site: Site): number {
 
         const stmt = sqlite.prepare(`
             INSERT INTO sites
@@ -25,13 +25,15 @@ export class SiteRepository {
             VALUES (?, ?, ?, ?, ?)
         `);
 
-        stmt.run(
-            site.code,
-            site.name,
-            site.location ?? null,
-            site.timezone ?? null,
-            site.active ?? 1
-        );
+        const result = stmt.run(
+    site.code,
+    site.name,
+    site.location ?? null,
+    site.timezone ?? null,
+    site.active ?? 1
+);
+
+return Number(result.lastInsertRowid);
     }
 
     getAll(): Site[] {
