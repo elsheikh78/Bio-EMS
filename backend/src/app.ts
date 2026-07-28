@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 getMqttClient();
 
-app.use(config.apiPrefix, healthRouter);
+app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);
 
 export default app;
