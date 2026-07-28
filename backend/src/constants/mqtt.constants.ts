@@ -10,11 +10,11 @@ export const MQTT = {
 
   PASSWORD: process.env.MQTT_PASSWORD || "",
 
-  KEEPALIVE: 60,
+  KEEPALIVE: Number(process.env.MQTT_KEEPALIVE || 60),
 
-  RECONNECT_PERIOD: 5000,
+RECONNECT_PERIOD: Number(process.env.MQTT_RECONNECT_PERIOD || 5000),
 
-  CONNECT_TIMEOUT: 10000,
+CONNECT_TIMEOUT: Number(process.env.MQTT_CONNECT_TIMEOUT || 10000),
 
-  CLEAN: true,
+  CLEAN: process.env.MQTT_CLEAN !== "false",
 };
