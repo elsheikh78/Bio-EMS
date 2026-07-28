@@ -21,4 +21,42 @@ export function createTables(): void {
     `);
 
     console.log("Sites table ready");
+
+    sqlite.exec(`
+        CREATE TABLE IF NOT EXISTS devices (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            uuid TEXT NOT NULL UNIQUE,
+
+            device_id TEXT NOT NULL UNIQUE,
+
+            site_id INTEGER NOT NULL,
+
+            device_type TEXT NOT NULL,
+
+            protocol TEXT NOT NULL,
+
+            manufacturer TEXT,
+
+            model TEXT,
+
+            firmware_version TEXT,
+
+            status TEXT NOT NULL DEFAULT 'pending',
+
+            activated INTEGER NOT NULL DEFAULT 0,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            updated_at DATETIME,
+
+            FOREIGN KEY (site_id)
+                REFERENCES sites(id)
+
+        );
+    `);
+
+    console.log("Devices table ready");
+
 }
