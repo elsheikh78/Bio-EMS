@@ -1,18 +1,15 @@
-### Health
-GET http://localhost:3001/api/v1/health
-
-###
-
+### Create Site
 POST http://localhost:3001/api/v1/sites
 Content-Type: application/json
 
 {
-    "code":"SITE001",
-    "name":"Main Warehouse",
-    "location":"Tanta",
-    "timezone":"Africa/Cairo"
+  "code": "SITE001",
+  "name": "Main Warehouse",
+  "location": "Tanta",
+  "timezone": "Africa/Cairo"
 }
 
 ###
 
+### Get Sites
 GET http://localhost:3001/api/v1/sites

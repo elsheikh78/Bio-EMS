@@ -1,0 +1,19 @@
+### Create Device
+POST http://localhost:3001/api/v1/devices
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440001",
+  "device_id": "ESP32-0001",
+  "site_id": 1,
+  "device_type": "Zone Controller",
+  "protocol": "MQTT",
+  "manufacturer": "BIO",
+  "model": "BIO-ZC-01",
+  "firmware_version": "1.0.0"
+}
+
+###
+
+### Get Devices
+GET http://localhost:3001/api/v1/devices
