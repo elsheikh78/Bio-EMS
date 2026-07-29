@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import { asyncHandler } from "../middleware/async-handler";
 import { createDevice, getDevices } from "../services/device.service";
 
-export function createDeviceController(req: Request, res: Response) {
+export const createDeviceController = asyncHandler(async (req: Request, res: Response) => {
 
     const deviceId = createDevice(req.body);
 
@@ -10,10 +11,10 @@ export function createDeviceController(req: Request, res: Response) {
         id: deviceId
     });
 
-}
+});
 
-export function getDevicesController(req: Request, res: Response) {
+export const getDevicesController = asyncHandler(async (req: Request, res: Response) => {
 
     res.json(getDevices());
 
-}
+});

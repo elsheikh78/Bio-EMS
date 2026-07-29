@@ -59,4 +59,35 @@ export function createTables(): void {
 
     console.log("Devices table ready");
 
+    sqlite.exec(`
+        CREATE TABLE IF NOT EXISTS rooms (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            uuid TEXT NOT NULL UNIQUE,
+
+            site_id INTEGER NOT NULL,
+
+            code TEXT NOT NULL,
+
+            name TEXT NOT NULL,
+
+            description TEXT,
+
+            active INTEGER NOT NULL DEFAULT 1,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            updated_at DATETIME,
+
+            FOREIGN KEY (site_id)
+                REFERENCES sites(id),
+
+            UNIQUE(site_id, code)
+
+        );
+    `);
+
+    console.log("Rooms table ready");
+
 }
