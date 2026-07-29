@@ -1,31 +1,73 @@
 import { Point } from "@influxdata/influxdb-client";
 import { influxDB, org, bucket } from "./client";
 
-const writeApi = influxDB.getWriteApi(org, bucket);
+
+const writeApi = influxDB.getWriteApi(
+    org,
+    bucket
+);
+
 
 writeApi.useDefaultTags({
     application: "BIO-EMS",
 });
 
-export async function writeTelemetry(
-    site: string,
-    device: string,
-    payload: any
+
+
+export interface TelemetryPoint {
+
+    site: string;
+
+    device: string;
+
+    sensor: string;
+
+    sensorType: string;
+
+    unit: string;
+
+    value: number;
+
+    timestamp?: string;
+
+}
+
+
+
+export async function writeTelemetryPoint(
+    data: TelemetryPoint
 ): Promise<void> {
 
-    console.log("Writing to InfluxDB...");
 
-    const point = new Point("telemetry")
-        .tag("site", site)
-        .tag("device", device)
-        .floatField("temperature", Number(payload.temperature))
-        .floatField("humidity", Number(payload.humidity))
-        .floatField("battery", Number(payload.battery))
-        .floatField("signal", Number(payload.signal));
+    console.log("Writing Telemetry Point to InfluxDB...");
+
+
+
+    const point = new Point(data.sensorType)
+
+        .tag("site", data.site)
+
+        .tag("device", data.device)
+
+        .tag("sensor", data.sensor)
+
+        .tag("unit", data.unit)
+
+        .floatField(
+            "value",
+            data.value
+        );
+
+
 
     writeApi.writePoint(point);
 
+
     await writeApi.flush();
 
-    console.log("InfluxDB Write Success");
+
+    console.log(
+        "InfluxDB Write Success"
+    );
+
 }

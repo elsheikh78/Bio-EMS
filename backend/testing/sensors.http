@@ -30,3 +30,67 @@ Content-Type: application/json
 ### Get Sensors
 
 GET http://localhost:3001/api/v1/sensors
+
+### Create Test Sensor
+
+POST http://localhost:3001/api/v1/sensors
+Content-Type: application/json
+
+{
+    "uuid": "sensor-temp-001-uuid",
+    "room_id": 1,
+    "device_id": 2,
+    "channel": 1,
+    "code": "TEMP-001",
+    "name": "Room Temperature Sensor",
+    "sensor_type": "temperature",
+    "unit": "°C",
+    "min_value": 0,
+    "max_value": 10,
+    "alarm_low": 2,
+    "alarm_high": 8,
+    "enabled": 1
+}
+
+
+### Create Second Test Sensor
+
+POST http://localhost:3001/api/v1/sensors
+Content-Type: application/json
+
+{
+    "uuid": "sensor-temp-002-uuid",
+    "room_id": 1,
+    "device_id": 2,
+    "channel": 2,
+    "code": "TEMP-002",
+    "name": "Return Air Temperature",
+    "sensor_type": "temperature",
+    "unit": "°C",
+    "min_value": 0,
+    "max_value": 10,
+    "alarm_low": 2,
+    "alarm_high": 8,
+    "enabled": 1
+}
+
+### Create Sensor For ESP32-002
+
+POST http://localhost:3001/api/v1/sensors
+Content-Type: application/json
+
+{
+    "uuid": "sensor-esp32-002-temp-001",
+    "room_id": 1,
+    "device_id": 3,
+    "channel": 1,
+    "code": "TEMP-002-001",
+    "name": "Cold Room 2 Temperature",
+    "sensor_type": "temperature",
+    "unit": "°C",
+    "min_value": 0,
+    "max_value": 10,
+    "alarm_low": 2,
+    "alarm_high": 8,
+    "enabled": 1
+}

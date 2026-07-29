@@ -1,4 +1,4 @@
-import { handleTelemetry } from "./handlers/telemetry.handler";
+import { handleTelemetry } from "../modules/telemetry/listeners/telemetry.listener";
 
 export async function routeMessage(
     topic: string,
@@ -12,15 +12,16 @@ export async function routeMessage(
         return;
     }
 
-    const [, siteId, messageType, deviceId] = parts;
+    const [, , messageType] = parts;
 
     switch (messageType) {
 
         case "telemetry":
-    await handleTelemetry(siteId, deviceId, payload);
-    break;
-    
+            await handleTelemetry(topic, payload);
+            break;
+
         default:
             console.warn(`Unhandled message type: ${messageType}`);
     }
+
 }

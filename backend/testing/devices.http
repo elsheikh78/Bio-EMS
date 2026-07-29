@@ -17,3 +17,39 @@ Content-Type: application/json
 
 ### Get Devices
 GET http://localhost:3001/api/v1/devices
+
+### Create Test Device
+
+POST http://localhost:3001/api/v1/devices
+Content-Type: application/json
+
+{
+    "uuid": "esp32-001-uuid",
+    "device_id": "ESP32-001",
+    "site_id": 1,
+    "device_type": "temperature_gateway",
+    "protocol": "mqtt",
+    "manufacturer": "BIO-EMS",
+    "model": "ESP32",
+    "firmware_version": "1.0.0",
+    "status": "active",
+    "activated": 1
+}
+
+### Create Second Test Device
+
+POST http://localhost:3001/api/v1/devices
+Content-Type: application/json
+
+{
+    "uuid": "esp32-002-uuid",
+    "device_id": "ESP32-002",
+    "site_id": 1,
+    "device_type": "temperature_gateway",
+    "protocol": "mqtt",
+    "manufacturer": "BIO-EMS",
+    "model": "ESP32",
+    "firmware_version": "1.0.0",
+    "status": "active",
+    "activated": 1
+}
