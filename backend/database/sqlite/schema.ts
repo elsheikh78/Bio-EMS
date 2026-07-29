@@ -90,4 +90,54 @@ export function createTables(): void {
 
     console.log("Rooms table ready");
 
+    sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS sensors (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        uuid TEXT NOT NULL UNIQUE,
+
+        room_id INTEGER NOT NULL,
+
+        device_id INTEGER NOT NULL,
+
+        channel INTEGER NOT NULL,
+
+        code TEXT NOT NULL,
+
+        name TEXT NOT NULL,
+
+        sensor_type TEXT NOT NULL,
+
+        unit TEXT NOT NULL,
+
+        min_value REAL,
+
+        max_value REAL,
+
+        alarm_low REAL,
+
+        alarm_high REAL,
+
+        enabled INTEGER NOT NULL DEFAULT 1,
+
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        updated_at DATETIME,
+
+        FOREIGN KEY (room_id)
+            REFERENCES rooms(id),
+
+        FOREIGN KEY (device_id)
+            REFERENCES devices(id),
+
+        UNIQUE(device_id, channel),
+
+        UNIQUE(room_id, code)
+
+    );
+`);
+
+console.log("Sensors table ready");
+
 }
