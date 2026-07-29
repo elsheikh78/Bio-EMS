@@ -1,11 +1,15 @@
-import { SiteRepository, Site } from "../repositories/site.repository";
+import { DeviceRepository, Device } from "../repositories/device.repository";
 
-const repository = new SiteRepository();
+const repository = new DeviceRepository();
 
-export function createSite(site: Site): number {
-    return repository.create(site);
+export function createDevice(device: Device): number {
+
+    return repository.create(device);
+
 }
 
-export function getSites(): Site[] {
+export function getDevices(): Device[] {
+
     return repository.getAll();
+
 }
