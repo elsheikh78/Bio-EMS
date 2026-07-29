@@ -1,5 +1,6 @@
 import express from "express";
 import siteRouter from "./routes/site.route";
+import deviceRouter from "./routes/device.route";
 import { config } from "./config/config";
 import healthRouter from "./routes/health.route";
 import { getMqttClient } from "./mqtt/client";
@@ -21,5 +22,6 @@ getMqttClient();
 
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);
+app.use(`${config.apiPrefix}/devices`, deviceRouter);
 
 export default app;
