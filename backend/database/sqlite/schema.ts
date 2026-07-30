@@ -140,4 +140,35 @@ export function createTables(): void {
 
 console.log("Sensors table ready");
 
+    sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS alarms (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        sensor_id INTEGER NOT NULL,
+
+        type TEXT NOT NULL,
+
+        severity TEXT NOT NULL DEFAULT 'WARNING',
+
+        status TEXT NOT NULL DEFAULT 'TRIGGERED',
+
+        trigger_value REAL NOT NULL,
+
+        trigger_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        acknowledged_time DATETIME,
+
+        recovered_time DATETIME,
+
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (sensor_id)
+            REFERENCES sensors(id)
+
+    );
+    `);
+
+    console.log("Alarms table ready");
+
 }

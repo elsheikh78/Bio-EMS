@@ -2,6 +2,7 @@ import { TelemetryPayload } from "../schemas/telemetry.schema";
 import { DeviceRepository } from "../../../repositories/device.repository";
 import { SensorRepository } from "../../../repositories/sensor.repository";
 import { writeTelemetryPoint } from "../../../../database/influx/writer";
+import { evaluateAlarm } from "../../../services/alarm.evaluator";
 
 
 const deviceRepository = new DeviceRepository();
@@ -109,6 +110,20 @@ export class TelemetryService {
                 sensorData.value,
                 sensor.unit
             );
+
+            evaluateAlarm({
+
+    sensorId: sensor.id!,
+
+    sensorName: sensor.name,
+
+    value: sensorData.value,
+
+    alarmLow: sensor.alarm_low,
+
+    alarmHigh: sensor.alarm_high
+
+});
 
 
 
