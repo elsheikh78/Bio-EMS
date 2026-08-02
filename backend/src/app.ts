@@ -10,6 +10,7 @@ import { createTables } from "../database/sqlite/schema";
 import { runMigrations } from "../database/sqlite/migrations";
 import { errorMiddleware } from "./middleware/error.middleware";
 import sensorRouter from "./routes/sensor.route";
+import alarmRouter from "./routes/alarm.route";
 
 runMigrations();
 
@@ -28,6 +29,7 @@ app.use(`${config.apiPrefix}/sites`, siteRouter);
 app.use(`${config.apiPrefix}/devices`, deviceRouter);
 app.use(`${config.apiPrefix}/rooms`, roomRouter);
 app.use(`${config.apiPrefix}/sensors`, sensorRouter);
+app.use(`${config.apiPrefix}/alarms`, alarmRouter);
 
 app.use(errorMiddleware);
 

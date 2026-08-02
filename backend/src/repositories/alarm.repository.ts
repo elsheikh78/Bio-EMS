@@ -1,6 +1,5 @@
 import { sqlite } from "../../database/sqlite/client";
 
-
 export interface Alarm {
 
     id?: number;
@@ -25,14 +24,9 @@ export interface Alarm {
 
 }
 
-
-
 export class AlarmRepository {
 
-
-
     create(alarm: Alarm): number {
-
 
         const stmt = sqlite.prepare(`
 
@@ -49,36 +43,24 @@ export class AlarmRepository {
 
         `);
 
-
-
         const result = stmt.run(
 
             alarm.sensor_id,
-
             alarm.type,
-
             alarm.severity,
-
             alarm.status,
-
             alarm.trigger_value
 
         );
-
 
         return Number(result.lastInsertRowid);
 
     }
 
-
-
-
-
     findActiveAlarm(
         sensorId: number,
         type: string
     ): Alarm | undefined {
-
 
         const stmt = sqlite.prepare(`
 
@@ -98,25 +80,14 @@ export class AlarmRepository {
 
         `);
 
-
-
         return stmt.get(
-
             sensorId,
-
             type
-
         ) as Alarm | undefined;
-
 
     }
 
-
-
-
-
     recoverAlarm(id: number): void {
-
 
         const stmt = sqlite.prepare(`
 
@@ -132,19 +103,69 @@ export class AlarmRepository {
 
         `);
 
-
-
         stmt.run(id);
-
 
     }
 
+    acknowledgeAlarm(id: number): void {
 
+        const stmt = sqlite.prepare(`
 
+            UPDATE alarms
 
+            SET
+
+                status = 'ACKNOWLEDGED',
+
+                acknowledged_time = CURRENT_TIMESTAMP
+
+            WHERE id = ?
+
+              AND status = 'TRIGGERED'
+
+        `);
+
+        stmt.run(id);
+
+    }
+
+    getById(id: number): Alarm | undefined {
+
+        const stmt = sqlite.prepare(`
+
+            SELECT *
+
+            FROM alarms
+
+            WHERE id = ?
+
+            LIMIT 1
+
+        `);
+
+        return stmt.get(id) as Alarm | undefined;
+
+    }
+
+    getActive(): Alarm[] {
+
+        const stmt = sqlite.prepare(`
+
+            SELECT *
+
+            FROM alarms
+
+            WHERE status = 'TRIGGERED'
+
+            ORDER BY id DESC
+
+        `);
+
+        return stmt.all() as Alarm[];
+
+    }
 
     getAll(): Alarm[] {
-
 
         const stmt = sqlite.prepare(`
 
@@ -156,13 +177,8 @@ export class AlarmRepository {
 
         `);
 
-
-
         return stmt.all() as Alarm[];
 
-
     }
-
-
 
 }
