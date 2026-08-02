@@ -7,6 +7,39 @@ The format is based on **Keep a Changelog**.
 This project follows **Semantic Versioning (SemVer)**.
 
 ---
+# v0.8.0
+
+Release Date: 2026-08-02
+
+## Added
+
+- Alarm REST API
+- Alarm Controller
+- Alarm Routes
+- Alarm Repository enhancements
+- Alarm Service enhancements
+- API Development Standard document
+
+## Changed
+
+- Business validation moved to Service layer.
+- Integrated AppError into Alarm API.
+- Registered Alarm Routes in app.ts.
+
+## Tested
+
+- GET /api/v1/alarms
+- GET /api/v1/alarms/active
+- GET /api/v1/alarms/{id}
+- POST /api/v1/alarms/{id}/acknowledge
+
+## Build
+
+PASS
+
+## Status
+
+Production Ready
 
 ## [0.6.0] - 2026-07-29
 

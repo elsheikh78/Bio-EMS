@@ -1,3 +1,20 @@
+## Sprint 09 — REST API Foundation
+
+Status: ✅ COMPLETED
+
+Highlights:
+
+- Alarm REST API implemented
+- Alarm Controller completed
+- Alarm Routes completed
+- AppError integration completed
+- REST API validation completed
+- API Development Standard introduced
+
+Result:
+
+BIO-EMS now exposes its first production-ready REST API module.
+
 Sprint 1
 ──────────────
 ☑ Bootstrap
