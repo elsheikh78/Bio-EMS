@@ -1,6 +1,5 @@
 import { sqlite } from "../../database/sqlite/client";
 
-
 export interface Sensor {
 
     id?: number;
@@ -37,12 +36,9 @@ export interface Sensor {
 
 }
 
-
 export class SensorRepository {
 
-
     create(sensor: Sensor): number {
-
 
         const stmt = sqlite.prepare(`
             INSERT INTO sensors
@@ -63,8 +59,6 @@ export class SensorRepository {
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
-
-
 
         const result = stmt.run(
 
@@ -96,15 +90,11 @@ export class SensorRepository {
 
         );
 
-
         return Number(result.lastInsertRowid);
 
     }
 
-
-
     getAll(): Sensor[] {
-
 
         const stmt = sqlite.prepare(`
             SELECT *
@@ -112,18 +102,14 @@ export class SensorRepository {
             ORDER BY id
         `);
 
-
         return stmt.all() as Sensor[];
 
     }
-
-
 
     findByDeviceAndChannel(
         deviceId: number,
         channel: number
     ): Sensor | undefined {
-
 
         const stmt = sqlite.prepare(`
             SELECT *
@@ -133,8 +119,6 @@ export class SensorRepository {
             LIMIT 1
         `);
 
-
-
         return stmt.get(
             deviceId,
             channel
@@ -142,5 +126,21 @@ export class SensorRepository {
 
     }
 
+    findByCode(
+        code: string
+    ): Sensor | undefined {
+
+        const stmt = sqlite.prepare(`
+            SELECT *
+            FROM sensors
+            WHERE code = ?
+            LIMIT 1
+        `);
+
+        return stmt.get(
+            code
+        ) as Sensor | undefined;
+
+    }
 
 }

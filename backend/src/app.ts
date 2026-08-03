@@ -11,6 +11,7 @@ import { runMigrations } from "../database/sqlite/migrations";
 import { errorMiddleware } from "./middleware/error.middleware";
 import sensorRouter from "./routes/sensor.route";
 import alarmRouter from "./routes/alarm.route";
+import dashboardRouter from "./routes/dashboard.route";
 
 runMigrations();
 
@@ -30,6 +31,10 @@ app.use(`${config.apiPrefix}/devices`, deviceRouter);
 app.use(`${config.apiPrefix}/rooms`, roomRouter);
 app.use(`${config.apiPrefix}/sensors`, sensorRouter);
 app.use(`${config.apiPrefix}/alarms`, alarmRouter);
+app.use(
+    `${config.apiPrefix}/dashboard`,
+    dashboardRouter
+);
 
 app.use(errorMiddleware);
 

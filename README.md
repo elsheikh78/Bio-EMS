@@ -1,37 +1,66 @@
 # BIO-EMS
 
-Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms, warehouses, laboratories and other regulated environments.
+Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms, warehouses, laboratories, clean rooms and other regulated environments.
 
 ---
 
-## Overview
+# Project Status
 
-BIO-EMS is a modular monitoring platform designed to collect, store and visualize environmental data from multiple sites and assets.
+**Current Version:** v0.10.0
 
-The system focuses on reliability, scalability and regulatory readiness by separating business domains from hardware implementation.
+**Current Phase:** Sprint 10 Completed
 
----
+**Build Status:** Passing
 
-## Key Features
-
-- Multi-site architecture
-- Asset-centric monitoring
-- MQTT communication
-- InfluxDB telemetry storage
-- SQLite configuration database
-- Temperature & humidity monitoring
-- Multiple sensor support
-- Device registration & activation workflow
-- Alarm engine (planned)
-- Notification engine (planned)
-- Web dashboard (planned)
-- Multi-language support (Arabic / English)
+**Backend Status:** Production-ready Foundation
 
 ---
 
-## Technology Stack
+# Overview
 
-Backend
+BIO-EMS is a modular environmental monitoring platform designed for regulated industries.
+
+The system collects telemetry from distributed devices using MQTT, stores high-frequency time-series data in InfluxDB, maintains configuration data in SQLite, and exposes REST APIs for dashboard visualization and system management.
+
+The architecture is designed to support multi-site deployments while remaining hardware-independent and vendor-independent.
+
+---
+
+# Key Features
+
+## Configuration Management
+
+- Multi-site support
+- Room management
+- Device management
+- Sensor management
+
+## Telemetry
+
+- MQTT telemetry ingestion
+- InfluxDB time-series storage
+- Generic telemetry query layer
+- Latest telemetry API
+
+## Dashboard Backend
+
+- Dashboard Summary API
+- Room Status API
+- Alarm Statistics API
+- Dashboard Aggregation Engine
+
+## Alarm Management
+
+- Alarm repository
+- Alarm service
+- Alarm REST API
+- Alarm acknowledgement workflow
+
+---
+
+# Technology Stack
+
+## Backend
 
 - Node.js
 - TypeScript
@@ -40,124 +69,142 @@ Backend
 - InfluxDB
 - MQTT
 
-Frontend
+## Architecture
 
-- (Under Development)
-
-Firmware
-
-- ESP32 (planned)
-- Hardware-independent architecture
-
----
-
-## Repository Structure
-
-```
-backend/
-frontend/
-firmware/
-gateway/
-hardware/
-deployment/
-docs/
-config/
-scripts/
-tools/
-```
-
----
-
-## Architecture Principles
-
-BIO-EMS follows:
-
-- Domain Driven Design
 - Layered Architecture
 - Repository Pattern
-- Documentation First
-- Architecture First
-- Hardware Independence
-- Vendor Independence
-
-Business logic belongs to Services.
-
-Repositories handle data access only.
+- Service Layer
+- DTO Pattern
+- REST API
+- Architecture Decision Records (ADR)
 
 ---
 
-## Current Project Status
+# Repository Structure
 
-Current Release
+```text
+backend/
+docs/
+diagrams/
 
-**0.1.0-alpha**
-
-Current implementation includes:
-
-- Backend foundation
-- SQLite configuration database
-- MQTT infrastructure
-- InfluxDB integration
-- Repository / Service architecture
-- Site module
-- Health endpoint
-- Project documentation
-- Architecture Decision Records (ADRs)
-
-Telemetry Pipeline is the next major milestone.
+README.md
+CHANGELOG.md
+PROJECT_STATE.md
+VERSION
+```
 
 ---
 
-## Roadmap
+# Available REST APIs
 
-Phase 1
-Repository Foundation
+## Health
 
-✔ Completed
+```
+GET /api/v1/health
+```
 
-Phase 2
-Database Layer
+## Sites
 
-✔ Completed
+CRUD Operations
 
-Phase 3
-MQTT Infrastructure
+## Rooms
 
-✔ Completed
+CRUD Operations
 
-Phase 4
-Device Registration
+## Devices
 
-In Progress
+CRUD Operations
 
-Phase 5
-Telemetry Pipeline
+## Sensors
 
-Next
+CRUD Operations
+
+## Alarms
+
+```
+GET /api/v1/alarms
+GET /api/v1/alarms/active
+GET /api/v1/alarms/{id}
+POST /api/v1/alarms/{id}/acknowledge
+```
+
+## Dashboard
+
+```
+GET /api/v1/dashboard/summary
+
+GET /api/v1/dashboard/latest-telemetry
+
+GET /api/v1/dashboard/rooms/status
+
+GET /api/v1/dashboard/alarm-statistics
+```
 
 ---
 
-## Documentation
+# Documentation
 
-Project documentation is located under:
+Project documentation is organized under:
 
 ```
 docs/
 ```
 
-Important documents include:
+Documentation includes:
 
 - Architecture
 - ADRs
-- Implementation Plan
-- Business Domain
-- Domain Driven Design
-- Project Rules
-- Risk Register
+- API Specifications
+- Deployment
+- Installation
+- Requirements
+- Security
+- Sprint Reports
+- Project Management
 
 ---
 
-## License
+# Current Development Status
+
+Completed
+
+- MQTT Infrastructure
+- SQLite Configuration Database
+- InfluxDB Integration
+- Repository Layer
+- Service Layer
+- Alarm Engine
+- Dashboard Backend APIs
+
+In Progress
+
+- Frontend Dashboard
+
+Planned
+
+- Notification Engine
+- User Authentication
+- Reporting Module
+- Multi-language UI
+
+---
+
+# Development Principles
+
+BIO-EMS follows:
+
+- Architecture First
+- Documentation First
+- Repository Pattern
+- Service-Oriented Business Logic
+- Hardware Independence
+- Vendor Independence
+- Backward Compatibility
+- Incremental Sprint Delivery
+
+---
+
+# License
 
 Proprietary License
 
@@ -165,6 +212,8 @@ All rights reserved.
 
 ---
 
-## Author
+# Author
 
 Ahmed A. Elsheikh
+
+Project: BIO-EMS

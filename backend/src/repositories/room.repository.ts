@@ -1,15 +1,25 @@
 import { sqlite } from "../../database/sqlite/client";
 
 export interface Room {
+
     id?: number;
+
     uuid: string;
+
     site_id: number;
+
     code: string;
+
     name: string;
+
     description?: string;
+
     active?: number;
+
     created_at?: string;
+
     updated_at?: string;
+
 }
 
 export class RoomRepository {
@@ -39,6 +49,7 @@ export class RoomRepository {
         );
 
         return Number(result.lastInsertRowid);
+
     }
 
     getAll(): Room[] {
@@ -50,6 +61,20 @@ export class RoomRepository {
         `);
 
         return stmt.all() as Room[];
+
+    }
+
+    findById(id: number): Room | undefined {
+
+        const stmt = sqlite.prepare(`
+            SELECT *
+            FROM rooms
+            WHERE id = ?
+            LIMIT 1
+        `);
+
+        return stmt.get(id) as Room | undefined;
+
     }
 
 }
