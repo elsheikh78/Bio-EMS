@@ -41,6 +41,14 @@ A decision was required to determine whether telemetry queries should be impleme
 
 ---
 
+## Implementation Status
+
+**Partially Implemented.** `room-status.query.ts` retrieves latest telemetry without a
+measurement-specific filter and returns sensor type with each record. However,
+`telemetry.query.ts` currently filters the latest-telemetry query to `temperature`.
+
+---
+
 ## Decision Drivers
 
 - Scalability
@@ -53,7 +61,7 @@ A decision was required to determine whether telemetry queries should be impleme
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -105,7 +113,9 @@ The query retrieves the latest value for each measurement and sensor combination
 
 BIO-EMS adopts a Generic Telemetry Query Architecture.
 
-Telemetry queries shall retrieve measurements without hardcoding individual sensor types.
+The generic query approach shall retrieve measurements without hardcoding individual
+sensor types. The current Room Status query follows this approach; the current Latest
+Telemetry query remains temperature-specific.
 
 Each telemetry record shall include:
 
@@ -152,3 +162,13 @@ Business logic is responsible for interpreting telemetry records based on sensor
 - ADR-015 Dashboard Aggregation Architecture
 - ADR-016 Dashboard Widget API Architecture
 - ADR-008 Asset-Centric Domain Model
+
+---
+
+## References
+
+- `backend/database/influx/queries/room-status.query.ts` — generic latest room telemetry query.
+- `backend/database/influx/queries/telemetry.query.ts` — current temperature-filtered latest telemetry query.
+- `backend/database/influx/writer.ts` — telemetry measurement is set from sensor type.
+- `backend/src/services/dashboard.service.ts` — current query consumers.
+- `docs/adr/ADR-015-dashboard-aggregation-architecture.md` — aggregation-service decision.

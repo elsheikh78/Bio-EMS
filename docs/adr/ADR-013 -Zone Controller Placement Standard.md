@@ -22,6 +22,14 @@ The installation location should minimize environmental stress on the hardware w
 
 ---
 
+## Implementation Status
+
+**Not implemented in the backend.** This placement standard is deployment
+documentation for a Zone Controller architecture that is not represented by a backend
+entity, API, or configuration model.
+
+---
+
 ## Decision Drivers
 
 - Hardware reliability
@@ -33,7 +41,7 @@ The installation location should minimize environmental stress on the hardware w
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -130,3 +138,12 @@ No changes are required to:
 
 - ADR-011 Zone is an Engineering Concept
 - ADR-012 Zone Controller Architecture
+
+---
+
+## References
+
+- `docs/hardware/installation-guide.md` — installation documentation.
+- `docs/hardware/zone-controller.md` — Zone Controller hardware documentation.
+- `docs/adr/ADR-011-Zone is an Engineering Concept.md` — Zone boundary decision.
+- `docs/adr/ADR-012 - Zone Controller Architecture.md` — related controller decision.

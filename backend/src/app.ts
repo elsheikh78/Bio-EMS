@@ -7,15 +7,15 @@ import healthRouter from "./routes/health.route";
 import { getMqttClient } from "./mqtt/client";
 import "../database/sqlite/client";
 import { createTables } from "../database/sqlite/schema";
-import { runMigrations } from "../database/sqlite/migrations";
+import { runMigrations } from "../database/sqlite/migration-runner";
 import { errorMiddleware } from "./middleware/error.middleware";
 import sensorRouter from "./routes/sensor.route";
 import alarmRouter from "./routes/alarm.route";
 import dashboardRouter from "./routes/dashboard.route";
 
-runMigrations();
-
 createTables();
+
+runMigrations();
 
 const app = express();
 

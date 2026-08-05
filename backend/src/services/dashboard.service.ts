@@ -1,19 +1,24 @@
 import { SiteRepository } from "../repositories/site.repository";
 import { RoomRepository } from "../repositories/room.repository";
 import { DeviceRepository } from "../repositories/device.repository";
-import { SensorRepository } from "../repositories/sensor.repository";
+import { Sensor, SensorRepository } from "../repositories/sensor.repository";
 import { AlarmRepository } from "../repositories/alarm.repository";
 import { AlarmStatistics } from "../types/alarm-statistics.types";
 import { DashboardSummary } from "../types/dashboard.types";
 import { getLatestTelemetry } from "../../database/influx/queries/telemetry.query";
 import { RoomStatus } from "../types/room-status.types";
 import { getLatestRoomTelemetry } from "../../database/influx/queries/room-status.query";
+import { evaluateAlarm } from "../domain/engines/alarm-evaluation.engine";
+import { AlarmStatus } from "../domain/enums/alarm-status";
+import { SensorType } from "../domain/enums/sensor-type";
 
 interface SensorSnapshot {
 
     value: number;
 
     time: string;
+
+    sensor: Sensor;
 
 }
 
@@ -157,7 +162,9 @@ async getRoomStatus(): Promise<RoomStatus[]> {
 
                 value: record.value,
 
-                time: record.time
+                time: record.time,
+
+                sensor
 
             }
 
@@ -185,9 +192,9 @@ async getRoomStatus(): Promise<RoomStatus[]> {
 
             humidity: humidity?.value ?? null,
 
-            temperatureStatus: temperature ? "NORMAL" : "UNKNOWN",
+            temperatureStatus: this.evaluateSensorStatus(temperature),
 
-            humidityStatus: humidity ? "NORMAL" : "UNKNOWN",
+            humidityStatus: this.evaluateSensorStatus(humidity),
 
             activeAlarms: room.activeAlarms,
 
@@ -198,6 +205,58 @@ async getRoomStatus(): Promise<RoomStatus[]> {
         };
 
     });
+
+}
+
+private evaluateSensorStatus(
+    snapshot: SensorSnapshot | undefined
+): RoomStatus["temperatureStatus"] {
+
+    if (!snapshot) {
+
+        return this.mapAlarmStatus(AlarmStatus.UNKNOWN);
+
+    }
+
+    const result = evaluateAlarm(
+        {
+            sensorType: snapshot.sensor.sensor_type.toUpperCase() as SensorType,
+            value: snapshot.value
+        },
+        {
+            warningLow: snapshot.sensor.warning_low,
+            alarmLow: snapshot.sensor.alarm_low,
+            warningHigh: snapshot.sensor.warning_high,
+            alarmHigh: snapshot.sensor.alarm_high
+        }
+    );
+
+    return this.mapAlarmStatus(result.status);
+
+}
+
+private mapAlarmStatus(
+    status: AlarmStatus
+): RoomStatus["temperatureStatus"] {
+
+    switch (status) {
+
+        case AlarmStatus.NORMAL:
+            return "NORMAL";
+
+        case AlarmStatus.LOW:
+        case AlarmStatus.HIGH:
+            return "WARNING";
+
+        case AlarmStatus.CRITICAL_LOW:
+        case AlarmStatus.CRITICAL_HIGH:
+            return "CRITICAL";
+
+        case AlarmStatus.UNKNOWN:
+        case AlarmStatus.OFFLINE:
+            return "UNKNOWN";
+
+    }
 
 }
     

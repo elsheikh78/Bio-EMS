@@ -1,0 +1,17 @@
+export enum SensorType {
+    TEMPERATURE = "TEMPERATURE",
+
+    HUMIDITY = "HUMIDITY",
+
+    DIFFERENTIAL_PRESSURE = "DIFFERENTIAL_PRESSURE",
+
+    DOOR = "DOOR",
+
+    CO2 = "CO2",
+
+    PARTICLE_COUNT = "PARTICLE_COUNT",
+
+    BATTERY = "BATTERY",
+
+    CUSTOM = "CUSTOM"
+}

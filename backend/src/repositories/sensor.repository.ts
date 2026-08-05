@@ -24,7 +24,11 @@ export interface Sensor {
 
     max_value?: number;
 
+    warning_low?: number;
+
     alarm_low?: number;
+
+    warning_high?: number;
 
     alarm_high?: number;
 
@@ -53,11 +57,13 @@ export class SensorRepository {
                 unit,
                 min_value,
                 max_value,
+                warning_low,
                 alarm_low,
+                warning_high,
                 alarm_high,
                 enabled
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
         const result = stmt.run(
@@ -82,7 +88,11 @@ export class SensorRepository {
 
             sensor.max_value ?? null,
 
+            sensor.warning_low ?? null,
+
             sensor.alarm_low ?? null,
+
+            sensor.warning_high ?? null,
 
             sensor.alarm_high ?? null,
 

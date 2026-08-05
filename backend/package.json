@@ -27,7 +27,9 @@
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
-    "test": "vitest"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",

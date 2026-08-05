@@ -24,6 +24,14 @@ The design team had to decide whether Zone should become a business entity withi
 
 ---
 
+## Implementation Status
+
+**Not implemented in the backend.** The current backend has no Zone table, repository,
+API, or Zone Controller configuration. Zone remains an engineering concept documented
+in hardware and deployment materials, not a current Domain entity.
+
+---
+
 ## Decision Drivers
 
 - Maintain Domain Model simplicity.
@@ -34,7 +42,7 @@ The design team had to decide whether Zone should become a business entity withi
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -127,3 +135,12 @@ No changes are required to:
 
 - ADR-007 Device Abstraction
 - ADR-008 Asset-Centric Design
+
+---
+
+## References
+
+- `docs/engineering/ARCHITECTURE_PRINCIPLES.md` — current Domain and infrastructure boundaries.
+- `docs/engineering/DOMAIN_GUIDELINES.md` — current Domain terminology and purity rules.
+- `docs/hardware/zone-controller.md` — Zone Controller hardware documentation.
+- `docs/adr/ADR-012 - Zone Controller Architecture.md` — related controller decision.

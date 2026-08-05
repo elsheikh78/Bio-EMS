@@ -35,6 +35,14 @@ The selected approach must support scalability, maintainability, independent evo
 
 ---
 
+## Implementation Status
+
+**Implemented.** The backend exposes independent Dashboard Summary, Latest Telemetry,
+Room Status, and Alarm Statistics routes through `DashboardController` and
+`DashboardService`. Each endpoint returns its existing response contract.
+
+---
+
 ## Decision Drivers
 
 - Separation of Concerns
@@ -48,7 +56,7 @@ The selected approach must support scalability, maintainability, independent evo
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -144,3 +152,13 @@ Widgets must remain independent.
 
 - ADR-015 Dashboard Aggregation Architecture
 - ADR-017 Generic Telemetry Query Architecture
+
+---
+
+## References
+
+- `backend/src/routes/dashboard.route.ts` — implemented widget-specific routes.
+- `backend/src/controllers/dashboard.controller.ts` — dashboard controller methods.
+- `backend/src/services/dashboard.service.ts` — dashboard aggregation and response composition.
+- `docs/adr/ADR-015-dashboard-aggregation-architecture.md` — aggregation-service decision.
+- `docs/adr/ADR-017-generic-telemetry-query-architecture.md` — telemetry-query decision.

@@ -22,6 +22,14 @@ A standard wiring approach is required for all BIO-EMS deployments.
 
 ---
 
+## Implementation Status
+
+**Partially Implemented.** The current Sensor model includes a `device_id` and a
+dedicated `channel`, supporting channel-level sensor configuration. The backend has no
+Zone Controller or Monitoring Point model and does not validate physical wiring.
+
+---
+
 ## Decision Drivers
 
 - Installation simplicity
@@ -34,7 +42,7 @@ A standard wiring approach is required for all BIO-EMS deployments.
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -80,7 +88,7 @@ Each Sensor is connected directly to the Zone Controller using an independent ca
 
 BIO-EMS adopts Home Run Wiring as the default wiring standard.
 
-Each Monitoring Point Sensor shall be connected directly to a dedicated Device Channel on the Zone Controller.
+Each Monitoring Point Sensor shall be connected directly to a dedicated Device Channel on the Zone Controller when the proposed Monitoring Point and Zone Controller deployment architecture is adopted.
 
 No intermediate Sensor-to-Sensor wiring shall be used as part of the standard deployment architecture.
 
@@ -126,3 +134,13 @@ No changes are required to:
 - ADR-011 Zone is an Engineering Concept
 - ADR-012 Zone Controller Architecture
 - ADR-013 Zone Controller Placement Standard
+
+---
+
+## References
+
+- `backend/database/sqlite/schema.ts` — current Sensor `device_id` and `channel` fields.
+- `backend/src/repositories/sensor.repository.ts` — Sensor channel persistence mapping.
+- `docs/hardware/wiring-standard.md` — wiring documentation.
+- `docs/adr/ADR-005-monitoring-points.md` — proposed Monitoring Point architecture.
+- `docs/adr/ADR-012 - Zone Controller Architecture.md` — related controller decision.

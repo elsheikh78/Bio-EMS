@@ -36,6 +36,15 @@ A development rule was required to standardize how future implementation decisio
 
 ---
 
+## Implementation Status
+
+**Implemented as an engineering standard.** The current Engineering Playbook, Code
+Review Checklist, Testing Guidelines, and ADR Policy require repository inspection,
+build/test verification, and evidence-based documentation. This is a documented
+manual practice; no automated governance enforcement is implemented.
+
+---
+
 ## Decision Drivers
 
 - Code Correctness
@@ -48,7 +57,7 @@ A development rule was required to standardize how future implementation decisio
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -150,3 +159,13 @@ No architectural or implementation decision shall rely solely on inferred behavi
 - ADR-015 Dashboard Aggregation Architecture
 - ADR-016 Dashboard Widget API Architecture
 - ADR-017 Generic Telemetry Query Architecture
+
+---
+
+## References
+
+- `docs/engineering/ENGINEERING_PLAYBOOK.md` — evidence-based engineering and Definition of Done.
+- `docs/engineering/CODE_REVIEW_CHECKLIST.md` — required review verification.
+- `docs/engineering/TESTING_GUIDELINES.md` — build, test, and regression verification.
+- `docs/engineering/ADR_POLICY.md` — ADR evidence and review requirements.
+- `backend/package.json` — current build and test commands.

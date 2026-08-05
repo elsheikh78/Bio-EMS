@@ -38,6 +38,15 @@ A dedicated architectural approach is required to combine configuration and tele
 
 ---
 
+## Implementation Status
+
+**Implemented.** `DashboardService` retrieves configuration through SQLite
+repositories, reads latest telemetry through InfluxDB query modules, and serves the
+implemented dashboard endpoints. Alarm status evaluation is delegated to
+`AlarmEvaluationEngine` before dashboard status mapping.
+
+---
+
 ## Decision Drivers
 
 - Separation of Concerns
@@ -50,7 +59,7 @@ A dedicated architectural approach is required to combine configuration and tele
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -92,7 +101,7 @@ Introduce a Dashboard Aggregation Service.
 #### Pros
 
 - Preserves Repository responsibilities.
-- Business logic remains inside the Service layer.
+- Dashboard aggregation orchestration remains inside the Service layer.
 - Supports multiple data sources.
 - Reusable by future Dashboard APIs.
 - Simplifies testing.
@@ -116,6 +125,9 @@ The DashboardService is responsible for:
 - Combining information into business-oriented DTOs.
 - Performing dashboard aggregation.
 - Producing widget-ready responses.
+
+Alarm evaluation remains a Domain responsibility. `DashboardService` orchestrates
+data retrieval and maps Domain results to the established dashboard API contract.
 
 Repositories remain responsible only for data access.
 
@@ -156,3 +168,15 @@ Controllers remain responsible only for HTTP request handling.
 - ADR-007 Device Abstraction
 - ADR-008 Asset-Centric Domain Model
 - ADR-017 Generic Telemetry Query Architecture
+
+---
+
+## References
+
+- `backend/src/services/dashboard.service.ts` — implemented dashboard aggregation and status mapping.
+- `backend/src/controllers/dashboard.controller.ts` — dashboard controller boundary.
+- `backend/src/routes/dashboard.route.ts` — implemented dashboard endpoints.
+- `backend/database/influx/queries/telemetry.query.ts` — latest telemetry query.
+- `backend/database/influx/queries/room-status.query.ts` — room telemetry query.
+- `backend/src/domain/engines/alarm-evaluation.engine.ts` — Domain alarm evaluation.
+- `docs/adr/ADR-017-generic-telemetry-query-architecture.md` — related telemetry-query decision.

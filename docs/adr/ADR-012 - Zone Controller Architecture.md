@@ -24,6 +24,14 @@ The architecture needed a standard hardware component responsible for collecting
 
 ---
 
+## Implementation Status
+
+**Not implemented in the backend.** The current backend models generic Devices and
+sensor channels, but it has no Zone Controller entity, configuration, or hardware
+implementation. ESP32 is not implemented as a backend-specific controller adapter.
+
+---
+
 ## Decision Drivers
 
 - Preserve Asset-Centric Design.
@@ -37,7 +45,7 @@ The architecture needed a standard hardware component responsible for collecting
 
 ---
 
-## Considered Options
+## Alternatives Considered
 
 ### Option 1
 
@@ -165,3 +173,13 @@ No changes are required to:
 - ADR-007 Device Abstraction
 - ADR-008 Asset-Centric Design
 - ADR-011 Zone is an Engineering Concept
+
+---
+
+## References
+
+- `backend/database/sqlite/schema.ts` — current Device and Sensor configuration schema.
+- `backend/src/repositories/device.repository.ts` — generic Device persistence mapping.
+- `docs/hardware/zone-controller.md` — controller hardware documentation.
+- `docs/adr/ADR-007-device-abstraction.md` — generic Device abstraction.
+- `docs/adr/ADR-011-Zone is an Engineering Concept.md` — Zone boundary decision.
