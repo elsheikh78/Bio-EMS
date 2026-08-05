@@ -1,219 +1,239 @@
 # BIO-EMS
 
-Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms, warehouses, laboratories, clean rooms and other regulated environments.
+![Current Version](https://img.shields.io/badge/version-0.10.0-blue)
+![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
+![Express](https://img.shields.io/badge/Express-5.2-000000)
+![SQLite](https://img.shields.io/badge/SQLite-Implemented-003B57)
+![InfluxDB](https://img.shields.io/badge/InfluxDB-Implemented-22ADF6)
+![Engineering Handbook](https://img.shields.io/badge/Engineering_Handbook-Approved-4CAF50)
 
----
+Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms,
+warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other
+regulated environments.
 
-# Project Status
+**Current repository version:** `0.10.0`
+**Backend:** TypeScript / Express
+**License:** Proprietary
 
-**Current Version:** v0.10.0
+## Project Overview
 
-**Current Phase:** Sprint 10 Completed
+BIO-EMS is a modular environmental monitoring backend for collecting device telemetry,
+managing monitoring configuration, evaluating alarm conditions, and exposing REST APIs
+for operational dashboard views.
 
-**Build Status:** Passing
+Its engineering goals are reliability, traceability, maintainability, hardware
+independence, and clear separation between business rules, configuration data, and
+time-series telemetry.
 
-**Backend Status:** Production-ready Foundation
+The current repository scope is the backend foundation: site, room, device, sensor,
+alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
 
----
+## Key Capabilities
 
-# Overview
-
-BIO-EMS is a modular environmental monitoring platform designed for regulated industries.
-
-The system collects telemetry from distributed devices using MQTT, stores high-frequency time-series data in InfluxDB, maintains configuration data in SQLite, and exposes REST APIs for dashboard visualization and system management.
-
-The architecture is designed to support multi-site deployments while remaining hardware-independent and vendor-independent.
-
----
-
-# Key Features
-
-## Configuration Management
-
-- Multi-site support
-- Room management
-- Device management
-- Sensor management
-
-## Telemetry
-
-- MQTT telemetry ingestion
-- InfluxDB time-series storage
-- Generic telemetry query layer
-- Latest telemetry API
-
-## Dashboard Backend
-
-- Dashboard Summary API
-- Room Status API
-- Alarm Statistics API
-- Dashboard Aggregation Engine
-
-## Alarm Management
-
-- Alarm repository
-- Alarm service
-- Alarm REST API
-- Alarm acknowledgement workflow
-
----
-
-# Technology Stack
-
-## Backend
-
-- Node.js
-- TypeScript
-- Express
-- SQLite
-- InfluxDB
-- MQTT
-
-## Architecture
-
-- Layered Architecture
-- Repository Pattern
-- Service Layer
-- DTO Pattern
-- REST API
+- Environmental telemetry collection
+- MQTT device communication
+- Alarm evaluation
+- Dashboard APIs
+- SQLite configuration management
+- InfluxDB time-series telemetry storage
+- Engineering Handbook
 - Architecture Decision Records (ADR)
 
----
+> The capabilities listed above reflect the current repository implementation and do
+> not describe planned functionality.
 
-# Repository Structure
+## Current Project Status
+
+| Component | Status |
+|----------|--------|
+| Backend API | ✅ Active Development |
+| Dashboard Backend | ✅ Implemented |
+| Engineering Handbook | ✅ Complete |
+| ADR Repository | ✅ Complete |
+| Domain Layer | ✅ Implemented |
+| SQLite Persistence | ✅ Implemented |
+| InfluxDB Integration | ✅ Implemented |
+| Device Registration | 🚧 In Progress |
+| Monitoring Point Layer | 📋 Proposed |
+
+Status reflects repository evidence. Device registration currently rejects unknown
+telemetry devices, while active-device enforcement and the full onboarding workflow
+remain incomplete. Monitoring Points have no backend table, repository, or API.
+
+## Repository Highlights
+
+| Area | Current State |
+|------|---------------|
+| Architecture | Layered Architecture |
+| Engineering Handbook | Complete |
+| ADR Repository | Complete |
+| Documentation | Repository-aligned |
+| Testing | Vitest |
+| Release Process | Documented |
+
+These highlights summarize the current engineering maturity of the repository.
+
+## Architecture Overview
+
+BIO-EMS uses a layered backend architecture:
 
 ```text
-backend/
-docs/
-diagrams/
-
-README.md
-CHANGELOG.md
-PROJECT_STATE.md
-VERSION
+REST API / MQTT ingestion
+          |
+          v
+Application Services and Dashboard Services
+          |
+          v
+Domain Layer: alarm evaluation
+          |
+          v
+SQLite configuration repositories / InfluxDB telemetry queries and writes
 ```
 
----
+- **Express API** exposes management, alarm, health, and dashboard endpoints.
+- **Domain Layer** evaluates alarm state from readings and configured thresholds.
+- **SQLite** owns configuration and operational records such as sites, rooms, devices,
+  sensors, alarms, and migration history.
+- **InfluxDB** owns time-series telemetry values.
+- **MQTT** receives device telemetry and routes it to the telemetry module.
+- **Dashboard Services** combine configuration, telemetry, and domain results into
+  established dashboard response contracts.
 
-# Available REST APIs
+## Technology Stack
 
-## Health
+| Technology | Current use |
+| --- | --- |
+| Node.js | Backend runtime; Node.js 22 or later is required. |
+| TypeScript | Backend source language and compilation. |
+| Express | REST API and middleware framework. |
+| SQLite | Configuration and operational persistence. |
+| InfluxDB | Telemetry time-series persistence and queries. |
+| MQTT | Device telemetry transport. |
+| Vitest | Current automated test runner. |
 
-```
-GET /api/v1/health
-```
+## Repository Structure
 
-## Sites
-
-CRUD Operations
-
-## Rooms
-
-CRUD Operations
-
-## Devices
-
-CRUD Operations
-
-## Sensors
-
-CRUD Operations
-
-## Alarms
-
-```
-GET /api/v1/alarms
-GET /api/v1/alarms/active
-GET /api/v1/alarms/{id}
-POST /api/v1/alarms/{id}/acknowledge
+```text
+backend/              TypeScript Express backend, databases, and tests
+docs/                 Engineering, ADR, API, architecture, and product documentation
+  hardware/           Hardware and installation reference documentation
+  product/            Product vision and journey documentation
+diagrams/              Architecture, ERD, MQTT, and sequence diagrams
+CHANGELOG.md          Implemented release history
+VERSION               Current repository version
 ```
 
-## Dashboard
+## Quick Start
 
-```
-GET /api/v1/dashboard/summary
+Prerequisites: Node.js 22 or later, a configured MQTT broker, and InfluxDB settings
+for telemetry features.
 
-GET /api/v1/dashboard/latest-telemetry
-
-GET /api/v1/dashboard/rooms/status
-
-GET /api/v1/dashboard/alarm-statistics
-```
-
----
-
-# Documentation
-
-Project documentation is organized under:
-
-```
-docs/
+```bash
+git clone <repository-url>
+cd bio-ems-project/backend
+npm install
 ```
 
-Documentation includes:
+Copy or create backend environment configuration from `.env.example`, then configure
+the MQTT and InfluxDB values for the target environment.
 
-- Architecture
-- ADRs
-- API Specifications
-- Deployment
-- Installation
-- Requirements
-- Security
-- Sprint Reports
-- Project Management
+```bash
+# Build
+npm run build
 
----
+# Development mode
+npm run dev
 
-# Current Development Status
+# Run the automated test suite once
+npm run test:run
+```
 
-Completed
+On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` in
+place of `npm`.
 
-- MQTT Infrastructure
-- SQLite Configuration Database
-- InfluxDB Integration
-- Repository Layer
-- Service Layer
-- Alarm Engine
-- Dashboard Backend APIs
+## Available API Areas
 
-In Progress
+The current API prefix is normally `/api/v1`.
 
-- Frontend Dashboard
+| Area | Current endpoints or operations |
+| --- | --- |
+| Health | `GET /health` |
+| Sites | Management endpoints |
+| Devices | Management endpoints |
+| Rooms | Management endpoints |
+| Sensors | Management endpoints |
+| Alarms | List, active, detail, and acknowledgement operations |
+| Dashboard | Summary, latest telemetry, room status, and alarm statistics |
 
-Planned
+See [`docs/api/`](docs/api/) for API reference material.
 
-- Notification Engine
-- User Authentication
-- Reporting Module
-- Multi-language UI
+## Documentation
 
----
+- [`docs/engineering/README.md`](docs/engineering/README.md) is the entry point to
+  the BIO-EMS Engineering Handbook. It links the current architecture, Domain,
+  review, testing, Git, release, ADR, AI workflow, and terminology standards.
+- [`docs/adr/`](docs/adr/) contains Architecture Decision Records, including decisions
+  that are implemented, partially implemented, and proposed.
 
-# Development Principles
+The handbook and ADR collection are repository-oriented: code and schema evidence take
+precedence over assumptions or roadmap language.
+
+## Engineering Standards
 
 BIO-EMS follows:
 
-- Architecture First
-- Documentation First
-- Repository Pattern
-- Service-Oriented Business Logic
-- Hardware Independence
-- Vendor Independence
-- Backward Compatibility
-- Incremental Sprint Delivery
+- **Repository-first engineering:** inspect the implementation before making claims or changes.
+- **Evidence-based reviews:** review conclusions are supported by repository evidence.
+- **ADR-driven architecture:** architectural rationale is retained in `docs/adr/`.
+- **Documentation synchronized with implementation:** documents distinguish current
+  behavior from proposed architecture.
+
+For detailed standards, start with the [Engineering Handbook](docs/engineering/README.md).
+
+## Project Roadmap
+
+Current focus: **Sprint 12** planning and delivery.
+
+Planned future work includes:
+
+- Device onboarding
+- Monitoring Point architecture
+- Asset model
+- Additional device types
+
+These roadmap items are planned work and are not claims of current implementation.
+
+## Contributing
+
+Contributors should:
+
+1. Follow the [Engineering Handbook](docs/engineering/README.md).
+2. Follow applicable ADRs in [`docs/adr/`](docs/adr/).
+3. Keep documentation synchronized with implemented behavior.
+4. Submit focused, reviewed Pull Requests with successful build and test evidence.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for repository contribution guidance.
+
+## License
+
+Proprietary License.
+
+All rights reserved. See [LICENSE](LICENSE) for licensing terms.
 
 ---
 
-# License
+## Engineering Handbook
 
-Proprietary License
+The BIO-EMS Engineering Handbook defines the engineering standards governing this
+repository.
 
-All rights reserved.
+For architecture, engineering standards, ADRs, development workflow, testing,
+releases, and terminology, begin with:
+
+[`docs/engineering/README.md`](docs/engineering/README.md)
 
 ---
-
-# Author
-
-Ahmed A. Elsheikh
 
 Project: BIO-EMS
+Author: Ahmed A. Elsheikh
