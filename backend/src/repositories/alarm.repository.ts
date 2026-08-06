@@ -1,34 +1,33 @@
+import type Database from "better-sqlite3";
 import { sqlite } from "../../database/sqlite/client";
 
 export interface Alarm {
+  id?: number;
 
-    id?: number;
+  sensor_id: number;
 
-    sensor_id: number;
+  type: string;
 
-    type: string;
+  severity: string;
 
-    severity: string;
+  status: string;
 
-    status: string;
+  trigger_value: number;
 
-    trigger_value: number;
+  trigger_time?: string;
 
-    trigger_time?: string;
+  acknowledged_time?: string;
 
-    acknowledged_time?: string;
+  recovered_time?: string;
 
-    recovered_time?: string;
-
-    created_at?: string;
-
+  created_at?: string;
 }
 
 export class AlarmRepository {
+  constructor(private readonly database: Database.Database = sqlite) {}
 
-    create(alarm: Alarm): number {
-
-        const stmt = sqlite.prepare(`
+  create(alarm: Alarm): number {
+    const stmt = this.database.prepare(`
 
             INSERT INTO alarms
             (
@@ -43,26 +42,19 @@ export class AlarmRepository {
 
         `);
 
-        const result = stmt.run(
+    const result = stmt.run(
+      alarm.sensor_id,
+      alarm.type,
+      alarm.severity,
+      alarm.status,
+      alarm.trigger_value
+    );
 
-            alarm.sensor_id,
-            alarm.type,
-            alarm.severity,
-            alarm.status,
-            alarm.trigger_value
+    return Number(result.lastInsertRowid);
+  }
 
-        );
-
-        return Number(result.lastInsertRowid);
-
-    }
-
-    findActiveAlarm(
-        sensorId: number,
-        type: string
-    ): Alarm | undefined {
-
-        const stmt = sqlite.prepare(`
+  findActiveAlarm(sensorId: number, type: string): Alarm | undefined {
+    const stmt = this.database.prepare(`
 
             SELECT *
 
@@ -80,16 +72,11 @@ export class AlarmRepository {
 
         `);
 
-        return stmt.get(
-            sensorId,
-            type
-        ) as Alarm | undefined;
+    return stmt.get(sensorId, type) as Alarm | undefined;
+  }
 
-    }
-
-    recoverAlarm(id: number): void {
-
-        const stmt = sqlite.prepare(`
+  recoverAlarm(id: number): void {
+    const stmt = this.database.prepare(`
 
             UPDATE alarms
 
@@ -103,13 +90,11 @@ export class AlarmRepository {
 
         `);
 
-        stmt.run(id);
+    stmt.run(id);
+  }
 
-    }
-
-    acknowledgeAlarm(id: number): void {
-
-        const stmt = sqlite.prepare(`
+  acknowledgeAlarm(id: number): void {
+    const stmt = this.database.prepare(`
 
             UPDATE alarms
 
@@ -125,13 +110,11 @@ export class AlarmRepository {
 
         `);
 
-        stmt.run(id);
+    stmt.run(id);
+  }
 
-    }
-
-    getById(id: number): Alarm | undefined {
-
-        const stmt = sqlite.prepare(`
+  getById(id: number): Alarm | undefined {
+    const stmt = this.database.prepare(`
 
             SELECT *
 
@@ -143,13 +126,11 @@ export class AlarmRepository {
 
         `);
 
-        return stmt.get(id) as Alarm | undefined;
+    return stmt.get(id) as Alarm | undefined;
+  }
 
-    }
-
-    getActive(): Alarm[] {
-
-        const stmt = sqlite.prepare(`
+  getActive(): Alarm[] {
+    const stmt = this.database.prepare(`
 
             SELECT *
 
@@ -161,13 +142,11 @@ export class AlarmRepository {
 
         `);
 
-        return stmt.all() as Alarm[];
+    return stmt.all() as Alarm[];
+  }
 
-    }
-
-    getAll(): Alarm[] {
-
-        const stmt = sqlite.prepare(`
+  getAll(): Alarm[] {
+    const stmt = this.database.prepare(`
 
             SELECT *
 
@@ -177,8 +156,6 @@ export class AlarmRepository {
 
         `);
 
-        return stmt.all() as Alarm[];
-
-    }
-
+    return stmt.all() as Alarm[];
+  }
 }

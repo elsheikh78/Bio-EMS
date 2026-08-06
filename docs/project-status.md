@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Version
-0.1.0-alpha
+0.11.0
 
 ---
 
@@ -15,6 +15,10 @@
 - [x] Sites Module
 - [x] REST Client Testing
 - [x] Documentation Structure
+- [x] Unified Alarm Evaluation Engine
+- [x] Warning Threshold Migration
+- [x] Dashboard Threshold Status
+- [x] ESLint and Prettier Quality Gates
 
 ---
 
@@ -28,9 +32,16 @@
 
 - [ ] Rooms Module
 - [ ] Sensors Module
-- [ ] Alarm Engine
+- [x] Alarm Engine
 - [ ] Notification Engine
-- [ ] Dashboard APIs
+- [x] Dashboard APIs
+
+---
+
+## Sprint 11
+
+Completed. The release contains 13 passing Alarm Domain, persistence, REST API,
+and migration tests. Sprint 12 has not started.
 - [ ] Authentication
 - [ ] Authorization
 - [ ] OTA Updates

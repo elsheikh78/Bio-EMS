@@ -1,14 +1,14 @@
 export interface TelemetrySensorDto {
-    channel: number;
-    value: number;
+  channel: number;
+  value: number;
 }
 
 export interface TelemetryDto {
-    protocolVersion: string;
-    timestamp: string;
+  protocolVersion: string;
+  timestamp: string;
 
-    battery: number;
-    signal: number;
+  battery: number;
+  signal: number;
 
-    sensors: TelemetrySensorDto[];
+  sensors: TelemetrySensorDto[];
 }

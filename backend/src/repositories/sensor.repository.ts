@@ -1,50 +1,46 @@
 import { sqlite } from "../../database/sqlite/client";
 
 export interface Sensor {
+  id?: number;
 
-    id?: number;
+  uuid: string;
 
-    uuid: string;
+  room_id: number;
 
-    room_id: number;
+  device_id: number;
 
-    device_id: number;
+  channel: number;
 
-    channel: number;
+  code: string;
 
-    code: string;
+  name: string;
 
-    name: string;
+  sensor_type: string;
 
-    sensor_type: string;
+  unit: string;
 
-    unit: string;
+  min_value?: number;
 
-    min_value?: number;
+  max_value?: number;
 
-    max_value?: number;
+  warning_low?: number;
 
-    warning_low?: number;
+  alarm_low?: number;
 
-    alarm_low?: number;
+  warning_high?: number;
 
-    warning_high?: number;
+  alarm_high?: number;
 
-    alarm_high?: number;
+  enabled?: number;
 
-    enabled?: number;
+  created_at?: string;
 
-    created_at?: string;
-
-    updated_at?: string;
-
+  updated_at?: string;
 }
 
 export class SensorRepository {
-
-    create(sensor: Sensor): number {
-
-        const stmt = sqlite.prepare(`
+  create(sensor: Sensor): number {
+    const stmt = sqlite.prepare(`
             INSERT INTO sensors
             (
                 uuid,
@@ -66,62 +62,53 @@ export class SensorRepository {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
-        const result = stmt.run(
+    const result = stmt.run(
+      sensor.uuid,
 
-            sensor.uuid,
+      sensor.room_id,
 
-            sensor.room_id,
+      sensor.device_id,
 
-            sensor.device_id,
+      sensor.channel,
 
-            sensor.channel,
+      sensor.code,
 
-            sensor.code,
+      sensor.name,
 
-            sensor.name,
+      sensor.sensor_type,
 
-            sensor.sensor_type,
+      sensor.unit,
 
-            sensor.unit,
+      sensor.min_value ?? null,
 
-            sensor.min_value ?? null,
+      sensor.max_value ?? null,
 
-            sensor.max_value ?? null,
+      sensor.warning_low ?? null,
 
-            sensor.warning_low ?? null,
+      sensor.alarm_low ?? null,
 
-            sensor.alarm_low ?? null,
+      sensor.warning_high ?? null,
 
-            sensor.warning_high ?? null,
+      sensor.alarm_high ?? null,
 
-            sensor.alarm_high ?? null,
+      sensor.enabled ?? 1
+    );
 
-            sensor.enabled ?? 1
+    return Number(result.lastInsertRowid);
+  }
 
-        );
-
-        return Number(result.lastInsertRowid);
-
-    }
-
-    getAll(): Sensor[] {
-
-        const stmt = sqlite.prepare(`
+  getAll(): Sensor[] {
+    const stmt = sqlite.prepare(`
             SELECT *
             FROM sensors
             ORDER BY id
         `);
 
-        return stmt.all() as Sensor[];
+    return stmt.all() as Sensor[];
+  }
 
-    }
-
-    findByDeviceAndChannel(
-        deviceId: number,
-        channel: number
-    ): Sensor | undefined {
-
-        const stmt = sqlite.prepare(`
+  findByDeviceAndChannel(deviceId: number, channel: number): Sensor | undefined {
+    const stmt = sqlite.prepare(`
             SELECT *
             FROM sensors
             WHERE device_id = ?
@@ -129,28 +116,17 @@ export class SensorRepository {
             LIMIT 1
         `);
 
-        return stmt.get(
-            deviceId,
-            channel
-        ) as Sensor | undefined;
+    return stmt.get(deviceId, channel) as Sensor | undefined;
+  }
 
-    }
-
-    findByCode(
-        code: string
-    ): Sensor | undefined {
-
-        const stmt = sqlite.prepare(`
+  findByCode(code: string): Sensor | undefined {
+    const stmt = sqlite.prepare(`
             SELECT *
             FROM sensors
             WHERE code = ?
             LIMIT 1
         `);
 
-        return stmt.get(
-            code
-        ) as Sensor | undefined;
-
-    }
-
+    return stmt.get(code) as Sensor | undefined;
+  }
 }

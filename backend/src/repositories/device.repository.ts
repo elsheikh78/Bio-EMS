@@ -1,42 +1,36 @@
 import { sqlite } from "../../database/sqlite/client";
 
 export interface Device {
+  id?: number;
 
-    id?: number;
+  uuid: string;
 
-    uuid: string;
+  device_id: string;
 
-    device_id: string;
+  site_id: number;
 
-    site_id: number;
+  device_type: string;
 
-    device_type: string;
+  protocol: string;
 
-    protocol: string;
+  manufacturer?: string;
 
-    manufacturer?: string;
+  model?: string;
 
-    model?: string;
+  firmware_version?: string;
 
-    firmware_version?: string;
+  status?: string;
 
-    status?: string;
+  activated?: number;
 
-    activated?: number;
+  created_at?: string;
 
-    created_at?: string;
-
-    updated_at?: string;
-
+  updated_at?: string;
 }
 
-
 export class DeviceRepository {
-
-
-    create(device: Device): number {
-
-        const stmt = sqlite.prepare(`
+  create(device: Device): number {
+    const stmt = sqlite.prepare(`
             INSERT INTO devices
             (
                 uuid,
@@ -53,66 +47,49 @@ export class DeviceRepository {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
+    const result = stmt.run(
+      device.uuid,
 
-        const result = stmt.run(
+      device.device_id,
 
-            device.uuid,
+      device.site_id,
 
-            device.device_id,
+      device.device_type,
 
-            device.site_id,
+      device.protocol,
 
-            device.device_type,
+      device.manufacturer ?? null,
 
-            device.protocol,
+      device.model ?? null,
 
-            device.manufacturer ?? null,
+      device.firmware_version ?? null,
 
-            device.model ?? null,
+      device.status ?? "pending",
 
-            device.firmware_version ?? null,
+      device.activated ?? 0
+    );
 
-            device.status ?? "pending",
+    return Number(result.lastInsertRowid);
+  }
 
-            device.activated ?? 0
-
-        );
-
-
-        return Number(result.lastInsertRowid);
-
-    }
-
-
-
-    getAll(): Device[] {
-
-        const stmt = sqlite.prepare(`
+  getAll(): Device[] {
+    const stmt = sqlite.prepare(`
             SELECT *
             FROM devices
             ORDER BY id
         `);
 
+    return stmt.all() as Device[];
+  }
 
-        return stmt.all() as Device[];
-
-    }
-
-
-
-    findByDeviceId(deviceId: string): Device | undefined {
-
-        const stmt = sqlite.prepare(`
+  findByDeviceId(deviceId: string): Device | undefined {
+    const stmt = sqlite.prepare(`
             SELECT *
             FROM devices
             WHERE device_id = ?
             LIMIT 1
         `);
 
-
-        return stmt.get(deviceId) as Device | undefined;
-
-    }
-
-
+    return stmt.get(deviceId) as Device | undefined;
+  }
 }

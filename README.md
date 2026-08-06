@@ -1,6 +1,6 @@
 # BIO-EMS
 
-![Current Version](https://img.shields.io/badge/version-0.10.0-blue)
+![Current Version](https://img.shields.io/badge/version-0.11.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 ![Express](https://img.shields.io/badge/Express-5.2-000000)
@@ -12,7 +12,7 @@ Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms,
 warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other
 regulated environments.
 
-**Current repository version:** `0.10.0`
+**Current repository version:** `0.11.0`
 **Backend:** TypeScript / Express
 **License:** Proprietary
 
@@ -34,6 +34,8 @@ alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
 - Environmental telemetry collection
 - MQTT device communication
 - Alarm evaluation
+- Six-state threshold classification (`critical-low`, `warning-low`, `normal`,
+  `warning-high`, `critical-high`, and `unknown`)
 - Dashboard APIs
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -111,6 +113,7 @@ SQLite configuration repositories / InfluxDB telemetry queries and writes
 | InfluxDB | Telemetry time-series persistence and queries. |
 | MQTT | Device telemetry transport. |
 | Vitest | Current automated test runner. |
+| ESLint / Prettier | TypeScript static analysis and formatting verification. |
 
 ## Repository Structure
 
@@ -147,6 +150,11 @@ npm run dev
 
 # Run the automated test suite once
 npm run test:run
+
+# Run quality checks
+npm run typecheck
+npm run lint
+npm run format:check
 ```
 
 On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` in
@@ -193,7 +201,8 @@ For detailed standards, start with the [Engineering Handbook](docs/engineering/R
 
 ## Project Roadmap
 
-Current focus: **Sprint 12** planning and delivery.
+Current completed release: **Sprint 11 — Engineering Foundation and Alarm
+Consolidation** (`0.11.0`). Sprint 12 has not started.
 
 Planned future work includes:
 

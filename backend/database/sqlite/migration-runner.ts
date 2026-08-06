@@ -1,3 +1,4 @@
+import type Database from "better-sqlite3";
 import { sqlite } from "./client";
 import { MigrationRepository } from "./migration.repository";
 
@@ -5,62 +6,41 @@ import { migration001 } from "./migrations/001_initial_schema";
 import { migration002 } from "./migrations/002_add_warning_thresholds";
 
 export interface Migration {
+  version: number;
 
-    version: number;
+  description: string;
 
-    description: string;
-
-    up(): void;
-
+  up(database: Database.Database): void;
 }
 
-const migrations: Migration[] = [
+const migrations: Migration[] = [migration001, migration002];
 
-    migration001,
+export function runMigrations(
+  database: Database.Database = sqlite,
+  registeredMigrations: Migration[] = migrations
+): void {
+  ensureMigrationTable(database);
 
-    migration002
+  const repository = new MigrationRepository(database);
 
-];
-
-export function runMigrations(): void {
-
-    ensureMigrationTable();
-
-    const repository = new MigrationRepository();
-
-    for (const migration of migrations) {
-
-        if (repository.hasMigration(migration.version)) {
-
-            continue;
-
-        }
-
-        console.log(
-            `Running migration ${migration.version}: ${migration.description}`
-        );
-
-        migration.up();
-
-        repository.recordMigration(
-
-            migration.version,
-
-            migration.description
-
-        );
-
-        console.log(
-            `Migration ${migration.version} completed`
-        );
-
+  for (const migration of registeredMigrations) {
+    if (repository.hasMigration(migration.version)) {
+      continue;
     }
 
+    console.log(`Running migration ${migration.version}: ${migration.description}`);
+
+    database.transaction(() => {
+      migration.up(database);
+      repository.recordMigration(migration.version, migration.description);
+    })();
+
+    console.log(`Migration ${migration.version} completed`);
+  }
 }
 
-function ensureMigrationTable(): void {
-
-    sqlite.exec(`
+function ensureMigrationTable(database: Database.Database): void {
+  database.exec(`
 
         CREATE TABLE IF NOT EXISTS schema_migrations (
 
@@ -73,5 +53,4 @@ function ensureMigrationTable(): void {
         );
 
     `);
-
 }

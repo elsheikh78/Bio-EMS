@@ -1,7 +1,7 @@
 export enum AlarmSeverity {
-    INFO = "INFO",
+  INFO = "INFO",
 
-    WARNING = "WARNING",
+  WARNING = "WARNING",
 
-    CRITICAL = "CRITICAL"
+  CRITICAL = "CRITICAL",
 }

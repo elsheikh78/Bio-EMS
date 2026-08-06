@@ -1,15 +1,13 @@
 export interface AlarmStatistics {
+  active: number;
 
-    active: number;
+  acknowledged: number;
 
-    acknowledged: number;
+  recovered: number;
 
-    recovered: number;
+  critical: number;
 
-    critical: number;
+  warning: number;
 
-    warning: number;
-
-    info: number;
-
+  info: number;
 }

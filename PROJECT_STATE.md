@@ -6,15 +6,15 @@
 
 **Project:** BIO-EMS
 
-**Version:** v0.10.0
+**Version:** v0.11.0
 
-**Current Phase:** Sprint 10 Completed
+**Current Phase:** Sprint 11 Completed
 
 **Release Status:** Development
 
 **Build Status:** PASS
 
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-08-06
 
 ---
 
@@ -126,6 +126,25 @@ Features
 
 # Sprint Status
 
+## Sprint 11
+
+Completed
+
+Theme
+
+Engineering Foundation and Alarm Consolidation
+
+Major Deliverables
+
+- Unified Domain Alarm Evaluation Engine
+- Warning-low and warning-high thresholds
+- MQTT and Dashboard classification consolidation
+- Versioned, idempotent SQLite migrations
+- 13 Alarm Domain, persistence, REST API, and migration tests
+- ESLint flat config and Prettier quality gates
+
+Sprint 12 has not started.
+
 ## Sprint 08
 
 Completed
@@ -191,17 +210,10 @@ Deferred to Sprint 11
 
 ---
 
-# Next Sprint
+# Release Boundary
 
-## Sprint 11
-
-Planned Objectives
-
-- Dashboard frontend integration
-- Notification Engine
-- Dashboard widgets refinement
-- Threshold-based room status
-- Dashboard performance improvements
+Sprint 11 is complete in the working tree. Commit and push are intentionally pending.
+No Sprint 12 implementation is included.
 
 ---
 
@@ -211,4 +223,4 @@ The backend foundation is stable.
 
 Dashboard backend APIs are completed and verified.
 
-The project is ready to continue with Sprint 11.
+The project is ready for Sprint 11 review and commit.

@@ -1,6 +1,8 @@
 # BIO-EMS Development Roadmap
 
-Version: 0.1.0-alpha
+Version: 0.11.0
+
+Repository status: Sprint 11 completed on 2026-08-06. Sprint 12 has not started.
 
 ---
 
@@ -22,12 +24,14 @@ Completed
 
 # Phase 2 - Domain Design
 
-In Progress
+Completed through Sprint 11
 
 - Domain Model
 - Entity Relationships
 - Architecture Decisions
 - Database Design
+- Unified Alarm Evaluation Engine
+- Six-state threshold classification
 
 ---
 
@@ -44,10 +48,10 @@ Planned
 
 # Phase 4 - Monitoring
 
-Planned
+In Progress
 
-- Telemetry Service
-- Alarm Engine
+- Telemetry Service (implemented)
+- Alarm Engine (implemented and consolidated in Sprint 11)
 - Event Engine
 - Notification Engine
 
@@ -66,11 +70,29 @@ Planned
 
 # Phase 6 - Dashboard
 
-Planned
+In Progress
 
-- Dashboard APIs
+- Dashboard APIs (implemented)
+- Threshold-based room status (implemented in Sprint 11)
 - Grafana Integration
 - Reports
+
+---
+
+# Sprint 11 - Engineering Foundation and Alarm Consolidation ✅
+
+Completed
+
+- Unified Domain Alarm Evaluation Engine
+- MQTT and Dashboard classification consolidation
+- Warning-low and warning-high thresholds
+- Versioned SQLite migrations and migration history
+- Idempotent warning-threshold migration
+- Alarm Domain, persistence, REST API, and migration tests (13 total)
+- ESLint flat config, Prettier, and quality gates
+- Version alignment at 0.11.0
+
+Sprint 12 remains future work and is not started by this release.
 
 ---
 

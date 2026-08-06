@@ -1,11 +1,11 @@
 export enum AlarmColor {
-    GREEN = "GREEN",
+  GREEN = "GREEN",
 
-    YELLOW = "YELLOW",
+  YELLOW = "YELLOW",
 
-    ORANGE = "ORANGE",
+  ORANGE = "ORANGE",
 
-    RED = "RED",
+  RED = "RED",
 
-    GRAY = "GRAY"
+  GRAY = "GRAY",
 }

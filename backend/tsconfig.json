@@ -29,13 +29,7 @@
     "skipLibCheck": true
   },
 
-  "include": [
-    "src/**/*.ts",
-    "database/**/*.ts"
-  ],
+  "include": ["src/**/*.ts", "database/**/*.ts"],
 
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "exclude": ["node_modules", "dist"]
 }

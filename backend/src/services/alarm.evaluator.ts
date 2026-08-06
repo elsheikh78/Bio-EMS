@@ -1,185 +1,68 @@
-import {
-    createAlarm,
-    getActiveAlarm,
-    recoverAlarm
-} from "./alarm.service";
-
-
+import { createAlarm, getActiveAlarm, recoverAlarm } from "./alarm.service";
+import { evaluateAlarm as evaluateDomainAlarm } from "../domain/engines/alarm-evaluation.engine";
+import { AlarmStatus } from "../domain/enums/alarm-status";
+import { SensorType } from "../domain/enums/sensor-type";
 
 export interface AlarmCheckInput {
+  sensorId: number;
 
-    sensorId: number;
+  sensorName: string;
 
-    sensorName: string;
+  value: number;
 
-    value: number;
+  sensorType: string;
 
-    alarmLow?: number | null;
+  warningLow?: number | null;
 
-    alarmHigh?: number | null;
+  alarmLow?: number | null;
 
+  warningHigh?: number | null;
+
+  alarmHigh?: number | null;
 }
 
-
-
-export function evaluateAlarm(
-    input: AlarmCheckInput
-): void {
-
-
-
-    /*
-        HIGH TEMPERATURE
-    */
-
-    if (
-        input.alarmHigh !== null &&
-        input.alarmHigh !== undefined &&
-        input.value > input.alarmHigh
-    ) {
-
-
-        const alarmId = createAlarm({
-
-            sensor_id: input.sensorId,
-
-            type: "HIGH_TEMPERATURE",
-
-            severity: "WARNING",
-
-            status: "TRIGGERED",
-
-            trigger_value: input.value
-
-        });
-
-
-
-        if (alarmId) {
-
-            console.log(
-                `HIGH ALARM: ${input.sensorName} = ${input.value}`
-            );
-
-        }
-
-
-
-        return;
-
+export function evaluateAlarm(input: AlarmCheckInput): void {
+  const result = evaluateDomainAlarm(
+    {
+      sensorType: input.sensorType.toUpperCase() as SensorType,
+      value: input.value,
+    },
+    {
+      warningLow: input.warningLow ?? undefined,
+      alarmLow: input.alarmLow ?? undefined,
+      warningHigh: input.warningHigh ?? undefined,
+      alarmHigh: input.alarmHigh ?? undefined,
     }
+  );
 
+  const lowStatuses = [AlarmStatus.WARNING_LOW, AlarmStatus.CRITICAL_LOW];
+  const highStatuses = [AlarmStatus.WARNING_HIGH, AlarmStatus.CRITICAL_HIGH];
+  const desiredType = lowStatuses.includes(result.status)
+    ? "LOW_TEMPERATURE"
+    : highStatuses.includes(result.status)
+      ? "HIGH_TEMPERATURE"
+      : undefined;
 
-
-
-
-    /*
-        LOW TEMPERATURE
-    */
-
-    if (
-        input.alarmLow !== null &&
-        input.alarmLow !== undefined &&
-        input.value < input.alarmLow
-    ) {
-
-
-        const alarmId = createAlarm({
-
-            sensor_id: input.sensorId,
-
-            type: "LOW_TEMPERATURE",
-
-            severity: "WARNING",
-
-            status: "TRIGGERED",
-
-            trigger_value: input.value
-
-        });
-
-
-
-        if (alarmId) {
-
-            console.log(
-                `LOW ALARM: ${input.sensorName} = ${input.value}`
-            );
-
-        }
-
-
-
-        return;
-
+  for (const type of ["LOW_TEMPERATURE", "HIGH_TEMPERATURE"]) {
+    const activeAlarm = getActiveAlarm(input.sensorId, type);
+    if (activeAlarm?.id !== undefined && type !== desiredType) {
+      recoverAlarm(activeAlarm.id);
     }
+  }
 
+  if (desiredType) {
+    const alarmId = createAlarm({
+      sensor_id: input.sensorId,
+      type: desiredType,
+      severity: result.severity,
+      status: "TRIGGERED",
+      trigger_value: input.value,
+    });
 
-
-
-
-    /*
-        RECOVERY CHECK
-    */
-
-
-    const highAlarm =
-        getActiveAlarm(
-            input.sensorId,
-            "HIGH_TEMPERATURE"
-        );
-
-
-    if (
-        highAlarm &&
-        (
-            input.alarmHigh === null ||
-            input.alarmHigh === undefined ||
-            input.value <= input.alarmHigh
-        )
-    ) {
-
-
-        recoverAlarm(
-            highAlarm.id!
-        );
-
+    if (alarmId) {
+      console.log(`${result.status}: ${input.sensorName} = ${input.value}`);
     }
-
-
-
-
-
-    const lowAlarm =
-        getActiveAlarm(
-            input.sensorId,
-            "LOW_TEMPERATURE"
-        );
-
-
-    if (
-        lowAlarm &&
-        (
-            input.alarmLow === null ||
-            input.alarmLow === undefined ||
-            input.value >= input.alarmLow
-        )
-    ) {
-
-
-        recoverAlarm(
-            lowAlarm.id!
-        );
-
-    }
-
-
-
-
-
-    console.log(
-        `Normal: ${input.sensorName} = ${input.value}`
-    );
-
-
+  } else {
+    console.log(`${result.status}: ${input.sensorName} = ${input.value}`);
+  }
 }

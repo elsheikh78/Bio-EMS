@@ -14,16 +14,13 @@ export const AlarmMessageKeys = {
 
   NORMAL: "alarm.normal",
 
-  LOW: "alarm.low",
+  WARNING_LOW: "alarm.warning.low",
 
-  HIGH: "alarm.high",
+  WARNING_HIGH: "alarm.warning.high",
 
   CRITICAL_LOW: "alarm.critical.low",
 
   CRITICAL_HIGH: "alarm.critical.high",
-
-  OFFLINE: "alarm.offline",
 } as const;
 
-export type AlarmMessageKey =
-  (typeof AlarmMessageKeys)[keyof typeof AlarmMessageKeys];
+export type AlarmMessageKey = (typeof AlarmMessageKeys)[keyof typeof AlarmMessageKeys];

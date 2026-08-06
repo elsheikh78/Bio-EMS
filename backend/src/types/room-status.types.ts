@@ -1,33 +1,23 @@
 export interface RoomStatus {
+  roomId: number;
 
-    roomId: number;
+  roomName: string;
 
-    roomName: string;
+  siteId: number;
 
-    siteId: number;
+  siteName: string;
 
-    siteName: string;
+  temperature: number | null;
 
-    temperature: number | null;
+  humidity: number | null;
 
-    humidity: number | null;
+  temperatureStatus: "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";
 
-    temperatureStatus:
-        | "NORMAL"
-        | "WARNING"
-        | "CRITICAL"
-        | "UNKNOWN";
+  humidityStatus: "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";
 
-    humidityStatus:
-        | "NORMAL"
-        | "WARNING"
-        | "CRITICAL"
-        | "UNKNOWN";
+  activeAlarms: number;
 
-    activeAlarms: number;
+  online: boolean;
 
-    online: boolean;
-
-    lastUpdate: string | null;
-
+  lastUpdate: string | null;
 }

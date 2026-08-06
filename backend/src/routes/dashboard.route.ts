@@ -7,40 +7,21 @@ const router = Router();
 
 const dashboardController = new DashboardController();
 
+router.get("/summary", asyncHandler(dashboardController.getSummary.bind(dashboardController)));
+
 router.get(
-    "/summary",
-    asyncHandler(
-        dashboardController.getSummary.bind(
-            dashboardController
-        )
-    )
+  "/latest-telemetry",
+  asyncHandler(dashboardController.getLatestTelemetry.bind(dashboardController))
 );
 
 router.get(
-    "/latest-telemetry",
-    asyncHandler(
-        dashboardController.getLatestTelemetry.bind(
-            dashboardController
-        )
-    )
+  "/rooms/status",
+  asyncHandler(dashboardController.getRoomStatus.bind(dashboardController))
 );
 
 router.get(
-    "/rooms/status",
-    asyncHandler(
-        dashboardController.getRoomStatus.bind(
-            dashboardController
-        )
-    )
-);
-
-router.get(
-    "/alarm-statistics",
-    asyncHandler(
-        dashboardController.getAlarmStatistics.bind(
-            dashboardController
-        )
-    )
+  "/alarm-statistics",
+  asyncHandler(dashboardController.getAlarmStatistics.bind(dashboardController))
 );
 
 export default router;
