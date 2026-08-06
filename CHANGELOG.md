@@ -1,3 +1,36 @@
+# [0.11.0] - 2026-08-06
+
+## Release
+
+Sprint 11 — Engineering Foundation and Alarm Consolidation completed.
+
+## Added
+
+- Unified Domain Alarm Evaluation Engine with critical-low, warning-low, normal,
+  warning-high, critical-high, and unknown classifications.
+- Persisted `warning_low` and `warning_high` sensor thresholds.
+- Versioned SQLite migration history and idempotent warning-threshold migration.
+- Alarm Domain, persistence, REST API, and migration coverage totaling 13 tests.
+- ESLint flat configuration and Prettier quality checks.
+
+## Changed
+
+- MQTT telemetry alarm evaluation and Dashboard room status now share the Domain Engine.
+- Fresh SQLite schemas include warning thresholds while migration 002 upgrades existing schemas.
+- Project, backend package, and Health API versions are aligned at `0.11.0`.
+
+## Compatibility
+
+- Existing Room, Sensor, MQTT, Telemetry, Dashboard, and Alarm API contracts are unchanged.
+- Existing MQTT topics and entity relationships are unchanged.
+- Sprint 12 work is not included.
+
+## Verified
+
+- Typecheck, build, lint, Prettier check, 13 automated tests, and `git diff --check`.
+
+---
+
 # [0.10.0] - 2026-08-03
 
 ## Release

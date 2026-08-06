@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-    createSiteController,
-    getSitesController
-} from "../controllers/site.controller";
+import { createSiteController, getSitesController } from "../controllers/site.controller";
 
 const router = Router();
 

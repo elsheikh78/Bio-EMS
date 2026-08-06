@@ -8,7 +8,7 @@
 | Applies To | BIO-EMS Engineering |
 | Owner | Engineering Team |
 | Classification | Internal |
-| Last Updated | 2026-08-05 |
+| Last Updated | 2026-08-06 |
 
 ## 1. Purpose
 
@@ -94,6 +94,10 @@ historical rationale, or accepted architectural intent.
 
 **Current BIO-EMS usage:** `evaluateAlarm` returns status, severity, color, alarm flag, and message key.
 
+The six classifications are `CRITICAL_LOW`, `WARNING_LOW`, `NORMAL`,
+`WARNING_HIGH`, `CRITICAL_HIGH`, and `UNKNOWN`. MQTT telemetry processing and
+Dashboard room status both consume this Domain result.
+
 **Related documents:** `DOMAIN_GUIDELINES.md`, `ARCHITECTURE_PRINCIPLES.md`.
 
 ### Application Service
@@ -124,7 +128,7 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** The repository release-notes file recording implemented release contents.
 
-**Current BIO-EMS usage:** `CHANGELOG.md` records version `0.10.0` and Sprint 10 changes.
+**Current BIO-EMS usage:** `CHANGELOG.md` records version `0.11.0` and Sprint 11 changes.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
@@ -256,6 +260,15 @@ historical rationale, or accepted architectural intent.
 
 **Related documents:** `ARCHITECTURE_PRINCIPLES.md`, `ADR-009-device-registration-policy.md`.
 
+### Migration
+
+**Definition:** A versioned, ordered, and repeat-safe SQLite schema change recorded in migration history.
+
+**Current BIO-EMS usage:** `schema_migrations` records applied versions; migration 002 adds
+the `warning_low` and `warning_high` sensor columns and is idempotent.
+
+**Related documents:** `ARCHITECTURE_PRINCIPLES.md`, `TESTING_GUIDELINES.md`.
+
 ### Owner
 
 **Definition:** The Product / Engineering Owner with final scope, acceptance, and release authority.
@@ -300,7 +313,8 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** An implemented configured measurement channel linking a Device and Room.
 
-**Current BIO-EMS usage:** Stores type, unit, thresholds, `device_id`, `room_id`, and channel.
+**Current BIO-EMS usage:** Stores type, unit, critical and warning thresholds,
+`device_id`, `room_id`, and channel.
 
 **Related documents:** `ADR-004-device-design.md`, `DOMAIN_GUIDELINES.md`.
 
@@ -324,7 +338,7 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** A release recording a completed reviewed engineering increment.
 
-**Current BIO-EMS usage:** Sprint 10 was released as version `0.10.0`.
+**Current BIO-EMS usage:** Sprint 11 is prepared as version `0.11.0` pending commit and push.
 
 **Related documents:** `RELEASE_PROCESS.md`, `CHANGELOG.md`.
 
@@ -356,7 +370,7 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** The manual semantic identifier for a BIO-EMS release state.
 
-**Current BIO-EMS usage:** Current root version is `0.10.0`; release tags use a `v` prefix.
+**Current BIO-EMS usage:** Current root version is `0.11.0`; release tags use a `v` prefix.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
@@ -364,7 +378,7 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** The root repository file containing the current project version.
 
-**Current BIO-EMS usage:** `VERSION` contains `0.10.0` and must align with release artifacts.
+**Current BIO-EMS usage:** `VERSION` contains `0.11.0` and aligns with the backend package and Health API.
 
 **Related documents:** `RELEASE_PROCESS.md`.
 
@@ -372,7 +386,7 @@ historical rationale, or accepted architectural intent.
 
 **Definition:** The current automated test runner for the backend.
 
-**Current BIO-EMS usage:** Runs Domain alarm-engine tests through `npm.cmd run test:run`.
+**Current BIO-EMS usage:** Runs 13 Alarm Domain, persistence, REST API, and migration tests through `npm.cmd run test:run`.
 
 **Related documents:** `TESTING_GUIDELINES.md`.
 
@@ -453,3 +467,4 @@ evolve as the project grows.
 | Version | Date | Status | Change |
 | --- | --- | --- | --- |
 | 1.0 | 2026-08-05 | Approved | Initial repository-oriented engineering glossary. |
+| 1.1 | 2026-08-06 | Approved | Added Sprint 11 alarm states, warning thresholds, migrations, and version terminology. |

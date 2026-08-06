@@ -1,26 +1,23 @@
 import { influxDB, org, bucket } from "../client";
 
 export interface RoomTelemetryRecord {
+  sensorCode: string;
 
-    sensorCode: string;
+  sensorType: string;
 
-    sensorType: string;
+  deviceCode: string;
 
-    deviceCode: string;
+  siteCode: string;
 
-    siteCode: string;
+  value: number;
 
-    value: number;
-
-    time: string;
-
+  time: string;
 }
 
 const queryApi = influxDB.getQueryApi(org);
 
 export async function getLatestRoomTelemetry(): Promise<RoomTelemetryRecord[]> {
-
-    const fluxQuery = `
+  const fluxQuery = `
 from(bucket: "${bucket}")
     |> range(start: -30d)
     |> filter(fn: (r) => r._field == "value")
@@ -28,48 +25,35 @@ from(bucket: "${bucket}")
     |> last()
 `;
 
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    const records: RoomTelemetryRecord[] = [];
 
-        const records: RoomTelemetryRecord[] = [];
+    queryApi.queryRows(fluxQuery, {
+      next(row, tableMeta) {
+        const record = tableMeta.toObject(row);
 
-        queryApi.queryRows(fluxQuery, {
+        records.push({
+          sensorCode: String(record.sensor ?? ""),
 
-            next(row, tableMeta) {
+          sensorType: String(record._measurement ?? ""),
 
-                const record = tableMeta.toObject(row);
+          deviceCode: String(record.device ?? ""),
 
-                records.push({
+          siteCode: String(record.site ?? ""),
 
-                    sensorCode: String(record.sensor ?? ""),
+          value: Number(record._value),
 
-                    sensorType: String(record._measurement ?? ""),
-
-                    deviceCode: String(record.device ?? ""),
-
-                    siteCode: String(record.site ?? ""),
-
-                    value: Number(record._value),
-
-                    time: String(record._time)
-
-                });
-
-            },
-
-            error(error) {
-
-                reject(error);
-
-            },
-
-            complete() {
-
-                resolve(records);
-
-            }
-
+          time: String(record._time),
         });
+      },
 
+      error(error) {
+        reject(error);
+      },
+
+      complete() {
+        resolve(records);
+      },
     });
-
+  });
 }

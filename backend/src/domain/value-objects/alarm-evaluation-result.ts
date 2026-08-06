@@ -4,9 +4,9 @@ import { AlarmStatus } from "../enums/alarm-status";
 import { AlarmMessageKey } from "../constants/alarm-message-keys";
 
 export interface AlarmEvaluationResult {
-    status: AlarmStatus;
-    severity: AlarmSeverity;
-    color: AlarmColor;
-    isAlarm: boolean;
-    messageKey: AlarmMessageKey;
+  status: AlarmStatus;
+  severity: AlarmSeverity;
+  color: AlarmColor;
+  isAlarm: boolean;
+  messageKey: AlarmMessageKey;
 }

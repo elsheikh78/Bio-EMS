@@ -1,8 +1,7 @@
 import { sqlite } from "./client";
 
 export function createTables(): void {
-
-    sqlite.exec(`
+  sqlite.exec(`
         CREATE TABLE IF NOT EXISTS sites (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -20,9 +19,9 @@ export function createTables(): void {
         );
     `);
 
-    console.log("Sites table ready");
+  console.log("Sites table ready");
 
-    sqlite.exec(`
+  sqlite.exec(`
         CREATE TABLE IF NOT EXISTS devices (
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,9 +56,9 @@ export function createTables(): void {
         );
     `);
 
-    console.log("Devices table ready");
+  console.log("Devices table ready");
 
-    sqlite.exec(`
+  sqlite.exec(`
         CREATE TABLE IF NOT EXISTS rooms (
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,9 +87,9 @@ export function createTables(): void {
         );
     `);
 
-    console.log("Rooms table ready");
+  console.log("Rooms table ready");
 
-    sqlite.exec(`
+  sqlite.exec(`
     CREATE TABLE IF NOT EXISTS sensors (
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,7 +114,11 @@ export function createTables(): void {
 
         max_value REAL,
 
+        warning_low REAL,
+
         alarm_low REAL,
+
+        warning_high REAL,
 
         alarm_high REAL,
 
@@ -138,9 +141,9 @@ export function createTables(): void {
     );
 `);
 
-console.log("Sensors table ready");
+  console.log("Sensors table ready");
 
-    sqlite.exec(`
+  sqlite.exec(`
     CREATE TABLE IF NOT EXISTS alarms (
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,6 +172,5 @@ console.log("Sensors table ready");
     );
     `);
 
-    console.log("Alarms table ready");
-
+  console.log("Alarms table ready");
 }

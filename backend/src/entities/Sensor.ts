@@ -1,33 +1,37 @@
 export interface Sensor {
-    id?: number;
+  id?: number;
 
-    uuid: string;
+  uuid: string;
 
-    room_id: number;
+  room_id: number;
 
-    device_id: number;
+  device_id: number;
 
-    channel: number;
+  channel: number;
 
-    code: string;
+  code: string;
 
-    name: string;
+  name: string;
 
-    sensor_type: string;
+  sensor_type: string;
 
-    unit: string;
+  unit: string;
 
-    min_value?: number;
+  min_value?: number;
 
-    max_value?: number;
+  max_value?: number;
 
-    alarm_low?: number;
+  warning_low?: number;
 
-    alarm_high?: number;
+  alarm_low?: number;
 
-    enabled?: number;
+  warning_high?: number;
 
-    created_at?: string;
+  alarm_high?: number;
 
-    updated_at?: string;
+  enabled?: number;
+
+  created_at?: string;
+
+  updated_at?: string;
 }

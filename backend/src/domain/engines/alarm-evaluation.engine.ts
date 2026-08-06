@@ -9,7 +9,6 @@ export function evaluateAlarm(
   reading: SensorReading,
   threshold: AlarmThreshold
 ): AlarmEvaluationResult {
-
   if (reading.value === null) {
     return createResult(
       AlarmStatus.UNKNOWN,
@@ -22,11 +21,7 @@ export function evaluateAlarm(
 
   return evaluateNumeric(reading.value, threshold);
 }
-function evaluateNumeric(
-  value: number,
-  threshold: AlarmThreshold
-): AlarmEvaluationResult {
-
+function evaluateNumeric(value: number, threshold: AlarmThreshold): AlarmEvaluationResult {
   // Evaluation order:
   // 1. Critical Low
   // 2. Warning Low
@@ -34,10 +29,7 @@ function evaluateNumeric(
   // 4. Warning High
   // 5. Normal
 
-  if (
-    threshold.alarmLow !== undefined &&
-    value <= threshold.alarmLow
-  ) {
+  if (threshold.alarmLow !== undefined && value <= threshold.alarmLow) {
     return createResult(
       AlarmStatus.CRITICAL_LOW,
       AlarmSeverity.CRITICAL,
@@ -47,23 +39,17 @@ function evaluateNumeric(
     );
   }
 
-  if (
-    threshold.warningLow !== undefined &&
-    value <= threshold.warningLow
-  ) {
+  if (threshold.warningLow !== undefined && value <= threshold.warningLow) {
     return createResult(
-      AlarmStatus.LOW,
+      AlarmStatus.WARNING_LOW,
       AlarmSeverity.WARNING,
       AlarmColor.YELLOW,
       true,
-      AlarmMessageKeys.LOW
+      AlarmMessageKeys.WARNING_LOW
     );
   }
 
-  if (
-    threshold.alarmHigh !== undefined &&
-    value >= threshold.alarmHigh
-  ) {
+  if (threshold.alarmHigh !== undefined && value >= threshold.alarmHigh) {
     return createResult(
       AlarmStatus.CRITICAL_HIGH,
       AlarmSeverity.CRITICAL,
@@ -73,16 +59,13 @@ function evaluateNumeric(
     );
   }
 
-  if (
-    threshold.warningHigh !== undefined &&
-    value >= threshold.warningHigh
-  ) {
+  if (threshold.warningHigh !== undefined && value >= threshold.warningHigh) {
     return createResult(
-      AlarmStatus.HIGH,
+      AlarmStatus.WARNING_HIGH,
       AlarmSeverity.WARNING,
       AlarmColor.YELLOW,
       true,
-      AlarmMessageKeys.HIGH
+      AlarmMessageKeys.WARNING_HIGH
     );
   }
 
@@ -101,12 +84,11 @@ function createResult(
   isAlarm: boolean,
   messageKey: AlarmEvaluationResult["messageKey"]
 ): AlarmEvaluationResult {
-
   return {
     status,
     severity,
     color,
     isAlarm,
-    messageKey
+    messageKey,
   };
 }

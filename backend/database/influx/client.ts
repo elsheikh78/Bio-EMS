@@ -4,8 +4,8 @@ const url = process.env.INFLUX_URL!;
 const token = process.env.INFLUX_TOKEN!;
 
 export const influxDB = new InfluxDB({
-    url,
-    token,
+  url,
+  token,
 });
 
 export const org = process.env.INFLUX_ORG!;
