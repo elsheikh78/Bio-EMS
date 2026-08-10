@@ -21,6 +21,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src database",

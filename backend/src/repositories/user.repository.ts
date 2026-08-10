@@ -44,6 +44,18 @@ export class UserRepository {
     return Number(result.lastInsertRowid);
   }
 
+  createFirstUser(user: CreateUserRecord): number {
+    return this.database.transaction(() => {
+      const existing = this.database.prepare("SELECT 1 FROM users LIMIT 1").get();
+
+      if (existing) {
+        throw new Error("User bootstrap conflict");
+      }
+
+      return this.create(user);
+    })();
+  }
+
   getAll(): User[] {
     return this.database
       .prepare(`SELECT ${PUBLIC_USER_COLUMNS} FROM users ORDER BY id`)
