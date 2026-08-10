@@ -36,7 +36,7 @@ export const updateDeviceSchema = z
     message: "At least one field is required",
   });
 
-export const lifecycleTransitionParamsSchema = z
+export const deviceParamsSchema = z
   .object({
     deviceId: requiredString("deviceId", 100),
   })
@@ -44,4 +44,4 @@ export const lifecycleTransitionParamsSchema = z
 
 export type CreateDeviceInput = z.infer<typeof createDeviceSchema>;
 export type UpdateDeviceInput = z.infer<typeof updateDeviceSchema>;
-export type LifecycleTransitionParams = z.infer<typeof lifecycleTransitionParamsSchema>;
+export type DeviceParams = z.infer<typeof deviceParamsSchema>;

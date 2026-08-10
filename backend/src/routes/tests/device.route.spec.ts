@@ -1,13 +1,16 @@
 import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AppError } from "../../errors/app-error";
 import { errorMiddleware } from "../../middleware/error.middleware";
 import * as deviceService from "../../services/device.service";
 import deviceRouter from "../device.route";
 
 vi.mock("../../services/device.service", () => ({
   createDevice: vi.fn(),
+  getDeviceByDeviceId: vi.fn(),
   getDevices: vi.fn(),
+  updateDeviceMetadata: vi.fn(),
 }));
 
 const app = express();
@@ -87,6 +90,84 @@ describe("Device REST API characterization", () => {
         code: "VALIDATION_ERROR",
         message: "Invalid request body",
       },
+    });
+  });
+
+  it("returns an existing device directly", async () => {
+    const device = { id: 7, ...validCreateRequest, status: "pending", activated: 0 };
+    vi.mocked(deviceService.getDeviceByDeviceId).mockReturnValue(device);
+
+    const response = await request(app).get("/api/v1/devices/%20ZC-FW-001%20").expect(200);
+
+    expect(deviceService.getDeviceByDeviceId).toHaveBeenCalledWith("ZC-FW-001");
+    expect(response.body).toEqual(device);
+  });
+
+  it("returns the stable not-found error for a missing device", async () => {
+    vi.mocked(deviceService.getDeviceByDeviceId).mockImplementation(() => {
+      throw new AppError("Device not found", 404, "DEVICE_NOT_FOUND");
+    });
+
+    const response = await request(app).get("/api/v1/devices/missing-device").expect(404);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "DEVICE_NOT_FOUND", message: "Device not found" },
+    });
+  });
+
+  it("updates allowed metadata and returns the updated device directly", async () => {
+    const update = { model: "ZC-16B" };
+    const updated = { ...validCreateRequest, ...update };
+    vi.mocked(deviceService.updateDeviceMetadata).mockReturnValue(updated);
+
+    const response = await request(app)
+      .patch("/api/v1/devices/ZC-FW-001")
+      .send({ model: "  ZC-16B  " })
+      .expect(200);
+
+    expect(deviceService.updateDeviceMetadata).toHaveBeenCalledWith("ZC-FW-001", update);
+    expect(response.body).toEqual(updated);
+  });
+
+  it("returns the stable not-found error when updating a missing device", async () => {
+    vi.mocked(deviceService.updateDeviceMetadata).mockImplementation(() => {
+      throw new AppError("Device not found", 404, "DEVICE_NOT_FOUND");
+    });
+
+    const response = await request(app)
+      .patch("/api/v1/devices/missing-device")
+      .send({ model: "ZC-16" })
+      .expect(404);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "DEVICE_NOT_FOUND", message: "Device not found" },
+    });
+  });
+
+  it.each([
+    ["an empty body", {}],
+    ["a malformed field type", { firmware_version: 12 }],
+    ["an internal field", { status: "active" }],
+    ["an unknown field", { display_name: "Gateway" }],
+  ])("rejects %s without invoking the update service", async (_case, body) => {
+    const response = await request(app).patch("/api/v1/devices/ZC-FW-001").send(body).expect(400);
+
+    expect(deviceService.updateDeviceMetadata).not.toHaveBeenCalled();
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "Invalid request body" },
+    });
+  });
+
+  it("rejects invalid device params without invoking the read service", async () => {
+    const response = await request(app).get("/api/v1/devices/%20").expect(400);
+
+    expect(deviceService.getDeviceByDeviceId).not.toHaveBeenCalled();
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "Invalid route parameters" },
     });
   });
 });

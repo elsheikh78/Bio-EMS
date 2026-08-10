@@ -1,3 +1,4 @@
+import type Database from "better-sqlite3";
 import { sqlite } from "../../database/sqlite/client";
 
 export interface Device {
@@ -28,9 +29,15 @@ export interface Device {
   updated_at?: string;
 }
 
+export type DeviceMetadataUpdate = Partial<
+  Pick<Device, "device_type" | "protocol" | "manufacturer" | "model" | "firmware_version">
+>;
+
 export class DeviceRepository {
+  constructor(private readonly database: Database.Database = sqlite) {}
+
   create(device: Device): number {
-    const stmt = sqlite.prepare(`
+    const stmt = this.database.prepare(`
             INSERT INTO devices
             (
                 uuid,
@@ -73,7 +80,7 @@ export class DeviceRepository {
   }
 
   getAll(): Device[] {
-    const stmt = sqlite.prepare(`
+    const stmt = this.database.prepare(`
             SELECT *
             FROM devices
             ORDER BY id
@@ -83,7 +90,7 @@ export class DeviceRepository {
   }
 
   findByDeviceId(deviceId: string): Device | undefined {
-    const stmt = sqlite.prepare(`
+    const stmt = this.database.prepare(`
             SELECT *
             FROM devices
             WHERE device_id = ?
@@ -91,5 +98,34 @@ export class DeviceRepository {
         `);
 
     return stmt.get(deviceId) as Device | undefined;
+  }
+
+  updateMetadata(deviceId: string, update: DeviceMetadataUpdate): Device | undefined {
+    const stmt = this.database.prepare(`
+            UPDATE devices
+            SET
+                device_type = COALESCE(?, device_type),
+                protocol = COALESCE(?, protocol),
+                manufacturer = COALESCE(?, manufacturer),
+                model = COALESCE(?, model),
+                firmware_version = COALESCE(?, firmware_version),
+                updated_at = CURRENT_TIMESTAMP
+            WHERE device_id = ?
+        `);
+
+    const result = stmt.run(
+      update.device_type ?? null,
+      update.protocol ?? null,
+      update.manufacturer ?? null,
+      update.model ?? null,
+      update.firmware_version ?? null,
+      deviceId
+    );
+
+    if (result.changes === 0) {
+      return undefined;
+    }
+
+    return this.findByDeviceId(deviceId);
   }
 }

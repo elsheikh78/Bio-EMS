@@ -15,3 +15,17 @@ export function validateBody<T extends z.ZodType>(schema: T) {
     next();
   };
 }
+
+export function validateParams(schema: z.ZodType<Record<string, string>>) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.params);
+
+    if (!result.success) {
+      next(new AppError("Invalid route parameters", 400, "VALIDATION_ERROR"));
+      return;
+    }
+
+    req.params = result.data;
+    next();
+  };
+}
