@@ -1,7 +1,8 @@
+import type Database from "better-sqlite3";
 import { sqlite } from "./client";
 
-export function createTables(): void {
-  sqlite.exec(`
+export function createTables(database: Database.Database = sqlite): void {
+  database.exec(`
         CREATE TABLE IF NOT EXISTS sites (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -21,7 +22,7 @@ export function createTables(): void {
 
   console.log("Sites table ready");
 
-  sqlite.exec(`
+  database.exec(`
         CREATE TABLE IF NOT EXISTS devices (
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +59,7 @@ export function createTables(): void {
 
   console.log("Devices table ready");
 
-  sqlite.exec(`
+  database.exec(`
         CREATE TABLE IF NOT EXISTS rooms (
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,7 +90,7 @@ export function createTables(): void {
 
   console.log("Rooms table ready");
 
-  sqlite.exec(`
+  database.exec(`
     CREATE TABLE IF NOT EXISTS sensors (
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -143,7 +144,7 @@ export function createTables(): void {
 
   console.log("Sensors table ready");
 
-  sqlite.exec(`
+  database.exec(`
     CREATE TABLE IF NOT EXISTS alarms (
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -173,4 +174,25 @@ export function createTables(): void {
     `);
 
   console.log("Alarms table ready");
+
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL
+        CHECK(length(username) BETWEEN 3 AND 64)
+        CHECK(username = lower(trim(username)))
+        CHECK(username NOT GLOB '*[^a-z0-9._-]*'),
+      email TEXT,
+      password_hash TEXT NOT NULL CHECK(length(password_hash) > 0),
+      role TEXT NOT NULL CHECK(role IN ('ADMIN', 'OPERATOR', 'VIEWER')),
+      status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'disabled')),
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME
+    );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username
+      ON users(username);
+  `);
+
+  console.log("Users table ready");
 }
