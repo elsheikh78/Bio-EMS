@@ -1,3 +1,52 @@
+# [0.12.0] - 2026-08-10
+
+## Release Candidate
+
+Sprint 12 — Device Onboarding and Telemetry Trust Boundary completed. Draft PR #2
+remains unmerged; no tag, GitHub Release, or deployment is claimed.
+
+## Added
+
+- Strict Zod validation for Device create, update, route parameters, and list queries.
+- Device read, approved metadata update, activate, and disable REST operations.
+- Atomic `pending/0 -> active/1 -> disabled/0` lifecycle transitions.
+- Site existence and Device identity integrity for registration and activation.
+- Device, Site, channel, and enabled-Sensor telemetry trust enforcement.
+- Device repository, service, route, REST integration, characterization, acceptance,
+  and telemetry-policy coverage.
+- GitHub Actions backend quality gates using Node.js 22 and clean `npm ci` installation.
+
+## Changed
+
+- New Device records are always persisted as `pending` with `activated = 0`.
+- Production SQLite initialization enables foreign-key enforcement.
+- Invalid Device requests return `400`, missing Devices/Sites return `404`, and state
+  or uniqueness conflicts return `409` without exposing persistence details.
+- Trusted telemetry uses the persisted Site record; invalid channels are rejected
+  individually while valid channels in the same payload continue.
+- Project, backend package, and Health API version metadata align at `0.12.0`.
+
+## Compatibility
+
+- Existing Device create/list response contracts are preserved.
+- MQTT telemetry remains `bioems/{siteCode}/telemetry/{deviceId}` with subscription
+  `bioems/+/telemetry/+`; the payload schema is unchanged.
+- No SQLite schema change or migration was introduced.
+
+## Deferred
+
+- Discovery, QR identification, activation codes, Asset approval/assignment,
+  Authentication, certificates, provisioning, pairing, heartbeat/last-seen,
+  Monitoring Points, Notification Engine, Frontend, OTA, and npm audit remediation.
+
+## Verified
+
+- Local quality gates and GitHub Actions passed.
+- 113 automated tests passed across 10 test files.
+- `git diff --check` passed.
+
+---
+
 # [0.11.0] - 2026-08-06
 
 ## Release

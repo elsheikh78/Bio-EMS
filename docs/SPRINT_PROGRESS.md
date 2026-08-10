@@ -1,65 +1,41 @@
+# Sprint Progress
+
 ## Sprint 09 — REST API Foundation
 
-Status: ✅ COMPLETED
+Status: Completed
 
-Highlights:
-
-- Alarm REST API implemented
-- Alarm Controller completed
-- Alarm Routes completed
-- AppError integration completed
-- REST API validation completed
-- API Development Standard introduced
-
-Result:
-
-BIO-EMS now exposes its first production-ready REST API module.
-
-Sprint 1
-──────────────
-☑ Bootstrap
-☑ MQTT
-☑ Configuration
-☑ SQLite
-☑ Site Repository
-☑ Site Service
-☑ Site Controller
-☑ Site Routes
-☑ Health Route
-
-Sprint 2
-──────────────
-☐ S2-T01 Device Domain
-☐ S2-T02 Device Repository
-☐ S2-T03 Device Service
-☐ S2-T04 Device Controller
-☐ S2-T05 Device Routes
-☐ S2-T06 Device Registration
-☐ S2-T07 Device Activation
-
+- Alarm REST API, Controller, Routes, AppError integration, validation, and API
+  development standard.
 
 ## Sprint 10 — Dashboard Backend
 
-**Status:** ✅ COMPLETED
+Status: Completed
 
-### Highlights
+- Dashboard summary, latest telemetry, room status, alarm statistics, aggregation,
+  and generic telemetry queries.
 
-- Dashboard Summary API
-- Latest Telemetry API
-- Room Status API
-- Alarm Statistics API
-- Dashboard Aggregation Engine
-- Generic Telemetry Query Layer
+## Sprint 11 — Engineering Foundation and Alarm Consolidation
 
-### End-to-End Verification
+Status: Completed — version 0.11.0
 
-Verified:
+- Unified Alarm Domain Engine, warning thresholds, migrations, and quality tooling.
 
-- GET /api/v1/dashboard/summary
-- GET /api/v1/dashboard/latest-telemetry
-- GET /api/v1/dashboard/rooms/status
-- GET /api/v1/dashboard/alarm-statistics
+## Sprint 12 — Device Onboarding and Telemetry Trust Boundary
 
-Result:
+Status: Completed — version 0.12.0 release candidate
 
-PASS ✅
+- [x] Device request validation and characterization tests
+- [x] Device Repository, Service, Controller, and Routes
+- [x] Device create and list contract preservation
+- [x] Device read and approved metadata update
+- [x] Device registration with Site and identity constraints
+- [x] Device activation and disablement lifecycle
+- [x] Telemetry Device/Site/Sensor trust policy
+- [x] REST integration and acceptance coverage
+- [x] GitHub Actions backend quality gates
+- [x] 113 tests passing across 10 test files
+
+Deferred: discovery, QR identification, activation codes, Asset approval,
+Authentication, provisioning/pairing, heartbeat/last-seen, and Monitoring Points.
+
+Draft PR #2 remains unmerged; no tag, GitHub Release, or deployment is recorded.

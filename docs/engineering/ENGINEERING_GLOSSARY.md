@@ -128,7 +128,7 @@ Dashboard room status both consume this Domain result.
 
 **Definition:** The repository release-notes file recording implemented release contents.
 
-**Current BIO-EMS usage:** `CHANGELOG.md` records version `0.11.0` and Sprint 11 changes.
+**Current BIO-EMS usage:** `CHANGELOG.md` records the `0.12.0` Sprint 12 release candidate.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
@@ -338,7 +338,8 @@ the `warning_low` and `warning_high` sensor columns and is idempotent.
 
 **Definition:** A release recording a completed reviewed engineering increment.
 
-**Current BIO-EMS usage:** Sprint 11 is prepared as version `0.11.0` pending commit and push.
+**Current BIO-EMS usage:** Sprint 12 is complete as the `0.12.0` release candidate;
+merge, tag, GitHub Release, and deployment remain separate approval steps.
 
 **Related documents:** `RELEASE_PROCESS.md`, `CHANGELOG.md`.
 
@@ -370,7 +371,7 @@ the `warning_low` and `warning_high` sensor columns and is idempotent.
 
 **Definition:** The manual semantic identifier for a BIO-EMS release state.
 
-**Current BIO-EMS usage:** Current root version is `0.11.0`; release tags use a `v` prefix.
+**Current BIO-EMS usage:** Current root version is `0.12.0`; release tags use a `v` prefix.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
@@ -378,7 +379,7 @@ the `warning_low` and `warning_high` sensor columns and is idempotent.
 
 **Definition:** The root repository file containing the current project version.
 
-**Current BIO-EMS usage:** `VERSION` contains `0.11.0` and aligns with the backend package and Health API.
+**Current BIO-EMS usage:** `VERSION` contains `0.12.0` and aligns with the backend package and Health API.
 
 **Related documents:** `RELEASE_PROCESS.md`.
 
@@ -386,7 +387,8 @@ the `warning_low` and `warning_high` sensor columns and is idempotent.
 
 **Definition:** The current automated test runner for the backend.
 
-**Current BIO-EMS usage:** Runs 13 Alarm Domain, persistence, REST API, and migration tests through `npm.cmd run test:run`.
+**Current BIO-EMS usage:** Runs 113 Domain, persistence, REST, integration, telemetry,
+and migration tests across 10 files through `npm run test:run`.
 
 **Related documents:** `TESTING_GUIDELINES.md`.
 
@@ -468,3 +470,4 @@ evolve as the project grows.
 | --- | --- | --- | --- |
 | 1.0 | 2026-08-05 | Approved | Initial repository-oriented engineering glossary. |
 | 1.1 | 2026-08-06 | Approved | Added Sprint 11 alarm states, warning thresholds, migrations, and version terminology. |
+| 1.2 | 2026-08-10 | Approved | Aligned release, testing, and Device onboarding terminology with Sprint 12. |

@@ -1,107 +1,62 @@
 # BIO-EMS Development Roadmap
 
-Version: 0.11.0
+Version: 0.12.0 release candidate
 
-Repository status: Sprint 11 completed on 2026-08-06. Sprint 12 has not started.
+Repository status: Sprint 12 completed on 2026-08-10. Draft PR #2 remains unmerged.
 
----
+## Phase 1 — Foundation
 
-# Phase 1 - Foundation ✅
+Completed: project structure, documentation, MQTT and InfluxDB integration, SQLite,
+migrations, repositories, Sites, and REST testing foundations.
 
-Completed
+## Phase 2 — Domain Design
 
-- Project Structure
-- Documentation Structure
-- MQTT Integration
-- InfluxDB Integration
-- SQLite Integration
-- Migration System
-- Repository Pattern
-- Sites Module
-- REST Client Testing
+Completed through Sprint 12: Domain model, architecture decisions, database design,
+unified Alarm evaluation, and Device lifecycle/trust-boundary rules.
 
----
+## Phase 3 — Core Modules
 
-# Phase 2 - Domain Design
+- Devices: lifecycle onboarding scope completed in Sprint 12.
+- Rooms: implemented baseline; broader management remains planned.
+- Sensors: implemented baseline; broader management remains planned.
+- Monitoring Points: planned and not implemented.
 
-Completed through Sprint 11
+## Phase 4 — Monitoring
 
-- Domain Model
-- Entity Relationships
-- Architecture Decisions
-- Database Design
-- Unified Alarm Evaluation Engine
-- Six-state threshold classification
+- Telemetry ingestion: implemented.
+- Telemetry trust boundary: completed in Sprint 12.
+- Alarm Engine: implemented and consolidated in Sprint 11.
+- Event Engine and Notification Engine: planned.
 
----
+## Phase 5 — Management
 
-# Phase 3 - Core Modules
+Users, Roles, Authentication, and Authorization remain planned.
 
-Planned
+## Phase 6 — Dashboard
 
-- Devices
-- Rooms
-- Monitoring Points
-- Sensors
+Dashboard APIs and threshold-based room status are implemented. Grafana integration
+and reports remain planned.
 
----
+## Sprint 11 — Engineering Foundation and Alarm Consolidation
 
-# Phase 4 - Monitoring
+Completed as version 0.11.0.
 
-In Progress
+## Sprint 12 — Device Onboarding and Telemetry Trust Boundary
 
-- Telemetry Service (implemented)
-- Alarm Engine (implemented and consolidated in Sprint 11)
-- Event Engine
-- Notification Engine
+Completed as the 0.12.0 release candidate:
 
----
+- Strict Device REST validation and preserved create/list contracts.
+- Device read and approved metadata update APIs.
+- `pending/0 -> active/1 -> disabled/0` lifecycle transitions.
+- Site existence, foreign-key, and identity uniqueness integrity.
+- Device/Site/Sensor telemetry trust-boundary enforcement.
+- 113 passing tests across 10 files.
+- Successful GitHub Actions backend quality gates on Draft PR #2.
 
-# Phase 5 - Management
+Discovery, QR identification, activation codes, Asset approval, Authentication,
+certificates, provisioning, pairing, and heartbeat remain future work. Completion of
+the Sprint does not claim merge, tag, GitHub Release, or deployment.
 
-Planned
+## Phase 7 — Production
 
-- Users
-- Roles
-- Authentication
-- Authorization
-
----
-
-# Phase 6 - Dashboard
-
-In Progress
-
-- Dashboard APIs (implemented)
-- Threshold-based room status (implemented in Sprint 11)
-- Grafana Integration
-- Reports
-
----
-
-# Sprint 11 - Engineering Foundation and Alarm Consolidation ✅
-
-Completed
-
-- Unified Domain Alarm Evaluation Engine
-- MQTT and Dashboard classification consolidation
-- Warning-low and warning-high thresholds
-- Versioned SQLite migrations and migration history
-- Idempotent warning-threshold migration
-- Alarm Domain, persistence, REST API, and migration tests (13 total)
-- ESLint flat config, Prettier, and quality gates
-- Version alignment at 0.11.0
-
-Sprint 12 remains future work and is not started by this release.
-
----
-
-# Phase 7 - Production
-
-Planned
-
-- OTA Updates
-- Backup
-- Restore
-- Deployment
-- Monitoring
+OTA Updates, backup, restore, deployment, and production monitoring remain planned.

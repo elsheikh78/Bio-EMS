@@ -1,226 +1,67 @@
-# PROJECT STATE
+# BIO-EMS Project State
 
----
+**Version:** v0.12.0 release candidate
 
-# Project Information
+**Current Phase:** Sprint 12 Completed
 
-**Project:** BIO-EMS
+**Branch:** `sprint-12-device-onboarding`
 
-**Version:** v0.11.0
+**Pull Request:** Draft PR #2, open and unmerged
 
-**Current Phase:** Sprint 11 Completed
+## Implemented Platform
 
-**Release Status:** Development
+- TypeScript/Express backend with layered Controller, Service, Repository, and
+  persistence boundaries.
+- SQLite configuration and migration infrastructure.
+- MQTT telemetry ingestion and InfluxDB time-series persistence.
+- Site, Room, Device, Sensor, Alarm, and Dashboard backend capabilities.
+- Unified Alarm evaluation and threshold classification.
 
-**Build Status:** PASS
+## Sprint 12 Delivered State
 
-**Last Updated:** 2026-08-06
+Device represents firmware identity inside a Zone Controller; it does not represent
+the physical Zone Controller. The implemented Device API supports validated create,
+list, read, approved metadata update, activation, and disablement operations while
+preserving the pre-Sprint create/list contracts.
 
----
+New Devices persist as `pending` with `activated = 0`. The only successful lifecycle
+path is `pending/0 -> active/1 -> disabled/0`. Registration and activation require a
+valid Site; duplicate identity and persistence constraints map to stable HTTP errors.
 
-# Current Architecture Status
+Operational telemetry requires:
 
-## Backend
+- A known Device in `active/1` state.
+- A persisted Site whose code exactly matches the topic Site.
+- A Sensor belonging to the Device and channel with `enabled = 1`.
 
-✅ Stable
+Message-level trust failures prevent Alarm evaluation and InfluxDB writes. Invalid
+channels are rejected individually so valid channels in the same trusted payload can
+continue.
 
-- Express
-- TypeScript
-- Repository Pattern
-- Service Layer
-- DTO Layer
-- REST APIs
+## Contracts and Compatibility
 
----
+- Telemetry topic: `bioems/{siteCode}/telemetry/{deviceId}`.
+- MQTT subscription: `bioems/+/telemetry/+`.
+- No MQTT topic or telemetry payload migration.
+- No SQLite schema change or migration in Sprint 12.
+- Device PATCH cannot change identity, Site ownership, lifecycle, or timestamps.
 
-## Databases
+## Verification
 
-### SQLite
+- 113 passing tests across 10 test files.
+- GitHub Actions `CI / Backend quality gates` passed on Draft PR #2.
+- Quality gates cover clean install, typecheck, build, lint, format check, and tests.
 
-Status:
+## Deferred State
 
-✅ Operational
+The broader ADR-010 workflow is not complete. Discovery, QR identification,
+activation-code verification, Asset approval/assignment, Authentication,
+certificates, provisioning, pairing, heartbeat/last-seen, and automatic registration
+remain deferred. Monitoring Points, Users/Roles, Notification Engine, Frontend, OTA,
+and npm audit remediation are also outside Sprint 12.
 
-Used for:
+## Release State
 
-- Sites
-- Rooms
-- Devices
-- Sensors
-- Alarm Configuration
-
----
-
-### InfluxDB
-
-Status:
-
-✅ Operational
-
-Used for:
-
-- Telemetry Storage
-- Time-Series Queries
-- Dashboard Telemetry
-
----
-
-## MQTT
-
-Status:
-
-✅ Operational
-
-Features
-
-- Device Telemetry
-- Generic Sensor Messages
-- InfluxDB Integration
-
----
-
-# Completed Modules
-
-## Core
-
-- Health API
-- Site Management
-- Room Management
-- Device Management
-- Sensor Management
-
----
-
-## Alarm System
-
-- Alarm Repository
-- Alarm Service
-- Alarm REST API
-- Alarm Acknowledgement
-
----
-
-## Dashboard
-
-- Dashboard Summary
-- Latest Telemetry
-- Room Status
-- Alarm Statistics
-- Dashboard Aggregation Engine
-
----
-
-# REST API Status
-
-| Module | Status |
-|---------|--------|
-| Health | ✅ |
-| Sites | ✅ |
-| Rooms | ✅ |
-| Devices | ✅ |
-| Sensors | ✅ |
-| Alarms | ✅ |
-| Dashboard | ✅ |
-
----
-
-# Sprint Status
-
-## Sprint 11
-
-Completed
-
-Theme
-
-Engineering Foundation and Alarm Consolidation
-
-Major Deliverables
-
-- Unified Domain Alarm Evaluation Engine
-- Warning-low and warning-high thresholds
-- MQTT and Dashboard classification consolidation
-- Versioned, idempotent SQLite migrations
-- 13 Alarm Domain, persistence, REST API, and migration tests
-- ESLint flat config and Prettier quality gates
-
-Sprint 12 has not started.
-
-## Sprint 08
-
-Completed
-
----
-
-## Sprint 09
-
-Completed
-
----
-
-## Sprint 10
-
-Completed
-
-Theme
-
-Dashboard Backend APIs
-
-Major Deliverables
-
-- Dashboard Summary API
-- Latest Telemetry API
-- Room Status API
-- Alarm Statistics API
-- Generic Influx Query Layer
-- Dashboard Aggregation Engine
-
----
-
-# Quality Status
-
-## TypeScript
-
-✅ PASS
-
-## Build
-
-✅ PASS
-
-## End-to-End Tests
-
-✅ PASS
-
-Verified APIs
-
-- Dashboard Summary
-- Latest Telemetry
-- Room Status
-- Alarm Statistics
-
----
-
-# Technical Debt
-
-Deferred to Sprint 11
-
-- Dashboard status calculation using alarm thresholds
-- Unified bootstrap for standalone scripts
-- Entity naming consistency
-- Dashboard API error handling improvements
-
----
-
-# Release Boundary
-
-Sprint 11 is complete in the working tree. Commit and push are intentionally pending.
-No Sprint 12 implementation is included.
-
----
-
-# Overall Project Status
-
-The backend foundation is stable.
-
-Dashboard backend APIs are completed and verified.
-
-The project is ready for Sprint 11 review and commit.
+Sprint 12 implementation and acceptance are complete as the v0.12.0 release
+candidate. The branch has not been merged, tagged, published as a GitHub Release, or
+deployed.

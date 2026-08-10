@@ -1,7 +1,7 @@
 # BIO-EMS MQTT Protocol
 Version: 1.0
-Status: Draft
-Last Updated: 2026-07-29
+Status: Implemented telemetry subset; other message types are future design
+Last Updated: 2026-08-10
 
 ---
 
@@ -70,13 +70,20 @@ False
 
 # 4. Topic Naming Convention
 
-Format
+Implemented telemetry format
 
 bioems/{siteCode}/{messageType}/{deviceId}
 
-Examples
+The only backend subscription implemented by this document is:
+
+bioems/+/telemetry/+
+
+The resulting external telemetry contract is:
 
 bioems/CAIRO01/telemetry/ESP32-0001
+
+The following examples are future protocol designs and are not implemented by Sprint
+12:
 
 bioems/CAIRO01/register/ESP32-0001
 
@@ -89,6 +96,10 @@ bioems/CAIRO01/response/ESP32-0001
 ---
 
 # 5. Message Types
+
+Only Telemetry is implemented in the current backend path. Register, Heartbeat,
+Command, and Response remain future message types and must not be treated as available
+features.
 
 Telemetry
 
@@ -308,7 +319,10 @@ Dashboard
 Device
 
 - Device must exist.
-- Device must be activated.
+- Device identity is the `deviceId` segment of the MQTT topic.
+- Device must have `status = active` and `activated = 1`.
+- Device's persisted Site must exist.
+- Persisted `site.code` must exactly match the topic `siteCode`.
 
 Room
 
@@ -316,10 +330,9 @@ Room
 
 Sensor
 
-- Sensor must exist.
-- Sensor must belong to the device.
-- Sensor must belong to the room.
-- Channel must exist.
+- Channel must resolve to a Sensor by persisted Device ID and channel.
+- Sensor must belong to the Device.
+- Sensor must have `enabled = 1`.
 
 Telemetry
 
@@ -404,7 +417,7 @@ This component will be implemented in a later version.
 
 Invalid Topic
 
-Ignore message
+Reject the complete message
 
 Invalid JSON
 
@@ -412,11 +425,23 @@ Reject message
 
 Unknown Device
 
-Reject message
+Reject the complete message before Alarm evaluation or InfluxDB persistence
+
+Pending, Disabled, or Lifecycle-Inconsistent Device
+
+Reject the complete message before Alarm evaluation or InfluxDB persistence
+
+Missing or Mismatched Site
+
+Reject the complete message before Alarm evaluation or InfluxDB persistence
 
 Unknown Sensor
 
-Reject message
+Reject the affected reading and continue valid channels in the same payload
+
+Disabled Sensor
+
+Reject the affected reading and continue valid channels in the same payload
 
 Database Error
 
@@ -449,3 +474,8 @@ Encrypted Communication
 Version 1.0
 
 Initial protocol definition.
+
+Version 1.1
+
+Documented the Sprint 12 Device/Site/Sensor telemetry trust boundary without changing
+the telemetry topic, subscription, or payload contract.

@@ -1,6 +1,6 @@
 # Sprint 12 — Device Onboarding and Telemetry Trust Boundary
 
-Status: Planned
+Status: Completed
 
 Target version: v0.12.0
 
@@ -243,40 +243,40 @@ four-phase workflow that remains deferred.
 
 ## Acceptance Criteria
 
-- [ ] New Devices are persisted as `pending` with `activated = 0`, regardless of REST
+- [x] New Devices are persisted as `pending` with `activated = 0`, regardless of REST
   input, and invalid lifecycle input is rejected.
-- [ ] The Device API can list, read, update allowed metadata, activate, and disable a
+- [x] The Device API can list, read, update allowed metadata, activate, and disable a
   Device through Zod-validated inputs.
-- [ ] Only `pending -> active -> disabled` transitions succeed; all other transitions
+- [x] Only `pending -> active -> disabled` transitions succeed; all other transitions
   return a tested conflict and leave the row unchanged.
-- [ ] Telemetry from unknown, pending, disabled, or lifecycle-inconsistent Devices
+- [x] Telemetry from unknown, pending, disabled, or lifecycle-inconsistent Devices
   produces no alarm evaluation and no InfluxDB write.
-- [ ] Telemetry is rejected when the Device's configured Site code does not exactly
+- [x] Telemetry is rejected when the Device's configured Site code does not exactly
   match the Site code in the existing MQTT topic.
-- [ ] Unknown channels and channels mapped to Sensors with `enabled !== 1` are not
+- [x] Unknown channels and channels mapped to Sensors with `enabled !== 1` are not
   evaluated or persisted; valid channels in the same payload retain the documented
   partial-message behavior.
-- [ ] Existing REST create/list contracts and the approved MQTT topic shape remain
+- [x] Existing REST create/list contracts and the approved MQTT topic shape remain
   backward compatible; no SQLite schema migration is introduced.
-- [ ] Device REST errors return `400` for Zod/invalid requests, `404` for missing
+- [x] Device REST errors return `400` for Zod/invalid requests, `404` for missing
   Devices or Sites, and `409` for invalid lifecycle transitions or uniqueness
   conflicts, without leaking SQLite details.
-- [ ] Characterization tests pin existing Device response envelopes and status codes
+- [x] Characterization tests pin existing Device response envelopes and status codes
   before new endpoints are implemented and continue to pass unchanged throughout the
   Sprint.
-- [ ] `src/mqtt/topics.ts` is unified with
+- [x] `src/mqtt/topics.ts` is unified with
   `bioems/{siteCode}/telemetry/{deviceId}` without adding, changing, or migrating any
   MQTT topic.
-- [ ] Repository, REST, and telemetry-policy suites cover every success and rejection
+- [x] Repository, REST, and telemetry-policy suites cover every success and rejection
   path listed in this plan and pass in isolation.
-- [ ] GitHub Actions runs and passes `typecheck`, `build`, `lint`, `format:check`, and
+- [x] GitHub Actions runs and passes `typecheck`, `build`, `lint`, `format:check`, and
   `test:run` using clean dependency installation.
-- [ ] Roadmap, project status, Sprint progress, ADR implementation status, protocol
+- [x] Roadmap, project status, Sprint progress, ADR implementation status, protocol
   documentation, changelog, and version files accurately describe the delivered
   v0.12.0 boundary.
-- [ ] Monitoring Points, Authentication, Users/Roles, Notification Engine, Frontend,
+- [x] Monitoring Points, Authentication, Users/Roles, Notification Engine, Frontend,
   OTA Updates, and npm-audit remediation are absent from the implementation diff.
-- [ ] The release candidate reports v0.12.0 and passes `git diff --check` with no
+- [x] The release candidate reports v0.12.0 and passes `git diff --check` with no
   commit or push performed until review approval.
 
 ## Definition of Done
@@ -285,3 +285,22 @@ All acceptance criteria are evidenced by automated tests or repository inspectio
 all five CI gates pass locally and in GitHub Actions, compatibility constraints are
 documented, and the v0.12.0 documentation accurately separates delivered behavior
 from deferred onboarding and security capabilities.
+
+## Completion Evidence
+
+Sprint 12 was delivered through the following reviewed commits:
+
+- `2d7fe87` — Device request validation and characterization coverage.
+- `4d0c302` — Device read and metadata-update APIs.
+- `4c5bc17` — Device lifecycle transitions.
+- `d9b60f4` — Site and identity registration integrity.
+- `edcb03c` — Telemetry trust-boundary enforcement.
+- `70fb413` — Acceptance and REST integration coverage.
+- `a9130f9` — GitHub Actions backend quality workflow.
+
+The final pre-closure CI run passed all five quality gates and reported 113 passing
+tests across 10 test files. Completion applies only to the lifecycle, REST,
+registration-integrity, and telemetry-policy scope in this document. Discovery, QR
+identification, activation codes, Asset approval, Authentication, and the other
+out-of-scope capabilities remain deferred. The branch is a release candidate; no
+merge, tag, GitHub Release, or deployment is claimed by this status.
