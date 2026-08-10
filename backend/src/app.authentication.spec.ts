@@ -8,6 +8,14 @@ vi.hoisted(() => {
 
 vi.mock("./mqtt/client", () => ({ getMqttClient: vi.fn() }));
 
+vi.mock("../database/influx/queries/telemetry.query", () => ({
+  getLatestTelemetry: vi.fn(),
+}));
+
+vi.mock("../database/influx/queries/room-status.query", () => ({
+  getLatestRoomTelemetry: vi.fn(),
+}));
+
 vi.mock("../database/sqlite/client", async () => {
   const { default: SqliteDatabase } = await import("better-sqlite3");
   const sqlite = new SqliteDatabase(":memory:");
