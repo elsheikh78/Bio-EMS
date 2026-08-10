@@ -101,7 +101,7 @@ describe("Device REST API characterization", () => {
   it("keeps an unknown create failure generic instead of converting it to conflict", async () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.mocked(deviceService.createDevice).mockImplementation(() => {
-      throw new Error("SQLITE_INTERNAL sensitive details");
+      throw new SyntaxError("SQLITE_INTERNAL sensitive details");
     });
 
     const response = await request(app)
@@ -118,6 +118,24 @@ describe("Device REST API characterization", () => {
     });
     expect(JSON.stringify(response.body)).not.toContain("SQLITE_INTERNAL");
     consoleError.mockRestore();
+  });
+
+  it("returns a safe validation error for raw malformed JSON", async () => {
+    const response = await request(app)
+      .post("/api/v1/devices")
+      .set("Content-Type", "application/json")
+      .send("{")
+      .expect(400);
+
+    expect(deviceService.createDevice).not.toHaveBeenCalled();
+    expect(response.body).toEqual({
+      success: false,
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Invalid request body",
+      },
+    });
+    expect(response.text).not.toMatch(/unexpected|token|syntax|stack|position|json parse/i);
   });
 
   it.each([
