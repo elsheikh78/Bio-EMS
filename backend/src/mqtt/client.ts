@@ -1,6 +1,7 @@
 import mqtt, { MqttClient } from "mqtt";
 import { MQTT } from "../constants/mqtt.constants";
 import { routeMessage } from "./router";
+import { MQTT_TOPICS } from "./topics";
 
 let client: MqttClient | null = null;
 
@@ -25,13 +26,13 @@ export function getMqttClient(): MqttClient {
   client.on("connect", () => {
     console.log("MQTT Connected Successfully");
 
-    client?.subscribe("bioems/+/telemetry/+", (err) => {
+    client?.subscribe(MQTT_TOPICS.TELEMETRY, (err) => {
       if (err) {
         console.error(err);
         return;
       }
 
-      console.log("Subscribed : bioems/+/telemetry/+");
+      console.log(`Subscribed : ${MQTT_TOPICS.TELEMETRY}`);
     });
   });
 
