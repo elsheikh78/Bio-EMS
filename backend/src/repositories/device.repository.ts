@@ -33,6 +33,8 @@ export type DeviceMetadataUpdate = Partial<
   Pick<Device, "device_type" | "protocol" | "manufacturer" | "model" | "firmware_version">
 >;
 
+export type DeviceLifecycleStatus = "pending" | "active" | "disabled";
+
 export class DeviceRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
@@ -121,6 +123,33 @@ export class DeviceRepository {
       update.firmware_version ?? null,
       deviceId
     );
+
+    if (result.changes === 0) {
+      return undefined;
+    }
+
+    return this.findByDeviceId(deviceId);
+  }
+
+  transitionLifecycle(
+    deviceId: string,
+    expectedStatus: DeviceLifecycleStatus,
+    expectedActivated: 0 | 1,
+    nextStatus: DeviceLifecycleStatus,
+    nextActivated: 0 | 1
+  ): Device | undefined {
+    const stmt = this.database.prepare(`
+            UPDATE devices
+            SET
+                status = ?,
+                activated = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE device_id = ?
+            AND status = ?
+            AND activated = ?
+        `);
+
+    const result = stmt.run(nextStatus, nextActivated, deviceId, expectedStatus, expectedActivated);
 
     if (result.changes === 0) {
       return undefined;

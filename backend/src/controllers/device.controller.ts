@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import {
+  activateDevice,
   createDevice,
+  disableDevice,
   getDeviceByDeviceId,
   getDevices,
   updateDeviceMetadata,
@@ -26,4 +28,12 @@ export const getDeviceController = asyncHandler(async (req: Request, res: Respon
 
 export const updateDeviceController = asyncHandler(async (req: Request, res: Response) => {
   res.json(updateDeviceMetadata(req.params.deviceId as string, req.body));
+});
+
+export const activateDeviceController = asyncHandler(async (req: Request, res: Response) => {
+  res.json(activateDevice(req.params.deviceId as string));
+});
+
+export const disableDeviceController = asyncHandler(async (req: Request, res: Response) => {
+  res.json(disableDevice(req.params.deviceId as string));
 });

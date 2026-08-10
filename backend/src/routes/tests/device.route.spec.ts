@@ -7,7 +7,9 @@ import * as deviceService from "../../services/device.service";
 import deviceRouter from "../device.route";
 
 vi.mock("../../services/device.service", () => ({
+  activateDevice: vi.fn(),
   createDevice: vi.fn(),
+  disableDevice: vi.fn(),
   getDeviceByDeviceId: vi.fn(),
   getDevices: vi.fn(),
   updateDeviceMetadata: vi.fn(),
@@ -165,6 +167,90 @@ describe("Device REST API characterization", () => {
     const response = await request(app).get("/api/v1/devices/%20").expect(400);
 
     expect(deviceService.getDeviceByDeviceId).not.toHaveBeenCalled();
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "Invalid route parameters" },
+    });
+  });
+
+  it("activates a device and returns the persisted device directly", async () => {
+    const activated = { ...validCreateRequest, status: "active", activated: 1 };
+    vi.mocked(deviceService.activateDevice).mockReturnValue(activated);
+
+    const response = await request(app)
+      .post("/api/v1/devices/%20ZC-FW-001%20/activate")
+      .send({ ignored: true })
+      .expect(200);
+
+    expect(deviceService.activateDevice).toHaveBeenCalledWith("ZC-FW-001");
+    expect(response.body).toEqual(activated);
+  });
+
+  it("disables a device and returns the persisted device directly", async () => {
+    const disabled = { ...validCreateRequest, status: "disabled", activated: 0 };
+    vi.mocked(deviceService.disableDevice).mockReturnValue(disabled);
+
+    const response = await request(app).post("/api/v1/devices/ZC-FW-001/disable").expect(200);
+
+    expect(deviceService.disableDevice).toHaveBeenCalledWith("ZC-FW-001");
+    expect(response.body).toEqual(disabled);
+  });
+
+  it.each([
+    ["activateDevice", "activate"],
+    ["disableDevice", "disable"],
+  ] as const)("returns the stable missing-device error from %s", async (method, path) => {
+    vi.mocked(deviceService[method]).mockImplementation(() => {
+      throw new AppError("Device not found", 404, "DEVICE_NOT_FOUND");
+    });
+
+    const response = await request(app).post(`/api/v1/devices/missing-device/${path}`).expect(404);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "DEVICE_NOT_FOUND", message: "Device not found" },
+    });
+  });
+
+  it("returns the stable missing-site error from activate", async () => {
+    vi.mocked(deviceService.activateDevice).mockImplementation(() => {
+      throw new AppError("Site not found", 404, "SITE_NOT_FOUND");
+    });
+
+    const response = await request(app).post("/api/v1/devices/ZC-FW-001/activate").expect(404);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "SITE_NOT_FOUND", message: "Site not found" },
+    });
+  });
+
+  it.each([
+    ["activateDevice", "activate"],
+    ["disableDevice", "disable"],
+  ] as const)("returns the stable state conflict from %s", async (method, path) => {
+    vi.mocked(deviceService[method]).mockImplementation(() => {
+      throw new AppError("Device state transition not allowed", 409, "DEVICE_STATE_CONFLICT");
+    });
+
+    const response = await request(app).post(`/api/v1/devices/ZC-FW-001/${path}`).expect(409);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: {
+        code: "DEVICE_STATE_CONFLICT",
+        message: "Device state transition not allowed",
+      },
+    });
+  });
+
+  it.each([
+    ["activateDevice", "activate"],
+    ["disableDevice", "disable"],
+  ] as const)("rejects invalid params before calling %s", async (method, path) => {
+    const response = await request(app).post(`/api/v1/devices/%20/${path}`).expect(400);
+
+    expect(deviceService[method]).not.toHaveBeenCalled();
     expect(response.body).toEqual({
       success: false,
       error: { code: "VALIDATION_ERROR", message: "Invalid route parameters" },

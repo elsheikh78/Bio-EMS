@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
+  activateDeviceController,
   createDeviceController,
+  disableDeviceController,
   getDeviceController,
   getDevicesController,
   updateDeviceController,
@@ -17,6 +19,10 @@ const router = Router();
 router.post("/", validateBody(createDeviceSchema), createDeviceController);
 
 router.get("/", getDevicesController);
+
+router.post("/:deviceId/activate", validateParams(deviceParamsSchema), activateDeviceController);
+
+router.post("/:deviceId/disable", validateParams(deviceParamsSchema), disableDeviceController);
 
 router.get("/:deviceId", validateParams(deviceParamsSchema), getDeviceController);
 

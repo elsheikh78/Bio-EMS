@@ -89,4 +89,48 @@ describe("DeviceRepository", () => {
   it("returns undefined when no device row is updated", () => {
     expect(repository.updateMetadata("missing-device", { model: "ZC-16B" })).toBeUndefined();
   });
+
+  it("atomically activates pending/0 and returns the persisted row", () => {
+    const activated = repository.transitionLifecycle("ZC-FW-001", "pending", 0, "active", 1);
+
+    expect(activated).toMatchObject({
+      device_id: "ZC-FW-001",
+      status: "active",
+      activated: 1,
+      uuid: "49db1d2a-95cc-4ad9-bdcb-823d8a29890f",
+      model: "ZC-16",
+    });
+    expect(activated?.updated_at).toBeTruthy();
+  });
+
+  it("atomically disables active/1 and returns the persisted row", () => {
+    database
+      .prepare("UPDATE devices SET status = 'active', activated = 1 WHERE device_id = ?")
+      .run("ZC-FW-001");
+
+    const disabled = repository.transitionLifecycle("ZC-FW-001", "active", 1, "disabled", 0);
+
+    expect(disabled).toMatchObject({
+      device_id: "ZC-FW-001",
+      status: "disabled",
+      activated: 0,
+      protocol: "mqtt",
+      manufacturer: "BIO-EMS",
+    });
+    expect(disabled?.updated_at).toBeTruthy();
+  });
+
+  it("does not mutate a device when the expected lifecycle is stale", () => {
+    expect(repository.transitionLifecycle("ZC-FW-001", "active", 1, "disabled", 0)).toBeUndefined();
+    expect(repository.findByDeviceId("ZC-FW-001")).toMatchObject({
+      status: "pending",
+      activated: 0,
+    });
+  });
+
+  it("does not report transition success for a missing textual device_id", () => {
+    expect(
+      repository.transitionLifecycle("missing-device", "pending", 0, "active", 1)
+    ).toBeUndefined();
+  });
 });
