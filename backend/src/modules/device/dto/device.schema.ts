@@ -42,6 +42,9 @@ export const deviceParamsSchema = z
   })
   .strict();
 
+export const deviceListQuerySchema = z.object({}).strict();
+
 export type CreateDeviceInput = z.infer<typeof createDeviceSchema>;
 export type UpdateDeviceInput = z.infer<typeof updateDeviceSchema>;
 export type DeviceParams = z.infer<typeof deviceParamsSchema>;
+export type DeviceListQuery = z.infer<typeof deviceListQuerySchema>;

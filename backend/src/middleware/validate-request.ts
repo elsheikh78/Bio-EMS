@@ -29,3 +29,16 @@ export function validateParams(schema: z.ZodType<Record<string, string>>) {
     next();
   };
 }
+
+export function validateQuery(schema: z.ZodType<Record<string, unknown>>) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.query);
+
+    if (!result.success) {
+      next(new AppError("Invalid query parameters", 400, "VALIDATION_ERROR"));
+      return;
+    }
+
+    next();
+  };
+}
