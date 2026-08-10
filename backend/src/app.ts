@@ -13,6 +13,7 @@ import sensorRouter from "./routes/sensor.route";
 import alarmRouter from "./routes/alarm.route";
 import dashboardRouter from "./routes/dashboard.route";
 import authRouter from "./routes/auth.route";
+import { authenticationMiddleware } from "./middleware/authentication.middleware";
 
 createTables();
 
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 getMqttClient();
 
+app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/auth`, authRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);

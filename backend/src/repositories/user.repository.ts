@@ -68,6 +68,12 @@ export class UserRepository {
       .get(normalizeUsername(username)) as User | undefined;
   }
 
+  findById(id: number): User | undefined {
+    return this.database
+      .prepare(`SELECT ${PUBLIC_USER_COLUMNS} FROM users WHERE id = ? LIMIT 1`)
+      .get(id) as User | undefined;
+  }
+
   findCredentialsByUsername(username: string): UserCredentialRecord | undefined {
     return this.database
       .prepare(`SELECT ${PUBLIC_USER_COLUMNS}, password_hash FROM users WHERE username = ? LIMIT 1`)

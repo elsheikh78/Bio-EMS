@@ -176,6 +176,18 @@ describe("UserRepository", () => {
     expect(repository.findByUsername(" LOOKUP-USER ")).not.toHaveProperty("password_hash");
   });
 
+  it("finds a User by ID without exposing the password hash", () => {
+    const id = repository.create({
+      username: "id-lookup",
+      passwordHash: VALID_BCRYPT_HASH,
+      role: "OPERATOR",
+    });
+
+    expect(repository.findById(id)).toMatchObject({ id, username: "id-lookup", role: "OPERATOR" });
+    expect(repository.findById(id)).not.toHaveProperty("password_hash");
+    expect(repository.findById(id + 1)).toBeUndefined();
+  });
+
   it("limits credential lookup to the internal authentication record", () => {
     repository.create({
       username: "auth-user",
