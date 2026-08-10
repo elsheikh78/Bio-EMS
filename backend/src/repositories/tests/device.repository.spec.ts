@@ -8,7 +8,12 @@ describe("DeviceRepository", () => {
 
   beforeEach(() => {
     database = new Database(":memory:");
+    database.pragma("foreign_keys = ON");
     database.exec(`
+      CREATE TABLE sites (
+        id INTEGER PRIMARY KEY
+      );
+
       CREATE TABLE devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         uuid TEXT NOT NULL UNIQUE,
@@ -22,8 +27,11 @@ describe("DeviceRepository", () => {
         status TEXT NOT NULL DEFAULT 'pending',
         activated INTEGER NOT NULL DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME
+        updated_at DATETIME,
+        FOREIGN KEY (site_id) REFERENCES sites(id)
       );
+
+      INSERT INTO sites (id) VALUES (1);
     `);
     repository = new DeviceRepository(database);
     repository.create({
@@ -47,6 +55,57 @@ describe("DeviceRepository", () => {
     });
     expect(repository.findByDeviceId("1")).toBeUndefined();
     expect(repository.findByDeviceId("missing-device")).toBeUndefined();
+  });
+
+  it("persists create metadata with pending/0 defaults", () => {
+    expect(repository.findByDeviceId("ZC-FW-001")).toMatchObject({
+      uuid: "49db1d2a-95cc-4ad9-bdcb-823d8a29890f",
+      device_id: "ZC-FW-001",
+      site_id: 1,
+      device_type: "zone-controller-firmware",
+      protocol: "mqtt",
+      manufacturer: "BIO-EMS",
+      model: "ZC-16",
+      firmware_version: "1.0.0",
+      status: "pending",
+      activated: 0,
+    });
+  });
+
+  it.each([
+    ["uuid", { uuid: "49db1d2a-95cc-4ad9-bdcb-823d8a29890f", device_id: "ZC-FW-002" }],
+    ["device_id", { uuid: "ee0ee6c1-dbe5-488c-a47a-cb2e8fb9a7bf", device_id: "ZC-FW-001" }],
+  ])("raises the actual uniqueness constraint code for duplicate %s", (_field, identity) => {
+    expect(() =>
+      repository.create({
+        ...identity,
+        site_id: 1,
+        device_type: "zone-controller-firmware",
+        protocol: "mqtt",
+      })
+    ).toThrowError(
+      expect.objectContaining({
+        name: "SqliteError",
+        code: "SQLITE_CONSTRAINT_UNIQUE",
+      })
+    );
+  });
+
+  it("raises the actual foreign-key constraint code for a missing Site", () => {
+    expect(() =>
+      repository.create({
+        uuid: "ee0ee6c1-dbe5-488c-a47a-cb2e8fb9a7bf",
+        device_id: "ZC-FW-002",
+        site_id: 999,
+        device_type: "zone-controller-firmware",
+        protocol: "mqtt",
+      })
+    ).toThrowError(
+      expect.objectContaining({
+        name: "SqliteError",
+        code: "SQLITE_CONSTRAINT_FOREIGNKEY",
+      })
+    );
   });
 
   it("updates one metadata field without changing omitted or protected fields", () => {

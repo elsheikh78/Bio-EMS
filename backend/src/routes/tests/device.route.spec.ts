@@ -62,6 +62,64 @@ describe("Device REST API characterization", () => {
     expect(response.body).toEqual({ success: true, id: 12 });
   });
 
+  it("returns the stable missing-site contract from create", async () => {
+    vi.mocked(deviceService.createDevice).mockImplementation(() => {
+      throw new AppError("Site not found", 404, "SITE_NOT_FOUND");
+    });
+
+    const response = await request(app)
+      .post("/api/v1/devices")
+      .send(validCreateRequest)
+      .expect(404);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "SITE_NOT_FOUND", message: "Site not found" },
+    });
+  });
+
+  it.each(["uuid", "device_id"])(
+    "returns the stable conflict contract for duplicate %s",
+    async () => {
+      vi.mocked(deviceService.createDevice).mockImplementation(() => {
+        throw new AppError("Resource already exists", 409, "RESOURCE_ALREADY_EXISTS");
+      });
+
+      const response = await request(app)
+        .post("/api/v1/devices")
+        .send(validCreateRequest)
+        .expect(409);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: { code: "RESOURCE_ALREADY_EXISTS", message: "Resource already exists" },
+      });
+      expect(JSON.stringify(response.body)).not.toMatch(/sqlite|constraint|uuid|device_id|insert/i);
+    }
+  );
+
+  it("keeps an unknown create failure generic instead of converting it to conflict", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    vi.mocked(deviceService.createDevice).mockImplementation(() => {
+      throw new Error("SQLITE_INTERNAL sensitive details");
+    });
+
+    const response = await request(app)
+      .post("/api/v1/devices")
+      .send(validCreateRequest)
+      .expect(500);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred.",
+      },
+    });
+    expect(JSON.stringify(response.body)).not.toContain("SQLITE_INTERNAL");
+    consoleError.mockRestore();
+  });
+
   it.each([
     ["missing required fields", { uuid: validCreateRequest.uuid }],
     ["an invalid required field", { ...validCreateRequest, protocol: "" }],

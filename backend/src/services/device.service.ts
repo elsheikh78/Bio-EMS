@@ -1,5 +1,6 @@
+import Database from "better-sqlite3";
 import { DeviceRepository, Device } from "../repositories/device.repository";
-import { UpdateDeviceInput } from "../modules/device/dto/device.schema";
+import { CreateDeviceInput, UpdateDeviceInput } from "../modules/device/dto/device.schema";
 import { AppError } from "../errors/app-error";
 import { SiteRepository } from "../repositories/site.repository";
 
@@ -11,8 +12,26 @@ const siteNotFound = () => new AppError("Site not found", 404, "SITE_NOT_FOUND")
 const stateConflict = () =>
   new AppError("Device state transition not allowed", 409, "DEVICE_STATE_CONFLICT");
 
-export function createDevice(device: Device): number {
-  return repository.create(device);
+export function createDevice(device: CreateDeviceInput): number {
+  if (!siteRepository.findById(device.site_id)) {
+    throw siteNotFound();
+  }
+
+  try {
+    return repository.create(device);
+  } catch (error) {
+    if (error instanceof Database.SqliteError) {
+      if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+        throw new AppError("Resource already exists", 409, "RESOURCE_ALREADY_EXISTS");
+      }
+
+      if (error.code === "SQLITE_CONSTRAINT_FOREIGNKEY") {
+        throw siteNotFound();
+      }
+    }
+
+    throw error;
+  }
 }
 
 export function getDevices(): Device[] {

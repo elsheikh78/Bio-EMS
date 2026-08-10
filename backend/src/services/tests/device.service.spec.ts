@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import Database from "better-sqlite3";
 
 const mocks = vi.hoisted(() => ({
   deviceRepository: {
@@ -22,6 +23,7 @@ vi.mock("../../repositories/site.repository", () => ({
 }));
 
 import { activateDevice, disableDevice } from "../device.service";
+import { createDevice } from "../device.service";
 
 const device = (status: string, activated: number) => ({
   id: 1,
@@ -33,6 +35,46 @@ const device = (status: string, activated: number) => ({
   status,
   activated,
 });
+
+const createInput = {
+  uuid: "49db1d2a-95cc-4ad9-bdcb-823d8a29890f",
+  device_id: "ZC-FW-001",
+  site_id: 4,
+  device_type: "zone-controller-firmware",
+  protocol: "mqtt",
+};
+
+const actualSqliteError = (kind: "unique" | "foreign-key"): Error & { code: string } => {
+  const database = new Database(":memory:");
+  database.pragma("foreign_keys = ON");
+  database.exec(`
+    CREATE TABLE sites (id INTEGER PRIMARY KEY);
+    CREATE TABLE devices (
+      id INTEGER PRIMARY KEY,
+      uuid TEXT UNIQUE,
+      site_id INTEGER REFERENCES sites(id)
+    );
+    INSERT INTO sites (id) VALUES (1);
+    INSERT INTO devices (id, uuid, site_id) VALUES (1, 'duplicate', 1);
+  `);
+
+  try {
+    if (kind === "unique") {
+      database.exec("INSERT INTO devices (id, uuid, site_id) VALUES (2, 'duplicate', 1)");
+    } else {
+      database.exec("INSERT INTO devices (id, uuid, site_id) VALUES (2, 'new', 999)");
+    }
+  } catch (error) {
+    database.close();
+    if (error instanceof Database.SqliteError) {
+      return error;
+    }
+    throw error;
+  }
+
+  database.close();
+  throw new Error("Expected SQLite constraint error");
+};
 
 const expectAppError = (operation: () => unknown, statusCode: number, code: string) => {
   expect(operation).toThrowError(
@@ -47,6 +89,47 @@ describe("Device lifecycle service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.siteRepository.findById.mockReturnValue({ id: 4, code: "CAIRO01", name: "Cairo" });
+  });
+
+  it("creates once when Site exists and returns the repository id", () => {
+    mocks.deviceRepository.create.mockReturnValue(17);
+
+    expect(createDevice(createInput)).toBe(17);
+    expect(mocks.siteRepository.findById).toHaveBeenCalledWith(4);
+    expect(mocks.deviceRepository.create).toHaveBeenCalledOnce();
+    expect(mocks.deviceRepository.create).toHaveBeenCalledWith(createInput);
+  });
+
+  it("rejects create when Site is missing without invoking mutation", () => {
+    mocks.siteRepository.findById.mockReturnValue(undefined);
+
+    expectAppError(() => createDevice(createInput), 404, "SITE_NOT_FOUND");
+    expect(mocks.deviceRepository.create).not.toHaveBeenCalled();
+  });
+
+  it.each(["uuid", "device_id"])("maps actual duplicate %s errors to conflict", () => {
+    mocks.deviceRepository.create.mockImplementation(() => {
+      throw actualSqliteError("unique");
+    });
+
+    expectAppError(() => createDevice(createInput), 409, "RESOURCE_ALREADY_EXISTS");
+  });
+
+  it("maps an actual foreign-key race failure to SITE_NOT_FOUND", () => {
+    mocks.deviceRepository.create.mockImplementation(() => {
+      throw actualSqliteError("foreign-key");
+    });
+
+    expectAppError(() => createDevice(createInput), 404, "SITE_NOT_FOUND");
+  });
+
+  it("rethrows unknown repository errors without converting them to client errors", () => {
+    const unknown = new Error("unknown repository failure");
+    mocks.deviceRepository.create.mockImplementation(() => {
+      throw unknown;
+    });
+
+    expect(() => createDevice(createInput)).toThrow(unknown);
   });
 
   it("activates only pending/0 and returns the repository result", () => {

@@ -6,5 +6,6 @@ const dbPath = path.join(process.cwd(), "database", "bioems.db");
 export const sqlite = new Database(dbPath);
 
 sqlite.pragma("journal_mode = WAL");
+sqlite.pragma("foreign_keys = ON");
 
 console.log("SQLite Connected");
