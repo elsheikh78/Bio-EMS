@@ -1,25 +1,21 @@
 # BIO-EMS MQTT Protocol
 
-Version: 1.0.0
+This file is a concise pointer to the maintained protocol specification:
 
-Status: Implemented
+- [BIO-EMS MQTT Protocol — Architecture](architecture/BIO-EMS-MQTT-Protocol.md)
 
----
+The implemented telemetry contract is:
 
-# 1. Overview
+```text
+bioems/{siteCode}/telemetry/{deviceId}
+```
 
-BIO-EMS uses MQTT as the communication protocol between field devices and the backend monitoring system.
+The backend subscription is:
 
-The MQTT layer is responsible for:
+```text
+bioems/+/telemetry/+
+```
 
-- Receiving telemetry messages from devices.
-- Routing messages according to MQTT topics.
-- Validating payload structure.
-- Linking telemetry data to registered devices and sensors.
-- Storing measurements in InfluxDB.
-
----
-
-# 2. MQTT Topic Structure
-
-Current telemetry topic format:
+Sprint 12 did not add, rename, version, or migrate MQTT topics or change the telemetry
+payload schema. Registration, heartbeat, command, and response topics described as
+future design in the architecture document are not implemented by Sprint 12.

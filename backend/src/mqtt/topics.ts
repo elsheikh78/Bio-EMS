@@ -1,5 +1,5 @@
 export const MQTT_TOPICS = {
-  TELEMETRY: "bioems/device/+/telemetry",
+  TELEMETRY: "bioems/+/telemetry/+",
 
   STATUS: "bioems/device/+/status",
 

@@ -20,16 +20,24 @@ Accepting telemetry from unknown devices may compromise data integrity and regul
 
 ## Implementation Status
 
-**Partially Implemented.** `TelemetryService` rejects telemetry when no Device record
-matches the incoming `device_id`. The current telemetry path does not enforce the
-Device `activated` flag or require an active status before accepting telemetry.
+**Implemented for the Sprint 12 trust boundary.** `TelemetryService` resolves the
+firmware identity from the existing MQTT topic, requires a registered Device in
+`active` status with `activated = 1`, resolves its persisted Site, and requires an
+exact Site-code match. Each accepted channel must resolve to a Sensor owned by the
+Device with `enabled = 1`.
+
+Unknown or non-operational Devices and invalid Site trust fail the complete message
+before Alarm evaluation or InfluxDB persistence. Unknown channels and disabled
+Sensors fail only their affected readings. No Device, Site, or Sensor is created or
+mutated from telemetry.
 
 ## Decision
 
 The policy requires only registered and active devices to send telemetry to the system.
 
-Current enforcement rejects unregistered devices; active-device enforcement remains
-incomplete.
+Current enforcement rejects unregistered and non-operational Devices and applies Site
+and enabled-Sensor checks. Future security-event generation, device authentication,
+and certificate-based identity are not part of this implementation.
 
 If telemetry is received from an unknown device:
 
@@ -65,6 +73,7 @@ device identity is verified.
 
 ## References
 
-- `backend/src/modules/telemetry/services/telemetry.service.ts` — current unknown-device rejection.
+- `backend/src/modules/telemetry/services/telemetry.service.ts` — current Device,
+  Site, channel, and Sensor trust enforcement.
 - `backend/src/repositories/device.repository.ts` — Device lookup and activation fields.
 - `backend/database/sqlite/schema.ts` — Device `status` and `activated` columns.

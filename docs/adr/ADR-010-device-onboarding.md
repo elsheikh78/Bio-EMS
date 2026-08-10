@@ -18,14 +18,20 @@ BIO-EMS must provide a secure and user-friendly process for introducing new devi
 
 ## Implementation Status
 
-**Not implemented.** The current backend can create Device records with `status` and
-`activated` fields, but it has no Discovery flow, Pending Devices list, QR processing,
-Activation Code verification, approval endpoint, or Asset assignment layer.
+**Partially implemented.** Sprint 12 implements the REST-managed lifecycle subset:
+strict Device creation as `pending/0`, read and approved metadata update operations,
+`pending/0 -> active/1 -> disabled/0` transitions, Site and identity integrity, and
+operational telemetry authorization for `active/1` Devices.
+
+The broader workflow remains unimplemented: there is no Discovery broadcast or
+dedicated Pending Devices experience, QR processing, Activation Code verification,
+Asset approval/assignment, Authentication, provisioning, or pairing.
 
 ## Decision
 
-This ADR defines an intended four-phase device onboarding workflow. It does not
-describe a current implemented workflow.
+This ADR defines an intended four-phase workflow. Sprint 12 delivers only the REST
+lifecycle and telemetry trust-boundary subset described above; the phases below must
+not be read as fully implemented.
 
 ### 1. Discovery
 
@@ -80,8 +86,9 @@ Only Active devices may publish operational telemetry.
 
 ### Direct Device Creation Through the Current REST API
 
-This is the current implementation. A Device can be created through the Device API,
-but the API does not implement the four onboarding phases.
+This remains the current implementation boundary. The Device API now supports
+validated creation, read, approved metadata update, activation, and disablement, but
+it does not implement the complete four-phase onboarding experience.
 
 ### Fully Automated Device Enrollment
 

@@ -1,10 +1,37 @@
 import { Router } from "express";
-import { createDeviceController, getDevicesController } from "../controllers/device.controller";
+import {
+  activateDeviceController,
+  createDeviceController,
+  disableDeviceController,
+  getDeviceController,
+  getDevicesController,
+  updateDeviceController,
+} from "../controllers/device.controller";
+import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
+import {
+  createDeviceSchema,
+  deviceListQuerySchema,
+  deviceParamsSchema,
+  updateDeviceSchema,
+} from "../modules/device/dto/device.schema";
 
 const router = Router();
 
-router.post("/", createDeviceController);
+router.post("/", validateBody(createDeviceSchema), createDeviceController);
 
-router.get("/", getDevicesController);
+router.get("/", validateQuery(deviceListQuerySchema), getDevicesController);
+
+router.post("/:deviceId/activate", validateParams(deviceParamsSchema), activateDeviceController);
+
+router.post("/:deviceId/disable", validateParams(deviceParamsSchema), disableDeviceController);
+
+router.get("/:deviceId", validateParams(deviceParamsSchema), getDeviceController);
+
+router.patch(
+  "/:deviceId",
+  validateParams(deviceParamsSchema),
+  validateBody(updateDeviceSchema),
+  updateDeviceController
+);
 
 export default router;

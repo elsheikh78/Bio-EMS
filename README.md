@@ -1,6 +1,6 @@
 # BIO-EMS
 
-![Current Version](https://img.shields.io/badge/version-0.11.0-blue)
+![Current Version](https://img.shields.io/badge/version-0.12.0--rc-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 ![Express](https://img.shields.io/badge/Express-5.2-000000)
@@ -12,7 +12,7 @@ Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms,
 warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other
 regulated environments.
 
-**Current repository version:** `0.11.0`
+**Current repository version:** `0.12.0` release candidate
 **Backend:** TypeScript / Express
 **License:** Proprietary
 
@@ -56,12 +56,14 @@ alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
 | Domain Layer | ✅ Implemented |
 | SQLite Persistence | ✅ Implemented |
 | InfluxDB Integration | ✅ Implemented |
-| Device Registration | 🚧 In Progress |
+| Device Lifecycle Onboarding | ✅ Implemented |
 | Monitoring Point Layer | 📋 Proposed |
 
-Status reflects repository evidence. Device registration currently rejects unknown
-telemetry devices, while active-device enforcement and the full onboarding workflow
-remain incomplete. Monitoring Points have no backend table, repository, or API.
+Status reflects repository evidence. Sprint 12 implements validated Device REST
+management, lifecycle transitions, registration integrity, and Device/Site/enabled-
+Sensor telemetry authorization. The broader discovery, QR, activation-code, Asset,
+and Authentication workflow remains deferred. Monitoring Points have no backend
+table, repository, or API.
 
 ## Repository Highlights
 
@@ -168,7 +170,7 @@ The current API prefix is normally `/api/v1`.
 | --- | --- |
 | Health | `GET /health` |
 | Sites | Management endpoints |
-| Devices | Management endpoints |
+| Devices | Create, list, read, metadata update, activate, and disable |
 | Rooms | Management endpoints |
 | Sensors | Management endpoints |
 | Alarms | List, active, detail, and acknowledgement operations |
@@ -201,12 +203,14 @@ For detailed standards, start with the [Engineering Handbook](docs/engineering/R
 
 ## Project Roadmap
 
-Current completed release: **Sprint 11 — Engineering Foundation and Alarm
-Consolidation** (`0.11.0`). Sprint 12 has not started.
+Current release candidate: **Sprint 12 — Device Onboarding and Telemetry Trust
+Boundary** (`0.12.0`). Implementation and acceptance are complete with 113 passing
+tests across 10 files and successful GitHub Actions checks on Draft PR #2. The branch
+has not been merged, tagged, released, or deployed.
 
 Planned future work includes:
 
-- Device onboarding
+- Broader Device onboarding: discovery, QR, activation codes, Asset approval, and Authentication
 - Monitoring Point architecture
 - Asset model
 - Additional device types
