@@ -16,6 +16,10 @@ export interface User {
   updated_at: string | null;
 }
 
+export interface UserCredentialRecord extends User {
+  password_hash: string;
+}
+
 export interface CreateUserRecord {
   username: string;
   email?: string | null;

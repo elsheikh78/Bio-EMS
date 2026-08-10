@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { loadJwtConfig } from "./jwt.config";
 
 dotenv.config();
 
@@ -21,9 +22,7 @@ export const config = {
     bucket: process.env.INFLUX_BUCKET || "",
   },
 
-  jwt: {
-    secret: process.env.JWT_SECRET || "",
-  },
+  jwt: loadJwtConfig(process.env),
 
   logLevel: process.env.LOG_LEVEL || "info",
 };

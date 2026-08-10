@@ -1,6 +1,6 @@
 import type Database from "better-sqlite3";
 import { sqlite } from "../../database/sqlite/client";
-import { CreateUserRecord, normalizeUsername, User } from "../entities/User";
+import { CreateUserRecord, normalizeUsername, User, UserCredentialRecord } from "../entities/User";
 
 const BCRYPT_HASH_PATTERN = /^\$2[aby]\$(\d{2})\$[./A-Za-z0-9]{53}$/;
 const MINIMUM_BCRYPT_COST = 12;
@@ -66,6 +66,12 @@ export class UserRepository {
     return this.database
       .prepare(`SELECT ${PUBLIC_USER_COLUMNS} FROM users WHERE username = ? LIMIT 1`)
       .get(normalizeUsername(username)) as User | undefined;
+  }
+
+  findCredentialsByUsername(username: string): UserCredentialRecord | undefined {
+    return this.database
+      .prepare(`SELECT ${PUBLIC_USER_COLUMNS}, password_hash FROM users WHERE username = ? LIMIT 1`)
+      .get(normalizeUsername(username)) as UserCredentialRecord | undefined;
   }
 }
 

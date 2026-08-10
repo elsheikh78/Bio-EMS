@@ -175,4 +175,18 @@ describe("UserRepository", () => {
 
     expect(repository.findByUsername(" LOOKUP-USER ")).not.toHaveProperty("password_hash");
   });
+
+  it("limits credential lookup to the internal authentication record", () => {
+    repository.create({
+      username: "auth-user",
+      passwordHash: VALID_BCRYPT_HASH,
+      role: "VIEWER",
+    });
+
+    expect(repository.findCredentialsByUsername(" AUTH-USER ")).toMatchObject({
+      username: "auth-user",
+      password_hash: VALID_BCRYPT_HASH,
+    });
+    expect(repository.findByUsername("auth-user")).not.toHaveProperty("password_hash");
+  });
 });

@@ -27,6 +27,14 @@ describe("password service", () => {
     await expect(verifyPassword("WrongPassword1", passwordHash)).resolves.toBe(false);
   });
 
+  it("verifies legacy weak passwords without applying creation complexity rules", async () => {
+    const weakPassword = "x";
+    const passwordHash = await bcrypt.hash(weakPassword, BCRYPT_COST);
+
+    await expect(verifyPassword(weakPassword, passwordHash)).resolves.toBe(true);
+    await expect(verifyPassword(`${"A".repeat(71)}a1`, passwordHash)).resolves.toBe(false);
+  });
+
   it.each([
     "",
     "Short1A",

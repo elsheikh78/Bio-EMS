@@ -18,7 +18,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, passwordHash: string): Promise<boolean> {
-  if (!isPasswordPolicyCompliant(password) || !isStructurallyValidBcryptHash(passwordHash)) {
+  if (!isLoginPasswordInputValid(password) || !isStructurallyValidBcryptHash(passwordHash)) {
     return false;
   }
 
@@ -27,6 +27,10 @@ export async function verifyPassword(password: string, passwordHash: string): Pr
   } catch {
     return false;
   }
+}
+
+function isLoginPasswordInputValid(password: string): boolean {
+  return password.length > 0 && Buffer.byteLength(password, "utf8") <= MAXIMUM_PASSWORD_BYTES;
 }
 
 function assertPasswordPolicy(password: string): void {
