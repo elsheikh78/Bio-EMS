@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { loadJwtConfig } from "./jwt.config";
+import { loadCorsConfig } from "./cors.config";
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ export const config = {
   },
 
   jwt: loadJwtConfig(process.env),
+
+  cors: loadCorsConfig(process.env),
 
   logLevel: process.env.LOG_LEVEL || "info",
 };

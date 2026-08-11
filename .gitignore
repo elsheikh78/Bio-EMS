@@ -30,6 +30,7 @@ backend/.env
 
 # Node
 backend/node_modules/
+frontend/node_modules/
 
 # Coverage
 coverage/
@@ -48,6 +49,11 @@ coverage/
 # Build
 dist/
 backend/dist/
+frontend/dist/
+frontend/coverage/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 build/
 
 # Archives

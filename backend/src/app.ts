@@ -15,12 +15,15 @@ import dashboardRouter from "./routes/dashboard.route";
 import authRouter from "./routes/auth.route";
 import { authenticationMiddleware } from "./middleware/authentication.middleware";
 import userRouter from "./routes/user.route";
+import { createBrowserSecurityMiddleware } from "./middleware/browser-security.middleware";
 
 createTables();
 
 runMigrations();
 
 const app = express();
+
+app.use(createBrowserSecurityMiddleware(config.cors));
 
 app.use(express.json());
 
