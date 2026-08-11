@@ -1,3 +1,45 @@
+# [0.13.0] - 2026-08-11
+
+## Release
+
+Sprint 13 — Centralized Role-Based Authorization and Alarm Acknowledgment Audit completed.
+
+## Added
+
+- Centralized permission definitions and Role → Permissions authorization policy.
+- Reusable authorization middleware with explicit permission enforcement.
+- Route authorization across Site, Room, Sensor, Device, Alarm, and Dashboard APIs.
+- SQLite Migration 004 for `acknowledged_by_user_id` with a foreign key to `users(id)`.
+- Alarm acknowledgment audit persistence using the authenticated User ID.
+- Authorization, route-matrix, Alarm audit, repository, service, and migration test coverage.
+
+## Changed
+
+- Alarm acknowledgment is restricted to ADMIN and OPERATOR; VIEWER receives 403.
+- Alarm acknowledgment is atomic and succeeds only while the Alarm status is `TRIGGERED`.
+- Zero-change acknowledgment races return `409 / INVALID_ALARM_STATE`.
+- Alarm reads use an explicit public projection instead of `SELECT *`.
+- Project, backend package, and Health API version metadata align at `0.13.0`.
+
+## Compatibility
+
+- Existing Authentication and JWT identity flow is unchanged.
+- Existing 401, 404, and 409 API contracts are preserved.
+- Successful Alarm acknowledgment remains `{ "success": true }`.
+- `acknowledged_by_user_id` remains internal and is excluded from Alarm GET responses.
+- Deleting a User sets the audit reference to NULL without deleting the Alarm.
+- Migrations 001–003 are unchanged.
+- No dependency or MQTT contract changes were introduced.
+
+## Verified
+
+- 25 test files and 303 automated tests passed before release preparation.
+- Typecheck, build, lint, formatting check, and GitHub Actions passed.
+- Sprint 13 PR #4 was merged using a normal merge commit.
+- S13-06/User Management and Sprint 14 have not started.
+
+---
+
 # [0.12.0] - 2026-08-10
 
 ## Release Candidate
