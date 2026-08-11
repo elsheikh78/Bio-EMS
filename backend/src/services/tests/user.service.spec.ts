@@ -46,17 +46,27 @@ describe("UserService", () => {
     expect(repository.updateStatus).not.toHaveBeenCalled();
   });
 
-  it("maps transactional last-ADMIN protection to a stable conflict", () => {
-    const repository = repositoryMock();
-    repository.updateStatus.mockImplementation(() => {
-      throw new LastActiveAdminError();
-    });
-    const service = new UserService(repository as unknown as UserRepository);
+  it.each([
+    ["demotion", "updateProfileAndRole", () => ({ role: "VIEWER" as const })],
+    ["disablement", "updateStatus", () => ({ status: "disabled" as const })],
+  ] as const)(
+    "maps transactional last-ADMIN %s protection to a stable conflict",
+    (_, method, input) => {
+      const repository = repositoryMock();
+      repository[method].mockImplementation(() => {
+        throw new LastActiveAdminError();
+      });
+      const service = new UserService(repository as unknown as UserRepository);
 
-    expect(() => service.updateStatus(1, 2, { status: "disabled" })).toThrowError(
-      expect.objectContaining({ code: "LAST_ACTIVE_ADMIN_REQUIRED" })
-    );
-  });
+      const operation =
+        method === "updateStatus"
+          ? () => service.updateStatus(1, 2, input() as { status: "disabled" })
+          : () => service.updateUser(1, 2, input() as { role: "VIEWER" });
+      expect(operation).toThrowError(
+        expect.objectContaining({ code: "LAST_ACTIVE_ADMIN_REQUIRED" })
+      );
+    }
+  );
 
   it("returns USER_NOT_FOUND for missing targets", () => {
     const repository = repositoryMock();

@@ -41,7 +41,7 @@ describe("Admin User Management application boundary", () => {
   it("allows ADMIN to list sanitized users in deterministic order", async () => {
     const response = await request(app).get("/api/v1/users").set(auth(1)).expect(200);
     expect(response.body.map((item: { id: number }) => item.id)).toEqual([1, 2, 3]);
-    expect(JSON.stringify(response.body)).not.toMatch(/password_hash|\$2b\$/);
+    expect(JSON.stringify(response.body)).not.toMatch(/password_hash|password|\$2b\$/i);
   });
 
   it.each([
@@ -91,43 +91,72 @@ describe("Admin User Management application boundary", () => {
       })
       .expect(201);
     expect(response.body).toMatchObject({ username: "new.user", role: "VIEWER", status: "active" });
-    expect(response.body).not.toHaveProperty("password_hash");
+    expect(JSON.stringify(response.body)).not.toMatch(/password_hash|password|\$2b\$/i);
     const stored = database
       .prepare("SELECT password_hash FROM users WHERE username = 'new.user'")
       .get() as { password_hash: string };
     expect(stored.password_hash).toMatch(/^\$2[aby]\$12\$/);
   });
 
-  it("returns stable validation, duplicate, and not-found errors", async () => {
-    await request(app)
-      .post("/api/v1/users")
-      .set(auth(1))
-      .send({ username: "x", password: "weak", role: "OWNER" })
-      .expect(400);
-    await request(app)
+  it.each([
+    ["missing username", { password: "StrongPassword1", role: "VIEWER" }],
+    [
+      "unknown key",
+      { username: "new-user", password: "StrongPassword1", role: "VIEWER", unexpected: true },
+    ],
+    ["invalid role", { username: "new-user", password: "StrongPassword1", role: "OWNER" }],
+    ["invalid password", { username: "new-user", password: "weak", role: "VIEWER" }],
+  ])("rejects POST /users with %s", async (_case, body) => {
+    const response = await request(app).post("/api/v1/users").set(auth(1)).send(body).expect(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects a duplicate username with the stable conflict contract", async () => {
+    const response = await request(app)
       .post("/api/v1/users")
       .set(auth(1))
       .send({ username: "viewer", password: "StrongPassword1", role: "VIEWER" })
       .expect(409);
-    const missing = await request(app)
-      .patch("/api/v1/users/99")
-      .set(auth(1))
-      .send({ email: null })
-      .expect(404);
-    expect(missing.body.error.code).toBe("USER_NOT_FOUND");
+    expect(response.body.error.code).toBe("RESOURCE_ALREADY_EXISTS");
   });
 
   it("prevents self role changes and self disablement", async () => {
-    await request(app).patch("/api/v1/users/1").set(auth(1)).send({ role: "VIEWER" }).expect(409);
-    await request(app)
+    const roleResponse = await request(app)
+      .patch("/api/v1/users/1")
+      .set(auth(1))
+      .send({ role: "VIEWER" })
+      .expect(409);
+    expect(roleResponse.body.error.code).toBe("SELF_ROLE_CHANGE_FORBIDDEN");
+
+    const statusResponse = await request(app)
       .patch("/api/v1/users/1/status")
       .set(auth(1))
       .send({ status: "disabled" })
       .expect(409);
+    expect(statusResponse.body.error.code).toBe("SELF_DISABLE_FORBIDDEN");
     expect(database.prepare("SELECT role, status FROM users WHERE id = 1").get()).toEqual({
       role: "ADMIN",
       status: "active",
     });
+  });
+
+  it.each([
+    ["empty body", "/api/v1/users/3", {}],
+    ["unknown key", "/api/v1/users/3", { unexpected: true }],
+    ["invalid role", "/api/v1/users/3", { role: "OWNER" }],
+    ["whitespace user_id", "/api/v1/users/%20", { role: "VIEWER" }],
+  ])("rejects PATCH /users/{user_id} with %s", async (_case, path, body) => {
+    const response = await request(app).patch(path).set(auth(1)).send(body).expect(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("returns USER_NOT_FOUND when PATCH targets a missing user", async () => {
+    const response = await request(app)
+      .patch("/api/v1/users/99")
+      .set(auth(1))
+      .send({ email: null })
+      .expect(404);
+    expect(response.body.error.code).toBe("USER_NOT_FOUND");
   });
 
   it("allows ADMIN to update another user's metadata and role", async () => {
@@ -141,8 +170,7 @@ describe("Admin User Management application boundary", () => {
     expect(response.body).not.toHaveProperty("password_hash");
   });
 
-  it("protects the last active ADMIN but permits changing another ADMIN", async () => {
-    await request(app).patch("/api/v1/users/1").set(auth(1)).send({ role: "OPERATOR" }).expect(409);
+  it("permits changing another ADMIN when the authenticated ADMIN remains active", async () => {
     insert(4, "backup-admin", "ADMIN");
     await request(app)
       .patch("/api/v1/users/4/status")
@@ -151,17 +179,73 @@ describe("Admin User Management application boundary", () => {
       .expect(200);
   });
 
+  it.each([
+    ["invalid status", "/api/v1/users/3/status", { status: "pending" }],
+    ["unknown key", "/api/v1/users/3/status", { status: "active", unexpected: true }],
+    ["whitespace user_id", "/api/v1/users/%20/status", { status: "disabled" }],
+  ])("rejects PATCH /users/{user_id}/status with %s", async (_case, path, body) => {
+    const response = await request(app).patch(path).set(auth(1)).send(body).expect(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("returns USER_NOT_FOUND for missing status target and documents status no-op", async () => {
+    const missing = await request(app)
+      .patch("/api/v1/users/99/status")
+      .set(auth(1))
+      .send({ status: "disabled" })
+      .expect(404);
+    expect(missing.body.error.code).toBe("USER_NOT_FOUND");
+
+    const noOp = await request(app)
+      .patch("/api/v1/users/3/status")
+      .set(auth(1))
+      .send({ status: "active" })
+      .expect(200);
+    expect(noOp.body).toMatchObject({ id: 3, status: "active" });
+  });
+
   it("changes a password through bcrypt and preserves authentication invalidation", async () => {
+    const previousHash = (
+      database.prepare("SELECT password_hash FROM users WHERE id = 3").get() as {
+        password_hash: string;
+      }
+    ).password_hash;
     const response = await request(app)
       .put("/api/v1/users/3/password")
       .set(auth(1))
       .send({ password: "ReplacementPass1" })
       .expect(200);
-    expect(response.body).not.toHaveProperty("password_hash");
+    expect(JSON.stringify(response.body)).not.toMatch(/password_hash|password|ReplacementPass1/i);
+    const storedHash = (
+      database.prepare("SELECT password_hash FROM users WHERE id = 3").get() as {
+        password_hash: string;
+      }
+    ).password_hash;
+    expect(storedHash).not.toBe(previousHash);
+    expect(storedHash).not.toBe("ReplacementPass1");
     database.prepare("UPDATE users SET status = 'disabled' WHERE id = 1").run();
     await request(app).get("/api/v1/users").set(auth(1)).expect(401);
     database.prepare("DELETE FROM users WHERE id = 1").run();
     await request(app).get("/api/v1/users").set(auth(1)).expect(401);
+  });
+
+  it.each([
+    ["invalid password", "/api/v1/users/3/password", { password: "weak" }],
+    ["missing password", "/api/v1/users/3/password", {}],
+    ["unknown key", "/api/v1/users/3/password", { password: "ReplacementPass1", extra: true }],
+    ["whitespace user_id", "/api/v1/users/%20/password", { password: "ReplacementPass1" }],
+  ])("rejects PUT /users/{user_id}/password with %s", async (_case, path, body) => {
+    const response = await request(app).put(path).set(auth(1)).send(body).expect(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("returns USER_NOT_FOUND when password target is missing", async () => {
+    const response = await request(app)
+      .put("/api/v1/users/99/password")
+      .set(auth(1))
+      .send({ password: "ReplacementPass1" })
+      .expect(404);
+    expect(response.body.error.code).toBe("USER_NOT_FOUND");
   });
 
   function insert(id: number, username: string, role: string) {
