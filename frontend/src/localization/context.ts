@@ -1,10 +1,14 @@
 import { createContext } from "react";
-import type { englishResources, localizationDefaults } from "./resources";
+import type {
+  SupportedLanguage,
+  TextDirection,
+  TranslationResources,
+} from "./resources";
 
 export interface LocalizationValue {
-  language: typeof localizationDefaults.language;
-  direction: typeof localizationDefaults.direction;
-  resources: typeof englishResources;
+  language: SupportedLanguage;
+  direction: TextDirection;
+  resources: TranslationResources;
 }
 
 export const LocalizationContext = createContext<LocalizationValue | null>(

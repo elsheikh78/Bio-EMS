@@ -16,8 +16,7 @@ export function FoundationPage() {
               {resources.foundation.description}
             </Typography>
             <Typography variant="body2">
-              Operational screens, authentication, and the application shell are
-              intentionally deferred to later Sprint 14 stories.
+              {resources.foundation.deferredDescription}
             </Typography>
           </Stack>
         </Paper>
