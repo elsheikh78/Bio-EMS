@@ -69,8 +69,25 @@ reviewed directly.
 
 Corrective review started from Draft PR #9 at pre-correction head
 `5dee66bf096d69f3b77c2e35b0f6414634a08fea`. The PR is OPEN, Draft, and unmerged:
-<https://github.com/elsheikh78/Bio-EMS/pull/9>. Corrective implementation and CI
-evidence are recorded below after those immutable values exist.
+<https://github.com/elsheikh78/Bio-EMS/pull/9>.
+
+## S13-08 corrective evidence
+
+- Corrective implementation commit:
+  `13af94ca715b6d244ceb7b25ed60d2cfe623f8d0`.
+- Its `pull_request` CI run:
+  <https://github.com/elsheikh78/Bio-EMS/actions/runs/31510379207>.
+- Job: `Backend quality gates`; status/conclusion: `completed / success`.
+- The evidence commit is the commit containing this section. Its SHA becomes the
+  final reviewed Head only after the commit exists and therefore cannot be embedded
+  in itself.
+- The final CI run is triggered by pushing that evidence commit and likewise cannot
+  be embedded in the commit that triggers it. PR #9 metadata and the corrective
+  handoff report are the authoritative evidence for that final Head/run pair.
+
+This distinction avoids claiming that run 31510379207 validates a later evidence
+commit. Independent re-review must verify the final PR Head and its own successful CI
+run before any separate merge authorization.
 
 ## Protected-state declaration
 
