@@ -32,7 +32,7 @@ export function recoverAlarm(id: number): void {
   console.log(`Alarm recovered: ${id}`);
 }
 
-export function acknowledgeAlarm(id: number): void {
+export function acknowledgeAlarm(id: number, acknowledgingUserId: number): void {
   const alarm = repository.getById(id);
 
   if (!alarm) {
@@ -43,7 +43,11 @@ export function acknowledgeAlarm(id: number): void {
     throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
   }
 
-  repository.acknowledgeAlarm(id);
+  const acknowledged = repository.acknowledgeAlarm(id, acknowledgingUserId);
+
+  if (!acknowledged) {
+    throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
+  }
 }
 
 export function getAlarmById(id: number): Alarm {

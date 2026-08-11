@@ -5,6 +5,7 @@ import { MigrationRepository } from "./migration.repository";
 import { migration001 } from "./migrations/001_initial_schema";
 import { migration002 } from "./migrations/002_add_warning_thresholds";
 import { migration003 } from "./migrations/003_create_users";
+import { migration004 } from "./migrations/004_add_alarm_acknowledging_user";
 
 export interface Migration {
   version: number;
@@ -14,7 +15,7 @@ export interface Migration {
   up(database: Database.Database): void;
 }
 
-const migrations: Migration[] = [migration001, migration002, migration003];
+const migrations: Migration[] = [migration001, migration002, migration003, migration004];
 
 export function runMigrations(
   database: Database.Database = sqlite,

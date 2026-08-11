@@ -1,10 +1,12 @@
 import { Router } from "express";
+import { PERMISSION } from "../authorization/permissions";
 import { createSiteController, getSitesController } from "../controllers/site.controller";
+import { requirePermission } from "../middleware/authorization.middleware";
 
 const router = Router();
 
-router.post("/", createSiteController);
+router.post("/", requirePermission(PERMISSION.CONFIGURATION_WRITE), createSiteController);
 
-router.get("/", getSitesController);
+router.get("/", requirePermission(PERMISSION.CONFIGURATION_READ), getSitesController);
 
 export default router;

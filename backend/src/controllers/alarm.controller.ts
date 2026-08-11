@@ -25,7 +25,7 @@ export const getAlarmById = asyncHandler(async (req: Request, res: Response) => 
 export const acknowledgeAlarm = asyncHandler(async (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
-  alarmService.acknowledgeAlarm(id);
+  alarmService.acknowledgeAlarm(id, req.user!.id);
 
   res.json({
     success: true,

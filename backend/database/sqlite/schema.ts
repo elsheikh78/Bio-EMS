@@ -163,12 +163,18 @@ export function createTables(database: Database.Database = sqlite): void {
 
         acknowledged_time DATETIME,
 
+        acknowledged_by_user_id INTEGER,
+
         recovered_time DATETIME,
 
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
         FOREIGN KEY (sensor_id)
-            REFERENCES sensors(id)
+            REFERENCES sensors(id),
+
+        FOREIGN KEY (acknowledged_by_user_id)
+            REFERENCES users(id)
+            ON DELETE SET NULL
 
     );
     `);

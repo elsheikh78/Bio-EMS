@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { PERMISSION } from "../authorization/permissions";
 import {
   activateDeviceController,
   createDeviceController,
@@ -8,6 +9,7 @@ import {
   updateDeviceController,
 } from "../controllers/device.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
+import { requirePermission } from "../middleware/authorization.middleware";
 import {
   createDeviceSchema,
   deviceListQuerySchema,
@@ -17,18 +19,44 @@ import {
 
 const router = Router();
 
-router.post("/", validateBody(createDeviceSchema), createDeviceController);
+router.post(
+  "/",
+  requirePermission(PERMISSION.DEVICE_MANAGE),
+  validateBody(createDeviceSchema),
+  createDeviceController
+);
 
-router.get("/", validateQuery(deviceListQuerySchema), getDevicesController);
+router.get(
+  "/",
+  requirePermission(PERMISSION.DEVICE_READ),
+  validateQuery(deviceListQuerySchema),
+  getDevicesController
+);
 
-router.post("/:deviceId/activate", validateParams(deviceParamsSchema), activateDeviceController);
+router.post(
+  "/:deviceId/activate",
+  requirePermission(PERMISSION.DEVICE_MANAGE),
+  validateParams(deviceParamsSchema),
+  activateDeviceController
+);
 
-router.post("/:deviceId/disable", validateParams(deviceParamsSchema), disableDeviceController);
+router.post(
+  "/:deviceId/disable",
+  requirePermission(PERMISSION.DEVICE_MANAGE),
+  validateParams(deviceParamsSchema),
+  disableDeviceController
+);
 
-router.get("/:deviceId", validateParams(deviceParamsSchema), getDeviceController);
+router.get(
+  "/:deviceId",
+  requirePermission(PERMISSION.DEVICE_READ),
+  validateParams(deviceParamsSchema),
+  getDeviceController
+);
 
 router.patch(
   "/:deviceId",
+  requirePermission(PERMISSION.DEVICE_MANAGE),
   validateParams(deviceParamsSchema),
   validateBody(updateDeviceSchema),
   updateDeviceController
