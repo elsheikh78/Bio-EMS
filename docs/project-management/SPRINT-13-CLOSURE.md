@@ -1,7 +1,9 @@
 # Sprint 13 Closure Evidence
 
-**Status:** Pending independent review  
-**Sprint 13:** Not closed by this document  
+**Status:** Pending independent review
+
+**Sprint 13:** Not closed by this document
+
 **Sprint 14:** Not started
 
 ## Purpose
