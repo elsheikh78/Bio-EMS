@@ -28,6 +28,11 @@ export interface CreateUserRecord {
   status?: UserStatus;
 }
 
+export interface UpdateUserRecord {
+  email?: string | null;
+  role?: UserRole;
+}
+
 export function normalizeUsername(username: string): string {
   return username.trim().toLowerCase();
 }

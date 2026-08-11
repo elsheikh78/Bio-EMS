@@ -44,6 +44,13 @@ vi.mock("../../controllers/dashboard.controller", () => ({
     getAlarmStatistics = controller;
   },
 }));
+vi.mock("../../controllers/user.controller", () => ({
+  createUser: controller,
+  listUsers: controller,
+  updateUser: controller,
+  updateUserPassword: controller,
+  updateUserStatus: controller,
+}));
 
 import alarmRouter from "../alarm.route";
 import dashboardRouter from "../dashboard.route";
@@ -51,8 +58,9 @@ import deviceRouter from "../device.route";
 import roomRouter from "../room.route";
 import sensorRouter from "../sensor.route";
 import siteRouter from "../site.route";
+import userRouter from "../user.route";
 
-type Method = "get" | "patch" | "post";
+type Method = "get" | "patch" | "post" | "put";
 
 interface RouteCase {
   area: string;
@@ -100,6 +108,15 @@ const ROUTES: readonly RouteCase[] = [
   dashboardRoute("/dashboard/latest-telemetry", "/latest-telemetry"),
   dashboardRoute("/dashboard/rooms/status", "/rooms/status"),
   dashboardRoute("/dashboard/alarm-statistics", "/alarm-statistics"),
+  userRoute("get", "/users", "/"),
+  userRoute("post", "/users", "/", {
+    username: "new-user",
+    password: "Password1234",
+    role: "VIEWER",
+  }),
+  userRoute("patch", "/users/2", "/:user_id", { role: "VIEWER" }),
+  userRoute("patch", "/users/2/status", "/:user_id/status", { status: "disabled" }),
+  userRoute("put", "/users/2/password", "/:user_id/password", { password: "Password1234" }),
 ];
 
 describe("actual route authorization matrix", () => {
@@ -116,6 +133,7 @@ describe("actual route authorization matrix", () => {
       ...registeredRoutes("Devices", deviceRouter),
       ...registeredRoutes("Alarms", alarmRouter),
       ...registeredRoutes("Dashboard", dashboardRouter),
+      ...registeredRoutes("Users", userRouter),
     ];
 
     expect(actual.sort()).toEqual(expected.sort());
@@ -228,6 +246,23 @@ function dashboardRoute(path: string, routerPath: string): RouteCase {
     permission: PERMISSION.DASHBOARD_READ,
     router: dashboardRouter,
     routerPath,
+  };
+}
+
+function userRoute(
+  method: Method,
+  path: string,
+  routerPath: string,
+  body?: Record<string, unknown>
+): RouteCase {
+  return {
+    area: "Users",
+    method,
+    path,
+    permission: PERMISSION.USER_MANAGE,
+    router: userRouter,
+    routerPath,
+    body,
   };
 }
 

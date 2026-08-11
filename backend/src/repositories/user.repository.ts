@@ -1,6 +1,13 @@
 import type Database from "better-sqlite3";
 import { sqlite } from "../../database/sqlite/client";
-import { CreateUserRecord, normalizeUsername, User, UserCredentialRecord } from "../entities/User";
+import {
+  CreateUserRecord,
+  normalizeUsername,
+  UpdateUserRecord,
+  User,
+  UserCredentialRecord,
+  UserStatus,
+} from "../entities/User";
 
 const BCRYPT_HASH_PATTERN = /^\$2[aby]\$(\d{2})\$[./A-Za-z0-9]{53}$/;
 const MINIMUM_BCRYPT_COST = 12;
@@ -78,6 +85,89 @@ export class UserRepository {
     return this.database
       .prepare(`SELECT ${PUBLIC_USER_COLUMNS}, password_hash FROM users WHERE username = ? LIMIT 1`)
       .get(normalizeUsername(username)) as UserCredentialRecord | undefined;
+  }
+
+  updateProfileAndRole(id: number, input: UpdateUserRecord): User | undefined {
+    return this.database.transaction(() => {
+      const current = this.findById(id);
+      if (!current) return undefined;
+
+      if (
+        current.role === "ADMIN" &&
+        current.status === "active" &&
+        input.role !== undefined &&
+        input.role !== "ADMIN"
+      ) {
+        this.assertAnotherActiveAdmin(id);
+      }
+
+      this.database
+        .prepare(
+          `UPDATE users
+           SET email = ?, role = ?, updated_at = CURRENT_TIMESTAMP
+           WHERE id = ?`
+        )
+        .run(
+          input.email === undefined ? current.email : input.email,
+          input.role ?? current.role,
+          id
+        );
+
+      return this.findById(id);
+    })();
+  }
+
+  updateStatus(id: number, status: UserStatus): User | undefined {
+    return this.database.transaction(() => {
+      const current = this.findById(id);
+      if (!current) return undefined;
+
+      if (current.role === "ADMIN" && current.status === "active" && status === "disabled") {
+        this.assertAnotherActiveAdmin(id);
+      }
+
+      this.database
+        .prepare(
+          `UPDATE users
+           SET status = ?, updated_at = CURRENT_TIMESTAMP
+           WHERE id = ?`
+        )
+        .run(status, id);
+
+      return this.findById(id);
+    })();
+  }
+
+  updatePasswordHash(id: number, passwordHash: string): User | undefined {
+    assertValidBcryptHash(passwordHash);
+    const result = this.database
+      .prepare(
+        `UPDATE users
+         SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`
+      )
+      .run(passwordHash, id);
+
+    return result.changes === 0 ? undefined : this.findById(id);
+  }
+
+  private assertAnotherActiveAdmin(excludedId: number): void {
+    const row = this.database
+      .prepare(
+        `SELECT COUNT(*) AS count
+         FROM users
+         WHERE role = 'ADMIN' AND status = 'active' AND id <> ?`
+      )
+      .get(excludedId) as { count: number };
+
+    if (row.count === 0) throw new LastActiveAdminError();
+  }
+}
+
+export class LastActiveAdminError extends Error {
+  constructor() {
+    super("Last active administrator must be preserved");
+    this.name = "LastActiveAdminError";
   }
 }
 
