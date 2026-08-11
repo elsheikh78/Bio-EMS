@@ -4,7 +4,7 @@ export async function routeMessage(topic: string, payload: Buffer): Promise<void
   const parts = topic.split("/");
 
   if (parts.length !== 4) {
-    console.warn(`Invalid topic: ${topic}`);
+    console.warn("Invalid MQTT topic");
     return;
   }
 
@@ -16,6 +16,6 @@ export async function routeMessage(topic: string, payload: Buffer): Promise<void
       break;
 
     default:
-      console.warn(`Unhandled message type: ${messageType}`);
+      console.warn("Unhandled MQTT message type");
   }
 }
