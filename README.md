@@ -198,6 +198,17 @@ for the implemented authentication and authorization boundary.
 The handbook and ADR collection are repository-oriented: code and schema evidence take
 precedence over assumptions or roadmap language.
 
+### Frontend Development
+
+Sprint 14 begins with the isolated [`frontend/`](frontend/) architecture and quality
+foundation. It currently renders a developer placeholder only; login, the application
+shell, dashboard widgets, monitored-area views, and the Alarm Center are not implemented
+by S14-01.
+
+See [`frontend/README.md`](frontend/README.md) for environment, startup, security, and
+quality commands. The architecture decision is recorded in
+[`ADR-019`](docs/adr/ADR-019-frontend-foundation.md).
+
 ## Engineering Standards
 
 BIO-EMS follows:
