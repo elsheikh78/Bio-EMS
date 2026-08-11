@@ -1,6 +1,19 @@
 import type Database from "better-sqlite3";
 import { sqlite } from "../../database/sqlite/client";
 
+const ALARM_COLUMNS = `
+  id,
+  sensor_id,
+  type,
+  severity,
+  status,
+  trigger_value,
+  trigger_time,
+  acknowledged_time,
+  recovered_time,
+  created_at
+`;
+
 export interface Alarm {
   id?: number;
 
@@ -56,7 +69,7 @@ export class AlarmRepository {
   findActiveAlarm(sensorId: number, type: string): Alarm | undefined {
     const stmt = this.database.prepare(`
 
-            SELECT *
+            SELECT ${ALARM_COLUMNS}
 
             FROM alarms
 
@@ -93,7 +106,7 @@ export class AlarmRepository {
     stmt.run(id);
   }
 
-  acknowledgeAlarm(id: number): void {
+  acknowledgeAlarm(id: number, acknowledgingUserId: number): boolean {
     const stmt = this.database.prepare(`
 
             UPDATE alarms
@@ -102,7 +115,9 @@ export class AlarmRepository {
 
                 status = 'ACKNOWLEDGED',
 
-                acknowledged_time = CURRENT_TIMESTAMP
+                acknowledged_time = CURRENT_TIMESTAMP,
+
+                acknowledged_by_user_id = ?
 
             WHERE id = ?
 
@@ -110,13 +125,13 @@ export class AlarmRepository {
 
         `);
 
-    stmt.run(id);
+    return stmt.run(acknowledgingUserId, id).changes === 1;
   }
 
   getById(id: number): Alarm | undefined {
     const stmt = this.database.prepare(`
 
-            SELECT *
+            SELECT ${ALARM_COLUMNS}
 
             FROM alarms
 
@@ -132,7 +147,7 @@ export class AlarmRepository {
   getActive(): Alarm[] {
     const stmt = this.database.prepare(`
 
-            SELECT *
+            SELECT ${ALARM_COLUMNS}
 
             FROM alarms
 
@@ -148,7 +163,7 @@ export class AlarmRepository {
   getAll(): Alarm[] {
     const stmt = this.database.prepare(`
 
-            SELECT *
+            SELECT ${ALARM_COLUMNS}
 
             FROM alarms
 

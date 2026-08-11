@@ -44,7 +44,7 @@ describe("Alarm REST API", () => {
   it("preserves the acknowledgement response contract", async () => {
     const response = await request(app).post("/api/v1/alarms/4/acknowledge").expect(200);
 
-    expect(alarmService.acknowledgeAlarm).toHaveBeenCalledWith(4);
+    expect(alarmService.acknowledgeAlarm).toHaveBeenCalledWith(4, 1);
     expect(response.body).toEqual({ success: true });
   });
 });
