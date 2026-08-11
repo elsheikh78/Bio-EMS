@@ -15,7 +15,15 @@ export function AppHeader({
   title,
 }: AppHeaderProps) {
   return (
-    <AppBar color="inherit" elevation={0} position="fixed">
+    <AppBar
+      color="inherit"
+      elevation={0}
+      position="fixed"
+      data-testid="app-header"
+      sx={(theme) => ({
+        zIndex: theme.zIndex.drawer + 1,
+      })}
+    >
       <Toolbar sx={{ borderBottom: 1, borderColor: "divider", gap: 2 }}>
         <Button
           aria-label={menuLabel}

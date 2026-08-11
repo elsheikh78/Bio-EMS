@@ -43,17 +43,24 @@ describe("responsive application shell", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders desktop navigation and marks the active route", () => {
+  it("keeps the desktop title above the permanent drawer layer", () => {
     useViewport(1200);
     renderShell("/dashboard");
 
+    const header = screen.getByTestId("app-header");
     const navigation = screen.getByRole("navigation", {
       name: "Primary navigation",
     });
+    const drawer = navigation.closest(".MuiDrawer-paper");
+
     expect(
       within(navigation).getByRole("link", { name: "Dashboard" }),
     ).toHaveAttribute("aria-current", "page");
-    expect(screen.getAllByRole("main")).toHaveLength(1);
+    expect(screen.getByText("BIO-EMS")).toBeVisible();
+    expect(drawer).not.toBeNull();
+    expect(Number(getComputedStyle(header).zIndex)).toBeGreaterThan(
+      Number(getComputedStyle(drawer as HTMLElement).zIndex),
+    );
   });
 
   it("opens and dismisses mobile navigation with Escape and restores focus", async () => {
@@ -72,8 +79,14 @@ describe("responsive application shell", () => {
     await user.keyboard("{Escape}");
     await waitFor(() => expect(menuButton).toHaveFocus());
     const shellStyle = getComputedStyle(screen.getByTestId("app-shell"));
+    const main = screen.getByRole("main", { hidden: true });
+    const mainStyle = getComputedStyle(main);
     expect(window.innerWidth).toBe(320);
-    expect(shellStyle.overflowX).toBe("hidden");
+    expect(Number.parseInt(shellStyle.maxWidth, 10)).toBeGreaterThanOrEqual(
+      window.innerWidth,
+    );
+    expect(mainStyle.minWidth).toBe("0px");
+    expect(screen.getByText("Operational workspace")).toBeVisible();
   });
 
   it("closes the mobile drawer after navigation and restores focus", async () => {

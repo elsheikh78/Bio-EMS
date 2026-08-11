@@ -77,7 +77,7 @@ describe("frontend foundation routing", () => {
       screen.getByRole("heading", { name: /page not found/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /return to foundation/i }),
+      screen.getByRole("link", { name: /return to workspace/i }),
     ).toHaveAttribute("href", "/");
     expect(screen.getByTestId("provider-probe")).toHaveTextContent(
       "query:ltr:en:ltr:/missing",

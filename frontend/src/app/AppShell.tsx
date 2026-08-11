@@ -64,7 +64,9 @@ export function AppShell() {
       {desktop ? (
         <Drawer
           open
-          slotProps={{ paper: { component: "aside" } }}
+          slotProps={{
+            paper: { component: "aside" },
+          }}
           sx={{
             flexShrink: 0,
             width: navigationWidth,

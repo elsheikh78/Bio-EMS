@@ -43,7 +43,7 @@ export const englishResources = {
     deferredDescription:
       "Operational screens, authentication, and the application shell are intentionally deferred to later Sprint 14 stories.",
   },
-  notFound: { title: "Page not found", action: "Return to foundation" },
+  notFound: { title: "Page not found", action: "Return to workspace" },
   shell: {
     productName: "BIO-EMS",
     openNavigation: "Open primary navigation",
