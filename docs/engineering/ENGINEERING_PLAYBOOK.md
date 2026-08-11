@@ -22,16 +22,16 @@ The playbook records how the implemented system MUST be maintained and extended.
 It is an engineering manual, not a product roadmap or a user tutorial.
 
 > **Implementation boundary:** A capability is described as implemented only when it
-> exists in the repository. Planned frontend, notification, reporting, authentication,
-> and authorization capabilities are not documented here as current features.
+> exists in the repository. Planned frontend, notification, reporting, and other
+> future capabilities are not documented here as current features.
 
 ## 2. Scope
 
 This document applies to the TypeScript backend in `backend/`, its SQLite and
 InfluxDB persistence code, MQTT ingestion code, tests, and supporting documentation.
 
-The current backend provides site, device, room, sensor, alarm, telemetry, and
-dashboard APIs and processing.
+The current backend provides authenticated and role-authorized site, device, room,
+sensor, alarm, dashboard, and ADMIN User Management APIs plus telemetry processing.
 
 - Engineers MUST apply these rules to new backend changes.
 - Changes SHOULD be scoped to one coherent concern.
@@ -263,20 +263,66 @@ existing capability.
 
 Runtime configuration is loaded through `dotenv` and exposed by `src/config/config.ts`.
 
-| Area | Current environment variables |
-| --- | --- |
-| Server | `NODE_ENV`, `PORT`, `API_PREFIX`, `LOG_LEVEL` |
-| MQTT | `MQTT_HOST`, `MQTT_PORT` |
-| InfluxDB | `INFLUX_URL`, `INFLUX_TOKEN`, `INFLUX_ORG`, `INFLUX_BUCKET` |
-| JWT configuration | `JWT_SECRET` |
+| Area              | Current environment variables                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------------------------- |
+| Server            | `NODE_ENV`, `PORT`, `API_PREFIX`, `LOG_LEVEL`                                                        |
+| MQTT              | `MQTT_HOST`, `MQTT_PORT`                                                                             |
+| InfluxDB          | `INFLUX_URL`, `INFLUX_TOKEN`, `INFLUX_ORG`, `INFLUX_BUCKET`                                          |
+| JWT configuration | `BIOEMS_JWT_SECRET`, `BIOEMS_JWT_EXPIRE_MINUTES`, `BIOEMS_JWT_ISSUER`, `BIOEMS_JWT_AUDIENCE`         |
+| ADMIN bootstrap   | `BIOEMS_BOOTSTRAP_ADMIN_USERNAME`, `BIOEMS_BOOTSTRAP_ADMIN_PASSWORD`, `BIOEMS_BOOTSTRAP_ADMIN_EMAIL` |
 
 - Secrets MUST NOT be committed to source control.
 - Production deployments MUST supply required InfluxDB settings explicitly.
 - Local defaults MAY be used only when they are safe and intentional.
 - Environment variables MUST NOT be logged.
 
-> **Current-state note:** JWT configuration exists, but API authentication and
-> authorization enforcement are not implemented by the current backend.
+`BIOEMS_JWT_SECRET` is required and must contain at least 32 UTF-8 bytes. Token expiry
+defaults to 30 minutes, issuer to `bio-ems`, and audience to `bio-ems-api`; their
+environment variables are optional overrides. Authentication validates the Bearer
+token and reloads the active User from SQLite for every protected request.
+
+Authorization is a separate centralized RBAC step. It evaluates the persisted User's
+current role against the permission required by the route. ADMIN bootstrap is an
+installation operation and is not a public registration API.
+
+### Secure ADMIN bootstrap
+
+Before the first authenticated use, configure SQLite plus the required bootstrap
+username and password. Email is optional. Run from `backend/`:
+
+```bash
+npm run bootstrap:admin
+```
+
+The password must satisfy the implemented password policy: 12 or more characters,
+at most 72 UTF-8 bytes, with uppercase, lowercase, and numeric characters. The
+command hashes it with bcrypt before persistence, creates one active `ADMIN`, and
+returns a non-zero exit status with the generic `Administrator bootstrap failed`
+message for invalid input, an existing User, or another failure. It never overwrites
+an existing User. Do not echo, log, commit, or include the password in command-line
+arguments.
+
+### API access and role matrix
+
+The configured API prefix is normally `/api/v1`. Missing, malformed, invalid, or
+inactive-User credentials return `401`; an authenticated role without the required
+permission returns `403`.
+
+| Route or group                                          | Authentication | ADMIN   | OPERATOR  | VIEWER    |
+| ------------------------------------------------------- | -------------- | ------- | --------- | --------- |
+| `GET /health`                                           | Public         | Allowed | Allowed   | Allowed   |
+| `POST /auth/login`                                      | Public         | Allowed | Allowed   | Allowed   |
+| `GET /sites`, `/rooms`, `/sensors`                      | Required       | Allowed | Allowed   | Allowed   |
+| Mutating `/sites`, `/rooms`, `/sensors`                 | Required       | Allowed | Forbidden | Forbidden |
+| Reading `/devices`                                      | Required       | Allowed | Allowed   | Allowed   |
+| Creating, updating, activating, or disabling `/devices` | Required       | Allowed | Allowed   | Forbidden |
+| Reading `/alarms`                                       | Required       | Allowed | Allowed   | Allowed   |
+| Acknowledging `/alarms/:id`                             | Required       | Allowed | Allowed   | Forbidden |
+| Reading `/dashboard`                                    | Required       | Allowed | Allowed   | Allowed   |
+| All `/users` operations                                 | Required       | Allowed | Forbidden | Forbidden |
+
+The paths above are relative to `/api/v1`. This matrix documents authorization only;
+it does not expand tenant or site ownership boundaries.
 
 ## 16. Testing Policy
 

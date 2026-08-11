@@ -183,7 +183,9 @@ The current API prefix is normally `/api/v1`.
 | Alarms    | List, active, detail, and acknowledgement operations         |
 | Dashboard | Summary, latest telemetry, room status, and alarm statistics |
 
-See [`docs/api/`](docs/api/) for API reference material.
+See the
+[API access and role matrix](docs/engineering/ENGINEERING_PLAYBOOK.md#api-access-and-role-matrix)
+for the implemented authentication and authorization boundary.
 
 ## Documentation
 
