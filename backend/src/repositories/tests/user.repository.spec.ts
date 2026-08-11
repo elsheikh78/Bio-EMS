@@ -201,4 +201,60 @@ describe("UserRepository", () => {
     });
     expect(repository.findByUsername("auth-user")).not.toHaveProperty("password_hash");
   });
+
+  it("updates email and role without exposing credentials", () => {
+    const id = createUser("editable-admin", "ADMIN");
+    createUser("backup-admin", "ADMIN");
+
+    expect(
+      repository.updateProfileAndRole(id, { email: "new@example.com", role: "OPERATOR" })
+    ).toMatchObject({ id, email: "new@example.com", role: "OPERATOR" });
+    expect(repository.findById(id)).not.toHaveProperty("password_hash");
+  });
+
+  it("rolls back demotion of the last active ADMIN", () => {
+    const id = createUser("only-admin", "ADMIN");
+
+    expect(() => repository.updateProfileAndRole(id, { role: "VIEWER" })).toThrowError(
+      "Last active administrator"
+    );
+    expect(repository.findById(id)).toMatchObject({ role: "ADMIN", status: "active" });
+  });
+
+  it("rolls back disabling the last active ADMIN", () => {
+    const id = createUser("only-admin", "ADMIN");
+
+    expect(() => repository.updateStatus(id, "disabled")).toThrowError("Last active administrator");
+    expect(repository.findById(id)).toMatchObject({ role: "ADMIN", status: "active" });
+  });
+
+  it("allows demotion and disablement when another active ADMIN remains", () => {
+    const demoted = createUser("demoted-admin", "ADMIN");
+    const disabled = createUser("disabled-admin", "ADMIN");
+    createUser("remaining-admin", "ADMIN");
+
+    expect(repository.updateProfileAndRole(demoted, { role: "OPERATOR" })?.role).toBe("OPERATOR");
+    expect(repository.updateStatus(disabled, "disabled")?.status).toBe("disabled");
+  });
+
+  it("updates a password hash and preserves sanitized output", () => {
+    const id = createUser("password-user", "VIEWER");
+
+    expect(repository.updatePasswordHash(id, SECOND_VALID_BCRYPT_HASH)).not.toHaveProperty(
+      "password_hash"
+    );
+    expect(repository.findCredentialsByUsername("password-user")?.password_hash).toBe(
+      SECOND_VALID_BCRYPT_HASH
+    );
+  });
+
+  it("returns undefined for missing update targets", () => {
+    expect(repository.updateProfileAndRole(999, { role: "VIEWER" })).toBeUndefined();
+    expect(repository.updateStatus(999, "disabled")).toBeUndefined();
+    expect(repository.updatePasswordHash(999, SECOND_VALID_BCRYPT_HASH)).toBeUndefined();
+  });
+
+  function createUser(username: string, role: "ADMIN" | "OPERATOR" | "VIEWER"): number {
+    return repository.create({ username, passwordHash: VALID_BCRYPT_HASH, role });
+  }
 });

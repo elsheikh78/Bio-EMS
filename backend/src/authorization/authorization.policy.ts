@@ -10,6 +10,7 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "ALARM_READ",
     "ALARM_ACKNOWLEDGE",
     "DASHBOARD_READ",
+    "USER_MANAGE",
   ]),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",

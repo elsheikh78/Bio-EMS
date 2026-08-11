@@ -14,6 +14,7 @@ import alarmRouter from "./routes/alarm.route";
 import dashboardRouter from "./routes/dashboard.route";
 import authRouter from "./routes/auth.route";
 import { authenticationMiddleware } from "./middleware/authentication.middleware";
+import userRouter from "./routes/user.route";
 
 createTables();
 
@@ -36,6 +37,7 @@ app.use(`${config.apiPrefix}/rooms`, roomRouter);
 app.use(`${config.apiPrefix}/sensors`, sensorRouter);
 app.use(`${config.apiPrefix}/alarms`, alarmRouter);
 app.use(`${config.apiPrefix}/dashboard`, dashboardRouter);
+app.use(`${config.apiPrefix}/users`, userRouter);
 
 app.use(errorMiddleware);
 
