@@ -8,6 +8,8 @@ import {
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
+import { getAppHeaderLayering } from "../components/appHeaderStyles";
+import { createAppTheme } from "../theme/theme";
 import { AppProviders } from "./AppProviders";
 
 function useViewport(width: number) {
@@ -52,18 +54,24 @@ describe("responsive application shell", () => {
       name: "Primary navigation",
     });
     const drawer = navigation.closest(".MuiDrawer-paper");
+    const theme = createAppTheme("ltr");
+    const headerLayering = getAppHeaderLayering(theme);
+    const drawerZIndex = Number(getComputedStyle(drawer as HTMLElement).zIndex);
 
     expect(
       within(navigation).getByRole("link", { name: "Dashboard" }),
     ).toHaveAttribute("aria-current", "page");
     expect(screen.getByText("BIO-EMS")).toBeVisible();
     expect(drawer).not.toBeNull();
-    expect(Number(getComputedStyle(header).zIndex)).toBeGreaterThan(
-      Number(getComputedStyle(drawer as HTMLElement).zIndex),
-    );
+    expect(drawer?.querySelector(".MuiToolbar-root")).not.toBeNull();
+    expect(headerLayering.mobile).toBe(theme.zIndex.appBar);
+    expect(drawerZIndex).toBe(theme.zIndex.drawer);
+    expect(headerLayering.desktop).toBeGreaterThan(drawerZIndex);
+    expect(getAppHeaderLayering(createAppTheme("rtl"))).toEqual(headerLayering);
+    expect(header).toHaveClass("MuiAppBar-root");
   });
 
-  it("opens and dismisses mobile navigation with Escape and restores focus", async () => {
+  it("keeps the temporary mobile drawer above the header and dismisses it with Escape", async () => {
     useViewport(320);
     const user = userEvent.setup();
     renderShell();
@@ -72,9 +80,17 @@ describe("responsive application shell", () => {
       name: "Open primary navigation",
     });
     await user.click(menuButton);
+    const header = screen.getByTestId("app-header");
+    const navigation = screen.getByRole("navigation", {
+      name: "Primary navigation",
+    });
+    const drawer = navigation.closest(".MuiDrawer-paper");
+
+    expect(navigation).toBeVisible();
+    expect(drawer).not.toBeNull();
     expect(
-      screen.getByRole("navigation", { name: "Primary navigation" }),
-    ).toBeVisible();
+      Number(getComputedStyle(drawer as HTMLElement).zIndex),
+    ).toBeGreaterThan(Number(getComputedStyle(header).zIndex));
 
     await user.keyboard("{Escape}");
     await waitFor(() => expect(menuButton).toHaveFocus());
@@ -87,6 +103,28 @@ describe("responsive application shell", () => {
     );
     expect(mainStyle.minWidth).toBe("0px");
     expect(screen.getByText("Operational workspace")).toBeVisible();
+  });
+
+  it("dismisses mobile navigation through the backdrop and restores focus", async () => {
+    useViewport(320);
+    const user = userEvent.setup();
+    renderShell();
+
+    const menuButton = screen.getByRole("button", {
+      name: "Open primary navigation",
+    });
+    await user.click(menuButton);
+    const navigation = screen.getByRole("navigation", {
+      name: "Primary navigation",
+    });
+    const backdrop = document.querySelector(".MuiBackdrop-root");
+
+    expect(navigation).toBeVisible();
+    expect(backdrop).not.toBeNull();
+    await user.click(backdrop as HTMLElement);
+
+    await waitFor(() => expect(navigation).not.toBeVisible());
+    expect(menuButton).toHaveFocus();
   });
 
   it("closes the mobile drawer after navigation and restores focus", async () => {

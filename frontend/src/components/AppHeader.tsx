@@ -1,5 +1,6 @@
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import type { RefObject } from "react";
+import { getAppHeaderStyles } from "./appHeaderStyles";
 
 interface AppHeaderProps {
   menuButtonRef: RefObject<HTMLButtonElement | null>;
@@ -20,9 +21,7 @@ export function AppHeader({
       elevation={0}
       position="fixed"
       data-testid="app-header"
-      sx={(theme) => ({
-        zIndex: theme.zIndex.drawer + 1,
-      })}
+      sx={getAppHeaderStyles}
     >
       <Toolbar sx={{ borderBottom: 1, borderColor: "divider", gap: 2 }}>
         <Button
