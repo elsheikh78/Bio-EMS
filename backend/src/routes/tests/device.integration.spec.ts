@@ -19,6 +19,10 @@ const database = sqlite as Database.Database;
 
 const app = express();
 app.use(express.json());
+app.use((req, _res, next) => {
+  req.user = { id: 1, username: "admin", role: "ADMIN" };
+  next();
+});
 app.use("/api/v1/devices", deviceRouter);
 app.use(errorMiddleware);
 
