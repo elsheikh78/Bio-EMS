@@ -1,39 +1,41 @@
 # Project Status
 
-## Current Version
+## Current version
 
-0.12.0 release candidate
+Published release: [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
 
-## Completed
+The release tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
+Current `main` is newer and includes post-release S13-06 and S13-07 merges.
 
-- [x] Project Architecture
-- [x] MQTT Integration
-- [x] InfluxDB Integration
-- [x] SQLite Integration and Migration System
-- [x] Sites Module
-- [x] Device REST validation, read, and metadata update
-- [x] Device lifecycle transitions
-- [x] Device registration integrity
-- [x] Telemetry trust-boundary enforcement
-- [x] Alarm Engine and Dashboard APIs
+## Implemented
+
+- [x] Project architecture and persistence foundations
+- [x] MQTT and InfluxDB integration
+- [x] Site, Device, Sensor, Alarm, and Dashboard backend foundations
+- [x] Device lifecycle and telemetry trust-boundary enforcement
+- [x] JWT Authentication and active-User validation
+- [x] Centralized RBAC route enforcement
+- [x] Authenticated Alarm acknowledgment audit persistence
+- [x] ADMIN User Management
+- [x] Last-active-ADMIN transactional and concurrency protection
+- [x] Security hardening and regression coverage
 - [x] ESLint, Prettier, and GitHub Actions quality gates
 
-## Sprint 12
+## Sprint 13
 
-Implementation and acceptance are complete on `sprint-12-device-onboarding`. The
-release candidate provides the Device `pending/0 -> active/1 -> disabled/0` lifecycle,
-Site and identity constraints, and Device/Site/enabled-Sensor telemetry authorization.
-The suite reports 113 passing tests across 10 files, and Draft PR #2 has a successful
-`CI / Backend quality gates` check.
+S13-01 through S13-07 are implemented and merged. The current `main` baseline is
+`857834f194afb4bb750c2247ebea5e56fab061f2`, verified by CI run 31504321547 with
+30 test files and 359 passing tests and no failures, skips, or todos.
 
-The branch has not been merged, tagged, released, or deployed.
+S13-08 is the documentation-correction and closure-evidence activity. Its evidence
+requires independent review; this document does not itself close Sprint 13.
+Sprint 14 has not started.
 
-## Deferred
+## Planned or deferred
 
-- [ ] Discovery, QR identification, and activation codes
-- [ ] Asset approval or assignment
-- [ ] Monitoring Points
-- [ ] Users, Roles, Authentication, and Authorization
+- [ ] Monitoring Point architecture and APIs
+- [ ] Broader Device discovery, QR, activation-code, and provisioning workflows
+- [ ] Asset approval and assignment
 - [ ] Notification Engine
-- [ ] Frontend and OTA Updates
-- [ ] Provisioning, pairing, heartbeat, and last-seen
+- [ ] Frontend and OTA updates
+- [ ] Deployment and production operations

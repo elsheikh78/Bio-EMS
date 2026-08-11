@@ -1,6 +1,6 @@
 # BIO-EMS
 
-![Current Version](https://img.shields.io/badge/version-0.12.0--rc-blue)
+![Current Version](https://img.shields.io/badge/version-0.13.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 ![Express](https://img.shields.io/badge/Express-5.2-000000)
@@ -12,7 +12,7 @@ Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms,
 warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other
 regulated environments.
 
-**Current repository version:** `0.12.0` release candidate
+**Current repository version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0) — released
 **Backend:** TypeScript / Express
 **License:** Proprietary
 
@@ -26,8 +26,9 @@ Its engineering goals are reliability, traceability, maintainability, hardware
 independence, and clear separation between business rules, configuration data, and
 time-series telemetry.
 
-The current repository scope is the backend foundation: site, room, device, sensor,
-alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
+The current repository scope is the backend foundation: authenticated and
+role-authorized site, room, device, sensor, alarm, user-management, and dashboard
+APIs; MQTT telemetry; and SQLite/InfluxDB persistence.
 
 ## Key Capabilities
 
@@ -37,6 +38,10 @@ alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
 - Six-state threshold classification (`critical-low`, `warning-low`, `normal`,
   `warning-high`, `critical-high`, and `unknown`)
 - Dashboard APIs
+- JWT authentication with active-User enforcement
+- Centralized role-based authorization
+- ADMIN User Management with last-active-ADMIN protection
+- Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
 - Engineering Handbook
@@ -47,34 +52,36 @@ alarm, MQTT telemetry, InfluxDB telemetry storage/querying, and dashboard APIs.
 
 ## Current Project Status
 
-| Component | Status |
-|----------|--------|
-| Backend API | ✅ Active Development |
-| Dashboard Backend | ✅ Implemented |
-| Engineering Handbook | ✅ Complete |
-| ADR Repository | ✅ Complete |
-| Domain Layer | ✅ Implemented |
-| SQLite Persistence | ✅ Implemented |
-| InfluxDB Integration | ✅ Implemented |
-| Device Lifecycle Onboarding | ✅ Implemented |
-| Monitoring Point Layer | 📋 Proposed |
+| Component                   | Status             |
+| --------------------------- | ------------------ |
+| Backend API                 | Active development |
+| Dashboard Backend           | Implemented        |
+| Engineering Handbook        | Complete           |
+| ADR Repository              | Complete           |
+| Domain Layer                | Implemented        |
+| SQLite Persistence          | Implemented        |
+| InfluxDB Integration        | Implemented        |
+| Device Lifecycle Onboarding | Implemented        |
+| Authentication and RBAC     | Implemented        |
+| ADMIN User Management       | Implemented        |
+| Alarm Acknowledgment Audit  | Implemented        |
+| Monitoring Point Layer      | Proposed           |
 
-Status reflects repository evidence. Sprint 12 implements validated Device REST
-management, lifecycle transitions, registration integrity, and Device/Site/enabled-
-Sensor telemetry authorization. The broader discovery, QR, activation-code, Asset,
-and Authentication workflow remains deferred. Monitoring Points have no backend
-table, repository, or API.
+Status reflects merged repository evidence. Sprint 13 implements JWT authentication,
+persisted active-User enforcement, centralized RBAC, ADMIN User Management, and
+authenticated Alarm acknowledgment audit persistence. Monitoring Points remain
+proposed: there is no Monitoring Point backend table, repository, or API.
 
 ## Repository Highlights
 
-| Area | Current State |
-|------|---------------|
-| Architecture | Layered Architecture |
-| Engineering Handbook | Complete |
-| ADR Repository | Complete |
-| Documentation | Repository-aligned |
-| Testing | Vitest |
-| Release Process | Documented |
+| Area                 | Current State        |
+| -------------------- | -------------------- |
+| Architecture         | Layered Architecture |
+| Engineering Handbook | Complete             |
+| ADR Repository       | Complete             |
+| Documentation        | Repository-aligned   |
+| Testing              | Vitest               |
+| Release Process      | Documented           |
 
 These highlights summarize the current engineering maturity of the repository.
 
@@ -106,15 +113,15 @@ SQLite configuration repositories / InfluxDB telemetry queries and writes
 
 ## Technology Stack
 
-| Technology | Current use |
-| --- | --- |
-| Node.js | Backend runtime; Node.js 22 or later is required. |
-| TypeScript | Backend source language and compilation. |
-| Express | REST API and middleware framework. |
-| SQLite | Configuration and operational persistence. |
-| InfluxDB | Telemetry time-series persistence and queries. |
-| MQTT | Device telemetry transport. |
-| Vitest | Current automated test runner. |
+| Technology        | Current use                                             |
+| ----------------- | ------------------------------------------------------- |
+| Node.js           | Backend runtime; Node.js 22 or later is required.       |
+| TypeScript        | Backend source language and compilation.                |
+| Express           | REST API and middleware framework.                      |
+| SQLite            | Configuration and operational persistence.              |
+| InfluxDB          | Telemetry time-series persistence and queries.          |
+| MQTT              | Device telemetry transport.                             |
+| Vitest            | Current automated test runner.                          |
 | ESLint / Prettier | TypeScript static analysis and formatting verification. |
 
 ## Repository Structure
@@ -166,14 +173,14 @@ place of `npm`.
 
 The current API prefix is normally `/api/v1`.
 
-| Area | Current endpoints or operations |
-| --- | --- |
-| Health | `GET /health` |
-| Sites | Management endpoints |
-| Devices | Create, list, read, metadata update, activate, and disable |
-| Rooms | Management endpoints |
-| Sensors | Management endpoints |
-| Alarms | List, active, detail, and acknowledgement operations |
+| Area      | Current endpoints or operations                              |
+| --------- | ------------------------------------------------------------ |
+| Health    | `GET /health`                                                |
+| Sites     | Management endpoints                                         |
+| Devices   | Create, list, read, metadata update, activate, and disable   |
+| Rooms     | Management endpoints                                         |
+| Sensors   | Management endpoints                                         |
+| Alarms    | List, active, detail, and acknowledgement operations         |
 | Dashboard | Summary, latest telemetry, room status, and alarm statistics |
 
 See [`docs/api/`](docs/api/) for API reference material.
@@ -203,17 +210,21 @@ For detailed standards, start with the [Engineering Handbook](docs/engineering/R
 
 ## Project Roadmap
 
-Current release candidate: **Sprint 12 — Device Onboarding and Telemetry Trust
-Boundary** (`0.12.0`). Implementation and acceptance are complete with 113 passing
-tests across 10 files and successful GitHub Actions checks on Draft PR #2. The branch
-has not been merged, tagged, released, or deployed.
+Current published release: [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0),
+whose immutable tag target is `ee2cb45832888ff500e02afcbe1418b6144276c6`.
+Current `main` additionally contains the later S13-06 User Management and S13-07
+security-hardening merges. The verified current baseline is 359 passing tests across
+30 files with successful GitHub Actions on `main`.
 
 Planned future work includes:
 
-- Broader Device onboarding: discovery, QR, activation codes, Asset approval, and Authentication
+- Broader Device onboarding: discovery, QR, activation codes, and Asset approval
 - Monitoring Point architecture
 - Asset model
 - Additional device types
+
+Sprint 13 closure remains pending independent review of the S13-08 documentation and
+closure evidence. Sprint 14 has not started.
 
 These roadmap items are planned work and are not claims of current implementation.
 
