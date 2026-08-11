@@ -33,10 +33,26 @@ Sprint 13 — Centralized Role-Based Authorization and Alarm Acknowledgment Audi
 
 ## Verified
 
-- 25 test files and 303 automated tests passed before release preparation.
+- The published `v0.13.0` tag targets
+  `ee2cb45832888ff500e02afcbe1418b6144276c6`; later main commits are not part of that
+  immutable tag target.
+- 25 test files and 303 automated tests passed for the original release preparation.
 - Typecheck, build, lint, formatting check, and GitHub Actions passed.
 - Sprint 13 PR #4 was merged using a normal merge commit.
-- S13-06/User Management and Sprint 14 have not started.
+
+## Post-release repository additions
+
+The following changes were merged to `main` after the published tag and are not
+retroactively attributed to the original `v0.13.0` artifact:
+
+- S13-06 ADMIN User Management through PR #7, including transactional
+  last-active-ADMIN protection and concurrency coverage.
+- S13-07 security hardening through PR #8, including MQTT rejected-input log
+  sanitization, User Management regression coverage, and removal of unused `yamljs`.
+- Current main verification: 30 test files and 359 passing tests, with zero failures,
+  skipped tests, or todo tests, plus successful CI run 31504321547.
+- Sprint 13 closure remains pending independent review of S13-08; Sprint 14 has not
+  started.
 
 ---
 

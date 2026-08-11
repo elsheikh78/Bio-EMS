@@ -1,67 +1,50 @@
 # BIO-EMS Project State
 
-**Version:** v0.12.0 release candidate
+**Published version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
 
-**Current Phase:** Sprint 12 Completed
+**Current phase:** Sprint 13 closure review
 
-**Branch:** `sprint-12-device-onboarding`
+**Main baseline:** `857834f194afb4bb750c2247ebea5e56fab061f2`
 
-**Pull Request:** Draft PR #2, open and unmerged
+## Implemented platform
 
-## Implemented Platform
+- TypeScript/Express backend with Controller, Service, Repository, and persistence boundaries.
+- SQLite configuration and migration infrastructure plus InfluxDB time-series storage.
+- MQTT telemetry ingestion, Alarm evaluation, Dashboard APIs, and core Site/Room/Device/Sensor APIs.
+- JWT Authentication with persisted active-User enforcement.
+- Centralized role-based authorization and ADMIN-only User Management.
+- Transactional protection against disabling or demoting the last active ADMIN.
+- Authenticated Alarm acknowledgment with actor audit persistence.
 
-- TypeScript/Express backend with layered Controller, Service, Repository, and
-  persistence boundaries.
-- SQLite configuration and migration infrastructure.
-- MQTT telemetry ingestion and InfluxDB time-series persistence.
-- Site, Room, Device, Sensor, Alarm, and Dashboard backend capabilities.
-- Unified Alarm evaluation and threshold classification.
+## Sprint 13 delivered state
 
-## Sprint 12 Delivered State
+S13-01 through S13-07 are implemented and merged. Authentication identifies the
+active persisted User; authorization applies centralized permissions; resource
+ownership remains a separate data-boundary concern. ADMIN User Management includes
+list, create, profile/role update, status update, and password replacement APIs.
 
-Device represents firmware identity inside a Zone Controller; it does not represent
-the physical Zone Controller. The implemented Device API supports validated create,
-list, read, approved metadata update, activation, and disablement operations while
-preserving the pre-Sprint create/list contracts.
+S13-07 added rejected-input MQTT log sanitization, User Management regression and
+concurrency coverage, and removed the unused direct `yamljs` dependency without
+changing public API contracts.
 
-New Devices persist as `pending` with `activated = 0`. The only successful lifecycle
-path is `pending/0 -> active/1 -> disabled/0`. Registration and activation require a
-valid Site; duplicate identity and persistence constraints map to stable HTTP errors.
+## Release and repository timeline
 
-Operational telemetry requires:
+The immutable `v0.13.0` tag targets
+`ee2cb45832888ff500e02afcbe1418b6144276c6`. S13-06 and S13-07 were merged to
+`main` after that tag, so they are current repository capabilities but are not
+retroactively part of the tagged artifact.
 
-- A known Device in `active/1` state.
-- A persisted Site whose code exactly matches the topic Site.
-- A Sensor belonging to the Device and channel with `enabled = 1`.
+Current `main` passed CI run 31504321547 with 30 test files and 359 passing tests,
+and zero failed, skipped, or todo tests.
 
-Message-level trust failures prevent Alarm evaluation and InfluxDB writes. Invalid
-channels are rejected individually so valid channels in the same trusted payload can
-continue.
+## Closure state
 
-## Contracts and Compatibility
+Sprint 13 is not closed by this status update. S13-08 documentation correction and
+closure evidence require independent review and controlled merge verification.
+Sprint 14 has not started.
 
-- Telemetry topic: `bioems/{siteCode}/telemetry/{deviceId}`.
-- MQTT subscription: `bioems/+/telemetry/+`.
-- No MQTT topic or telemetry payload migration.
-- No SQLite schema change or migration in Sprint 12.
-- Device PATCH cannot change identity, Site ownership, lifecycle, or timestamps.
+## Deferred state
 
-## Verification
-
-- 113 passing tests across 10 test files.
-- GitHub Actions `CI / Backend quality gates` passed on Draft PR #2.
-- Quality gates cover clean install, typecheck, build, lint, format check, and tests.
-
-## Deferred State
-
-The broader ADR-010 workflow is not complete. Discovery, QR identification,
-activation-code verification, Asset approval/assignment, Authentication,
-certificates, provisioning, pairing, heartbeat/last-seen, and automatic registration
-remain deferred. Monitoring Points, Users/Roles, Notification Engine, Frontend, OTA,
-and npm audit remediation are also outside Sprint 12.
-
-## Release State
-
-Sprint 12 implementation and acceptance are complete as the v0.12.0 release
-candidate. The branch has not been merged, tagged, published as a GitHub Release, or
-deployed.
+Monitoring Points, broader Asset/discovery/provisioning workflows, Notification
+Engine, Frontend, OTA, deployment, and production operations remain planned unless
+separately authorized.
