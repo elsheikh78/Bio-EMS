@@ -150,6 +150,44 @@ describe("Admin User Management application boundary", () => {
     expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
 
+  it.each([
+    ["id", { email: "changed@example.com", id: 1 }],
+    ["password hash", { email: "changed@example.com", password_hash: "attacker-value" }],
+    ["status", { email: "changed@example.com", status: "disabled" }],
+    ["created timestamp", { email: "changed@example.com", created_at: "2000-01-01" }],
+    ["permissions", { email: "changed@example.com", permissions: ["user:manage"] }],
+    ["constructor", { email: "changed@example.com", constructor: { role: "ADMIN" } }],
+    ["prototype-style key", JSON.parse('{"__proto__":{"role":"ADMIN"}}')],
+  ])("rejects mass assignment through the protected %s field", async (_field, body) => {
+    const before = database.prepare("SELECT * FROM users WHERE id = 3").get();
+
+    const response = await request(app)
+      .patch("/api/v1/users/3")
+      .set(auth(1))
+      .send(body)
+      .expect(400);
+
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    expect(database.prepare("SELECT * FROM users WHERE id = 3").get()).toEqual(before);
+  });
+
+  it("rejects malformed authenticated JSON without reflecting sensitive input", async () => {
+    const sensitiveMarker = "authorization-bearer-sensitive-marker";
+
+    const response = await request(app)
+      .patch("/api/v1/users/3")
+      .set(auth(1))
+      .set("Content-Type", "application/json")
+      .send(`{"email":"${sensitiveMarker}"`)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "Invalid request body" },
+    });
+    expect(JSON.stringify(response.body)).not.toContain(sensitiveMarker);
+  });
+
   it("returns USER_NOT_FOUND when PATCH targets a missing user", async () => {
     const response = await request(app)
       .patch("/api/v1/users/99")
