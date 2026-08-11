@@ -8,9 +8,14 @@ export async function apiRequest<T>(
   path: `/${string}`,
   options: ApiRequestOptions = {},
 ) {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "application/json");
+  }
+
   const response = await fetch(`${getEnvironment().VITE_API_BASE_URL}${path}`, {
     ...options,
-    headers: { Accept: "application/json", ...options.headers },
+    headers,
   });
 
   if (!response.ok) {

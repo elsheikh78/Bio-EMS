@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import type { PropsWithChildren } from "react";
+import { useMemo, type PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AppErrorBoundary } from "../components/AppErrorBoundary";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
-import { theme } from "../theme/theme";
+import { useLocalization } from "../localization/useLocalization";
+import { createAppTheme } from "../theme/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,13 +18,22 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <AppErrorBoundary>
       <LocalizationProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>{children}</BrowserRouter>
-          </QueryClientProvider>
-        </ThemeProvider>
+        <LocalizedAppProviders>{children}</LocalizedAppProviders>
       </LocalizationProvider>
     </AppErrorBoundary>
+  );
+}
+
+function LocalizedAppProviders({ children }: PropsWithChildren) {
+  const { direction } = useLocalization();
+  const theme = useMemo(() => createAppTheme(direction), [direction]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>{children}</BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

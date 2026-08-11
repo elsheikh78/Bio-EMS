@@ -1,16 +1,18 @@
 import { Button, Container, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { englishResources } from "../localization/resources";
+import { useLocalization } from "../localization/useLocalization";
 
 export function NotFoundPage() {
+  const { resources } = useLocalization();
+
   return (
     <Container component="main" maxWidth="sm" sx={{ py: 8 }}>
       <Stack spacing={2} sx={{ alignItems: "flex-start" }}>
         <Typography component="h1" variant="h4">
-          {englishResources.notFound.title}
+          {resources.notFound.title}
         </Typography>
         <Button component={Link} to="/" variant="contained">
-          {englishResources.notFound.action}
+          {resources.notFound.action}
         </Button>
       </Stack>
     </Container>

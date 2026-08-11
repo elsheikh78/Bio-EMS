@@ -26,14 +26,18 @@ and Vite. React Router provides client routing, TanStack Query manages server st
 Zod validates public environment and future external contracts, and Material UI is
 configured through reusable design tokens.
 
-The application is English-first and light-only during Sprint 14. Localization is
-isolated behind resource and direction abstractions so later Arabic and RTL work does
-not require feature rewrites. Future presentation may call current Rooms “Monitored
-Areas”, while API routes, schemas, and DTOs retain the implemented Room terminology.
+The application is English-first and light-only during Sprint 14. A localization
+provider exposes language, direction, and resources through context rather than
+letting pages import a language bundle directly. It also synchronizes document and
+Material UI direction, so later Arabic and RTL work does not require feature rewrites.
+Future presentation may call current Rooms “Monitored Areas”, while API routes,
+schemas, and DTOs retain the implemented Room terminology.
 
-The API base URL is supplied through `VITE_API_BASE_URL`; it is validated at runtime
-and is never hard-coded into feature code. Only variables prefixed with `VITE_` are
-browser-visible and they must never contain secrets.
+The absolute API base URL is supplied through `VITE_API_BASE_URL`; it is validated at
+runtime and is never hard-coded into feature code. Development uses this URL directly
+with the backend's exact-origin CORS policy; Vite does not proxy API requests. Only
+variables prefixed with `VITE_` are browser-visible and they must never contain
+secrets.
 
 Operational polling targets are 15 seconds for alarms, telemetry, and monitored-area
 status, and 60 seconds for dashboard summary. These constants do not initiate network
