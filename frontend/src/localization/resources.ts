@@ -10,6 +10,29 @@ export interface TranslationResources {
     deferredDescription: string;
   };
   notFound: { title: string; action: string };
+  shell: {
+    productName: string;
+    openNavigation: string;
+    primaryNavigation: string;
+    skipToContent: string;
+  };
+  navigation: {
+    workspace: string;
+    dashboard: string;
+    monitoredAreas: string;
+    alarms: string;
+    devices: string;
+    configuration: string;
+  };
+  workspace: { title: string; description: string };
+  placeholders: {
+    dashboard: { title: string; description: string };
+    monitoredAreas: { title: string; description: string };
+    alarms: { title: string; description: string };
+    devices: { title: string; description: string };
+    configuration: { title: string; description: string };
+  };
+  errorBoundary: { title: string; reload: string };
 }
 
 export const englishResources = {
@@ -21,6 +44,53 @@ export const englishResources = {
       "Operational screens, authentication, and the application shell are intentionally deferred to later Sprint 14 stories.",
   },
   notFound: { title: "Page not found", action: "Return to foundation" },
+  shell: {
+    productName: "BIO-EMS",
+    openNavigation: "Open primary navigation",
+    primaryNavigation: "Primary navigation",
+    skipToContent: "Skip to main content",
+  },
+  navigation: {
+    workspace: "Workspace",
+    dashboard: "Dashboard",
+    monitoredAreas: "Monitored Areas",
+    alarms: "Alarms",
+    devices: "Devices",
+    configuration: "Configuration",
+  },
+  workspace: {
+    title: "Operational workspace",
+    description:
+      "The application shell is ready. Operational features remain explicitly staged for later Sprint 14 stories.",
+  },
+  placeholders: {
+    dashboard: {
+      title: "Dashboard",
+      description: "Dashboard data and widgets are not implemented in S14-02.",
+    },
+    monitoredAreas: {
+      title: "Monitored Areas",
+      description:
+        "Monitored Areas is the presentation name for existing Room contracts; no Asset or Monitoring Point model is introduced.",
+    },
+    alarms: {
+      title: "Alarms",
+      description: "Operational alarm views are not implemented in S14-02.",
+    },
+    devices: {
+      title: "Devices",
+      description: "Operational device views are not implemented in S14-02.",
+    },
+    configuration: {
+      title: "Configuration",
+      description:
+        "Configuration management screens are not implemented in S14-02.",
+    },
+  },
+  errorBoundary: {
+    title: "The application could not start",
+    reload: "Reload",
+  },
 } satisfies TranslationResources;
 
 export const localizationDefaults = {

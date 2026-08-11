@@ -20,6 +20,7 @@ Current `main` is newer and includes post-release S13-06 and S13-07 merges.
 - [x] Last-active-ADMIN transactional and concurrency protection
 - [x] Security hardening and regression coverage
 - [x] ESLint, Prettier, and GitHub Actions quality gates
+- [x] S14-01 frontend architecture and quality foundation
 
 ## Sprint 13
 
@@ -27,9 +28,13 @@ S13-01 through S13-07 are implemented and merged. The current `main` baseline is
 `857834f194afb4bb750c2247ebea5e56fab061f2`, verified by CI run 31504321547 with
 30 test files and 359 passing tests and no failures, skips, or todos.
 
-S13-08 is the documentation-correction and closure-evidence activity. Its evidence
-requires independent review; this document does not itself close Sprint 13.
-Sprint 14 has not started.
+S13-08 is merged and Sprint 13 is closed. S14-01 is merged and formally closed at
+main commit `cc699124bdf49d67cd692d559899642b8d0cfabe`, with CI run 31520085478
+attempt 2 successful.
+
+Sprint 14 has started. S14-02 implements the professional responsive application
+shell on a Draft PR pending independent review; it is not closed. S14-03 has not
+started.
 
 ## Planned or deferred
 
@@ -37,5 +42,5 @@ Sprint 14 has not started.
 - [ ] Broader Device discovery, QR, activation-code, and provisioning workflows
 - [ ] Asset approval and assignment
 - [ ] Notification Engine
-- [ ] Frontend and OTA updates
+- [ ] Operational frontend features and OTA updates
 - [ ] Deployment and production operations

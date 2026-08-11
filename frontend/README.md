@@ -1,8 +1,9 @@
 # BIO-EMS Frontend Foundation
 
-This directory contains the S14-01 browser-application foundation. It is not yet the
-BIO-EMS Operational Dashboard: login, the professional application shell, dashboard
-widgets, monitored-area views, and the Alarm Center are deferred to later stories.
+This directory contains the S14-01 browser-application foundation and the S14-02
+professional responsive application shell. S14-02 adds presentational navigation and
+explicit feature placeholders only. Login, operational dashboard widgets,
+monitored-area data, and the Alarm Center remain deferred.
 
 ## Prerequisites
 
@@ -57,3 +58,11 @@ The frontend is hosted separately from the JSON API. Helmet protects API respons
 but the frontend hosting layer must enforce the browser application's CSP. S14-01
 does not store an access token. The approved `sessionStorage` implementation, logout,
 expiry handling, and authorization-aware routing belong to S14-03.
+
+## S14-02 Route Boundary
+
+The shell defines `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, and
+`/configuration`; feature routes are honest placeholders and perform no API requests.
+`Monitored Areas` is display terminology for current Room contracts. There are no
+User Management, Asset, Monitoring Point, Login, protected-route, role, or permission
+decisions in S14-02.

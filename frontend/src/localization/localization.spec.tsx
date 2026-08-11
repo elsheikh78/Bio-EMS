@@ -10,8 +10,10 @@ import type {
   TextDirection,
   TranslationResources,
 } from "./resources";
+import { englishResources } from "./resources";
 
 const alternativeResources = {
+  ...englishResources,
   foundation: {
     title: "Alternative foundation title",
     description: "Alternative foundation description",
@@ -20,6 +22,10 @@ const alternativeResources = {
   notFound: {
     title: "Alternative missing-page title",
     action: "Alternative return action",
+  },
+  errorBoundary: {
+    title: "Alternative startup failure",
+    reload: "Alternative reload action",
   },
 } satisfies TranslationResources;
 

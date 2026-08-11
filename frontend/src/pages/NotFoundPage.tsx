@@ -6,7 +6,7 @@ export function NotFoundPage() {
   const { resources } = useLocalization();
 
   return (
-    <Container component="main" maxWidth="sm" sx={{ py: 8 }}>
+    <Container component="section" maxWidth="sm" sx={{ py: 8 }}>
       <Stack spacing={2} sx={{ alignItems: "flex-start" }}>
         <Typography component="h1" variant="h4">
           {resources.notFound.title}
