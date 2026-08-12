@@ -827,4 +827,140 @@ describe("authentication session lifecycle", () => {
     expect(screen.getByTestId("identity")).toHaveTextContent("new-admin:ADMIN");
     expect(storage.current()?.accessToken).toBe("new-token");
   });
+
+  it("invalidates the current session when dashboard summary returns 401", async () => {
+    const storage = storageAdapter(storedSession);
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }, new ApiResponseError(401)],
+    });
+
+    queryClient.setQueryData(
+      ["dashboard", "summary"],
+      "sensitive-dashboard-data",
+    );
+
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    await expect(
+      authentication().protectedRequest("/dashboard/summary"),
+    ).rejects.toMatchObject({
+      name: "AbortError",
+    });
+
+    expect(request).toHaveBeenLastCalledWith(
+      "/dashboard/summary",
+      expect.objectContaining({
+        auth: "protected",
+      }),
+    );
+
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+
+    expect(storage.current()).toBeUndefined();
+
+    expect(queryClient.getQueryData(["dashboard", "summary"])).toBeUndefined();
+  });
+
+  it("keeps a newer session intact after a stale dashboard telemetry 401", async () => {
+    const pendingTelemetry = deferred<unknown>();
+    const storage = storageAdapter(storedSession);
+
+    const loginResponse: LoginResponse = {
+      access_token: "new-dashboard-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: {
+        id: 2,
+        username: "new-dashboard-admin",
+        role: "ADMIN",
+      },
+    };
+
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [
+        { user: storedSession.user },
+        pendingTelemetry.promise,
+        loginResponse,
+      ],
+    });
+
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    const staleRequest = authentication().protectedRequest(
+      "/dashboard/latest-telemetry",
+    );
+
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+
+    await act(async () => authentication().logout());
+
+    await act(async () =>
+      authentication().login({
+        username: "admin",
+        password: "password",
+      }),
+    );
+
+    queryClient.setQueryData(
+      ["dashboard", "current-generation"],
+      "current-dashboard-data",
+    );
+
+    pendingTelemetry.reject(new ApiResponseError(401));
+
+    await expect(staleRequest).rejects.toMatchObject({
+      name: "AbortError",
+    });
+
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+
+    expect(screen.getByTestId("identity")).toHaveTextContent(
+      "new-dashboard-admin:ADMIN",
+    );
+
+    expect(storage.current()?.accessToken).toBe("new-dashboard-token");
+
+    expect(queryClient.getQueryData(["dashboard", "current-generation"])).toBe(
+      "current-dashboard-data",
+    );
+  });
+
+  it("preserves the authenticated session when dashboard alarm statistics returns 403", async () => {
+    const storage = storageAdapter(storedSession);
+
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }, new ApiResponseError(403)],
+    });
+
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    queryClient.setQueryData(
+      ["dashboard", "alarm-statistics"],
+      "preserved-dashboard-data",
+    );
+
+    await expect(
+      authentication().protectedRequest("/dashboard/alarm-statistics"),
+    ).rejects.toMatchObject({
+      status: 403,
+    });
+
+    expect(request).toHaveBeenLastCalledWith(
+      "/dashboard/alarm-statistics",
+      expect.objectContaining({
+        auth: "protected",
+      }),
+    );
+
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+
+    expect(storage.current()?.accessToken).toBe("opaque-token");
+
+    expect(queryClient.getQueryData(["dashboard", "alarm-statistics"])).toBe(
+      "preserved-dashboard-data",
+    );
+  });
 });
