@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { useMemo, type PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
+import { AuthenticationProvider } from "../auth/AuthenticationProvider";
 import { AppErrorBoundary } from "../components/AppErrorBoundary";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { englishResources } from "../localization/resources";
@@ -33,7 +34,9 @@ function LocalizedAppProviders({ children }: PropsWithChildren) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
+        <AuthenticationProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </AuthenticationProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

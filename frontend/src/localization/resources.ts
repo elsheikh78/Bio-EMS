@@ -4,6 +4,25 @@ export type SupportedLanguage = "en" | "ar";
 export type TextDirection = Direction;
 
 export interface TranslationResources {
+  authentication: {
+    loginTitle: string;
+    username: string;
+    password: string;
+    signIn: string;
+    signingIn: string;
+    logout: string;
+    retry: string;
+    restorationTitle: string;
+    restorationDescription: string;
+    errors: {
+      "invalid-credentials": string;
+      validation: string;
+      network: string;
+      server: string;
+      "malformed-response": string;
+      storage: string;
+    };
+  };
   foundation: {
     title: string;
     description: string;
@@ -36,6 +55,26 @@ export interface TranslationResources {
 }
 
 export const englishResources = {
+  authentication: {
+    loginTitle: "Sign in to BIO-EMS",
+    username: "Username",
+    password: "Password",
+    signIn: "Sign in",
+    signingIn: "Signing in",
+    logout: "Log out",
+    retry: "Retry",
+    restorationTitle: "Session verification is temporarily unavailable",
+    restorationDescription:
+      "Protected content remains hidden. Retry verification or log out.",
+    errors: {
+      "invalid-credentials": "The username or password is invalid.",
+      validation: "Check the entered credentials and try again.",
+      network: "The service could not be reached. Try again.",
+      server: "The service could not complete sign in. Try again.",
+      "malformed-response": "The sign-in response could not be verified.",
+      storage: "The session could not be stored securely in this browser tab.",
+    },
+  },
   foundation: {
     title: "BIO-EMS frontend foundation",
     description:
