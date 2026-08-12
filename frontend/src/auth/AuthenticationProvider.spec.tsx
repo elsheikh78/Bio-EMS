@@ -2,8 +2,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiResponseError, type ApiClientConfiguration } from "../api/client";
+import {
+  ApiResponseError,
+  type ApiClientConfiguration,
+  type ApiRequestOptions,
+} from "../api/client";
 import type { LoginResponse } from "./contracts";
+import type { AuthenticationContextValue } from "./AuthenticationContext";
 import { AuthenticationProvider } from "./AuthenticationProvider";
 import type {
   AuthenticationStorageAdapter,
@@ -19,8 +24,13 @@ const storedSession: StoredAuthenticationSession = {
   user: { id: 1, username: "login-user", role: "ADMIN" },
 };
 
-function Probe() {
+function Probe({
+  capture,
+}: {
+  capture: (authentication: AuthenticationContextValue) => void;
+}) {
   const authentication = useAuthentication();
+  capture(authentication);
   return (
     <div>
       <output data-testid="status">{authentication.status}</output>
@@ -65,12 +75,14 @@ function renderProvider({
   storage = storageAdapter().adapter,
   responses = [],
   now = () => 1_000,
+  request: suppliedRequest,
 }: {
   storage?: AuthenticationStorageAdapter;
   responses?: unknown[];
   now?: () => number;
+  request?: ReturnType<typeof vi.fn>;
 } = {}) {
-  const request = vi.fn();
+  const request = suppliedRequest ?? vi.fn();
   for (const response of responses) {
     if (response instanceof Error) request.mockRejectedValueOnce(response);
     else request.mockResolvedValueOnce(response);
@@ -83,18 +95,48 @@ function renderProvider({
     configuration = next;
     return { request };
   });
-  render(
+  let authentication: AuthenticationContextValue | undefined;
+  const rendered = render(
     <QueryClientProvider client={queryClient}>
       <AuthenticationProvider
         storageAdapter={storage}
         now={now}
         createClient={createClient}
       >
-        <Probe />
+        <Probe
+          capture={(next) => {
+            authentication = next;
+          }}
+        />
       </AuthenticationProvider>
     </QueryClientProvider>,
   );
-  return { configuration: () => configuration, queryClient, request };
+  return {
+    authentication: () => {
+      if (!authentication)
+        throw new Error("Authentication context unavailable");
+      return authentication;
+    },
+    configuration: () => configuration,
+    queryClient,
+    request,
+    unmount: rendered.unmount,
+  };
+}
+
+function deferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}
+
+function requestOptions(request: ReturnType<typeof vi.fn>, callIndex: number) {
+  const call = request.mock.calls[callIndex] as unknown[] | undefined;
+  return (call?.[1] ?? {}) as ApiRequestOptions;
 }
 
 describe("authentication session lifecycle", () => {
@@ -121,7 +163,11 @@ describe("authentication session lifecycle", () => {
     expect(screen.getByTestId("identity")).toHaveTextContent(
       "current-user:VIEWER",
     );
-    expect(request).toHaveBeenCalledWith("/auth/me", { auth: "protected" });
+    expect(request).toHaveBeenCalledWith(
+      "/auth/me",
+      expect.objectContaining({ auth: "protected" }),
+    );
+    expect(requestOptions(request, 0).signal).toBeInstanceOf(AbortSignal);
     expect(storage.current()?.user.role).toBe("VIEWER");
   });
 
@@ -316,5 +362,295 @@ describe("authentication session lifecycle", () => {
 
     expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
     expect(queryClient.getQueryData(["protected"])).toBeUndefined();
+  });
+
+  it("prevents a pending Login from restoring authentication after Logout", async () => {
+    const pendingLogin = deferred<LoginResponse>();
+    const storage = storageAdapter();
+    const { authentication, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [pendingLogin.promise],
+    });
+    expect(await screen.findByText("unauthenticated")).toBeInTheDocument();
+
+    const login = authentication().login({
+      username: "admin",
+      password: "password",
+    });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+    const signal = requestOptions(request, 0).signal as AbortSignal;
+    await act(async () => authentication().logout());
+    pendingLogin.resolve({
+      access_token: "late-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 1, username: "late-admin", role: "ADMIN" },
+    });
+
+    await expect(login).rejects.toMatchObject({ name: "AbortError" });
+    expect(signal.aborted).toBe(true);
+    expect(storage.adapter.write).not.toHaveBeenCalled();
+    expect(storage.current()).toBeUndefined();
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("prevents a late protected response from publishing Query data after Logout", async () => {
+    const pendingProtected = deferred<{ value: string }>();
+    const storage = storageAdapter(storedSession);
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }, pendingProtected.promise],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    const result = authentication()
+      .protectedRequest<{ value: string }>("/dashboard")
+      .then((data) => {
+        queryClient.setQueryData(["protected"], data);
+        return data;
+      });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+    const signal = requestOptions(request, 1).signal as AbortSignal;
+    await act(async () => authentication().logout());
+    pendingProtected.resolve({ value: "late-sensitive-data" });
+
+    await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(signal.aborted).toBe(true);
+    expect(queryClient.getQueryData(["protected"])).toBeUndefined();
+  });
+
+  it("makes concurrent protected 401 invalidation idempotent", async () => {
+    const storage = storageAdapter(storedSession);
+    const { configuration, queryClient } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }],
+    });
+    const cancel = vi.spyOn(queryClient, "cancelQueries");
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    storage.adapter.clear.mockClear();
+
+    await act(async () =>
+      Promise.all([
+        configuration()?.onProtectedUnauthorized?.(),
+        configuration()?.onProtectedUnauthorized?.(),
+      ]),
+    );
+
+    expect(storage.adapter.clear).toHaveBeenCalledTimes(1);
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("prevents a protected 401 racing with a late success from restoring cache", async () => {
+    const lateSuccess = deferred<{ value: string }>();
+    const { authentication, configuration, queryClient, request } =
+      renderProvider({
+        storage: storageAdapter(storedSession).adapter,
+        responses: [{ user: storedSession.user }, lateSuccess.promise],
+      });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    const result = authentication()
+      .protectedRequest<{ value: string }>("/dashboard")
+      .then((data) => {
+        queryClient.setQueryData(["protected"], data);
+        return data;
+      });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+    await act(async () => configuration()?.onProtectedUnauthorized?.());
+    lateSuccess.resolve({ value: "late-sensitive-data" });
+
+    await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(queryClient.getQueryData(["protected"])).toBeUndefined();
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("aborts restoration on local expiry without showing a restoration error", async () => {
+    vi.useFakeTimers();
+    let now = 1_000;
+    const pendingRestoration = deferred<{ user: typeof storedSession.user }>();
+    const expiringSession = { ...storedSession, expiresAt: 2_000 };
+    const storage = storageAdapter(expiringSession);
+    const { request } = renderProvider({
+      storage: storage.adapter,
+      responses: [pendingRestoration.promise],
+      now: () => now,
+    });
+    await act(async () => Promise.resolve());
+    const signal = requestOptions(request, 0).signal as AbortSignal;
+
+    now = 2_000;
+    await act(async () => vi.advanceTimersByTimeAsync(1_000));
+    pendingRestoration.resolve({ user: storedSession.user });
+    await act(async () => Promise.resolve());
+
+    expect(signal.aborted).toBe(true);
+    expect(storage.adapter.write).not.toHaveBeenCalled();
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("does not dispatch protected requests after local expiry", async () => {
+    let now = 1_000;
+    const expiringSession = { ...storedSession, expiresAt: 2_000 };
+    const { authentication, request } = renderProvider({
+      storage: storageAdapter(expiringSession).adapter,
+      responses: [{ user: expiringSession.user }],
+      now: () => now,
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    now = 2_000;
+
+    await expect(
+      authentication().protectedRequest("/dashboard"),
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("aborts a pending protected request when the session expires", async () => {
+    vi.useFakeTimers();
+    let now = 1_000;
+    const pendingProtected = deferred<{ value: string }>();
+    const expiringSession = { ...storedSession, expiresAt: 2_000 };
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storageAdapter(expiringSession).adapter,
+      responses: [{ user: expiringSession.user }, pendingProtected.promise],
+      now: () => now,
+    });
+    await act(async () => Promise.resolve());
+    const result = authentication()
+      .protectedRequest<{ value: string }>("/dashboard")
+      .then((data) => {
+        queryClient.setQueryData(["protected"], data);
+        return data;
+      });
+    await act(async () => Promise.resolve());
+    const signal = requestOptions(request, 1).signal as AbortSignal;
+
+    now = 2_000;
+    await act(async () => vi.advanceTimersByTimeAsync(1_000));
+    pendingProtected.resolve({ value: "late-sensitive-data" });
+
+    await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(signal.aborted).toBe(true);
+    expect(queryClient.getQueryData(["protected"])).toBeUndefined();
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it.each(["bootstrapping", "restoration-error"])(
+    "blocks external protected requests while %s",
+    async (state) => {
+      const pending = deferred<{ user: typeof storedSession.user }>();
+      const response =
+        state === "bootstrapping" ? pending.promise : new TypeError("network");
+      const { authentication, request } = renderProvider({
+        storage: storageAdapter(storedSession).adapter,
+        responses: [response],
+      });
+      if (state === "restoration-error") {
+        expect(
+          await screen.findByText("restoration-error"),
+        ).toBeInTheDocument();
+      } else {
+        await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+      }
+
+      await expect(
+        authentication().protectedRequest("/dashboard"),
+      ).rejects.toMatchObject({ name: "AbortError" });
+      expect(request).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("re-arms expiry timers for lifetimes longer than the platform maximum", async () => {
+    vi.useFakeTimers();
+    const maximumDelay = 2_147_483_647;
+    let now = 1_000;
+    const longSession = {
+      ...storedSession,
+      expiresAt: now + maximumDelay + 5_000,
+    };
+    renderProvider({
+      storage: storageAdapter(longSession).adapter,
+      responses: [{ user: longSession.user }],
+      now: () => now,
+    });
+    await act(async () => Promise.resolve());
+
+    now += maximumDelay;
+    await act(async () => vi.advanceTimersByTimeAsync(maximumDelay));
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+
+    now += 5_000;
+    await act(async () => vi.advanceTimersByTimeAsync(5_000));
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
+  it("preserves caller headers and links the caller AbortSignal", async () => {
+    const pendingProtected = deferred<unknown>();
+    const caller = new AbortController();
+    const { authentication, request } = renderProvider({
+      storage: storageAdapter(storedSession).adapter,
+      responses: [{ user: storedSession.user }, pendingProtected.promise],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    const result = authentication().protectedRequest("/dashboard", {
+      headers: { "X-Request-ID": "request-1" },
+      signal: caller.signal,
+    });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+    const options = requestOptions(request, 1);
+    const linkedSignal = options.signal as AbortSignal;
+    caller.abort();
+    pendingProtected.resolve({ value: "ignored" });
+
+    await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(options.headers).toEqual({ "X-Request-ID": "request-1" });
+    expect(linkedSignal).not.toBe(caller.signal);
+    expect(linkedSignal.aborted).toBe(true);
+  });
+
+  it("aborts owned requests and suppresses late updates during cleanup", async () => {
+    const pendingRestoration = deferred<{ user: typeof storedSession.user }>();
+    const storage = storageAdapter(storedSession);
+    const { request, unmount } = renderProvider({
+      storage: storage.adapter,
+      responses: [pendingRestoration.promise],
+    });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+    const signal = requestOptions(request, 0).signal as AbortSignal;
+
+    unmount();
+    pendingRestoration.resolve({ user: storedSession.user });
+    await Promise.resolve();
+
+    expect(signal.aborted).toBe(true);
+    expect(storage.adapter.write).not.toHaveBeenCalled();
+  });
+
+  it("lets a newer Login supersede an older restoration operation", async () => {
+    const pendingRestoration = deferred<{ user: typeof storedSession.user }>();
+    const storage = storageAdapter(storedSession);
+    const loginResponse: LoginResponse = {
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 2, username: "new-admin", role: "ADMIN" },
+    };
+    const { authentication, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [pendingRestoration.promise, loginResponse],
+    });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+
+    await act(async () =>
+      authentication().login({ username: "admin", password: "password" }),
+    );
+    pendingRestoration.resolve({ user: storedSession.user });
+    await act(async () => Promise.resolve());
+
+    expect(screen.getByTestId("identity")).toHaveTextContent("new-admin:ADMIN");
+    expect(storage.current()?.accessToken).toBe("new-token");
   });
 });
