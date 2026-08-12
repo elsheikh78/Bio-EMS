@@ -141,6 +141,27 @@ export interface TranslationResources {
       time: string;
     };
 
+    alarmStatistics: {
+      title: string;
+      description: string;
+      loading: string;
+      error: string;
+
+      lifecycle: {
+        title: string;
+        active: string;
+        acknowledged: string;
+        recovered: string;
+      };
+
+      severity: {
+        title: string;
+        critical: string;
+        warning: string;
+        info: string;
+      };
+    };
+
     loading: string;
     error: string;
     retry: string;
@@ -285,6 +306,31 @@ export const englishResources = {
       site: "Site",
       device: "Device",
       time: "Reading time",
+    },
+
+    alarmStatistics: {
+      title: "Alarm statistics",
+
+      description:
+        "Current alarm lifecycle and severity distribution across monitored areas.",
+
+      loading: "Loading alarm statistics",
+
+      error: "Alarm statistics could not be loaded.",
+
+      lifecycle: {
+        title: "Lifecycle",
+        active: "Active",
+        acknowledged: "Acknowledged",
+        recovered: "Recovered",
+      },
+
+      severity: {
+        title: "Severity",
+        critical: "Critical",
+        warning: "Warning",
+        info: "Info",
+      },
     },
 
     loading: "Loading dashboard summary",

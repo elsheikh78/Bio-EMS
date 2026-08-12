@@ -73,16 +73,11 @@ const alternativeResources = {
 
     rooms: {
       title: "Alt monitored area status",
-
       description:
         "Alt current environmental status for monitored rooms and areas.",
-
       loading: "Alt loading monitored area status",
-
       error: "Alt monitored area status could not be loaded.",
-
       empty: "Alt no monitored area status is currently available.",
-
       online: "Alt Online",
       offline: "Alt Offline",
       temperature: "Alt Temperature",
@@ -101,19 +96,36 @@ const alternativeResources = {
 
     latestTelemetry: {
       title: "Alt latest telemetry",
-
       description:
         "Alt most recent validated sensor readings across monitored areas.",
-
       loading: "Alt loading latest telemetry",
-
       error: "Alt latest telemetry could not be loaded.",
-
       empty: "Alt no latest telemetry is currently available.",
-
       site: "Alt Site",
       device: "Alt Device",
       time: "Alt Reading Time",
+    },
+
+    alarmStatistics: {
+      title: "Alt alarm statistics",
+      description:
+        "Alt current alarm lifecycle and severity distribution across monitored areas.",
+      loading: "Alt loading alarm statistics",
+      error: "Alt alarm statistics could not be loaded.",
+
+      lifecycle: {
+        title: "Alt Lifecycle",
+        active: "Alt Active",
+        acknowledged: "Alt Acknowledged",
+        recovered: "Alt Recovered",
+      },
+
+      severity: {
+        title: "Alt Severity",
+        critical: "Alt Critical",
+        warning: "Alt Warning",
+        info: "Alt Info",
+      },
     },
 
     loading: "Alt loading dashboard summary",
@@ -353,6 +365,16 @@ describe("localization contracts", () => {
 
     expect(
       screen.getByText("Alt loading latest telemetry"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt alarm statistics",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading alarm statistics"),
     ).toBeInTheDocument();
   });
 

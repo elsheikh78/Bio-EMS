@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  useDashboardAlarmStatistics,
   useDashboardRoomStatuses,
   useDashboardSummary,
   useLatestTelemetry,
@@ -13,6 +14,7 @@ vi.mock("../dashboard/queries", () => ({
   useDashboardSummary: vi.fn(),
   useDashboardRoomStatuses: vi.fn(),
   useLatestTelemetry: vi.fn(),
+  useDashboardAlarmStatistics: vi.fn(),
 }));
 
 const mockedUseDashboardSummary = vi.mocked(useDashboardSummary);
@@ -20,6 +22,10 @@ const mockedUseDashboardSummary = vi.mocked(useDashboardSummary);
 const mockedUseDashboardRoomStatuses = vi.mocked(useDashboardRoomStatuses);
 
 const mockedUseLatestTelemetry = vi.mocked(useLatestTelemetry);
+
+const mockedUseDashboardAlarmStatistics = vi.mocked(
+  useDashboardAlarmStatistics,
+);
 
 function renderDashboard() {
   return render(
@@ -69,12 +75,22 @@ function mockLatestTelemetryPending() {
   } as unknown as ReturnType<typeof useLatestTelemetry>);
 }
 
+function mockAlarmStatisticsPending() {
+  mockedUseDashboardAlarmStatistics.mockReturnValue({
+    data: undefined,
+    isPending: true,
+    isError: false,
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
+}
+
 describe("DashboardPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSummarySuccess();
     mockRoomsPending();
     mockLatestTelemetryPending();
+    mockAlarmStatisticsPending();
   });
 
   it("renders an accessible dashboard summary loading state", () => {
@@ -366,6 +382,7 @@ describe("DashboardPage", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText("temperature")).toBeInTheDocument();
+
     expect(screen.getByText("humidity")).toBeInTheDocument();
 
     expect(screen.getByText("4.3 °C")).toBeInTheDocument();
@@ -374,6 +391,7 @@ describe("DashboardPage", () => {
     expect(screen.getAllByText("main-site")).toHaveLength(2);
 
     expect(screen.getByText("device-01")).toBeInTheDocument();
+
     expect(screen.getByText("device-02")).toBeInTheDocument();
 
     expect(
@@ -420,11 +438,130 @@ describe("DashboardPage", () => {
       screen.getByText(englishResources.dashboard.latestTelemetry.error),
     ).toBeInTheDocument();
 
-    const retryButtons = screen.getAllByRole("button", {
-      name: englishResources.dashboard.retry,
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: englishResources.dashboard.retry,
+      }),
+    );
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders an accessible alarm-statistics loading state", () => {
+    renderDashboard();
+
+    expect(
+      screen.getByRole("heading", {
+        name: englishResources.dashboard.alarmStatistics.title,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(englishResources.dashboard.alarmStatistics.loading),
+    ).toBeInTheDocument();
+  });
+
+  it("renders alarm lifecycle and severity statistics including zero values", () => {
+    mockedUseDashboardAlarmStatistics.mockReturnValue({
+      data: {
+        active: 4,
+        acknowledged: 2,
+        recovered: 7,
+        critical: 1,
+        warning: 3,
+        info: 0,
+      },
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
+
+    renderDashboard();
+
+    const alarmHeading = screen.getByRole("heading", {
+      name: englishResources.dashboard.alarmStatistics.title,
     });
 
-    fireEvent.click(retryButtons[retryButtons.length - 1]);
+    const alarmSection = alarmHeading.closest("section");
+
+    expect(alarmSection).not.toBeNull();
+
+    const alarmView = within(alarmSection as HTMLElement);
+
+    expect(
+      alarmView.getByRole("heading", {
+        name: englishResources.dashboard.alarmStatistics.lifecycle.title,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByRole("heading", {
+        name: englishResources.dashboard.alarmStatistics.severity.title,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.lifecycle.active,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.lifecycle.acknowledged,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.lifecycle.recovered,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.severity.critical,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.severity.warning,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      alarmView.getByText(
+        englishResources.dashboard.alarmStatistics.severity.info,
+      ),
+    ).toBeInTheDocument();
+
+    for (const value of ["4", "2", "7", "1", "3", "0"]) {
+      expect(alarmView.getByText(value)).toBeInTheDocument();
+    }
+  });
+
+  it("renders a safe alarm-statistics error state and retries on request", () => {
+    const refetch = vi.fn();
+
+    mockedUseDashboardAlarmStatistics.mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch,
+    } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
+
+    renderDashboard();
+
+    expect(
+      screen.getByText(englishResources.dashboard.alarmStatistics.error),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: englishResources.dashboard.retry,
+      }),
+    );
 
     expect(refetch).toHaveBeenCalledTimes(1);
   });

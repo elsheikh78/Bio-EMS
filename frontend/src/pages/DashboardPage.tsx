@@ -9,11 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import type {
+  DashboardAlarmStatistics,
   DashboardRoomStatus,
   DashboardSensorStatus,
   LatestTelemetryRecord,
 } from "../dashboard/contracts";
 import {
+  useDashboardAlarmStatistics,
   useDashboardRoomStatuses,
   useDashboardSummary,
   useLatestTelemetry,
@@ -29,6 +31,7 @@ export function DashboardPage() {
   const summaryQuery = useDashboardSummary();
   const roomStatusesQuery = useDashboardRoomStatuses();
   const latestTelemetryQuery = useLatestTelemetry();
+  const alarmStatisticsQuery = useDashboardAlarmStatistics();
 
   return (
     <Stack spacing={4}>
@@ -54,6 +57,11 @@ export function DashboardPage() {
 
       <LatestTelemetrySection
         query={latestTelemetryQuery}
+        resources={resources.dashboard}
+      />
+
+      <AlarmStatisticsSection
+        query={alarmStatisticsQuery}
         resources={resources.dashboard}
       />
     </Stack>
@@ -491,6 +499,168 @@ function TelemetryMetadata({ label, value }: TelemetryMetadataProps) {
 
       <Typography variant="body2">{value}</Typography>
     </Box>
+  );
+}
+
+interface AlarmStatisticsSectionProps {
+  query: ReturnType<typeof useDashboardAlarmStatistics>;
+  resources: DashboardResources;
+}
+
+function AlarmStatisticsSection({
+  query,
+  resources,
+}: AlarmStatisticsSectionProps) {
+  return (
+    <Box component="section" aria-labelledby="dashboard-alarm-statistics-title">
+      <Stack spacing={2}>
+        <Box>
+          <Typography
+            component="h2"
+            variant="h5"
+            id="dashboard-alarm-statistics-title"
+          >
+            {resources.alarmStatistics.title}
+          </Typography>
+
+          <Typography color="text.secondary">
+            {resources.alarmStatistics.description}
+          </Typography>
+        </Box>
+
+        {query.isPending ? (
+          <LoadingState label={resources.alarmStatistics.loading} />
+        ) : null}
+
+        {query.isError ? (
+          <Alert
+            severity="error"
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => void query.refetch()}
+              >
+                {resources.retry}
+              </Button>
+            }
+          >
+            {resources.alarmStatistics.error}
+          </Alert>
+        ) : null}
+
+        {query.data ? (
+          <AlarmStatisticsContent
+            statistics={query.data}
+            resources={resources}
+          />
+        ) : null}
+      </Stack>
+    </Box>
+  );
+}
+
+interface AlarmStatisticsContentProps {
+  statistics: DashboardAlarmStatistics;
+  resources: DashboardResources;
+}
+
+function AlarmStatisticsContent({
+  statistics,
+  resources,
+}: AlarmStatisticsContentProps) {
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          lg: "repeat(2, minmax(0, 1fr))",
+        },
+        gap: 2,
+      }}
+    >
+      <AlarmStatisticsGroup
+        title={resources.alarmStatistics.lifecycle.title}
+        items={[
+          {
+            label: resources.alarmStatistics.lifecycle.active,
+            value: statistics.active,
+          },
+          {
+            label: resources.alarmStatistics.lifecycle.acknowledged,
+            value: statistics.acknowledged,
+          },
+          {
+            label: resources.alarmStatistics.lifecycle.recovered,
+            value: statistics.recovered,
+          },
+        ]}
+      />
+
+      <AlarmStatisticsGroup
+        title={resources.alarmStatistics.severity.title}
+        items={[
+          {
+            label: resources.alarmStatistics.severity.critical,
+            value: statistics.critical,
+          },
+          {
+            label: resources.alarmStatistics.severity.warning,
+            value: statistics.warning,
+          },
+          {
+            label: resources.alarmStatistics.severity.info,
+            value: statistics.info,
+          },
+        ]}
+      />
+    </Box>
+  );
+}
+
+interface AlarmStatisticItem {
+  label: string;
+  value: number;
+}
+
+interface AlarmStatisticsGroupProps {
+  title: string;
+  items: AlarmStatisticItem[];
+}
+
+function AlarmStatisticsGroup({ title, items }: AlarmStatisticsGroupProps) {
+  return (
+    <Paper variant="outlined" sx={{ p: 2.5 }}>
+      <Stack spacing={2}>
+        <Typography component="h3" variant="h6">
+          {title}
+        </Typography>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(3, minmax(0, 1fr))",
+            },
+            gap: 2,
+          }}
+        >
+          {items.map((item) => (
+            <Box key={item.label}>
+              <Typography variant="body2" color="text.secondary">
+                {item.label}
+              </Typography>
+
+              <Typography component="p" variant="h4" sx={{ mt: 0.5 }}>
+                {item.value}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Stack>
+    </Paper>
   );
 }
 
