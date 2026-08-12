@@ -46,13 +46,13 @@ function useViewport(width: number) {
   );
 }
 
-function renderShell(path = "/") {
+function renderShell(path = "/", state?: unknown) {
   return render(
     <LocalizationProvider>
       <ThemeProvider theme={createAppTheme("ltr")}>
         <CssBaseline />
         <AuthenticationContext.Provider value={authenticatedAdmin}>
-          <MemoryRouter initialEntries={[path]}>
+          <MemoryRouter initialEntries={[{ pathname: path, state }]}>
             <App />
           </MemoryRouter>
         </AuthenticationContext.Provider>
@@ -179,5 +179,12 @@ describe("responsive application shell", () => {
     expect(skipLink).toHaveFocus();
     fireEvent.click(skipLink);
     expect(screen.getByRole("main")).toHaveFocus();
+  });
+
+  it("focuses main content only when entering the shell after Login", async () => {
+    useViewport(1200);
+    renderShell("/", { focusAfterLogin: true });
+
+    await waitFor(() => expect(screen.getByRole("main")).toHaveFocus());
   });
 });

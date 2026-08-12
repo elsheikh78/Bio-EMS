@@ -114,7 +114,7 @@ describe("versioned authentication session storage", () => {
 
   it("fails closed when storage does not return the value that was written", () => {
     const storage = new MemoryStorage();
-    vi.spyOn(storage, "getItem").mockReturnValue(null);
+    vi.spyOn(storage, "getItem").mockReturnValueOnce(null);
     const adapter = createAuthenticationStorageAdapter(
       () => storage,
       () => 1_000,
@@ -123,5 +123,55 @@ describe("versioned authentication session storage", () => {
       createStoredAuthenticationSession(loginResponse, 1_000);
 
     expect(adapter.write(session)).toBe(false);
+    expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
   });
+
+  it("removes a value when read-back verification returns a different session", () => {
+    const storage = new MemoryStorage();
+    const session = createStoredAuthenticationSession(loginResponse, 1_000);
+    const differentSession = { ...session, accessToken: "different-token" };
+    vi.spyOn(storage, "getItem").mockReturnValueOnce(
+      JSON.stringify(differentSession),
+    );
+    const adapter = createAuthenticationStorageAdapter(
+      () => storage,
+      () => 1_000,
+    );
+
+    expect(adapter.write(session)).toBe(false);
+    expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
+  });
+
+  it.each([
+    [
+      "invalid",
+      {
+        ...createStoredAuthenticationSession(loginResponse, 1_000),
+        version: 2,
+      },
+    ],
+    [
+      "expired",
+      {
+        ...createStoredAuthenticationSession(loginResponse, 1_000),
+        expiresAt: 999,
+      },
+    ],
+  ])(
+    "clears an existing usable record when a %s write is rejected",
+    (_case, rejected) => {
+      const storage = new MemoryStorage();
+      const existing = createStoredAuthenticationSession(loginResponse, 1_000);
+      storage.setItem(AUTHENTICATION_SESSION_KEY, JSON.stringify(existing));
+      const adapter = createAuthenticationStorageAdapter(
+        () => storage,
+        () => 1_000,
+      );
+
+      expect(adapter.write(rejected as StoredAuthenticationSession)).toBe(
+        false,
+      );
+      expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
+    },
+  );
 });

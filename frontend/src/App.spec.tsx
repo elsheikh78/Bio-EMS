@@ -118,6 +118,21 @@ function mockCurrentUser(role: UserRole = "ADMIN") {
   );
 }
 
+function mockLogin() {
+  vi.stubEnv("VITE_API_BASE_URL", "https://api.example.com/api/v1");
+  return vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        access_token: "opaque-login-token",
+        token_type: "bearer",
+        expires_in: 60,
+        user: users.ADMIN,
+      }),
+      { headers: { "Content-Type": "application/json" }, status: 200 },
+    ),
+  );
+}
+
 describe("authenticated application routing", () => {
   afterEach(() => {
     window.sessionStorage.clear();
@@ -138,7 +153,7 @@ describe("authenticated application routing", () => {
     );
   });
 
-  it("renders no protected shell while bootstrapping or restoration is blocked", () => {
+  it("renders no protected shell while bootstrapping or restoration is blocked", async () => {
     const { rerender } = renderWithAuthentication(
       "/dashboard",
       authenticationValue("ADMIN", {
@@ -165,11 +180,11 @@ describe("authenticated application routing", () => {
         </ThemeProvider>
       </LocalizationProvider>,
     );
-    expect(
-      screen.getByRole("heading", {
-        name: "Session verification is temporarily unavailable",
-      }),
-    ).toBeInTheDocument();
+    const restorationHeading = screen.getByRole("heading", {
+      name: "Session verification is temporarily unavailable",
+    });
+    expect(restorationHeading).toBeInTheDocument();
+    await waitFor(() => expect(restorationHeading).toHaveFocus());
     expect(screen.queryByTestId("app-shell")).not.toBeInTheDocument();
   });
 
@@ -188,11 +203,11 @@ describe("authenticated application routing", () => {
 
   it.each(["OPERATOR", "VIEWER"] as const)(
     "denies direct /users access for %s without rendering Not Found",
-    (role) => {
+    async (role) => {
       renderWithAuthentication("/users", authenticationValue(role));
-      expect(
-        screen.getByRole("heading", { name: "Not authorized" }),
-      ).toBeInTheDocument();
+      const heading = screen.getByRole("heading", { name: "Not authorized" });
+      expect(heading).toBeInTheDocument();
+      await waitFor(() => expect(heading).toHaveFocus());
       expect(
         screen.queryByRole("heading", { name: "Page not found" }),
       ).not.toBeInTheDocument();
@@ -255,9 +270,11 @@ describe("authenticated application routing", () => {
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Log out" }));
-    expect(
-      await screen.findByRole("heading", { name: "Sign in to BIO-EMS" }),
-    ).toBeInTheDocument();
+    const loginHeading = await screen.findByRole("heading", {
+      name: "Sign in to BIO-EMS",
+    });
+    expect(loginHeading).toBeInTheDocument();
+    await waitFor(() => expect(loginHeading).toHaveFocus());
     window.history.back();
 
     await waitFor(() => {
@@ -266,5 +283,21 @@ describe("authenticated application routing", () => {
       ).toBeInTheDocument();
       expect(screen.queryByText("Dashboard data")).not.toBeInTheDocument();
     });
+  });
+
+  it("moves focus to protected main content after successful Login", async () => {
+    mockLogin();
+    const user = userEvent.setup();
+    renderApplication("/login");
+    await screen.findByRole("heading", { name: "Sign in to BIO-EMS" });
+
+    await user.type(screen.getByRole("textbox", { name: "Username" }), "admin");
+    await user.type(screen.getByLabelText(/Password/), "password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Operational workspace" }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("main")).toHaveFocus());
   });
 });

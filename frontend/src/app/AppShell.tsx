@@ -7,7 +7,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useInitialFocus } from "../accessibility/useInitialFocus";
 import { useAuthentication } from "../auth/useAuthentication";
 import { AppHeader } from "../components/AppHeader";
 import { AppNavigation } from "../components/AppNavigation";
@@ -22,9 +23,17 @@ export function AppShell() {
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
   const { resources } = useLocalization();
   const { logout, user } = useAuthentication();
+  const location = useLocation();
   const navigate = useNavigate();
   const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const routeState = location.state as unknown;
+  const focusAfterLogin =
+    typeof routeState === "object" &&
+    routeState !== null &&
+    "focusAfterLogin" in routeState &&
+    (routeState as { focusAfterLogin?: unknown }).focusAfterLogin === true;
+  const mainContentRef = useInitialFocus<HTMLElement>(focusAfterLogin);
 
   const closeMobileNavigation = () => {
     setMobileNavigationOpen(false);
@@ -116,6 +125,7 @@ export function AppShell() {
       <Box
         component="main"
         id={mainContentId}
+        ref={mainContentRef}
         sx={{ flexGrow: 1, minWidth: 0, p: { xs: 2, sm: 3, lg: 4 } }}
         tabIndex={-1}
       >

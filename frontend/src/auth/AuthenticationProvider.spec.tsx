@@ -248,6 +248,17 @@ describe("authentication session lifecycle", () => {
     });
   });
 
+  it("classifies a whitespace-only username as client-side validation", async () => {
+    const { authentication, request } = renderProvider();
+    expect(await screen.findByText("unauthenticated")).toBeInTheDocument();
+
+    await expect(
+      authentication().login({ username: "   ", password: "password" }),
+    ).rejects.toMatchObject({ kind: "validation" });
+    expect(request).not.toHaveBeenCalled();
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+  });
+
   it("fails closed when Login persistence fails", async () => {
     const storage = storageAdapter();
     storage.adapter.write.mockReturnValue(false);

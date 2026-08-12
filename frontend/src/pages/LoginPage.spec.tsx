@@ -46,6 +46,13 @@ function renderLogin(
 }
 
 describe("accessible Login experience", () => {
+  it("places initial focus on the Login heading", async () => {
+    renderLogin();
+
+    const heading = screen.getByRole("heading", { name: "Sign in to BIO-EMS" });
+    await waitFor(() => expect(heading).toHaveFocus());
+  });
+
   it("uses the approved field types, autocomplete values, and keyboard submission", async () => {
     const login = vi.fn().mockResolvedValue(admin);
     renderLogin({ login });
@@ -113,16 +120,19 @@ describe("accessible Login experience", () => {
       .mockRejectedValue(new AuthenticationFailure("invalid-credentials"));
     renderLogin({ login });
     const user = userEvent.setup();
+    const username = screen.getByRole("textbox", { name: "Username" });
+    const password = screen.getByLabelText(/Password/);
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Username" }),
-      "unknown",
-    );
-    await user.type(screen.getByLabelText(/Password/), "wrong");
+    await user.type(username, "unknown");
+    await user.type(password, "wrong");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("The username or password is invalid.");
+    expect(username).toHaveAttribute("aria-describedby", "login-error");
+    expect(username).toHaveAttribute("aria-invalid", "true");
+    expect(password).toHaveAttribute("aria-describedby", "login-error");
+    expect(password).toHaveAttribute("aria-invalid", "true");
     await waitFor(() => expect(alert).toHaveFocus());
     expect(screen.queryByDisplayValue("wrong")).not.toBeInTheDocument();
   });

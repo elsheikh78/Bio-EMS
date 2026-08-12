@@ -80,17 +80,20 @@ export function createAuthenticationStorageAdapter(
     },
     write(session) {
       const validation = storedAuthenticationSessionSchema.safeParse(session);
-      if (!validation.success || validation.data.expiresAt <= now())
+      if (!validation.success || validation.data.expiresAt <= now()) {
+        clear();
         return false;
+      }
 
       try {
         const serialized = JSON.stringify(validation.data);
         const storage = getStorage();
         storage.setItem(AUTHENTICATION_SESSION_KEY, serialized);
         const persisted = parse(storage.getItem(AUTHENTICATION_SESSION_KEY));
-        return (
-          persisted !== undefined && JSON.stringify(persisted) === serialized
-        );
+        const verified =
+          persisted !== undefined && JSON.stringify(persisted) === serialized;
+        if (!verified) clear();
+        return verified;
       } catch {
         clear();
         return false;

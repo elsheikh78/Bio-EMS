@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { useRef, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useInitialFocus } from "../accessibility/useInitialFocus";
 import {
   AuthenticationFailure,
   type AuthenticationFailureKind,
@@ -22,6 +23,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const errorRef = useRef<HTMLDivElement>(null);
+  const headingRef = useInitialFocus<HTMLHeadingElement>();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [failure, setFailure] = useState<AuthenticationFailureKind>();
@@ -36,6 +38,7 @@ export function LoginPage() {
         resolveSafeReturnPath(location.state, authenticatedUser.role),
         {
           replace: true,
+          state: { focusAfterLogin: true },
         },
       );
     } catch (error) {
@@ -59,11 +62,23 @@ export function LoginPage() {
         onSubmit={(event) => void submit(event)}
         sx={{ maxWidth: 420, width: "100%" }}
       >
-        <Typography component="h1" gutterBottom variant="h4">
+        <Typography
+          component="h1"
+          gutterBottom
+          ref={headingRef}
+          tabIndex={-1}
+          variant="h4"
+        >
           {resources.authentication.loginTitle}
         </Typography>
         {failure ? (
-          <Alert ref={errorRef} severity="error" sx={{ mb: 2 }} tabIndex={-1}>
+          <Alert
+            id="login-error"
+            ref={errorRef}
+            severity="error"
+            sx={{ mb: 2 }}
+            tabIndex={-1}
+          >
             {resources.authentication.errors[failure]}
           </Alert>
         ) : null}
@@ -76,6 +91,12 @@ export function LoginPage() {
           name="username"
           onChange={(event) => setUsername(event.target.value)}
           required
+          slotProps={{
+            htmlInput: {
+              "aria-describedby": failure ? "login-error" : undefined,
+              "aria-invalid": failure ? true : undefined,
+            },
+          }}
           value={username}
         />
         <TextField
@@ -87,6 +108,12 @@ export function LoginPage() {
           name="password"
           onChange={(event) => setPassword(event.target.value)}
           required
+          slotProps={{
+            htmlInput: {
+              "aria-describedby": failure ? "login-error" : undefined,
+              "aria-invalid": failure ? true : undefined,
+            },
+          }}
           type="password"
           value={password}
         />

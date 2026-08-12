@@ -5,6 +5,7 @@ import {
   useSyncExternalStore,
   type PropsWithChildren,
 } from "react";
+import { ZodError } from "zod";
 import {
   ApiResponseError,
   createApiClient,
@@ -141,6 +142,9 @@ class AuthenticationController {
       }
       this.update({ ...this.snapshot, loginPending: false });
       if (error instanceof AuthenticationFailure) throw error;
+      if (error instanceof ZodError) {
+        throw new AuthenticationFailure("validation");
+      }
       if (error instanceof ApiResponseError) {
         if (error.status === 401) {
           throw new AuthenticationFailure("invalid-credentials");

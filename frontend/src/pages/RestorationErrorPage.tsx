@@ -1,10 +1,12 @@
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
+import { useInitialFocus } from "../accessibility/useInitialFocus";
 import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
 
 export function RestorationErrorPage() {
   const { logout, retryRestoration } = useAuthentication();
   const { resources } = useLocalization();
+  const headingRef = useInitialFocus<HTMLHeadingElement>();
 
   return (
     <Box
@@ -12,7 +14,13 @@ export function RestorationErrorPage() {
       sx={{ display: "grid", minHeight: "100vh", placeItems: "center", p: 2 }}
     >
       <Alert severity="warning" sx={{ maxWidth: 560 }}>
-        <Typography component="h1" gutterBottom variant="h5">
+        <Typography
+          component="h1"
+          gutterBottom
+          ref={headingRef}
+          tabIndex={-1}
+          variant="h5"
+        >
           {resources.authentication.restorationTitle}
         </Typography>
         <Typography>
