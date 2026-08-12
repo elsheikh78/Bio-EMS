@@ -2,9 +2,9 @@
 
 **Published version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
 
-**Current phase:** Sprint 13 closure review
+**Current phase:** Sprint 14 — S14-02 application shell review
 
-**Main baseline:** `857834f194afb4bb750c2247ebea5e56fab061f2`
+**Main baseline:** `cc699124bdf49d67cd692d559899642b8d0cfabe`
 
 ## Implemented platform
 
@@ -15,6 +15,8 @@
 - Centralized role-based authorization and ADMIN-only User Management.
 - Transactional protection against disabling or demoting the last active ADMIN.
 - Authenticated Alarm acknowledgment with actor audit persistence.
+- React frontend foundation with typed localization, responsive shell architecture,
+  and independent frontend quality gates.
 
 ## Sprint 13 delivered state
 
@@ -37,14 +39,17 @@ retroactively part of the tagged artifact.
 Current `main` passed CI run 31504321547 with 30 test files and 359 passing tests,
 and zero failed, skipped, or todo tests.
 
-## Closure state
+## Closure and Sprint 14 state
 
-Sprint 13 is not closed by this status update. S13-08 documentation correction and
-closure evidence require independent review and controlled merge verification.
-Sprint 14 has not started.
+Sprint 13 and S13-08 are closed. S14-01 was merged through PR #10 and formally closed
+after CI run 31520085478 attempt 2 completed successfully. Sprint 14 has started.
+
+S14-02 implements the professional responsive application shell on a Draft PR pending
+independent review. It is not closed. S14-03 authentication/session work has not
+started.
 
 ## Deferred state
 
 Monitoring Points, broader Asset/discovery/provisioning workflows, Notification
-Engine, Frontend, OTA, deployment, and production operations remain planned unless
-separately authorized.
+Engine, operational frontend features, authentication/session UI, OTA, deployment,
+and production operations remain planned unless separately authorized.

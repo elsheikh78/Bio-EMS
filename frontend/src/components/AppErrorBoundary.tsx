@@ -5,7 +5,16 @@ interface State {
   hasError: boolean;
 }
 
-export class AppErrorBoundary extends Component<PropsWithChildren, State> {
+export interface ErrorBoundaryFallbackCopy {
+  title: string;
+  reload: string;
+}
+
+interface AppErrorBoundaryProps extends PropsWithChildren {
+  fallbackCopy: ErrorBoundaryFallbackCopy;
+}
+
+export class AppErrorBoundary extends Component<AppErrorBoundaryProps, State> {
   state: State = { hasError: false };
 
   static getDerivedStateFromError(): State {
@@ -27,9 +36,11 @@ export class AppErrorBoundary extends Component<PropsWithChildren, State> {
         >
           <Alert severity="error">
             <Typography component="h1" variant="h5">
-              The application could not start
+              {this.props.fallbackCopy.title}
             </Typography>
-            <Button onClick={() => window.location.reload()}>Reload</Button>
+            <Button onClick={() => window.location.reload()}>
+              {this.props.fallbackCopy.reload}
+            </Button>
           </Alert>
         </Box>
       );

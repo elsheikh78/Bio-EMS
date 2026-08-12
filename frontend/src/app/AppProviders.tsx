@@ -4,6 +4,7 @@ import { useMemo, type PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AppErrorBoundary } from "../components/AppErrorBoundary";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
+import { englishResources } from "../localization/resources";
 import { useLocalization } from "../localization/useLocalization";
 import { createAppTheme } from "../theme/theme";
 
@@ -16,7 +17,7 @@ const queryClient = new QueryClient({
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <AppErrorBoundary>
+    <AppErrorBoundary fallbackCopy={englishResources.errorBoundary}>
       <LocalizationProvider>
         <LocalizedAppProviders>{children}</LocalizedAppProviders>
       </LocalizationProvider>

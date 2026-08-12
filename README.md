@@ -26,9 +26,9 @@ Its engineering goals are reliability, traceability, maintainability, hardware
 independence, and clear separation between business rules, configuration data, and
 time-series telemetry.
 
-The current repository scope is the backend foundation: authenticated and
-role-authorized site, room, device, sensor, alarm, user-management, and dashboard
-APIs; MQTT telemetry; and SQLite/InfluxDB persistence.
+The current repository includes the authenticated and role-authorized backend plus a
+React frontend foundation and professional responsive application shell. S14-02 shell
+routes are presentational placeholders and do not consume Backend APIs.
 
 ## Key Capabilities
 
@@ -65,6 +65,7 @@ APIs; MQTT telemetry; and SQLite/InfluxDB persistence.
 | Authentication and RBAC     | Implemented        |
 | ADMIN User Management       | Implemented        |
 | Alarm Acknowledgment Audit  | Implemented        |
+| Frontend Application Shell  | Draft review       |
 | Monitoring Point Layer      | Proposed           |
 
 Status reflects merged repository evidence. Sprint 13 implements JWT authentication,
@@ -200,10 +201,11 @@ precedence over assumptions or roadmap language.
 
 ### Frontend Development
 
-Sprint 14 begins with the isolated [`frontend/`](frontend/) architecture and quality
-foundation. It currently renders a developer placeholder only; login, the application
-shell, dashboard widgets, monitored-area views, and the Alarm Center are not implemented
-by S14-01.
+Sprint 14 began with the isolated [`frontend/`](frontend/) architecture and quality
+foundation. S14-01 is merged and formally closed. S14-02 implements a professional
+responsive shell and presentational navigation on a Draft PR pending independent
+review. Login, sessions, authorization-aware routing, dashboard widgets,
+monitored-area data, and the Alarm Center remain unimplemented.
 
 See [`frontend/README.md`](frontend/README.md) for environment, startup, security, and
 quality commands. The architecture decision is recorded in
@@ -236,8 +238,8 @@ Planned future work includes:
 - Asset model
 - Additional device types
 
-Sprint 13 closure remains pending independent review of the S13-08 documentation and
-closure evidence. Sprint 14 has not started.
+Sprint 13 and S13-08 are closed. Sprint 14 has started: S14-01 is closed, S14-02 is on
+a Draft PR pending review, and S14-03 has not started.
 
 These roadmap items are planned work and are not claims of current implementation.
 

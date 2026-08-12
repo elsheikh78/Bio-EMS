@@ -2,8 +2,9 @@
 
 Published version: `v0.13.0`
 
-Repository status: S13-01 through S13-07 are merged; S13-08 closure evidence is
-pending independent review. Sprint 14 has not started.
+Repository status: Sprint 13 and S13-08 are closed. S14-01 is merged and formally
+closed. Sprint 14 has started; S14-02 is implemented on a Draft PR pending independent
+review, and S14-03 has not started.
 
 ## Phase 1 — Foundation
 
@@ -52,6 +53,17 @@ The published `v0.13.0` tag remains fixed at
 `ee2cb45832888ff500e02afcbe1418b6144276c6`. S13-06 and S13-07 were merged to
 `main` later and are not retroactively attributed to that artifact. Current main CI
 run 31504321547 passed with 30 test files and 359 tests.
+
+## Sprint 14 — Frontend application
+
+- S14-01: frontend architecture, providers, security boundary, and quality foundation
+  — merged and formally closed.
+- S14-02: professional responsive application shell and presentational navigation —
+  implemented on a Draft PR pending independent review.
+- S14-03: Login, session lifecycle, and authorization-aware routing — not started.
+
+The application shell consumes no Backend API. Assets and Monitoring Points remain
+proposed and have no route or implemented Backend contract.
 
 ## Phase 7 — Production
 

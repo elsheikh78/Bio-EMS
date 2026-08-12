@@ -13,14 +13,21 @@ describe("AppErrorBoundary", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     render(
-      <AppErrorBoundary>
+      <AppErrorBoundary
+        fallbackCopy={{
+          title: "Localized startup failure",
+          reload: "Try again",
+        }}
+      >
         <BrokenChild />
       </AppErrorBoundary>,
     );
 
     expect(
-      screen.getByRole("heading", { name: /application could not start/i }),
+      screen.getByRole("heading", { name: "Localized startup failure" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /reload/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Try again" }),
+    ).toBeInTheDocument();
   });
 });
