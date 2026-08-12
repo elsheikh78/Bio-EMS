@@ -94,6 +94,52 @@ describe("Application authentication boundary", () => {
     expect(response.body).toEqual([]);
   });
 
+  it.each(["ADMIN", "OPERATOR", "VIEWER"] as const)(
+    "returns the current persisted %s principal from /auth/me without sensitive fields",
+    async (role) => {
+      database
+        .prepare("UPDATE users SET username = ?, role = ? WHERE id = 1")
+        .run("current-user", role);
+      const token = tokenService.issueAccessToken(1).accessToken;
+
+      const response = await request(app)
+        .get("/api/v1/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200);
+
+      expect(response.body).toEqual({
+        user: { id: 1, username: "current-user", role },
+      });
+      expect(Object.keys(response.body.user)).toEqual(["id", "username", "role"]);
+      expect(JSON.stringify(response.body)).not.toMatch(
+        /access_token|authorization|claim|email|password|status/i
+      );
+    }
+  );
+
+  it.each([
+    ["missing", undefined],
+    ["malformed", "NotBearer signed-token"],
+    ["invalid", "Bearer invalid-token"],
+  ])("rejects a %s token for /auth/me", async (_case, authorization) => {
+    const operation = request(app).get("/api/v1/auth/me");
+    if (authorization) operation.set("Authorization", authorization);
+
+    const response = await operation.expect(401);
+
+    expect(response.body).toEqual({
+      success: false,
+      error: { code: "AUTHENTICATION_REQUIRED", message: "Authentication required" },
+    });
+  });
+
+  it("rejects an expired token for /auth/me", async () => {
+    const expiredTokenService = new TokenService({ ...config.jwt, expireMinutes: -1 });
+    const token = expiredTokenService.issueAccessToken(1).accessToken;
+
+    await request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${token}`).expect(401);
+  });
+
   it("returns 404 only after an unknown protected route authenticates", async () => {
     await request(app).get("/api/v1/not-a-route").expect(401);
 
@@ -114,5 +160,17 @@ describe("Application authentication boundary", () => {
     await authorized().expect(401);
     database.prepare("DELETE FROM users WHERE id = 1").run();
     await authorized().expect(401);
+  });
+
+  it("invalidates /auth/me immediately after persisted disablement or removal", async () => {
+    const token = tokenService.issueAccessToken(1).accessToken;
+    const currentUser = () =>
+      request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${token}`);
+
+    await currentUser().expect(200);
+    database.prepare("UPDATE users SET status = 'disabled' WHERE id = 1").run();
+    await currentUser().expect(401);
+    database.prepare("DELETE FROM users WHERE id = 1").run();
+    await currentUser().expect(401);
   });
 });

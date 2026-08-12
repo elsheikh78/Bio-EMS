@@ -27,6 +27,12 @@ import authRouter from "../auth.route";
 
 const app = express();
 app.use(express.json());
+app.use((req, _res, next) => {
+  if (req.method === "GET" && req.path === "/api/v1/auth/me") {
+    req.user = { id: 7, username: "current-user", role: "OPERATOR" };
+  }
+  next();
+});
 app.use("/api/v1/auth", authRouter);
 app.use(errorMiddleware);
 
@@ -122,5 +128,19 @@ describe("Login REST API", () => {
     expect(error).not.toHaveBeenCalled();
     log.mockRestore();
     error.mockRestore();
+  });
+});
+
+describe("Current User REST API", () => {
+  it("returns only the sanitized principal resolved before the route", async () => {
+    const response = await request(app).get("/api/v1/auth/me").expect(200);
+
+    expect(response.body).toEqual({
+      user: { id: 7, username: "current-user", role: "OPERATOR" },
+    });
+    expect(Object.keys(response.body.user)).toEqual(["id", "username", "role"]);
+    expect(JSON.stringify(response.body)).not.toMatch(
+      /access_token|authorization|claim|email|password|status/i
+    );
   });
 });

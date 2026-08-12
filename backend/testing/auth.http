@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:3000/api/v1
+@username = {{$dotenv BIOEMS_REST_USERNAME}}
+@password = {{$dotenv BIOEMS_REST_PASSWORD}}
+@accessToken = {{$dotenv BIOEMS_REST_ACCESS_TOKEN}}
+
+### Login with private local REST Client environment values
+POST {{baseUrl}}/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Read the current persisted principal with a private local access token
+GET {{baseUrl}}/auth/me
+Accept: application/json
+Authorization: Bearer {{accessToken}}
