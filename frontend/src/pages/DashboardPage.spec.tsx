@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   useDashboardRoomStatuses,
   useDashboardSummary,
+  useLatestTelemetry,
 } from "../dashboard/queries";
 import { LocalizationContext } from "../localization/context";
 import { englishResources } from "../localization/resources";
@@ -11,11 +12,14 @@ import { DashboardPage } from "./DashboardPage";
 vi.mock("../dashboard/queries", () => ({
   useDashboardSummary: vi.fn(),
   useDashboardRoomStatuses: vi.fn(),
+  useLatestTelemetry: vi.fn(),
 }));
 
 const mockedUseDashboardSummary = vi.mocked(useDashboardSummary);
 
 const mockedUseDashboardRoomStatuses = vi.mocked(useDashboardRoomStatuses);
+
+const mockedUseLatestTelemetry = vi.mocked(useLatestTelemetry);
 
 function renderDashboard() {
   return render(
@@ -56,11 +60,21 @@ function mockRoomsPending() {
   } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
 }
 
+function mockLatestTelemetryPending() {
+  mockedUseLatestTelemetry.mockReturnValue({
+    data: undefined,
+    isPending: true,
+    isError: false,
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useLatestTelemetry>);
+}
+
 describe("DashboardPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSummarySuccess();
     mockRoomsPending();
+    mockLatestTelemetryPending();
   });
 
   it("renders an accessible dashboard summary loading state", () => {
@@ -292,6 +306,125 @@ describe("DashboardPage", () => {
         name: englishResources.dashboard.retry,
       }),
     );
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders an accessible latest-telemetry loading state", () => {
+    renderDashboard();
+
+    expect(
+      screen.getByRole("heading", {
+        name: englishResources.dashboard.latestTelemetry.title,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(englishResources.dashboard.latestTelemetry.loading),
+    ).toBeInTheDocument();
+  });
+
+  it("renders latest telemetry records", () => {
+    mockedUseLatestTelemetry.mockReturnValue({
+      data: [
+        {
+          time: "2026-08-12T18:00:00.000Z",
+          site: "main-site",
+          device: "device-01",
+          sensor: "temperature-01",
+          sensorType: "temperature",
+          unit: "°C",
+          value: 4.3,
+        },
+        {
+          time: "2026-08-12T18:01:00.000Z",
+          site: "main-site",
+          device: "device-02",
+          sensor: "humidity-01",
+          sensorType: "humidity",
+          unit: "%",
+          value: 55,
+        },
+      ],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useLatestTelemetry>);
+
+    renderDashboard();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "temperature-01",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "humidity-01",
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("temperature")).toBeInTheDocument();
+    expect(screen.getByText("humidity")).toBeInTheDocument();
+
+    expect(screen.getByText("4.3 °C")).toBeInTheDocument();
+    expect(screen.getByText("55 %")).toBeInTheDocument();
+
+    expect(screen.getAllByText("main-site")).toHaveLength(2);
+
+    expect(screen.getByText("device-01")).toBeInTheDocument();
+    expect(screen.getByText("device-02")).toBeInTheDocument();
+
+    expect(
+      screen.getByText((_, element) => {
+        const text = element?.textContent ?? "";
+
+        return (
+          element?.tagName.toLowerCase() === "span" &&
+          text.includes(englishResources.dashboard.latestTelemetry.time) &&
+          text.includes("2026-08-12T18:00:00.000Z")
+        );
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the latest-telemetry empty state", () => {
+    mockedUseLatestTelemetry.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useLatestTelemetry>);
+
+    renderDashboard();
+
+    expect(
+      screen.getByText(englishResources.dashboard.latestTelemetry.empty),
+    ).toBeInTheDocument();
+  });
+
+  it("renders a safe latest-telemetry error state and retries on request", () => {
+    const refetch = vi.fn();
+
+    mockedUseLatestTelemetry.mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch,
+    } as unknown as ReturnType<typeof useLatestTelemetry>);
+
+    renderDashboard();
+
+    expect(
+      screen.getByText(englishResources.dashboard.latestTelemetry.error),
+    ).toBeInTheDocument();
+
+    const retryButtons = screen.getAllByRole("button", {
+      name: englishResources.dashboard.retry,
+    });
+
+    fireEvent.click(retryButtons[retryButtons.length - 1]);
 
     expect(refetch).toHaveBeenCalledTimes(1);
   });

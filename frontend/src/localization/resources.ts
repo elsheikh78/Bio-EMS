@@ -130,6 +130,17 @@ export interface TranslationResources {
       };
     };
 
+    latestTelemetry: {
+      title: string;
+      description: string;
+      loading: string;
+      error: string;
+      empty: string;
+      site: string;
+      device: string;
+      time: string;
+    };
+
     loading: string;
     error: string;
     retry: string;
@@ -257,6 +268,23 @@ export const englishResources = {
         CRITICAL: "Critical",
         UNKNOWN: "Unknown",
       },
+    },
+
+    latestTelemetry: {
+      title: "Latest telemetry",
+
+      description:
+        "Most recent validated sensor readings received across monitored areas.",
+
+      loading: "Loading latest telemetry",
+
+      error: "Latest telemetry could not be loaded.",
+
+      empty: "No latest telemetry is currently available.",
+
+      site: "Site",
+      device: "Device",
+      time: "Reading time",
     },
 
     loading: "Loading dashboard summary",

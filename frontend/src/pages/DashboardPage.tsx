@@ -11,10 +11,12 @@ import {
 import type {
   DashboardRoomStatus,
   DashboardSensorStatus,
+  LatestTelemetryRecord,
 } from "../dashboard/contracts";
 import {
   useDashboardRoomStatuses,
   useDashboardSummary,
+  useLatestTelemetry,
 } from "../dashboard/queries";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -26,6 +28,7 @@ export function DashboardPage() {
   const { resources } = useLocalization();
   const summaryQuery = useDashboardSummary();
   const roomStatusesQuery = useDashboardRoomStatuses();
+  const latestTelemetryQuery = useLatestTelemetry();
 
   return (
     <Stack spacing={4}>
@@ -46,6 +49,11 @@ export function DashboardPage() {
 
       <RoomStatusSection
         query={roomStatusesQuery}
+        resources={resources.dashboard}
+      />
+
+      <LatestTelemetrySection
+        query={latestTelemetryQuery}
         resources={resources.dashboard}
       />
     </Stack>
@@ -333,6 +341,156 @@ function SensorReading({
         sx={{ alignSelf: "flex-start" }}
       />
     </Stack>
+  );
+}
+
+interface LatestTelemetrySectionProps {
+  query: ReturnType<typeof useLatestTelemetry>;
+  resources: DashboardResources;
+}
+
+function LatestTelemetrySection({
+  query,
+  resources,
+}: LatestTelemetrySectionProps) {
+  return (
+    <Box component="section" aria-labelledby="dashboard-latest-telemetry-title">
+      <Stack spacing={2}>
+        <Box>
+          <Typography
+            component="h2"
+            variant="h5"
+            id="dashboard-latest-telemetry-title"
+          >
+            {resources.latestTelemetry.title}
+          </Typography>
+
+          <Typography color="text.secondary">
+            {resources.latestTelemetry.description}
+          </Typography>
+        </Box>
+
+        {query.isPending ? (
+          <LoadingState label={resources.latestTelemetry.loading} />
+        ) : null}
+
+        {query.isError ? (
+          <Alert
+            severity="error"
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => void query.refetch()}
+              >
+                {resources.retry}
+              </Button>
+            }
+          >
+            {resources.latestTelemetry.error}
+          </Alert>
+        ) : null}
+
+        {query.data?.length === 0 ? (
+          <Paper variant="outlined" sx={{ p: 2.5 }}>
+            <Typography color="text.secondary">
+              {resources.latestTelemetry.empty}
+            </Typography>
+          </Paper>
+        ) : null}
+
+        {query.data && query.data.length > 0 ? (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                md: "repeat(2, minmax(0, 1fr))",
+                xl: "repeat(3, minmax(0, 1fr))",
+              },
+              gap: 2,
+            }}
+          >
+            {query.data.map((record) => (
+              <LatestTelemetryCard
+                key={`${record.device}-${record.sensor}-${record.time}`}
+                record={record}
+                resources={resources}
+              />
+            ))}
+          </Box>
+        ) : null}
+      </Stack>
+    </Box>
+  );
+}
+
+interface LatestTelemetryCardProps {
+  record: LatestTelemetryRecord;
+  resources: DashboardResources;
+}
+
+function LatestTelemetryCard({ record, resources }: LatestTelemetryCardProps) {
+  return (
+    <Paper variant="outlined" sx={{ p: 2.5 }}>
+      <Stack spacing={2}>
+        <Box>
+          <Typography component="h3" variant="h6">
+            {record.sensor}
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary">
+            {record.sensorType}
+          </Typography>
+        </Box>
+
+        <Typography component="p" variant="h4">
+          {record.value} {record.unit}
+        </Typography>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, minmax(0, 1fr))",
+            },
+            gap: 1.5,
+          }}
+        >
+          <TelemetryMetadata
+            label={resources.latestTelemetry.site}
+            value={record.site}
+          />
+
+          <TelemetryMetadata
+            label={resources.latestTelemetry.device}
+            value={record.device}
+          />
+        </Box>
+
+        <Typography variant="caption" color="text.secondary">
+          {resources.latestTelemetry.time}: {record.time}
+        </Typography>
+      </Stack>
+    </Paper>
+  );
+}
+
+interface TelemetryMetadataProps {
+  label: string;
+  value: string;
+}
+
+function TelemetryMetadata({ label, value }: TelemetryMetadataProps) {
+  return (
+    <Box>
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+
+      <Typography variant="body2">{value}</Typography>
+    </Box>
   );
 }
 

@@ -99,6 +99,23 @@ const alternativeResources = {
       },
     },
 
+    latestTelemetry: {
+      title: "Alt latest telemetry",
+
+      description:
+        "Alt most recent validated sensor readings across monitored areas.",
+
+      loading: "Alt loading latest telemetry",
+
+      error: "Alt latest telemetry could not be loaded.",
+
+      empty: "Alt no latest telemetry is currently available.",
+
+      site: "Alt Site",
+      device: "Alt Device",
+      time: "Alt Reading Time",
+    },
+
     loading: "Alt loading dashboard summary",
     error: "Alt dashboard summary error",
     retry: "Alt retry",
@@ -326,6 +343,16 @@ describe("localization contracts", () => {
 
     expect(
       screen.getByText("Alt loading monitored area status"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt latest telemetry",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading latest telemetry"),
     ).toBeInTheDocument();
   });
 
