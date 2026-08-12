@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ShellLandingPage } from "./pages/ShellLandingPage";
 import { UsersPlaceholderPage } from "./pages/UsersPlaceholderPage";
+import { DashboardPage } from "./pages/DashboardPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -36,7 +37,7 @@ export function App() {
             path="dashboard"
             element={
               <PermissionBoundary path="/dashboard">
-                <FeaturePlaceholderPage feature="dashboard" />
+                <DashboardPage />
               </PermissionBoundary>
             }
           />

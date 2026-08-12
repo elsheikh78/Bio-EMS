@@ -1,4 +1,5 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -23,21 +24,25 @@ import { englishResources } from "./resources";
 
 const alternativeResources = {
   ...englishResources,
+
   foundation: {
     title: "Alternative foundation title",
     description: "Alternative foundation description",
     deferredDescription: "Alternative deferred description",
   },
+
   notFound: {
     title: "Alternative missing-page title",
     action: "Alternative return to workspace",
   },
+
   shell: {
     productName: "ALT-BIO-EMS",
     openNavigation: "Open alt navigation",
     primaryNavigation: "Alt primary navigation",
     skipToContent: "Skip to alt main content",
   },
+
   navigation: {
     workspace: "Alt Workspace",
     dashboard: "Alt Dashboard",
@@ -47,36 +52,121 @@ const alternativeResources = {
     configuration: "Alt Configuration",
     users: "Alt Users",
   },
+
   workspace: {
     title: "Alt workspace title",
     description: "Alt workspace description",
   },
+
+  dashboard: {
+    title: "Alt operational dashboard",
+    description: "Alt operational dashboard description",
+    refresh: "Alt refresh dashboard",
+    refreshing: "Alt refreshing dashboard",
+
+    summary: {
+      totalSites: "Alt Sites",
+      totalRooms: "Alt Monitored Areas",
+      totalDevices: "Alt Devices",
+      totalSensors: "Alt Sensors",
+      activeAlarms: "Alt Active Alarms",
+      offlineDevices: "Alt Offline Devices",
+    },
+
+    rooms: {
+      title: "Alt monitored area status",
+      description:
+        "Alt current environmental status for monitored rooms and areas.",
+      loading: "Alt loading monitored area status",
+      error: "Alt monitored area status could not be loaded.",
+      empty: "Alt no monitored area status is currently available.",
+      online: "Alt Online",
+      offline: "Alt Offline",
+      temperature: "Alt Temperature",
+      humidity: "Alt Relative Humidity",
+      activeAlarms: "Alt Active Alarms",
+      lastUpdate: "Alt Last Update",
+      unavailable: "Alt Unavailable",
+
+      status: {
+        NORMAL: "Alt Normal",
+        WARNING: "Alt Warning",
+        CRITICAL: "Alt Critical",
+        UNKNOWN: "Alt Unknown",
+      },
+    },
+
+    latestTelemetry: {
+      title: "Alt latest telemetry",
+      description:
+        "Alt most recent validated sensor readings across monitored areas.",
+      loading: "Alt loading latest telemetry",
+      error: "Alt latest telemetry could not be loaded.",
+      empty: "Alt no latest telemetry is currently available.",
+      site: "Alt Site",
+      device: "Alt Device",
+      time: "Alt Reading Time",
+    },
+
+    alarmStatistics: {
+      title: "Alt alarm statistics",
+      description:
+        "Alt current alarm lifecycle and severity distribution across monitored areas.",
+      loading: "Alt loading alarm statistics",
+      error: "Alt alarm statistics could not be loaded.",
+
+      lifecycle: {
+        title: "Alt Lifecycle",
+        active: "Alt Active",
+        acknowledged: "Alt Acknowledged",
+        recovered: "Alt Recovered",
+      },
+
+      severity: {
+        title: "Alt Severity",
+        critical: "Alt Critical",
+        warning: "Alt Warning",
+        info: "Alt Info",
+      },
+    },
+
+    loading: "Alt loading dashboard summary",
+    error: "Alt dashboard summary error",
+    retry: "Alt retry",
+  },
+
   placeholders: {
     dashboard: {
       title: "Alt dashboard title",
       description: "Alt dashboard description",
     },
+
     monitoredAreas: {
       title: "Alt monitored areas title",
       description: "Alt monitored areas description",
     },
+
     alarms: {
       title: "Alt alarms title",
       description: "Alt alarms description",
     },
+
     devices: {
       title: "Alt devices title",
       description: "Alt devices description",
     },
+
     configuration: {
       title: "Alt configuration title",
       description: "Alt configuration description",
     },
+
     users: {
       title: "Alt users title",
       description: "Alt users description",
     },
   },
+
   errorBoundary: {
     title: "Alternative startup failure",
     reload: "Alternative reload action",
@@ -85,9 +175,16 @@ const alternativeResources = {
 
 const futureLanguage: SupportedLanguage = "ar";
 const futureDirection: TextDirection = "rtl";
+
 const authenticatedAdmin = {
   status: "authenticated",
-  user: { id: 1, username: "admin", role: "ADMIN" },
+
+  user: {
+    id: 1,
+    username: "admin",
+    role: "ADMIN",
+  },
+
   loginPending: false,
   login: vi.fn(),
   logout: vi.fn(),
@@ -100,6 +197,7 @@ function setDesktopViewport() {
     configurable: true,
     value: 1200,
   });
+
   vi.stubGlobal(
     "matchMedia",
     vi.fn().mockImplementation((query: string) => ({
@@ -115,21 +213,33 @@ function setDesktopViewport() {
 
 function renderWithAlternativeResources(path: string) {
   setDesktopViewport();
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
   return render(
-    <LocalizationProvider
-      language={futureLanguage}
-      direction={futureDirection}
-      resources={alternativeResources}
-    >
-      <ThemeProvider theme={createAppTheme(futureDirection)}>
-        <CssBaseline />
-        <AuthenticationContext.Provider value={authenticatedAdmin}>
-          <MemoryRouter initialEntries={[path]}>
-            <App />
-          </MemoryRouter>
-        </AuthenticationContext.Provider>
-      </ThemeProvider>
-    </LocalizationProvider>,
+    <QueryClientProvider client={queryClient}>
+      <LocalizationProvider
+        language={futureLanguage}
+        direction={futureDirection}
+        resources={alternativeResources}
+      >
+        <ThemeProvider theme={createAppTheme(futureDirection)}>
+          <CssBaseline />
+
+          <AuthenticationContext.Provider value={authenticatedAdmin}>
+            <MemoryRouter initialEntries={[path]}>
+              <App />
+            </MemoryRouter>
+          </AuthenticationContext.Provider>
+        </ThemeProvider>
+      </LocalizationProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -142,6 +252,7 @@ describe("localization contracts", () => {
   it("accepts future language, RTL direction, and independently translated text", () => {
     expect(futureLanguage).toBe("ar");
     expect(futureDirection).toBe("rtl");
+
     expect(alternativeResources.foundation.title).toBe(
       "Alternative foundation title",
     );
@@ -163,11 +274,15 @@ describe("localization contracts", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Alternative foundation title" }),
+      screen.getByRole("heading", {
+        name: "Alternative foundation title",
+      }),
     ).toBeInTheDocument();
+
     expect(
       screen.getByText("Alternative foundation description"),
     ).toBeInTheDocument();
+
     expect(
       screen.getByText("Alternative deferred description"),
     ).toBeInTheDocument();
@@ -187,8 +302,11 @@ describe("localization contracts", () => {
         name: "Alternative missing-page title",
       }),
     ).toBeInTheDocument();
+
     expect(
-      screen.getByRole("link", { name: "Alternative return to workspace" }),
+      screen.getByRole("link", {
+        name: "Alternative return to workspace",
+      }),
     ).toHaveAttribute("href", "/");
   });
 
@@ -196,23 +314,76 @@ describe("localization contracts", () => {
     renderWithAlternativeResources("/");
 
     expect(
-      screen.getByRole("heading", { name: "Alt workspace title" }),
+      screen.getByRole("heading", {
+        name: "Alt workspace title",
+      }),
     ).toBeInTheDocument();
+
     expect(
-      screen.getByRole("navigation", { name: "Alt primary navigation" }),
+      screen.getByRole("navigation", {
+        name: "Alt primary navigation",
+      }),
     ).toBeInTheDocument();
+
     expect(
-      screen.getByRole("link", { name: "Alt Dashboard" }),
+      screen.getByRole("link", {
+        name: "Alt Dashboard",
+      }),
     ).toBeInTheDocument();
   });
 
-  it("renders an alternative placeholder route through the localization resources", () => {
+  it("renders the operational dashboard through localization resources", () => {
     renderWithAlternativeResources("/dashboard");
 
     expect(
-      screen.getByRole("heading", { name: "Alt dashboard title" }),
+      screen.getByRole("heading", {
+        name: "Alt operational dashboard",
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Alt dashboard description")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt operational dashboard description"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Alt refresh dashboard",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading dashboard summary"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt monitored area status",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading monitored area status"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt latest telemetry",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading latest telemetry"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt alarm statistics",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading alarm statistics"),
+    ).toBeInTheDocument();
   });
 
   it("renders the alternative shell landing page copy", () => {
@@ -230,7 +401,9 @@ describe("localization contracts", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Alt workspace title" }),
+      screen.getByRole("heading", {
+        name: "Alt workspace title",
+      }),
     ).toBeInTheDocument();
   });
 
@@ -243,14 +416,18 @@ describe("localization contracts", () => {
       >
         <ThemeProvider theme={createAppTheme(futureDirection)}>
           <CssBaseline />
+
           <FeaturePlaceholderPage feature="alarms" />
         </ThemeProvider>
       </LocalizationProvider>,
     );
 
     expect(
-      screen.getByRole("heading", { name: "Alt alarms title" }),
+      screen.getByRole("heading", {
+        name: "Alt alarms title",
+      }),
     ).toBeInTheDocument();
+
     expect(screen.getByText("Alt alarms description")).toBeInTheDocument();
   });
 
@@ -266,10 +443,15 @@ describe("localization contracts", () => {
     );
 
     expect(
-      screen.getByRole("navigation", { name: "Alt primary navigation" }),
+      screen.getByRole("navigation", {
+        name: "Alt primary navigation",
+      }),
     ).toBeInTheDocument();
+
     expect(
-      screen.getByRole("link", { name: "Alt Workspace" }),
+      screen.getByRole("link", {
+        name: "Alt Workspace",
+      }),
     ).toBeInTheDocument();
   });
 });
