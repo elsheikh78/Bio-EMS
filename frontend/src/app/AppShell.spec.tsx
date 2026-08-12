@@ -1,3 +1,4 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import {
   fireEvent,
   render,
@@ -6,11 +7,26 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
+import {
+  AuthenticationContext,
+  type AuthenticationContextValue,
+} from "../auth/AuthenticationContext";
 import { getAppHeaderLayering } from "../components/appHeaderStyles";
+import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { createAppTheme } from "../theme/theme";
-import { AppProviders } from "./AppProviders";
+
+const authenticatedAdmin = {
+  status: "authenticated",
+  user: { id: 1, username: "admin", role: "ADMIN" },
+  loginPending: false,
+  login: vi.fn(),
+  logout: vi.fn(),
+  retryRestoration: vi.fn(),
+  protectedRequest: vi.fn(),
+} satisfies AuthenticationContextValue;
 
 function useViewport(width: number) {
   Object.defineProperty(window, "innerWidth", {
@@ -31,11 +47,17 @@ function useViewport(width: number) {
 }
 
 function renderShell(path = "/") {
-  window.history.pushState({}, "", path);
   return render(
-    <AppProviders>
-      <App />
-    </AppProviders>,
+    <LocalizationProvider>
+      <ThemeProvider theme={createAppTheme("ltr")}>
+        <CssBaseline />
+        <AuthenticationContext.Provider value={authenticatedAdmin}>
+          <MemoryRouter initialEntries={[path]}>
+            <App />
+          </MemoryRouter>
+        </AuthenticationContext.Provider>
+      </ThemeProvider>
+    </LocalizationProvider>,
   );
 }
 
@@ -62,6 +84,9 @@ describe("responsive application shell", () => {
       within(navigation).getByRole("link", { name: "Dashboard" }),
     ).toHaveAttribute("aria-current", "page");
     expect(screen.getByText("BIO-EMS")).toBeVisible();
+    expect(screen.getByText("admin")).toBeVisible();
+    expect(screen.getByText("ADMIN")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Log out" })).toBeVisible();
     expect(drawer).not.toBeNull();
     expect(drawer?.querySelector(".MuiToolbar-root")).not.toBeNull();
     expect(headerLayering.mobile).toBe(theme.zIndex.appBar);

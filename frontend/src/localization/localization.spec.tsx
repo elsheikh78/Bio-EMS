@@ -3,6 +3,10 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
+import {
+  AuthenticationContext,
+  type AuthenticationContextValue,
+} from "../auth/AuthenticationContext";
 import { AppNavigation } from "../components/AppNavigation";
 import { FeaturePlaceholderPage } from "../pages/FeaturePlaceholderPage";
 import { FoundationPage } from "../pages/FoundationPage";
@@ -41,6 +45,7 @@ const alternativeResources = {
     alarms: "Alt Alarms",
     devices: "Alt Devices",
     configuration: "Alt Configuration",
+    users: "Alt Users",
   },
   workspace: {
     title: "Alt workspace title",
@@ -67,6 +72,10 @@ const alternativeResources = {
       title: "Alt configuration title",
       description: "Alt configuration description",
     },
+    users: {
+      title: "Alt users title",
+      description: "Alt users description",
+    },
   },
   errorBoundary: {
     title: "Alternative startup failure",
@@ -76,6 +85,15 @@ const alternativeResources = {
 
 const futureLanguage: SupportedLanguage = "ar";
 const futureDirection: TextDirection = "rtl";
+const authenticatedAdmin = {
+  status: "authenticated",
+  user: { id: 1, username: "admin", role: "ADMIN" },
+  loginPending: false,
+  login: vi.fn(),
+  logout: vi.fn(),
+  retryRestoration: vi.fn(),
+  protectedRequest: vi.fn(),
+} satisfies AuthenticationContextValue;
 
 function setDesktopViewport() {
   Object.defineProperty(window, "innerWidth", {
@@ -105,9 +123,11 @@ function renderWithAlternativeResources(path: string) {
     >
       <ThemeProvider theme={createAppTheme(futureDirection)}>
         <CssBaseline />
-        <MemoryRouter initialEntries={[path]}>
-          <App />
-        </MemoryRouter>
+        <AuthenticationContext.Provider value={authenticatedAdmin}>
+          <MemoryRouter initialEntries={[path]}>
+            <App />
+          </MemoryRouter>
+        </AuthenticationContext.Provider>
       </ThemeProvider>
     </LocalizationProvider>,
   );
@@ -237,9 +257,11 @@ describe("localization contracts", () => {
   it("renders the navigation copy through localization resources", () => {
     render(
       <LocalizationProvider resources={alternativeResources}>
-        <MemoryRouter>
-          <AppNavigation label="Alt primary navigation" />
-        </MemoryRouter>
+        <AuthenticationContext.Provider value={authenticatedAdmin}>
+          <MemoryRouter>
+            <AppNavigation label="Alt primary navigation" />
+          </MemoryRouter>
+        </AuthenticationContext.Provider>
       </LocalizationProvider>,
     );
 

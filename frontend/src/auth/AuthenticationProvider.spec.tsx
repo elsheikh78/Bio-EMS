@@ -143,7 +143,7 @@ describe("authentication session lifecycle", () => {
     },
   );
 
-  it("clears the session and QueryClient after a restoration 401", async () => {
+  it("clears the session and QueryClient when disabled or deleted Users produce a restoration 401", async () => {
     const storage = storageAdapter(storedSession);
     const { queryClient } = renderProvider({
       storage: storage.adapter,
@@ -239,7 +239,7 @@ describe("authentication session lifecycle", () => {
     expect(queryClient.getQueryData(["protected"])).toBeUndefined();
   });
 
-  it("enforces expiry on timer, focus, and visibility without polling /auth/me", async () => {
+  it("enforces expiry with a timer without polling /auth/me", async () => {
     vi.useFakeTimers();
     let now = 1_000;
     const session = { ...storedSession, expiresAt: 2_000 };
@@ -253,10 +253,52 @@ describe("authentication session lifecycle", () => {
     expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
 
     now = 2_000;
+    await act(async () => vi.advanceTimersByTimeAsync(1_000));
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
+  it("rechecks expiry when browser focus returns", async () => {
+    vi.useFakeTimers();
+    let now = 1_000;
+    const session = { ...storedSession, expiresAt: 2_000 };
+    const storage = storageAdapter(session);
+    const { request } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: session.user }],
+      now: () => now,
+    });
+    await act(async () => Promise.resolve());
+    now = 2_000;
     await act(async () => {
       window.dispatchEvent(new Event("focus"));
       await Promise.resolve();
     });
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
+  it("rechecks expiry when document visibility returns to visible", async () => {
+    vi.useFakeTimers();
+    let now = 1_000;
+    const session = { ...storedSession, expiresAt: 2_000 };
+    const storage = storageAdapter(session);
+    const { request } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: session.user }],
+      now: () => now,
+    });
+    await act(async () => Promise.resolve());
+    now = 2_000;
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      value: "visible",
+    });
+    await act(async () => {
+      document.dispatchEvent(new Event("visibilitychange"));
+      await Promise.resolve();
+    });
+
     expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
     expect(request).toHaveBeenCalledTimes(1);
   });

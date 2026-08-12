@@ -7,18 +7,20 @@ import {
   Typography,
 } from "@mui/material";
 import { useRef, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   AuthenticationFailure,
   type AuthenticationFailureKind,
 } from "../auth/AuthenticationContext";
 import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
+import { resolveSafeReturnPath } from "../routing/routePolicy";
 
 export function LoginPage() {
   const { resources } = useLocalization();
   const { login, loginPending } = useAuthentication();
   const navigate = useNavigate();
+  const location = useLocation();
   const errorRef = useRef<HTMLDivElement>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -28,9 +30,14 @@ export function LoginPage() {
     event.preventDefault();
     setFailure(undefined);
     try {
-      await login({ username, password });
+      const authenticatedUser = await login({ username, password });
       setPassword("");
-      void navigate("/", { replace: true });
+      void navigate(
+        resolveSafeReturnPath(location.state, authenticatedUser.role),
+        {
+          replace: true,
+        },
+      );
     } catch (error) {
       setPassword("");
       setFailure(

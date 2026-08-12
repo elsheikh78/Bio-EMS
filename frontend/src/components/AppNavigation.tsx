@@ -1,5 +1,7 @@
 import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { hasPermission } from "../authorization/permissions";
+import { useAuthentication } from "../auth/useAuthentication";
 import { navigationItems } from "../navigation/navigationConfig";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -10,12 +12,13 @@ interface AppNavigationProps {
 
 export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
   const { resources } = useLocalization();
+  const { user } = useAuthentication();
 
   return (
     <nav aria-label={label}>
       <List>
         {navigationItems
-          .filter((item) => item.visible)
+          .filter((item) => user && hasPermission(user.role, item.permission))
           .map((item) => (
             <ListItem disablePadding key={item.id}>
               <ListItemButton

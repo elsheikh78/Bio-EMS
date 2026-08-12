@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import {
   AuthenticationContext,
@@ -10,11 +10,21 @@ import {
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { LoginPage } from "./LoginPage";
 
-function renderLogin(overrides: Partial<AuthenticationContextValue> = {}) {
+const admin = { id: 1, username: "admin", role: "ADMIN" } as const;
+
+function LocationProbe() {
+  const location = useLocation();
+  return <output data-testid="location">{location.pathname}</output>;
+}
+
+function renderLogin(
+  overrides: Partial<AuthenticationContextValue> = {},
+  returnTo?: unknown,
+) {
   const value: AuthenticationContextValue = {
     status: "unauthenticated",
     loginPending: false,
-    login: vi.fn(),
+    login: vi.fn().mockResolvedValue(admin),
     logout: vi.fn(),
     retryRestoration: vi.fn(),
     protectedRequest: vi.fn(),
@@ -23,8 +33,11 @@ function renderLogin(overrides: Partial<AuthenticationContextValue> = {}) {
   render(
     <LocalizationProvider>
       <AuthenticationContext.Provider value={value}>
-        <MemoryRouter>
+        <MemoryRouter
+          initialEntries={[{ pathname: "/login", state: { returnTo } }]}
+        >
           <LoginPage />
+          <LocationProbe />
         </MemoryRouter>
       </AuthenticationContext.Provider>
     </LocalizationProvider>,
@@ -34,7 +47,7 @@ function renderLogin(overrides: Partial<AuthenticationContextValue> = {}) {
 
 describe("accessible Login experience", () => {
   it("uses the approved field types, autocomplete values, and keyboard submission", async () => {
-    const login = vi.fn().mockResolvedValue(undefined);
+    const login = vi.fn().mockResolvedValue(admin);
     renderLogin({ login });
     const user = userEvent.setup();
     const username = screen.getByRole("textbox", { name: "Username" });
@@ -51,6 +64,38 @@ describe("accessible Login experience", () => {
         username: "admin",
         password: "password",
       }),
+    );
+  });
+
+  it("returns to a known permitted internal route after Login", async () => {
+    const login = vi.fn().mockResolvedValue(admin);
+    renderLogin({ login }, "/users");
+    const user = userEvent.setup();
+
+    await user.type(screen.getByRole("textbox", { name: "Username" }), "admin");
+    await user.type(screen.getByLabelText(/Password/), "password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent("/users"),
+    );
+    expect(screen.queryByText("password")).not.toBeInTheDocument();
+  });
+
+  it("falls back to the workspace for an unauthorized return target", async () => {
+    const operator = { id: 2, username: "operator", role: "OPERATOR" } as const;
+    renderLogin({ login: vi.fn().mockResolvedValue(operator) }, "/users");
+    const user = userEvent.setup();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Username" }),
+      "operator",
+    );
+    await user.type(screen.getByLabelText(/Password/), "password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("location")).toHaveTextContent("/"),
     );
   });
 
@@ -80,5 +125,27 @@ describe("accessible Login experience", () => {
     expect(alert).toHaveTextContent("The username or password is invalid.");
     await waitFor(() => expect(alert).toHaveFocus());
     expect(screen.queryByDisplayValue("wrong")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["validation", "Check the entered credentials and try again."],
+    ["network", "The service could not be reached. Try again."],
+    ["server", "The service could not complete sign in. Try again."],
+    ["malformed-response", "The sign-in response could not be verified."],
+    [
+      "storage",
+      "The session could not be stored securely in this browser tab.",
+    ],
+  ] as const)("announces a safe localized %s error", async (kind, message) => {
+    renderLogin({
+      login: vi.fn().mockRejectedValue(new AuthenticationFailure(kind)),
+    });
+    const user = userEvent.setup();
+
+    await user.type(screen.getByRole("textbox", { name: "Username" }), "user");
+    await user.type(screen.getByLabelText(/Password/), "password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(message);
   });
 });
