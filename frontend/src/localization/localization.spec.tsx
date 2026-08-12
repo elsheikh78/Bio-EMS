@@ -61,6 +61,8 @@ const alternativeResources = {
   dashboard: {
     title: "Alt operational dashboard",
     description: "Alt operational dashboard description",
+    refresh: "Alt refresh dashboard",
+    refreshing: "Alt refreshing dashboard",
 
     summary: {
       totalSites: "Alt Sites",
@@ -341,6 +343,12 @@ describe("localization contracts", () => {
 
     expect(
       screen.getByText("Alt operational dashboard description"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Alt refresh dashboard",
+      }),
     ).toBeInTheDocument();
 
     expect(

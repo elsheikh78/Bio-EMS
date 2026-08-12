@@ -98,6 +98,8 @@ export interface TranslationResources {
   dashboard: {
     title: string;
     description: string;
+    refresh: string;
+    refreshing: string;
 
     summary: {
       totalSites: string;
@@ -253,6 +255,9 @@ export const englishResources = {
 
     description:
       "Current monitoring coverage and operational health across BIO-EMS.",
+
+    refresh: "Refresh dashboard",
+    refreshing: "Refreshing dashboard",
 
     summary: {
       totalSites: "Sites",

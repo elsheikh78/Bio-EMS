@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Alert,
   Box,
@@ -33,16 +34,70 @@ export function DashboardPage() {
   const latestTelemetryQuery = useLatestTelemetry();
   const alarmStatisticsQuery = useDashboardAlarmStatistics();
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  async function refreshDashboard() {
+    if (isRefreshing) {
+      return;
+    }
+
+    setIsRefreshing(true);
+
+    try {
+      await Promise.all([
+        summaryQuery.refetch(),
+        roomStatusesQuery.refetch(),
+        latestTelemetryQuery.refetch(),
+        alarmStatisticsQuery.refetch(),
+      ]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
+
   return (
     <Stack spacing={4}>
-      <Box>
-        <Typography component="h1" variant="h4">
-          {resources.dashboard.title}
-        </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: {
+            xs: "stretch",
+            sm: "flex-start",
+          },
+          flexDirection: {
+            xs: "column",
+            sm: "row",
+          },
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography component="h1" variant="h4">
+            {resources.dashboard.title}
+          </Typography>
 
-        <Typography color="text.secondary">
-          {resources.dashboard.description}
-        </Typography>
+          <Typography color="text.secondary">
+            {resources.dashboard.description}
+          </Typography>
+        </Box>
+
+        <Button
+          variant="outlined"
+          onClick={() => void refreshDashboard()}
+          disabled={isRefreshing}
+          sx={{
+            alignSelf: {
+              xs: "stretch",
+              sm: "flex-start",
+            },
+            whiteSpace: "nowrap",
+          }}
+        >
+          {isRefreshing
+            ? resources.dashboard.refreshing
+            : resources.dashboard.refresh}
+        </Button>
       </Box>
 
       <DashboardSummarySection

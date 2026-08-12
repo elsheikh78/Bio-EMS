@@ -53,6 +53,7 @@ function mockSummarySuccess() {
     },
     isPending: false,
     isError: false,
+    isFetching: false,
     refetch: vi.fn(),
   } as unknown as ReturnType<typeof useDashboardSummary>);
 }
@@ -62,6 +63,7 @@ function mockRoomsPending() {
     data: undefined,
     isPending: true,
     isError: false,
+    isFetching: false,
     refetch: vi.fn(),
   } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
 }
@@ -71,6 +73,7 @@ function mockLatestTelemetryPending() {
     data: undefined,
     isPending: true,
     isError: false,
+    isFetching: false,
     refetch: vi.fn(),
   } as unknown as ReturnType<typeof useLatestTelemetry>);
 }
@@ -80,6 +83,7 @@ function mockAlarmStatisticsPending() {
     data: undefined,
     isPending: true,
     isError: false,
+    isFetching: false,
     refetch: vi.fn(),
   } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
 }
@@ -93,11 +97,78 @@ describe("DashboardPage", () => {
     mockAlarmStatisticsPending();
   });
 
+  it("refreshes all dashboard data sources through one user action", () => {
+    const summaryRefetch = vi.fn();
+    const roomsRefetch = vi.fn();
+    const telemetryRefetch = vi.fn();
+    const alarmStatisticsRefetch = vi.fn();
+
+    mockedUseDashboardSummary.mockReturnValue({
+      data: {
+        totalSites: 2,
+        totalRooms: 6,
+        totalDevices: 4,
+        totalSensors: 18,
+        activeAlarms: 3,
+        offlineDevices: 1,
+      },
+      isPending: false,
+      isError: false,
+      isFetching: false,
+      refetch: summaryRefetch,
+    } as unknown as ReturnType<typeof useDashboardSummary>);
+
+    mockedUseDashboardRoomStatuses.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      isFetching: false,
+      refetch: roomsRefetch,
+    } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
+
+    mockedUseLatestTelemetry.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      isFetching: false,
+      refetch: telemetryRefetch,
+    } as unknown as ReturnType<typeof useLatestTelemetry>);
+
+    mockedUseDashboardAlarmStatistics.mockReturnValue({
+      data: {
+        active: 0,
+        acknowledged: 0,
+        recovered: 0,
+        critical: 0,
+        warning: 0,
+        info: 0,
+      },
+      isPending: false,
+      isError: false,
+      isFetching: false,
+      refetch: alarmStatisticsRefetch,
+    } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
+
+    renderDashboard();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: englishResources.dashboard.refresh,
+      }),
+    );
+
+    expect(summaryRefetch).toHaveBeenCalledTimes(1);
+    expect(roomsRefetch).toHaveBeenCalledTimes(1);
+    expect(telemetryRefetch).toHaveBeenCalledTimes(1);
+    expect(alarmStatisticsRefetch).toHaveBeenCalledTimes(1);
+  });
+
   it("renders an accessible dashboard summary loading state", () => {
     mockedUseDashboardSummary.mockReturnValue({
       data: undefined,
       isPending: true,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useDashboardSummary>);
 
@@ -153,6 +224,7 @@ describe("DashboardPage", () => {
       data: undefined,
       isPending: false,
       isError: true,
+      isFetching: false,
       refetch,
     } as unknown as ReturnType<typeof useDashboardSummary>);
 
@@ -217,6 +289,7 @@ describe("DashboardPage", () => {
       ],
       isPending: false,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
 
@@ -285,6 +358,7 @@ describe("DashboardPage", () => {
       data: [],
       isPending: false,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
 
@@ -308,6 +382,7 @@ describe("DashboardPage", () => {
       data: undefined,
       isPending: false,
       isError: true,
+      isFetching: false,
       refetch,
     } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
 
@@ -364,6 +439,7 @@ describe("DashboardPage", () => {
       ],
       isPending: false,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useLatestTelemetry>);
 
@@ -412,6 +488,7 @@ describe("DashboardPage", () => {
       data: [],
       isPending: false,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useLatestTelemetry>);
 
@@ -429,6 +506,7 @@ describe("DashboardPage", () => {
       data: undefined,
       isPending: false,
       isError: true,
+      isFetching: false,
       refetch,
     } as unknown as ReturnType<typeof useLatestTelemetry>);
 
@@ -473,6 +551,7 @@ describe("DashboardPage", () => {
       },
       isPending: false,
       isError: false,
+      isFetching: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
 
@@ -548,6 +627,7 @@ describe("DashboardPage", () => {
       data: undefined,
       isPending: false,
       isError: true,
+      isFetching: false,
       refetch,
     } as unknown as ReturnType<typeof useDashboardAlarmStatistics>);
 
