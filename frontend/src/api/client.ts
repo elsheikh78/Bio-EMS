@@ -14,7 +14,6 @@ export interface ApiClient {
 
 export interface ApiClientConfiguration {
   getAccessToken?: () => string | undefined;
-  onProtectedUnauthorized?: () => void | Promise<void>;
 }
 
 export async function apiRequest<T>(
@@ -68,9 +67,6 @@ async function request<T>(
 
   if (!response.ok) {
     const envelope = await readErrorEnvelope(response);
-    if (mode === "protected" && response.status === 401) {
-      await configuration.onProtectedUnauthorized?.();
-    }
     throw new ApiResponseError(response.status, envelope?.error.code);
   }
 

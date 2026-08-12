@@ -360,18 +360,21 @@ describe("authentication session lifecycle", () => {
     expect(request).toHaveBeenCalledTimes(1);
   });
 
-  it("allows the API client callback to invalidate a protected session", async () => {
+  it("invalidates the current generation when a protected request returns 401", async () => {
     const storage = storageAdapter(storedSession);
-    const { configuration, queryClient } = renderProvider({
+    const { authentication, queryClient } = renderProvider({
       storage: storage.adapter,
-      responses: [{ user: storedSession.user }],
+      responses: [{ user: storedSession.user }, new ApiResponseError(401)],
     });
     queryClient.setQueryData(["protected"], "sensitive");
     expect(await screen.findByText("authenticated")).toBeInTheDocument();
 
-    await act(async () => configuration()?.onProtectedUnauthorized?.());
+    await expect(
+      authentication().protectedRequest("/dashboard"),
+    ).rejects.toMatchObject({ name: "AbortError" });
 
     expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(storage.current()).toBeUndefined();
     expect(queryClient.getQueryData(["protected"])).toBeUndefined();
   });
 
@@ -430,50 +433,210 @@ describe("authentication session lifecycle", () => {
     expect(queryClient.getQueryData(["protected"])).toBeUndefined();
   });
 
-  it("makes concurrent protected 401 invalidation idempotent", async () => {
+  it("keeps a newer Login session intact after a stale protected 401", async () => {
+    const pendingProtected = deferred<unknown>();
     const storage = storageAdapter(storedSession);
-    const { configuration, queryClient } = renderProvider({
+    const loginResponse: LoginResponse = {
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 2, username: "new-admin", role: "ADMIN" },
+    };
+    const { authentication, queryClient, request } = renderProvider({
       storage: storage.adapter,
-      responses: [{ user: storedSession.user }],
+      responses: [
+        { user: storedSession.user },
+        pendingProtected.promise,
+        loginResponse,
+      ],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+
+    const staleRequest = authentication().protectedRequest("/dashboard");
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+    await act(async () => authentication().logout());
+    await act(async () =>
+      authentication().login({ username: "admin", password: "password" }),
+    );
+    queryClient.setQueryData(["session-b"], "current-data");
+
+    pendingProtected.reject(new ApiResponseError(401));
+
+    await expect(staleRequest).rejects.toMatchObject({ name: "AbortError" });
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+    expect(screen.getByTestId("identity")).toHaveTextContent("new-admin:ADMIN");
+    expect(storage.current()?.accessToken).toBe("new-token");
+    expect(queryClient.getQueryData(["session-b"])).toBe("current-data");
+  });
+
+  it("keeps a newer Login session intact after a stale restoration 401", async () => {
+    const pendingRestoration = deferred<unknown>();
+    const storage = storageAdapter(storedSession);
+    const loginResponse: LoginResponse = {
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 2, username: "new-admin", role: "ADMIN" },
+    };
+    const { authentication, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [pendingRestoration.promise, loginResponse],
+    });
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+
+    await act(async () =>
+      authentication().login({ username: "admin", password: "password" }),
+    );
+    pendingRestoration.reject(new ApiResponseError(401));
+    await act(async () => Promise.resolve());
+
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+    expect(screen.getByTestId("identity")).toHaveTextContent("new-admin:ADMIN");
+    expect(storage.current()?.accessToken).toBe("new-token");
+  });
+
+  it("does not let an older invalidation suppress a current-generation 401", async () => {
+    const olderCancellation = deferred<void>();
+    const storage = storageAdapter(storedSession);
+    const loginResponse: LoginResponse = {
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 2, username: "new-admin", role: "ADMIN" },
+    };
+    const { authentication, queryClient } = renderProvider({
+      storage: storage.adapter,
+      responses: [
+        { user: storedSession.user },
+        loginResponse,
+        new ApiResponseError(401),
+      ],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    vi.spyOn(queryClient, "cancelQueries")
+      .mockReturnValueOnce(olderCancellation.promise)
+      .mockResolvedValueOnce(undefined);
+
+    const olderInvalidation = authentication().logout();
+    await waitFor(() =>
+      expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated"),
+    );
+    await act(async () =>
+      authentication().login({ username: "admin", password: "password" }),
+    );
+    queryClient.setQueryData(["session-b"], "sensitive-current-data");
+
+    await expect(
+      authentication().protectedRequest("/dashboard"),
+    ).rejects.toMatchObject({ name: "AbortError" });
+
+    expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(storage.current()).toBeUndefined();
+    expect(queryClient.getQueryData(["session-b"])).toBeUndefined();
+    olderCancellation.resolve();
+    await olderInvalidation;
+  });
+
+  it("does not let an older invalidation clear newer-generation Query data", async () => {
+    const olderCancellation = deferred<void>();
+    const storage = storageAdapter(storedSession);
+    const loginResponse: LoginResponse = {
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 60,
+      user: { id: 2, username: "new-admin", role: "ADMIN" },
+    };
+    const { authentication, queryClient } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }, loginResponse],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    vi.spyOn(queryClient, "cancelQueries").mockReturnValueOnce(
+      olderCancellation.promise,
+    );
+
+    const olderInvalidation = authentication().logout();
+    await waitFor(() =>
+      expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated"),
+    );
+    await act(async () =>
+      authentication().login({ username: "admin", password: "password" }),
+    );
+    queryClient.setQueryData(["session-b"], "current-data");
+
+    olderCancellation.resolve();
+    await olderInvalidation;
+
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+    expect(storage.current()?.accessToken).toBe("new-token");
+    expect(queryClient.getQueryData(["session-b"])).toBe("current-data");
+  });
+
+  it("makes concurrent current-generation protected 401 responses idempotent", async () => {
+    const firstUnauthorized = deferred<unknown>();
+    const secondUnauthorized = deferred<unknown>();
+    const storage = storageAdapter(storedSession);
+    const { authentication, queryClient, request } = renderProvider({
+      storage: storage.adapter,
+      responses: [
+        { user: storedSession.user },
+        firstUnauthorized.promise,
+        secondUnauthorized.promise,
+      ],
     });
     const cancel = vi.spyOn(queryClient, "cancelQueries");
     expect(await screen.findByText("authenticated")).toBeInTheDocument();
     storage.adapter.clear.mockClear();
 
-    await act(async () =>
-      Promise.all([
-        configuration()?.onProtectedUnauthorized?.(),
-        configuration()?.onProtectedUnauthorized?.(),
-      ]),
-    );
+    const firstRequest = authentication().protectedRequest("/dashboard");
+    const secondRequest = authentication().protectedRequest("/alarms");
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(3));
+    firstUnauthorized.reject(new ApiResponseError(401));
+    secondUnauthorized.reject(new ApiResponseError(401));
+
+    await expect(firstRequest).rejects.toMatchObject({ name: "AbortError" });
+    await expect(secondRequest).rejects.toMatchObject({ name: "AbortError" });
 
     expect(storage.adapter.clear).toHaveBeenCalledTimes(1);
     expect(cancel).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
   });
 
-  it("prevents a protected 401 racing with a late success from restoring cache", async () => {
-    const lateSuccess = deferred<{ value: string }>();
-    const { authentication, configuration, queryClient, request } =
-      renderProvider({
-        storage: storageAdapter(storedSession).adapter,
-        responses: [{ user: storedSession.user }, lateSuccess.promise],
-      });
+  it("preserves the current session and QueryClient after a protected 403", async () => {
+    const storage = storageAdapter(storedSession);
+    const { authentication, queryClient } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }, new ApiResponseError(403)],
+    });
     expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    queryClient.setQueryData(["protected"], "preserved");
 
-    const result = authentication()
-      .protectedRequest<{ value: string }>("/dashboard")
-      .then((data) => {
-        queryClient.setQueryData(["protected"], data);
-        return data;
-      });
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
-    await act(async () => configuration()?.onProtectedUnauthorized?.());
-    lateSuccess.resolve({ value: "late-sensitive-data" });
+    await expect(
+      authentication().protectedRequest("/users"),
+    ).rejects.toMatchObject({ status: 403 });
 
-    await expect(result).rejects.toMatchObject({ name: "AbortError" });
-    expect(queryClient.getQueryData(["protected"])).toBeUndefined();
+    expect(screen.getByTestId("status")).toHaveTextContent("authenticated");
+    expect(storage.current()?.accessToken).toBe("opaque-token");
+    expect(queryClient.getQueryData(["protected"])).toBe("preserved");
+  });
+
+  it("clears QueryClient state even when query cancellation rejects", async () => {
+    const storage = storageAdapter(storedSession);
+    const { authentication, queryClient } = renderProvider({
+      storage: storage.adapter,
+      responses: [{ user: storedSession.user }],
+    });
+    expect(await screen.findByText("authenticated")).toBeInTheDocument();
+    vi.spyOn(queryClient, "cancelQueries").mockRejectedValueOnce(
+      new Error("cancellation failed"),
+    );
+    queryClient.setQueryData(["protected"], "sensitive");
+
+    await expect(authentication().logout()).resolves.toBeUndefined();
+
     expect(screen.getByTestId("status")).toHaveTextContent("unauthenticated");
+    expect(storage.current()).toBeUndefined();
+    expect(queryClient.getQueryData(["protected"])).toBeUndefined();
   });
 
   it("aborts restoration on local expiry without showing a restoration error", async () => {

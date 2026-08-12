@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiRequestConfigurationError,
-  ApiResponseError,
   apiRequest,
   createApiClient,
 } from "./client";
@@ -100,12 +99,10 @@ describe("API request headers", () => {
     expect(headers.has("Authorization")).toBe(false);
   });
 
-  it("invalidates only a protected 401 and preserves a normal 403", async () => {
+  it("surfaces protected 401 and 403 responses for generation-scoped handling", async () => {
     vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
-    const invalidate = vi.fn();
     const client = createApiClient({
       getAccessToken: () => "opaque-token",
-      onProtectedUnauthorized: invalidate,
     });
     const fetchSpy = vi.spyOn(globalThis, "fetch");
     fetchSpy.mockResolvedValueOnce(
@@ -124,7 +121,6 @@ describe("API request headers", () => {
     await expect(
       client.request("/auth/me", { auth: "protected" }),
     ).rejects.toMatchObject({ status: 401 });
-    expect(invalidate).toHaveBeenCalledOnce();
 
     fetchSpy.mockResolvedValueOnce(
       new Response(
@@ -137,14 +133,12 @@ describe("API request headers", () => {
     );
     await expect(
       client.request("/users", { auth: "protected" }),
-    ).rejects.toBeInstanceOf(ApiResponseError);
-    expect(invalidate).toHaveBeenCalledOnce();
+    ).rejects.toMatchObject({ status: 403 });
   });
 
-  it("does not globally invalidate a Login 401", async () => {
+  it("surfaces a public Login 401 without adding Authorization", async () => {
     vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
-    const invalidate = vi.fn();
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
           success: false,
@@ -156,11 +150,12 @@ describe("API request headers", () => {
         { status: 401 },
       ),
     );
-    const client = createApiClient({ onProtectedUnauthorized: invalidate });
+    const client = createApiClient();
 
     await expect(
       client.request("/auth/login", { auth: "public" }),
     ).rejects.toMatchObject({ status: 401 });
-    expect(invalidate).not.toHaveBeenCalled();
+    const headers = fetchSpy.mock.calls[0]?.[1]?.headers as Headers;
+    expect(headers.has("Authorization")).toBe(false);
   });
 });

@@ -46,6 +46,11 @@ interface OwnedRequest {
   release(): void;
 }
 
+interface InvalidationOperation {
+  generation: number;
+  promise: Promise<void>;
+}
+
 type ApiClientFactory = (configuration?: ApiClientConfiguration) => ApiClient;
 
 interface AuthenticationProviderProps extends PropsWithChildren {
@@ -64,7 +69,7 @@ class AuthenticationController {
   private disposed = false;
   private expiryTimer?: number;
   private generation = 0;
-  private invalidation?: Promise<void>;
+  private invalidation?: InvalidationOperation;
   private session?: StoredAuthenticationSession;
   private snapshot: AuthenticationSnapshot = {
     status: "bootstrapping",
@@ -82,7 +87,6 @@ class AuthenticationController {
     this.now = now;
     this.apiClient = createClient({
       getAccessToken: () => this.session?.accessToken,
-      onProtectedUnauthorized: () => this.clearAuthentication(),
     });
   }
 
@@ -194,43 +198,70 @@ class AuthenticationController {
       this.requireAuthenticatedCurrent(generation, request.controller.signal);
       return result;
     } catch (error) {
-      if (!this.isAuthenticatedCurrent(generation) || isAbortError(error)) {
+      if (!this.isCurrent(generation) || isAbortError(error)) {
         throw createAbortError();
       }
+      if (error instanceof ApiResponseError && error.status === 401) {
+        await this.clearAuthentication(generation);
+        throw createAbortError();
+      }
+      if (!this.isAuthenticatedCurrent(generation)) throw createAbortError();
       throw error;
     } finally {
       request.release();
     }
   };
 
-  private readonly clearAuthentication = (): Promise<void> => {
-    if (this.invalidation) return this.invalidation;
+  private readonly clearAuthentication = (
+    expectedGeneration?: number,
+  ): Promise<void> => {
+    const generation = expectedGeneration ?? this.generation;
+    if (generation !== this.generation) {
+      return this.invalidation?.generation === generation
+        ? this.invalidation.promise
+        : Promise.resolve();
+    }
     if (
       !this.session &&
       this.snapshot.status === "unauthenticated" &&
       !this.snapshot.loginPending &&
       this.ownedControllers.size === 0
     ) {
-      return Promise.resolve();
+      return this.invalidation?.promise ?? Promise.resolve();
     }
 
     this.generation += 1;
+    const cleanupGeneration = this.generation;
     this.abortOwnedRequests();
     this.session = undefined;
     this.storage.clear();
     this.update({ status: "unauthenticated", loginPending: false });
 
     const invalidation = (async () => {
-      await this.queryClient.cancelQueries();
+      let cancellation: Promise<void> | undefined;
+      try {
+        cancellation = this.queryClient.cancelQueries();
+      } catch {
+        cancellation = undefined;
+      }
       this.queryClient.clear();
+      try {
+        await cancellation;
+      } catch {
+        // Authentication remains fail-closed even if query cancellation fails.
+      }
+      if (!this.disposed && this.generation === cleanupGeneration) {
+        this.queryClient.clear();
+      }
     })();
-    this.invalidation = invalidation;
+    const operation = { generation, promise: invalidation };
+    this.invalidation = operation;
     void invalidation.then(
       () => {
-        if (this.invalidation === invalidation) this.invalidation = undefined;
+        if (this.invalidation === operation) this.invalidation = undefined;
       },
       () => {
-        if (this.invalidation === invalidation) this.invalidation = undefined;
+        if (this.invalidation === operation) this.invalidation = undefined;
       },
     );
     return invalidation;
@@ -278,7 +309,7 @@ class AuthenticationController {
       const refreshed = { ...session, user: response.user };
       this.requireCurrent(generation, request.controller.signal);
       if (!this.storage.write(refreshed)) {
-        await this.clearAuthentication();
+        await this.clearAuthentication(generation);
         return;
       }
       this.requireCurrent(generation, request.controller.signal);
@@ -292,11 +323,11 @@ class AuthenticationController {
     } catch (error) {
       if (!this.isCurrent(generation) || isAbortError(error)) return;
       if (error instanceof ApiResponseError && error.status === 401) {
-        await this.clearAuthentication();
+        await this.clearAuthentication(generation);
         return;
       }
       if (session.expiresAt <= this.now()) {
-        await this.clearAuthentication();
+        await this.clearAuthentication(generation);
         return;
       }
       this.update({
