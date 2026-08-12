@@ -55,6 +55,21 @@ export interface TranslationResources {
     configuration: { title: string; description: string };
     users: { title: string; description: string };
   };
+  dashboard: {
+    title: string;
+    description: string;
+    summary: {
+      totalSites: string;
+      totalRooms: string;
+      totalDevices: string;
+      totalSensors: string;
+      activeAlarms: string;
+      offlineDevices: string;
+    };
+    loading: string;
+    error: string;
+    retry: string;
+  };
   errorBoundary: { title: string; reload: string };
 }
 
@@ -111,6 +126,22 @@ export const englishResources = {
     title: "Operational workspace",
     description:
       "The application shell is ready. Operational features remain explicitly staged for later Sprint 14 stories.",
+  },
+  dashboard: {
+    title: "Operational dashboard",
+    description:
+      "Current monitoring coverage and operational health across BIO-EMS.",
+    summary: {
+      totalSites: "Sites",
+      totalRooms: "Monitored areas",
+      totalDevices: "Devices",
+      totalSensors: "Sensors",
+      activeAlarms: "Active alarms",
+      offlineDevices: "Offline devices",
+    },
+    loading: "Loading dashboard summary",
+    error: "Dashboard summary could not be loaded.",
+    retry: "Retry",
   },
   placeholders: {
     dashboard: {
