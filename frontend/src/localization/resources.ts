@@ -4,12 +4,33 @@ export type SupportedLanguage = "en" | "ar";
 export type TextDirection = Direction;
 
 export interface TranslationResources {
+  authentication: {
+    loginTitle: string;
+    username: string;
+    password: string;
+    signIn: string;
+    signingIn: string;
+    checkingSession: string;
+    logout: string;
+    retry: string;
+    restorationTitle: string;
+    restorationDescription: string;
+    errors: {
+      "invalid-credentials": string;
+      validation: string;
+      network: string;
+      server: string;
+      "malformed-response": string;
+      storage: string;
+    };
+  };
   foundation: {
     title: string;
     description: string;
     deferredDescription: string;
   };
   notFound: { title: string; action: string };
+  notAuthorized: { title: string; description: string };
   shell: {
     productName: string;
     openNavigation: string;
@@ -23,6 +44,7 @@ export interface TranslationResources {
     alarms: string;
     devices: string;
     configuration: string;
+    users: string;
   };
   workspace: { title: string; description: string };
   placeholders: {
@@ -31,11 +53,33 @@ export interface TranslationResources {
     alarms: { title: string; description: string };
     devices: { title: string; description: string };
     configuration: { title: string; description: string };
+    users: { title: string; description: string };
   };
   errorBoundary: { title: string; reload: string };
 }
 
 export const englishResources = {
+  authentication: {
+    loginTitle: "Sign in to BIO-EMS",
+    username: "Username",
+    password: "Password",
+    signIn: "Sign in",
+    signingIn: "Signing in",
+    checkingSession: "Verifying your session",
+    logout: "Log out",
+    retry: "Retry",
+    restorationTitle: "Session verification is temporarily unavailable",
+    restorationDescription:
+      "Protected content remains hidden. Retry verification or log out.",
+    errors: {
+      "invalid-credentials": "The username or password is invalid.",
+      validation: "Check the entered credentials and try again.",
+      network: "The service could not be reached. Try again.",
+      server: "The service could not complete sign in. Try again.",
+      "malformed-response": "The sign-in response could not be verified.",
+      storage: "The session could not be stored securely in this browser tab.",
+    },
+  },
   foundation: {
     title: "BIO-EMS frontend foundation",
     description:
@@ -44,6 +88,10 @@ export const englishResources = {
       "Operational screens, authentication, and the application shell are intentionally deferred to later Sprint 14 stories.",
   },
   notFound: { title: "Page not found", action: "Return to workspace" },
+  notAuthorized: {
+    title: "Not authorized",
+    description: "Your current role does not permit access to this page.",
+  },
   shell: {
     productName: "BIO-EMS",
     openNavigation: "Open primary navigation",
@@ -57,6 +105,7 @@ export const englishResources = {
     alarms: "Alarms",
     devices: "Devices",
     configuration: "Configuration",
+    users: "Users",
   },
   workspace: {
     title: "Operational workspace",
@@ -85,6 +134,11 @@ export const englishResources = {
       title: "Configuration",
       description:
         "Configuration management screens are not implemented in S14-02.",
+    },
+    users: {
+      title: "Users",
+      description:
+        "User management operations are not implemented in this frontend story.",
     },
   },
   errorBoundary: {

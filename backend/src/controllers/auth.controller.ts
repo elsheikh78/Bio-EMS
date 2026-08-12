@@ -10,3 +10,7 @@ const authService = new AuthService(new UserRepository(), new TokenService(confi
 export const loginController = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(await authService.login(req.body));
 });
+
+export const currentUserController = (req: Request, res: Response): void => {
+  res.status(200).json({ user: req.user! });
+};

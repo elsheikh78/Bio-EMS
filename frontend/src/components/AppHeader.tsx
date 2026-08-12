@@ -3,17 +3,25 @@ import type { RefObject } from "react";
 import { getAppHeaderStyles } from "./appHeaderStyles";
 
 interface AppHeaderProps {
+  logoutLabel: string;
   menuButtonRef: RefObject<HTMLButtonElement | null>;
   menuLabel: string;
+  onLogout: () => void;
   onMenuOpen: () => void;
+  role: string;
   title: string;
+  username: string;
 }
 
 export function AppHeader({
+  logoutLabel,
   menuButtonRef,
   menuLabel,
+  onLogout,
   onMenuOpen,
+  role,
   title,
+  username,
 }: AppHeaderProps) {
   return (
     <AppBar
@@ -34,9 +42,23 @@ export function AppHeader({
             ☰
           </Box>
         </Button>
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="h6">
+        <Typography
+          component="span"
+          sx={{ display: { xs: "none", sm: "block" }, fontWeight: 700 }}
+          variant="h6"
+        >
           {title}
         </Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ minWidth: 0, textAlign: "end" }}>
+          <Typography noWrap sx={{ fontWeight: 600 }} variant="body2">
+            {username}
+          </Typography>
+          <Typography color="text.secondary" variant="caption">
+            {role}
+          </Typography>
+        </Box>
+        <Button onClick={onLogout}>{logoutLabel}</Button>
       </Toolbar>
     </AppBar>
   );
