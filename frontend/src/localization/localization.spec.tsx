@@ -71,6 +71,34 @@ const alternativeResources = {
       offlineDevices: "Alt Offline Devices",
     },
 
+    rooms: {
+      title: "Alt monitored area status",
+
+      description:
+        "Alt current environmental status for monitored rooms and areas.",
+
+      loading: "Alt loading monitored area status",
+
+      error: "Alt monitored area status could not be loaded.",
+
+      empty: "Alt no monitored area status is currently available.",
+
+      online: "Alt Online",
+      offline: "Alt Offline",
+      temperature: "Alt Temperature",
+      humidity: "Alt Relative Humidity",
+      activeAlarms: "Alt Active Alarms",
+      lastUpdate: "Alt Last Update",
+      unavailable: "Alt Unavailable",
+
+      status: {
+        NORMAL: "Alt Normal",
+        WARNING: "Alt Warning",
+        CRITICAL: "Alt Critical",
+        UNKNOWN: "Alt Unknown",
+      },
+    },
+
     loading: "Alt loading dashboard summary",
     error: "Alt dashboard summary error",
     retry: "Alt retry",
@@ -288,6 +316,16 @@ describe("localization contracts", () => {
 
     expect(
       screen.getByText("Alt loading dashboard summary"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt monitored area status",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt loading monitored area status"),
     ).toBeInTheDocument();
   });
 
