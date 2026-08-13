@@ -2,11 +2,13 @@
 
 **Published version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
 
-**Current phase:** Sprint 14 — S14-02 application shell review
+**Current phase:** Sprint 14 — S14-05 Monitored Areas frontend
 
-**Main baseline:** `cc699124bdf49d67cd692d559899642b8d0cfabe`
+**Current integrated `main` baseline:** `b3f938e8d46fddf6c3e406f38d5ae1f5a28541f1`
 
-## Implemented platform
+**Active feature branch:** `agent/s14-05-monitored-areas`
+
+## Implemented Platform
 
 - TypeScript/Express backend with Controller, Service, Repository, and persistence boundaries.
 - SQLite configuration and migration infrastructure plus InfluxDB time-series storage.
@@ -15,41 +17,43 @@
 - Centralized role-based authorization and ADMIN-only User Management.
 - Transactional protection against disabling or demoting the last active ADMIN.
 - Authenticated Alarm acknowledgment with actor audit persistence.
-- React frontend foundation with typed localization, responsive shell architecture,
-  and independent frontend quality gates.
+- React frontend architecture, typed localization, responsive AppShell, independent frontend quality gates, authenticated session lifecycle, authorization-aware routing, and an operational Dashboard.
 
-## Sprint 13 delivered state
+## Release and Repository Timeline
 
-S13-01 through S13-07 are implemented and merged. Authentication identifies the
-active persisted User; authorization applies centralized permissions; resource
-ownership remains a separate data-boundary concern. ADMIN User Management includes
-list, create, profile/role update, status update, and password replacement APIs.
+The immutable `v0.13.0` tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
+Later Sprint 13 and Sprint 14 work is current repository development but is not retroactively part of that tagged artifact.
 
-S13-07 added rejected-input MQTT log sanitization, User Management regression and
-concurrency coverage, and removed the unused direct `yamljs` dependency without
-changing public API contracts.
+Sprint 13 and S13-08 are closed.
 
-## Release and repository timeline
+## Sprint 14 State
 
-The immutable `v0.13.0` tag targets
-`ee2cb45832888ff500e02afcbe1418b6144276c6`. S13-06 and S13-07 were merged to
-`main` after that tag, so they are current repository capabilities but are not
-retroactively part of the tagged artifact.
+- **S14-01 — Frontend foundation:** COMPLETE / MERGED / CLOSED.
+- **S14-02 — Professional application shell and navigation:** COMPLETE / MERGED / VERIFIED.
+- **S14-03 — Authentication, session, and authorization-aware routing:** COMPLETE / MERGED / VERIFIED.
+- **S14-04 — Operational Dashboard frontend:** COMPLETE / MERGED / VERIFIED.
+- **S14-05 — Monitored Areas frontend:** IN PROGRESS.
 
-Current `main` passed CI run 31504321547 with 30 test files and 359 passing tests,
-and zero failed, skipped, or todo tests.
+### S14-05 Progress
 
-## Closure and Sprint 14 state
+- **S14-05A — Contracts and data access:** COMPLETE / COMMITTED / PUSHED on `agent/s14-05-monitored-areas`.
+  - commit `90e39af` — `feat(frontend): add monitored areas data contracts and queries`.
+- **S14-05B — Site and Monitored Area hierarchy:** COMPLETE / COMMITTED / PUSHED on the same feature branch.
+  - commit `bd442e9` — `feat(frontend): add monitored areas hierarchy view`.
+  - final recorded frontend gate: 21/21 test files and 189/189 tests passing.
+- **S14-05C — Sensor inventory and threshold metadata:** NOT STARTED / NEXT.
+- **S14-05D — Refresh, integration, and hardening:** NOT STARTED.
 
-Sprint 13 and S13-08 are closed. S14-01 was merged through PR #10 and formally closed
-after CI run 31520085478 attempt 2 completed successfully. Sprint 14 has started.
+S14-05A/B are feature-branch progress and are not yet integrated into `main`.
 
-S14-02 implements the professional responsive application shell on a Draft PR pending
-independent review. It is not closed. S14-03 authentication/session work has not
-started.
+## Domain Boundary
 
-## Deferred state
+For the S14-05 frontend, **Monitored Area** is presentation terminology for the existing Room domain. The hierarchy is:
 
-Monitoring Points, broader Asset/discovery/provisioning workflows, Notification
-Engine, operational frontend features, authentication/session UI, OTA, deployment,
-and production operations remain planned unless separately authorized.
+**Site → Monitored Area (Room) → Sensor**
+
+No Asset, Monitoring Point, or new Area backend domain has been introduced.
+
+## Deferred State
+
+Monitoring Points, broader Asset/discovery/provisioning workflows, Notification Engine, OTA, deployment, production operations, and other separately scoped future features remain planned unless explicitly implemented and merged.
