@@ -1,45 +1,47 @@
-# BIO-EMS Frontend Foundation
+# BIO-EMS Frontend
 
-This directory contains the S14-01 browser-application foundation and the S14-02
-professional responsive application shell. S14-02 adds presentational navigation and
-explicit feature placeholders only. Login, operational dashboard widgets,
-monitored-area data, and the Alarm Center remain deferred.
+This directory contains the Sprint 14 browser application.
+
+Integrated work:
+
+- S14-01 frontend architecture and quality foundation — complete.
+- S14-02 professional responsive AppShell and navigation — complete.
+- S14-03 Login, session lifecycle, and authorization-aware routing — complete.
+- S14-04 operational Dashboard — complete.
+- S14-05 Monitored Areas — in progress.
+
+On `agent/s14-05-monitored-areas`, S14-05A and S14-05B are complete and pushed. S14-05C is next.
 
 ## Prerequisites
 
 - Node.js 22 or newer
-- The backend dependencies and environment described in `../backend/README.md`
+- Backend dependencies and environment described in `../backend/README.md`
 
 ## Environment
 
-Copy `.env.example` to a local `.env` and set:
+Copy `.env.example` to `.env` and configure:
 
 ```dotenv
 VITE_API_BASE_URL=http://localhost:3001/api/v1
 ```
 
-Only public browser configuration may use the `VITE_` prefix. Never place tokens,
-credentials, or other secrets in frontend environment files.
+Only public browser configuration may use the `VITE_` prefix.
 
 ## Local Development
 
-Start the backend from `backend/`:
+Backend:
 
 ```powershell
 npm.cmd install
 npm.cmd run dev
 ```
 
-In another terminal, start the frontend from `frontend/`:
+Frontend:
 
 ```powershell
 npm.cmd install
 npm.cmd run dev
 ```
-
-Vite serves the frontend at `http://localhost:5173`. The backend development CORS
-default allows exactly this origin. Deployments must set
-`BIOEMS_CORS_ALLOWED_ORIGINS` to a comma-separated list of exact HTTPS origins.
 
 ## Quality Commands
 
@@ -52,17 +54,21 @@ npm.cmd run test:coverage
 npm.cmd run build
 ```
 
-## Security Boundary
+## Authentication and Authorization Boundary
 
-The frontend is hosted separately from the JSON API. Helmet protects API responses,
-but the frontend hosting layer must enforce the browser application's CSP. S14-01
-does not store an access token. The approved `sessionStorage` implementation, logout,
-expiry handling, and authorization-aware routing belong to S14-03.
+S14-03 established versioned browser session persistence, restoration, expiry handling, Login/Logout, the authenticated protected-request boundary, generation-scoped invalidation, and authorization-aware routing/navigation. Backend authentication and authorization remain authoritative.
 
-## S14-02 Route Boundary
+## Current Routes
 
-The shell defines `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, and
-`/configuration`; feature routes are honest placeholders and perform no API requests.
-`Monitored Areas` is display terminology for current Room contracts. There are no
-User Management, Asset, Monitoring Point, Login, protected-route, role, or permission
-decisions in S14-02.
+The application includes `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, `/configuration`, and `/users`, subject to the centralized route policy.
+
+`/dashboard` is operational. `/monitored-areas` is the active S14-05 feature. Monitored Area is presentation terminology for the existing Room domain.
+
+## S14-05 Progress
+
+- S14-05A contracts and data access — complete at `90e39af`.
+- S14-05B Site and Monitored Area hierarchy — complete at `bd442e9`.
+- S14-05C Sensor inventory and threshold metadata — next / not started.
+- S14-05D refresh, integration, and hardening — not started.
+
+The latest recorded S14-05B frontend gate passed 21/21 test files and 189/189 tests.
