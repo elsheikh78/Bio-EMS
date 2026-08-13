@@ -1,5 +1,6 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { MonitoredAreasApi } from "./api";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthentication } from "../auth/useAuthentication";
+import { createMonitoredAreasApi } from "./api";
 
 export const monitoredAreasQueryKeys = {
   all: ["monitoredAreas"] as const,
@@ -8,23 +9,32 @@ export const monitoredAreasQueryKeys = {
   sensors: () => [...monitoredAreasQueryKeys.all, "sensors"] as const,
 };
 
-export function sitesQueryOptions(api: MonitoredAreasApi) {
-  return queryOptions({
+export function useSites() {
+  const { protectedRequest } = useAuthentication();
+  const api = createMonitoredAreasApi(protectedRequest);
+
+  return useQuery({
     queryKey: monitoredAreasQueryKeys.sites(),
-    queryFn: api.getSites,
+    queryFn: () => api.getSites(),
   });
 }
 
-export function roomsQueryOptions(api: MonitoredAreasApi) {
-  return queryOptions({
+export function useRooms() {
+  const { protectedRequest } = useAuthentication();
+  const api = createMonitoredAreasApi(protectedRequest);
+
+  return useQuery({
     queryKey: monitoredAreasQueryKeys.rooms(),
-    queryFn: api.getRooms,
+    queryFn: () => api.getRooms(),
   });
 }
 
-export function sensorsQueryOptions(api: MonitoredAreasApi) {
-  return queryOptions({
+export function useSensors() {
+  const { protectedRequest } = useAuthentication();
+  const api = createMonitoredAreasApi(protectedRequest);
+
+  return useQuery({
     queryKey: monitoredAreasQueryKeys.sensors(),
-    queryFn: api.getSensors,
+    queryFn: () => api.getSensors(),
   });
 }
