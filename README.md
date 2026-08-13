@@ -8,87 +8,87 @@
 ![InfluxDB](https://img.shields.io/badge/InfluxDB-Implemented-22ADF6)
 ![Engineering Handbook](https://img.shields.io/badge/Engineering_Handbook-Approved-4CAF50)
 
-Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms,
-warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other
-regulated environments.
+Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Current repository version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0) — released
+**Published release:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
+
 **Backend:** TypeScript / Express
+
+**Frontend:** React / TypeScript / Vite
+
 **License:** Proprietary
 
 ## Project Overview
 
-BIO-EMS is a modular environmental monitoring backend for collecting device telemetry,
-managing monitoring configuration, evaluating alarm conditions, and exposing REST APIs
-for operational dashboard views.
+BIO-EMS is a modular environmental monitoring platform for collecting device telemetry, managing monitoring configuration, evaluating alarm conditions, and exposing protected REST APIs and operational frontend views.
 
-Its engineering goals are reliability, traceability, maintainability, hardware
-independence, and clear separation between business rules, configuration data, and
-time-series telemetry.
+The repository currently contains an authenticated and role-authorized backend plus the Sprint 14 React frontend foundation, professional AppShell, browser authentication/session lifecycle, authorization-aware routing, and operational Dashboard.
 
-The current repository includes the authenticated and role-authorized backend plus a
-React frontend foundation and professional responsive application shell. S14-02 shell
-routes are presentational placeholders and do not consume Backend APIs.
+S14-05 Monitored Areas frontend work is in progress on `agent/s14-05-monitored-areas`. S14-05A and S14-05B are complete and pushed; S14-05C is the next implementation slice.
 
 ## Key Capabilities
 
 - Environmental telemetry collection
 - MQTT device communication
-- Alarm evaluation
-- Six-state threshold classification (`critical-low`, `warning-low`, `normal`,
-  `warning-high`, `critical-high`, and `unknown`)
-- Dashboard APIs
+- Six-state Alarm evaluation (`critical-low`, `warning-low`, `normal`, `warning-high`, `critical-high`, `unknown`)
+- Dashboard backend APIs
 - JWT authentication with active-User enforcement
 - Centralized role-based authorization
 - ADMIN User Management with last-active-ADMIN protection
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
-- Engineering Handbook
-- Architecture Decision Records (ADR)
-
-> The capabilities listed above reflect the current repository implementation and do
-> not describe planned functionality.
+- React frontend architecture and responsive AppShell
+- Browser Login/session lifecycle and authorization-aware routing
+- Operational Dashboard frontend
+- Typed localization architecture
+- Engineering Handbook and Architecture Decision Records
 
 ## Current Project Status
 
-| Component                   | Status             |
-| --------------------------- | ------------------ |
-| Backend API                 | Active development |
-| Dashboard Backend           | Implemented        |
-| Engineering Handbook        | Complete           |
-| ADR Repository              | Complete           |
-| Domain Layer                | Implemented        |
-| SQLite Persistence          | Implemented        |
-| InfluxDB Integration        | Implemented        |
-| Device Lifecycle Onboarding | Implemented        |
-| Authentication and RBAC     | Implemented        |
-| ADMIN User Management       | Implemented        |
-| Alarm Acknowledgment Audit  | Implemented        |
-| Frontend Application Shell  | Draft review       |
-| Monitoring Point Layer      | Proposed           |
+| Component | Status |
+| --- | --- |
+| Backend API | Active development |
+| Dashboard Backend | Implemented |
+| Domain Layer | Implemented |
+| SQLite Persistence | Implemented |
+| InfluxDB Integration | Implemented |
+| Device Lifecycle Onboarding | Implemented |
+| Authentication and RBAC | Implemented |
+| ADMIN User Management | Implemented |
+| Alarm Acknowledgment Audit | Implemented |
+| Frontend Architecture | Implemented |
+| Frontend AppShell | Implemented |
+| Frontend Authentication/Session | Implemented |
+| Operational Dashboard Frontend | Implemented |
+| Monitored Areas Frontend | In progress — S14-05A/B complete on feature branch |
+| Monitoring Point Layer | Proposed |
 
-Status reflects merged repository evidence. Sprint 13 implements JWT authentication,
-persisted active-User enforcement, centralized RBAC, ADMIN User Management, and
-authenticated Alarm acknowledgment audit persistence. Monitoring Points remain
-proposed: there is no Monitoring Point backend table, repository, or API.
+## Sprint 14 Status
 
-## Repository Highlights
+Sprint 14 is **IN PROGRESS**.
 
-| Area                 | Current State        |
-| -------------------- | -------------------- |
-| Architecture         | Layered Architecture |
-| Engineering Handbook | Complete             |
-| ADR Repository       | Complete             |
-| Documentation        | Repository-aligned   |
-| Testing              | Vitest               |
-| Release Process      | Documented           |
+- **S14-01 — Frontend architecture and project foundation:** COMPLETE / MERGED / CLOSED.
+- **S14-02 — Professional responsive application shell and navigation:** COMPLETE / MERGED / VERIFIED.
+- **S14-03 — Authentication, session, and authorization-aware routing:** COMPLETE / MERGED / VERIFIED.
+- **S14-04 — Operational Dashboard frontend:** COMPLETE / MERGED / VERIFIED.
+- **S14-05 — Monitored Areas frontend:** IN PROGRESS.
+  - S14-05A contracts/data access: COMPLETE / COMMITTED / PUSHED (`90e39af`).
+  - S14-05B Site/Monitored Area hierarchy: COMPLETE / COMMITTED / PUSHED (`bd442e9`).
+  - S14-05C Sensor inventory/threshold metadata: NOT STARTED / NEXT.
+  - S14-05D refresh/integration/hardening: NOT STARTED.
 
-These highlights summarize the current engineering maturity of the repository.
+S14-05A/B are feature-branch progress and are not yet integrated into `main`.
+
+## Domain Terminology
+
+For S14-05, **Monitored Area** is presentation terminology for the existing Room domain. The current hierarchy is:
+
+**Site → Monitored Area (Room) → Sensor**
+
+There is no implemented Monitoring Point backend table, repository, or API. Asset and Monitoring Point work remains separately scoped future work.
 
 ## Architecture Overview
-
-BIO-EMS uses a layered backend architecture:
 
 ```text
 REST API / MQTT ingestion
@@ -103,176 +103,131 @@ Domain Layer: alarm evaluation
 SQLite configuration repositories / InfluxDB telemetry queries and writes
 ```
 
-- **Express API** exposes management, alarm, health, and dashboard endpoints.
-- **Domain Layer** evaluates alarm state from readings and configured thresholds.
-- **SQLite** owns configuration and operational records such as sites, rooms, devices,
-  sensors, alarms, and migration history.
-- **InfluxDB** owns time-series telemetry values.
-- **MQTT** receives device telemetry and routes it to the telemetry module.
-- **Dashboard Services** combine configuration, telemetry, and domain results into
-  established dashboard response contracts.
+The browser application uses React Router, TanStack Query, Zod boundary validation, Material UI, typed localization resources, and the authenticated request/session architecture established during Sprint 14.
 
 ## Technology Stack
 
-| Technology        | Current use                                             |
-| ----------------- | ------------------------------------------------------- |
-| Node.js           | Backend runtime; Node.js 22 or later is required.       |
-| TypeScript        | Backend source language and compilation.                |
-| Express           | REST API and middleware framework.                      |
-| SQLite            | Configuration and operational persistence.              |
-| InfluxDB          | Telemetry time-series persistence and queries.          |
-| MQTT              | Device telemetry transport.                             |
-| Vitest            | Current automated test runner.                          |
-| ESLint / Prettier | TypeScript static analysis and formatting verification. |
+| Technology | Current use |
+| --- | --- |
+| Node.js | Backend runtime; Node.js 22 or later |
+| TypeScript | Backend and frontend source language |
+| Express | REST API and middleware framework |
+| React + Vite | Frontend browser application |
+| Material UI | Frontend component/design system |
+| TanStack Query | Frontend server-state/query boundary |
+| Zod | External/frontend response validation |
+| SQLite | Configuration and operational persistence |
+| InfluxDB | Telemetry time-series persistence and queries |
+| MQTT | Device telemetry transport |
+| Vitest | Automated test runner |
+| ESLint / Prettier | Static analysis and formatting verification |
 
 ## Repository Structure
 
 ```text
-backend/              TypeScript Express backend, databases, and tests
-docs/                 Engineering, ADR, API, architecture, and product documentation
-  hardware/           Hardware and installation reference documentation
-  product/            Product vision and journey documentation
-diagrams/              Architecture, ERD, MQTT, and sequence diagrams
-CHANGELOG.md          Implemented release history
-VERSION               Current repository version
+backend/              TypeScript Express backend, databases, services, and tests
+frontend/             React TypeScript browser application
+docs/                 Engineering, ADR, API, architecture, project, and product documentation
+diagrams/             Architecture, ERD, MQTT, and sequence diagrams
+CHANGELOG.md          Published and repository release history
+VERSION               Published repository version metadata
 ```
 
 ## Quick Start
 
-Prerequisites: Node.js 22 or later, a configured MQTT broker, and InfluxDB settings
-for telemetry features.
+Backend:
 
 ```bash
 git clone <repository-url>
 cd bio-ems-project/backend
 npm install
+npm run dev
 ```
 
-Copy or create backend environment configuration from `.env.example`, then configure
-the MQTT and InfluxDB values for the target environment.
+Frontend:
 
 ```bash
-# Build
-npm run build
-
-# Development mode
+cd ../frontend
+npm install
 npm run dev
+```
 
-# Run the automated test suite once
-npm run test:run
+Typical quality checks:
 
-# Run quality checks
+```bash
 npm run typecheck
 npm run lint
+npm run test:run
 npm run format:check
 ```
 
-On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` in
-place of `npm`.
+On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` in place of `npm`.
 
 ## Available API Areas
 
 The current API prefix is normally `/api/v1`.
 
-| Area      | Current endpoints or operations                              |
-| --------- | ------------------------------------------------------------ |
-| Health    | `GET /health`                                                |
-| Sites     | Management endpoints                                         |
-| Devices   | Create, list, read, metadata update, activate, and disable   |
-| Rooms     | Management endpoints                                         |
-| Sensors   | Management endpoints                                         |
-| Alarms    | List, active, detail, and acknowledgement operations         |
+| Area | Current endpoints or operations |
+| --- | --- |
+| Health | `GET /health` |
+| Sites | Management/read endpoints |
+| Rooms | Management/read endpoints |
+| Sensors | Management/read endpoints |
+| Devices | Create, list, read, metadata update, activate, and disable |
+| Alarms | List, active, detail, and acknowledgement operations |
 | Dashboard | Summary, latest telemetry, room status, and alarm statistics |
+| Authentication | Login/current-principal support |
+| Users | ADMIN management operations |
 
-See the
-[API access and role matrix](docs/engineering/ENGINEERING_PLAYBOOK.md#api-access-and-role-matrix)
-for the implemented authentication and authorization boundary.
+See the [Engineering Handbook](docs/engineering/README.md) and current ADRs for the authoritative architecture and security boundaries.
 
-## Documentation
+## Frontend Development
 
-- [`docs/engineering/README.md`](docs/engineering/README.md) is the entry point to
-  the BIO-EMS Engineering Handbook. It links the current architecture, Domain,
-  review, testing, Git, release, ADR, AI workflow, and terminology standards.
-- [`docs/adr/`](docs/adr/) contains Architecture Decision Records, including decisions
-  that are implemented, partially implemented, and proposed.
+Sprint 14 frontend evolution:
 
-The handbook and ADR collection are repository-oriented: code and schema evidence take
-precedence over assumptions or roadmap language.
+1. S14-01 established React, providers, design tokens, localization contracts, frontend configuration, testing, and quality gates.
+2. S14-02 established the professional responsive AppShell and navigation.
+3. S14-03 added Login, session restoration, protected requests, and authorization-aware routing/navigation.
+4. S14-04 replaced the Dashboard placeholder with the operational Dashboard.
+5. S14-05 is replacing the Monitored Areas placeholder with a read-only Site → Room → Sensor hierarchy using existing backend contracts only.
 
-### Frontend Development
+See [`frontend/README.md`](frontend/README.md), [`docs/project-management/SPRINT-14-PLAN.md`](docs/project-management/SPRINT-14-PLAN.md), and the Sprint 14 closure/progress records for detailed evidence.
 
-Sprint 14 began with the isolated [`frontend/`](frontend/) architecture and quality
-foundation. S14-01 is merged and formally closed. S14-02 implements a professional
-responsive shell and presentational navigation on a Draft PR pending independent
-review. Login, sessions, authorization-aware routing, dashboard widgets,
-monitored-area data, and the Alarm Center remain unimplemented.
+## Release Boundary
 
-See [`frontend/README.md`](frontend/README.md) for environment, startup, security, and
-quality commands. The architecture decision is recorded in
-[`ADR-019`](docs/adr/ADR-019-frontend-foundation.md).
+The immutable `v0.13.0` tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
+
+Later Sprint 13 and Sprint 14 work is newer repository development and is not retroactively part of the `v0.13.0` artifact.
+
+## Planned or Deferred Work
+
+- S14-05C Sensor inventory and threshold metadata
+- S14-05D refresh, integration, and hardening
+- Monitoring Point architecture and APIs
+- Broader Device discovery, QR, activation-code, and provisioning workflows
+- Asset approval and assignment
+- Notification Engine
+- Additional operational frontend features and reports
+- OTA, deployment, backup/restore, and production operations
 
 ## Engineering Standards
 
-BIO-EMS follows:
+BIO-EMS follows repository-first engineering, evidence-based reviews, ADR-driven architecture, scoped Pull Requests, and documentation synchronized with implementation.
 
-- **Repository-first engineering:** inspect the implementation before making claims or changes.
-- **Evidence-based reviews:** review conclusions are supported by repository evidence.
-- **ADR-driven architecture:** architectural rationale is retained in `docs/adr/`.
-- **Documentation synchronized with implementation:** documents distinguish current
-  behavior from proposed architecture.
-
-For detailed standards, start with the [Engineering Handbook](docs/engineering/README.md).
-
-## Project Roadmap
-
-Current published release: [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0),
-whose immutable tag target is `ee2cb45832888ff500e02afcbe1418b6144276c6`.
-Current `main` additionally contains the later S13-06 User Management and S13-07
-security-hardening merges. The verified current baseline is 359 passing tests across
-30 files with successful GitHub Actions on `main`.
-
-Planned future work includes:
-
-- Broader Device onboarding: discovery, QR, activation codes, and Asset approval
-- Monitoring Point architecture
-- Asset model
-- Additional device types
-
-Sprint 13 and S13-08 are closed. Sprint 14 has started: S14-01 is closed, S14-02 is on
-a Draft PR pending review, and S14-03 has not started.
-
-These roadmap items are planned work and are not claims of current implementation.
+Start with [`docs/engineering/README.md`](docs/engineering/README.md).
 
 ## Contributing
 
-Contributors should:
+Contributors should follow the Engineering Handbook, applicable ADRs, current Sprint documentation, and repository quality gates. Submit focused reviewed Pull Requests with successful validation evidence.
 
-1. Follow the [Engineering Handbook](docs/engineering/README.md).
-2. Follow applicable ADRs in [`docs/adr/`](docs/adr/).
-3. Keep documentation synchronized with implemented behavior.
-4. Submit focused, reviewed Pull Requests with successful build and test evidence.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for repository contribution guidance.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Proprietary License.
-
-All rights reserved. See [LICENSE](LICENSE) for licensing terms.
-
----
-
-## Engineering Handbook
-
-The BIO-EMS Engineering Handbook defines the engineering standards governing this
-repository.
-
-For architecture, engineering standards, ADRs, development workflow, testing,
-releases, and terminology, begin with:
-
-[`docs/engineering/README.md`](docs/engineering/README.md)
+Proprietary License. All rights reserved. See [LICENSE](LICENSE).
 
 ---
 
 Project: BIO-EMS
+
 Author: Ahmed A. Elsheikh
