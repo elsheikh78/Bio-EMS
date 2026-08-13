@@ -43,6 +43,29 @@ JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Ma
 
 For S14-05, Monitored Area is presentation terminology for the existing Room domain. No new Asset or Monitoring Point backend domain is introduced.
 
+## Post-Sprint-14 Product Readiness Priorities
+
+After Sprint 14 closes, BIO-EMS must explicitly address two coordinated product-readiness tracks before the first reference deployment is treated as production-ready.
+
+### Hardware / Pilot Readiness
+
+- Perform a formal Hardware Design Review against the accepted hardware, Device, Zone Controller, wiring, onboarding, and communications ADRs before committing to production hardware.
+- Use the ESP32-based controller architecture as the starting point unless the review identifies a concrete technical or lifecycle reason to change it.
+- Optimize hardware for **low cost, reliability, and manufacturability** together; BOM reduction must not compromise field reliability or required industrial protection.
+- Prefer modular hardware so installations pay only for required interfaces and capabilities.
+- Prepare an MVP suitable for a real customer pilot/reference installation, including commissioning, telemetry continuity, alarm verification, calibration evidence, and acceptance evidence.
+- Use lessons from the first field deployment to drive subsequent BOM cost-down and hardware revisions.
+
+### Commercial-Grade UI/UX
+
+- Treat professional, visually compelling user interfaces as a product requirement, not optional cosmetic polish.
+- Preserve operational clarity, accessibility, responsive behavior, localization readiness, and performance while improving visual presentation.
+- Maintain a coherent BIO-EMS design language across Login, Application Shell, Dashboard, Monitored Areas, Alarms, Devices, Configuration, and subsequent operational screens.
+- After the functional Sprint 14 scope is complete, perform a dedicated UI/UX Professionalization Pass rather than rebuilding the frontend architecture.
+- The first customer demo/reference deployment must present a polished commercial product experience in addition to correct engineering behavior.
+
+These two tracks are complementary: the first reference installation must combine field-reliable, cost-conscious hardware with a professional customer-facing software experience.
+
 ## Phase 7 — Future Product Expansion
 
 Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points, Notification Engine, additional operational screens, reports, and approved industry-specific capabilities.
