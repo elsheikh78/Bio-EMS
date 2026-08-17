@@ -35,9 +35,9 @@ These documents collectively define the BIO-EMS Engineering Handbook.
 
 ## Handbook Scope
 
-The handbook applies to the TypeScript backend, SQLite configuration data, InfluxDB
-telemetry, MQTT ingestion, REST APIs, Domain behavior, engineering records, and
-repository workflow.
+The handbook applies to the TypeScript backend and React frontend, SQLite
+configuration data, InfluxDB telemetry, MQTT ingestion, REST APIs, Domain behavior,
+deployment-readiness records, and repository workflow.
 
 It complements the existing ADR collection under `docs/adr/`. ADRs explain individual
 architectural decisions; handbook documents define the current rules and vocabulary
@@ -52,13 +52,13 @@ established contracts.
 
 ## Handbook Principles Summary
 
-| Principle | Purpose |
-|-----------|---------|
-| Repository First | Repository evidence takes precedence over assumptions. |
-| Architecture Before Implementation | Validate architecture before modifying code. |
-| Documentation Alongside Code | Documentation evolves together with implementation. |
-| Evidence-Based Engineering | Engineering decisions must be supported by repository evidence. |
-| Consistency | Shared terminology and engineering standards improve maintainability. |
+| Principle                          | Purpose                                                               |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| Repository First                   | Repository evidence takes precedence over assumptions.                |
+| Architecture Before Implementation | Validate architecture before modifying code.                          |
+| Documentation Alongside Code       | Documentation evolves together with implementation.                   |
+| Evidence-Based Engineering         | Engineering decisions must be supported by repository evidence.       |
+| Consistency                        | Shared terminology and engineering standards improve maintainability. |
 
 These principles apply across every engineering document.
 
@@ -78,14 +78,14 @@ artifacts rather than roadmap language or proposed ADRs.
 
 ## Engineering Document Ownership
 
-| Document area | Primary purpose | Owner responsibility |
-| --- | --- | --- |
-| Engineering Playbook | Engineering rules and Definition of Done | Maintain current process rules. |
-| Architecture and Domain | Boundaries, dependencies, and business-rule ownership | Preserve architecture consistency. |
-| Review and Testing | Verification and Pull Request quality | Maintain actionable quality gates. |
-| Git and Release | Traceability and release readiness | Keep manual workflow evidence accurate. |
-| ADR and Glossary | Decision rationale and terminology | Preserve historical context and shared language. |
-| AI Workflow | Scoped AI-assisted process | Keep ownership and evidence requirements explicit. |
+| Document area           | Primary purpose                                       | Owner responsibility                               |
+| ----------------------- | ----------------------------------------------------- | -------------------------------------------------- |
+| Engineering Playbook    | Engineering rules and Definition of Done              | Maintain current process rules.                    |
+| Architecture and Domain | Boundaries, dependencies, and business-rule ownership | Preserve architecture consistency.                 |
+| Review and Testing      | Verification and Pull Request quality                 | Maintain actionable quality gates.                 |
+| Git and Release         | Traceability and release readiness                    | Keep manual workflow evidence accurate.            |
+| ADR and Glossary        | Decision rationale and terminology                    | Preserve historical context and shared language.   |
+| AI Workflow             | Scoped AI-assisted process                            | Keep ownership and evidence requirements explicit. |
 
 The Engineering Team owns handbook maintenance. The Product / Engineering Owner retains
 final approval for scope, architecture, and release decisions.
@@ -119,31 +119,32 @@ Future handbook versions MAY include additional engineering documents such as:
 - Architecture Review
 - Security Guidelines
 - Performance Guidelines
-- Operational Runbooks
+- Expanded operational governance beyond the current Pilot runbook
 
-These documents are intentionally excluded from Version 1.0 because they are not yet
-required by the current repository.
+The existing Pilot deployment and recovery runbook is maintained under
+`docs/deployment/`; broader operational governance remains outside Handbook Version
+1.0.
 
 ## Cross References
 
-| Location | Purpose |
-| --- | --- |
-| `docs/adr/` | Existing Architecture Decision Record collection. |
+| Location             | Purpose                                                   |
+| -------------------- | --------------------------------------------------------- |
+| `docs/adr/`          | Existing Architecture Decision Record collection.         |
 | `docs/architecture/` | Architecture reference material and design documentation. |
-| `docs/api/` | API specifications and endpoint documentation. |
-| `docs/security/` | Current security-related documentation. |
-| `CHANGELOG.md` | Implemented release history. |
-| `VERSION` | Current repository version. |
+| `docs/api/`          | API specifications and endpoint documentation.            |
+| `docs/security/`     | Current security-related documentation.                   |
+| `CHANGELOG.md`       | Implemented release history.                              |
+| `VERSION`            | Current repository version.                               |
 
 ## Engineering Handbook Metrics
 
-| Metric | Purpose |
-|---------|---------|
-| Documentation Coverage | Measure completeness of engineering documentation. |
-| ADR Coverage | Measure architectural documentation completeness. |
-| Cross Reference Integrity | Ensure documents remain connected. |
-| Terminology Consistency | Maintain a unified engineering vocabulary. |
-| Review Completion Rate | Measure handbook review discipline. |
+| Metric                    | Purpose                                            |
+| ------------------------- | -------------------------------------------------- |
+| Documentation Coverage    | Measure completeness of engineering documentation. |
+| ADR Coverage              | Measure architectural documentation completeness.  |
+| Cross Reference Integrity | Ensure documents remain connected.                 |
+| Terminology Consistency   | Maintain a unified engineering vocabulary.         |
+| Review Completion Rate    | Measure handbook review discipline.                |
 
 These metrics improve documentation quality.
 
@@ -151,6 +152,6 @@ They MUST NOT be used to evaluate individual contributors.
 
 ## Revision History
 
-| Version | Date | Status | Change |
-| --- | --- | --- | --- |
-| 1.0 | 2026-08-05 | Approved | Initial Engineering Handbook index. |
+| Version | Date       | Status   | Change                              |
+| ------- | ---------- | -------- | ----------------------------------- |
+| 1.0     | 2026-08-05 | Approved | Initial Engineering Handbook index. |
