@@ -1,6 +1,6 @@
 # BIO-EMS Frontend
 
-This directory contains the Sprint 14 browser application.
+This directory contains the completed Sprint 14 browser application foundation.
 
 Integrated work:
 
@@ -8,9 +8,7 @@ Integrated work:
 - S14-02 professional responsive AppShell and navigation — complete.
 - S14-03 Login, session lifecycle, and authorization-aware routing — complete.
 - S14-04 operational Dashboard — complete.
-- S14-05 Monitored Areas — in progress.
-
-On `agent/s14-05-monitored-areas`, S14-05A and S14-05B are complete and pushed. S14-05C is next.
+- S14-05 Monitored Areas — complete, merged, and verified.
 
 ## Prerequisites
 
@@ -62,13 +60,16 @@ S14-03 established versioned browser session persistence, restoration, expiry ha
 
 The application includes `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, `/configuration`, and `/users`, subject to the centralized route policy.
 
-`/dashboard` is operational. `/monitored-areas` is the active S14-05 feature. Monitored Area is presentation terminology for the existing Room domain.
+`/dashboard` and `/monitored-areas` are operational. The remaining routes retain their
+current approved presentation scope. Monitored Area is presentation terminology for
+the existing Room domain.
 
-## S14-05 Progress
+## S14-05 Delivered Scope
 
-- S14-05A contracts and data access — complete at `90e39af`.
-- S14-05B Site and Monitored Area hierarchy — complete at `bd442e9`.
-- S14-05C Sensor inventory and threshold metadata — next / not started.
-- S14-05D refresh, integration, and hardening — not started.
+- S14-05A contracts and data access — complete.
+- S14-05B Site and Monitored Area hierarchy — complete.
+- S14-05C Sensor inventory and threshold metadata — complete.
+- S14-05D refresh, retry, integration, and hardening — complete.
 
-The latest recorded S14-05B frontend gate passed 21/21 test files and 189/189 tests.
+The complete S14-05 scope was integrated through PR #19. Sprint 14 closure and current
+quality evidence are recorded in `../docs/project-management/SPRINT-14-CLOSURE.md`.

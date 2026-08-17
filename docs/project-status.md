@@ -6,7 +6,9 @@ Published release: [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/ta
 
 The release tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
 
-Current repository development is newer than the published `v0.13.0` release and includes later Sprint 13 work plus the completed Sprint 14 frontend application scope.
+Current repository development is newer than the published `v0.13.0` release and
+includes later Sprint 13 work, the completed Sprint 14 frontend application, and the
+completed Sprint 15 Pilot-readiness foundation.
 
 The current repository state must not be interpreted as a new published production release until a later release is explicitly prepared and published.
 

@@ -2,7 +2,9 @@
 
 Published version: `v0.13.0`
 
-Repository status: Sprint 13 is closed. Sprint 14 is in progress. S14-01 through S14-04 are complete and merged. S14-05A and S14-05B are complete on the active Monitored Areas feature branch; S14-05C is the next implementation slice.
+Repository status: Sprints 13 through 15 are complete, merged, verified, and closed.
+The current phase is controlled BIO EGYPT field-pilot preparation; field
+commissioning and Pilot acceptance remain unexecuted.
 
 ## Phase 1 — Foundation
 
@@ -23,7 +25,8 @@ Implemented through Sprint 13: Domain model, architecture decisions, database de
 
 - Telemetry ingestion and Device/Site/Sensor trust boundary: implemented.
 - Alarm Engine and authenticated acknowledgment audit: implemented.
-- Event Engine and Notification Engine: planned.
+- Durable Alarm and Device notification events: implemented.
+- Delivery-channel provider implementations beyond the approved SMS failover contract: planned.
 
 ## Phase 5 — Identity and Management
 
@@ -35,17 +38,18 @@ JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Ma
 - S14-02: professional responsive AppShell and navigation — complete.
 - S14-03: Login, session restoration, protected-request boundary, and authorization-aware routing — complete.
 - S14-04: operational Dashboard frontend — complete.
-- S14-05: Monitored Areas frontend — in progress.
-  - S14-05A contracts/data access — complete on `agent/s14-05-monitored-areas`.
-  - S14-05B Site → Monitored Area hierarchy — complete on the same feature branch.
-  - S14-05C Sensor inventory and threshold metadata — next.
-  - S14-05D refresh/integration/hardening — planned after C.
+- S14-05: Monitored Areas frontend — complete, merged, and verified.
+  - S14-05A contracts/data access — complete.
+  - S14-05B Site → Monitored Area hierarchy — complete.
+  - S14-05C Sensor inventory and threshold metadata — complete.
+  - S14-05D refresh/retry/integration/hardening — complete.
 
 For S14-05, Monitored Area is presentation terminology for the existing Room domain. No new Asset or Monitoring Point backend domain is introduced.
 
-## Post-Sprint-14 Product Readiness Priorities
+## Post-Sprint-15 Product Readiness Priorities
 
-After Sprint 14 closes, BIO-EMS must explicitly address two coordinated product-readiness tracks before the first reference deployment is treated as production-ready.
+After Sprint 15 closure, BIO-EMS must complete controlled field evidence before the
+first reference deployment is treated as commissioned or accepted.
 
 ### Hardware / Pilot Readiness
 
@@ -68,12 +72,19 @@ These two tracks are complementary: the first reference installation must combin
 
 ## Phase 7 — Future Product Expansion
 
-Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points, Notification Engine, additional operational screens, reports, and approved industry-specific capabilities.
+Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points,
+delivery-channel implementations, additional operational screens, reports, and
+approved industry-specific capabilities.
 
 ## Phase 8 — Production Operations
 
-OTA updates, backup, restore, deployment, and production monitoring remain planned.
+Pilot deployment validation, backup/restore procedures, and rollback guidance are
+implemented. Field execution, broader production monitoring, commercial operations,
+and OTA updates remain separately scoped.
 
 ## Release Boundary
 
-The published `v0.13.0` tag remains fixed at `ee2cb45832888ff500e02afcbe1418b6144276c6`. Later Sprint 13 and Sprint 14 work is newer repository development and is not retroactively attributed to that immutable release artifact.
+The published `v0.13.0` tag remains fixed at
+`ee2cb45832888ff500e02afcbe1418b6144276c6`. Later Sprint 13 work and all Sprint 14
+and Sprint 15 work are newer repository development and are not retroactively
+attributed to that immutable release artifact.

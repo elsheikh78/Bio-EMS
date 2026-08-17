@@ -1,14 +1,14 @@
 # BIO-EMS Release Process
 
-| Item | Value |
-|------|-------|
-| Document | Release Process |
-| Version | 1.0 |
-| Status | Approved |
-| Applies To | BIO-EMS Engineering |
-| Owner | Engineering Team |
-| Classification | Internal |
-| Last Updated | 2026-08-05 |
+| Item           | Value               |
+| -------------- | ------------------- |
+| Document       | Release Process     |
+| Version        | 1.0                 |
+| Status         | Approved            |
+| Applies To     | BIO-EMS Engineering |
+| Owner          | Engineering Team    |
+| Classification | Internal            |
+| Last Updated   | 2026-08-05          |
 
 ## 1. Purpose
 
@@ -51,22 +51,22 @@ are released capabilities.
 
 ## Release Principles Summary
 
-| Principle | Purpose |
-|-----------|---------|
-| Quality Before Release | Prevent unstable releases from being published. |
-| Evidence-Based Releases | Ensure every release reflects verified repository evidence. |
+| Principle                              | Purpose                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------- |
+| Quality Before Release                 | Prevent unstable releases from being published.                           |
+| Evidence-Based Releases                | Ensure every release reflects verified repository evidence.               |
 | Documentation Alongside Implementation | Keep engineering documentation synchronized with delivered functionality. |
-| Owner Approval | Preserve engineering accountability for every release. |
-| Repository Traceability | Every release MUST be traceable to a reviewed repository state. |
+| Owner Approval                         | Preserve engineering accountability for every release.                    |
+| Repository Traceability                | Every release MUST be traceable to a reviewed repository state.           |
 
 These principles guide every BIO-EMS release regardless of release type.
 
 ## 4. Release Types
 
-| Release type | Purpose | BIO-EMS example |
-| --- | --- | --- |
-| Sprint Release | Records completion of a reviewed increment of implemented work. | `v0.10.0` for Sprint 10 dashboard backend work. |
-| Patch Release | Records a backward-compatible correction or maintenance update. | A corrected SQLite migration bootstrap sequence. |
+| Release type   | Purpose                                                             | BIO-EMS example                                           |
+| -------------- | ------------------------------------------------------------------- | --------------------------------------------------------- |
+| Sprint Release | Records completion of a reviewed increment of implemented work.     | `v0.10.0` for Sprint 10 dashboard backend work.           |
+| Patch Release  | Records a backward-compatible correction or maintenance update.     | A corrected SQLite migration bootstrap sequence.          |
 | Hotfix Release | Records an urgent, narrowly scoped correction to released behavior. | A production-impacting telemetry or database startup fix. |
 
 Release type MUST match the scope and risk of the change. A hotfix MUST NOT become a
@@ -165,9 +165,13 @@ This preserves release traceability.
 
 ## 7. Versioning
 
-BIO-EMS currently records its version in the root `VERSION` file and documents releases
-in `CHANGELOG.md`. Existing Git tags include `v0.1.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`,
-and `v0.10.0`.
+BIO-EMS currently records its published version in the root `VERSION` file and
+documents published and unreleased repository development in `CHANGELOG.md`. The
+current published release is `v0.13.0`; earlier release tags remain immutable.
+
+Completed Sprint work does not itself update `VERSION`, create a tag, or publish a
+GitHub Release. Those actions require a separate release-readiness review and explicit
+Engineering Owner approval.
 
 Version tags SHOULD use semantic version format:
 
@@ -175,11 +179,11 @@ Version tags SHOULD use semantic version format:
 vMAJOR.MINOR.PATCH
 ```
 
-| Version component | Release interpretation |
-| --- | --- |
-| MAJOR | An approved incompatible release change. |
-| MINOR | A backward-compatible engineering increment or sprint release. |
-| PATCH | A backward-compatible correction or hotfix. |
+| Version component | Release interpretation                                         |
+| ----------------- | -------------------------------------------------------------- |
+| MAJOR             | An approved incompatible release change.                       |
+| MINOR             | A backward-compatible engineering increment or sprint release. |
+| PATCH             | A backward-compatible correction or hotfix.                    |
 
 Version updates are manual. A tag MUST identify the reviewed release commit and MUST
 NOT imply that deployment occurred automatically.
@@ -189,12 +193,12 @@ NOT imply that deployment occurred automatically.
 The release identifier appears in several repository artifacts and MUST remain
 internally consistent.
 
-| Artifact | Current release role |
-| --- | --- |
-| `VERSION` | Primary repository version value. |
+| Artifact       | Current release role                                     |
+| -------------- | -------------------------------------------------------- |
+| `VERSION`      | Primary repository version value.                        |
 | `CHANGELOG.md` | Human-readable release history and verification summary. |
-| Git tag | Immutable reference to the approved release commit. |
-| `package.json` | Backend package version metadata. |
+| Git tag        | Immutable reference to the approved release commit.      |
+| `package.json` | Backend package version metadata.                        |
 
 Before tagging, reviewers SHOULD compare these artifacts and record any intentional
 difference. A package metadata change MUST NOT be assumed to update the root version,
@@ -249,28 +253,28 @@ feature release.
 
 ## 10. Release Anti-Patterns
 
-| Anti-pattern | Risk | Required response |
-| --- | --- | --- |
-| Releasing without build verification | TypeScript compilation failure reaches the release state. | Run and record the build. |
-| Releasing without documentation updates | Release behavior cannot be accurately understood. | Update relevant documents and notes. |
-| Mixing incomplete features into a release | Scope and operational behavior become unclear. | Exclude or label the work as not implemented. |
-| Skipping engineering review | Boundary and regression defects remain unexamined. | Complete review before approval. |
-| Declaring features without evidence | Roadmap items are mistaken for delivered capability. | Verify claims against repository code. |
-| Tagging an unreviewed commit | The version tag loses its traceability value. | Tag only the approved release state. |
+| Anti-pattern                              | Risk                                                      | Required response                             |
+| ----------------------------------------- | --------------------------------------------------------- | --------------------------------------------- |
+| Releasing without build verification      | TypeScript compilation failure reaches the release state. | Run and record the build.                     |
+| Releasing without documentation updates   | Release behavior cannot be accurately understood.         | Update relevant documents and notes.          |
+| Mixing incomplete features into a release | Scope and operational behavior become unclear.            | Exclude or label the work as not implemented. |
+| Skipping engineering review               | Boundary and regression defects remain unexamined.        | Complete review before approval.              |
+| Declaring features without evidence       | Roadmap items are mistaken for delivered capability.      | Verify claims against repository code.        |
+| Tagging an unreviewed commit              | The version tag loses its traceability value.             | Tag only the approved release state.          |
 
 ## 11. Release Quality Gates
 
 Release quality gates require evidence, not confidence alone.
 
-| Gate | Current required evidence |
-| --- | --- |
-| Implementation | Changed files match the approved release scope. |
-| Build | `npm.cmd run build` succeeds. |
-| Tests | `npm.cmd run test:run` succeeds. |
-| Database | Fresh and upgrade migration behavior verified when schema changes. |
-| Architecture | ADRs and engineering documents reflect the implemented decision. |
-| Documentation | Version, changelog, and relevant technical documents are accurate. |
-| Approval | Engineering Owner approves release readiness. |
+| Gate           | Current required evidence                                          |
+| -------------- | ------------------------------------------------------------------ |
+| Implementation | Changed files match the approved release scope.                    |
+| Build          | `npm.cmd run build` succeeds.                                      |
+| Tests          | `npm.cmd run test:run` succeeds.                                   |
+| Database       | Fresh and upgrade migration behavior verified when schema changes. |
+| Architecture   | ADRs and engineering documents reflect the implemented decision.   |
+| Documentation  | Version, changelog, and relevant technical documents are accurate. |
+| Approval       | Engineering Owner approves release readiness.                      |
 
 For a documentation-only release update, the build and test gate MAY be recorded as
 not applicable if no backend source or package configuration changed. For a source
@@ -300,27 +304,27 @@ the project grows.
 
 ## 12. Cross References
 
-| Document | Relationship |
-| --- | --- |
-| `docs/engineering/ENGINEERING_PLAYBOOK.md` | Definition of Done and release checklist. |
-| `docs/engineering/GIT_WORKFLOW.md` | Branch, review, tag, and merge practices. |
-| `docs/engineering/CODE_REVIEW_CHECKLIST.md` | Merge blockers and review outcomes. |
-| `docs/engineering/TESTING_GUIDELINES.md` | Build, test, migration, and regression verification. |
-| `docs/engineering/ADR_POLICY.md` | Architectural decision documentation. |
-| `docs/engineering/AI_DEVELOPMENT_WORKFLOW.md` | Evidence-based AI-assisted engineering handoff. |
+| Document                                      | Relationship                                         |
+| --------------------------------------------- | ---------------------------------------------------- |
+| `docs/engineering/ENGINEERING_PLAYBOOK.md`    | Definition of Done and release checklist.            |
+| `docs/engineering/GIT_WORKFLOW.md`            | Branch, review, tag, and merge practices.            |
+| `docs/engineering/CODE_REVIEW_CHECKLIST.md`   | Merge blockers and review outcomes.                  |
+| `docs/engineering/TESTING_GUIDELINES.md`      | Build, test, migration, and regression verification. |
+| `docs/engineering/ADR_POLICY.md`              | Architectural decision documentation.                |
+| `docs/engineering/AI_DEVELOPMENT_WORKFLOW.md` | Evidence-based AI-assisted engineering handoff.      |
 
 ## Release Metrics
 
 BIO-EMS encourages monitoring release quality over time.
 
-| Metric | Purpose |
-|---------|---------|
-| Build Success Rate | Measure release stability. |
-| Test Success Rate | Measure release quality. |
-| Documentation Completeness | Ensure documentation remains synchronized with implementation. |
-| ADR Coverage | Verify architectural changes are documented. |
-| Hotfix Frequency | Identify recurring engineering quality issues. |
-| Release Readiness Completion | Measure adherence to the release checklist. |
+| Metric                       | Purpose                                                        |
+| ---------------------------- | -------------------------------------------------------------- |
+| Build Success Rate           | Measure release stability.                                     |
+| Test Success Rate            | Measure release quality.                                       |
+| Documentation Completeness   | Ensure documentation remains synchronized with implementation. |
+| ADR Coverage                 | Verify architectural changes are documented.                   |
+| Hotfix Frequency             | Identify recurring engineering quality issues.                 |
+| Release Readiness Completion | Measure adherence to the release checklist.                    |
 
 These metrics are intended to improve engineering processes and release quality.
 
@@ -328,6 +332,6 @@ They MUST NOT be used to evaluate individual developer performance.
 
 ## 13. Revision History
 
-| Version | Date | Status | Change |
-| --- | --- | --- | --- |
-| 1.0 | 2026-08-05 | Approved | Initial manual release process for the current BIO-EMS workflow. |
+| Version | Date       | Status   | Change                                                           |
+| ------- | ---------- | -------- | ---------------------------------------------------------------- |
+| 1.0     | 2026-08-05 | Approved | Initial manual release process for the current BIO-EMS workflow. |

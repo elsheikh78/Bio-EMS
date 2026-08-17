@@ -24,6 +24,19 @@ been surveyed or accepted.
 4. [Commissioning and acceptance record](BIO-EGYPT-COMMISSIONING.md)
 5. [Open-items register](BIO-EGYPT-OPEN-ITEMS.md)
 
+## Deployment and readiness references
+
+The S15-06 customer package is executed using the approved S15-07 repository
+baseline:
+
+1. [Production runbook](../../deployment/production-runbook.md)
+2. [Deployment architecture](../../deployment/deployment-architecture.md)
+3. [Site Controller integration contract](../../deployment/site-controller-integration-contract.md)
+4. [S15-07 readiness evidence](../../deployment/S15-07-READINESS-EVIDENCE.md)
+
+Sprint 15 repository scope is closed. The BIO EGYPT Pilot remains **NOT COMMISSIONED /
+NOT ACCEPTED** until the open-item and commissioning evidence is completed and signed.
+
 ## Control rule
 
 Items marked `TBD — Field Survey`, `TBD — Customer`, or `TBD — Commissioning` are

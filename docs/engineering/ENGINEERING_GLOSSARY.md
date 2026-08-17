@@ -1,14 +1,14 @@
 # BIO-EMS Engineering Glossary
 
-| Item | Value |
-|------|-------|
-| Document | Engineering Glossary |
-| Version | 1.0 |
-| Status | Approved |
-| Applies To | BIO-EMS Engineering |
-| Owner | Engineering Team |
-| Classification | Internal |
-| Last Updated | 2026-08-06 |
+| Item           | Value                |
+| -------------- | -------------------- |
+| Document       | Engineering Glossary |
+| Version        | 1.0                  |
+| Status         | Approved             |
+| Applies To     | BIO-EMS Engineering  |
+| Owner          | Engineering Team     |
+| Classification | Internal             |
+| Last Updated   | 2026-08-06           |
 
 ## 1. Purpose
 
@@ -37,35 +37,35 @@ implemented without repository evidence.
 
 ## Glossary Usage Summary
 
-| Rule | Purpose |
-|------|---------|
-| Use Official BIO-EMS Terminology | Maintain a single engineering vocabulary across the project. |
-| Repository Definitions Take Precedence | Repository evidence overrides generic industry definitions. |
-| Distinguish Implemented vs Proposed | Prevent incorrect capability claims. |
-| Cross-Reference Related Documents | Provide architectural and engineering context. |
-| Avoid Synonyms for Core Concepts | Preserve consistency throughout the Engineering Handbook. |
+| Rule                                   | Purpose                                                      |
+| -------------------------------------- | ------------------------------------------------------------ |
+| Use Official BIO-EMS Terminology       | Maintain a single engineering vocabulary across the project. |
+| Repository Definitions Take Precedence | Repository evidence overrides generic industry definitions.  |
+| Distinguish Implemented vs Proposed    | Prevent incorrect capability claims.                         |
+| Cross-Reference Related Documents      | Provide architectural and engineering context.               |
+| Avoid Synonyms for Core Concepts       | Preserve consistency throughout the Engineering Handbook.    |
 
 These rules provide a quick reference for engineering documents, ADRs, reviews,
 release notes, and AI-assisted development.
 
 ## 4. Terminology Status
 
-| Term | Status |
-|------|--------|
-| Site | Implemented |
-| Room | Implemented |
-| Sensor | Implemented |
-| Device | Implemented |
-| Dashboard | Implemented |
-| Alarm Evaluation Engine | Implemented |
-| SQLite | Implemented |
-| MQTT | Implemented |
-| InfluxDB | Implemented |
-| Monitoring Point | Proposed |
-| Asset | Proposed |
-| Zone | Engineering Concept |
-| Zone Controller | Proposed |
-| Notification | Proposed |
+| Term                    | Status              |
+| ----------------------- | ------------------- |
+| Site                    | Implemented         |
+| Room                    | Implemented         |
+| Sensor                  | Implemented         |
+| Device                  | Implemented         |
+| Dashboard               | Implemented         |
+| Alarm Evaluation Engine | Implemented         |
+| SQLite                  | Implemented         |
+| MQTT                    | Implemented         |
+| InfluxDB                | Implemented         |
+| Monitoring Point        | Proposed            |
+| Asset                   | Proposed            |
+| Zone                    | Engineering Concept |
+| Zone Controller         | Proposed            |
+| Notification            | Proposed            |
 
 Implementation status reflects the current repository rather than future plans,
 historical rationale, or accepted architectural intent.
@@ -371,7 +371,7 @@ merge, tag, GitHub Release, and deployment remain separate approval steps.
 
 **Definition:** The manual semantic identifier for a BIO-EMS release state.
 
-**Current BIO-EMS usage:** Current root version is `0.12.0`; release tags use a `v` prefix.
+**Current BIO-EMS usage:** Current published root version is `0.13.0`; release tags use a `v` prefix. Newer repository development remains under `Unreleased` until approved for publication.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
@@ -379,7 +379,7 @@ merge, tag, GitHub Release, and deployment remain separate approval steps.
 
 **Definition:** The root repository file containing the current project version.
 
-**Current BIO-EMS usage:** `VERSION` contains `0.12.0` and aligns with the backend package and Health API.
+**Current BIO-EMS usage:** `VERSION` contains `0.13.0` and aligns with the backend package and Health API.
 
 **Related documents:** `RELEASE_PROCESS.md`.
 
@@ -419,27 +419,27 @@ and migration tests across 10 files through `npm run test:run`.
 
 ## 7. Common Terminology Mistakes
 
-| Mistake | Correct distinction |
-| --- | --- |
-| Monitoring Point = Sensor | A Sensor is implemented; a Monitoring Point is proposed. |
-| Asset = Device | Asset is proposed business modeling; Device is implemented hardware identity. |
-| Zone = Room | Zone is an engineering deployment concept; Room is an implemented configuration entity. |
-| Alarm = Alarm Evaluation Engine | Alarm is a persisted lifecycle record; the engine evaluates reading state. |
-| Dashboard Widget = Dashboard Service | A Widget is an API view; DashboardService aggregates its data. |
-| Implementation Status = ADR Status | ADR Status records decision state; implementation status records repository evidence. |
+| Mistake                              | Correct distinction                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------- |
+| Monitoring Point = Sensor            | A Sensor is implemented; a Monitoring Point is proposed.                                |
+| Asset = Device                       | Asset is proposed business modeling; Device is implemented hardware identity.           |
+| Zone = Room                          | Zone is an engineering deployment concept; Room is an implemented configuration entity. |
+| Alarm = Alarm Evaluation Engine      | Alarm is a persisted lifecycle record; the engine evaluates reading state.              |
+| Dashboard Widget = Dashboard Service | A Widget is an API view; DashboardService aggregates its data.                          |
+| Implementation Status = ADR Status   | ADR Status records decision state; implementation status records repository evidence.   |
 
 These distinctions MUST be preserved in ADRs, reviews, and release notes.
 
 ## 8. Related Concepts
 
-| Concept | Related Concepts |
-|----------|------------------|
-| Sensor | Device, Room, Telemetry, Alarm Evaluation Engine |
-| Alarm | Alarm Evaluation Engine, AlarmStatus, SQLite |
-| Dashboard | Widget, DashboardService, DTO, InfluxDB |
-| Repository | SQLite, Entity, Application Service |
-| Telemetry | MQTT, InfluxDB, Telemetry Query |
-| Device | Site, Sensor, MQTT, Device Channel |
+| Concept    | Related Concepts                                 |
+| ---------- | ------------------------------------------------ |
+| Sensor     | Device, Room, Telemetry, Alarm Evaluation Engine |
+| Alarm      | Alarm Evaluation Engine, AlarmStatus, SQLite     |
+| Dashboard  | Widget, DashboardService, DTO, InfluxDB          |
+| Repository | SQLite, Entity, Application Service              |
+| Telemetry  | MQTT, InfluxDB, Telemetry Query                  |
+| Device     | Site, Sensor, MQTT, Device Channel               |
 
 ## Lessons Learned
 
@@ -456,18 +456,18 @@ evolve as the project grows.
 
 ## 9. Cross References
 
-| Document | Relationship |
-| --- | --- |
-| `docs/engineering/ENGINEERING_PLAYBOOK.md` | General engineering terminology and responsibilities. |
-| `docs/engineering/ARCHITECTURE_PRINCIPLES.md` | Layer and data-ownership definitions. |
-| `docs/engineering/DOMAIN_GUIDELINES.md` | Domain concepts and alarm vocabulary. |
-| `docs/engineering/ADR_POLICY.md` | ADR and implementation-status terminology. |
-| `docs/engineering/RELEASE_PROCESS.md` | Version and release terminology. |
+| Document                                      | Relationship                                          |
+| --------------------------------------------- | ----------------------------------------------------- |
+| `docs/engineering/ENGINEERING_PLAYBOOK.md`    | General engineering terminology and responsibilities. |
+| `docs/engineering/ARCHITECTURE_PRINCIPLES.md` | Layer and data-ownership definitions.                 |
+| `docs/engineering/DOMAIN_GUIDELINES.md`       | Domain concepts and alarm vocabulary.                 |
+| `docs/engineering/ADR_POLICY.md`              | ADR and implementation-status terminology.            |
+| `docs/engineering/RELEASE_PROCESS.md`         | Version and release terminology.                      |
 
 ## 10. Revision History
 
-| Version | Date | Status | Change |
-| --- | --- | --- | --- |
-| 1.0 | 2026-08-05 | Approved | Initial repository-oriented engineering glossary. |
-| 1.1 | 2026-08-06 | Approved | Added Sprint 11 alarm states, warning thresholds, migrations, and version terminology. |
-| 1.2 | 2026-08-10 | Approved | Aligned release, testing, and Device onboarding terminology with Sprint 12. |
+| Version | Date       | Status   | Change                                                                                 |
+| ------- | ---------- | -------- | -------------------------------------------------------------------------------------- |
+| 1.0     | 2026-08-05 | Approved | Initial repository-oriented engineering glossary.                                      |
+| 1.1     | 2026-08-06 | Approved | Added Sprint 11 alarm states, warning thresholds, migrations, and version terminology. |
+| 1.2     | 2026-08-10 | Approved | Aligned release, testing, and Device onboarding terminology with Sprint 12.            |

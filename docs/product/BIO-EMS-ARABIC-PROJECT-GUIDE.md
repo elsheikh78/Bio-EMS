@@ -164,7 +164,7 @@ MQTT هو Transport أساسي لاتصال أجهزة IoT بالمنصة. تق�
 
 ## 18. Monitored Areas
 
-الواجهة التشغيلية الحالية تتجه إلى عرض:
+الواجهة التشغيلية الحالية تعرض:
 
 ```text
 Site
@@ -180,17 +180,20 @@ Site
 - **S14-02 AppShell & Navigation:** COMPLETE / MERGED / VERIFIED.
 - **S14-03 Authentication / Session / Routing:** COMPLETE / MERGED / VERIFIED.
 - **S14-04 Operational Dashboard:** COMPLETE / MERGED / VERIFIED.
-- **S14-05 Monitored Areas:** IN PROGRESS.
-  - S14-05A Contracts/Data Access: COMPLETE / PUSHED.
-  - S14-05B Site/Monitored Area Hierarchy: COMPLETE / PUSHED.
-  - S14-05C Sensor Inventory/Threshold Metadata: NEXT.
-  - S14-05D Refresh/Integration/Hardening: PENDING.
+- **S14-05 Monitored Areas:** COMPLETE / MERGED / VERIFIED.
+  - S14-05A Contracts/Data Access: COMPLETE.
+  - S14-05B Site/Monitored Area Hierarchy: COMPLETE.
+  - S14-05C Sensor Inventory/Threshold Metadata: COMPLETE.
+  - S14-05D Refresh/Retry/Integration/Hardening: COMPLETE.
+
+Sprint 14 بالكامل **COMPLETE / MERGED / VERIFIED / CLOSED**. كما أن Sprint 15 الخاص
+بأساس جاهزية الـPilot مكتمل ومغلق، مع بقاء التنفيذ والقبول الميدانيين مفتوحين.
 
 > يجب تحديث هذا القسم مباشرة بعد تغير حالة أي Slice أو Sprint.
 
 ## 20. Sensor Configuration Metadata
 
-المرحلة التالية تعرض بيانات مثل Sensor Type وUnit وChannel وEnabled state، إضافة إلى Threshold metadata المتاحة مثل:
+الواجهة تعرض بيانات مثل Sensor Type وUnit وChannel وEnabled state، إضافة إلى Threshold metadata المتاحة مثل:
 
 - `min_value`
 - `warning_low`
@@ -281,13 +284,13 @@ Sensors / Devices
 
 ## 28. الحالة الحالية للمنتج
 
-الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وAlarm Acknowledgement وFrontend Foundation وProfessional AppShell وOperational Dashboard، بينما Monitored Areas ما زالت قيد التنفيذ.
+الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وAlarm Acknowledgement وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
 
-الـPublished Release الموثق حاليًا هو `v0.13.0`، بينما أعمال Sprint 14 أحدث من هذا الـRelease ولا يجب اعتبارها جزءًا من Artifact الإصدار القديم.
+الـPublished Release الموثق حاليًا هو `v0.13.0`، بينما أعمال Sprint 14 وSprint 15 أحدث من هذا الـRelease ولا يجب اعتبارها جزءًا من Artifact الإصدار القديم.
 
 ## 29. ما المتبقي للوصول إلى Commercial Production-Ready EMS؟
 
-من أهم المسارات المتبقية: استكمال الواجهات التشغيلية، Monitoring Point architecture، Notification Engine، Reports، Audit Trail الأوسع، Calibration Management، Advanced Device Provisioning، Customer/Licensing Management، OTA، Backup/Restore، Deployment وProduction Operations.
+من أهم المسارات المتبقية: التنفيذ والتوثيق الميداني لـBIO EGYPT، استكمال الواجهات التشغيلية، Monitoring Point architecture، Channel provider implementations، Reports، Audit Trail الأوسع، Advanced Device Provisioning، Customer/Licensing Management، OTA، وعمليات الإنتاج التجارية الأوسع.
 
 ## 30. الصورة النهائية المستهدفة
 
