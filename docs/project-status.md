@@ -35,6 +35,8 @@ The current repository state must not be interpreted as a new published producti
 - [x] SQLite migration 005 with backward-compatible Sensor defaults
 - [x] S15-02 append-only, actor-audited calibration history
 - [x] SQLite migration 006 with immutable calibration evidence
+- [x] S15-03 trusted Device communication health and heartbeat foundation
+- [x] SQLite migration 007 with Device last-seen and heartbeat timestamps
 
 ## Sprint 14
 
@@ -126,6 +128,11 @@ The immediate project phase after Sprint 14 is:
 The Pilot Readiness Review is complete. S15-01 is complete, merged, verified, and
 closed through PR #21 at `main` integration commit
 `d0a800dea252907d5f2a942571add2528a29666f`.
+
+S15-02 and S15-03 are also complete, merged, verified, and closed. S15-03 was
+integrated through PR #25 at `main` integration commit
+`daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`. The next work item is S15-04 —
+Notification Architecture.
 
 The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
 
