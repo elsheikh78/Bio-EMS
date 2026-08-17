@@ -11,7 +11,7 @@ Status: **IN PROGRESS**
 ### Work-item status
 
 - S15-01 — Sensor Lifecycle & Calibration Foundation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #21.
-- S15-02 — Calibration History: **NEXT / NOT STARTED**.
+- S15-02 — Calibration History: **IN PROGRESS** on `agent/s15-02-calibration-history`.
 - S15-03 — Device / Communication Health: **NOT STARTED**.
 - S15-04 — Notification Architecture: **NOT STARTED**.
 - S15-05 — SMS Failover Contract: **NOT STARTED**.

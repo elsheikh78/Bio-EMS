@@ -19,7 +19,9 @@ vi.mock("../../controllers/room.controller", () => ({
   getRooms: controller,
 }));
 vi.mock("../../controllers/sensor.controller", () => ({
+  createCalibrationRecord: controller,
   createSensor: controller,
+  getCalibrationHistory: controller,
   getSensors: controller,
 }));
 vi.mock("../../controllers/device.controller", () => ({
@@ -105,6 +107,26 @@ const ROUTES: readonly RouteCase[] = [
   configurationRoute("Rooms", "post", "/rooms", roomRouter, "/"),
   configurationRoute("Sensors", "get", "/sensors", sensorRouter, "/"),
   configurationRoute("Sensors", "post", "/sensors", sensorRouter, "/", validSensor),
+  configurationRoute(
+    "Sensors",
+    "get",
+    `/sensors/${validSensor.uuid}/calibrations`,
+    sensorRouter,
+    "/:sensorUuid/calibrations"
+  ),
+  configurationRoute(
+    "Sensors",
+    "post",
+    `/sensors/${validSensor.uuid}/calibrations`,
+    sensorRouter,
+    "/:sensorUuid/calibrations",
+    {
+      result: "PASS",
+      performed_at: "2026-08-17T09:00:00Z",
+      due_at: "2027-08-17T09:00:00Z",
+      offset: 0,
+    }
+  ),
   deviceRoute("get", "/devices", "/"),
   deviceRoute("post", "/devices", "/", validDevice),
   deviceRoute("get", "/devices/ZC-FW-001", "/:deviceId"),

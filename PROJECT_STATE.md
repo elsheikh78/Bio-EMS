@@ -37,7 +37,7 @@ is not retroactively part of that tagged artifact.
   - PR: #21;
   - merge commit: `d0a800dea252907d5f2a942571add2528a29666f`;
   - backend and frontend GitHub CI quality gates: PASS.
-- **S15-02 — Calibration History:** NEXT / NOT STARTED.
+- **S15-02 — Calibration History:** IN PROGRESS on `agent/s15-02-calibration-history`.
 - **S15-03 — Device / Communication Health:** NOT STARTED.
 - **S15-04 — Notification Architecture:** NOT STARTED.
 - **S15-05 — SMS Failover Contract:** NOT STARTED.
