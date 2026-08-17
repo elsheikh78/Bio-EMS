@@ -167,7 +167,7 @@ This preserves release traceability.
 
 BIO-EMS currently records its published version in the root `VERSION` file and
 documents published and unreleased repository development in `CHANGELOG.md`. The
-current published release is `v0.13.0`; earlier release tags remain immutable.
+current published release is `v0.15.0`; earlier release tags remain immutable.
 
 Completed Sprint work does not itself update `VERSION`, create a tag, or publish a
 GitHub Release. Those actions require a separate release-readiness review and explicit

@@ -371,7 +371,7 @@ merge, tag, GitHub Release, and deployment remain separate approval steps.
 
 **Definition:** The manual semantic identifier for a BIO-EMS release state.
 
-**Current BIO-EMS usage:** Current published root version is `0.13.0`; release tags use a `v` prefix. Newer repository development remains under `Unreleased` until approved for publication.
+**Current BIO-EMS usage:** Current published root version is `0.15.0`; release tags use a `v` prefix. Newer repository development remains under `Unreleased` until approved for publication.
 
 **Related documents:** `RELEASE_PROCESS.md`, `GIT_WORKFLOW.md`.
 
