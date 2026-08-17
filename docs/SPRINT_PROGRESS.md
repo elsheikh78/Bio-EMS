@@ -11,8 +11,8 @@ Status: **IN PROGRESS**
 ### Work-item status
 
 - S15-01 — Sensor Lifecycle & Calibration Foundation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #21.
-- S15-02 — Calibration History: **IN PROGRESS** on `agent/s15-02-calibration-history`.
-- S15-03 — Device / Communication Health: **NOT STARTED**.
+- S15-02 — Calibration History: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #23.
+- S15-03 — Device / Communication Health: **NEXT / NOT STARTED**.
 - S15-04 — Notification Architecture: **NOT STARTED**.
 - S15-05 — SMS Failover Contract: **NOT STARTED**.
 - S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
@@ -28,6 +28,16 @@ Status: **IN PROGRESS**
 S15-01 added the backward-compatible Sensor product-grade, hardware, installation,
 and current calibration-state foundation. Calibration history was excluded and
 remains the dedicated scope of S15-02.
+
+### S15-02 integration evidence
+
+- feature commit: `a579f69ce921ecb208133efca5c0d40a9bd42dea`;
+- PR: #23;
+- merge commit: `43969c57a1caf670cac22b52543a8b2a253adb89`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-02 added immutable, actor-audited calibration records and atomic synchronization
+of the current Sensor calibration snapshot after passing records.
 
 ## Sprint 14 — Frontend Application
 
@@ -115,4 +125,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-02 — Calibration History**.
+The immediate project critical path is now **S15-03 — Device / Communication Health**.

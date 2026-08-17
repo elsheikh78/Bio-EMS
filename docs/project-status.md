@@ -33,6 +33,8 @@ The current repository state must not be interpreted as a new published producti
 - [x] Monitored Areas refresh/retry and integration hardening
 - [x] S15-01 Sensor product-grade, hardware, installation, and current calibration-state foundation
 - [x] SQLite migration 005 with backward-compatible Sensor defaults
+- [x] S15-02 append-only, actor-audited calibration history
+- [x] SQLite migration 006 with immutable calibration evidence
 
 ## Sprint 14
 
@@ -179,7 +181,5 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Complete and review **S15-02 — Calibration History** on
-`agent/s15-02-calibration-history` as a separate persistent module that preserves
-historical calibration evidence rather than overwriting the current Sensor metadata
-established by S15-01.
+Begin **S15-03 — Device / Communication Health** to distinguish communication loss
+and stale Devices from normal Sensor alarm conditions.

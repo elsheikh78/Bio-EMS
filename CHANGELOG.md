@@ -8,7 +8,8 @@ These changes are newer repository development and are **not** retroactively par
 
 - S15-02 calibration history: append-only actor-audited `PASS`/`FAIL` records,
   immutable SQLite enforcement, chronological Sensor history API, and atomic current
-  Sensor snapshot synchronization after passing calibration — in progress.
+  Sensor snapshot synchronization after passing calibration — merged and closed
+  through PR #23.
 - S15-01 Sensor lifecycle and calibration foundation: backward-compatible product
   grade, hardware, installation, and current calibration-state contracts, backed by
   SQLite migration 005 and strict Sensor request validation — merged and closed
