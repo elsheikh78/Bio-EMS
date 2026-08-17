@@ -197,6 +197,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-06 — BIO EGYPT Pilot Documentation** by consolidating the controlled
-site scope, Sensor map, controller-placement assumptions, installation/wiring
-requirements, and commissioning package.
+Complete and review **S15-06 — BIO EGYPT Pilot Documentation** on
+`agent/s15-06-bio-egypt-pilot-docs`, preserving field-dependent values as controlled
+survey and commissioning gates.

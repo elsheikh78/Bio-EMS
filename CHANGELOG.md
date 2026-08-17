@@ -6,6 +6,9 @@ These changes are newer repository development and are **not** retroactively par
 
 ### Sprint 15 pilot-readiness work
 
+- S15-06 BIO EGYPT Pilot Documentation: controlled two-Site/20-Sensor scope and map,
+  installation/wiring requirements, commissioning record, acceptance gates, and
+  open-items register — in progress.
 - S15-05 SMS Failover Contract: provider-neutral emergency decision policy for
   critical Alarms and Device offline transitions during primary communication loss,
   with E.164 validation and retry idempotency — merged and closed through PR #30.

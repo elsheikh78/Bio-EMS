@@ -6,7 +6,7 @@
 
 **Current integrated `main` baseline:** `2b2983433f0ea80ef00fd5359d1230b7f86254e3`
 
-**Next work item:** S15-06 — BIO EGYPT Pilot Documentation
+**Current work item:** S15-06 — BIO EGYPT Pilot Documentation
 
 ## Implemented Platform
 
@@ -45,7 +45,7 @@ is not retroactively part of that tagged artifact.
 - **S15-03 — Device / Communication Health:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #25.
 - **S15-04 — Notification Architecture:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #28.
 - **S15-05 — SMS Failover Contract:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #30.
-- **S15-06 — BIO EGYPT Pilot Documentation:** NOT STARTED.
+- **S15-06 — BIO EGYPT Pilot Documentation:** IN PROGRESS on `agent/s15-06-bio-egypt-pilot-docs`.
 - **S15-07 — Deployment & Commissioning Readiness:** NOT STARTED.
 
 ## S15-01 Boundary
