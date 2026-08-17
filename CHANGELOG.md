@@ -4,6 +4,12 @@
 
 These changes are newer repository development and are **not** retroactively part of the immutable `v0.13.0` tag.
 
+### Sprint 15 pilot-readiness work
+
+- S15-01 Sensor lifecycle and calibration foundation: backward-compatible product
+  grade, hardware, installation, and current calibration-state contracts, backed by
+  SQLite migration 005 and strict Sensor request validation.
+
 ### Sprint 13 post-release work
 
 - S13-06 ADMIN User Management, including transactional last-active-ADMIN protection and concurrency coverage.

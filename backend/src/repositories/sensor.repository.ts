@@ -1,42 +1,7 @@
 import { sqlite } from "../../database/sqlite/client";
+import type { Sensor } from "../entities/Sensor";
 
-export interface Sensor {
-  id?: number;
-
-  uuid: string;
-
-  room_id: number;
-
-  device_id: number;
-
-  channel: number;
-
-  code: string;
-
-  name: string;
-
-  sensor_type: string;
-
-  unit: string;
-
-  min_value?: number;
-
-  max_value?: number;
-
-  warning_low?: number;
-
-  alarm_low?: number;
-
-  warning_high?: number;
-
-  alarm_high?: number;
-
-  enabled?: number;
-
-  created_at?: string;
-
-  updated_at?: string;
-}
+export type { Sensor } from "../entities/Sensor";
 
 export class SensorRepository {
   create(sensor: Sensor): number {
@@ -57,9 +22,17 @@ export class SensorRepository {
                 alarm_low,
                 warning_high,
                 alarm_high,
+                product_grade,
+                hardware_model,
+                installation_date,
+                calibration_status,
+                last_calibrated_at,
+                calibration_due_at,
+                calibration_offset,
+                certificate_reference,
                 enabled
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
     const result = stmt.run(
@@ -90,6 +63,22 @@ export class SensorRepository {
       sensor.warning_high ?? null,
 
       sensor.alarm_high ?? null,
+
+      sensor.product_grade ?? "STANDARD",
+
+      sensor.hardware_model ?? null,
+
+      sensor.installation_date ?? null,
+
+      sensor.calibration_status ?? "NOT_CALIBRATED",
+
+      sensor.last_calibrated_at ?? null,
+
+      sensor.calibration_due_at ?? null,
+
+      sensor.calibration_offset ?? 0,
+
+      sensor.certificate_reference ?? null,
 
       sensor.enabled ?? 1
     );

@@ -87,13 +87,24 @@ const validDevice = {
   protocol: "mqtt",
 };
 
+const validSensor = {
+  uuid: "8ae946c2-1424-44e8-b98d-ae2fd2f2273e",
+  room_id: 1,
+  device_id: 1,
+  channel: 0,
+  code: "TEMP-01",
+  name: "Cold room temperature",
+  sensor_type: "TEMPERATURE",
+  unit: "°C",
+};
+
 const ROUTES: readonly RouteCase[] = [
   configurationRoute("Sites", "get", "/sites", siteRouter, "/"),
   configurationRoute("Sites", "post", "/sites", siteRouter, "/"),
   configurationRoute("Rooms", "get", "/rooms", roomRouter, "/"),
   configurationRoute("Rooms", "post", "/rooms", roomRouter, "/"),
   configurationRoute("Sensors", "get", "/sensors", sensorRouter, "/"),
-  configurationRoute("Sensors", "post", "/sensors", sensorRouter, "/"),
+  configurationRoute("Sensors", "post", "/sensors", sensorRouter, "/", validSensor),
   deviceRoute("get", "/devices", "/"),
   deviceRoute("post", "/devices", "/", validDevice),
   deviceRoute("get", "/devices/ZC-FW-001", "/:deviceId"),
@@ -198,7 +209,8 @@ function configurationRoute(
   method: "get" | "post",
   path: string,
   router: Router,
-  routerPath: string
+  routerPath: string,
+  body?: Record<string, unknown>
 ): RouteCase {
   return {
     area,
@@ -207,6 +219,7 @@ function configurationRoute(
     permission: method === "get" ? PERMISSION.CONFIGURATION_READ : PERMISSION.CONFIGURATION_WRITE,
     router,
     routerPath,
+    body,
   };
 }
 

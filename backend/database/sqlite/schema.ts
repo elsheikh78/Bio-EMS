@@ -123,6 +123,24 @@ export function createTables(database: Database.Database = sqlite): void {
 
         alarm_high REAL,
 
+        product_grade TEXT NOT NULL DEFAULT 'STANDARD'
+            CHECK(product_grade IN ('STANDARD', 'ADVANCED')),
+
+        hardware_model TEXT,
+
+        installation_date TEXT,
+
+        calibration_status TEXT NOT NULL DEFAULT 'NOT_CALIBRATED'
+            CHECK(calibration_status IN ('NOT_CALIBRATED', 'VALID', 'DUE', 'EXPIRED')),
+
+        last_calibrated_at TEXT,
+
+        calibration_due_at TEXT,
+
+        calibration_offset REAL NOT NULL DEFAULT 0,
+
+        certificate_reference TEXT,
+
         enabled INTEGER NOT NULL DEFAULT 1,
 
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
