@@ -7,6 +7,7 @@ import { migration002 } from "./migrations/002_add_warning_thresholds";
 import { migration003 } from "./migrations/003_create_users";
 import { migration004 } from "./migrations/004_add_alarm_acknowledging_user";
 import { migration005 } from "./migrations/005_add_sensor_calibration_foundation";
+import { migration006 } from "./migrations/006_create_calibration_records";
 
 export interface Migration {
   version: number;
@@ -22,6 +23,7 @@ const migrations: Migration[] = [
   migration003,
   migration004,
   migration005,
+  migration006,
 ];
 
 export function runMigrations(

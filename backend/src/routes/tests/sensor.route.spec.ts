@@ -3,12 +3,18 @@ import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { errorMiddleware } from "../../middleware/error.middleware";
 import type { Sensor } from "../../entities/Sensor";
+import * as calibrationService from "../../services/calibration.service";
 import * as sensorService from "../../services/sensor.service";
 import sensorRouter from "../sensor.route";
 
 vi.mock("../../services/sensor.service", () => ({
   createSensor: vi.fn(),
   getSensors: vi.fn(),
+}));
+
+vi.mock("../../services/calibration.service", () => ({
+  createCalibrationRecord: vi.fn(),
+  getCalibrationHistory: vi.fn(),
 }));
 
 const app = express();
@@ -102,5 +108,85 @@ describe("Sensor REST API", () => {
     const response = await request(app).get("/api/v1/sensors").expect(200);
 
     expect(response.body).toEqual(sensors);
+  });
+});
+
+describe("Calibration history REST API", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const record = {
+    id: 31,
+    sensor_id: 14,
+    sensor_uuid: validSensor.uuid,
+    result: "PASS" as const,
+    performed_at: "2026-08-17T09:00:00Z",
+    due_at: "2027-08-17T09:00:00Z",
+    offset: -0.15,
+    certificate_reference: "CAL-2026-0042",
+    notes: null,
+    performed_by_user_id: 1,
+    performed_by_username: "admin",
+    created_at: "2026-08-17 09:01:00",
+  };
+
+  it("creates an actor-audited passing calibration record", async () => {
+    vi.mocked(calibrationService.createCalibrationRecord).mockReturnValue(record);
+
+    const body = {
+      result: "PASS",
+      performed_at: record.performed_at,
+      due_at: record.due_at,
+      offset: record.offset,
+      certificate_reference: record.certificate_reference,
+    };
+    const response = await request(app)
+      .post(`/api/v1/sensors/${validSensor.uuid}/calibrations`)
+      .send(body)
+      .expect(201);
+
+    expect(calibrationService.createCalibrationRecord).toHaveBeenCalledWith(
+      validSensor.uuid,
+      body,
+      1
+    );
+    expect(response.body).toEqual(record);
+  });
+
+  it("returns immutable history in the service-provided order", async () => {
+    vi.mocked(calibrationService.getCalibrationHistory).mockReturnValue([record]);
+
+    const response = await request(app)
+      .get(`/api/v1/sensors/${validSensor.uuid}/calibrations`)
+      .expect(200);
+
+    expect(calibrationService.getCalibrationHistory).toHaveBeenCalledWith(validSensor.uuid);
+    expect(response.body).toEqual([record]);
+  });
+
+  it.each([
+    ["a malformed Sensor UUID", "/api/v1/sensors/not-a-uuid/calibrations", {}],
+    [
+      "a passing record without due date and offset",
+      `/api/v1/sensors/${validSensor.uuid}/calibrations`,
+      { result: "PASS", performed_at: record.performed_at },
+    ],
+    [
+      "a reversed due date",
+      `/api/v1/sensors/${validSensor.uuid}/calibrations`,
+      {
+        result: "PASS",
+        performed_at: record.performed_at,
+        due_at: "2026-08-16T09:00:00Z",
+        offset: 0,
+      },
+    ],
+    [
+      "an unknown field",
+      `/api/v1/sensors/${validSensor.uuid}/calibrations`,
+      { result: "FAIL", performed_at: record.performed_at, approved: true },
+    ],
+  ])("rejects %s", async (_case, path, body) => {
+    await request(app).post(path).send(body).expect(400);
+    expect(calibrationService.createCalibrationRecord).not.toHaveBeenCalled();
   });
 });

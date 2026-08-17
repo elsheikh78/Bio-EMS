@@ -179,6 +179,7 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-02 — Calibration History** as a separate persistent module that preserves
+Complete and review **S15-02 — Calibration History** on
+`agent/s15-02-calibration-history` as a separate persistent module that preserves
 historical calibration evidence rather than overwriting the current Sensor metadata
 established by S15-01.
