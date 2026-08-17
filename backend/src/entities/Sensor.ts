@@ -1,3 +1,6 @@
+import type { SensorCalibrationStatus } from "../domain/enums/sensor-calibration-status";
+import type { SensorProductGrade } from "../domain/enums/sensor-product-grade";
+
 export interface Sensor {
   id?: number;
 
@@ -28,6 +31,22 @@ export interface Sensor {
   warning_high?: number;
 
   alarm_high?: number;
+
+  product_grade?: SensorProductGrade;
+
+  hardware_model?: string;
+
+  installation_date?: string;
+
+  calibration_status?: SensorCalibrationStatus;
+
+  last_calibrated_at?: string;
+
+  calibration_due_at?: string;
+
+  calibration_offset?: number;
+
+  certificate_reference?: string;
 
   enabled?: number;
 
