@@ -9,7 +9,7 @@ These changes are newer repository development and are **not** retroactively par
 - S15-07 Deployment & Commissioning Readiness: production configuration gate, MQTT
   TLS support, persistent SQLite path, LIVE/REPLAY telemetry recovery semantics,
   Site Controller contract, deployment/backup/restore runbook, and readiness evidence
-  boundary — in progress.
+  boundary — merged and closed through PR #34.
 - S15-06 BIO EGYPT Pilot Documentation: controlled two-Site/20-Sensor scope and map,
   installation/wiring requirements, commissioning record, acceptance gates, and
   open-items register — merged and closed through PR #32.
@@ -30,6 +30,9 @@ These changes are newer repository development and are **not** retroactively par
   grade, hardware, installation, and current calibration-state contracts, backed by
   SQLite migration 005 and strict Sensor request validation — merged and closed
   through PR #21.
+
+Sprint 15 is complete, merged, verified, and closed. BIO EGYPT field commissioning
+and Pilot acceptance remain unexecuted pending controlled field evidence.
 
 ### Sprint 13 post-release work
 

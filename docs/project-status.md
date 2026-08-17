@@ -144,8 +144,11 @@ S15-05 is complete, merged, verified, and closed through PR #30 at `main`
 integration commit `2b2983433f0ea80ef00fd5359d1230b7f86254e3`.
 
 S15-06 is complete, merged, verified, and closed through PR #32 at `main`
-integration commit `8ee97931079d90d4f901e9500f06dc905d7e6049`. The next work item
-is S15-07 — Deployment & Commissioning Readiness.
+integration commit `8ee97931079d90d4f901e9500f06dc905d7e6049`.
+
+S15-07 and Sprint 15 are complete, merged, verified, and closed. S15-07 was
+integrated through PR #34 at `main` integration commit
+`c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`.
 
 The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
 
@@ -195,12 +198,11 @@ The following items are not declared part of Sprint 14 and remain subject to sep
 - [x] Channel-independent Notification Architecture foundation
 - [ ] Additional operational frontend features
 - [ ] OTA update capabilities
-- [ ] Production deployment and operations work
+- [x] Pilot deployment-readiness foundation and controlled operating runbook
 
 These items must not be assumed necessary for the first Pilot unless the Pilot Readiness Review establishes that requirement.
 
 ## Next Action
 
-Complete and review **S15-07 — Deployment & Commissioning Readiness** on
-`agent/s15-07-deployment-commissioning-readiness`, while keeping field commissioning
-and Pilot acceptance explicitly unexecuted until controlled evidence exists.
+Execute controlled BIO EGYPT field-pilot preparation and close `BE-001` through
+`BE-012` with evidence. Field commissioning and Pilot acceptance remain unexecuted.
