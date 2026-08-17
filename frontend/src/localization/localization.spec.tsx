@@ -135,6 +135,49 @@ const alternativeResources = {
     retry: "Alt retry",
   },
 
+  monitoredAreas: {
+    title: "Alt monitored areas operational title",
+    description: "Alt monitored areas operational description",
+    loading: "Alt loading monitored areas",
+    error: "Alt monitored areas error",
+    refresh: "Alt refresh monitored areas",
+    refreshing: "Alt refreshing monitored areas",
+    retry: "Alt retry monitored areas",
+    noSites: "Alt no Sites configured",
+    noAreas: "Alt no Monitored Areas configured",
+    noSensors: "Alt no Sensors configured",
+
+    site: {
+      active: "Alt Active Site",
+      inactive: "Alt Inactive Site",
+    },
+
+    area: {
+      active: "Alt Active Area",
+      inactive: "Alt Inactive Area",
+    },
+
+    sensor: {
+      enabled: "Alt Enabled",
+      disabled: "Alt Disabled",
+      type: "Alt Sensor Type",
+      unit: "Alt Unit",
+      channel: "Alt Channel",
+
+      thresholds: {
+        title: "Alt configured thresholds",
+        description: "Alt configuration-only threshold description",
+        minValue: "Alt Minimum Value",
+        warningLow: "Alt Warning Low",
+        alarmLow: "Alt Alarm Low",
+        warningHigh: "Alt Warning High",
+        alarmHigh: "Alt Alarm High",
+        maxValue: "Alt Maximum Value",
+        notConfigured: "Alt Not Configured",
+      },
+    },
+  },
+
   placeholders: {
     dashboard: {
       title: "Alt dashboard title",
@@ -384,6 +427,22 @@ describe("localization contracts", () => {
     expect(
       screen.getByText("Alt loading alarm statistics"),
     ).toBeInTheDocument();
+  });
+
+  it("renders the operational monitored areas page through localization resources", () => {
+    renderWithAlternativeResources("/monitored-areas");
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Alt monitored areas operational title",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alt monitored areas operational description"),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Alt loading monitored areas")).toBeInTheDocument();
   });
 
   it("renders the alternative shell landing page copy", () => {

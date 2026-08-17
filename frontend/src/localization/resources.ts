@@ -169,6 +169,49 @@ export interface TranslationResources {
     retry: string;
   };
 
+  monitoredAreas: {
+    title: string;
+    description: string;
+    loading: string;
+    error: string;
+    refresh: string;
+    refreshing: string;
+    retry: string;
+    noSites: string;
+    noAreas: string;
+    noSensors: string;
+
+    site: {
+      active: string;
+      inactive: string;
+    };
+
+    area: {
+      active: string;
+      inactive: string;
+    };
+
+    sensor: {
+      enabled: string;
+      disabled: string;
+      type: string;
+      unit: string;
+      channel: string;
+
+      thresholds: {
+        title: string;
+        description: string;
+        minValue: string;
+        warningLow: string;
+        alarmLow: string;
+        warningHigh: string;
+        alarmHigh: string;
+        maxValue: string;
+        notConfigured: string;
+      };
+    };
+  };
+
   errorBoundary: {
     title: string;
     reload: string;
@@ -343,6 +386,60 @@ export const englishResources = {
     error: "Dashboard summary could not be loaded.",
 
     retry: "Retry",
+  },
+
+  monitoredAreas: {
+    title: "Monitored Areas",
+
+    description:
+      "Configured monitoring hierarchy across Sites, Monitored Areas, and Sensors.",
+
+    loading: "Loading monitored areas",
+
+    error: "Unable to load monitored areas configuration.",
+
+    refresh: "Refresh monitored areas",
+    refreshing: "Refreshing monitored areas",
+    retry: "Retry",
+
+    noSites: "No Sites are currently configured.",
+
+    noAreas: "No Monitored Areas are configured for this Site.",
+
+    noSensors: "No Sensors are configured for this Monitored Area.",
+
+    site: {
+      active: "Active Site",
+      inactive: "Inactive Site",
+    },
+
+    area: {
+      active: "Active Area",
+      inactive: "Inactive Area",
+    },
+
+    sensor: {
+      enabled: "Enabled",
+      disabled: "Disabled",
+      type: "Sensor Type",
+      unit: "Unit",
+      channel: "Channel",
+
+      thresholds: {
+        title: "Configured thresholds",
+
+        description:
+          "Configuration values only. These values do not represent live telemetry, connectivity health, or current alarm state.",
+
+        minValue: "Minimum value",
+        warningLow: "Warning low",
+        alarmLow: "Alarm low",
+        warningHigh: "Warning high",
+        alarmHigh: "Alarm high",
+        maxValue: "Maximum value",
+        notConfigured: "Not configured",
+      },
+    },
   },
 
   placeholders: {

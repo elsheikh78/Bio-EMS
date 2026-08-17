@@ -1,11 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
+import { DashboardPage } from "./pages/DashboardPage";
 import { FeaturePlaceholderPage } from "./pages/FeaturePlaceholderPage";
 import { LoginPage } from "./pages/LoginPage";
+import { MonitoredAreasPage } from "./pages/MonitoredAreasPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ShellLandingPage } from "./pages/ShellLandingPage";
 import { UsersPlaceholderPage } from "./pages/UsersPlaceholderPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -23,6 +24,7 @@ export function App() {
           </LoginBoundary>
         }
       />
+
       <Route element={<AuthenticationBoundary />}>
         <Route element={<AppShell />}>
           <Route
@@ -33,6 +35,7 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route
             path="dashboard"
             element={
@@ -41,14 +44,16 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route
             path="monitored-areas"
             element={
               <PermissionBoundary path="/monitored-areas">
-                <FeaturePlaceholderPage feature="monitoredAreas" />
+                <MonitoredAreasPage />
               </PermissionBoundary>
             }
           />
+
           <Route
             path="alarms"
             element={
@@ -57,6 +62,7 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route
             path="devices"
             element={
@@ -65,6 +71,7 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route
             path="configuration"
             element={
@@ -73,6 +80,7 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route
             path="users"
             element={
@@ -81,7 +89,9 @@ export function App() {
               </PermissionBoundary>
             }
           />
+
           <Route path="foundation" element={<Navigate to="/" replace />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>
