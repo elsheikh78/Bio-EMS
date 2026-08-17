@@ -1,6 +1,6 @@
 # BIO-EMS Development Roadmap
 
-Published version: `v0.13.0`
+Published version: `v0.15.0`
 
 Repository status: Sprints 13 through 15 are complete, merged, verified, and closed.
 The current phase is controlled BIO EGYPT field-pilot preparation; field
@@ -84,7 +84,6 @@ and OTA updates remain separately scoped.
 
 ## Release Boundary
 
-The published `v0.13.0` tag remains fixed at
-`ee2cb45832888ff500e02afcbe1418b6144276c6`. Later Sprint 13 work and all Sprint 14
-and Sprint 15 work are newer repository development and are not retroactively
-attributed to that immutable release artifact.
+Release `v0.15.0` contains later Sprint 13 work and all completed Sprint 14 and Sprint
+15 repository scope. Field deployment, commissioning evidence, and Pilot acceptance
+remain outside the software release claim.

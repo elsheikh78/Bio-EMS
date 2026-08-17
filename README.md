@@ -1,6 +1,6 @@
 # BIO-EMS
 
-![Current Version](https://img.shields.io/badge/version-0.13.0-blue)
+![Current Version](https://img.shields.io/badge/version-0.15.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 ![Express](https://img.shields.io/badge/Express-5.2-000000)
@@ -10,7 +10,7 @@
 
 Enterprise Environmental Monitoring System (EMS) for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Published release:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
+**Published release:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
 **Backend:** TypeScript / Express
 
@@ -216,11 +216,9 @@ See [`frontend/README.md`](frontend/README.md), [`docs/project-management/SPRINT
 
 ## Release Boundary
 
-The immutable `v0.13.0` tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
-
-Later Sprint 13 work and all Sprint 14 and Sprint 15 work are newer repository
-development and are not retroactively part of the `v0.13.0` artifact. They remain
-under `Unreleased` until a separate, owner-approved release is prepared.
+Release `v0.15.0` contains the approved repository state through the completed Sprint
+14 frontend and Sprint 15 Pilot-readiness foundation. It does not represent BIO EGYPT
+field commissioning or Pilot acceptance.
 
 ## Planned or Deferred Work
 

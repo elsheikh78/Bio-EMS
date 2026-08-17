@@ -1,6 +1,6 @@
 # [0.15.0] - 2026-08-17
 
-## Release Candidate
+## Release
 
 Post-`v0.13.0` repository development through the completed Sprint 14 frontend and
 Sprint 15 Pilot-readiness foundation.
@@ -56,21 +56,23 @@ Sprint 15 Pilot-readiness foundation.
 ## Known limitations and acceptance boundary
 
 - BIO EGYPT field survey, installation, commissioning, signed evidence, and Pilot
-  acceptance have not been executed by this release candidate.
+  acceptance are not claimed by this software release.
 - Monitoring Points, Assets, broader Device discovery/provisioning, OTA, additional
   operational frontend modules, delivery-channel provider implementations, and
   broader commercial production operations remain separately scoped.
-- This changelog entry does not itself create tag `v0.15.0`, publish a GitHub Release,
-  or deploy the system.
+- Publishing `v0.15.0` does not deploy the system or constitute field acceptance.
 
 ## Verified
 
 - Sprint 14 and Sprint 15 implementation and closure PRs were merged with successful
   Backend and Frontend GitHub quality gates.
-- The release preparation PR must pass typecheck, build, lint, formatting, automated
-  tests, and migration coverage before owner approval.
+- Release preparation PR #37 passed Backend and Frontend typecheck, build, lint,
+  formatting, automated tests, and migration coverage in GitHub Actions run
+  `32050279641`.
+- The production configuration validator passed with a complete non-sensitive dummy
+  environment.
 - `git diff --check`, release metadata consistency, documentation status, and secret
-  boundary checks are required before tagging.
+  boundary checks passed before publication approval.
 
 ---
 

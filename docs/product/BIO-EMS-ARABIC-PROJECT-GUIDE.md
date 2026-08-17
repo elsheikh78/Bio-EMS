@@ -286,7 +286,7 @@ Sensors / Devices
 
 الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وAlarm Acknowledgement وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
 
-الـPublished Release الموثق حاليًا هو `v0.13.0`، بينما أعمال Sprint 14 وSprint 15 أحدث من هذا الـRelease ولا يجب اعتبارها جزءًا من Artifact الإصدار القديم.
+الـPublished Release الموثق حاليًا هو `v0.15.0`، ويشمل أعمال Sprint 14 وSprint 15 المعتمدة داخل المستودع، لكنه لا يعني تنفيذ أو قبول الـPilot ميدانيًا.
 
 ## 29. ما المتبقي للوصول إلى Commercial Production-Ready EMS؟
 

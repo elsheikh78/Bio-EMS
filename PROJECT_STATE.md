@@ -1,6 +1,6 @@
 # BIO-EMS Project State
 
-**Published version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
+**Published version:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
 **Current phase:** Post-Sprint 15 — BIO EGYPT Field-Pilot Preparation
 

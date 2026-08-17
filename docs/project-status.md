@@ -2,15 +2,11 @@
 
 ## Current Version
 
-Published release: [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
+Published release: [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
-The release tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
-
-Current repository development is newer than the published `v0.13.0` release and
-includes later Sprint 13 work, the completed Sprint 14 frontend application, and the
-completed Sprint 15 Pilot-readiness foundation.
-
-The current repository state must not be interpreted as a new published production release until a later release is explicitly prepared and published.
+The release contains later Sprint 13 work, the completed Sprint 14 frontend
+application, and the completed Sprint 15 Pilot-readiness foundation. It does not
+declare BIO EGYPT field commissioning or Pilot acceptance.
 
 ## Implemented
 
