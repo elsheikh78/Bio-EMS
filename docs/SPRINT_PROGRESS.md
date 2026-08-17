@@ -2,7 +2,32 @@
 
 ## Completed Sprints
 
-Sprints 09 through 14 are complete.
+Sprints 09 through 14 are complete. Sprint 15 is in progress.
+
+## Sprint 15 — Pilot Readiness Foundation
+
+Status: **IN PROGRESS**
+
+### Work-item status
+
+- S15-01 — Sensor Lifecycle & Calibration Foundation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #21.
+- S15-02 — Calibration History: **NEXT / NOT STARTED**.
+- S15-03 — Device / Communication Health: **NOT STARTED**.
+- S15-04 — Notification Architecture: **NOT STARTED**.
+- S15-05 — SMS Failover Contract: **NOT STARTED**.
+- S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
+- S15-07 — Deployment & Commissioning Readiness: **NOT STARTED**.
+
+### S15-01 integration evidence
+
+- feature commit: `bb3873424a566ef43a18e12b732b9f252bfa99ff`;
+- PR: #21;
+- merge commit: `d0a800dea252907d5f2a942571add2528a29666f`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-01 added the backward-compatible Sensor product-grade, hardware, installation,
+and current calibration-state foundation. Calibration history was excluded and
+remains the dedicated scope of S15-02.
 
 ## Sprint 14 — Frontend Application
 
@@ -63,7 +88,7 @@ Sprint 14 delivered:
 
 The existing backend architecture remained authoritative for authentication, authorization, domain behavior, telemetry, and alarm processing.
 
-## Current Project State
+## Sprint 14 Final State
 
 Sprint 14 implementation is closed.
 
@@ -73,9 +98,11 @@ No additional feature expansion should be approved solely because a capability c
 
 Potential work must first be classified against the requirements of the target Pilot deployment.
 
-## Next Project Phase
+## Pilot Readiness Transition
 
-**BIO-EMS Pilot Readiness Review**
+The BIO-EMS Pilot Readiness Review was completed and recorded in
+`docs/BIO-EMS-FULL-AUDIT-2026-08-17.md`. Its decision established Sprint 15 as the
+Pilot Readiness Foundation sequence.
 
 The review will determine which Pilot requirements are:
 
@@ -88,4 +115,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The Pilot Readiness Review is therefore the immediate project critical path.
+The immediate project critical path is now **S15-02 — Calibration History**.

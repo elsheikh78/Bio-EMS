@@ -8,7 +8,8 @@ These changes are newer repository development and are **not** retroactively par
 
 - S15-01 Sensor lifecycle and calibration foundation: backward-compatible product
   grade, hardware, installation, and current calibration-state contracts, backed by
-  SQLite migration 005 and strict Sensor request validation.
+  SQLite migration 005 and strict Sensor request validation — merged and closed
+  through PR #21.
 
 ### Sprint 13 post-release work
 
@@ -22,13 +23,9 @@ These changes are newer repository development and are **not** retroactively par
 - S14-02 professional responsive AppShell and navigation — merged and verified.
 - S14-03 browser authentication/session lifecycle and authorization-aware routing — merged and verified.
 - S14-04 operational Dashboard frontend — merged and verified.
-- S14-05 Monitored Areas frontend — in progress.
-  - S14-05A contracts/data access — complete and pushed on `agent/s14-05-monitored-areas` at `90e39af`.
-  - S14-05B Site/Monitored Area hierarchy — complete and pushed at `bd442e9`.
-  - S14-05C Sensor inventory/threshold metadata — next / not started.
-  - S14-05D refresh/integration/hardening — not started.
+- S14-05 operational Monitored Areas frontend — merged and closed through PR #19.
 
-S14-05A/B remain feature-branch progress and are not yet integrated into `main`.
+Sprint 14 is complete, merged, and closed.
 
 ---
 

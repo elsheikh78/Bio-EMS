@@ -31,6 +31,8 @@ The current repository state must not be interpreted as a new published producti
 - [x] Site → Monitored Area (Room) → Sensor hierarchy
 - [x] Sensor configuration and threshold presentation
 - [x] Monitored Areas refresh/retry and integration hardening
+- [x] S15-01 Sensor product-grade, hardware, installation, and current calibration-state foundation
+- [x] SQLite migration 005 with backward-compatible Sensor defaults
 
 ## Sprint 14
 
@@ -117,7 +119,11 @@ The frontend continues to consume established backend contracts rather than crea
 
 The immediate project phase after Sprint 14 is:
 
-**BIO-EMS Pilot Readiness Review**
+**Sprint 15 — Pilot Readiness Foundation**
+
+The Pilot Readiness Review is complete. S15-01 is complete, merged, verified, and
+closed through PR #21 at `main` integration commit
+`d0a800dea252907d5f2a942571add2528a29666f`.
 
 The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
 
@@ -173,6 +179,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Complete the Sprint 14 documentation reconciliation and merge the documentation-only closure branch.
-
-Then begin the **BIO-EMS Pilot Readiness Review** before approving additional feature development.
+Begin **S15-02 — Calibration History** as a separate persistent module that preserves
+historical calibration evidence rather than overwriting the current Sensor metadata
+established by S15-01.
