@@ -40,6 +40,7 @@ The current repository state must not be interpreted as a new published producti
 - [x] S15-04 durable channel-independent Notification Architecture
 - [x] SQLite migration 008 with idempotent notification event outbox
 - [x] S15-05 provider-neutral SMS failover contract and decision policy
+- [x] S15-06 controlled BIO EGYPT Pilot documentation package
 
 ## Sprint 14
 
@@ -140,8 +141,11 @@ S15-04 is complete, merged, verified, and closed through PR #28 at `main`
 integration commit `f22945ccc5ce9d97a4991b6b923814d04802ade5`.
 
 S15-05 is complete, merged, verified, and closed through PR #30 at `main`
-integration commit `2b2983433f0ea80ef00fd5359d1230b7f86254e3`. The next work item
-is S15-06 — BIO EGYPT Pilot Documentation.
+integration commit `2b2983433f0ea80ef00fd5359d1230b7f86254e3`.
+
+S15-06 is complete, merged, verified, and closed through PR #32 at `main`
+integration commit `8ee97931079d90d4f901e9500f06dc905d7e6049`. The next work item
+is S15-07 — Deployment & Commissioning Readiness.
 
 The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
 
@@ -197,6 +201,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Complete and review **S15-06 — BIO EGYPT Pilot Documentation** on
-`agent/s15-06-bio-egypt-pilot-docs`, preserving field-dependent values as controlled
-survey and commissioning gates.
+Begin **S15-07 — Deployment & Commissioning Readiness** by validating the complete
+configured Site/controller/Sensor path, operational recovery, evidence gates, and
+acceptance boundary without claiming unperformed field work.
