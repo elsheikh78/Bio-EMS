@@ -8,7 +8,7 @@ These changes are newer repository development and are **not** retroactively par
 
 - S15-05 SMS Failover Contract: provider-neutral emergency decision policy for
   critical Alarms and Device offline transitions during primary communication loss,
-  with E.164 validation and retry idempotency — in progress.
+  with E.164 validation and retry idempotency — merged and closed through PR #30.
 - S15-04 Notification Architecture: durable channel-independent Alarm and Device
   communication event outbox, idempotent producer contracts, and future delivery
   adapter boundary — merged and closed through PR #28.

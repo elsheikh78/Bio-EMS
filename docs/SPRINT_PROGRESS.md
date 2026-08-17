@@ -14,7 +14,7 @@ Status: **IN PROGRESS**
 - S15-02 — Calibration History: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #23.
 - S15-03 — Device / Communication Health: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #25.
 - S15-04 — Notification Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #28.
-- S15-05 — SMS Failover Contract: **IN PROGRESS** on `agent/s15-05-sms-failover-contract`.
+- S15-05 — SMS Failover Contract: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #30.
 - S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
 - S15-07 — Deployment & Commissioning Readiness: **NOT STARTED**.
 
@@ -60,6 +60,17 @@ counting without changing Device lifecycle semantics.
 S15-04 added a durable, idempotent, channel-independent notification event outbox,
 transactional Alarm event production, Device communication transition contracts,
 and a future delivery-adapter seam without selecting an external provider.
+
+### S15-05 integration evidence
+
+- feature commit: `66b43e139c1c5462860a3c24ddd2a42ce4f524db`;
+- PR: #30;
+- merge commit: `2b2983433f0ea80ef00fd5359d1230b7f86254e3`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-05 added the provider-neutral SMS failover decision table, gateway contract,
+E.164 safety boundary, and retry idempotency for critical Alarm and Device-offline
+events during primary communication loss.
 
 ## Sprint 14 — Frontend Application
 
@@ -147,4 +158,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-05 — SMS Failover Contract**.
+The immediate project critical path is now **S15-06 — BIO EGYPT Pilot Documentation**.
