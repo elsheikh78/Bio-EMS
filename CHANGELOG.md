@@ -6,6 +6,9 @@ These changes are newer repository development and are **not** retroactively par
 
 ### Sprint 15 pilot-readiness work
 
+- S15-05 SMS Failover Contract: provider-neutral emergency decision policy for
+  critical Alarms and Device offline transitions during primary communication loss,
+  with E.164 validation and retry idempotency — in progress.
 - S15-04 Notification Architecture: durable channel-independent Alarm and Device
   communication event outbox, idempotent producer contracts, and future delivery
   adapter boundary — merged and closed through PR #28.
