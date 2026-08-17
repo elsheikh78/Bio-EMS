@@ -19,5 +19,7 @@ bioems/+/heartbeat/+
 ```
 
 Sprint 12 established telemetry without changing its existing payload schema. S15-03
-adds the heartbeat contract and trusted Device last-seen semantics. Registration,
-command, and response topics remain future design.
+adds the heartbeat contract and trusted Device last-seen semantics. S15-07 adds
+production MQTT TLS configuration plus optional `LIVE`/`REPLAY` telemetry mode;
+replayed readings retain their original timestamp without historical Alarm
+re-evaluation. Registration, command, and response topics remain future design.

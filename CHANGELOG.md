@@ -6,6 +6,10 @@ These changes are newer repository development and are **not** retroactively par
 
 ### Sprint 15 pilot-readiness work
 
+- S15-07 Deployment & Commissioning Readiness: production configuration gate, MQTT
+  TLS support, persistent SQLite path, LIVE/REPLAY telemetry recovery semantics,
+  Site Controller contract, deployment/backup/restore runbook, and readiness evidence
+  boundary — in progress.
 - S15-06 BIO EGYPT Pilot Documentation: controlled two-Site/20-Sensor scope and map,
   installation/wiring requirements, commissioning record, acceptance gates, and
   open-items register — merged and closed through PR #32.

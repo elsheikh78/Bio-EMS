@@ -1,5 +1,5 @@
 import mqtt, { MqttClient } from "mqtt";
-import { MQTT } from "../constants/mqtt.constants";
+import { config } from "../config/config";
 import { routeMessage } from "./router";
 import { MQTT_TOPICS } from "./topics";
 
@@ -10,23 +10,23 @@ export function getMqttClient(): MqttClient {
     return client;
   }
 
-  client = mqtt.connect(`mqtt://${MQTT.HOST}:${MQTT.PORT}`, {
-    clientId: MQTT.CLIENT_ID,
+  client = mqtt.connect(`${config.mqtt.protocol}://${config.mqtt.host}:${config.mqtt.port}`, {
+    clientId: config.mqtt.clientId,
 
-    username: MQTT.USERNAME || undefined,
-    password: MQTT.PASSWORD || undefined,
+    username: config.mqtt.username,
+    password: config.mqtt.password,
 
-    keepalive: MQTT.KEEPALIVE,
-    reconnectPeriod: MQTT.RECONNECT_PERIOD,
-    connectTimeout: MQTT.CONNECT_TIMEOUT,
+    keepalive: config.mqtt.keepalive,
+    reconnectPeriod: config.mqtt.reconnectPeriod,
+    connectTimeout: config.mqtt.connectTimeout,
 
-    clean: MQTT.CLEAN,
+    clean: config.mqtt.clean,
   });
 
   client.on("connect", () => {
     console.log("MQTT Connected Successfully");
 
-    client?.subscribe([MQTT_TOPICS.TELEMETRY, MQTT_TOPICS.HEARTBEAT], (err) => {
+    client?.subscribe([MQTT_TOPICS.TELEMETRY, MQTT_TOPICS.HEARTBEAT], { qos: 1 }, (err) => {
       if (err) {
         console.error(err);
         return;

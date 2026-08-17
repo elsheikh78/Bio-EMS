@@ -14,6 +14,8 @@ export const telemetrySchema = z.object({
 
   signal: z.number(),
 
+  mode: z.enum(["LIVE", "REPLAY"]).optional(),
+
   sensors: z.array(telemetrySensorSchema).min(1),
 });
 
