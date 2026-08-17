@@ -6,7 +6,7 @@
 
 **Current integrated `main` baseline:** `daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`
 
-**Next work item:** S15-04 — Notification Architecture
+**Current work item:** S15-04 — Notification Architecture
 
 ## Implemented Platform
 
@@ -41,7 +41,7 @@ is not retroactively part of that tagged artifact.
   - backend and frontend GitHub CI quality gates: PASS.
 - **S15-02 — Calibration History:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #23.
 - **S15-03 — Device / Communication Health:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #25.
-- **S15-04 — Notification Architecture:** NOT STARTED.
+- **S15-04 — Notification Architecture:** IN PROGRESS on `agent/s15-04-notification-architecture`.
 - **S15-05 — SMS Failover Contract:** NOT STARTED.
 - **S15-06 — BIO EGYPT Pilot Documentation:** NOT STARTED.
 - **S15-07 — Deployment & Commissioning Readiness:** NOT STARTED.

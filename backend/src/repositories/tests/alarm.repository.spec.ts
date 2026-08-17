@@ -162,7 +162,8 @@ describe("AlarmRepository", () => {
       trigger_value: 1,
     });
 
-    repository.recoverAlarm(id);
+    expect(repository.recoverAlarm(id)).toBe(true);
+    expect(repository.recoverAlarm(id)).toBe(false);
 
     expect(repository.getById(id)).toMatchObject({ status: "RECOVERED" });
     expect(repository.getById(id)?.recovered_time).toBeTruthy();
