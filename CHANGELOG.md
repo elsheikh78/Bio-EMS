@@ -1,3 +1,12 @@
+# [Unreleased]
+
+## Fixed
+
+- Made SQLite deployment-path tests use platform-native absolute paths so the release
+  suite validates the same behavior on Windows and Linux.
+
+---
+
 # [0.15.0] - 2026-08-17
 
 ## Release
