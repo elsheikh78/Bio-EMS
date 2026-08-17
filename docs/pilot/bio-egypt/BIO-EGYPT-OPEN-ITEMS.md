@@ -21,7 +21,7 @@
 | BE-009 | Approve primary notification channel, recipients, and escalation ownership           | BIO EGYPT quality/IT  | Notification matrix                 | BLOCKING |
 | BE-010 | Select SMS implementation location/provider/SIM and approved E.164 test recipients   | Joint technical team  | Approved failover test plan         | BLOCKING |
 | BE-011 | Confirm backup/restore, support, incident, maintenance, and handover procedures      | BIO-EMS operations    | Approved operating pack             | BLOCKING |
-| BE-012 | Execute S15-07 deployment and commissioning readiness validation                     | Joint team            | Signed commissioning record         | BLOCKING |
+| BE-012 | Execute field deployment/commissioning using the approved S15-07 baseline            | Joint team            | Signed commissioning record         | BLOCKING |
 
 ## Register rule
 

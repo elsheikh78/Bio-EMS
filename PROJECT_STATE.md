@@ -2,11 +2,12 @@
 
 **Published version:** [`v0.13.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.13.0)
 
-**Current phase:** Sprint 15 — Pilot Readiness Foundation
+**Current phase:** Post-Sprint 15 — BIO EGYPT Field-Pilot Preparation
 
-**Current integrated `main` baseline:** `8ee97931079d90d4f901e9500f06dc905d7e6049`
+**Current integrated `main` baseline:** `c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`
 
-**Current work item:** S15-07 — Deployment & Commissioning Readiness
+**Next action:** close BIO EGYPT field gates `BE-001` through `BE-012`; Pilot remains
+NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
@@ -24,6 +25,7 @@
 - Durable channel-independent Alarm and Device communication notification events.
 - Provider-neutral emergency SMS failover policy and gateway contract.
 - Controlled BIO EGYPT two-Site/20-Sensor Pilot documentation package.
+- Production deployment validation, MQTT TLS/QoS, persistent SQLite, and LIVE/REPLAY recovery foundation.
 
 ## Release and Repository Timeline
 
@@ -33,7 +35,7 @@ is not retroactively part of that tagged artifact.
 
 - Sprint 13: COMPLETE / MERGED / CLOSED.
 - Sprint 14: COMPLETE / MERGED / CLOSED.
-- Sprint 15: IN PROGRESS.
+- Sprint 15: COMPLETE / MERGED / VERIFIED / CLOSED.
 
 ## Sprint 15 State
 
@@ -47,7 +49,7 @@ is not retroactively part of that tagged artifact.
 - **S15-04 — Notification Architecture:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #28.
 - **S15-05 — SMS Failover Contract:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #30.
 - **S15-06 — BIO EGYPT Pilot Documentation:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #32.
-- **S15-07 — Deployment & Commissioning Readiness:** IN PROGRESS on `agent/s15-07-deployment-commissioning-readiness`.
+- **S15-07 — Deployment & Commissioning Readiness:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #34.
 
 ## S15-01 Boundary
 
@@ -73,6 +75,6 @@ No Asset, Monitoring Point, or separate Area backend domain has been introduced.
 
 ## Deferred State
 
-Monitoring Points, broader Asset/discovery/provisioning workflows, OTA, production
-operations, and other separately scoped capabilities remain deferred unless a later
-approved Sprint 15 work item implements them.
+Monitoring Points, broader Asset/discovery/provisioning workflows, OTA, broader
+commercial production operations, and other separately scoped capabilities remain
+deferred unless later approved work implements them.

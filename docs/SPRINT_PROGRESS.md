@@ -2,11 +2,11 @@
 
 ## Completed Sprints
 
-Sprints 09 through 14 are complete. Sprint 15 is in progress.
+Sprints 09 through 15 are complete.
 
 ## Sprint 15 — Pilot Readiness Foundation
 
-Status: **IN PROGRESS**
+Status: **COMPLETE / MERGED / VERIFIED / CLOSED**
 
 ### Work-item status
 
@@ -16,7 +16,7 @@ Status: **IN PROGRESS**
 - S15-04 — Notification Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #28.
 - S15-05 — SMS Failover Contract: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #30.
 - S15-06 — BIO EGYPT Pilot Documentation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #32.
-- S15-07 — Deployment & Commissioning Readiness: **IN PROGRESS** on `agent/s15-07-deployment-commissioning-readiness`.
+- S15-07 — Deployment & Commissioning Readiness: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #34.
 
 ### S15-01 integration evidence
 
@@ -82,6 +82,18 @@ events during primary communication loss.
 S15-06 added the controlled BIO EGYPT two-Site/eight-area/20-Sensor package,
 installation and wiring requirements, commissioning/acceptance record, and blocking
 open-items register without inventing field evidence.
+
+### S15-07 integration evidence
+
+- feature commit: `15ee68c25b0ad41a67ab9c1ff08a8a72dd4d6d5d`;
+- PR: #34;
+- merge commit: `c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-07 added production configuration validation, MQTT TLS/QoS, persistent SQLite,
+complete telemetry quality/timestamp persistence, LIVE/REPLAY recovery semantics,
+the Site Controller integration contract, and operational deployment/restore
+evidence boundaries.
 
 ## Sprint 14 — Frontend Application
 
@@ -169,4 +181,6 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-07 — Deployment & Commissioning Readiness**.
+Sprint 15 is closed. The immediate project critical path is controlled BIO EGYPT
+field-pilot preparation and closure of `BE-001` through `BE-012`. The Pilot remains
+not commissioned and not accepted.
