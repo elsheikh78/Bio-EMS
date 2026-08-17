@@ -47,6 +47,10 @@ export function createTables(database: Database.Database = sqlite): void {
 
             activated INTEGER NOT NULL DEFAULT 0,
 
+            last_seen_at TEXT,
+
+            last_heartbeat_at TEXT,
+
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
             updated_at DATETIME,

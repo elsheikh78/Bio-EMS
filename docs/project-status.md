@@ -181,5 +181,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-03 — Device / Communication Health** to distinguish communication loss
-and stale Devices from normal Sensor alarm conditions.
+Complete and review **S15-03 — Device / Communication Health** on
+`agent/s15-03-device-communication-health` to distinguish communication loss and
+stale Devices from normal Sensor alarm conditions.

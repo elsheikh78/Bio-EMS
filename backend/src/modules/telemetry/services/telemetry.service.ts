@@ -32,12 +32,13 @@ type RejectionContext = {
 };
 
 type TelemetryDependencies = {
-  deviceRepository: Pick<DeviceRepository, "findByDeviceId">;
+  deviceRepository: Pick<DeviceRepository, "findByDeviceId" | "recordCommunication">;
   siteRepository: Pick<SiteRepository, "findById">;
   sensorRepository: Pick<SensorRepository, "findByDeviceAndChannel">;
   evaluateAlarm: typeof evaluateAlarm;
   writeTelemetryPoint: typeof writeTelemetryPoint;
   logRejection: (reason: TelemetryRejectionReason, context: RejectionContext) => void;
+  now: () => Date;
 };
 
 const defaultDependencies: TelemetryDependencies = {
@@ -47,6 +48,7 @@ const defaultDependencies: TelemetryDependencies = {
   evaluateAlarm,
   writeTelemetryPoint,
   logRejection: (reason, context) => console.warn("Telemetry rejected", { reason, ...context }),
+  now: () => new Date(),
 };
 
 export class TelemetryService {
@@ -98,6 +100,20 @@ export class TelemetryService {
     if (site.code !== siteCode) {
       this.reject(TELEMETRY_REJECTION_REASONS.SITE_MISMATCH, { deviceId, siteCode });
 
+      return;
+    }
+
+    if (
+      !this.dependencies.deviceRepository.recordCommunication(
+        device.device_id,
+        this.dependencies.now().toISOString(),
+        "telemetry"
+      )
+    ) {
+      this.reject(TELEMETRY_REJECTION_REASONS.DEVICE_NOT_OPERATIONAL, {
+        deviceId,
+        siteCode,
+      });
       return;
     }
 

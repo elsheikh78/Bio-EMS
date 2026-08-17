@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../../repositories/device.repository", () => ({
-  DeviceRepository: vi.fn(() => ({ findByDeviceId: vi.fn() })),
+  DeviceRepository: vi.fn(() => ({
+    findByDeviceId: vi.fn(),
+    recordCommunication: vi.fn(),
+  })),
 }));
 vi.mock("../../../repositories/site.repository", () => ({
   SiteRepository: vi.fn(() => ({ findById: vi.fn() })),
@@ -48,18 +51,20 @@ const enabledSensor = {
 
 describe("Telemetry trust-boundary policy", () => {
   const dependencies = {
-    deviceRepository: { findByDeviceId: vi.fn() },
+    deviceRepository: { findByDeviceId: vi.fn(), recordCommunication: vi.fn() },
     siteRepository: { findById: vi.fn() },
     sensorRepository: { findByDeviceAndChannel: vi.fn() },
     evaluateAlarm: vi.fn(),
     writeTelemetryPoint: vi.fn(),
     logRejection: vi.fn(),
+    now: () => new Date("2026-08-10T08:00:05.000Z"),
   };
   const service = new TelemetryService(dependencies);
 
   beforeEach(() => {
     vi.clearAllMocks();
     dependencies.deviceRepository.findByDeviceId.mockReturnValue(activeDevice);
+    dependencies.deviceRepository.recordCommunication.mockReturnValue(true);
     dependencies.siteRepository.findById.mockReturnValue({
       id: 3,
       code: "CAIRO01",
@@ -69,7 +74,12 @@ describe("Telemetry trust-boundary policy", () => {
     dependencies.writeTelemetryPoint.mockResolvedValue(undefined);
   });
 
-  const expectNoSideEffects = () => {
+  const expectNoSideEffects = (trustedCommunication = false) => {
+    if (trustedCommunication) {
+      expect(dependencies.deviceRepository.recordCommunication).toHaveBeenCalledOnce();
+    } else {
+      expect(dependencies.deviceRepository.recordCommunication).not.toHaveBeenCalled();
+    }
     expect(dependencies.evaluateAlarm).not.toHaveBeenCalled();
     expect(dependencies.writeTelemetryPoint).not.toHaveBeenCalled();
   };
@@ -80,6 +90,11 @@ describe("Telemetry trust-boundary policy", () => {
     expect(dependencies.deviceRepository.findByDeviceId).toHaveBeenCalledWith("ZC-FW-001");
     expect(dependencies.siteRepository.findById).toHaveBeenCalledWith(3);
     expect(dependencies.sensorRepository.findByDeviceAndChannel).toHaveBeenCalledWith(8, 1);
+    expect(dependencies.deviceRepository.recordCommunication).toHaveBeenCalledWith(
+      "ZC-FW-001",
+      "2026-08-10T08:00:05.000Z",
+      "telemetry"
+    );
     expect(dependencies.evaluateAlarm).toHaveBeenCalledOnce();
     expect(dependencies.writeTelemetryPoint).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -187,6 +202,20 @@ describe("Telemetry trust-boundary policy", () => {
     expectNoSideEffects();
   });
 
+  it("stops when the health update loses a concurrent lifecycle race", async () => {
+    dependencies.deviceRepository.recordCommunication.mockReturnValue(false);
+
+    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload);
+
+    expect(dependencies.logRejection).toHaveBeenCalledWith(
+      TELEMETRY_REJECTION_REASONS.DEVICE_NOT_OPERATIONAL,
+      { deviceId: "ZC-FW-001", siteCode: "CAIRO01" }
+    );
+    expect(dependencies.sensorRepository.findByDeviceAndChannel).not.toHaveBeenCalled();
+    expect(dependencies.evaluateAlarm).not.toHaveBeenCalled();
+    expect(dependencies.writeTelemetryPoint).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["zero", 0],
     ["missing", undefined],
@@ -203,7 +232,7 @@ describe("Telemetry trust-boundary policy", () => {
       TELEMETRY_REJECTION_REASONS.SENSOR_DISABLED,
       { deviceId: "ZC-FW-001", siteCode: "CAIRO01", channel: 1 }
     );
-    expectNoSideEffects();
+    expectNoSideEffects(true);
   });
 
   it("rejects an unknown channel without side effects", async () => {
@@ -215,7 +244,7 @@ describe("Telemetry trust-boundary policy", () => {
       TELEMETRY_REJECTION_REASONS.UNKNOWN_CHANNEL,
       { deviceId: "ZC-FW-001", siteCode: "CAIRO01", channel: 1 }
     );
-    expectNoSideEffects();
+    expectNoSideEffects(true);
   });
 
   it("processes only valid readings in a mixed-channel payload", async () => {

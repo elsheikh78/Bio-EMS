@@ -1,7 +1,7 @@
 # BIO-EMS MQTT Protocol
-Version: 1.0
-Status: Implemented telemetry subset; other message types are future design
-Last Updated: 2026-08-10
+Version: 1.1
+Status: Implemented telemetry and heartbeat subset; other message types are future design
+Last Updated: 2026-08-17
 
 ---
 
@@ -74,20 +74,19 @@ Implemented telemetry format
 
 bioems/{siteCode}/{messageType}/{deviceId}
 
-The only backend subscription implemented by this document is:
+The backend subscriptions implemented by this document are:
 
 bioems/+/telemetry/+
+
+bioems/+/heartbeat/+
 
 The resulting external telemetry contract is:
 
 bioems/CAIRO01/telemetry/ESP32-0001
 
-The following examples are future protocol designs and are not implemented by Sprint
-12:
+The following examples remain future protocol designs:
 
 bioems/CAIRO01/register/ESP32-0001
-
-bioems/CAIRO01/heartbeat/ESP32-0001
 
 bioems/CAIRO01/command/ESP32-0001
 
@@ -97,7 +96,7 @@ bioems/CAIRO01/response/ESP32-0001
 
 # 5. Message Types
 
-Only Telemetry is implemented in the current backend path. Register, Heartbeat,
+Telemetry and Heartbeat are implemented in the current backend path. Register,
 Command, and Response remain future message types and must not be treated as available
 features.
 
@@ -134,6 +133,22 @@ Device online status
 Direction
 
 ESP32 → Backend
+
+Implemented topic:
+
+bioems/{siteCode}/heartbeat/{deviceId}
+
+Implemented payload:
+
+```json
+{
+  "sent_at": "2026-08-17T09:00:00Z",
+  "uptime_seconds": 600
+}
+```
+
+`sent_at` is required protocol evidence. `uptime_seconds` is optional. Device health
+uses authenticated backend receipt time rather than trusting the Device clock.
 
 --------------------------------------------------
 

@@ -39,7 +39,7 @@ is not retroactively part of that tagged artifact.
   - merge commit: `d0a800dea252907d5f2a942571add2528a29666f`;
   - backend and frontend GitHub CI quality gates: PASS.
 - **S15-02 — Calibration History:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #23.
-- **S15-03 — Device / Communication Health:** NEXT / NOT STARTED.
+- **S15-03 — Device / Communication Health:** IN PROGRESS on `agent/s15-03-device-communication-health`.
 - **S15-04 — Notification Architecture:** NOT STARTED.
 - **S15-05 — SMS Failover Contract:** NOT STARTED.
 - **S15-06 — BIO EGYPT Pilot Documentation:** NOT STARTED.

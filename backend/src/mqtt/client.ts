@@ -26,13 +26,14 @@ export function getMqttClient(): MqttClient {
   client.on("connect", () => {
     console.log("MQTT Connected Successfully");
 
-    client?.subscribe(MQTT_TOPICS.TELEMETRY, (err) => {
+    client?.subscribe([MQTT_TOPICS.TELEMETRY, MQTT_TOPICS.HEARTBEAT], (err) => {
       if (err) {
         console.error(err);
         return;
       }
 
       console.log(`Subscribed : ${MQTT_TOPICS.TELEMETRY}`);
+      console.log(`Subscribed : ${MQTT_TOPICS.HEARTBEAT}`);
     });
   });
 

@@ -2,6 +2,7 @@ import { SiteRepository } from "../repositories/site.repository";
 import { RoomRepository } from "../repositories/room.repository";
 import { DeviceRepository } from "../repositories/device.repository";
 import { Sensor, SensorRepository } from "../repositories/sensor.repository";
+import { deriveCommunicationStatus } from "./device-health.service";
 import { AlarmRepository } from "../repositories/alarm.repository";
 import { AlarmStatistics } from "../types/alarm-statistics.types";
 import { DashboardSummary } from "../types/dashboard.types";
@@ -237,7 +238,10 @@ export class DashboardService {
     const sensors = this.sensorRepository.getAll();
     const activeAlarms = this.alarmRepository.getActive();
 
-    const offlineDevices = devices.filter((device) => device.status?.toLowerCase() === "offline");
+    const now = new Date();
+    const offlineDevices = devices.filter(
+      (device) => deriveCommunicationStatus(device, now) === "OFFLINE"
+    );
 
     return {
       totalSites: sites.length,
