@@ -174,6 +174,9 @@ export interface TranslationResources {
     description: string;
     loading: string;
     error: string;
+    refresh: string;
+    refreshing: string;
+    retry: string;
     noSites: string;
     noAreas: string;
     noSensors: string;
@@ -394,6 +397,10 @@ export const englishResources = {
     loading: "Loading monitored areas",
 
     error: "Unable to load monitored areas configuration.",
+
+    refresh: "Refresh monitored areas",
+    refreshing: "Refreshing monitored areas",
+    retry: "Retry",
 
     noSites: "No Sites are currently configured.",
 

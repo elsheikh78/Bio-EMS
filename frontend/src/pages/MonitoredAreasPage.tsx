@@ -1,6 +1,8 @@
+import { useState } from "react";
 import {
   Alert,
   Box,
+  Button,
   Chip,
   CircularProgress,
   Paper,
@@ -22,6 +24,26 @@ export function MonitoredAreasPage() {
   const sitesQuery = useSites();
   const roomsQuery = useRooms();
   const sensorsQuery = useSensors();
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  async function refreshMonitoredAreas() {
+    if (isRefreshing) {
+      return;
+    }
+
+    setIsRefreshing(true);
+
+    try {
+      await Promise.all([
+        sitesQuery.refetch(),
+        roomsQuery.refetch(),
+        sensorsQuery.refetch(),
+      ]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   if (sitesQuery.isLoading || roomsQuery.isLoading || sensorsQuery.isLoading) {
     return (
@@ -49,7 +71,21 @@ export function MonitoredAreasPage() {
       <Stack spacing={3}>
         <PageHeading title={copy.title} description={copy.description} />
 
-        <Alert severity="error">{copy.error}</Alert>
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => void refreshMonitoredAreas()}
+              disabled={isRefreshing}
+            >
+              {isRefreshing ? copy.refreshing : copy.retry}
+            </Button>
+          }
+        >
+          {copy.error}
+        </Alert>
       </Stack>
     );
   }
@@ -58,32 +94,73 @@ export function MonitoredAreasPage() {
   const rooms = roomsQuery.data ?? [];
   const sensors = sensorsQuery.data ?? [];
 
-  if (sites.length === 0) {
-    return (
-      <Stack spacing={3}>
-        <PageHeading title={copy.title} description={copy.description} />
-
-        <Alert severity="info">{copy.noSites}</Alert>
-      </Stack>
-    );
-  }
-
   return (
     <Stack spacing={4}>
+      <PageHeader
+        copy={copy}
+        isRefreshing={isRefreshing}
+        onRefresh={() => void refreshMonitoredAreas()}
+      />
+
+      {sites.length === 0 ? (
+        <Alert severity="info">{copy.noSites}</Alert>
+      ) : (
+        <Stack spacing={3}>
+          {sites.map((site) => (
+            <SiteSection
+              key={site.id ?? site.code}
+              site={site}
+              rooms={rooms}
+              sensors={sensors}
+              copy={copy}
+            />
+          ))}
+        </Stack>
+      )}
+    </Stack>
+  );
+}
+
+interface PageHeaderProps {
+  copy: MonitoredAreasResources;
+  isRefreshing: boolean;
+  onRefresh: () => void;
+}
+
+function PageHeader({ copy, isRefreshing, onRefresh }: PageHeaderProps) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: {
+          xs: "stretch",
+          sm: "flex-start",
+        },
+        flexDirection: {
+          xs: "column",
+          sm: "row",
+        },
+        gap: 2,
+      }}
+    >
       <PageHeading title={copy.title} description={copy.description} />
 
-      <Stack spacing={3}>
-        {sites.map((site) => (
-          <SiteSection
-            key={site.id ?? site.code}
-            site={site}
-            rooms={rooms}
-            sensors={sensors}
-            copy={copy}
-          />
-        ))}
-      </Stack>
-    </Stack>
+      <Button
+        variant="outlined"
+        onClick={onRefresh}
+        disabled={isRefreshing}
+        sx={{
+          alignSelf: {
+            xs: "stretch",
+            sm: "flex-start",
+          },
+          whiteSpace: "nowrap",
+        }}
+      >
+        {isRefreshing ? copy.refreshing : copy.refresh}
+      </Button>
+    </Box>
   );
 }
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-**IN PROGRESS — S14-05A COMPLETE / S14-05B COMPLETE / S14-05C IMPLEMENTED AND LOCALLY VALIDATED / S14-05D NEXT**
+**IN PROGRESS — S14-05A COMPLETE / S14-05B COMPLETE / S14-05C COMPLETE / S14-05D IMPLEMENTED AND LOCALLY VALIDATED / FINAL REVIEW NEXT**
 
 S14-05 replaces the `/monitored-areas` placeholder with a read-only operational hierarchy built exclusively on the existing Site, Room, and Sensor backend domains.
 
@@ -70,7 +70,7 @@ Evidence:
 
 ## S14-05C — Sensor Inventory per Monitored Area
 
-**Status: IMPLEMENTED / LOCALLY VALIDATED / COMMIT PENDING**
+**Status: COMPLETE / COMMITTED / PUSHED**
 
 Delivered:
 
@@ -104,24 +104,96 @@ Delivered:
   - Sensor-to-Monitored-Area association;
   - inactive and disabled configuration states.
 
-S14-05C scope remained frontend-only.
+S14-05C remained frontend-only.
 
 No backend, database, migration, MQTT, telemetry ingestion, device lifecycle, alarm-engine, Asset, Monitoring Point, or new Area-domain changes were introduced.
 
-### Local Validation
+### Validation
 
-The S14-05C implementation passed:
+S14-05C passed:
 
 - frontend typecheck;
 - frontend lint;
 - full frontend test suite;
 - frontend production build;
-- scoped Prettier validation for changed implementation/test files;
+- scoped Prettier validation;
 - `git diff --check`, apart from non-blocking LF/CRLF working-copy notices.
 
-The production build continues to report the existing non-blocking Vite chunk-size advisory. This is not treated as an S14-05C failure or scope expansion.
+The production build continued to report the existing non-blocking Vite chunk-size advisory.
 
-### Files Changed for S14-05C
+### Evidence
+
+- commit: `c1ce9477d54b1f2131aa385b10e0e65797695e1b`;
+- commit message: `feat(frontend): add monitored area sensor thresholds`;
+- feature branch push completed successfully;
+- local and remote feature-branch HEADs were verified identical;
+- working tree was clean after push.
+
+## S14-05D — Refresh, Integration, and Hardening
+
+**Status: IMPLEMENTED / LOCALLY VALIDATED / COMMIT PENDING**
+
+Delivered:
+
+- added explicit page-level `Refresh monitored areas` behavior;
+- refresh re-fetches Sites, Rooms, and Sensors together;
+- prevented duplicate refresh operations while a refresh is already pending;
+- added explicit Retry action for failed Monitored Areas resource loading;
+- kept successful configured hierarchy rendering unchanged during normal operation;
+- retained existing empty-Site, empty-Monitored-Area, and empty-Sensor states;
+- localized Refresh, Refreshing, and Retry production-facing copy;
+- extended alternative localization resources to preserve localization contract coverage;
+- strengthened focused page tests for:
+  - Retry availability on resource failure;
+  - Retry of Sites, Rooms, and Sensors together;
+  - explicit Refresh availability;
+  - simultaneous re-fetch of Sites, Rooms, and Sensors;
+  - disabling Refresh while a refresh operation is pending;
+  - prevention of duplicate refresh execution.
+
+### Existing Regression Coverage Reused
+
+S14-05D intentionally reused existing regression coverage instead of modifying stable cross-cutting infrastructure unnecessarily.
+
+Existing repository coverage already verifies:
+
+- authenticated `/monitored-areas` route availability;
+- centralized role-aware routing behavior;
+- protected-route authentication boundaries;
+- protected API access through `protectedRequest`;
+- rejection of malformed Site responses;
+- rejection of malformed Room responses;
+- rejection of malformed Sensor responses;
+- prevention of feature-owned Authorization headers;
+- generation-scoped 401 handling;
+- protected 401/403 propagation;
+- Logout cancellation and protected Query-state clearing;
+- prevention of stale protected responses publishing after Logout;
+- authentication restoration failure handling.
+
+No new Auth, API-client, routing, backend, database, MQTT, telemetry, device lifecycle, or alarm-engine implementation was required for S14-05D.
+
+### Focused Validation
+
+Focused Monitored Areas and localization regression testing passed:
+
+- 2/2 test files;
+- 25/25 tests.
+
+### Full Frontend Validation
+
+S14-05D full frontend validation passed:
+
+- frontend typecheck;
+- frontend lint;
+- frontend format check;
+- full frontend test suite;
+- frontend production build;
+- `git diff --check`, apart from non-blocking LF/CRLF working-copy notices.
+
+The existing Vite chunk-size advisory remains non-blocking and outside S14-05 scope.
+
+### Files Changed for S14-05D
 
 - `frontend/src/pages/MonitoredAreasPage.tsx`;
 - `frontend/src/pages/MonitoredAreasPage.spec.tsx`;
@@ -129,41 +201,28 @@ The production build continues to report the existing non-blocking Vite chunk-si
 - `frontend/src/localization/localization.spec.tsx`;
 - `docs/project-management/SPRINT-14-S14-05-PROGRESS.md`.
 
-Commit and push evidence will be recorded after the implementation is committed and synchronized with the feature branch remote.
-
-## S14-05D — Refresh, Integration, and Hardening
-
-**Status: NOT STARTED / NEXT IMPLEMENTATION SLICE**
-
-Planned after S14-05C commit and synchronization:
-
-- explicit refresh/retry behavior;
-- authorization-route regression;
-- authentication/session-boundary regression;
-- malformed-response, localization, accessibility, responsive-critical, and empty-state hardening;
-- complete frontend quality gates;
-- final S14-05 code review before PR/merge.
-
-S14-05D must remain within the existing Site → Monitored Area (Room) → Sensor architecture and must not introduce deferred domain expansion.
-
 ## Current Integration State
 
-S14-05A and S14-05B are committed and pushed on `agent/s14-05-monitored-areas`.
+S14-05A, S14-05B, and S14-05C are committed and pushed on:
 
-S14-05C is implemented and locally validated on the same feature branch, with commit and push pending.
+`agent/s14-05-monitored-areas`
 
-The feature branch has already been synchronized with the current `origin/main` baseline before S14-05C implementation.
+S14-05D is implemented and locally validated on the same feature branch, with commit and push pending.
+
+The feature branch was synchronized with `origin/main` before S14-05C and S14-05D implementation.
 
 S14-05 is not yet integrated into `main`.
 
-Sprint 14 remains **IN PROGRESS**.
+Sprint 14 remains **IN PROGRESS** until S14-05D final review, commit/push, PR validation, merge, and Sprint 14 closure are complete.
 
 ## Immediate Next Step
 
-1. perform final S14-05C diff and scope review;
-2. commit S14-05C implementation and documentation together;
-3. push and verify local/remote synchronization;
-4. begin S14-05D — Refresh, Integration, and Hardening;
-5. complete S14-05 final quality gates and code review before PR/merge.
+1. perform final S14-05D diff and scope review;
+2. commit S14-05D implementation and progress documentation together;
+3. push and verify local/remote feature-branch synchronization;
+4. perform final S14-05 PR/CI/code review;
+5. merge S14-05 into `main` when all gates pass;
+6. complete Sprint 14 closure and documentation reconciliation;
+7. move immediately to the BIO-EMS Pilot Readiness Review.
 
-Pilot-readiness work remains a post-Sprint-14 critical-path concern and must not expand the approved S14-05C or S14-05D implementation scope.
+Pilot-readiness remains the post-Sprint-14 critical path. No additional feature expansion should be introduced before the Pilot requirements, hardware/deployment readiness, commissioning flow, and acceptance criteria are formally reconciled.

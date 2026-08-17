@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import type { Room, Sensor, Site } from "../monitoredAreas/contracts";
@@ -61,32 +61,51 @@ function renderPage() {
   );
 }
 
+function createRefetch() {
+  return vi.fn().mockResolvedValue({});
+}
+
 function setSuccessfulQueries({
   sites = [site],
   rooms = [room],
   sensors = [sensor],
+  sitesRefetch = createRefetch(),
+  roomsRefetch = createRefetch(),
+  sensorsRefetch = createRefetch(),
 }: {
   sites?: Site[];
   rooms?: Room[];
   sensors?: Sensor[];
+  sitesRefetch?: ReturnType<typeof vi.fn>;
+  roomsRefetch?: ReturnType<typeof vi.fn>;
+  sensorsRefetch?: ReturnType<typeof vi.fn>;
 } = {}) {
   mockedUseSites.mockReturnValue({
     data: sites,
     isLoading: false,
     isError: false,
-  } as ReturnType<typeof useSites>);
+    refetch: sitesRefetch,
+  } as unknown as ReturnType<typeof useSites>);
 
   mockedUseRooms.mockReturnValue({
     data: rooms,
     isLoading: false,
     isError: false,
-  } as ReturnType<typeof useRooms>);
+    refetch: roomsRefetch,
+  } as unknown as ReturnType<typeof useRooms>);
 
   mockedUseSensors.mockReturnValue({
     data: sensors,
     isLoading: false,
     isError: false,
-  } as ReturnType<typeof useSensors>);
+    refetch: sensorsRefetch,
+  } as unknown as ReturnType<typeof useSensors>);
+
+  return {
+    sitesRefetch,
+    roomsRefetch,
+    sensorsRefetch,
+  };
 }
 
 describe("MonitoredAreasPage", () => {
@@ -99,19 +118,22 @@ describe("MonitoredAreasPage", () => {
       data: undefined,
       isLoading: true,
       isError: false,
-    } as ReturnType<typeof useSites>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useSites>);
 
     mockedUseRooms.mockReturnValue({
       data: undefined,
       isLoading: false,
       isError: false,
-    } as ReturnType<typeof useRooms>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useRooms>);
 
     mockedUseSensors.mockReturnValue({
       data: undefined,
       isLoading: false,
       isError: false,
-    } as ReturnType<typeof useSensors>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useSensors>);
 
     renderPage();
 
@@ -129,33 +151,83 @@ describe("MonitoredAreasPage", () => {
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("renders an error state when a resource query fails", () => {
+  it("renders an error state with a retry action when a resource query fails", () => {
     mockedUseSites.mockReturnValue({
       data: undefined,
       isLoading: false,
       isError: true,
-    } as ReturnType<typeof useSites>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useSites>);
 
     mockedUseRooms.mockReturnValue({
       data: [] as Room[],
       isLoading: false,
       isError: false,
-    } as ReturnType<typeof useRooms>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useRooms>);
 
     mockedUseSensors.mockReturnValue({
       data: [] as Sensor[],
       isLoading: false,
       isError: false,
-    } as ReturnType<typeof useSensors>);
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useSensors>);
 
     renderPage();
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Unable to load monitored areas configuration.",
     );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Retry",
+      }),
+    ).toBeInTheDocument();
   });
 
-  it("renders the empty Sites state", () => {
+  it("retries all monitored-area resources from the error state", async () => {
+    const sitesRefetch = createRefetch();
+    const roomsRefetch = createRefetch();
+    const sensorsRefetch = createRefetch();
+
+    mockedUseSites.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      refetch: sitesRefetch,
+    } as unknown as ReturnType<typeof useSites>);
+
+    mockedUseRooms.mockReturnValue({
+      data: [] as Room[],
+      isLoading: false,
+      isError: false,
+      refetch: roomsRefetch,
+    } as unknown as ReturnType<typeof useRooms>);
+
+    mockedUseSensors.mockReturnValue({
+      data: [] as Sensor[],
+      isLoading: false,
+      isError: false,
+      refetch: sensorsRefetch,
+    } as unknown as ReturnType<typeof useSensors>);
+
+    renderPage();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Retry",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(sitesRefetch).toHaveBeenCalledTimes(1);
+      expect(roomsRefetch).toHaveBeenCalledTimes(1);
+      expect(sensorsRefetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("renders the empty Sites state with an explicit refresh action", () => {
     setSuccessfulQueries({
       sites: [],
       rooms: [],
@@ -167,6 +239,87 @@ describe("MonitoredAreasPage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "No Sites are currently configured.",
     );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Refresh monitored areas",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("refreshes Sites, Rooms, and Sensors together", async () => {
+    const { sitesRefetch, roomsRefetch, sensorsRefetch } =
+      setSuccessfulQueries();
+
+    renderPage();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Refresh monitored areas",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(sitesRefetch).toHaveBeenCalledTimes(1);
+      expect(roomsRefetch).toHaveBeenCalledTimes(1);
+      expect(sensorsRefetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("disables refresh while a refresh operation is still pending", async () => {
+    let resolveSites: (() => void) | undefined;
+
+    const sitesRefetch = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveSites = () => resolve({});
+        }),
+    );
+
+    const roomsRefetch = createRefetch();
+    const sensorsRefetch = createRefetch();
+
+    setSuccessfulQueries({
+      sitesRefetch,
+      roomsRefetch,
+      sensorsRefetch,
+    });
+
+    renderPage();
+
+    const refreshButton = screen.getByRole("button", {
+      name: "Refresh monitored areas",
+    });
+
+    fireEvent.click(refreshButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: "Refreshing monitored areas",
+        }),
+      ).toBeDisabled();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Refreshing monitored areas",
+      }),
+    );
+
+    expect(sitesRefetch).toHaveBeenCalledTimes(1);
+    expect(roomsRefetch).toHaveBeenCalledTimes(1);
+    expect(sensorsRefetch).toHaveBeenCalledTimes(1);
+
+    resolveSites?.();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: "Refresh monitored areas",
+        }),
+      ).toBeEnabled();
+    });
   });
 
   it("renders the Site to Monitored Area hierarchy", () => {
