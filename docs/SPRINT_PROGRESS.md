@@ -15,7 +15,7 @@ Status: **IN PROGRESS**
 - S15-03 — Device / Communication Health: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #25.
 - S15-04 — Notification Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #28.
 - S15-05 — SMS Failover Contract: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #30.
-- S15-06 — BIO EGYPT Pilot Documentation: **IN PROGRESS** on `agent/s15-06-bio-egypt-pilot-docs`.
+- S15-06 — BIO EGYPT Pilot Documentation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #32.
 - S15-07 — Deployment & Commissioning Readiness: **NOT STARTED**.
 
 ### S15-01 integration evidence
@@ -71,6 +71,17 @@ and a future delivery-adapter seam without selecting an external provider.
 S15-05 added the provider-neutral SMS failover decision table, gateway contract,
 E.164 safety boundary, and retry idempotency for critical Alarm and Device-offline
 events during primary communication loss.
+
+### S15-06 integration evidence
+
+- feature commit: `e5015163c606f4aab969e615e67892f023eca7cb`;
+- PR: #32;
+- merge commit: `8ee97931079d90d4f901e9500f06dc905d7e6049`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-06 added the controlled BIO EGYPT two-Site/eight-area/20-Sensor package,
+installation and wiring requirements, commissioning/acceptance record, and blocking
+open-items register without inventing field evidence.
 
 ## Sprint 14 — Frontend Application
 
@@ -158,4 +169,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-06 — BIO EGYPT Pilot Documentation**.
+The immediate project critical path is now **S15-07 — Deployment & Commissioning Readiness**.
