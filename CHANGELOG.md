@@ -1,3 +1,31 @@
+# [Unreleased]
+
+## Repository Development After v0.13.0
+
+These changes are newer repository development and are **not** retroactively part of the immutable `v0.13.0` tag.
+
+### Sprint 13 post-release work
+
+- S13-06 ADMIN User Management, including transactional last-active-ADMIN protection and concurrency coverage.
+- S13-07 security hardening, including rejected-input MQTT log sanitization, User Management regression coverage, and removal of unused `yamljs`.
+- S13-08 documentation correction and Sprint 13 closure.
+
+### Sprint 14 frontend work
+
+- S14-01 frontend architecture, provider, localization, configuration, and quality foundation — merged and closed.
+- S14-02 professional responsive AppShell and navigation — merged and verified.
+- S14-03 browser authentication/session lifecycle and authorization-aware routing — merged and verified.
+- S14-04 operational Dashboard frontend — merged and verified.
+- S14-05 Monitored Areas frontend — in progress.
+  - S14-05A contracts/data access — complete and pushed on `agent/s14-05-monitored-areas` at `90e39af`.
+  - S14-05B Site/Monitored Area hierarchy — complete and pushed at `bd442e9`.
+  - S14-05C Sensor inventory/threshold metadata — next / not started.
+  - S14-05D refresh/integration/hardening — not started.
+
+S14-05A/B remain feature-branch progress and are not yet integrated into `main`.
+
+---
+
 # [0.13.0] - 2026-08-11
 
 ## Release
@@ -33,26 +61,10 @@ Sprint 13 — Centralized Role-Based Authorization and Alarm Acknowledgment Audi
 
 ## Verified
 
-- The published `v0.13.0` tag targets
-  `ee2cb45832888ff500e02afcbe1418b6144276c6`; later main commits are not part of that
-  immutable tag target.
+- The published `v0.13.0` tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`; later repository commits are not part of that immutable tag target.
 - 25 test files and 303 automated tests passed for the original release preparation.
 - Typecheck, build, lint, formatting check, and GitHub Actions passed.
 - Sprint 13 PR #4 was merged using a normal merge commit.
-
-## Post-release repository additions
-
-The following changes were merged to `main` after the published tag and are not
-retroactively attributed to the original `v0.13.0` artifact:
-
-- S13-06 ADMIN User Management through PR #7, including transactional
-  last-active-ADMIN protection and concurrency coverage.
-- S13-07 security hardening through PR #8, including MQTT rejected-input log
-  sanitization, User Management regression coverage, and removal of unused `yamljs`.
-- Current main verification: 30 test files and 359 passing tests, with zero failures,
-  skipped tests, or todo tests, plus successful CI run 31504321547.
-- Sprint 13 closure remains pending independent review of S13-08; Sprint 14 has not
-  started.
 
 ---
 
@@ -60,8 +72,7 @@ retroactively attributed to the original `v0.13.0` artifact:
 
 ## Release Candidate
 
-Sprint 12 — Device Onboarding and Telemetry Trust Boundary completed. Draft PR #2
-remains unmerged; no tag, GitHub Release, or deployment is claimed.
+Sprint 12 — Device Onboarding and Telemetry Trust Boundary completed.
 
 ## Added
 
@@ -70,32 +81,26 @@ remains unmerged; no tag, GitHub Release, or deployment is claimed.
 - Atomic `pending/0 -> active/1 -> disabled/0` lifecycle transitions.
 - Site existence and Device identity integrity for registration and activation.
 - Device, Site, channel, and enabled-Sensor telemetry trust enforcement.
-- Device repository, service, route, REST integration, characterization, acceptance,
-  and telemetry-policy coverage.
+- Device repository, service, route, REST integration, characterization, acceptance, and telemetry-policy coverage.
 - GitHub Actions backend quality gates using Node.js 22 and clean `npm ci` installation.
 
 ## Changed
 
 - New Device records are always persisted as `pending` with `activated = 0`.
 - Production SQLite initialization enables foreign-key enforcement.
-- Invalid Device requests return `400`, missing Devices/Sites return `404`, and state
-  or uniqueness conflicts return `409` without exposing persistence details.
-- Trusted telemetry uses the persisted Site record; invalid channels are rejected
-  individually while valid channels in the same payload continue.
+- Invalid Device requests return `400`, missing Devices/Sites return `404`, and state or uniqueness conflicts return `409` without exposing persistence details.
+- Trusted telemetry uses the persisted Site record; invalid channels are rejected individually while valid channels in the same payload continue.
 - Project, backend package, and Health API version metadata align at `0.12.0`.
 
 ## Compatibility
 
 - Existing Device create/list response contracts are preserved.
-- MQTT telemetry remains `bioems/{siteCode}/telemetry/{deviceId}` with subscription
-  `bioems/+/telemetry/+`; the payload schema is unchanged.
+- MQTT telemetry remains `bioems/{siteCode}/telemetry/{deviceId}` with subscription `bioems/+/telemetry/+`; the payload schema is unchanged.
 - No SQLite schema change or migration was introduced.
 
 ## Deferred
 
-- Discovery, QR identification, activation codes, Asset approval/assignment,
-  Authentication, certificates, provisioning, pairing, heartbeat/last-seen,
-  Monitoring Points, Notification Engine, Frontend, OTA, and npm audit remediation.
+- Discovery, QR identification, activation codes, Asset approval/assignment, certificates, provisioning, pairing, heartbeat/last-seen, Monitoring Points, Notification Engine, Frontend expansion, OTA, and audit remediation not separately scoped.
 
 ## Verified
 
@@ -113,8 +118,7 @@ Sprint 11 — Engineering Foundation and Alarm Consolidation completed.
 
 ## Added
 
-- Unified Domain Alarm Evaluation Engine with critical-low, warning-low, normal,
-  warning-high, critical-high, and unknown classifications.
+- Unified Domain Alarm Evaluation Engine with critical-low, warning-low, normal, warning-high, critical-high, and unknown classifications.
 - Persisted `warning_low` and `warning_high` sensor thresholds.
 - Versioned SQLite migration history and idempotent warning-threshold migration.
 - Alarm Domain, persistence, REST API, and migration coverage totaling 13 tests.
@@ -144,8 +148,6 @@ Sprint 11 — Engineering Foundation and Alarm Consolidation completed.
 
 Sprint 10 Completed
 
----
-
 ## Added
 
 ### Dashboard
@@ -163,53 +165,17 @@ Sprint 10 Completed
 - Dashboard DTOs
 - Dashboard REST Endpoints
 
----
-
 ## Changed
 
 - DashboardService redesigned as the central aggregation service.
-- Room status is now generated by combining SQLite configuration with InfluxDB telemetry.
-- Dashboard endpoints now expose production-ready DTOs.
+- Room status is generated by combining SQLite configuration with InfluxDB telemetry.
+- Dashboard endpoints expose production-ready DTOs.
 - Generic telemetry query layer introduced for dashboard widgets.
-
----
-
-## Fixed
-
-- Room telemetry mapping.
-- Sensor-to-room aggregation.
-- Dashboard API integration.
-- TypeScript build issues.
-- Repository lookup consistency.
-
----
 
 ## Tested
 
-End-to-End verification completed for:
-
-- Dashboard Summary
-- Latest Telemetry
-- Room Status
-- Alarm Statistics
-
-Build Status:
-
-PASS
-
----
+End-to-End verification completed for Dashboard Summary, Latest Telemetry, Room Status, and Alarm Statistics.
 
 ## Architecture
 
-Implemented architectural decisions introduced during Sprint 10:
-
-- Dashboard Aggregation Engine
-- Widget-per-Endpoint design
-- Generic Influx Query Layer
-- Separation of configuration data and telemetry data
-
----
-
-## Notes
-
-Sprint 10 marks the completion of the first production-ready backend dashboard foundation for BIO-EMS.
+Implemented Dashboard Aggregation Engine, Widget-per-Endpoint design, Generic Influx Query Layer, and separation of configuration data from telemetry data.

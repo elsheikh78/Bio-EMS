@@ -2,25 +2,20 @@
 
 Published version: `v0.13.0`
 
-Repository status: Sprint 13 and S13-08 are closed. S14-01 is merged and formally
-closed. Sprint 14 has started; S14-02 is implemented on a Draft PR pending independent
-review, and S14-03 has not started.
+Repository status: Sprint 13 is closed. Sprint 14 is in progress. S14-01 through S14-04 are complete and merged. S14-05A and S14-05B are complete on the active Monitored Areas feature branch; S14-05C is the next implementation slice.
 
 ## Phase 1 — Foundation
 
-Completed: project structure, documentation, MQTT and InfluxDB integration, SQLite,
-migrations, repositories, Sites, and REST testing foundations.
+Completed: project structure, documentation, MQTT and InfluxDB integration, SQLite, migrations, repositories, Sites, and REST testing foundations.
 
-## Phase 2 — Domain design
+## Phase 2 — Domain Design
 
-Implemented through Sprint 13: Domain model, architecture decisions, database
-design, unified Alarm evaluation, Device lifecycle/trust-boundary rules,
-Authentication, centralized RBAC, and Alarm acknowledgment actor auditing.
+Implemented through Sprint 13: Domain model, architecture decisions, database design, unified Alarm evaluation, Device lifecycle/trust-boundary rules, Authentication, centralized RBAC, and Alarm acknowledgment actor auditing.
 
-## Phase 3 — Core modules
+## Phase 3 — Core Modules
 
 - Devices: lifecycle onboarding scope implemented.
-- Rooms and Sensors: baseline implemented; broader management remains planned.
+- Rooms and Sensors: baseline backend domains implemented; broader management remains separately scoped.
 - Users: ADMIN management implemented with last-active-ADMIN protection.
 - Monitoring Points: proposed and not implemented.
 
@@ -30,41 +25,55 @@ Authentication, centralized RBAC, and Alarm acknowledgment actor auditing.
 - Alarm Engine and authenticated acknowledgment audit: implemented.
 - Event Engine and Notification Engine: planned.
 
-## Phase 5 — Identity and management
+## Phase 5 — Identity and Management
 
-JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User
-Management are implemented. Tenant/site-scoped administration beyond current
-repository contracts remains future work.
+JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Management are implemented. Sprint 14 additionally provides the frontend Login/session lifecycle and authorization-aware routing established in S14-03.
 
-## Phase 6 — Dashboard
+## Phase 6 — Operational Frontend
 
-Dashboard APIs and threshold-based room status are implemented. Grafana integration
-and reports remain planned.
+- S14-01: frontend architecture, providers, localization contract, and quality foundation — complete.
+- S14-02: professional responsive AppShell and navigation — complete.
+- S14-03: Login, session restoration, protected-request boundary, and authorization-aware routing — complete.
+- S14-04: operational Dashboard frontend — complete.
+- S14-05: Monitored Areas frontend — in progress.
+  - S14-05A contracts/data access — complete on `agent/s14-05-monitored-areas`.
+  - S14-05B Site → Monitored Area hierarchy — complete on the same feature branch.
+  - S14-05C Sensor inventory and threshold metadata — next.
+  - S14-05D refresh/integration/hardening — planned after C.
 
-## Sprint 13 — Authentication, RBAC, User Management, and hardening
+For S14-05, Monitored Area is presentation terminology for the existing Room domain. No new Asset or Monitoring Point backend domain is introduced.
 
-- S13-01 through S13-04: Authentication foundation and active-User enforcement.
-- S13-05: centralized permissions and Alarm acknowledgment actor audit.
-- S13-06: ADMIN User Management and transactional last-active-ADMIN protection.
-- S13-07: security hardening, concurrency and regression coverage, and dependency cleanup.
-- S13-08: documentation correction and closure evidence, pending independent review.
+## Post-Sprint-14 Product Readiness Priorities
 
-The published `v0.13.0` tag remains fixed at
-`ee2cb45832888ff500e02afcbe1418b6144276c6`. S13-06 and S13-07 were merged to
-`main` later and are not retroactively attributed to that artifact. Current main CI
-run 31504321547 passed with 30 test files and 359 tests.
+After Sprint 14 closes, BIO-EMS must explicitly address two coordinated product-readiness tracks before the first reference deployment is treated as production-ready.
 
-## Sprint 14 — Frontend application
+### Hardware / Pilot Readiness
 
-- S14-01: frontend architecture, providers, security boundary, and quality foundation
-  — merged and formally closed.
-- S14-02: professional responsive application shell and presentational navigation —
-  implemented on a Draft PR pending independent review.
-- S14-03: Login, session lifecycle, and authorization-aware routing — not started.
+- Perform a formal Hardware Design Review against the accepted hardware, Device, Zone Controller, wiring, onboarding, and communications ADRs before committing to production hardware.
+- Use the ESP32-based controller architecture as the starting point unless the review identifies a concrete technical or lifecycle reason to change it.
+- Optimize hardware for **low cost, reliability, and manufacturability** together; BOM reduction must not compromise field reliability or required industrial protection.
+- Prefer modular hardware so installations pay only for required interfaces and capabilities.
+- Prepare an MVP suitable for a real customer pilot/reference installation, including commissioning, telemetry continuity, alarm verification, calibration evidence, and acceptance evidence.
+- Use lessons from the first field deployment to drive subsequent BOM cost-down and hardware revisions.
 
-The application shell consumes no Backend API. Assets and Monitoring Points remain
-proposed and have no route or implemented Backend contract.
+### Commercial-Grade UI/UX
 
-## Phase 7 — Production
+- Treat professional, visually compelling user interfaces as a product requirement, not optional cosmetic polish.
+- Preserve operational clarity, accessibility, responsive behavior, localization readiness, and performance while improving visual presentation.
+- Maintain a coherent BIO-EMS design language across Login, Application Shell, Dashboard, Monitored Areas, Alarms, Devices, Configuration, and subsequent operational screens.
+- After the functional Sprint 14 scope is complete, perform a dedicated UI/UX Professionalization Pass rather than rebuilding the frontend architecture.
+- The first customer demo/reference deployment must present a polished commercial product experience in addition to correct engineering behavior.
+
+These two tracks are complementary: the first reference installation must combine field-reliable, cost-conscious hardware with a professional customer-facing software experience.
+
+## Phase 7 — Future Product Expansion
+
+Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points, Notification Engine, additional operational screens, reports, and approved industry-specific capabilities.
+
+## Phase 8 — Production Operations
 
 OTA updates, backup, restore, deployment, and production monitoring remain planned.
+
+## Release Boundary
+
+The published `v0.13.0` tag remains fixed at `ee2cb45832888ff500e02afcbe1418b6144276c6`. Later Sprint 13 and Sprint 14 work is newer repository development and is not retroactively attributed to that immutable release artifact.
