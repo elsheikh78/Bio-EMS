@@ -4,9 +4,9 @@
 
 **Current phase:** Sprint 15 — Pilot Readiness Foundation
 
-**Current integrated `main` baseline:** `d0a800dea252907d5f2a942571add2528a29666f`
+**Current integrated `main` baseline:** `43969c57a1caf670cac22b52543a8b2a253adb89`
 
-**Next work item:** S15-02 — Calibration History
+**Next work item:** S15-03 — Device / Communication Health
 
 ## Implemented Platform
 
@@ -19,6 +19,7 @@
 - React frontend foundation, responsive AppShell, authenticated session lifecycle,
   authorization-aware routing, operational Dashboard, and Monitored Areas.
 - Sensor product-grade, hardware, installation, and current calibration-state foundation.
+- Append-only, actor-audited Sensor calibration history.
 
 ## Release and Repository Timeline
 
@@ -37,8 +38,8 @@ is not retroactively part of that tagged artifact.
   - PR: #21;
   - merge commit: `d0a800dea252907d5f2a942571add2528a29666f`;
   - backend and frontend GitHub CI quality gates: PASS.
-- **S15-02 — Calibration History:** IN PROGRESS on `agent/s15-02-calibration-history`.
-- **S15-03 — Device / Communication Health:** NOT STARTED.
+- **S15-02 — Calibration History:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #23.
+- **S15-03 — Device / Communication Health:** NEXT / NOT STARTED.
 - **S15-04 — Notification Architecture:** NOT STARTED.
 - **S15-05 — SMS Failover Contract:** NOT STARTED.
 - **S15-06 — BIO EGYPT Pilot Documentation:** NOT STARTED.
