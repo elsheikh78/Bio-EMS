@@ -7,6 +7,7 @@ import { migration003 } from "../migrations/003_create_users";
 import { migration004 } from "../migrations/004_add_alarm_acknowledging_user";
 import { migration005 } from "../migrations/005_add_sensor_calibration_foundation";
 import { migration006 } from "../migrations/006_create_calibration_records";
+import { migration007 } from "../migrations/007_add_device_communication_health";
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -41,6 +42,11 @@ describe("SQLite migrations", () => {
         id INTEGER PRIMARY KEY,
         legacy_value TEXT
       );
+
+      CREATE TABLE devices (
+        id INTEGER PRIMARY KEY,
+        device_id TEXT
+      );
     `);
   });
 
@@ -57,7 +63,7 @@ describe("SQLite migrations", () => {
     expect(columns.map((column) => column.name)).toEqual(
       expect.arrayContaining(["warning_low", "warning_high"])
     );
-    expect(history).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(history).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(
       database
         .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'")
@@ -76,7 +82,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => column.name.startsWith("warning_"));
 
-    expect(historyCount.count).toBe(6);
+    expect(historyCount.count).toBe(7);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -140,6 +146,17 @@ describe("SQLite migrations", () => {
     );
   });
 
+  it("is idempotent when migration 007 executes directly more than once", () => {
+    migration007.up(database);
+    migration007.up(database);
+
+    const columns = database.prepare("PRAGMA table_info(devices)").all() as Array<{ name: string }>;
+    expect(columns.filter(({ name }) => name.startsWith("last_")).map(({ name }) => name)).toEqual([
+      "last_seen_at",
+      "last_heartbeat_at",
+    ]);
+  });
+
   it("creates the approved User schema and username index on a fresh application database", () => {
     database.exec("DROP TABLE alarms; DROP TABLE sensors");
     createTables(database);
@@ -169,7 +186,7 @@ describe("SQLite migrations", () => {
     expect(indexes).toContainEqual(
       expect.objectContaining({ name: "idx_users_username", unique: 1 })
     );
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
 
     const alarmColumn = (
       database.prepare("PRAGMA table_info(alarms)").all() as Array<{
@@ -208,6 +225,7 @@ describe("SQLite migrations", () => {
   it("upgrades a pre-Sprint 13 database without changing existing data", () => {
     database.prepare("INSERT INTO sensors (id, alarm_low, alarm_high) VALUES (1, 2.5, 8.5)").run();
     database.prepare("INSERT INTO alarms (id, legacy_value) VALUES (8, 'preserved')").run();
+    database.prepare("INSERT INTO devices (id, device_id) VALUES (3, 'ZC-FW-001')").run();
     runMigrations(database, [
       {
         version: 1,
@@ -231,7 +249,7 @@ describe("SQLite migrations", () => {
       alarm_low: 2.5,
       alarm_high: 8.5,
     });
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(
       database
         .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'")
@@ -252,6 +270,16 @@ describe("SQLite migrations", () => {
     ).toEqual({ id: 8, legacy_value: "preserved", acknowledged_by_user_id: null });
     expect(
       database
+        .prepare("SELECT id, device_id, last_seen_at, last_heartbeat_at FROM devices WHERE id = 3")
+        .get()
+    ).toEqual({
+      id: 3,
+      device_id: "ZC-FW-001",
+      last_seen_at: null,
+      last_heartbeat_at: null,
+    });
+    expect(
+      database
         .prepare(
           "SELECT product_grade, calibration_status, calibration_offset FROM sensors WHERE id = 1"
         )
@@ -261,7 +289,7 @@ describe("SQLite migrations", () => {
       calibration_status: "NOT_CALIBRATED",
       calibration_offset: 0,
     });
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
   it("keeps the User schema identical between fresh and supported upgrade paths", () => {
@@ -274,6 +302,7 @@ describe("SQLite migrations", () => {
       upgradeDatabase.exec(`
         CREATE TABLE sensors (id INTEGER PRIMARY KEY);
         CREATE TABLE alarms (id INTEGER PRIMARY KEY);
+        CREATE TABLE devices (id INTEGER PRIMARY KEY);
       `);
       runMigrations(upgradeDatabase);
 

@@ -26,6 +26,8 @@ describe("DeviceRepository", () => {
         firmware_version TEXT,
         status TEXT NOT NULL DEFAULT 'pending',
         activated INTEGER NOT NULL DEFAULT 0,
+        last_seen_at TEXT,
+        last_heartbeat_at TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME,
         FOREIGN KEY (site_id) REFERENCES sites(id)
@@ -191,5 +193,37 @@ describe("DeviceRepository", () => {
     expect(
       repository.transitionLifecycle("missing-device", "pending", 0, "active", 1)
     ).toBeUndefined();
+  });
+
+  it("records trusted telemetry and heartbeat only for an operational Device", () => {
+    expect(
+      repository.recordCommunication("ZC-FW-001", "2026-08-17T09:00:00.000Z", "telemetry")
+    ).toBe(false);
+
+    database
+      .prepare("UPDATE devices SET status = 'active', activated = 1 WHERE device_id = ?")
+      .run("ZC-FW-001");
+
+    expect(
+      repository.recordCommunication("ZC-FW-001", "2026-08-17T09:00:01.000Z", "telemetry")
+    ).toBe(true);
+    expect(repository.findByDeviceId("ZC-FW-001")).toMatchObject({
+      last_seen_at: "2026-08-17T09:00:01.000Z",
+      last_heartbeat_at: null,
+    });
+
+    expect(
+      repository.recordCommunication("ZC-FW-001", "2026-08-17T09:00:02.000Z", "heartbeat")
+    ).toBe(true);
+    expect(repository.findByDeviceId("ZC-FW-001")).toMatchObject({
+      last_seen_at: "2026-08-17T09:00:02.000Z",
+      last_heartbeat_at: "2026-08-17T09:00:02.000Z",
+    });
+
+    repository.recordCommunication("ZC-FW-001", "2026-08-17T08:59:00.000Z", "heartbeat");
+    expect(repository.findByDeviceId("ZC-FW-001")).toMatchObject({
+      last_seen_at: "2026-08-17T09:00:02.000Z",
+      last_heartbeat_at: "2026-08-17T09:00:02.000Z",
+    });
   });
 });

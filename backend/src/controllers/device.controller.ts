@@ -8,6 +8,7 @@ import {
   getDevices,
   updateDeviceMetadata,
 } from "../services/device.service";
+import { getDeviceHealth } from "../services/device-health.service";
 
 export const createDeviceController = asyncHandler(async (req: Request, res: Response) => {
   const deviceId = createDevice(req.body);
@@ -36,4 +37,8 @@ export const activateDeviceController = asyncHandler(async (req: Request, res: R
 
 export const disableDeviceController = asyncHandler(async (req: Request, res: Response) => {
   res.json(disableDevice(req.params.deviceId as string));
+});
+
+export const getDeviceHealthController = asyncHandler(async (req: Request, res: Response) => {
+  res.json(getDeviceHealth(req.params.deviceId as string));
 });

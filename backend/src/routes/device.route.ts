@@ -5,6 +5,7 @@ import {
   createDeviceController,
   disableDeviceController,
   getDeviceController,
+  getDeviceHealthController,
   getDevicesController,
   updateDeviceController,
 } from "../controllers/device.controller";
@@ -24,6 +25,13 @@ router.post(
   requirePermission(PERMISSION.DEVICE_MANAGE),
   validateBody(createDeviceSchema),
   createDeviceController
+);
+
+router.get(
+  "/:deviceId/health",
+  requirePermission(PERMISSION.DEVICE_READ),
+  validateParams(deviceParamsSchema),
+  getDeviceHealthController
 );
 
 router.get(

@@ -24,6 +24,10 @@ export interface Device {
 
   activated?: number;
 
+  last_seen_at?: string | null;
+
+  last_heartbeat_at?: string | null;
+
   created_at?: string;
 
   updated_at?: string;
@@ -156,5 +160,36 @@ export class DeviceRepository {
     }
 
     return this.findByDeviceId(deviceId);
+  }
+
+  recordCommunication(
+    deviceId: string,
+    receivedAt: string,
+    kind: "telemetry" | "heartbeat"
+  ): boolean {
+    const result = this.database
+      .prepare(
+        kind === "heartbeat"
+          ? `UPDATE devices
+             SET last_seen_at = CASE
+                   WHEN last_seen_at IS NULL OR last_seen_at < ? THEN ? ELSE last_seen_at END,
+                 last_heartbeat_at = CASE
+                   WHEN last_heartbeat_at IS NULL OR last_heartbeat_at < ?
+                   THEN ? ELSE last_heartbeat_at END,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE device_id = ? AND status = 'active' AND activated = 1`
+          : `UPDATE devices
+             SET last_seen_at = CASE
+                   WHEN last_seen_at IS NULL OR last_seen_at < ? THEN ? ELSE last_seen_at END,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE device_id = ? AND status = 'active' AND activated = 1`
+      )
+      .run(
+        ...(kind === "heartbeat"
+          ? [receivedAt, receivedAt, receivedAt, receivedAt, deviceId]
+          : [receivedAt, receivedAt, deviceId])
+      );
+
+    return result.changes === 1;
   }
 }

@@ -29,6 +29,7 @@ vi.mock("../../controllers/device.controller", () => ({
   createDeviceController: controller,
   disableDeviceController: controller,
   getDeviceController: controller,
+  getDeviceHealthController: controller,
   getDevicesController: controller,
   updateDeviceController: controller,
 }));
@@ -130,6 +131,7 @@ const ROUTES: readonly RouteCase[] = [
   deviceRoute("get", "/devices", "/"),
   deviceRoute("post", "/devices", "/", validDevice),
   deviceRoute("get", "/devices/ZC-FW-001", "/:deviceId"),
+  deviceRoute("get", "/devices/ZC-FW-001/health", "/:deviceId/health"),
   deviceRoute("patch", "/devices/ZC-FW-001", "/:deviceId", { model: "ZC-16" }),
   deviceRoute("post", "/devices/ZC-FW-001/activate", "/:deviceId/activate"),
   deviceRoute("post", "/devices/ZC-FW-001/disable", "/:deviceId/disable"),

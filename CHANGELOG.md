@@ -6,6 +6,9 @@ These changes are newer repository development and are **not** retroactively par
 
 ### Sprint 15 pilot-readiness work
 
+- S15-03 Device/communication health: trusted telemetry and heartbeat last-seen
+  semantics, derived operational communication states, Device health API, and
+  Dashboard offline correction — in progress.
 - S15-02 calibration history: append-only actor-audited `PASS`/`FAIL` records,
   immutable SQLite enforcement, chronological Sensor history API, and atomic current
   Sensor snapshot synchronization after passing calibration — merged and closed

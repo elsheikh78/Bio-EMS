@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "../../errors/app-error";
 import { errorMiddleware } from "../../middleware/error.middleware";
 import * as deviceService from "../../services/device.service";
+import * as deviceHealthService from "../../services/device-health.service";
 import deviceRouter from "../device.route";
 
 vi.mock("../../services/device.service", () => ({
@@ -13,6 +14,10 @@ vi.mock("../../services/device.service", () => ({
   getDeviceByDeviceId: vi.fn(),
   getDevices: vi.fn(),
   updateDeviceMetadata: vi.fn(),
+}));
+
+vi.mock("../../services/device-health.service", () => ({
+  getDeviceHealth: vi.fn(),
 }));
 
 const app = express();
@@ -37,6 +42,25 @@ const validCreateRequest = {
 
 describe("Device REST API characterization", () => {
   beforeEach(() => vi.clearAllMocks());
+
+  it("returns communication health independently from lifecycle status", async () => {
+    const health = {
+      device_id: "ZC-FW-001",
+      lifecycle_status: "active",
+      communication_status: "ONLINE" as const,
+      last_seen_at: "2026-08-17T09:00:00.000Z",
+      last_heartbeat_at: "2026-08-17T09:00:00.000Z",
+      seconds_since_seen: 30,
+      stale_after_seconds: 120,
+      offline_after_seconds: 300,
+    };
+    vi.mocked(deviceHealthService.getDeviceHealth).mockReturnValue(health);
+
+    const response = await request(app).get("/api/v1/devices/%20ZC-FW-001%20/health").expect(200);
+
+    expect(deviceHealthService.getDeviceHealth).toHaveBeenCalledWith("ZC-FW-001");
+    expect(response.body).toEqual(health);
+  });
 
   it("preserves the device list response contract", async () => {
     const devices = [
