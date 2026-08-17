@@ -8,6 +8,7 @@ import { migration004 } from "../migrations/004_add_alarm_acknowledging_user";
 import { migration005 } from "../migrations/005_add_sensor_calibration_foundation";
 import { migration006 } from "../migrations/006_create_calibration_records";
 import { migration007 } from "../migrations/007_add_device_communication_health";
+import { migration008 } from "../migrations/008_create_notification_events";
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -63,7 +64,7 @@ describe("SQLite migrations", () => {
     expect(columns.map((column) => column.name)).toEqual(
       expect.arrayContaining(["warning_low", "warning_high"])
     );
-    expect(history).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(history).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(
       database
         .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'")
@@ -82,7 +83,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => column.name.startsWith("warning_"));
 
-    expect(historyCount.count).toBe(7);
+    expect(historyCount.count).toBe(8);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -157,6 +158,22 @@ describe("SQLite migrations", () => {
     ]);
   });
 
+  it("is idempotent when migration 008 executes directly more than once", () => {
+    migration008.up(database);
+    migration008.up(database);
+
+    expect(
+      database
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'notification_events'"
+        )
+        .get()
+    ).toEqual({ name: "notification_events" });
+    expect(database.prepare("PRAGMA index_list(notification_events)").all()).toContainEqual(
+      expect.objectContaining({ name: "idx_notification_events_pending" })
+    );
+  });
+
   it("creates the approved User schema and username index on a fresh application database", () => {
     database.exec("DROP TABLE alarms; DROP TABLE sensors");
     createTables(database);
@@ -186,7 +203,9 @@ describe("SQLite migrations", () => {
     expect(indexes).toContainEqual(
       expect.objectContaining({ name: "idx_users_username", unique: 1 })
     );
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8,
+    ]);
 
     const alarmColumn = (
       database.prepare("PRAGMA table_info(alarms)").all() as Array<{
@@ -249,7 +268,9 @@ describe("SQLite migrations", () => {
       alarm_low: 2.5,
       alarm_high: 8.5,
     });
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8,
+    ]);
     expect(
       database
         .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'users'")
@@ -289,7 +310,9 @@ describe("SQLite migrations", () => {
       calibration_status: "NOT_CALIBRATED",
       calibration_offset: 0,
     });
-    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(new MigrationRepository(database).getAppliedVersions()).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8,
+    ]);
   });
 
   it("keeps the User schema identical between fresh and supported upgrade paths", () => {

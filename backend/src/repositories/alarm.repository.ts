@@ -88,7 +88,7 @@ export class AlarmRepository {
     return stmt.get(sensorId, type) as Alarm | undefined;
   }
 
-  recoverAlarm(id: number): void {
+  recoverAlarm(id: number): boolean {
     const stmt = this.database.prepare(`
 
             UPDATE alarms
@@ -100,10 +100,11 @@ export class AlarmRepository {
                 recovered_time = CURRENT_TIMESTAMP
 
             WHERE id = ?
+              AND status = 'TRIGGERED'
 
         `);
 
-    stmt.run(id);
+    return stmt.run(id).changes === 1;
   }
 
   acknowledgeAlarm(id: number, acknowledgingUserId: number): boolean {

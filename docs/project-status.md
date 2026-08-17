@@ -188,5 +188,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-04 — Notification Architecture** by defining the channel-independent
-notification boundary without introducing SMS failover, which remains S15-05 scope.
+Complete and review **S15-04 — Notification Architecture** on
+`agent/s15-04-notification-architecture`, preserving SMS failover as separate S15-05
+scope.

@@ -1,6 +1,8 @@
 import { AlarmRepository, Alarm } from "../repositories/alarm.repository";
 
 import { AppError } from "../errors/app-error";
+import { notificationService } from "../modules/notification/notification.service";
+import { sqlite } from "../../database/sqlite/client";
 
 const repository = new AlarmRepository();
 
@@ -13,13 +15,26 @@ export function createAlarm(alarm: Alarm): number | null {
     return null;
   }
 
-  return repository.create({
-    ...alarm,
+  return sqlite.transaction(() => {
+    const alarmId = repository.create({
+      ...alarm,
 
-    severity: alarm.severity ?? "WARNING",
+      severity: alarm.severity ?? "WARNING",
 
-    status: alarm.status ?? "TRIGGERED",
-  });
+      status: alarm.status ?? "TRIGGERED",
+    });
+
+    notificationService.publishAlarmTriggered({
+      alarmId,
+      sensorId: alarm.sensor_id,
+      alarmType: alarm.type,
+      severity: alarm.severity ?? "WARNING",
+      triggerValue: alarm.trigger_value,
+      occurredAt: new Date().toISOString(),
+    });
+
+    return alarmId;
+  })();
 }
 
 export function getActiveAlarm(sensorId: number, type: string): Alarm | undefined {
@@ -27,27 +42,40 @@ export function getActiveAlarm(sensorId: number, type: string): Alarm | undefine
 }
 
 export function recoverAlarm(id: number): void {
-  repository.recoverAlarm(id);
+  const recovered = sqlite.transaction(() => {
+    if (!repository.recoverAlarm(id)) {
+      return false;
+    }
 
-  console.log(`Alarm recovered: ${id}`);
+    notificationService.publishAlarmRecovered(id, new Date().toISOString());
+    return true;
+  })();
+
+  if (recovered) {
+    console.log(`Alarm recovered: ${id}`);
+  }
 }
 
 export function acknowledgeAlarm(id: number, acknowledgingUserId: number): void {
-  const alarm = repository.getById(id);
+  sqlite.transaction(() => {
+    const alarm = repository.getById(id);
 
-  if (!alarm) {
-    throw new AppError("Alarm not found", 404, "ALARM_NOT_FOUND");
-  }
+    if (!alarm) {
+      throw new AppError("Alarm not found", 404, "ALARM_NOT_FOUND");
+    }
 
-  if (alarm.status !== "TRIGGERED") {
-    throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
-  }
+    if (alarm.status !== "TRIGGERED") {
+      throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
+    }
 
-  const acknowledged = repository.acknowledgeAlarm(id, acknowledgingUserId);
+    const acknowledged = repository.acknowledgeAlarm(id, acknowledgingUserId);
 
-  if (!acknowledged) {
-    throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
-  }
+    if (!acknowledged) {
+      throw new AppError("Alarm cannot be acknowledged", 409, "INVALID_ALARM_STATE");
+    }
+
+    notificationService.publishAlarmAcknowledged(id, acknowledgingUserId, new Date().toISOString());
+  })();
 }
 
 export function getAlarmById(id: number): Alarm {

@@ -9,6 +9,7 @@ import { migration004 } from "./migrations/004_add_alarm_acknowledging_user";
 import { migration005 } from "./migrations/005_add_sensor_calibration_foundation";
 import { migration006 } from "./migrations/006_create_calibration_records";
 import { migration007 } from "./migrations/007_add_device_communication_health";
+import { migration008 } from "./migrations/008_create_notification_events";
 
 export interface Migration {
   version: number;
@@ -26,6 +27,7 @@ const migrations: Migration[] = [
   migration005,
   migration006,
   migration007,
+  migration008,
 ];
 
 export function runMigrations(
