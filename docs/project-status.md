@@ -37,6 +37,8 @@ The current repository state must not be interpreted as a new published producti
 - [x] SQLite migration 006 with immutable calibration evidence
 - [x] S15-03 trusted Device communication health and heartbeat foundation
 - [x] SQLite migration 007 with Device last-seen and heartbeat timestamps
+- [x] S15-04 durable channel-independent Notification Architecture
+- [x] SQLite migration 008 with idempotent notification event outbox
 
 ## Sprint 14
 
@@ -131,8 +133,11 @@ closed through PR #21 at `main` integration commit
 
 S15-02 and S15-03 are also complete, merged, verified, and closed. S15-03 was
 integrated through PR #25 at `main` integration commit
-`daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`. The next work item is S15-04 —
-Notification Architecture.
+`daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`.
+
+S15-04 is complete, merged, verified, and closed through PR #28 at `main`
+integration commit `f22945ccc5ce9d97a4991b6b923814d04802ade5`. The next work item
+is S15-05 — SMS Failover Contract.
 
 The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
 
@@ -179,7 +184,7 @@ The following items are not declared part of Sprint 14 and remain subject to sep
 - [ ] Monitoring Point architecture and APIs
 - [ ] Broader Device discovery, QR, activation-code, and provisioning workflows
 - [ ] Asset approval and assignment
-- [ ] Notification Engine
+- [x] Channel-independent Notification Architecture foundation
 - [ ] Additional operational frontend features
 - [ ] OTA update capabilities
 - [ ] Production deployment and operations work
@@ -188,6 +193,5 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Complete and review **S15-04 — Notification Architecture** on
-`agent/s15-04-notification-architecture`, preserving SMS failover as separate S15-05
-scope.
+Begin **S15-05 — SMS Failover Contract** using the S15-04 channel-independent event
+boundary without making SMS the normal primary notification channel.
