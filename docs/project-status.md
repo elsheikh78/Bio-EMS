@@ -201,6 +201,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-07 — Deployment & Commissioning Readiness** by validating the complete
-configured Site/controller/Sensor path, operational recovery, evidence gates, and
-acceptance boundary without claiming unperformed field work.
+Complete and review **S15-07 — Deployment & Commissioning Readiness** on
+`agent/s15-07-deployment-commissioning-readiness`, while keeping field commissioning
+and Pilot acceptance explicitly unexecuted until controlled evidence exists.

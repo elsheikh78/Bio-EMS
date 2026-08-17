@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
-import path from "path";
+import { resolveSqlitePath } from "./sqlite.config";
 
-const dbPath = path.join(process.cwd(), "database", "bioems.db");
+const dbPath = resolveSqlitePath(process.env, process.cwd());
 
 export const sqlite = new Database(dbPath);
 

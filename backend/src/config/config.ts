@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { loadJwtConfig } from "./jwt.config";
 import { loadCorsConfig } from "./cors.config";
+import { loadMqttConfig } from "./mqtt.config";
 
 dotenv.config();
 
@@ -11,10 +12,7 @@ export const config = {
 
   apiPrefix: process.env.API_PREFIX || "/api/v1",
 
-  mqtt: {
-    host: process.env.MQTT_HOST || "localhost",
-    port: Number(process.env.MQTT_PORT) || 1883,
-  },
+  mqtt: loadMqttConfig(process.env),
 
   influx: {
     url: process.env.INFLUX_URL || "",

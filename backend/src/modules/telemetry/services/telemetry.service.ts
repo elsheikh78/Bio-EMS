@@ -165,23 +165,25 @@ export class TelemetryService {
 
       console.log("Value      :", sensorData.value, sensor.unit);
 
-      this.dependencies.evaluateAlarm({
-        sensorId: sensor.id!,
+      if (payload.mode !== "REPLAY") {
+        this.dependencies.evaluateAlarm({
+          sensorId: sensor.id!,
 
-        sensorName: sensor.name,
+          sensorName: sensor.name,
 
-        value: sensorData.value,
+          value: sensorData.value,
 
-        sensorType: sensor.sensor_type,
+          sensorType: sensor.sensor_type,
 
-        warningLow: sensor.warning_low,
+          warningLow: sensor.warning_low,
 
-        alarmLow: sensor.alarm_low,
+          alarmLow: sensor.alarm_low,
 
-        warningHigh: sensor.warning_high,
+          warningHigh: sensor.warning_high,
 
-        alarmHigh: sensor.alarm_high,
-      });
+          alarmHigh: sensor.alarm_high,
+        });
+      }
 
       await this.dependencies.writeTelemetryPoint({
         site: site.code,
@@ -195,6 +197,12 @@ export class TelemetryService {
         unit: sensor.unit,
 
         value: sensorData.value,
+
+        battery: payload.battery,
+
+        signal: payload.signal,
+
+        timestamp: payload.timestamp,
       });
     }
 

@@ -102,9 +102,26 @@ describe("Telemetry trust-boundary policy", () => {
         device: "ZC-FW-001",
         sensor: "TEMP-01",
         value: 7.5,
+        battery: 90,
+        signal: -55,
+        timestamp: "2026-08-10T08:00:00.000Z",
       })
     );
     expect(dependencies.logRejection).not.toHaveBeenCalled();
+  });
+
+  it("stores replayed telemetry at its original timestamp without re-evaluating Alarms", async () => {
+    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", {
+      ...payload,
+      mode: "REPLAY",
+      timestamp: "2026-08-10T07:30:00.000Z",
+    });
+
+    expect(dependencies.deviceRepository.recordCommunication).toHaveBeenCalledOnce();
+    expect(dependencies.evaluateAlarm).not.toHaveBeenCalled();
+    expect(dependencies.writeTelemetryPoint).toHaveBeenCalledWith(
+      expect.objectContaining({ timestamp: "2026-08-10T07:30:00.000Z" })
+    );
   });
 
   it.each([

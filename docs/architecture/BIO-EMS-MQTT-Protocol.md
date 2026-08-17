@@ -1,5 +1,6 @@
 # BIO-EMS MQTT Protocol
-Version: 1.1
+
+Version: 1.2
 Status: Implemented telemetry and heartbeat subset; other message types are future design
 Last Updated: 2026-08-17
 
@@ -26,10 +27,10 @@ This document is the official communication specification for BIO-EMS.
 
 The firmware must remain simple.
 
-The device should NOT know:
+The controller does not own normal backend business configuration such as:
 
 - Sensor type
-- Alarm limits
+- normal notification/escalation rules
 - Calibration rules
 - Dashboard configuration
 - Room information
@@ -40,7 +41,10 @@ The device only knows:
 - Sensor Channel
 - Measured Value
 
-All business logic belongs to the backend.
+Normal business logic belongs to the backend. The only approved exception is the
+S15-05 emergency subset: a Site Controller may hold approved critical thresholds and
+SMS recipients required for local failover while primary Internet communication is
+unavailable.
 
 ---
 
@@ -50,9 +54,13 @@ Protocol
 
 MQTT v3.1.1
 
-Default Port
+Development default
 
-1883
+`mqtt://localhost:1883`
+
+Production requirement
+
+`mqtts://` with an authenticated broker identity and a stable backend client ID.
 
 Authentication
 
@@ -110,7 +118,7 @@ Direction
 
 ESP32 → Backend
 
---------------------------------------------------
+---
 
 Register
 
@@ -122,7 +130,7 @@ Direction
 
 ESP32 → Backend
 
---------------------------------------------------
+---
 
 Heartbeat
 
@@ -150,7 +158,7 @@ Implemented payload:
 `sent_at` is required protocol evidence. `uptime_seconds` is optional. Device health
 uses authenticated backend receipt time rather than trusting the Device clock.
 
---------------------------------------------------
+---
 
 Command
 
@@ -162,7 +170,7 @@ Direction
 
 Backend → ESP32
 
---------------------------------------------------
+---
 
 Response
 
@@ -180,28 +188,22 @@ ESP32 → Backend
 
 ```json
 {
-    "timestamp":"2026-07-29T13:30:20Z",
-
-    "battery":96,
-
-    "signal":-63,
-
-    "sensors":[
-        {
-            "channel":1,
-            "value":4.82
-        },
-        {
-            "channel":2,
-            "value":5.11
-        },
-        {
-            "channel":3,
-            "value":58.20
-        }
-    ]
+  "protocolVersion": "1.1",
+  "timestamp": "2026-07-29T13:30:20Z",
+  "battery": 96,
+  "signal": -63,
+  "mode": "LIVE",
+  "sensors": [
+    { "channel": 1, "value": 4.82 },
+    { "channel": 2, "value": 5.11 }
+  ]
 }
 ```
+
+`mode` is optional and defaults operationally to live processing. `LIVE` readings
+are written to history and evaluated by the Alarm Engine. `REPLAY` readings are
+written at their original payload timestamp but do not re-trigger historical Alarms.
+Device communication health still uses trusted server receipt time.
 
 ---
 
@@ -209,15 +211,15 @@ ESP32 → Backend
 
 ```json
 {
-    "firmware":"1.0.0",
+  "firmware": "1.0.0",
 
-    "hardware":"ESP32",
+  "hardware": "ESP32",
 
-    "mac":"34:B7:DA:10:22:AB",
+  "mac": "34:B7:DA:10:22:AB",
 
-    "ip":"192.168.1.120",
+  "ip": "192.168.1.120",
 
-    "channels":8
+  "channels": 8
 }
 ```
 
@@ -225,17 +227,8 @@ ESP32 → Backend
 
 # 8. Heartbeat Payload
 
-```json
-{
-    "uptime":152300,
-
-    "battery":95,
-
-    "signal":-60,
-
-    "freeMemory":185640
-}
-```
+The normative Heartbeat payload is the `sent_at`/optional `uptime_seconds` contract
+in Section 5. Earlier uptime/battery/signal heartbeat examples are not supported.
 
 ---
 
@@ -245,7 +238,7 @@ Example
 
 ```json
 {
-    "command":"restart"
+  "command": "restart"
 }
 ```
 
@@ -253,7 +246,7 @@ Example
 
 ```json
 {
-    "command":"sync"
+  "command": "sync"
 }
 ```
 
@@ -261,7 +254,7 @@ Example
 
 ```json
 {
-    "command":"update"
+  "command": "update"
 }
 ```
 
@@ -271,9 +264,9 @@ Example
 
 ```json
 {
-    "success":true,
+  "success": true,
 
-    "message":"Command executed successfully"
+  "message": "Command executed successfully"
 }
 ```
 
@@ -317,11 +310,11 @@ Telemetry Service
 
 ↓
 
-InfluxDB
+Alarm Engine
 
 ↓
 
-Alarm Engine
+InfluxDB
 
 ↓
 
@@ -339,10 +332,6 @@ Device
 - Device's persisted Site must exist.
 - Persisted `site.code` must exactly match the topic `siteCode`.
 
-Room
-
-- Room must exist.
-
 Sensor
 
 - Channel must resolve to a Sensor by persisted Device ID and channel.
@@ -352,8 +341,11 @@ Sensor
 Telemetry
 
 - Payload must be valid JSON.
+- `protocolVersion` must be a non-empty string.
+- `timestamp` must be an ISO datetime.
 - Battery must be numeric.
 - Signal must be numeric.
+- `mode`, when present, must be `LIVE` or `REPLAY`.
 - Sensor values must be numeric.
 
 ---
@@ -362,23 +354,17 @@ Telemetry
 
 Measurement
 
-telemetry
+Configured Sensor type
 
 Tags
 
-application
-
 site
-
-room
 
 device
 
 sensor
 
-channel
-
-sensor_type
+unit
 
 Fields
 
@@ -390,7 +376,8 @@ signal
 
 Timestamp
 
-MQTT Timestamp
+Validated payload timestamp. A `REPLAY` reading therefore preserves its original
+measurement time rather than the reconnect time.
 
 ---
 
@@ -418,13 +405,13 @@ Stores
 
 The Alarm Engine is responsible for:
 
-- High Alarm
-- Low Alarm
-- Sensor Offline
-- Device Offline
-- Communication Failure
+- warning-low and critical-low threshold states;
+- warning-high and critical-high threshold states;
+- current Alarm trigger/recovery behavior for `LIVE` telemetry.
 
-This component will be implemented in a later version.
+`REPLAY` telemetry is deliberately excluded from current Alarm evaluation. Device
+communication health is a separate derived domain; S15-03 does not persist Device
+offline as a Sensor Alarm.
 
 ---
 
@@ -460,27 +447,16 @@ Reject the affected reading and continue valid channels in the same payload
 
 Database Error
 
-Log error
-
-Continue processing
+Reject/stop the affected processing path and log the operational error without
+exposing secrets.
 
 ---
 
 # 17. Security
 
-Authentication
-
-MQTT Username
-
-MQTT Password
-
-Future Enhancements
-
-TLS
-
-Certificate Authentication
-
-Encrypted Communication
+Development may use local unauthenticated `mqtt`. Production validation requires
+`mqtts`, a stable backend client ID, username/password authentication, and broker
+topic ACLs. Certificate-based client authentication is not implemented.
 
 ---
 
@@ -494,3 +470,8 @@ Version 1.1
 
 Documented the Sprint 12 Device/Site/Sensor telemetry trust boundary without changing
 the telemetry topic, subscription, or payload contract.
+
+Version 1.2
+
+Documented the implemented heartbeat contract, production MQTT TLS configuration,
+payload quality-field persistence, and optional `LIVE`/`REPLAY` recovery semantics.

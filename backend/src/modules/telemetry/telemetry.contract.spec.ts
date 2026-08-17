@@ -30,5 +30,9 @@ describe("Telemetry contracts", () => {
     expect(() =>
       telemetrySchema.parse({ ...valid, sensors: [{ channel: "1", value: 7.5 }] })
     ).toThrow();
+    expect(telemetrySchema.parse({ ...valid, mode: "REPLAY" })).toMatchObject({
+      mode: "REPLAY",
+    });
+    expect(() => telemetrySchema.parse({ ...valid, mode: "BUFFERED" })).toThrow();
   });
 });

@@ -1,14 +1,14 @@
 # BIO-EMS Engineering Playbook
 
-| Item | Value |
-|------|-------|
-| Document | Engineering Playbook |
-| Version | 1.0 |
-| Status | Approved |
-| Applies To | BIO-EMS Backend |
-| Owner | Engineering Team |
-| Classification | Internal |
-| Last Updated | 2026-08-05 |
+| Item           | Value                |
+| -------------- | -------------------- |
+| Document       | Engineering Playbook |
+| Version        | 1.0                  |
+| Status         | Approved             |
+| Applies To     | BIO-EMS Backend      |
+| Owner          | Engineering Team     |
+| Classification | Internal             |
+| Last Updated   | 2026-08-05           |
 
 ## 1. Purpose
 
@@ -73,14 +73,14 @@ MQTT device -> MQTT router -> telemetry listener/service -> alarm processing -> 
 Dashboard service -> domain alarm evaluation -> existing dashboard API response
 ```
 
-| Area | Current implementation |
-| --- | --- |
-| HTTP API | Express routes, controllers, async/error middleware |
-| Domain | Alarm engine, statuses, severity, colors, value objects |
-| Application | Site, device, room, sensor, alarm, telemetry, dashboard services |
-| Configuration store | SQLite through `better-sqlite3` repositories |
-| Telemetry store | InfluxDB writer and query modules |
-| Device integration | MQTT client, router, handlers, and telemetry module |
+| Area                | Current implementation                                           |
+| ------------------- | ---------------------------------------------------------------- |
+| HTTP API            | Express routes, controllers, async/error middleware              |
+| Domain              | Alarm engine, statuses, severity, colors, value objects          |
+| Application         | Site, device, room, sensor, alarm, telemetry, dashboard services |
+| Configuration store | SQLite through `better-sqlite3` repositories                     |
+| Telemetry store     | InfluxDB writer and query modules                                |
+| Device integration  | MQTT client, router, handlers, and telemetry module              |
 
 The architecture exists to prevent transport and persistence details from becoming
 business-rule dependencies.
@@ -114,14 +114,14 @@ database table, for example, SHOULD include schema migration and repository work
 
 ## 6. Layer Responsibilities
 
-| Layer | Owns | MUST NOT own |
-| --- | --- | --- |
-| Domain | Business state and rule evaluation | Express, MQTT, SQLite, InfluxDB dependencies |
-| Repository | SQLite reads, writes, and record mapping | Alarm or workflow policy |
-| Service | Use-case orchestration | Duplicated domain decisions |
-| Controller | HTTP translation and service invocation | SQL or business policy |
-| Route | HTTP method and path binding | Request handling logic |
-| Influx query module | Telemetry read/write access | API response policy |
+| Layer               | Owns                                     | MUST NOT own                                 |
+| ------------------- | ---------------------------------------- | -------------------------------------------- |
+| Domain              | Business state and rule evaluation       | Express, MQTT, SQLite, InfluxDB dependencies |
+| Repository          | SQLite reads, writes, and record mapping | Alarm or workflow policy                     |
+| Service             | Use-case orchestration                   | Duplicated domain decisions                  |
+| Controller          | HTTP translation and service invocation  | SQL or business policy                       |
+| Route               | HTTP method and path binding             | Request handling logic                       |
+| Influx query module | Telemetry read/write access              | API response policy                          |
 
 This division keeps a dashboard response change from changing telemetry persistence
 or alarm comparison semantics.
@@ -191,10 +191,10 @@ dashboard operations such as `/dashboard/summary` and `/dashboard/rooms/status`.
 BIO-EMS uses two storage technologies because configuration and telemetry have
 different access patterns.
 
-| Store | Mandatory purpose | Current data |
-| --- | --- | --- |
-| SQLite | Configuration and operational records | sites, devices, rooms, sensors, alarms, migration history |
-| InfluxDB | Time-series telemetry | sensor value points and tags |
+| Store    | Mandatory purpose                     | Current data                                              |
+| -------- | ------------------------------------- | --------------------------------------------------------- |
+| SQLite   | Configuration and operational records | sites, devices, rooms, sensors, alarms, migration history |
+| InfluxDB | Time-series telemetry                 | sensor value points and tags                              |
 
 - SQLite stores configuration data.
 - InfluxDB stores telemetry.
@@ -263,16 +263,20 @@ existing capability.
 
 Runtime configuration is loaded through `dotenv` and exposed by `src/config/config.ts`.
 
-| Area              | Current environment variables                                                                        |
-| ----------------- | ---------------------------------------------------------------------------------------------------- |
-| Server            | `NODE_ENV`, `PORT`, `API_PREFIX`, `LOG_LEVEL`                                                        |
-| MQTT              | `MQTT_HOST`, `MQTT_PORT`                                                                             |
-| InfluxDB          | `INFLUX_URL`, `INFLUX_TOKEN`, `INFLUX_ORG`, `INFLUX_BUCKET`                                          |
-| JWT configuration | `BIOEMS_JWT_SECRET`, `BIOEMS_JWT_EXPIRE_MINUTES`, `BIOEMS_JWT_ISSUER`, `BIOEMS_JWT_AUDIENCE`         |
-| ADMIN bootstrap   | `BIOEMS_BOOTSTRAP_ADMIN_USERNAME`, `BIOEMS_BOOTSTRAP_ADMIN_PASSWORD`, `BIOEMS_BOOTSTRAP_ADMIN_EMAIL` |
+| Area              | Current environment variables                                                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Server            | `NODE_ENV`, `PORT`, `API_PREFIX`, `LOG_LEVEL`                                                                                 |
+| MQTT              | `MQTT_PROTOCOL`, `MQTT_HOST`, `MQTT_PORT`, `MQTT_CLIENT_ID`, `MQTT_USERNAME`, `MQTT_PASSWORD`, timing/clean-session overrides |
+| InfluxDB          | `INFLUX_URL`, `INFLUX_TOKEN`, `INFLUX_ORG`, `INFLUX_BUCKET`                                                                   |
+| SQLite            | `BIOEMS_SQLITE_PATH`, `BIOEMS_SQLITE_BACKUP_DIR`                                                                              |
+| JWT configuration | `BIOEMS_JWT_SECRET`, `BIOEMS_JWT_EXPIRE_MINUTES`, `BIOEMS_JWT_ISSUER`, `BIOEMS_JWT_AUDIENCE`                                  |
+| Browser CORS      | `BIOEMS_CORS_ALLOWED_ORIGINS`                                                                                                 |
+| ADMIN bootstrap   | `BIOEMS_BOOTSTRAP_ADMIN_USERNAME`, `BIOEMS_BOOTSTRAP_ADMIN_PASSWORD`, `BIOEMS_BOOTSTRAP_ADMIN_EMAIL`                          |
 
 - Secrets MUST NOT be committed to source control.
 - Production deployments MUST supply required InfluxDB settings explicitly.
+- Production deployments MUST pass `npm run validate:deployment` and use MQTT/Influx
+  TLS plus absolute persistent SQLite and backup paths.
 - Local defaults MAY be used only when they are safe and intentional.
 - Environment variables MUST NOT be logged.
 
@@ -378,10 +382,10 @@ and documentation, but accountability remains with the engineer.
 
 The official BIO-EMS AI development workflow assigns responsibilities as follows:
 
-| AI assistant | Primary responsibilities |
-| --- | --- |
-| ChatGPT | Architecture, engineering review, ADRs, sprint planning, documentation |
-| Codex | Implementation, refactoring, build, tests, compilation fixes |
+| AI assistant | Primary responsibilities                                               |
+| ------------ | ---------------------------------------------------------------------- |
+| ChatGPT      | Architecture, engineering review, ADRs, sprint planning, documentation |
+| Codex        | Implementation, refactoring, build, tests, compilation fixes           |
 
 ChatGPT SHOULD help engineers evaluate architecture, review proposed changes, document
 decisions, plan sprint work, and maintain project documentation. Codex SHOULD implement

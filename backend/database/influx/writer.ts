@@ -20,13 +20,27 @@ export interface TelemetryPoint {
 
   value: number;
 
-  timestamp?: string;
+  battery: number;
+
+  signal: number;
+
+  timestamp: string;
 }
 
 export async function writeTelemetryPoint(data: TelemetryPoint): Promise<void> {
   console.log("Writing Telemetry Point to InfluxDB...");
 
-  const point = new Point(data.sensorType)
+  const point = buildTelemetryPoint(data);
+
+  writeApi.writePoint(point);
+
+  await writeApi.flush();
+
+  console.log("InfluxDB Write Success");
+}
+
+export function buildTelemetryPoint(data: TelemetryPoint): Point {
+  return new Point(data.sensorType)
 
     .tag("site", data.site)
 
@@ -36,11 +50,11 @@ export async function writeTelemetryPoint(data: TelemetryPoint): Promise<void> {
 
     .tag("unit", data.unit)
 
-    .floatField("value", data.value);
+    .floatField("value", data.value)
 
-  writeApi.writePoint(point);
+    .floatField("battery", data.battery)
 
-  await writeApi.flush();
+    .floatField("signal", data.signal)
 
-  console.log("InfluxDB Write Success");
+    .timestamp(new Date(data.timestamp));
 }

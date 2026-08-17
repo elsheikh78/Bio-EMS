@@ -6,7 +6,7 @@
 
 **Current integrated `main` baseline:** `8ee97931079d90d4f901e9500f06dc905d7e6049`
 
-**Next work item:** S15-07 — Deployment & Commissioning Readiness
+**Current work item:** S15-07 — Deployment & Commissioning Readiness
 
 ## Implemented Platform
 
@@ -47,7 +47,7 @@ is not retroactively part of that tagged artifact.
 - **S15-04 — Notification Architecture:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #28.
 - **S15-05 — SMS Failover Contract:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #30.
 - **S15-06 — BIO EGYPT Pilot Documentation:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #32.
-- **S15-07 — Deployment & Commissioning Readiness:** NOT STARTED.
+- **S15-07 — Deployment & Commissioning Readiness:** IN PROGRESS on `agent/s15-07-deployment-commissioning-readiness`.
 
 ## S15-01 Boundary
 
