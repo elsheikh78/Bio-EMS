@@ -8,7 +8,7 @@ These changes are newer repository development and are **not** retroactively par
 
 - S15-04 Notification Architecture: durable channel-independent Alarm and Device
   communication event outbox, idempotent producer contracts, and future delivery
-  adapter boundary — in progress.
+  adapter boundary — merged and closed through PR #28.
 - S15-03 Device/communication health: trusted telemetry and heartbeat last-seen
   semantics, derived operational communication states, Device health API, and
   Dashboard offline correction — merged and closed through PR #25.

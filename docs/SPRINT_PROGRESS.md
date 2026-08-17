@@ -13,7 +13,7 @@ Status: **IN PROGRESS**
 - S15-01 — Sensor Lifecycle & Calibration Foundation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #21.
 - S15-02 — Calibration History: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #23.
 - S15-03 — Device / Communication Health: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #25.
-- S15-04 — Notification Architecture: **IN PROGRESS** on `agent/s15-04-notification-architecture`.
+- S15-04 — Notification Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #28.
 - S15-05 — SMS Failover Contract: **NOT STARTED**.
 - S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
 - S15-07 — Deployment & Commissioning Readiness: **NOT STARTED**.
@@ -49,6 +49,17 @@ of the current Sensor calibration snapshot after passing records.
 S15-03 added trusted telemetry/heartbeat last-seen tracking, derived Device
 communication states, a health read API, and communication-based Dashboard offline
 counting without changing Device lifecycle semantics.
+
+### S15-04 integration evidence
+
+- feature commit: `2fc2ea7cf3041b885285d7753254c0f741ad327a`;
+- PR: #28;
+- merge commit: `f22945ccc5ce9d97a4991b6b923814d04802ade5`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-04 added a durable, idempotent, channel-independent notification event outbox,
+transactional Alarm event production, Device communication transition contracts,
+and a future delivery-adapter seam without selecting an external provider.
 
 ## Sprint 14 — Frontend Application
 
@@ -136,4 +147,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-04 — Notification Architecture**.
+The immediate project critical path is now **S15-05 — SMS Failover Contract**.
