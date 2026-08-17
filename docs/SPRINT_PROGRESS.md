@@ -15,7 +15,7 @@ Status: **IN PROGRESS**
 - S15-03 — Device / Communication Health: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #25.
 - S15-04 — Notification Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #28.
 - S15-05 — SMS Failover Contract: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #30.
-- S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
+- S15-06 — BIO EGYPT Pilot Documentation: **IN PROGRESS** on `agent/s15-06-bio-egypt-pilot-docs`.
 - S15-07 — Deployment & Commissioning Readiness: **NOT STARTED**.
 
 ### S15-01 integration evidence
