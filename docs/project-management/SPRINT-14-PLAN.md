@@ -2,30 +2,43 @@
 
 ## Status
 
-**IN PROGRESS — S14-05C NEXT**
+**COMPLETE / MERGED / CLOSED**
 
-Sprint 14 establishes the production-facing BIO-EMS frontend on top of the backend and domain capabilities completed through Sprint 13.
+Sprint 14 established the production-facing BIO-EMS frontend on top of the backend and domain capabilities completed through Sprint 13.
 
-Git history, merged pull requests, accepted ADRs, and scoped feature-branch commits are the authoritative implementation evidence.
+This document preserves the approved Sprint 14 scope and records its final completion state.
+
+Git history, merged pull requests, accepted ADRs, closure documentation, and verified quality-gate evidence remain the authoritative implementation evidence.
+
+For the final Sprint 14 completion record, see:
+
+- `SPRINT-14-CLOSURE.md`;
+- `SPRINT-14-S14-02-APPLICATION-SHELL.md`;
+- `SPRINT-14-S14-03-CLOSURE.md`;
+- `SPRINT-14-S14-04-CLOSURE.md`;
+- `SPRINT-14-S14-05-PROGRESS.md`.
 
 ## Sprint Objective
 
-Deliver a professional, responsive, secure, localized-ready frontend that consumes existing backend contracts without duplicating backend authorization or inventing unsupported domain behavior.
+Deliver a professional, responsive, secure, localization-ready frontend that consumes existing backend contracts without duplicating backend authorization or inventing unsupported domain behavior.
 
-## Current Sprint 14 Summary
+## Final Sprint 14 Summary
 
-| Slice | Status | Evidence |
+| Slice | Final Status | Evidence |
 | --- | --- | --- |
 | S14-01 Frontend foundation | COMPLETE / MERGED / CLOSED | PR #10 |
 | S14-02 AppShell and navigation | COMPLETE / MERGED / VERIFIED | PR #11, merge `edd74cc7...` |
 | S14-03 Authentication/session/routing | COMPLETE / MERGED / VERIFIED | PR #12, merge `3cbe2e66...` |
 | S14-04 Operational Dashboard | COMPLETE / MERGED / VERIFIED | PR #15, merge `04c7533c...` |
-| S14-05A Monitored Areas contracts/data | COMPLETE / COMMITTED / PUSHED | `90e39af` |
-| S14-05B Monitored Areas hierarchy UI | COMPLETE / COMMITTED / PUSHED | `bd442e9` |
-| S14-05C Sensor inventory/thresholds | NOT STARTED / NEXT | — |
-| S14-05D Refresh/integration/hardening | NOT STARTED | — |
+| S14-05A Monitored Areas contracts/data | COMPLETE | See `SPRINT-14-S14-05-PROGRESS.md` |
+| S14-05B Monitored Areas hierarchy UI | COMPLETE | See `SPRINT-14-S14-05-PROGRESS.md` |
+| S14-05C Sensor inventory/thresholds | COMPLETE | See `SPRINT-14-S14-05-PROGRESS.md` |
+| S14-05D Refresh/integration/hardening | COMPLETE | See `SPRINT-14-S14-05-PROGRESS.md` |
+| Sprint 14 | COMPLETE / MERGED / CLOSED | See `SPRINT-14-CLOSURE.md` |
 
-S14-05A/B are complete on `agent/s14-05-monitored-areas` but are not yet merged to `main`.
+Sprint 14 implementation is complete.
+
+The project critical path now moves from frontend feature implementation to the **BIO-EMS Pilot Readiness Review**.
 
 ## S14-01 — Frontend Architecture and Project Foundation
 
@@ -135,7 +148,7 @@ See `SPRINT-14-S14-04-CLOSURE.md`.
 
 ## S14-05 — Monitored Areas Frontend
 
-**Status: IN PROGRESS — A/B COMPLETE, C NEXT**
+**Status: COMPLETE / MERGED / VERIFIED**
 
 ### Objective
 
@@ -147,7 +160,7 @@ Hierarchy:
 
 **Site → Monitored Area (Room) → Sensor**
 
-No Asset, Monitoring Point, or new Area backend abstraction is introduced.
+No Asset, Monitoring Point, or new Area backend abstraction was introduced.
 
 ### Existing Backend Basis
 
@@ -160,7 +173,7 @@ Relationships are joined client-side using established identifiers:
 
 ### S14-05A — Contracts and Data Access
 
-**Status: COMPLETE / COMMITTED / PUSHED**
+**Status: COMPLETE**
 
 Delivered:
 
@@ -170,13 +183,15 @@ Delivered:
 - stable feature query keys/hooks;
 - focused contract/API/query tests.
 
-Evidence:
+Historical implementation evidence includes:
 
 - commit `90e39af` — `feat(frontend): add monitored areas data contracts and queries`.
 
+See `SPRINT-14-S14-05-PROGRESS.md` for the reconciled final feature evidence.
+
 ### S14-05B — Site and Monitored Area Hierarchy
 
-**Status: COMPLETE / COMMITTED / PUSHED**
+**Status: COMPLETE**
 
 Delivered:
 
@@ -188,59 +203,68 @@ Delivered:
 - localized production-facing copy and alternative-resource regression coverage;
 - focused hierarchy/rendering tests.
 
-Final recorded S14-05B gate:
-
-- typecheck: passed;
-- lint: passed;
-- full frontend suite: 21/21 test files, 189/189 tests;
-- scoped Prettier: passed;
-- `git diff --check`: passed apart from non-blocking LF/CRLF notices.
-
-Evidence:
+Historical implementation evidence includes:
 
 - commit `bd442e9` — `feat(frontend): add monitored areas hierarchy view`.
 
+See `SPRINT-14-S14-05-PROGRESS.md` for the reconciled final feature evidence and quality-gate state.
+
 ### S14-05C — Sensor Inventory per Monitored Area
 
-**Status: NOT STARTED / NEXT**
+**Status: COMPLETE**
 
-Planned scope:
+Completed scope:
 
-- complete Sensor inventory presentation under the correct Monitored Area;
-- present existing Sensor type, unit, channel, and enabled state;
-- present configured threshold metadata where available: `min_value`, `warning_low`, `alarm_low`, `warning_high`, `alarm_high`, `max_value`;
-- keep configuration metadata clearly distinct from live telemetry, online/offline health, and alarm state;
-- strengthen focused hierarchy/rendering tests for threshold and partial metadata behavior.
+- Sensor inventory presentation under the correct Monitored Area;
+- presentation of existing Sensor type, unit, channel, and enabled state;
+- presentation of configured threshold metadata where available:
+  - `min_value`;
+  - `warning_low`;
+  - `alarm_low`;
+  - `warning_high`;
+  - `alarm_high`;
+  - `max_value`;
+- clear separation between configuration metadata and live telemetry, online/offline health, and alarm state;
+- focused hierarchy/rendering coverage for threshold and partial-metadata behavior.
+
+Final implementation evidence is maintained in `SPRINT-14-S14-05-PROGRESS.md`.
 
 ### S14-05D — Refresh, Integration, and Hardening
 
-**Status: NOT STARTED**
+**Status: COMPLETE**
 
-Planned scope:
+Completed scope:
 
 - explicit user refresh/retry behavior;
-- route authorization regression;
-- current/stale authentication-generation regression;
-- ordinary protected-operation `403` session-preservation regression;
+- route authorization regression coverage;
+- authentication/session integration hardening;
+- current/stale authentication-generation regression protection;
+- ordinary protected-operation `403` session-preservation behavior;
 - malformed-response, localization, accessibility, responsive-critical, and empty-state hardening;
-- complete frontend quality gates and final code review before PR/merge.
+- frontend quality-gate validation and final integration review.
+
+Final implementation evidence is maintained in `SPRINT-14-S14-05-PROGRESS.md`.
 
 ### S14-05 Acceptance Boundary
 
-S14-05 must:
+S14-05 was constrained to:
 
 - use existing Site/Room/Sensor backend contracts only;
 - validate consumed success payloads before presentation;
 - issue all protected requests through `protectedRequest`;
 - associate Rooms with Sites and Sensors with Rooms correctly;
 - represent configuration active/enabled state without manufacturing live health;
-- provide clear loading, empty, partial-empty, error, success, refresh, and retry behavior by completion;
+- provide clear loading, empty, partial-empty, error, success, refresh, and retry behavior;
 - preserve centralized authorization, localization, accessibility, responsiveness, and S14-03 session semantics;
 - introduce no unrelated backend, database, MQTT, telemetry-ingestion, Device-lifecycle, Alarm-Engine, dependency, or deployment changes.
 
-See `SPRINT-14-S14-05-PROGRESS.md` for the current feature-branch evidence.
+The final S14-05 implementation remained within this boundary.
+
+See `SPRINT-14-S14-05-PROGRESS.md` for the reconciled feature history and final status.
 
 ## Sprint 14 Working Rules
+
+The following rules governed Sprint 14 and remain part of its historical engineering record:
 
 1. `main` is the integration baseline; feature work occurs on scoped branches and is merged through reviewed Pull Requests.
 2. Backend authorization remains authoritative.
@@ -251,6 +275,32 @@ See `SPRINT-14-S14-05-PROGRESS.md` for the current feature-branch evidence.
 7. Quality gates and repository cleanliness are required before merge.
 8. Unrelated refactors, dependency upgrades, schema changes, release work, and deployment work require separately approved scope.
 
+## Sprint 14 Closure
+
+Sprint 14 is **COMPLETE / MERGED / CLOSED**.
+
+Its planned frontend scope has been completed across:
+
+- frontend architecture and foundation;
+- professional application shell and navigation;
+- authentication, session, and authorization-aware routing;
+- operational Dashboard;
+- Monitored Areas hierarchy and Sensor configuration presentation;
+- frontend integration and hardening.
+
+`SPRINT-14-CLOSURE.md` is the authoritative Sprint-level closure record.
+
 ## Current Next Action
 
-Complete documentation reconciliation, synchronize it through PR #17, then begin **S14-05C** on the existing `agent/s14-05-monitored-areas` feature branch from the already pushed S14-05B baseline.
+Begin the **BIO-EMS Pilot Readiness Review** immediately.
+
+The review must reconcile the current implemented platform against the actual Pilot deployment requirements and classify remaining work into:
+
+- already implemented and ready;
+- implemented but requiring validation;
+- configuration required;
+- deployment/hardware work required;
+- documentation/procedure required;
+- genuine software gap.
+
+No unnecessary feature expansion should be introduced before the current platform capability, Pilot requirements, hardware/deployment readiness, commissioning flow, and acceptance criteria are formally reconciled.

@@ -1,12 +1,23 @@
-# Sprint 14 — S14-05 Monitored Areas Progress
+# Sprint 14 — S14-05 Monitored Areas Final Status
 
 ## Status
 
-**IN PROGRESS — S14-05A COMPLETE / S14-05B COMPLETE / S14-05C COMPLETE / S14-05D IMPLEMENTED AND LOCALLY VALIDATED / FINAL REVIEW NEXT**
+**COMPLETE / MERGED / VERIFIED**
 
-S14-05 replaces the `/monitored-areas` placeholder with a read-only operational hierarchy built exclusively on the existing Site, Room, and Sensor backend domains.
+S14-05 replaced the `/monitored-areas` placeholder with a read-only operational hierarchy built exclusively on the existing Site, Room, and Sensor backend domains.
 
-User-facing **Monitored Area** remains presentation terminology for the existing Room domain. No Asset, Monitoring Point, or new Area domain is introduced.
+User-facing **Monitored Area** remains presentation terminology for the existing Room domain. No Asset, Monitoring Point, or new Area domain was introduced.
+
+S14-05 was completed through four controlled implementation slices:
+
+- S14-05A — Contracts and Data Access;
+- S14-05B — Site and Monitored Area Hierarchy;
+- S14-05C — Sensor Inventory and Threshold Configuration;
+- S14-05D — Refresh, Integration, and Hardening.
+
+All four slices are complete.
+
+The complete S14-05 feature was reviewed, validated, pushed, and merged into `main` through PR #19.
 
 ## Approved Hierarchy
 
@@ -17,9 +28,13 @@ Relationships use the existing identifiers only:
 - Room → Site through `site_id`;
 - Sensor → Room through `room_id`.
 
+No parallel frontend Area domain was introduced.
+
+---
+
 ## S14-05A — Contracts and Data Access
 
-**Status: COMPLETE / COMMITTED / PUSHED**
+**Status: COMPLETE / COMMITTED / PUSHED / MERGED**
 
 Delivered:
 
@@ -36,9 +51,11 @@ Evidence:
 - local/remote synchronization was verified after push;
 - working tree was clean before S14-05B began.
 
+---
+
 ## S14-05B — Site and Monitored Area Hierarchy
 
-**Status: COMPLETE / COMMITTED / PUSHED**
+**Status: COMPLETE / COMMITTED / PUSHED / MERGED**
 
 Delivered:
 
@@ -68,9 +85,11 @@ Evidence:
 - feature branch and remote were verified at zero ahead/behind divergence;
 - working tree was clean after push.
 
-## S14-05C — Sensor Inventory per Monitored Area
+---
 
-**Status: COMPLETE / COMMITTED / PUSHED**
+## S14-05C — Sensor Inventory and Threshold Configuration
+
+**Status: COMPLETE / COMMITTED / PUSHED / MERGED**
 
 Delivered:
 
@@ -96,7 +115,7 @@ Delivered:
   - device connectivity or online/offline health;
   - current alarm state;
 - added localized threshold labels and explanatory configuration-only copy;
-- extended alternative localization resources so the localization contract remains complete;
+- extended alternative localization resources so the localization contract remained complete;
 - strengthened page coverage for:
   - complete threshold metadata;
   - partial threshold metadata;
@@ -129,9 +148,11 @@ The production build continued to report the existing non-blocking Vite chunk-si
 - local and remote feature-branch HEADs were verified identical;
 - working tree was clean after push.
 
+---
+
 ## S14-05D — Refresh, Integration, and Hardening
 
-**Status: IMPLEMENTED / LOCALLY VALIDATED / COMMIT PENDING**
+**Status: COMPLETE / COMMITTED / PUSHED / MERGED / VERIFIED**
 
 Delivered:
 
@@ -155,7 +176,7 @@ Delivered:
 
 S14-05D intentionally reused existing regression coverage instead of modifying stable cross-cutting infrastructure unnecessarily.
 
-Existing repository coverage already verifies:
+Existing repository coverage verifies:
 
 - authenticated `/monitored-areas` route availability;
 - centralized role-aware routing behavior;
@@ -191,7 +212,7 @@ S14-05D full frontend validation passed:
 - frontend production build;
 - `git diff --check`, apart from non-blocking LF/CRLF working-copy notices.
 
-The existing Vite chunk-size advisory remains non-blocking and outside S14-05 scope.
+The existing Vite chunk-size advisory remained non-blocking and outside S14-05 scope.
 
 ### Files Changed for S14-05D
 
@@ -201,28 +222,129 @@ The existing Vite chunk-size advisory remains non-blocking and outside S14-05 sc
 - `frontend/src/localization/localization.spec.tsx`;
 - `docs/project-management/SPRINT-14-S14-05-PROGRESS.md`.
 
-## Current Integration State
+---
 
-S14-05A, S14-05B, and S14-05C are committed and pushed on:
+## Final Pull Request and Integration
+
+S14-05 was completed on:
 
 `agent/s14-05-monitored-areas`
 
-S14-05D is implemented and locally validated on the same feature branch, with commit and push pending.
+Final feature-branch commit before merge:
 
-The feature branch was synchronized with `origin/main` before S14-05C and S14-05D implementation.
+`19a7e49acb4b0b224aa71d085fd741e2bcadd87e`
 
-S14-05 is not yet integrated into `main`.
+Pull Request:
 
-Sprint 14 remains **IN PROGRESS** until S14-05D final review, commit/push, PR validation, merge, and Sprint 14 closure are complete.
+**PR #19 — `feat(frontend): complete S14-05 monitored areas`**
+
+PR #19 contained:
+
+- 5 commits;
+- 12 changed files;
+- the complete approved S14-05 implementation;
+- associated S14-05 progress documentation.
+
+Final review found no blocking code or scope issue.
+
+GitHub reported the PR as mergeable.
+
+Applicable CI gates completed successfully before merge.
+
+PR #19 was merged into `main`.
+
+Final integration commit:
+
+`2f79609ce8f79ac22ce06c12d9cf08c19a9a8207`
+
+Local `main` was subsequently synchronized with `origin/main`.
+
+Verification confirmed:
+
+`HEAD == origin/main == 2f79609ce8f79ac22ce06c12d9cf08c19a9a8207`
+
+The local working tree was clean after synchronization.
+
+---
+
+## Architecture and Scope Confirmation
+
+S14-05 remained within the approved frontend integration scope.
+
+It did not introduce:
+
+- a new backend Area domain;
+- Asset or Monitoring Point domains;
+- database schema changes;
+- database migrations;
+- MQTT protocol changes;
+- telemetry-ingestion changes;
+- device-lifecycle changes;
+- alarm-engine changes.
+
+The existing backend model remains authoritative.
+
+`Monitored Area` is a user-facing presentation term for the existing Room domain.
+
+Configured Sensor thresholds shown by S14-05 are configuration metadata.
+
+They must not be interpreted as:
+
+- current telemetry values;
+- current alarm state;
+- Sensor connectivity status;
+- device online/offline health.
+
+---
+
+## Final S14-05 State
+
+**S14-05A: COMPLETE**
+
+**S14-05B: COMPLETE**
+
+**S14-05C: COMPLETE**
+
+**S14-05D: COMPLETE**
+
+**PR #19: MERGED**
+
+**CI: PASSED**
+
+**S14-05: INTEGRATED INTO `main`**
+
+**LOCAL `main` / `origin/main` SYNCHRONIZATION: VERIFIED**
+
+S14-05 implementation is closed.
+
+---
+
+## Relationship to Sprint 14 Closure
+
+S14-05 was the final approved implementation slice of Sprint 14.
+
+With S14-05 integrated into `main`, no additional Sprint 14 production-code implementation remains pending.
+
+The remaining Sprint 14 activity is documentation reconciliation and formal Sprint closure.
+
+The authoritative Sprint-level closure record is:
+
+`docs/project-management/SPRINT-14-CLOSURE.md`
+
+---
 
 ## Immediate Next Step
 
-1. perform final S14-05D diff and scope review;
-2. commit S14-05D implementation and progress documentation together;
-3. push and verify local/remote feature-branch synchronization;
-4. perform final S14-05 PR/CI/code review;
-5. merge S14-05 into `main` when all gates pass;
-6. complete Sprint 14 closure and documentation reconciliation;
-7. move immediately to the BIO-EMS Pilot Readiness Review.
+Complete the Sprint 14 documentation reconciliation so that all authoritative status documents reflect the merged implementation.
 
-Pilot-readiness remains the post-Sprint-14 critical path. No additional feature expansion should be introduced before the Pilot requirements, hardware/deployment readiness, commissioning flow, and acceptance criteria are formally reconciled.
+After documentation reconciliation:
+
+1. validate the documentation-only closure diff;
+2. commit and push the Sprint 14 closure documentation;
+3. review and merge the documentation closure;
+4. verify local `main` against `origin/main`;
+5. begin the **BIO-EMS Pilot Readiness Review** immediately.
+
+Pilot Readiness is the next project critical path.
+
+No unnecessary feature expansion should be introduced before the current platform capability, Pilot requirements, hardware/deployment readiness, commissioning flow, and acceptance criteria are formally reconciled.
