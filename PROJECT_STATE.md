@@ -4,9 +4,9 @@
 
 **Current phase:** Sprint 15 — Pilot Readiness Foundation
 
-**Current integrated `main` baseline:** `f22945ccc5ce9d97a4991b6b923814d04802ade5`
+**Current integrated `main` baseline:** `2b2983433f0ea80ef00fd5359d1230b7f86254e3`
 
-**Current work item:** S15-05 — SMS Failover Contract
+**Next work item:** S15-06 — BIO EGYPT Pilot Documentation
 
 ## Implemented Platform
 
@@ -22,6 +22,7 @@
 - Append-only, actor-audited Sensor calibration history.
 - Trusted Device heartbeat/telemetry communication health with derived read-time states.
 - Durable channel-independent Alarm and Device communication notification events.
+- Provider-neutral emergency SMS failover policy and gateway contract.
 
 ## Release and Repository Timeline
 
@@ -43,7 +44,7 @@ is not retroactively part of that tagged artifact.
 - **S15-02 — Calibration History:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #23.
 - **S15-03 — Device / Communication Health:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #25.
 - **S15-04 — Notification Architecture:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #28.
-- **S15-05 — SMS Failover Contract:** IN PROGRESS on `agent/s15-05-sms-failover-contract`.
+- **S15-05 — SMS Failover Contract:** COMPLETE / MERGED / VERIFIED / CLOSED through PR #30.
 - **S15-06 — BIO EGYPT Pilot Documentation:** NOT STARTED.
 - **S15-07 — Deployment & Commissioning Readiness:** NOT STARTED.
 
