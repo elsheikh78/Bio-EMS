@@ -12,7 +12,7 @@ Status: **IN PROGRESS**
 
 - S15-01 — Sensor Lifecycle & Calibration Foundation: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #21.
 - S15-02 — Calibration History: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #23.
-- S15-03 — Device / Communication Health: **IN PROGRESS** on `agent/s15-03-device-communication-health`.
+- S15-03 — Device / Communication Health: **COMPLETE / MERGED / VERIFIED / CLOSED** through PR #25.
 - S15-04 — Notification Architecture: **NOT STARTED**.
 - S15-05 — SMS Failover Contract: **NOT STARTED**.
 - S15-06 — BIO EGYPT Pilot Documentation: **NOT STARTED**.
@@ -38,6 +38,17 @@ remains the dedicated scope of S15-02.
 
 S15-02 added immutable, actor-audited calibration records and atomic synchronization
 of the current Sensor calibration snapshot after passing records.
+
+### S15-03 integration evidence
+
+- feature commit: `ce969ff3b9fefa781823e1ee31a87ef952a953f5`;
+- PR: #25;
+- merge commit: `daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`;
+- Backend and Frontend GitHub CI quality gates: PASS.
+
+S15-03 added trusted telemetry/heartbeat last-seen tracking, derived Device
+communication states, a health read API, and communication-based Dashboard offline
+counting without changing Device lifecycle semantics.
 
 ## Sprint 14 — Frontend Application
 
@@ -125,4 +136,4 @@ The review will determine which Pilot requirements are:
 
 Only confirmed gaps should create new implementation scope.
 
-The immediate project critical path is now **S15-03 — Device / Communication Health**.
+The immediate project critical path is now **S15-04 — Notification Architecture**.
