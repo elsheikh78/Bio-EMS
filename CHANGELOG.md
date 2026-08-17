@@ -1,54 +1,76 @@
-# [Unreleased]
+# [0.15.0] - 2026-08-17
 
-## Repository Development After v0.13.0
+## Release Candidate
 
-These changes are newer repository development and are **not** retroactively part of the immutable `v0.13.0` tag.
+Post-`v0.13.0` repository development through the completed Sprint 14 frontend and
+Sprint 15 Pilot-readiness foundation.
 
-### Sprint 15 pilot-readiness work
+## Added
 
-- S15-07 Deployment & Commissioning Readiness: production configuration gate, MQTT
-  TLS support, persistent SQLite path, LIVE/REPLAY telemetry recovery semantics,
-  Site Controller contract, deployment/backup/restore runbook, and readiness evidence
-  boundary — merged and closed through PR #34.
-- S15-06 BIO EGYPT Pilot Documentation: controlled two-Site/20-Sensor scope and map,
-  installation/wiring requirements, commissioning record, acceptance gates, and
-  open-items register — merged and closed through PR #32.
-- S15-05 SMS Failover Contract: provider-neutral emergency decision policy for
-  critical Alarms and Device offline transitions during primary communication loss,
-  with E.164 validation and retry idempotency — merged and closed through PR #30.
-- S15-04 Notification Architecture: durable channel-independent Alarm and Device
-  communication event outbox, idempotent producer contracts, and future delivery
-  adapter boundary — merged and closed through PR #28.
-- S15-03 Device/communication health: trusted telemetry and heartbeat last-seen
-  semantics, derived operational communication states, Device health API, and
-  Dashboard offline correction — merged and closed through PR #25.
-- S15-02 calibration history: append-only actor-audited `PASS`/`FAIL` records,
-  immutable SQLite enforcement, chronological Sensor history API, and atomic current
-  Sensor snapshot synchronization after passing calibration — merged and closed
-  through PR #23.
-- S15-01 Sensor lifecycle and calibration foundation: backward-compatible product
-  grade, hardware, installation, and current calibration-state contracts, backed by
-  SQLite migration 005 and strict Sensor request validation — merged and closed
-  through PR #21.
+- ADMIN User Management with transactional last-active-ADMIN protection and
+  concurrency coverage.
+- React frontend foundation, responsive AppShell, typed localization, browser
+  authentication/session lifecycle, and authorization-aware routing.
+- Operational Dashboard and read-only Site → Monitored Area → Sensor frontend views.
+- Product-grade Sensor identity, hardware, installation, and current calibration
+  state through SQLite migration 005.
+- Append-only, actor-audited calibration history and immutable enforcement through
+  SQLite migration 006.
+- Trusted Device heartbeat/last-seen persistence, communication-health states, and
+  Device health API through SQLite migration 007.
+- Durable, channel-independent Alarm and Device notification events through SQLite
+  migration 008.
+- Provider-neutral, failover-only emergency SMS policy with E.164 validation and
+  retry idempotency.
+- Controlled BIO EGYPT two-Site/eight-area/20-Sensor Pilot scope, installation,
+  commissioning, acceptance, and open-item records.
+- Fail-closed production configuration validator, MQTT TLS/QoS configuration,
+  persistent SQLite and backup paths, LIVE/REPLAY telemetry recovery behavior, Site
+  Controller contract, and deployment/backup/restore runbook.
 
-Sprint 15 is complete, merged, verified, and closed. BIO EGYPT field commissioning
-and Pilot acceptance remain unexecuted pending controlled field evidence.
+## Changed
 
-### Sprint 13 post-release work
+- MQTT rejected-input logging is sanitized and no longer reflects untrusted topic or
+  payload content.
+- Telemetry persistence retains value, battery, signal, and original payload
+  timestamp.
+- LIVE telemetry evaluates current Alarms; REPLAY telemetry preserves historical
+  data without delayed historical Alarm re-triggering.
+- Device health remains derived from trusted backend receipt time rather than an
+  untrusted payload timestamp.
+- Project, backend package, and Health API version metadata align at `0.15.0`.
 
-- S13-06 ADMIN User Management, including transactional last-active-ADMIN protection and concurrency coverage.
-- S13-07 security hardening, including rejected-input MQTT log sanitization, User Management regression coverage, and removal of unused `yamljs`.
-- S13-08 documentation correction and Sprint 13 closure.
+## Compatibility
 
-### Sprint 14 frontend work
+- The existing `/api/v1` boundary, authentication model, role policy, and successful
+  Alarm acknowledgment contract remain intact.
+- Existing Device lifecycle and Site → Room → Sensor relationships remain
+  authoritative; Monitored Area remains frontend terminology for Room.
+- Existing databases upgrade sequentially through migrations 005–008; migration
+  history remains atomic and versioned.
+- MQTT production configuration now requires TLS, credentials, and a stable client
+  ID, while development defaults remain available outside production validation.
+- The frontend package retains its private scaffold version and is not an independent
+  published package.
 
-- S14-01 frontend architecture, provider, localization, configuration, and quality foundation — merged and closed.
-- S14-02 professional responsive AppShell and navigation — merged and verified.
-- S14-03 browser authentication/session lifecycle and authorization-aware routing — merged and verified.
-- S14-04 operational Dashboard frontend — merged and verified.
-- S14-05 operational Monitored Areas frontend — merged and closed through PR #19.
+## Known limitations and acceptance boundary
 
-Sprint 14 is complete, merged, and closed.
+- BIO EGYPT field survey, installation, commissioning, signed evidence, and Pilot
+  acceptance have not been executed by this release candidate.
+- Monitoring Points, Assets, broader Device discovery/provisioning, OTA, additional
+  operational frontend modules, delivery-channel provider implementations, and
+  broader commercial production operations remain separately scoped.
+- This changelog entry does not itself create tag `v0.15.0`, publish a GitHub Release,
+  or deploy the system.
+
+## Verified
+
+- Sprint 14 and Sprint 15 implementation and closure PRs were merged with successful
+  Backend and Frontend GitHub quality gates.
+- The release preparation PR must pass typecheck, build, lint, formatting, automated
+  tests, and migration coverage before owner approval.
+- `git diff --check`, release metadata consistency, documentation status, and secret
+  boundary checks are required before tagging.
 
 ---
 
