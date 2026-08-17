@@ -193,5 +193,6 @@ These items must not be assumed necessary for the first Pilot unless the Pilot R
 
 ## Next Action
 
-Begin **S15-05 — SMS Failover Contract** using the S15-04 channel-independent event
-boundary without making SMS the normal primary notification channel.
+Complete and review **S15-05 — SMS Failover Contract** on
+`agent/s15-05-sms-failover-contract`, without adding a provider or making SMS the
+normal primary notification channel.
