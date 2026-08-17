@@ -194,6 +194,18 @@ export interface TranslationResources {
       type: string;
       unit: string;
       channel: string;
+
+      thresholds: {
+        title: string;
+        description: string;
+        minValue: string;
+        warningLow: string;
+        alarmLow: string;
+        warningHigh: string;
+        alarmHigh: string;
+        maxValue: string;
+        notConfigured: string;
+      };
     };
   };
 
@@ -405,6 +417,21 @@ export const englishResources = {
       type: "Sensor Type",
       unit: "Unit",
       channel: "Channel",
+
+      thresholds: {
+        title: "Configured thresholds",
+
+        description:
+          "Configuration values only. These values do not represent live telemetry, connectivity health, or current alarm state.",
+
+        minValue: "Minimum value",
+        warningLow: "Warning low",
+        alarmLow: "Alarm low",
+        warningHigh: "Warning high",
+        alarmHigh: "Alarm high",
+        maxValue: "Maximum value",
+        notConfigured: "Not configured",
+      },
     },
   },
 

@@ -272,7 +272,7 @@ function SensorRow({ sensor, copy }: SensorRowProps) {
       }}
     >
       <Stack
-        spacing={1}
+        spacing={2}
         sx={{
           minWidth: 0,
         }}
@@ -326,9 +326,118 @@ function SensorRow({ sensor, copy }: SensorRowProps) {
             value={String(sensor.channel)}
           />
         </Box>
+
+        <ThresholdConfiguration sensor={sensor} copy={copy.sensor.thresholds} />
       </Stack>
     </Paper>
   );
+}
+
+interface ThresholdConfigurationProps {
+  sensor: Sensor;
+  copy: MonitoredAreasResources["sensor"]["thresholds"];
+}
+
+function ThresholdConfiguration({ sensor, copy }: ThresholdConfigurationProps) {
+  return (
+    <Box
+      component="section"
+      aria-label={copy.title}
+      sx={{
+        borderTop: 1,
+        borderColor: "divider",
+        pt: 2,
+      }}
+    >
+      <Stack spacing={1.5}>
+        <Box>
+          <Typography variant="subtitle2">{copy.title}</Typography>
+
+          <Typography variant="caption" color="text.secondary">
+            {copy.description}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, minmax(0, 1fr))",
+              md: "repeat(3, minmax(0, 1fr))",
+            },
+            gap: 1.5,
+          }}
+        >
+          <MetadataItem
+            label={copy.minValue}
+            value={formatConfiguredValue(
+              sensor.min_value,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+
+          <MetadataItem
+            label={copy.warningLow}
+            value={formatConfiguredValue(
+              sensor.warning_low,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+
+          <MetadataItem
+            label={copy.alarmLow}
+            value={formatConfiguredValue(
+              sensor.alarm_low,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+
+          <MetadataItem
+            label={copy.warningHigh}
+            value={formatConfiguredValue(
+              sensor.warning_high,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+
+          <MetadataItem
+            label={copy.alarmHigh}
+            value={formatConfiguredValue(
+              sensor.alarm_high,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+
+          <MetadataItem
+            label={copy.maxValue}
+            value={formatConfiguredValue(
+              sensor.max_value,
+              sensor.unit,
+              copy.notConfigured,
+            )}
+          />
+        </Box>
+      </Stack>
+    </Box>
+  );
+}
+
+function formatConfiguredValue(
+  value: number | null | undefined,
+  unit: string,
+  notConfiguredLabel: string,
+) {
+  if (value === null || value === undefined) {
+    return notConfiguredLabel;
+  }
+
+  return unit ? `${value} ${unit}` : String(value);
 }
 
 interface MetadataItemProps {

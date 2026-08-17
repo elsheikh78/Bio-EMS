@@ -160,6 +160,18 @@ const alternativeResources = {
       type: "Alt Sensor Type",
       unit: "Alt Unit",
       channel: "Alt Channel",
+
+      thresholds: {
+        title: "Alt configured thresholds",
+        description: "Alt configuration-only threshold description",
+        minValue: "Alt Minimum Value",
+        warningLow: "Alt Warning Low",
+        alarmLow: "Alt Alarm Low",
+        warningHigh: "Alt Warning High",
+        alarmHigh: "Alt Alarm High",
+        maxValue: "Alt Maximum Value",
+        notConfigured: "Alt Not Configured",
+      },
     },
   },
 

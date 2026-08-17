@@ -44,12 +44,12 @@ const sensor: Sensor = {
   name: "Temperature Sensor 01",
   sensor_type: "temperature",
   unit: "°C",
-  min_value: 2,
-  max_value: 8,
+  min_value: 1,
   warning_low: 2.5,
   alarm_low: 2,
   warning_high: 7.5,
   alarm_high: 8,
+  max_value: 9,
   enabled: 1,
 };
 
@@ -212,6 +212,87 @@ describe("MonitoredAreasPage", () => {
     expect(screen.getByText("Unit")).toBeInTheDocument();
     expect(screen.getByText("Channel")).toBeInTheDocument();
     expect(screen.getByText("0")).toBeInTheDocument();
+  });
+
+  it("renders complete configured threshold metadata with the Sensor unit", () => {
+    setSuccessfulQueries();
+
+    renderPage();
+
+    expect(
+      screen.getByRole("region", {
+        name: "Configured thresholds",
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Minimum value")).toBeInTheDocument();
+    expect(screen.getByText("Warning low")).toBeInTheDocument();
+    expect(screen.getByText("Alarm low")).toBeInTheDocument();
+    expect(screen.getByText("Warning high")).toBeInTheDocument();
+    expect(screen.getByText("Alarm high")).toBeInTheDocument();
+    expect(screen.getByText("Maximum value")).toBeInTheDocument();
+
+    expect(screen.getByText("1 °C")).toBeInTheDocument();
+    expect(screen.getByText("2.5 °C")).toBeInTheDocument();
+    expect(screen.getByText("2 °C")).toBeInTheDocument();
+    expect(screen.getByText("7.5 °C")).toBeInTheDocument();
+    expect(screen.getByText("8 °C")).toBeInTheDocument();
+    expect(screen.getByText("9 °C")).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Configuration values only. These values do not represent live telemetry, connectivity health, or current alarm state.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders partial threshold metadata without manufacturing missing values", () => {
+    const partiallyConfiguredSensor: Sensor = {
+      ...sensor,
+      min_value: null,
+      warning_low: 3,
+      alarm_low: null,
+      warning_high: undefined,
+      alarm_high: 7,
+      max_value: undefined,
+    };
+
+    setSuccessfulQueries({
+      sensors: [partiallyConfiguredSensor],
+    });
+
+    renderPage();
+
+    expect(screen.getByText("3 °C")).toBeInTheDocument();
+    expect(screen.getByText("7 °C")).toBeInTheDocument();
+
+    expect(screen.getAllByText("Not configured")).toHaveLength(4);
+  });
+
+  it("renders all threshold fields as not configured when metadata is absent", () => {
+    const sensorWithoutThresholds: Sensor = {
+      ...sensor,
+      min_value: undefined,
+      warning_low: undefined,
+      alarm_low: undefined,
+      warning_high: undefined,
+      alarm_high: undefined,
+      max_value: undefined,
+    };
+
+    setSuccessfulQueries({
+      sensors: [sensorWithoutThresholds],
+    });
+
+    renderPage();
+
+    expect(
+      screen.getByRole("region", {
+        name: "Configured thresholds",
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getAllByText("Not configured")).toHaveLength(6);
   });
 
   it("does not place a Room under an unrelated Site", () => {
