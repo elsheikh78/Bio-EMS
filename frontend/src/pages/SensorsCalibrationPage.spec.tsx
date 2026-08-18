@@ -1,12 +1,25 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Sensor } from "../monitoredAreas/contracts";
-import { useSensors } from "../monitoredAreas/queries";
+import { useAuthentication } from "../auth/useAuthentication";
+import {
+  useCalibrationHistory,
+  useCreateCalibrationRecord,
+  useSensors,
+} from "../monitoredAreas/queries";
 import { SensorsCalibrationPage } from "./SensorsCalibrationPage";
 
-vi.mock("../monitoredAreas/queries", () => ({ useSensors: vi.fn() }));
+vi.mock("../auth/useAuthentication", () => ({ useAuthentication: vi.fn() }));
+vi.mock("../monitoredAreas/queries", () => ({
+  useSensors: vi.fn(),
+  useCalibrationHistory: vi.fn(),
+  useCreateCalibrationRecord: vi.fn(),
+}));
 
 const mockedUseSensors = vi.mocked(useSensors);
+const mockedUseAuthentication = vi.mocked(useAuthentication);
+const mockedUseCalibrationHistory = vi.mocked(useCalibrationHistory);
+const mockedUseCreateCalibrationRecord = vi.mocked(useCreateCalibrationRecord);
 const baseSensor: Sensor = {
   id: 1,
   uuid: "sensor-1",
@@ -27,7 +40,23 @@ const baseSensor: Sensor = {
 };
 
 describe("SensorsCalibrationPage", () => {
-  beforeEach(() => vi.resetAllMocks());
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mockedUseAuthentication.mockReturnValue({
+      user: { id: 1, username: "admin", role: "ADMIN" },
+    } as ReturnType<typeof useAuthentication>);
+    mockedUseCalibrationHistory.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useCalibrationHistory>);
+    mockedUseCreateCalibrationRecord.mockReturnValue({
+      isPending: false,
+      isError: false,
+      isSuccess: false,
+      mutateAsync: vi.fn(),
+    } as unknown as ReturnType<typeof useCreateCalibrationRecord>);
+  });
 
   it("summarizes and renders real calibration evidence", () => {
     mockedUseSensors.mockReturnValue({
@@ -60,7 +89,7 @@ describe("SensorsCalibrationPage", () => {
     );
     expect(screen.getByText("PT100-A")).toBeInTheDocument();
     expect(screen.getByText("CERT-2026-01")).toBeInTheDocument();
-    expect(screen.getByText("0.2 °C")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Record" })).toHaveLength(2);
     expect(screen.getAllByText("1")).toHaveLength(2);
   });
 
@@ -90,7 +119,55 @@ describe("SensorsCalibrationPage", () => {
     } as unknown as ReturnType<typeof useSensors>);
     rerender(<SensorsCalibrationPage />);
     expect(
-      screen.getByText(/No Sensors are currently configured/i),
+      screen.getByText(/No sensors match the current filters/i),
     ).toBeInTheDocument();
+  });
+
+  it("filters the register and exposes real calibration history", () => {
+    mockedUseSensors.mockReturnValue({
+      data: [
+        baseSensor,
+        {
+          ...baseSensor,
+          id: 2,
+          uuid: "sensor-2",
+          code: "HUM-01",
+          name: "Humidity",
+          sensor_type: "humidity",
+        },
+      ],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useSensors>);
+    mockedUseCalibrationHistory.mockReturnValue({
+      data: [
+        {
+          id: 9,
+          sensor_id: 1,
+          sensor_uuid: "sensor-1",
+          result: "PASS",
+          performed_at: "2026-08-18T09:00:00Z",
+          due_at: "2027-08-18T09:00:00Z",
+          offset: 0.1,
+          certificate_reference: "CAL-009",
+          notes: null,
+          performed_by_user_id: 1,
+          performed_by_username: "admin",
+          created_at: "2026-08-18T09:00:00Z",
+        },
+      ],
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useCalibrationHistory>);
+
+    render(<SensorsCalibrationPage />);
+    fireEvent.change(screen.getByLabelText("Search sensors"), {
+      target: { value: "humidity" },
+    });
+    expect(screen.getByText("Humidity")).toBeInTheDocument();
+    expect(screen.queryByText("Cold room temperature")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    expect(screen.getByText("CAL-009")).toBeInTheDocument();
   });
 });
