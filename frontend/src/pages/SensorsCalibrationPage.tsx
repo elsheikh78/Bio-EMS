@@ -332,6 +332,7 @@ function CalibrationDialog({
   const history = useCalibrationHistory(sensor?.uuid);
   const mutation = useCreateCalibrationRecord(sensor?.uuid);
   const [result, setResult] = useState<"PASS" | "FAIL">("PASS");
+  const [validationError, setValidationError] = useState<string>();
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -344,11 +345,19 @@ function CalibrationDialog({
       result,
       performed_at: new Date(field("performed_at")).toISOString(),
     };
+    setValidationError(undefined);
+    mutation.reset();
     const certificate = field("certificate_reference").trim();
     const notes = field("notes").trim();
     if (result === "PASS") {
       payload.due_at = new Date(field("due_at")).toISOString();
       payload.offset = Number(field("offset"));
+      if (Date.parse(payload.due_at) <= Date.parse(payload.performed_at)) {
+        setValidationError(
+          "Next calibration due must be later than the performed date and time.",
+        );
+        return;
+      }
     }
     if (certificate) payload.certificate_reference = certificate;
     if (notes) payload.notes = notes;
@@ -380,6 +389,9 @@ function CalibrationDialog({
                     <Alert severity="error">
                       Calibration record could not be saved.
                     </Alert>
+                  )}
+                  {validationError && (
+                    <Alert severity="warning">{validationError}</Alert>
                   )}
                   {mutation.isSuccess && (
                     <Alert severity="success">
