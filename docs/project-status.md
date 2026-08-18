@@ -39,6 +39,26 @@ declare BIO EGYPT field commissioning or Pilot acceptance.
 - [x] SQLite migration 008 with idempotent notification event outbox
 - [x] S15-05 provider-neutral SMS failover contract and decision policy
 - [x] S15-06 controlled BIO EGYPT Pilot documentation package
+- [x] S16-01 Product, reporting, hardware, and evidence requirements baseline
+- [x] S16-02 BIO-EMS Design System and approved high-value wireframes
+- [x] S16-03 reporting architecture and evidence rules
+- [x] S16-04 Site Controller v1 Hardware Design Review
+- [x] S16-06 approved operational Dashboard, charts, and navigation treatment
+- [x] Sensors & Calibration register, recording, and actor-audited history
+
+## Sprint 16
+
+Sprint 16 is **IN PROGRESS**.
+
+S16-01 through S16-04 and S16-06 are complete, merged, verified, and closed. S16-06
+was integrated through PR #50 at `main` commit
+`4ce1155156015d1983a93e637dde8f99f7be2337` after final Product Owner visual and
+functional approval and successful GitHub CI run `32179346503`.
+
+The next Product/Reporting item is S16-07 Reports Center. Controlled S16-05 field
+evidence and S16-08 hardware work continue on the parallel field/hardware track.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## Sprint 14
 

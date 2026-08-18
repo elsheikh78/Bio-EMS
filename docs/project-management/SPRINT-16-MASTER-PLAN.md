@@ -362,23 +362,23 @@ evidence independently supports a different decision.
 
 ## 15. Master dashboard
 
-| Workstream        | Current item          | Status       | Next evidence/decision                            |
-| ----------------- | --------------------- | ------------ | ------------------------------------------------- |
-| Coordination      | Sprint 16 Master Plan | UNDER REVIEW | Product Owner approval and merge                  |
-| A — Product UI/UX | S16-02                | NOT STARTED  | Approved product requirements and wireframes      |
-| B — Reporting     | S16-03                | NOT STARTED  | Approved report catalogue and data rules          |
-| C — Hardware      | S16-04                | NOT STARTED  | Hardware evidence inventory and review record     |
-| C — Field         | S16-05                | NOT STARTED  | Customer access, floor plans, and survey schedule |
+| Workstream        | Current item          | Status      | Next evidence/decision                              |
+| ----------------- | --------------------- | ----------- | --------------------------------------------------- |
+| Coordination      | Sprint 16 Master Plan | ACTIVE      | Maintain evidence after each approved merge         |
+| A — Product UI/UX | S16-06                | CLOSED      | Start S16-07 Reports Center                         |
+| B — Reporting     | S16-06                | CLOSED      | Implement S16-07 from approved reporting rules      |
+| C — Hardware      | S16-08                | NEXT        | Consume S16-04 design and applicable field evidence |
+| C — Field         | S16-05                | IN PROGRESS | Complete controlled Site survey evidence            |
 
 This table is updated only from repository evidence. Conversation status updates may
 summarize progress but do not replace the merged record.
 
 ## 16. Immediate next actions after plan approval
 
-1. Open S16-01 and confirm product/reporting requirements and evidence ownership.
-2. Start S16-02, S16-03, and S16-04 in parallel from the approved baseline.
-3. Request BIO EGYPT access, plans, contacts, thresholds, and survey schedule for
-   S16-05.
+1. Start S16-07 Reports Center from the approved S16-02 and S16-03 baselines.
+2. Continue controlled S16-05 field evidence collection.
+3. Start S16-08 hardware detail/prototype work only from approved design and applicable
+   field evidence.
 4. Do not procure the full Pilot hardware quantity before the applicable hardware and
    survey gates release the design.
 5. Maintain the Master Dashboard after every approved merge or field-evidence update.

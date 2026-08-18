@@ -1,5 +1,36 @@
 # Sprint Progress
 
+## Sprint 16 — Product Experience, Reporting, Hardware, and Pilot Readiness
+
+Status: **IN PROGRESS**
+
+### Completed work items
+
+- S16-01 — Requirements Baseline: **COMPLETE / MERGED / VERIFIED / CLOSED**.
+- S16-02 — Design System and Wireframes: **COMPLETE / MERGED / VERIFIED / CLOSED**.
+- S16-03 — Reporting Architecture: **COMPLETE / MERGED / VERIFIED / CLOSED**.
+- S16-04 — Hardware Design Review: **COMPLETE / MERGED / VERIFIED / CLOSED**.
+- S16-06 — Executive Dashboard and Operational Charts: **COMPLETE / PRODUCT OWNER APPROVED / MERGED / CI VERIFIED / CLOSED** through PR #50.
+
+### S16-06 integration evidence
+
+- final feature head: `29625572bcd1a2f33b1d0145ff801c003e244096`;
+- PR: #50;
+- integration commit: `4ce1155156015d1983a93e637dde8f99f7be2337`;
+- GitHub CI run: `32179346503` — PASS;
+- final visual and functional Product Owner acceptance: 18 August 2026.
+
+S16-06 delivered the approved Dashboard visual treatment, current operational charts,
+completed navigation, and the authorized Sensors & Calibration register and history.
+
+### Current next actions
+
+- Product/Reporting: start S16-07 Reports Center.
+- Field: continue S16-05 controlled BIO EGYPT survey evidence.
+- Hardware: progress S16-08 only from approved S16-04 and applicable S16-05 evidence.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
 ## Completed Sprints
 
 Sprints 09 through 15 are complete.
