@@ -9,7 +9,6 @@ interface AppHeaderProps {
   onLogout: () => void;
   onMenuOpen: () => void;
   role: string;
-  title: string;
   username: string;
 }
 
@@ -20,7 +19,6 @@ export function AppHeader({
   onLogout,
   onMenuOpen,
   role,
-  title,
   username,
 }: AppHeaderProps) {
   return (
@@ -31,7 +29,15 @@ export function AppHeader({
       data-testid="app-header"
       sx={getAppHeaderStyles}
     >
-      <Toolbar sx={{ borderBottom: 1, borderColor: "divider", gap: 2 }}>
+      <Toolbar
+        sx={{
+          minHeight: "68px !important",
+          borderBottom: 1,
+          borderColor: "divider",
+          gap: 3,
+          bgcolor: "white",
+        }}
+      >
         <Button
           aria-label={menuLabel}
           onClick={onMenuOpen}
@@ -42,13 +48,17 @@ export function AppHeader({
             ☰
           </Box>
         </Button>
-        <Typography
-          component="span"
-          sx={{ display: { xs: "none", sm: "block" }, fontWeight: 700 }}
-          variant="h6"
-        >
-          {title}
-        </Typography>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", letterSpacing: 1 }}
+          >
+            OPERATIONS
+          </Typography>
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            Dashboard / Executive overview
+          </Typography>
+        </Box>
         <Box sx={{ flexGrow: 1 }} />
         <Box sx={{ minWidth: 0, textAlign: "end" }}>
           <Typography noWrap sx={{ fontWeight: 600 }} variant="body2">
