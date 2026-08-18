@@ -219,7 +219,10 @@ export function SensorsCalibrationPage() {
             <Alert severity="info">No sensors match the current filters.</Alert>
           ) : (
             <TableContainer>
-              <Table aria-label="Sensor calibration register">
+              <Table
+                aria-label="Sensor calibration register"
+                sx={{ "& .MuiTableCell-root": { fontSize: "0.84rem" } }}
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell>Sensor</TableCell>
@@ -239,7 +242,7 @@ export function SensorsCalibrationPage() {
                           {sensor.name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {sensor.code} · CH {sensor.channel + 1}
+                          {sensor.code} · CH {sensor.channel}
                         </Typography>
                       </TableCell>
                       <TableCell>
