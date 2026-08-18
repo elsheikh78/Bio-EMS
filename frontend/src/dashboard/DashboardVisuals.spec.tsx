@@ -18,6 +18,8 @@ const labels = {
   total: "Total",
   noData: "No current records.",
   trendUnavailable: "Historical trends are unavailable.",
+  partialData: "Some operational panels are unavailable.",
+  panelUnavailable: "This panel is unavailable.",
 };
 
 describe("OperationalOverview", () => {
@@ -91,5 +93,25 @@ describe("OperationalOverview", () => {
 
     expect(screen.queryByText("-1")).not.toBeInTheDocument();
     expect(screen.getByText(labels.noData)).toBeInTheDocument();
+  });
+
+  it("keeps available evidence visible when one source fails", () => {
+    render(
+      <OperationalOverview
+        summary={{
+          totalSites: 1,
+          totalRooms: 2,
+          totalDevices: 3,
+          totalSensors: 4,
+          activeAlarms: 0,
+          offlineDevices: 1,
+        }}
+        labels={labels}
+      />,
+    );
+
+    expect(screen.getByText(labels.online)).toBeInTheDocument();
+    expect(screen.getByText(labels.panelUnavailable)).toBeInTheDocument();
+    expect(screen.getByText(labels.partialData)).toBeInTheDocument();
   });
 });

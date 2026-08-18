@@ -126,6 +126,8 @@ export interface TranslationResources {
       total: string;
       noData: string;
       trendUnavailable: string;
+      partialData: string;
+      panelUnavailable: string;
     };
 
     rooms: {
@@ -349,6 +351,9 @@ export const englishResources = {
       noData: "No current records are available for this distribution.",
       trendUnavailable:
         "Historical trends will appear after a versioned time-range contract is released.",
+      partialData:
+        "Some operational panels are unavailable. Available evidence remains visible while the failed source is retried.",
+      panelUnavailable: "This panel's current data source is unavailable.",
     },
 
     rooms: {

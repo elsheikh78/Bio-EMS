@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Alert, Box, Paper, Stack, Typography } from "@mui/material";
 import type { DashboardAlarmStatistics, DashboardSummary } from "./contracts";
 
 interface DistributionItem {
@@ -112,8 +112,8 @@ function DistributionPanel({
 }
 
 interface OperationalOverviewProps {
-  summary: DashboardSummary;
-  alarmStatistics: DashboardAlarmStatistics;
+  summary?: DashboardSummary;
+  alarmStatistics?: DashboardAlarmStatistics;
   labels: {
     title: string;
     description: string;
@@ -130,6 +130,8 @@ interface OperationalOverviewProps {
     total: string;
     noData: string;
     trendUnavailable: string;
+    partialData: string;
+    panelUnavailable: string;
   };
 }
 
@@ -138,10 +140,9 @@ export function OperationalOverview({
   alarmStatistics,
   labels,
 }: OperationalOverviewProps) {
-  const onlineDevices = Math.max(
-    summary.totalDevices - summary.offlineDevices,
-    0,
-  );
+  const onlineDevices = summary
+    ? Math.max(summary.totalDevices - summary.offlineDevices, 0)
+    : 0;
 
   return (
     <Box component="section" aria-labelledby="operational-overview-title">
@@ -164,49 +165,67 @@ export function OperationalOverview({
             gap: 2,
           }}
         >
-          <DistributionPanel
-            title={labels.deviceTitle}
-            description={labels.deviceDescription}
-            items={[
-              {
-                label: labels.online,
-                value: onlineDevices,
-                color: "success.main",
-              },
-              {
-                label: labels.offline,
-                value: summary.offlineDevices,
-                color: "error.main",
-              },
-            ]}
-            totalLabel={labels.total}
-            emptyLabel={labels.noData}
-          />
+          {summary ? (
+            <DistributionPanel
+              title={labels.deviceTitle}
+              description={labels.deviceDescription}
+              items={[
+                {
+                  label: labels.online,
+                  value: onlineDevices,
+                  color: "success.main",
+                },
+                {
+                  label: labels.offline,
+                  value: summary.offlineDevices,
+                  color: "error.main",
+                },
+              ]}
+              totalLabel={labels.total}
+              emptyLabel={labels.noData}
+            />
+          ) : (
+            <UnavailablePanel
+              title={labels.deviceTitle}
+              description={labels.panelUnavailable}
+            />
+          )}
 
-          <DistributionPanel
-            title={labels.severityTitle}
-            description={labels.severityDescription}
-            items={[
-              {
-                label: labels.critical,
-                value: alarmStatistics.critical,
-                color: "error.main",
-              },
-              {
-                label: labels.warning,
-                value: alarmStatistics.warning,
-                color: "warning.main",
-              },
-              {
-                label: labels.info,
-                value: alarmStatistics.info,
-                color: "info.main",
-              },
-            ]}
-            totalLabel={labels.total}
-            emptyLabel={labels.noData}
-          />
+          {alarmStatistics ? (
+            <DistributionPanel
+              title={labels.severityTitle}
+              description={labels.severityDescription}
+              items={[
+                {
+                  label: labels.critical,
+                  value: alarmStatistics.critical,
+                  color: "error.main",
+                },
+                {
+                  label: labels.warning,
+                  value: alarmStatistics.warning,
+                  color: "warning.main",
+                },
+                {
+                  label: labels.info,
+                  value: alarmStatistics.info,
+                  color: "info.main",
+                },
+              ]}
+              totalLabel={labels.total}
+              emptyLabel={labels.noData}
+            />
+          ) : (
+            <UnavailablePanel
+              title={labels.severityTitle}
+              description={labels.panelUnavailable}
+            />
+          )}
         </Box>
+
+        {!summary || !alarmStatistics ? (
+          <Alert severity="warning">{labels.partialData}</Alert>
+        ) : null}
 
         <Paper
           variant="outlined"
@@ -218,5 +237,24 @@ export function OperationalOverview({
         </Paper>
       </Stack>
     </Box>
+  );
+}
+
+function UnavailablePanel({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <Paper variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
+      <Stack spacing={1}>
+        <Typography component="h3" variant="h6">
+          {title}
+        </Typography>
+        <Typography color="text.secondary">{description}</Typography>
+      </Stack>
+    </Paper>
   );
 }

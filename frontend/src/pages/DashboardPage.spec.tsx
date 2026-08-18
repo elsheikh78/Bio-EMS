@@ -212,8 +212,12 @@ describe("DashboardPage", () => {
       screen.getByText(englishResources.dashboard.summary.offlineDevices),
     ).toBeInTheDocument();
 
+    const summary = screen.getByRole("region", {
+      name: englishResources.dashboard.title,
+    });
+
     for (const value of ["2", "6", "4", "18", "3", "1"]) {
-      expect(screen.getByText(value)).toBeInTheDocument();
+      expect(within(summary).getByText(value)).toBeInTheDocument();
     }
   });
 
@@ -332,12 +336,26 @@ describe("DashboardPage", () => {
       screen.getByText(englishResources.dashboard.rooms.status.UNKNOWN),
     ).toBeInTheDocument();
 
+    const coldRoomOneCard = screen
+      .getByRole("heading", { name: "Cold Room 1" })
+      .closest<HTMLElement>(".MuiPaper-root");
+
+    expect(coldRoomOneCard).not.toBeNull();
     expect(
-      screen.getByText(englishResources.dashboard.rooms.online),
+      within(coldRoomOneCard!).getByText(
+        englishResources.dashboard.rooms.online,
+      ),
     ).toBeInTheDocument();
 
+    const coldRoomTwoCard = screen
+      .getByRole("heading", { name: "Cold Room 2" })
+      .closest<HTMLElement>(".MuiPaper-root");
+
+    expect(coldRoomTwoCard).not.toBeNull();
     expect(
-      screen.getByText(englishResources.dashboard.rooms.offline),
+      within(coldRoomTwoCard!).getByText(
+        englishResources.dashboard.rooms.offline,
+      ),
     ).toBeInTheDocument();
 
     expect(
@@ -369,9 +387,7 @@ describe("DashboardPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByRole("heading", {
-        level: 3,
-      }),
+      screen.queryByRole("heading", { name: /Cold Room/i }),
     ).not.toBeInTheDocument();
   });
 

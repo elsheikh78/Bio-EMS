@@ -106,7 +106,7 @@ export function DashboardPage() {
         resources={resources.dashboard}
       />
 
-      {summaryQuery.data && alarmStatisticsQuery.data ? (
+      {summaryQuery.data || alarmStatisticsQuery.data ? (
         <OperationalOverview
           summary={summaryQuery.data}
           alarmStatistics={alarmStatisticsQuery.data}
@@ -205,11 +205,13 @@ function DashboardSummarySection({
       <SummaryCard
         label={resources.summary.activeAlarms}
         value={query.data.activeAlarms}
+        tone={query.data.activeAlarms > 0 ? "error" : "neutral"}
       />
 
       <SummaryCard
         label={resources.summary.offlineDevices}
         value={query.data.offlineDevices}
+        tone={query.data.offlineDevices > 0 ? "warning" : "neutral"}
       />
     </Box>
   );
@@ -731,16 +733,33 @@ function AlarmStatisticsGroup({ title, items }: AlarmStatisticsGroupProps) {
 interface SummaryCardProps {
   label: string;
   value: number;
+  tone?: "neutral" | "warning" | "error";
 }
 
-function SummaryCard({ label, value }: SummaryCardProps) {
+function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
+  const accent =
+    tone === "error"
+      ? "error.main"
+      : tone === "warning"
+        ? "warning.main"
+        : "primary.main";
+
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2.5,
+        borderRadius: 3,
+        borderTop: 4,
+        borderTopColor: accent,
+        boxShadow: "0 10px 30px rgba(16, 24, 40, 0.05)",
+      }}
+    >
       <Typography color="text.secondary" variant="body2">
         {label}
       </Typography>
 
-      <Typography component="p" variant="h4" sx={{ mt: 1 }}>
+      <Typography component="p" variant="h4" sx={{ mt: 1, color: accent }}>
         {value}
       </Typography>
     </Paper>
