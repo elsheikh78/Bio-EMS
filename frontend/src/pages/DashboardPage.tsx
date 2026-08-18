@@ -150,10 +150,25 @@ export function DashboardPage() {
       />
 
       {latestTelemetryQuery.data && latestTelemetryQuery.data.length > 0 ? (
-        <CurrentTelemetryProfile
-          records={latestTelemetryQuery.data}
-          resources={resources.dashboard}
-        />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              lg: "minmax(0, 2fr) minmax(300px, 1fr)",
+            },
+            gap: 4,
+          }}
+        >
+          <CurrentTelemetryProfile
+            records={latestTelemetryQuery.data}
+            resources={resources.dashboard}
+          />
+          <PriorityAreasPanel
+            rooms={roomStatusesQuery.data ?? []}
+            resources={resources.dashboard}
+          />
+        </Box>
       ) : null}
 
       {summaryQuery.data || alarmStatisticsQuery.data ? (
@@ -201,6 +216,16 @@ function CurrentTelemetryProfile({
   const minimum = Math.min(...values);
   const maximum = Math.max(...values);
   const span = Math.max(maximum - minimum, 1);
+  const points = visibleRecords
+    .map((record, index) => {
+      const x =
+        visibleRecords.length === 1
+          ? 50
+          : 6 + (index / (visibleRecords.length - 1)) * 88;
+      const y = 78 - ((record.value - minimum) / span) * 56;
+      return `${x},${y}`;
+    })
+    .join(" ");
 
   return (
     <Paper
@@ -223,62 +248,162 @@ function CurrentTelemetryProfile({
             a historical trend.
           </Typography>
         </Box>
-        <Box sx={{ display: "grid", gap: 3 }}>
-          {visibleRecords.map((record) => {
-            const width = 22 + ((record.value - minimum) / span) * 78;
-            return (
+        <Box sx={{ minHeight: 240 }}>
+          <Box
+            component="svg"
+            viewBox="0 0 100 100"
+            role="img"
+            aria-label="Current Sensor reading profile"
+            preserveAspectRatio="none"
+            sx={{ width: "100%", height: 220, overflow: "visible" }}
+          >
+            {[22, 50, 78].map((y) => (
+              <line
+                key={y}
+                x1="4"
+                x2="96"
+                y1={y}
+                y2={y}
+                stroke="#E3ECEE"
+                strokeWidth="0.6"
+              />
+            ))}
+            <polyline
+              points={points}
+              fill="none"
+              stroke="#0B6B78"
+              strokeWidth="1.6"
+              vectorEffect="non-scaling-stroke"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+            {visibleRecords.map((record, index) => {
+              const [x, y] = points.split(" ")[index].split(",");
+              return (
+                <circle
+                  key={`${record.device}-${record.sensor}`}
+                  cx={x}
+                  cy={y}
+                  r="1.4"
+                  fill="#18A6A6"
+                  stroke="#FFFFFF"
+                  strokeWidth="0.6"
+                />
+              );
+            })}
+          </Box>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${visibleRecords.length}, minmax(0, 1fr))`,
+              gap: 1,
+            }}
+          >
+            {visibleRecords.map((record) => (
               <Box
                 key={`${record.device}-${record.sensor}-${record.time}`}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "90px 1fr 64px",
-                    sm: "140px 1fr 82px",
-                  },
-                  gap: 3,
-                  alignItems: "center",
-                }}
+                sx={{ textAlign: "center", minWidth: 0 }}
               >
-                <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+                <Typography
+                  variant="caption"
+                  noWrap
+                  sx={{ display: "block", fontWeight: 700 }}
+                >
                   {record.sensor}
                 </Typography>
-                <Box
-                  sx={{
-                    height: 18,
-                    borderRadius: 999,
-                    bgcolor: "#EAF1F3",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Box
-                    aria-hidden
-                    sx={{
-                      width: `${width}%`,
-                      height: "100%",
-                      borderRadius: 999,
-                      bgcolor: "primary.main",
-                      backgroundImage:
-                        "linear-gradient(90deg, #18A6A6, #0B6B78)",
-                    }}
-                  />
-                </Box>
-                <Typography
-                  sx={{
-                    fontWeight: 800,
-                    textAlign: "end",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
+                <Typography variant="caption" color="text.secondary">
                   {record.value}
                   {record.unit}
                 </Typography>
               </Box>
-            );
-          })}
+            ))}
+          </Box>
         </Box>
         <Typography variant="caption" color="text.secondary">
           {visibleRecords.length} current Sensor readings displayed
         </Typography>
+      </Stack>
+    </Paper>
+  );
+}
+
+function PriorityAreasPanel({
+  rooms,
+  resources,
+}: {
+  rooms: DashboardRoomStatus[];
+  resources: DashboardResources;
+}) {
+  const prioritized = [...rooms]
+    .sort(
+      (first, second) =>
+        second.activeAlarms - first.activeAlarms ||
+        Number(first.online) - Number(second.online),
+    )
+    .slice(0, 3);
+
+  return (
+    <Paper variant="outlined" sx={{ p: { xs: 4, md: 6 }, borderRadius: 3.5 }}>
+      <Stack spacing={4}>
+        <Box>
+          <Typography component="p" variant="h5">
+            Priority areas
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ordered by current operational exceptions
+          </Typography>
+        </Box>
+        {prioritized.length === 0 ? (
+          <Typography color="text.secondary">
+            {resources.rooms.empty}
+          </Typography>
+        ) : (
+          prioritized.map((room) => {
+            const tone = !room.online
+              ? "error.main"
+              : room.activeAlarms > 0
+                ? "warning.main"
+                : "success.main";
+            return (
+              <Box
+                key={room.roomId}
+                sx={{
+                  p: 4,
+                  borderRadius: 2.5,
+                  border: 1,
+                  borderColor: "divider",
+                  borderInlineStart: 4,
+                  borderInlineStartColor: tone,
+                }}
+              >
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                  spacing={3}
+                >
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography noWrap sx={{ fontWeight: 700 }}>
+                      {room.roomName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {room.siteName}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    sx={{ color: tone, fontWeight: 800, whiteSpace: "nowrap" }}
+                  >
+                    {room.temperature === null
+                      ? resources.rooms.unavailable
+                      : `${room.temperature} °C`}
+                  </Typography>
+                </Stack>
+              </Box>
+            );
+          })
+        )}
       </Stack>
     </Paper>
   );
