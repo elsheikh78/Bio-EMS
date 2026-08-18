@@ -11,6 +11,7 @@ import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
 import { navigationItems } from "../navigation/navigationConfig";
 import { useLocalization } from "../localization/useLocalization";
+import bioEmsLogo from "../assets/bio-ems-logo.png";
 
 interface AppNavigationProps {
   label: string;
@@ -23,10 +24,27 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
 
   return (
     <nav aria-label={label}>
-      <Box sx={{ px: 5, pt: 6, pb: 4 }}>
-        <Typography sx={{ color: "white", fontSize: 19, fontWeight: 800 }}>
-          BIO-EMS
-        </Typography>
+      <Box sx={{ px: 4, pt: 5, pb: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 3,
+            p: 2,
+            borderRadius: 3,
+            bgcolor: "transparent",
+          }}
+        >
+          <Box
+            component="img"
+            src={bioEmsLogo}
+            alt=""
+            sx={{ width: 58, height: 46, objectFit: "contain", flexShrink: 0 }}
+          />
+          <Typography sx={{ color: "#FFFFFF", fontSize: 18, fontWeight: 800 }}>
+            BIO-EMS
+          </Typography>
+        </Box>
         <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1.2 }}>
           ENVIRONMENTAL MONITORING
         </Typography>

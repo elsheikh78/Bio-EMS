@@ -149,6 +149,13 @@ export function DashboardPage() {
         resources={resources.dashboard}
       />
 
+      {latestTelemetryQuery.data && latestTelemetryQuery.data.length > 0 ? (
+        <CurrentTelemetryProfile
+          records={latestTelemetryQuery.data}
+          resources={resources.dashboard}
+        />
+      ) : null}
+
       {summaryQuery.data || alarmStatisticsQuery.data ? (
         <OperationalOverview
           summary={summaryQuery.data}
@@ -172,6 +179,108 @@ export function DashboardPage() {
         resources={resources.dashboard}
       />
     </Stack>
+  );
+}
+
+function CurrentTelemetryProfile({
+  records,
+  resources,
+}: {
+  records: LatestTelemetryRecord[];
+  resources: DashboardResources;
+}) {
+  const temperatureRecords = records.filter(
+    (record) =>
+      record.unit.toLowerCase().includes("c") ||
+      record.sensorType.toLowerCase().includes("temp"),
+  );
+  const visibleRecords = (
+    temperatureRecords.length > 0 ? temperatureRecords : records
+  ).slice(0, 8);
+  const values = visibleRecords.map((record) => record.value);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const span = Math.max(maximum - minimum, 1);
+
+  return (
+    <Paper
+      component="section"
+      aria-label={resources.latestTelemetry.title}
+      variant="outlined"
+      sx={{
+        p: { xs: 4, md: 6 },
+        borderRadius: 3.5,
+        boxShadow: "0 12px 32px rgba(7, 59, 76, 0.08)",
+      }}
+    >
+      <Stack spacing={5}>
+        <Box>
+          <Typography component="p" variant="h5">
+            Current temperature profile
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Latest verified reading per Sensor — this is a current snapshot, not
+            a historical trend.
+          </Typography>
+        </Box>
+        <Box sx={{ display: "grid", gap: 3 }}>
+          {visibleRecords.map((record) => {
+            const width = 22 + ((record.value - minimum) / span) * 78;
+            return (
+              <Box
+                key={`${record.device}-${record.sensor}-${record.time}`}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "90px 1fr 64px",
+                    sm: "140px 1fr 82px",
+                  },
+                  gap: 3,
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+                  {record.sensor}
+                </Typography>
+                <Box
+                  sx={{
+                    height: 18,
+                    borderRadius: 999,
+                    bgcolor: "#EAF1F3",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Box
+                    aria-hidden
+                    sx={{
+                      width: `${width}%`,
+                      height: "100%",
+                      borderRadius: 999,
+                      bgcolor: "primary.main",
+                      backgroundImage:
+                        "linear-gradient(90deg, #18A6A6, #0B6B78)",
+                    }}
+                  />
+                </Box>
+                <Typography
+                  sx={{
+                    fontWeight: 800,
+                    textAlign: "end",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {record.value}
+                  {record.unit}
+                </Typography>
+              </Box>
+            );
+          })}
+        </Box>
+        <Typography variant="caption" color="text.secondary">
+          {visibleRecords.length} current Sensor readings displayed
+        </Typography>
+      </Stack>
+    </Paper>
   );
 }
 
