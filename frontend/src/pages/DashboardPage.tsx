@@ -21,6 +21,7 @@ import {
   useDashboardSummary,
   useLatestTelemetry,
 } from "../dashboard/queries";
+import { OperationalOverview } from "../dashboard/DashboardVisuals";
 import { useLocalization } from "../localization/useLocalization";
 
 type DashboardResources = ReturnType<
@@ -104,6 +105,14 @@ export function DashboardPage() {
         query={summaryQuery}
         resources={resources.dashboard}
       />
+
+      {summaryQuery.data && alarmStatisticsQuery.data ? (
+        <OperationalOverview
+          summary={summaryQuery.data}
+          alarmStatistics={alarmStatisticsQuery.data}
+          labels={resources.dashboard.operationalOverview!}
+        />
+      ) : null}
 
       <RoomStatusSection
         query={roomStatusesQuery}
