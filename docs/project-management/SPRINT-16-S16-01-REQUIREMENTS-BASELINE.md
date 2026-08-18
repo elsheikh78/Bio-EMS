@@ -5,7 +5,7 @@
 | Field             | Value                                                                         |
 | ----------------- | ----------------------------------------------------------------------------- |
 | Work item         | S16-01                                                                        |
-| Status            | PROPOSED — PRODUCT OWNER REVIEW REQUIRED                                      |
+| Status            | APPROVED — MERGED                                                             |
 | Baseline          | Sprint 16 Master Plan on `main` at `1d5db096145e316bd05af5ba328a34e3613d715b` |
 | Product owner     | Ahmed A. Elsheikh                                                             |
 | Pilot customer    | United Company for Biological Industries — BIO EGYPT                          |
