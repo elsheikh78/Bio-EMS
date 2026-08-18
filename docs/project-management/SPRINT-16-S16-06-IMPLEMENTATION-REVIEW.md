@@ -2,7 +2,7 @@
 
 ## Status
 
-**READY FOR PRODUCT OWNER VISUAL REVIEW — CONTRACT-GATED CAPABILITIES EXPLICIT**
+**PRODUCT OWNER APPROVED — READY FOR FINAL CODE REVIEW**
 
 This review records the implemented S16-06 Dashboard slice against the approved
 S16-01 requirements, S16-02 design direction, and S16-03 reporting/evidence rules.
@@ -96,6 +96,23 @@ production Dashboard.
 | `frontend/src/pages/DashboardPage.spec.tsx`        | page behavior and regression coverage               |
 | `frontend/src/localization/resources.ts`           | typed user-facing Dashboard messages                |
 
+### Sensors and Calibration operational workspace
+
+The approved navigation treatment now includes a real `Sensors & Calibration`
+workspace backed by the existing authorized Sensor and calibration contracts. It
+provides:
+
+- searchable and filterable Sensor register;
+- current Valid, Due, Expired, and Not Calibrated counts;
+- actor-audited immutable calibration history;
+- permission-gated calibration recording for `CONFIGURATION_WRITE` users;
+- client and server validation of calibration dates;
+- compatibility with persisted legacy Sensor identifiers without accepting arbitrary
+  route parameters.
+
+This workspace stores operational calibration evidence in the transactional database.
+It does not move calibration records into InfluxDB or represent them as telemetry.
+
 ## Verification evidence
 
 The local verification gate includes:
@@ -106,6 +123,13 @@ The local verification gate includes:
 - focused Dashboard component and page tests;
 - production Vite build;
 - `git diff --check`.
+
+The final acceptance gate on 18 August 2026 passed TypeScript, ESLint, Prettier,
+Backend build, and Frontend production build. Focused Dashboard, routing, Sensor,
+calibration service, repository, and REST tests passed. The full Vitest processes
+continued to hold open handles after emitting their completed test output and were
+stopped by the configured safety timeout; no assertion failure was reported. CI remains
+the authoritative final merge gate for this known runner-lifecycle issue.
 
 Focused coverage verifies:
 
@@ -121,9 +145,25 @@ Focused coverage verifies:
 
 ## Product Owner visual-review gate
 
-**Preliminary visual direction approved on 18 August 2026. Final visual approval is
-still pending the completed navigation treatment, responsive review, and Product Owner
-review of the running Dashboard with real local data. PR #50 remains Draft.**
+**Final visual and functional approval was granted by the Product Owner on 18 August
+2026 after review of the running local application with persisted data.**
+
+The witnessed acceptance run confirmed:
+
+- the approved BIO-EMS logo and Clinical Command Center navigation treatment;
+- the Dashboard hierarchy and current-snapshot charts;
+- the responsive desktop information density;
+- a four-Sensor calibration register with search, filters, status chips, and actions;
+- three successful passing calibrations updating the register from Not Calibrated to
+  Valid;
+- persisted performed and due timestamps, offset, and certificate references;
+- calibration history showing `PASS`, the certificate, and the authenticated `admin`
+  actor;
+- backward-compatible calibration of both named legacy identifiers and UUID-shaped
+  legacy identifiers.
+
+The final review found no open visual or functional blocker for transitioning PR #50
+from Draft to Ready for Review.
 
 The Product Owner review should confirm:
 
