@@ -17,6 +17,7 @@ export const sensorCalibrationParamsSchema = z
       .refine(
         (value) =>
           z.string().uuid().safeParse(value).success ||
+          /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(value) ||
           /^sensor-[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(value),
         "sensorUuid must be a UUID or a supported legacy Sensor identifier"
       ),
