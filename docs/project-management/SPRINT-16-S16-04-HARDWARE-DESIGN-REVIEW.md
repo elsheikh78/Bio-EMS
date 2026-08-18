@@ -5,7 +5,7 @@
 | Field                 | Value                                                      |
 | --------------------- | ---------------------------------------------------------- |
 | Work item             | S16-04                                                     |
-| Status                | PROPOSED — ENGINEERING AND PRODUCT OWNER REVIEW REQUIRED   |
+| Status                | APPROVED CONCEPT DIRECTION — MERGED                        |
 | Requirements baseline | S16-01, merged through PR #41                              |
 | Pilot scope           | Two Sites, eight Monitored Areas, 20 temperature Sensors   |
 | Design maturity       | CONCEPT REVIEW — NOT RELEASED                              |
