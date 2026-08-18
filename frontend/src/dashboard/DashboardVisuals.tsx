@@ -1,4 +1,4 @@
-import { Alert, Box, Paper, Stack, Typography } from "@mui/material";
+import { Alert, Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import type { DashboardAlarmStatistics, DashboardSummary } from "./contracts";
 
 interface DistributionItem {
@@ -22,10 +22,39 @@ function DistributionPanel({
   totalLabel,
   emptyLabel,
 }: DistributionPanelProps) {
+  const theme = useTheme();
   const total = items.reduce((sum, item) => sum + item.value, 0);
+  const segments = items
+    .filter((item) => item.value > 0 && total > 0)
+    .map((item, index, visibleItems) => {
+      const start = visibleItems
+        .slice(0, index)
+        .reduce((sum, previous) => sum + (previous.value / total) * 100, 0);
+      const end = start + (item.value / total) * 100;
+      const color =
+        item.color === "success.main"
+          ? theme.palette.success.main
+          : item.color === "error.main"
+            ? theme.palette.error.main
+            : item.color === "warning.main"
+              ? theme.palette.warning.main
+              : theme.palette.info.main;
+      return `${color} ${start}% ${end}%`;
+    });
+  const chartBackground =
+    segments.length > 0
+      ? `conic-gradient(${segments.join(", ")})`
+      : theme.palette.action.hover;
 
   return (
-    <Paper variant="outlined" sx={{ borderRadius: 3, overflow: "hidden" }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        borderRadius: 3.5,
+        overflow: "hidden",
+        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+      }}
+    >
       <Stack spacing={2.5} sx={{ p: 3 }}>
         <Box>
           <Typography component="h3" variant="h6">
@@ -37,75 +66,93 @@ function DistributionPanel({
         </Box>
 
         <Box
-          aria-hidden="true"
-          sx={{
-            display: "flex",
-            minHeight: 14,
-            overflow: "hidden",
-            borderRadius: 999,
-            bgcolor: "action.hover",
-          }}
-        >
-          {total > 0
-            ? items.map((item) => (
-                <Box
-                  key={item.label}
-                  sx={{
-                    width: `${(item.value / total) * 100}%`,
-                    minWidth: item.value > 0 ? 6 : 0,
-                    bgcolor: item.color,
-                    transition: "width 180ms ease-out",
-                  }}
-                />
-              ))
-            : null}
-        </Box>
-
-        {total === 0 ? (
-          <Typography color="text.secondary">{emptyLabel}</Typography>
-        ) : null}
-
-        <Box
-          component="dl"
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: 1.5,
-            m: 0,
+            gridTemplateColumns: { xs: "1fr", sm: "144px 1fr" },
+            alignItems: "center",
+            gap: 5,
           }}
         >
-          {items.map((item) => (
-            <Box
-              key={item.label}
+          <Box
+            aria-hidden="true"
+            sx={{
+              position: "relative",
+              width: 136,
+              height: 136,
+              mx: "auto",
+              borderRadius: "50%",
+              background: chartBackground,
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                inset: 18,
+                borderRadius: "50%",
+                bgcolor: "background.paper",
+              },
+            }}
+          >
+            <Stack
               sx={{
-                display: "grid",
-                gridTemplateColumns: "auto 1fr auto",
+                position: "absolute",
+                inset: 0,
+                zIndex: 1,
                 alignItems: "center",
-                gap: 1,
+                justifyContent: "center",
               }}
+              spacing={0}
             >
+              <Typography
+                variant="h5"
+                sx={{ fontVariantNumeric: "tabular-nums" }}
+              >
+                {total}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {totalLabel}
+              </Typography>
+            </Stack>
+          </Box>
+          <Box component="dl" sx={{ display: "grid", gap: 2.5, m: 0 }}>
+            {items.map((item) => (
               <Box
-                aria-hidden="true"
+                key={item.label}
                 sx={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  bgcolor: item.color,
+                  display: "grid",
+                  gridTemplateColumns: "auto 1fr auto",
+                  alignItems: "center",
+                  gap: 2,
                 }}
-              />
-              <Typography component="dt" variant="body2" color="text.secondary">
-                {item.label}
-              </Typography>
-              <Typography component="dd" variant="subtitle2" sx={{ m: 0 }}>
-                {item.value}
-              </Typography>
-            </Box>
-          ))}
+              >
+                <Box
+                  aria-hidden="true"
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    bgcolor: item.color,
+                  }}
+                />
+                <Typography
+                  component="dt"
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  {item.label}
+                </Typography>
+                <Typography
+                  component="dd"
+                  variant="subtitle2"
+                  sx={{ m: 0, fontVariantNumeric: "tabular-nums" }}
+                >
+                  {item.value}
+                </Typography>
+              </Box>
+            ))}
+            {total === 0 ? (
+              <Typography color="text.secondary">{emptyLabel}</Typography>
+            ) : null}
+          </Box>
         </Box>
-
-        <Typography variant="caption" color="text.secondary">
-          {totalLabel}: {total}
-        </Typography>
       </Stack>
     </Paper>
   );
