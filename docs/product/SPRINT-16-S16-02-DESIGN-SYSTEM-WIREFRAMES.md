@@ -2,13 +2,13 @@
 
 ## Document control
 
-| Field                 | Value                                        |
-| --------------------- | -------------------------------------------- |
-| Work item             | S16-02                                       |
-| Status                | DRAFT — PRODUCT OWNER VISUAL REVIEW REQUIRED |
-| Requirements baseline | S16-01, merged through PR #41                |
-| Visual direction      | Clinical Command Center                      |
-| Implementation state  | NOT STARTED                                  |
+| Field                 | Value                         |
+| --------------------- | ----------------------------- |
+| Work item             | S16-02                        |
+| Status                | APPROVED — MERGED             |
+| Requirements baseline | S16-01, merged through PR #41 |
+| Visual direction      | Clinical Command Center       |
+| Implementation state  | NOT STARTED                   |
 
 ## 1. Design intent
 
