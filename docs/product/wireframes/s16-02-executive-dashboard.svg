@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" viewBox="0 0 1440 1024" role="img" aria-labelledby="title desc">
+  <title id="title">BIO-EMS Clinical Command Center executive dashboard concept</title>
+  <desc id="desc">A professional pharmaceutical environmental monitoring dashboard with deep teal navigation, operational summary cards, a temperature trend, area status, device health, and prioritized exceptions. All values are illustrative.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#17313a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .font { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .label { font-size: 12px; font-weight: 600; fill: #52666f; letter-spacing: .3px; }
+      .small { font-size: 11px; fill: #667983; }
+      .body { font-size: 13px; fill: #344a53; }
+      .title { font-size: 28px; font-weight: 700; fill: #172b34; }
+      .section { font-size: 15px; font-weight: 700; fill: #172b34; }
+      .metric { font-size: 29px; font-weight: 750; fill: #172b34; }
+      .nav { font-size: 13px; font-weight: 600; fill: #d8e7e9; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="1024" fill="#f3f7f8"/>
+
+  <!-- Navigation rail -->
+  <rect width="244" height="1024" fill="#073b4c"/>
+  <circle cx="38" cy="42" r="19" fill="#18a6a6"/>
+  <path d="M29 42h18M38 33v18" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  <text x="68" y="39" class="font" font-size="19" font-weight="750" fill="#fff">BIO-EMS</text>
+  <text x="68" y="57" class="font" font-size="10" fill="#9fc6cb" letter-spacing="1.2">ENVIRONMENTAL MONITORING</text>
+
+  <rect x="18" y="92" width="208" height="65" rx="11" fill="#0b4a5d"/>
+  <text x="34" y="113" class="font small" fill="#9fc6cb">CUSTOMER / SCOPE</text>
+  <text x="34" y="136" class="font" font-size="13" font-weight="700" fill="#fff">BIO EGYPT</text>
+  <path d="M204 122l5 5 5-5" fill="none" stroke="#9fc6cb" stroke-width="2"/>
+
+  <text x="28" y="195" class="font small" fill="#77a9b0" letter-spacing="1">OVERVIEW</text>
+  <rect x="14" y="210" width="216" height="44" rx="9" fill="#0b6b78"/>
+  <rect x="14" y="210" width="4" height="44" rx="2" fill="#6ee7df"/>
+  <circle cx="37" cy="232" r="7" fill="none" stroke="#fff" stroke-width="2"/>
+  <path d="M32 237l5-5 4 3 5-8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  <text x="58" y="237" class="font nav" fill="#fff">Executive Dashboard</text>
+
+  <g class="font nav">
+    <text x="58" y="289">Monitored Areas</text>
+    <text x="58" y="337">Alarms</text>
+    <text x="58" y="385">Device Health</text>
+    <text x="58" y="433">Sensors &amp; Calibration</text>
+    <text x="58" y="481">Reports Center</text>
+  </g>
+  <g fill="none" stroke="#9fc6cb" stroke-width="1.8">
+    <rect x="30" y="276" width="15" height="15" rx="3"/>
+    <path d="M31 326h14M34 321h8v10h-8z"/>
+    <circle cx="38" cy="378" r="8"/><path d="M38 374v5M38 382v1"/>
+    <path d="M30 423h16v15H30zM34 419h8"/>
+    <path d="M31 469h14v17H31zM34 474h8M34 479h8"/>
+  </g>
+  <text x="28" y="545" class="font small" fill="#77a9b0" letter-spacing="1">ADMINISTRATION</text>
+  <text x="58" y="585" class="font nav">Configuration</text>
+  <text x="58" y="633" class="font nav">Users &amp; Access</text>
+  <circle cx="38" cy="580" r="8" fill="none" stroke="#9fc6cb" stroke-width="1.8"/>
+  <path d="M31 626h14M34 620h8v12h-8z" fill="none" stroke="#9fc6cb" stroke-width="1.8"/>
+
+  <rect x="18" y="922" width="208" height="80" rx="12" fill="#062f3d"/>
+  <circle cx="43" cy="950" r="14" fill="#d5e0e3"/>
+  <text x="66" y="947" class="font" font-size="12" font-weight="700" fill="#fff">Ahmed Elsheikh</text>
+  <text x="66" y="965" class="font" font-size="10" fill="#9fc6cb">Product Administrator</text>
+  <circle cx="205" cy="949" r="4" fill="#35c28a"/>
+
+  <!-- Top bar -->
+  <rect x="244" y="0" width="1196" height="68" fill="#fff"/>
+  <line x1="244" y1="68" x2="1440" y2="68" stroke="#d5e0e3"/>
+  <text x="276" y="30" class="font small">OPERATIONS</text>
+  <text x="276" y="50" class="font" font-size="13" font-weight="650" fill="#344a53">Dashboard / Executive overview</text>
+  <rect x="1010" y="17" width="174" height="36" rx="9" fill="#f3f7f8" stroke="#d5e0e3"/>
+  <circle cx="1032" cy="35" r="6" fill="#14825b"/>
+  <text x="1046" y="40" class="font body">All systems connected</text>
+  <rect x="1200" y="17" width="70" height="36" rx="9" fill="#f3f7f8" stroke="#d5e0e3"/>
+  <text x="1223" y="40" class="font body" font-weight="700">EN</text>
+  <circle cx="1306" cy="35" r="17" fill="#eaf1f3"/>
+  <path d="M1300 36h12M1306 30v12" stroke="#0b6b78" stroke-width="2"/>
+  <circle cx="1362" cy="35" r="17" fill="#0b6b78"/>
+  <text x="1353" y="40" class="font" font-size="11" font-weight="700" fill="#fff">AE</text>
+
+  <!-- Header -->
+  <text x="276" y="118" class="font title">Executive Dashboard</text>
+  <text x="276" y="143" class="font body">Environmental status across authorized BIO EGYPT sites</text>
+  <circle cx="1070" cy="119" r="4" fill="#14825b"/>
+  <text x="1081" y="123" class="font small">Updated 18 Aug 2026, 10:26 EEST</text>
+  <rect x="1292" y="98" width="116" height="40" rx="9" fill="#fff" stroke="#0b6b78"/>
+  <path d="M1312 117a8 8 0 1 1 2 6" fill="none" stroke="#0b6b78" stroke-width="2"/>
+  <path d="M1310 121l4 2 1-5" fill="none" stroke="#0b6b78" stroke-width="2"/>
+  <text x="1330" y="123" class="font body" font-weight="700" fill="#0b6b78">Refresh</text>
+
+  <!-- Filter bar -->
+  <rect x="276" y="165" width="1132" height="64" rx="13" fill="#eaf1f3"/>
+  <text x="294" y="187" class="font label">SITE</text>
+  <text x="294" y="211" class="font body" font-weight="650">All authorized sites</text>
+  <line x1="505" y1="179" x2="505" y2="215" stroke="#c8d7da"/>
+  <text x="529" y="187" class="font label">AREA</text>
+  <text x="529" y="211" class="font body" font-weight="650">All monitored areas</text>
+  <line x1="748" y1="179" x2="748" y2="215" stroke="#c8d7da"/>
+  <text x="772" y="187" class="font label">TIME RANGE</text>
+  <text x="772" y="211" class="font body" font-weight="650">Last 24 hours</text>
+  <line x1="959" y1="179" x2="959" y2="215" stroke="#c8d7da"/>
+  <text x="983" y="187" class="font label">TIME ZONE</text>
+  <text x="983" y="211" class="font body" font-weight="650">EEST (UTC+03:00)</text>
+  <rect x="1248" y="177" width="142" height="40" rx="9" fill="#0b6b78"/>
+  <text x="1282" y="202" class="font" font-size="13" font-weight="700" fill="#fff">Apply filters</text>
+
+  <!-- Metric cards -->
+  <g filter="url(#shadow)">
+    <rect x="276" y="253" width="265" height="124" rx="14" fill="#fff"/>
+    <rect x="557" y="253" width="265" height="124" rx="14" fill="#fff"/>
+    <rect x="838" y="253" width="265" height="124" rx="14" fill="#fff"/>
+    <rect x="1119" y="253" width="289" height="124" rx="14" fill="#fff"/>
+  </g>
+  <rect x="276" y="253" width="5" height="124" rx="2" fill="#c7352c"/>
+  <rect x="557" y="253" width="5" height="124" rx="2" fill="#b76a00"/>
+  <rect x="838" y="253" width="5" height="124" rx="2" fill="#b76a00"/>
+  <rect x="1119" y="253" width="5" height="124" rx="2" fill="#0b6b78"/>
+  <text x="300" y="282" class="font label">ACTIVE CRITICAL</text>
+  <text x="300" y="328" class="font metric" fill="#c7352c">2</text>
+  <text x="300" y="355" class="font small">Requires immediate review</text>
+  <text x="581" y="282" class="font label">ACTIVE WARNING</text>
+  <text x="581" y="328" class="font metric" fill="#b76a00">5</text>
+  <text x="581" y="355" class="font small">Across 3 monitored areas</text>
+  <text x="862" y="282" class="font label">DEVICE HEALTH</text>
+  <text x="862" y="328" class="font metric">1 <tspan font-size="14" fill="#667983">offline</tspan></text>
+  <text x="862" y="355" class="font small">2 stale · 9 online</text>
+  <text x="1143" y="282" class="font label">CALIBRATION DUE</text>
+  <text x="1143" y="328" class="font metric">3</text>
+  <text x="1143" y="355" class="font small">Within the next 30 days</text>
+  <text x="510" y="282" class="font" font-size="16" fill="#c7352c">↗</text>
+  <text x="791" y="282" class="font" font-size="16" fill="#b76a00">→</text>
+  <text x="1072" y="282" class="font" font-size="16" fill="#b76a00">↘</text>
+  <text x="1374" y="282" class="font" font-size="16" fill="#0b6b78">→</text>
+
+  <!-- Trend panel -->
+  <rect x="276" y="401" width="746" height="337" rx="14" fill="#fff" stroke="#d5e0e3"/>
+  <text x="300" y="434" class="font section">Temperature trend</text>
+  <text x="300" y="456" class="font small">Selected critical areas · °C · EEST</text>
+  <rect x="824" y="420" width="174" height="35" rx="8" fill="#f3f7f8" stroke="#d5e0e3"/>
+  <text x="849" y="442" class="font small" font-weight="700">Chart</text>
+  <line x1="904" y1="426" x2="904" y2="449" stroke="#d5e0e3"/>
+  <text x="925" y="442" class="font small">Table</text>
+  <line x1="316" y1="489" x2="988" y2="489" stroke="#e8eff1"/>
+  <line x1="316" y1="542" x2="988" y2="542" stroke="#e8eff1"/>
+  <line x1="316" y1="595" x2="988" y2="595" stroke="#e8eff1"/>
+  <line x1="316" y1="648" x2="988" y2="648" stroke="#e8eff1"/>
+  <text x="300" y="493" class="font small" text-anchor="end">10°</text>
+  <text x="300" y="546" class="font small" text-anchor="end">8°</text>
+  <text x="300" y="599" class="font small" text-anchor="end">6°</text>
+  <text x="300" y="652" class="font small" text-anchor="end">4°</text>
+  <rect x="316" y="492" width="672" height="48" fill="#c7352c" opacity="0.055"/>
+  <line x1="316" y1="540" x2="988" y2="540" stroke="#c7352c" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <text x="979" y="532" class="font" font-size="10" fill="#c7352c" text-anchor="end">Critical high 8°C</text>
+  <path d="M316 624 C360 613 388 584 430 593 S502 640 548 612 S625 548 675 557 S747 606 797 579 S885 520 930 548 S970 566 988 552" fill="none" stroke="#0b6b78" stroke-width="3"/>
+  <path d="M316 646 C372 638 410 618 462 625 S555 655 604 632 S680 603 735 613 S830 651 880 629 S947 597 988 608" fill="none" stroke="#18a6a6" stroke-width="2.5"/>
+  <g fill="#0b6b78"><circle cx="548" cy="612" r="4"/><circle cx="675" cy="557" r="4"/><circle cx="930" cy="548" r="4"/></g>
+  <rect x="704" y="480" width="52" height="210" fill="#667983" opacity="0.06"/>
+  <text x="730" y="674" class="font" font-size="9" fill="#667983" text-anchor="middle">DATA GAP</text>
+  <text x="316" y="712" class="font small">00:00</text><text x="480" y="712" class="font small">06:00</text><text x="645" y="712" class="font small">12:00</text><text x="810" y="712" class="font small">18:00</text><text x="988" y="712" class="font small" text-anchor="end">Now</text>
+
+  <!-- Area status -->
+  <rect x="1040" y="401" width="368" height="337" rx="14" fill="#fff" stroke="#d5e0e3"/>
+  <text x="1064" y="434" class="font section">Priority areas</text>
+  <text x="1064" y="456" class="font small">Ordered by operational severity</text>
+  <g>
+    <rect x="1064" y="480" width="320" height="65" rx="10" fill="#fff6f5" stroke="#f0c8c4"/>
+    <circle cx="1087" cy="502" r="6" fill="#c7352c"/>
+    <text x="1103" y="506" class="font body" font-weight="700">Cold Room 03</text>
+    <text x="1103" y="526" class="font small">CPC / 6th of October</text>
+    <text x="1358" y="507" class="font" font-size="18" font-weight="750" fill="#c7352c" text-anchor="end">9.2°C</text>
+    <text x="1358" y="528" class="font small" text-anchor="end">Critical</text>
+    <rect x="1064" y="556" width="320" height="65" rx="10" fill="#fffaf2" stroke="#ead4aa"/>
+    <circle cx="1087" cy="578" r="6" fill="#b76a00"/>
+    <text x="1103" y="582" class="font body" font-weight="700">Anti-chamber 01</text>
+    <text x="1103" y="602" class="font small">El Manial</text>
+    <text x="1358" y="583" class="font" font-size="18" font-weight="750" fill="#b76a00" text-anchor="end">8.1°C</text>
+    <text x="1358" y="604" class="font small" text-anchor="end">Warning</text>
+    <rect x="1064" y="632" width="320" height="65" rx="10" fill="#f7fafb" stroke="#d5e0e3"/>
+    <circle cx="1087" cy="654" r="6" fill="#667983"/>
+    <text x="1103" y="658" class="font body" font-weight="700">Dry Warehouse 01</text>
+    <text x="1103" y="678" class="font small">CPC / 6th of October</text>
+    <text x="1358" y="659" class="font" font-size="15" font-weight="750" fill="#667983" text-anchor="end">No data</text>
+    <text x="1358" y="680" class="font small" text-anchor="end">Device offline</text>
+  </g>
+  <text x="1064" y="720" class="font" font-size="12" font-weight="700" fill="#0b6b78">View all monitored areas →</text>
+
+  <!-- Lower panels -->
+  <rect x="276" y="760" width="352" height="232" rx="14" fill="#fff" stroke="#d5e0e3"/>
+  <text x="300" y="793" class="font section">Device health</text>
+  <circle cx="382" cy="872" r="57" fill="none" stroke="#eaf1f3" stroke-width="16"/>
+  <path d="M382 815 A57 57 0 1 1 329 893" fill="none" stroke="#14825b" stroke-width="16" stroke-linecap="round"/>
+  <path d="M329 893 A57 57 0 0 1 337 835" fill="none" stroke="#b76a00" stroke-width="16"/>
+  <text x="382" y="869" class="font" font-size="26" font-weight="750" fill="#172b34" text-anchor="middle">12</text>
+  <text x="382" y="889" class="font small" text-anchor="middle">devices</text>
+  <circle cx="482" cy="839" r="5" fill="#14825b"/><text x="496" y="843" class="font body">9 Online</text>
+  <circle cx="482" cy="874" r="5" fill="#b76a00"/><text x="496" y="878" class="font body">2 Stale</text>
+  <circle cx="482" cy="909" r="5" fill="#c7352c"/><text x="496" y="913" class="font body">1 Offline</text>
+  <text x="300" y="967" class="font" font-size="12" font-weight="700" fill="#0b6b78">Open device health →</text>
+
+  <rect x="646" y="760" width="762" height="232" rx="14" fill="#fff" stroke="#d5e0e3"/>
+  <text x="670" y="793" class="font section">Recent operational exceptions</text>
+  <text x="1368" y="793" class="font" font-size="12" font-weight="700" fill="#0b6b78" text-anchor="end">View Alarm history →</text>
+  <line x1="670" y1="816" x2="1384" y2="816" stroke="#d5e0e3"/>
+  <text x="670" y="839" class="font label">SEVERITY</text><text x="770" y="839" class="font label">SOURCE</text><text x="1045" y="839" class="font label">ACTIVATED</text><text x="1190" y="839" class="font label">STATE</text>
+  <line x1="670" y1="850" x2="1384" y2="850" stroke="#edf2f3"/>
+  <rect x="670" y="863" width="70" height="24" rx="12" fill="#fde9e7"/><text x="705" y="879" class="font" font-size="10" font-weight="750" fill="#a92e27" text-anchor="middle">CRITICAL</text>
+  <text x="770" y="879" class="font body" font-weight="650">Cold Room 03 · Sensor T-14</text><text x="1045" y="879" class="font body">10:18</text><text x="1190" y="879" class="font body">Active · 08m</text>
+  <line x1="670" y1="897" x2="1384" y2="897" stroke="#edf2f3"/>
+  <rect x="670" y="910" width="70" height="24" rx="12" fill="#fff1d8"/><text x="705" y="926" class="font" font-size="10" font-weight="750" fill="#8c5100" text-anchor="middle">WARNING</text>
+  <text x="770" y="926" class="font body" font-weight="650">Anti-chamber 01 · Sensor T-05</text><text x="1045" y="926" class="font body">09:42</text><text x="1190" y="926" class="font body">Acknowledged</text>
+  <line x1="670" y1="944" x2="1384" y2="944" stroke="#edf2f3"/>
+  <circle cx="680" cy="970" r="5" fill="#667983"/><text x="695" y="974" class="font small">Illustrative design values — not field evidence</text>
+</svg>
