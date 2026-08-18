@@ -57,7 +57,7 @@ export function DashboardPage() {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={6}>
       <Box
         sx={{
           display: "flex",
@@ -74,7 +74,11 @@ export function DashboardPage() {
         }}
       >
         <Box>
-          <Typography component="h1" variant="h4">
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{ letterSpacing: "-0.02em" }}
+          >
             {resources.dashboard.title}
           </Typography>
 
@@ -84,7 +88,7 @@ export function DashboardPage() {
         </Box>
 
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => void refreshDashboard()}
           disabled={isRefreshing}
           sx={{
@@ -100,6 +104,45 @@ export function DashboardPage() {
             : resources.dashboard.refresh}
         </Button>
       </Box>
+
+      <Paper
+        variant="outlined"
+        sx={{
+          px: { xs: 4, md: 5 },
+          py: 3,
+          bgcolor: "#EAF1F3",
+          borderRadius: 3.5,
+          display: "flex",
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 3,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", letterSpacing: 1 }}
+          >
+            CUSTOMER / OPERATIONAL SCOPE
+          </Typography>
+          <Typography sx={{ fontWeight: 700, mt: 0.5 }}>BIO EGYPT</Typography>
+        </Box>
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          <Box
+            aria-hidden
+            sx={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              bgcolor: "success.main",
+            }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            Current authorized evidence
+          </Typography>
+        </Stack>
+      </Paper>
 
       <DashboardSummarySection
         query={summaryQuery}
@@ -178,6 +221,7 @@ function DashboardSummarySection({
           xs: "1fr",
           sm: "repeat(2, minmax(0, 1fr))",
           lg: "repeat(3, minmax(0, 1fr))",
+          xl: "repeat(6, minmax(0, 1fr))",
         },
         gap: 2,
       }}
@@ -301,7 +345,16 @@ interface RoomStatusCardProps {
 
 function RoomStatusCard({ room, resources }: RoomStatusCardProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 5,
+        borderRadius: 3.5,
+        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+        borderInlineStart: 4,
+        borderInlineStartColor: room.online ? "success.main" : "error.main",
+      }}
+    >
       <Stack spacing={2}>
         <Box
           sx={{
@@ -506,7 +559,14 @@ interface LatestTelemetryCardProps {
 
 function LatestTelemetryCard({ record, resources }: LatestTelemetryCardProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 5,
+        borderRadius: 3.5,
+        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+      }}
+    >
       <Stack spacing={2}>
         <Box>
           <Typography component="h3" variant="h6">
@@ -697,7 +757,7 @@ interface AlarmStatisticsGroupProps {
 
 function AlarmStatisticsGroup({ title, items }: AlarmStatisticsGroupProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper variant="outlined" sx={{ p: 5, borderRadius: 3.5 }}>
       <Stack spacing={2}>
         <Typography component="h3" variant="h6">
           {title}
@@ -748,18 +808,40 @@ function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
     <Paper
       variant="outlined"
       sx={{
-        p: 2.5,
-        borderRadius: 3,
-        borderTop: 4,
-        borderTopColor: accent,
-        boxShadow: "0 10px 30px rgba(16, 24, 40, 0.05)",
+        position: "relative",
+        minHeight: 116,
+        p: 5,
+        borderRadius: 3.5,
+        overflow: "hidden",
+        borderColor: "divider",
+        boxShadow: "0 10px 30px rgba(7, 59, 76, 0.07)",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          insetBlock: 0,
+          insetInlineStart: 0,
+          width: 5,
+          bgcolor: accent,
+        },
       }}
     >
-      <Typography color="text.secondary" variant="body2">
+      <Typography
+        color="text.secondary"
+        variant="caption"
+        sx={{ textTransform: "uppercase", letterSpacing: 0.6 }}
+      >
         {label}
       </Typography>
 
-      <Typography component="p" variant="h4" sx={{ mt: 1, color: accent }}>
+      <Typography
+        component="p"
+        variant="h4"
+        sx={{
+          mt: 2,
+          color: tone === "neutral" ? "text.primary" : accent,
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
         {value}
       </Typography>
     </Paper>
