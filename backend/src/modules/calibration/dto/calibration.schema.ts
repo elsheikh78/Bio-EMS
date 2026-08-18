@@ -9,7 +9,17 @@ const dateTime = (field: string) =>
 
 export const sensorCalibrationParamsSchema = z
   .object({
-    sensorUuid: z.string().trim().uuid("sensorUuid must be a valid UUID"),
+    sensorUuid: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .refine(
+        (value) =>
+          z.string().uuid().safeParse(value).success ||
+          /^sensor-[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(value),
+        "sensorUuid must be a UUID or a supported legacy Sensor identifier"
+      ),
   })
   .strict();
 
