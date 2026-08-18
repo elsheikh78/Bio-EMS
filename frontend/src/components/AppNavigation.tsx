@@ -32,7 +32,7 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
             gap: 3,
             p: 2,
             borderRadius: 3,
-            bgcolor: "transparent",
+            bgcolor: "rgba(255,255,255,0.96)",
           }}
         >
           <Box
@@ -41,7 +41,7 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
             alt=""
             sx={{ width: 58, height: 46, objectFit: "contain", flexShrink: 0 }}
           />
-          <Typography sx={{ color: "#FFFFFF", fontSize: 18, fontWeight: 800 }}>
+          <Typography sx={{ color: "#073B4C", fontSize: 18, fontWeight: 800 }}>
             BIO-EMS
           </Typography>
         </Box>
