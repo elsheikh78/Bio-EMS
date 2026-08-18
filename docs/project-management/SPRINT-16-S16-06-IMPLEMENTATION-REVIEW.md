@@ -121,6 +121,10 @@ Focused coverage verifies:
 
 ## Product Owner visual-review gate
 
+**Preliminary visual direction approved on 18 August 2026. Final visual approval is
+still pending the completed navigation treatment, responsive review, and Product Owner
+review of the running Dashboard with real local data. PR #50 remains Draft.**
+
 The Product Owner review should confirm:
 
 - the visual hierarchy makes active Alarms and Offline Devices immediately visible;
