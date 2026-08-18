@@ -49,6 +49,7 @@ const alternativeResources = {
     monitoredAreas: "Alt Monitored Areas",
     alarms: "Alt Alarms",
     devices: "Alt Devices",
+    sensorsCalibration: "Alt Sensors & Calibration",
     configuration: "Alt Configuration",
     users: "Alt Users",
   },

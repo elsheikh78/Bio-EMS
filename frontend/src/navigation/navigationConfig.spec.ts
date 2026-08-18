@@ -11,6 +11,7 @@ describe("permission-aware navigation registry", () => {
       ["/monitored-areas", "CONFIGURATION_READ"],
       ["/alarms", "ALARM_READ"],
       ["/devices", "DEVICE_READ"],
+      ["/sensors-calibration", "CONFIGURATION_READ"],
       ["/configuration", "CONFIGURATION_READ"],
       ["/users", "USER_MANAGE"],
     ]);
@@ -23,6 +24,7 @@ describe("permission-aware navigation registry", () => {
     expect(serialized).not.toContain('"CONFIG_READ"');
     for (const item of navigationItems) {
       expect(Object.keys(item).sort()).toEqual([
+        "group",
         "id",
         "labelKey",
         "path",

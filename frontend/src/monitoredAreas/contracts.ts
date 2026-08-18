@@ -44,6 +44,17 @@ export const sensorSchema = z
     name: z.string(),
     sensor_type: z.string(),
     unit: z.string(),
+    product_grade: z.enum(["STANDARD", "ADVANCED"]).nullable().optional(),
+    hardware_model: z.string().nullable().optional(),
+    installation_date: z.string().nullable().optional(),
+    calibration_status: z
+      .enum(["NOT_CALIBRATED", "VALID", "DUE", "EXPIRED"])
+      .nullable()
+      .optional(),
+    last_calibrated_at: z.string().nullable().optional(),
+    calibration_due_at: z.string().nullable().optional(),
+    calibration_offset: finiteNumberSchema.nullable().optional(),
+    certificate_reference: z.string().nullable().optional(),
     min_value: finiteNumberSchema.nullable().optional(),
     max_value: finiteNumberSchema.nullable().optional(),
     warning_low: finiteNumberSchema.nullable().optional(),
@@ -58,6 +69,35 @@ export const sensorSchema = z
 
 export const sensorsSchema = z.array(sensorSchema);
 
+export const calibrationRecordSchema = z
+  .object({
+    id: z.number().int(),
+    sensor_id: z.number().int(),
+    sensor_uuid: z.string(),
+    result: z.enum(["PASS", "FAIL"]),
+    performed_at: z.string(),
+    due_at: z.string().nullable(),
+    offset: finiteNumberSchema.nullable(),
+    certificate_reference: z.string().nullable(),
+    notes: z.string().nullable(),
+    performed_by_user_id: z.number().int(),
+    performed_by_username: z.string(),
+    created_at: z.string(),
+  })
+  .strict();
+
+export const calibrationRecordsSchema = z.array(calibrationRecordSchema);
+
 export type Site = z.infer<typeof siteSchema>;
 export type Room = z.infer<typeof roomSchema>;
 export type Sensor = z.infer<typeof sensorSchema>;
+export type CalibrationRecord = z.infer<typeof calibrationRecordSchema>;
+
+export interface CreateCalibrationRecordInput {
+  result: "PASS" | "FAIL";
+  performed_at: string;
+  due_at?: string;
+  offset?: number;
+  certificate_reference?: string;
+  notes?: string;
+}

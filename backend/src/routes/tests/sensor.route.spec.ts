@@ -163,6 +163,24 @@ describe("Calibration history REST API", () => {
     expect(response.body).toEqual([record]);
   });
 
+  it("supports persisted legacy Sensor identifiers during calibration transition", async () => {
+    const legacySensorUuid = "sensor-temp-001-uuid";
+    vi.mocked(calibrationService.getCalibrationHistory).mockReturnValue([]);
+
+    await request(app).get(`/api/v1/sensors/${legacySensorUuid}/calibrations`).expect(200);
+
+    expect(calibrationService.getCalibrationHistory).toHaveBeenCalledWith(legacySensorUuid);
+  });
+
+  it("supports UUID-shaped legacy identifiers with non-RFC variant bits", async () => {
+    const legacySensorUuid = "22222222-2222-2222-2222-222222222222";
+    vi.mocked(calibrationService.getCalibrationHistory).mockReturnValue([]);
+
+    await request(app).get(`/api/v1/sensors/${legacySensorUuid}/calibrations`).expect(200);
+
+    expect(calibrationService.getCalibrationHistory).toHaveBeenCalledWith(legacySensorUuid);
+  });
+
   it.each([
     ["a malformed Sensor UUID", "/api/v1/sensors/not-a-uuid/calibrations", {}],
     [

@@ -31,6 +31,7 @@ describe("safe post-Login return policy", () => {
 
   it("uses CONFIGURATION_READ for both configuration presentation routes", () => {
     expect(routePolicies["/monitored-areas"]).toBe("CONFIGURATION_READ");
+    expect(routePolicies["/sensors-calibration"]).toBe("CONFIGURATION_READ");
     expect(routePolicies["/configuration"]).toBe("CONFIGURATION_READ");
   });
 });

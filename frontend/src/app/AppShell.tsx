@@ -15,7 +15,7 @@ import { AppNavigation } from "../components/AppNavigation";
 import { SkipLink } from "../components/SkipLink";
 import { useLocalization } from "../localization/useLocalization";
 
-const navigationWidth = 280;
+const navigationWidth = 248;
 const mainContentId = "main-content";
 
 export function AppShell() {
@@ -52,6 +52,7 @@ export function AppShell() {
       data-testid="app-shell"
       sx={{
         display: "flex",
+        bgcolor: "background.default",
         maxWidth: "100vw",
         minHeight: "100vh",
         overflowX: "hidden",
@@ -80,7 +81,6 @@ export function AppShell() {
         onLogout={() => void handleLogout()}
         onMenuOpen={() => setMobileNavigationOpen(true)}
         role={user.role}
-        title={resources.shell.productName}
         username={user.username}
       />
 
@@ -96,6 +96,9 @@ export function AppShell() {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: navigationWidth,
+              bgcolor: "#073B4C",
+              color: "#D8E7E9",
+              border: 0,
             },
           }}
           variant="permanent"
@@ -110,7 +113,12 @@ export function AppShell() {
           open={mobileNavigationOpen}
           slotProps={{
             paper: {
-              sx: { maxWidth: "calc(100vw - 32px)", width: navigationWidth },
+              sx: {
+                maxWidth: "calc(100vw - 32px)",
+                width: navigationWidth,
+                bgcolor: "#073B4C",
+                color: "#D8E7E9",
+              },
             },
           }}
           variant="temporary"
@@ -126,11 +134,13 @@ export function AppShell() {
         component="main"
         id={mainContentId}
         ref={mainContentRef}
-        sx={{ flexGrow: 1, minWidth: 0, p: { xs: 2, sm: 3, lg: 4 } }}
+        sx={{ flexGrow: 1, minWidth: 0, px: { xs: 4, sm: 6, lg: 8 }, py: 6 }}
         tabIndex={-1}
       >
         <Toolbar />
-        <Outlet />
+        <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto" }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );

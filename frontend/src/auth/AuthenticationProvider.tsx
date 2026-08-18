@@ -98,6 +98,9 @@ class AuthenticationController {
   };
 
   start = () => {
+    // React StrictMode intentionally replays Effects in development using the same
+    // component state. Re-activate this controller after the replay cleanup.
+    this.disposed = false;
     window.addEventListener("focus", this.enforceExpiry);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
     const stored = this.storage.read();

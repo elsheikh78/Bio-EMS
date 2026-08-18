@@ -54,6 +54,7 @@ export interface TranslationResources {
     monitoredAreas: string;
     alarms: string;
     devices: string;
+    sensorsCalibration: string;
     configuration: string;
     users: string;
   };
@@ -108,6 +109,26 @@ export interface TranslationResources {
       totalSensors: string;
       activeAlarms: string;
       offlineDevices: string;
+    };
+
+    operationalOverview?: {
+      title: string;
+      description: string;
+      deviceTitle: string;
+      deviceDescription: string;
+      online: string;
+      offline: string;
+      staleUnavailable: string;
+      severityTitle: string;
+      severityDescription: string;
+      critical: string;
+      warning: string;
+      info: string;
+      total: string;
+      noData: string;
+      trendUnavailable: string;
+      partialData: string;
+      panelUnavailable: string;
     };
 
     rooms: {
@@ -282,6 +303,7 @@ export const englishResources = {
     monitoredAreas: "Monitored Areas",
     alarms: "Alarms",
     devices: "Devices",
+    sensorsCalibration: "Sensors & Calibration",
     configuration: "Configuration",
     users: "Users",
   },
@@ -309,6 +331,31 @@ export const englishResources = {
       totalSensors: "Sensors",
       activeAlarms: "Active alarms",
       offlineDevices: "Offline devices",
+    },
+
+    operationalOverview: {
+      title: "Operational overview",
+      description:
+        "A current, evidence-based view of device health and alarm severity.",
+      deviceTitle: "Device connectivity",
+      deviceDescription:
+        "Current Online and Offline distribution from the device snapshot.",
+      online: "Online",
+      offline: "Offline",
+      staleUnavailable:
+        "Stale status is not separated by the current backend contract.",
+      severityTitle: "Alarm severity",
+      severityDescription: "Current recorded alarm severity distribution.",
+      critical: "Critical",
+      warning: "Warning",
+      info: "Information",
+      total: "Total",
+      noData: "No current records are available for this distribution.",
+      trendUnavailable:
+        "Historical trends will appear after a versioned time-range contract is released.",
+      partialData:
+        "Some operational panels are unavailable. Available evidence remains visible while the failed source is retried.",
+      panelUnavailable: "This panel's current data source is unavailable.",
     },
 
     rooms: {

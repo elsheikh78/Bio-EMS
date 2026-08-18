@@ -21,6 +21,7 @@ import {
   useDashboardSummary,
   useLatestTelemetry,
 } from "../dashboard/queries";
+import { OperationalOverview } from "../dashboard/DashboardVisuals";
 import { useLocalization } from "../localization/useLocalization";
 
 type DashboardResources = ReturnType<
@@ -56,7 +57,7 @@ export function DashboardPage() {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={6}>
       <Box
         sx={{
           display: "flex",
@@ -73,7 +74,11 @@ export function DashboardPage() {
         }}
       >
         <Box>
-          <Typography component="h1" variant="h4">
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{ letterSpacing: "-0.02em" }}
+          >
             {resources.dashboard.title}
           </Typography>
 
@@ -83,7 +88,7 @@ export function DashboardPage() {
         </Box>
 
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => void refreshDashboard()}
           disabled={isRefreshing}
           sx={{
@@ -100,10 +105,79 @@ export function DashboardPage() {
         </Button>
       </Box>
 
+      <Paper
+        variant="outlined"
+        sx={{
+          px: { xs: 4, md: 5 },
+          py: 3,
+          bgcolor: "#EAF1F3",
+          borderRadius: 3.5,
+          display: "flex",
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 3,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", letterSpacing: 1 }}
+          >
+            CUSTOMER / OPERATIONAL SCOPE
+          </Typography>
+          <Typography sx={{ fontWeight: 700, mt: 0.5 }}>BIO EGYPT</Typography>
+        </Box>
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          <Box
+            aria-hidden
+            sx={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              bgcolor: "success.main",
+            }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            Current authorized evidence
+          </Typography>
+        </Stack>
+      </Paper>
+
       <DashboardSummarySection
         query={summaryQuery}
         resources={resources.dashboard}
       />
+
+      {latestTelemetryQuery.data && latestTelemetryQuery.data.length > 0 ? (
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              lg: "minmax(0, 2fr) minmax(300px, 1fr)",
+            },
+            gap: 4,
+          }}
+        >
+          <CurrentTelemetryProfile
+            records={latestTelemetryQuery.data}
+            resources={resources.dashboard}
+          />
+          <PriorityAreasPanel
+            rooms={roomStatusesQuery.data ?? []}
+            resources={resources.dashboard}
+          />
+        </Box>
+      ) : null}
+
+      {summaryQuery.data || alarmStatisticsQuery.data ? (
+        <OperationalOverview
+          summary={summaryQuery.data}
+          alarmStatistics={alarmStatisticsQuery.data}
+          labels={resources.dashboard.operationalOverview!}
+        />
+      ) : null}
 
       <RoomStatusSection
         query={roomStatusesQuery}
@@ -120,6 +194,218 @@ export function DashboardPage() {
         resources={resources.dashboard}
       />
     </Stack>
+  );
+}
+
+function CurrentTelemetryProfile({
+  records,
+  resources,
+}: {
+  records: LatestTelemetryRecord[];
+  resources: DashboardResources;
+}) {
+  const temperatureRecords = records.filter(
+    (record) =>
+      record.unit.toLowerCase().includes("c") ||
+      record.sensorType.toLowerCase().includes("temp"),
+  );
+  const visibleRecords = (
+    temperatureRecords.length > 0 ? temperatureRecords : records
+  ).slice(0, 8);
+  const values = visibleRecords.map((record) => record.value);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const span = Math.max(maximum - minimum, 1);
+  const points = visibleRecords
+    .map((record, index) => {
+      const x =
+        visibleRecords.length === 1
+          ? 50
+          : 6 + (index / (visibleRecords.length - 1)) * 88;
+      const y = 78 - ((record.value - minimum) / span) * 56;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <Paper
+      component="section"
+      aria-label={resources.latestTelemetry.title}
+      variant="outlined"
+      sx={{
+        p: { xs: 4, md: 6 },
+        borderRadius: 3.5,
+        boxShadow: "0 12px 32px rgba(7, 59, 76, 0.08)",
+      }}
+    >
+      <Stack spacing={5}>
+        <Box>
+          <Typography component="p" variant="h5">
+            Current temperature profile
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Latest verified reading per Sensor — this is a current snapshot, not
+            a historical trend.
+          </Typography>
+        </Box>
+        <Box sx={{ minHeight: 240 }}>
+          <Box
+            component="svg"
+            viewBox="0 0 100 100"
+            role="img"
+            aria-label="Current Sensor reading profile"
+            preserveAspectRatio="none"
+            sx={{ width: "100%", height: 220, overflow: "visible" }}
+          >
+            {[22, 50, 78].map((y) => (
+              <line
+                key={y}
+                x1="4"
+                x2="96"
+                y1={y}
+                y2={y}
+                stroke="#E3ECEE"
+                strokeWidth="0.6"
+              />
+            ))}
+            <polyline
+              points={points}
+              fill="none"
+              stroke="#0B6B78"
+              strokeWidth="1.6"
+              vectorEffect="non-scaling-stroke"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+            {visibleRecords.map((record, index) => {
+              const [x, y] = points.split(" ")[index].split(",");
+              return (
+                <circle
+                  key={`${record.device}-${record.sensor}`}
+                  cx={x}
+                  cy={y}
+                  r="1.4"
+                  fill="#18A6A6"
+                  stroke="#FFFFFF"
+                  strokeWidth="0.6"
+                />
+              );
+            })}
+          </Box>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${visibleRecords.length}, minmax(0, 1fr))`,
+              gap: 1,
+            }}
+          >
+            {visibleRecords.map((record) => (
+              <Box
+                key={`${record.device}-${record.sensor}-${record.time}`}
+                sx={{ textAlign: "center", minWidth: 0 }}
+              >
+                <Typography
+                  variant="caption"
+                  noWrap
+                  sx={{ display: "block", fontWeight: 700 }}
+                >
+                  {record.sensor}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {record.value}
+                  {record.unit}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+        <Typography variant="caption" color="text.secondary">
+          {visibleRecords.length} current Sensor readings displayed
+        </Typography>
+      </Stack>
+    </Paper>
+  );
+}
+
+function PriorityAreasPanel({
+  rooms,
+  resources,
+}: {
+  rooms: DashboardRoomStatus[];
+  resources: DashboardResources;
+}) {
+  const prioritized = [...rooms]
+    .sort(
+      (first, second) =>
+        second.activeAlarms - first.activeAlarms ||
+        Number(first.online) - Number(second.online),
+    )
+    .slice(0, 3);
+
+  return (
+    <Paper variant="outlined" sx={{ p: { xs: 4, md: 6 }, borderRadius: 3.5 }}>
+      <Stack spacing={4}>
+        <Box>
+          <Typography component="p" variant="h5">
+            Priority areas
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ordered by current operational exceptions
+          </Typography>
+        </Box>
+        {prioritized.length === 0 ? (
+          <Typography color="text.secondary">
+            {resources.rooms.empty}
+          </Typography>
+        ) : (
+          prioritized.map((room) => {
+            const tone = !room.online
+              ? "error.main"
+              : room.activeAlarms > 0
+                ? "warning.main"
+                : "success.main";
+            return (
+              <Box
+                key={room.roomId}
+                sx={{
+                  p: 4,
+                  borderRadius: 2.5,
+                  border: 1,
+                  borderColor: "divider",
+                  borderInlineStart: 4,
+                  borderInlineStartColor: tone,
+                }}
+              >
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                  spacing={3}
+                >
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography noWrap sx={{ fontWeight: 700 }}>
+                      {room.roomName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {room.siteName}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    sx={{ color: tone, fontWeight: 800, whiteSpace: "nowrap" }}
+                  >
+                    {room.temperature === null
+                      ? resources.rooms.unavailable
+                      : `${room.temperature} °C`}
+                  </Typography>
+                </Stack>
+              </Box>
+            );
+          })
+        )}
+      </Stack>
+    </Paper>
   );
 }
 
@@ -169,6 +455,7 @@ function DashboardSummarySection({
           xs: "1fr",
           sm: "repeat(2, minmax(0, 1fr))",
           lg: "repeat(3, minmax(0, 1fr))",
+          xl: "repeat(6, minmax(0, 1fr))",
         },
         gap: 2,
       }}
@@ -196,11 +483,13 @@ function DashboardSummarySection({
       <SummaryCard
         label={resources.summary.activeAlarms}
         value={query.data.activeAlarms}
+        tone={query.data.activeAlarms > 0 ? "error" : "neutral"}
       />
 
       <SummaryCard
         label={resources.summary.offlineDevices}
         value={query.data.offlineDevices}
+        tone={query.data.offlineDevices > 0 ? "warning" : "neutral"}
       />
     </Box>
   );
@@ -290,7 +579,16 @@ interface RoomStatusCardProps {
 
 function RoomStatusCard({ room, resources }: RoomStatusCardProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 5,
+        borderRadius: 3.5,
+        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+        borderInlineStart: 4,
+        borderInlineStartColor: room.online ? "success.main" : "error.main",
+      }}
+    >
       <Stack spacing={2}>
         <Box
           sx={{
@@ -495,7 +793,14 @@ interface LatestTelemetryCardProps {
 
 function LatestTelemetryCard({ record, resources }: LatestTelemetryCardProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 5,
+        borderRadius: 3.5,
+        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+      }}
+    >
       <Stack spacing={2}>
         <Box>
           <Typography component="h3" variant="h6">
@@ -686,7 +991,7 @@ interface AlarmStatisticsGroupProps {
 
 function AlarmStatisticsGroup({ title, items }: AlarmStatisticsGroupProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Paper variant="outlined" sx={{ p: 5, borderRadius: 3.5 }}>
       <Stack spacing={2}>
         <Typography component="h3" variant="h6">
           {title}
@@ -722,16 +1027,55 @@ function AlarmStatisticsGroup({ title, items }: AlarmStatisticsGroupProps) {
 interface SummaryCardProps {
   label: string;
   value: number;
+  tone?: "neutral" | "warning" | "error";
 }
 
-function SummaryCard({ label, value }: SummaryCardProps) {
+function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
+  const accent =
+    tone === "error"
+      ? "error.main"
+      : tone === "warning"
+        ? "warning.main"
+        : "primary.main";
+
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
-      <Typography color="text.secondary" variant="body2">
+    <Paper
+      variant="outlined"
+      sx={{
+        position: "relative",
+        minHeight: 116,
+        p: 5,
+        borderRadius: 3.5,
+        overflow: "hidden",
+        borderColor: "divider",
+        boxShadow: "0 10px 30px rgba(7, 59, 76, 0.07)",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          insetBlock: 0,
+          insetInlineStart: 0,
+          width: 5,
+          bgcolor: accent,
+        },
+      }}
+    >
+      <Typography
+        color="text.secondary"
+        variant="caption"
+        sx={{ textTransform: "uppercase", letterSpacing: 0.6 }}
+      >
         {label}
       </Typography>
 
-      <Typography component="p" variant="h4" sx={{ mt: 1 }}>
+      <Typography
+        component="p"
+        variant="h4"
+        sx={{
+          mt: 2,
+          color: tone === "neutral" ? "text.primary" : accent,
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
         {value}
       </Typography>
     </Paper>
