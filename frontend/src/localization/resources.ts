@@ -54,6 +54,7 @@ export interface TranslationResources {
     monitoredAreas: string;
     alarms: string;
     devices: string;
+    sensorsCalibration: string;
     configuration: string;
     users: string;
   };
@@ -302,6 +303,7 @@ export const englishResources = {
     monitoredAreas: "Monitored Areas",
     alarms: "Alarms",
     devices: "Devices",
+    sensorsCalibration: "Sensors & Calibration",
     configuration: "Configuration",
     users: "Users",
   },

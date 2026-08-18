@@ -48,6 +48,13 @@ export const navigationItems = [
     permission: "DEVICE_READ",
   },
   {
+    group: "overview",
+    id: "sensors-calibration",
+    path: "/sensors-calibration",
+    labelKey: "sensorsCalibration",
+    permission: "CONFIGURATION_READ",
+  },
+  {
     group: "administration",
     id: "configuration",
     path: "/configuration",

@@ -133,6 +133,8 @@ function NavigationIcon({ id }: { id: string }) {
     "monitored-areas": "M4 7h16v12H4zM8 7V4h8v3M8 12h8M8 16h5",
     alarms: "M12 3 3 20h18L12 3zm0 6v5m0 3v.5",
     devices: "M7 3h10v18H7zM9 6h6M9 17h6M12 20v1",
+    "sensors-calibration":
+      "M12 3v10m0 0a4 4 0 1 0 4 4m-4-4a4 4 0 0 0-4 4m4-9h3M5 5h3M5 9h3",
     configuration:
       "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0-5v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4",
     users:
