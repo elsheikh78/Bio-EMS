@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiResponseError,
@@ -76,11 +77,13 @@ function renderProvider({
   responses = [],
   now = () => 1_000,
   request: suppliedRequest,
+  strictMode = false,
 }: {
   storage?: AuthenticationStorageAdapter;
   responses?: unknown[];
   now?: () => number;
   request?: ReturnType<typeof vi.fn>;
+  strictMode?: boolean;
 } = {}) {
   const request = suppliedRequest ?? vi.fn();
   for (const response of responses) {
@@ -96,7 +99,7 @@ function renderProvider({
     return { request };
   });
   let authentication: AuthenticationContextValue | undefined;
-  const rendered = render(
+  const provider = (
     <QueryClientProvider client={queryClient}>
       <AuthenticationProvider
         storageAdapter={storage}
@@ -109,7 +112,10 @@ function renderProvider({
           }}
         />
       </AuthenticationProvider>
-    </QueryClientProvider>,
+    </QueryClientProvider>
+  );
+  const rendered = render(
+    strictMode ? <StrictMode>{provider}</StrictMode> : provider,
   );
   return {
     authentication: () => {
@@ -246,6 +252,31 @@ describe("authentication session lifecycle", () => {
       expiresAt: 39_000,
       user: { id: 4, username: "admin", role: "ADMIN" },
     });
+  });
+
+  it("remains usable after React StrictMode replays the provider effect", async () => {
+    const storage = storageAdapter();
+    renderProvider({
+      storage: storage.adapter,
+      responses: [
+        {
+          access_token: "strict-mode-token",
+          token_type: "bearer",
+          expires_in: 3_600,
+          user: { id: 1, username: "admin", role: "ADMIN" },
+        } satisfies LoginResponse,
+      ],
+      strictMode: true,
+    });
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: "Login" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("status")).toHaveTextContent("authenticated"),
+    );
+    expect(screen.getByTestId("identity")).toHaveTextContent("admin:ADMIN");
+    expect(storage.adapter.write).toHaveBeenCalledTimes(1);
   });
 
   it("classifies a whitespace-only username as client-side validation", async () => {
