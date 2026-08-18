@@ -23,6 +23,7 @@ been surveyed or accepted.
 3. [Installation and wiring requirements](BIO-EGYPT-INSTALLATION-WIRING.md)
 4. [Commissioning and acceptance record](BIO-EGYPT-COMMISSIONING.md)
 5. [Open-items register](BIO-EGYPT-OPEN-ITEMS.md)
+6. [Controlled Site Survey Pack](BIO-EGYPT-SITE-SURVEY-PACK.md)
 
 ## Deployment and readiness references
 
