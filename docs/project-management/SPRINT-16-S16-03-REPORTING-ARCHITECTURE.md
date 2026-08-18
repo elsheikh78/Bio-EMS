@@ -2,14 +2,14 @@
 
 ## Document control
 
-| Field                 | Value                                                     |
-| --------------------- | --------------------------------------------------------- |
-| Work item             | S16-03                                                    |
-| Status                | PROPOSED — PRODUCT OWNER AND ARCHITECTURE REVIEW REQUIRED |
-| Requirements baseline | S16-01, merged through PR #41                             |
-| UX consumer           | S16-02 Clinical Command Center baseline                   |
-| Software baseline     | `main` after S16-02 closure                               |
-| Implementation state  | NOT STARTED                                               |
+| Field                 | Value                                   |
+| --------------------- | --------------------------------------- |
+| Work item             | S16-03                                  |
+| Status                | APPROVED — MERGED                       |
+| Requirements baseline | S16-01, merged through PR #41           |
+| UX consumer           | S16-02 Clinical Command Center baseline |
+| Software baseline     | `main` after S16-02 closure             |
+| Implementation state  | NOT STARTED                             |
 
 ## 1. Decision
 
