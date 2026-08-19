@@ -6,6 +6,7 @@ export type ApiRequestMode = "public" | "protected";
 export interface ApiRequestOptions extends Omit<RequestInit, "headers"> {
   headers?: HeadersInit;
   auth?: ApiRequestMode;
+  responseMode?: "json" | "response";
 }
 
 export interface ApiClient {
@@ -60,6 +61,8 @@ async function request<T>(
 
   const requestOptions: RequestInit = { ...options };
   delete (requestOptions as { auth?: ApiRequestMode }).auth;
+  delete (requestOptions as { responseMode?: "json" | "response" })
+    .responseMode;
   const response = await fetch(`${getEnvironment().VITE_API_BASE_URL}${path}`, {
     ...requestOptions,
     headers,
@@ -70,6 +73,7 @@ async function request<T>(
     throw new ApiResponseError(response.status, envelope?.error.code);
   }
 
+  if (options.responseMode === "response") return response as T;
   return (await response.json()) as T;
 }
 

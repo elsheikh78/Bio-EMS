@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { PERMISSION } from "../authorization/permissions";
-import { getReportCatalogue, previewReport } from "../controllers/report.controller";
+import { exportReport, getReportCatalogue, previewReport } from "../controllers/report.controller";
 import { requirePermission } from "../middleware/authorization.middleware";
 import { validateBody } from "../middleware/validate-request";
 import { calibrationReportPreviewSchema } from "../modules/reporting/dto/calibration-report-preview.schema";
+import { reportExportSchema } from "../modules/reporting/dto/report-export.schema";
 
 const router = Router();
 
@@ -13,6 +14,12 @@ router.post(
   requirePermission(PERMISSION.REPORT_READ),
   validateBody(calibrationReportPreviewSchema),
   previewReport
+);
+router.post(
+  "/exports",
+  requirePermission(PERMISSION.REPORT_EXPORT),
+  validateBody(reportExportSchema),
+  exportReport
 );
 
 export default router;

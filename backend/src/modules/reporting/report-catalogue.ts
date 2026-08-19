@@ -34,7 +34,7 @@ export const reportCatalogue = {
       title: "Calibration Status and History",
       readiness: "AVAILABLE",
       previewAvailable: true,
-      exportFormats: [],
+      exportFormats: ["CSV"],
       unavailableReason: null,
     },
     {

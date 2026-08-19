@@ -51,6 +51,22 @@ describe("API request headers", () => {
     expect(requestHeaders.get("Accept")).toBe("application/problem+json");
   });
 
+  it("returns the raw successful response for controlled file downloads", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
+    const csvResponse = new Response("report_id\r\nRPT-1\r\n", {
+      headers: { "Content-Type": "text/csv" },
+    });
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(csvResponse);
+
+    const response = await apiRequest<Response>("/reports/exports", {
+      method: "POST",
+      responseMode: "response",
+    });
+
+    expect(response).toBe(csvResponse);
+    expect(await response.text()).toContain("RPT-1");
+  });
+
   it("injects exactly one adapter-controlled Bearer header in protected mode", async () => {
     vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
     const fetchSpy = vi
