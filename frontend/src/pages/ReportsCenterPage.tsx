@@ -301,7 +301,15 @@ function PreviewPanel({
             <Typography variant="caption" color="text.secondary">
               Report ID
             </Typography>
-            <Typography sx={{ fontFamily: "monospace", fontWeight: 700 }}>
+            <Typography
+              sx={{
+                fontFamily: "monospace",
+                fontWeight: 700,
+                fontSize: 12,
+                maxWidth: 300,
+                overflowWrap: "anywhere",
+              }}
+            >
               {data.identity.reportId}
             </Typography>
           </Box>
@@ -336,8 +344,37 @@ function PreviewPanel({
       </Paper>
       {data.quality.warnings.length ? (
         <Alert severity="warning">
-          {data.quality.warnings.length} evidence-quality warning(s) are
-          recorded. Missing values were not fabricated.
+          <Typography variant="subtitle2">
+            {data.quality.warnings.length} evidence-quality warning(s)
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Missing values were not fabricated.
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{ flexWrap: "wrap" }}
+          >
+            {data.quality.warnings.map((warning, index) => {
+              const sensor = data.sensors.find(
+                (item) => item.uuid === warning.sensorUuid,
+              );
+              const label =
+                warning.code === "MISSING_HARDWARE_MODEL"
+                  ? "Hardware model missing"
+                  : warning.code === "MISSING_CERTIFICATE_REFERENCE"
+                    ? "Certificate reference missing"
+                    : warning.code;
+              return (
+                <Chip
+                  key={`${warning.sensorUuid}-${warning.code}-${index}`}
+                  size="small"
+                  label={`${sensor?.name ?? warning.sensorUuid}: ${label}`}
+                />
+              );
+            })}
+          </Stack>
         </Alert>
       ) : (
         <Alert severity="success">
@@ -380,10 +417,12 @@ function PreviewPanel({
         </Box>
         <Stack direction="row" spacing={4} sx={{ mt: 2 }}>
           <Typography variant="body2" color="success.main">
-            ● PASS {data.summary.pass}
+            ● PASS {data.summary.pass} ·{" "}
+            {percentage(data.summary.pass, data.summary.records)}%
           </Typography>
           <Typography variant="body2" color="error.main">
-            ● FAIL {data.summary.fail}
+            ● FAIL {data.summary.fail} ·{" "}
+            {percentage(data.summary.fail, data.summary.records)}%
           </Typography>
         </Stack>
       </Paper>
@@ -412,7 +451,20 @@ function PreviewPanel({
                 <TableRow
                   key={`${record.sensor_uuid}-${record.performed_at}-${index}`}
                 >
-                  <TableCell>{record.sensor_uuid}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      {data.sensors.find(
+                        (sensor) => sensor.uuid === record.sensor_uuid,
+                      )?.name ?? record.sensor_uuid}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {sensorContext(
+                        data.sensors.find(
+                          (sensor) => sensor.uuid === record.sensor_uuid,
+                        ),
+                      )}
+                    </Typography>
+                  </TableCell>
                   <TableCell>
                     <Chip
                       size="small"
@@ -436,4 +488,22 @@ function PreviewPanel({
       </Typography>
     </Stack>
   );
+}
+
+function percentage(value: number, total: number) {
+  return total === 0 ? 0 : Math.round((value / total) * 100);
+}
+
+function sensorContext(
+  sensor:
+    | {
+        code: string;
+        room_name: string;
+        site_name: string;
+      }
+    | undefined,
+) {
+  return sensor
+    ? `${sensor.code} · ${sensor.room_name} · ${sensor.site_name}`
+    : "Sensor identity unavailable";
 }

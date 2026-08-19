@@ -98,6 +98,12 @@ export const calibrationReportPreviewResultSchema = z
       z
         .object({
           uuid: z.string(),
+          code: z.string(),
+          name: z.string(),
+          room_code: z.string(),
+          room_name: z.string(),
+          site_code: z.string(),
+          site_name: z.string(),
           dueClassification: z.enum(["CURRENT", "OVERDUE", "NOT_CALIBRATED"]),
         })
         .passthrough(),
