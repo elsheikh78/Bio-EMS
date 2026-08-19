@@ -61,6 +61,7 @@ describe("Calibration CSV renderer", () => {
     );
 
     expect(csv.startsWith("\uFEFF")).toBe(true);
+    expect(csv.startsWith("\uFEFFsep=,\r\n")).toBe(true);
     expect(csv).toContain("\r\n");
     expect(csv).toContain('"RPT-1"');
     expect(csv).toContain('"\'=unsafe"');

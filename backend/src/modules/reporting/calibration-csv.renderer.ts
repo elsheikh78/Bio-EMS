@@ -29,14 +29,22 @@ const columns = [
 
 function safeCell(value: unknown): string {
   let text = value === null || value === undefined ? "" : String(value);
-  if (typeof value === "string" && /^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+
+  if (typeof value === "string" && /^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+
   return `"${text.replaceAll('"', '""')}"`;
 }
 
 export function renderCalibrationCsv(result: Result, generatedBy: string) {
-  const sensorByUuid = new Map(result.sensors.map((sensor) => [sensor.uuid, sensor]));
+  const sensorByUuid = new Map(
+    result.sensors.map((sensor) => [sensor.uuid, sensor]),
+  );
+
   const rows = result.records.map((record) => {
     const sensor = sensorByUuid.get(record.sensor_uuid);
+
     return [
       result.identity.reportId,
       result.identity.contractVersion,
@@ -62,15 +70,19 @@ export function renderCalibrationCsv(result: Result, generatedBy: string) {
       record.performed_by_username,
     ];
   });
+
   const lines = [
+    "sep=,",
     columns.map(safeCell).join(","),
     ...rows.map((row) => row.map(safeCell).join(",")),
   ];
+
   return `\uFEFF${lines.join("\r\n")}\r\n`;
 }
 
 export function calibrationCsvFilename(result: Result) {
   const from = result.scope.from.slice(0, 10);
   const to = result.scope.to.slice(0, 10);
+
   return `bio-ems_calibration-history_${from}_${to}_${result.identity.reportId.toLowerCase()}.csv`;
 }

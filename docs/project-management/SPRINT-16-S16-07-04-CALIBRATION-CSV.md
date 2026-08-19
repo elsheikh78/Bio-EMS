@@ -18,7 +18,8 @@ This slice adds the first approved export capability to the Reports Center:
 ## CSV contract
 
 - UTF-8 with BOM for the approved Windows/Excel Pilot environment;
-- comma-delimited RFC 4180 quoting and CRLF line endings;
+- exported CSV files are expected to open directly in Microsoft Excel with fields distributed into separate columns without requiring manual delimiter import;
+- Excel direct-open compatibility is provided via a leading `sep=,` directive, followed by comma-delimited RFC 4180-style quoted data and CRLF line endings;
 - stable English machine column identifiers;
 - ISO 8601 timestamps;
 - report ID, contract version, generated time, source, range, time zone, and generating
