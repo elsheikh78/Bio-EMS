@@ -234,6 +234,7 @@ describe("authenticated application routing", () => {
     ["/monitored-areas", "Monitored Areas"],
     ["/alarms", "Alarms"],
     ["/devices", "Devices"],
+    ["/reports", "Reports Center"],
     ["/configuration", "Configuration"],
     ["/users", "Users"],
   ])("renders the permitted ADMIN route %s", (path, heading) => {

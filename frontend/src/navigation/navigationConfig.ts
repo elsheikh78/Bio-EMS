@@ -55,6 +55,13 @@ export const navigationItems = [
     permission: "CONFIGURATION_READ",
   },
   {
+    group: "overview",
+    id: "reports",
+    path: "/reports",
+    labelKey: "reports",
+    permission: "REPORT_READ",
+  },
+  {
     group: "administration",
     id: "configuration",
     path: "/configuration",

@@ -55,6 +55,7 @@ export interface TranslationResources {
     alarms: string;
     devices: string;
     sensorsCalibration: string;
+    reports: string;
     configuration: string;
     users: string;
   };
@@ -304,6 +305,7 @@ export const englishResources = {
     alarms: "Alarms",
     devices: "Devices",
     sensorsCalibration: "Sensors & Calibration",
+    reports: "Reports",
     configuration: "Configuration",
     users: "Users",
   },

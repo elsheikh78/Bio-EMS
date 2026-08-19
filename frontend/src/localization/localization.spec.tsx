@@ -50,6 +50,7 @@ const alternativeResources = {
     alarms: "Alt Alarms",
     devices: "Alt Devices",
     sensorsCalibration: "Alt Sensors & Calibration",
+    reports: "Alt Reports",
     configuration: "Alt Configuration",
     users: "Alt Users",
   },
