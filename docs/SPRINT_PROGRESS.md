@@ -4,6 +4,18 @@
 
 Status: **IN PROGRESS**
 
+### S16-07-02 — Calibration History Preview
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
+
+- feature commit: `d5080ac1a30827d3f95d0cbb6ce48f95f07f996d`;
+- PR: #53;
+- integration commit: `305b1c0ea00e0d16cf7d5d41b268c03d6055abb5`;
+- GitHub CI run number: 149 — SUCCESS.
+
+The next controlled reporting slice is S16-07-03 Reports Center UI. PDF and CSV
+remain unavailable.
+
 ### Completed work items
 
 - S16-01 — Requirements Baseline: **COMPLETE / MERGED / VERIFIED / CLOSED**.
