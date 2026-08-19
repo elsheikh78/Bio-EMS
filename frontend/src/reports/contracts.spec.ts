@@ -19,10 +19,10 @@ describe("report catalogue contract", () => {
         {
           id: "CALIBRATION-HISTORY",
           title: "Calibration Status and History",
-          readiness: "READY_FOR_IMPLEMENTATION",
-          previewAvailable: false,
-          exportFormats: [],
-          unavailableReason: "PREVIEW_ADAPTER_NOT_IMPLEMENTED",
+          readiness: "AVAILABLE",
+          previewAvailable: true,
+          exportFormats: ["CSV"],
+          unavailableReason: null,
         },
       ],
     });

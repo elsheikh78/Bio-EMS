@@ -29,6 +29,7 @@ describe("Reporting catalogue REST API", () => {
             id: "CALIBRATION-HISTORY",
             readiness: "AVAILABLE",
             previewAvailable: true,
+            exportFormats: ["CSV"],
           }),
           expect.objectContaining({ id: "DEVICE-HEALTH", readiness: "BLOCKED" }),
           expect.objectContaining({ id: "AUDIT-OPERATIONS", readiness: "BLOCKED" }),
@@ -41,4 +42,17 @@ describe("Reporting catalogue REST API", () => {
       ).toHaveLength(1);
     }
   );
+
+  it.each(["ADMIN", "OPERATOR"] as const)(
+    "allows %s through the export permission gate before request validation",
+    async (role) => {
+      const response = await request(createApp(role)).post("/api/v1/reports/exports").expect(400);
+      expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    }
+  );
+
+  it("denies CSV export to VIEWER", async () => {
+    const response = await request(createApp("VIEWER")).post("/api/v1/reports/exports").expect(403);
+    expect(response.body.error.code).toBe("FORBIDDEN");
+  });
 });

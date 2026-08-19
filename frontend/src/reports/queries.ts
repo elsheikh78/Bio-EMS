@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuthentication } from "../auth/useAuthentication";
 import { createReportsApi } from "./api";
-import type { CalibrationReportPreviewRequest } from "./contracts";
+import type {
+  CalibrationReportExportRequest,
+  CalibrationReportPreviewRequest,
+} from "./contracts";
 
 export const reportQueryKeys = { catalogue: ["reports", "catalogue"] as const };
 
@@ -20,5 +23,14 @@ export function useCalibrationReportPreview() {
   return useMutation({
     mutationFn: (input: CalibrationReportPreviewRequest) =>
       api.previewCalibration(input),
+  });
+}
+
+export function useCalibrationReportCsvExport() {
+  const { protectedRequest } = useAuthentication();
+  const api = createReportsApi(protectedRequest);
+  return useMutation({
+    mutationFn: (input: CalibrationReportExportRequest) =>
+      api.exportCalibrationCsv(input),
   });
 }

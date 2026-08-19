@@ -126,3 +126,7 @@ export type CalibrationReportPreviewRequest = z.infer<
 export type CalibrationReportPreviewResult = z.infer<
   typeof calibrationReportPreviewResultSchema
 >;
+
+export type CalibrationReportExportRequest = CalibrationReportPreviewRequest & {
+  format: "CSV";
+};

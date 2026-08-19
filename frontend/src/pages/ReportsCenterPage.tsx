@@ -18,8 +18,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useMemo, useState, type FormEvent } from "react";
+import { hasPermission } from "../authorization/permissions";
+import { useAuthentication } from "../auth/useAuthentication";
 import { useSensors } from "../monitoredAreas/queries";
 import {
+  useCalibrationReportCsvExport,
   useCalibrationReportPreview,
   useReportCatalogue,
 } from "../reports/queries";
@@ -32,6 +35,8 @@ export function ReportsCenterPage() {
   const catalogue = useReportCatalogue();
   const sensorsQuery = useSensors();
   const preview = useCalibrationReportPreview();
+  const csvExport = useCalibrationReportCsvExport();
+  const { user } = useAuthentication();
   const [from, setFrom] = useState(() => {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - 30);
@@ -45,19 +50,37 @@ export function ReportsCenterPage() {
   const calibrationFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === "CALIBRATION-HISTORY",
   );
+  const canExport = Boolean(user && hasPermission(user.role, "REPORT_EXPORT"));
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    if (selectedSensors.length === 0) return;
-    preview.mutate({
-      reportType: "CALIBRATION-HISTORY",
-      contractVersion: "1.0",
+  function reportRequest() {
+    return {
+      reportType: "CALIBRATION-HISTORY" as const,
+      contractVersion: "1.0" as const,
       sensorUuids: selectedSensors,
       from: new Date(`${from}T00:00:00`).toISOString(),
       to: new Date(`${to}T00:00:00`).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: "en",
+      language: "en" as const,
+    };
+  }
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    if (selectedSensors.length === 0) return;
+    preview.mutate(reportRequest());
+  }
+
+  async function exportCsv() {
+    const file = await csvExport.mutateAsync({
+      ...reportRequest(),
+      format: "CSV",
     });
+    const url = URL.createObjectURL(file.blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = file.filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   const loading = catalogue.isLoading || sensorsQuery.isLoading;
@@ -88,7 +111,8 @@ export function ReportsCenterPage() {
             color="primary"
             variant="outlined"
           />
-          <Chip label="PDF & CSV planned" variant="outlined" />
+          <Chip label="CSV available" color="success" variant="outlined" />
+          <Chip label="PDF planned" variant="outlined" />
         </Stack>
       </Stack>
 
@@ -242,7 +266,13 @@ export function ReportsCenterPage() {
             </Paper>
           </Stack>
 
-          <PreviewPanel preview={preview} />
+          <PreviewPanel
+            preview={preview}
+            canExport={canExport}
+            exporting={csvExport.isPending}
+            exportError={csvExport.isError}
+            onExport={() => void exportCsv()}
+          />
         </Box>
       ) : null}
     </Stack>
@@ -251,8 +281,16 @@ export function ReportsCenterPage() {
 
 function PreviewPanel({
   preview,
+  canExport,
+  exporting,
+  exportError,
+  onExport,
 }: {
   preview: ReturnType<typeof useCalibrationReportPreview>;
+  canExport: boolean;
+  exporting: boolean;
+  exportError: boolean;
+  onExport: () => void;
 }) {
   if (preview.isError)
     return (
@@ -286,6 +324,11 @@ function PreviewPanel({
   const data = preview.data;
   return (
     <Stack spacing={3}>
+      {exportError ? (
+        <Alert severity="error">
+          The CSV export could not be generated. The preview remains available.
+        </Alert>
+      ) : null}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
         <Stack
           direction={{ xs: "column", sm: "row" }}
@@ -314,6 +357,20 @@ function PreviewPanel({
             </Typography>
           </Box>
         </Stack>
+        {canExport ? (
+          <Button
+            sx={{ mt: 3 }}
+            variant="outlined"
+            disabled={exporting}
+            onClick={onExport}
+          >
+            {exporting ? "Preparing CSV…" : "Export CSV"}
+          </Button>
+        ) : (
+          <Typography sx={{ mt: 3 }} variant="caption" color="text.secondary">
+            Your role permits preview but not export.
+          </Typography>
+        )}
         <Box
           sx={{
             display: "grid",
