@@ -38,9 +38,7 @@ function safeCell(value: unknown): string {
 }
 
 export function renderCalibrationCsv(result: Result, generatedBy: string) {
-  const sensorByUuid = new Map(
-    result.sensors.map((sensor) => [sensor.uuid, sensor]),
-  );
+  const sensorByUuid = new Map(result.sensors.map((sensor) => [sensor.uuid, sensor]));
 
   const rows = result.records.map((record) => {
     const sensor = sensorByUuid.get(record.sensor_uuid);
