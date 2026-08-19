@@ -12,6 +12,11 @@ implemented and verified.
 Calibration history remains in SQLite; telemetry remains in InfluxDB 2.x. BIO EGYPT
 remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
+S16-07-03 Reports Center UI is also complete, visually approved, merged through PR
+#55 at `c194bce9abc781d32f56e7d615a9455e9de33420`, CI verified, and closed. The next
+reporting slice is a controlled export capability consuming the same canonical
+Calibration History result. PDF and CSV are not yet available.
+
 ## Current Version
 
 Published release: [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
