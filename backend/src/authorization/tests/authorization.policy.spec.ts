@@ -12,8 +12,10 @@ const EXPECTED_PERMISSIONS: Readonly<Record<UserRole, readonly Permission[]>> = 
     "ALARM_READ",
     "ALARM_ACKNOWLEDGE",
     "DASHBOARD_READ",
+    "REPORT_READ",
+    "REPORT_EXPORT",
   ],
-  VIEWER: ["CONFIGURATION_READ", "DEVICE_READ", "ALARM_READ", "DASHBOARD_READ"],
+  VIEWER: ["CONFIGURATION_READ", "DEVICE_READ", "ALARM_READ", "DASHBOARD_READ", "REPORT_READ"],
 };
 
 describe("central authorization policy", () => {
