@@ -1,5 +1,17 @@
 # Project Status
 
+## Current reporting status — 19 August 2026
+
+S16-07-02 Calibration History Preview is complete, merged through PR #53 at
+`305b1c0ea00e0d16cf7d5d41b268c03d6055abb5`, CI verified, and closed.
+
+The next reporting item is S16-07-03 Reports Center UI. It may expose the merged
+Calibration History preview only. PDF and CSV remain unavailable until separately
+implemented and verified.
+
+Calibration history remains in SQLite; telemetry remains in InfluxDB 2.x. BIO EGYPT
+remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
 ## Current Version
 
 Published release: [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
