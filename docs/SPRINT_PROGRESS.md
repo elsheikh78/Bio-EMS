@@ -16,6 +16,19 @@ Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 The next controlled reporting slice is S16-07-03 Reports Center UI. PDF and CSV
 remain unavailable.
 
+### S16-07-03 — Reports Center UI
+
+Status: **COMPLETE / VISUALLY APPROVED / MERGED / CI VERIFIED / CLOSED**
+
+- final feature head: `5306bed12b4308655be33b14732523756fff5b1d`;
+- PR: #55;
+- integration commit: `c194bce9abc781d32f56e7d615a9455e9de33420`;
+- GitHub CI run number: 154 — SUCCESS.
+
+The Reports Center now exposes the real Calibration History preview with controlled
+scope, metadata, quality warnings, an accessible PASS/FAIL visual, and its underlying
+records. PDF and CSV remain unavailable.
+
 ### Completed work items
 
 - S16-01 — Requirements Baseline: **COMPLETE / MERGED / VERIFIED / CLOSED**.
