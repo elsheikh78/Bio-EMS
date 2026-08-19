@@ -27,17 +27,18 @@ describe("Reporting catalogue REST API", () => {
         expect.arrayContaining([
           expect.objectContaining({
             id: "CALIBRATION-HISTORY",
-            readiness: "READY_FOR_IMPLEMENTATION",
+            readiness: "AVAILABLE",
+            previewAvailable: true,
           }),
           expect.objectContaining({ id: "DEVICE-HEALTH", readiness: "BLOCKED" }),
           expect.objectContaining({ id: "AUDIT-OPERATIONS", readiness: "BLOCKED" }),
         ])
       );
       expect(
-        response.body.reportTypes.every(
-          (item: { previewAvailable: boolean }) => !item.previewAvailable
+        response.body.reportTypes.filter(
+          (item: { previewAvailable: boolean }) => item.previewAvailable
         )
-      ).toBe(true);
+      ).toHaveLength(1);
     }
   );
 });
