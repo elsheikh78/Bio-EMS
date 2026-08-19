@@ -13,6 +13,8 @@ describe("frontend presentation permission matrix", () => {
       "ALARM_ACKNOWLEDGE",
       "DASHBOARD_READ",
       "USER_MANAGE",
+      "REPORT_READ",
+      "REPORT_EXPORT",
     ]);
     expect(permissions).not.toContain("CONFIG_READ");
   });
@@ -26,12 +28,15 @@ describe("frontend presentation permission matrix", () => {
       "ALARM_READ",
       "ALARM_ACKNOWLEDGE",
       "DASHBOARD_READ",
+      "REPORT_READ",
+      "REPORT_EXPORT",
     ]);
     expect([...rolePermissions.VIEWER]).toEqual([
       "CONFIGURATION_READ",
       "DEVICE_READ",
       "ALARM_READ",
       "DASHBOARD_READ",
+      "REPORT_READ",
     ]);
   });
 
@@ -40,6 +45,10 @@ describe("frontend presentation permission matrix", () => {
     ["OPERATOR", "USER_MANAGE", false],
     ["VIEWER", "USER_MANAGE", false],
     ["VIEWER", "CONFIGURATION_READ", true],
+    ["ADMIN", "REPORT_EXPORT", true],
+    ["OPERATOR", "REPORT_EXPORT", true],
+    ["VIEWER", "REPORT_READ", true],
+    ["VIEWER", "REPORT_EXPORT", false],
   ] as const)("evaluates %s × %s as %s", (role, permission, expected) => {
     expect(hasPermission(role satisfies UserRole, permission)).toBe(expected);
   });

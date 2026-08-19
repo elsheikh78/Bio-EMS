@@ -16,6 +16,7 @@ import authRouter from "./routes/auth.route";
 import { authenticationMiddleware } from "./middleware/authentication.middleware";
 import userRouter from "./routes/user.route";
 import { createBrowserSecurityMiddleware } from "./middleware/browser-security.middleware";
+import reportRouter from "./routes/report.route";
 
 createTables();
 
@@ -41,6 +42,7 @@ app.use(`${config.apiPrefix}/sensors`, sensorRouter);
 app.use(`${config.apiPrefix}/alarms`, alarmRouter);
 app.use(`${config.apiPrefix}/dashboard`, dashboardRouter);
 app.use(`${config.apiPrefix}/users`, userRouter);
+app.use(`${config.apiPrefix}/reports`, reportRouter);
 
 app.use(errorMiddleware);
 
