@@ -7,6 +7,7 @@ import { MonitoredAreasPage } from "./pages/MonitoredAreasPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ShellLandingPage } from "./pages/ShellLandingPage";
 import { SensorsCalibrationPage } from "./pages/SensorsCalibrationPage";
+import { ReportsCenterPage } from "./pages/ReportsCenterPage";
 import { UsersPlaceholderPage } from "./pages/UsersPlaceholderPage";
 import {
   AuthenticationBoundary,
@@ -78,6 +79,15 @@ export function App() {
             element={
               <PermissionBoundary path="/sensors-calibration">
                 <SensorsCalibrationPage />
+              </PermissionBoundary>
+            }
+          />
+
+          <Route
+            path="reports"
+            element={
+              <PermissionBoundary path="/reports">
+                <ReportsCenterPage />
               </PermissionBoundary>
             }
           />

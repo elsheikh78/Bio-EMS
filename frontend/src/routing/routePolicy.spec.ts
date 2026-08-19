@@ -34,4 +34,11 @@ describe("safe post-Login return policy", () => {
     expect(routePolicies["/sensors-calibration"]).toBe("CONFIGURATION_READ");
     expect(routePolicies["/configuration"]).toBe("CONFIGURATION_READ");
   });
+
+  it("uses REPORT_READ for the Reports Center", () => {
+    expect(routePolicies["/reports"]).toBe("REPORT_READ");
+    expect(resolveSafeReturnPath({ returnTo: "/reports" }, "VIEWER")).toBe(
+      "/reports",
+    );
+  });
 });
