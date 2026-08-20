@@ -24,7 +24,7 @@ describe("reports API", () => {
           'attachment; filename="bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf"',
       },
     });
-    const protectedRequest = vi.fn(async <T>() => response as T) as unknown as ReturnType<
+    const protectedRequest = vi.fn(<T>() => Promise.resolve(response as T)) as unknown as ReturnType<
       typeof vi.fn
     > &
       AuthenticationContextValue["protectedRequest"];
