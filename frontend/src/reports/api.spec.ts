@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import type { ApiRequestOptions } from "../api/client";
+import type { AuthenticationContextValue } from "../auth/AuthenticationContext";
 import { createReportsApi } from "./api";
 
 const exportRequest = {
@@ -22,7 +24,10 @@ describe("reports API", () => {
           'attachment; filename="bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf"',
       },
     });
-    const protectedRequest = vi.fn().mockResolvedValue(response);
+    const protectedRequest = vi.fn(async <T>() => response as T) as unknown as ReturnType<
+      typeof vi.fn
+    > &
+      AuthenticationContextValue["protectedRequest"];
     const api = createReportsApi(protectedRequest);
 
     const result = await api.exportCalibrationPdf(exportRequest);
@@ -40,8 +45,11 @@ describe("reports API", () => {
       }),
     );
 
-    const options = protectedRequest.mock.calls[0][1];
-    expect(JSON.parse(options.body)).toEqual(exportRequest);
+    const options = protectedRequest.mock.calls[0]?.[1] as
+      | Omit<ApiRequestOptions, "auth">
+      | undefined;
+    expect(options?.body).toBeTypeOf("string");
+    expect(JSON.parse(options?.body as string)).toEqual(exportRequest);
     expect(result.filename).toBe(
       "bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf",
     );
