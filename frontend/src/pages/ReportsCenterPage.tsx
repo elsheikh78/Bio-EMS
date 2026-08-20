@@ -61,8 +61,10 @@ export function ReportsCenterPage() {
   const calibrationFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === "CALIBRATION-HISTORY",
   );
-  const csvAvailable = calibrationFamily?.exportFormats.includes("CSV") ?? false;
-  const pdfAvailable = calibrationFamily?.exportFormats.includes("PDF") ?? false;
+  const csvAvailable =
+    calibrationFamily?.exportFormats.includes("CSV") ?? false;
+  const pdfAvailable =
+    calibrationFamily?.exportFormats.includes("PDF") ?? false;
   const canExport = Boolean(user && hasPermission(user.role, "REPORT_EXPORT"));
 
   function reportRequest() {
