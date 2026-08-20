@@ -21,12 +21,13 @@ describe("report catalogue contract", () => {
           title: "Calibration Status and History",
           readiness: "AVAILABLE",
           previewAvailable: true,
-          exportFormats: ["CSV"],
+          exportFormats: ["CSV", "PDF"],
           unavailableReason: null,
         },
       ],
     });
     expect(result.contractVersion).toBe("1.0");
+    expect(result.reportTypes[0].exportFormats).toEqual(["CSV", "PDF"]);
   });
 
   it("rejects an unsupported report family", () => {
