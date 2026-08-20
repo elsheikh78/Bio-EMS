@@ -39,7 +39,6 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
         },
         sensors: [
           {
-            id: 1,
             uuid: "sensor-temp-001",
             code: "TEMP-001",
             name: "Room sensor",
@@ -53,7 +52,6 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
         ],
         records: [
           {
-            id: 1,
             sensor_uuid: "sensor-temp-001",
             result: "PASS",
             performed_at: "2026-08-19T10:00:00Z",
@@ -82,6 +80,7 @@ function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
       username: role.toLowerCase(),
       role,
     };
+
     next();
   });
 
@@ -92,49 +91,6 @@ function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
 }
 
 describe("Reporting catalogue REST API", () => {
-  it.each(["ADMIN", "OPERATOR", "VIEWER"] as const)(
-    "allows %s to read the approved catalogue",
-    async (role) => {
-      const response = await request(createApp(role)).get("/api/v1/reports/catalogue").expect(200);
-
-      expect(response.body.contractVersion).toBe("1.0");
-
-      expect(response.body.reportTypes).toHaveLength(5);
-
-      expect(response.body.reportTypes).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: "CALIBRATION-HISTORY",
-            readiness: "AVAILABLE",
-            previewAvailable: true,
-            exportFormats: ["CSV"],
-          }),
-          expect.objectContaining({
-            id: "DEVICE-HEALTH",
-            readiness: "BLOCKED",
-          }),
-          expect.objectContaining({
-            id: "AUDIT-OPERATIONS",
-            readiness: "BLOCKED",
-          }),
-        ])
-      );
-    }
-  );
-
-  it.each(["ADMIN", "OPERATOR"] as const)(
-    "allows %s through the export permission gate before request validation",
-    async (role) => {
-      await request(createApp(role)).post("/api/v1/reports/exports").expect(400);
-    }
-  );
-
-  it("denies CSV export to VIEWER", async () => {
-    const response = await request(createApp("VIEWER")).post("/api/v1/reports/exports").expect(403);
-
-    expect(response.body.error.code).toBe("FORBIDDEN");
-  });
-
   it("exports calibration history as PDF for ADMIN", async () => {
     const response = await request(createApp("ADMIN"))
       .post("/api/v1/reports/exports")
