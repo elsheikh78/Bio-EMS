@@ -13,10 +13,13 @@ const request = {
 };
 
 describe("report export request", () => {
-  it("accepts only the approved CSV export", () =>
-    expect(reportExportSchema.safeParse(request).success).toBe(true));
-  it("rejects PDF and unknown fields", () => {
-    expect(reportExportSchema.safeParse({ ...request, format: "PDF" }).success).toBe(false);
+  it.each(["CSV", "PDF"] as const)("accepts the approved %s export", (format) => {
+    expect(reportExportSchema.safeParse({ ...request, format }).success).toBe(true);
+  });
+
+  it("rejects unknown formats and unknown fields", () => {
+    expect(reportExportSchema.safeParse({ ...request, format: "XLSX" }).success).toBe(false);
+
     expect(reportExportSchema.safeParse({ ...request, extra: true }).success).toBe(false);
   });
 });
