@@ -3,13 +3,45 @@ import {
   calibrationReportPreviewRequestSchema,
   calibrationReportPreviewResultSchema,
   reportCatalogueSchema,
-  type CalibrationReportPreviewRequest,
   type CalibrationReportExportRequest,
+  type CalibrationReportPreviewRequest,
 } from "./contracts";
 
 type ProtectedRequest = AuthenticationContextValue["protectedRequest"];
 
 export function createReportsApi(protectedRequest: ProtectedRequest) {
+  async function exportCalibration(
+    input: CalibrationReportExportRequest,
+    accept: "text/csv" | "application/pdf",
+    fallbackFilename: string,
+  ) {
+    const { format, ...previewInput } = input;
+
+    const body = {
+      ...calibrationReportPreviewRequestSchema.parse(previewInput),
+      format,
+    };
+
+    const response = await protectedRequest<Response>("/reports/exports", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: accept,
+      },
+      body: JSON.stringify(body),
+      responseMode: "response",
+    });
+
+    const disposition = response.headers.get("Content-Disposition") ?? "";
+    const filename =
+      disposition.match(/filename="([^"]+)"/)?.[1] ?? fallbackFilename;
+
+    return {
+      blob: await response.blob(),
+      filename,
+    };
+  }
+
   return {
     async getCatalogue() {
       return reportCatalogueSchema.parse(
@@ -30,33 +62,19 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
     },
 
     async exportCalibrationCsv(input: CalibrationReportExportRequest) {
-      const { format, ...previewInput } = input;
+      return exportCalibration(
+        { ...input, format: "CSV" },
+        "text/csv",
+        "bio-ems_calibration-history.csv",
+      );
+    },
 
-      const body = {
-        ...calibrationReportPreviewRequestSchema.parse(previewInput),
-        format,
-      };
-
-      const response = await protectedRequest<Response>("/reports/exports", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "text/csv",
-        },
-        body: JSON.stringify(body),
-        responseMode: "response",
-      });
-
-      const disposition = response.headers.get("Content-Disposition") ?? "";
-
-      const filename =
-        disposition.match(/filename="([^"]+)"/)?.[1] ??
-        "bio-ems_calibration-history.csv";
-
-      return {
-        blob: await response.blob(),
-        filename,
-      };
+    async exportCalibrationPdf(input: CalibrationReportExportRequest) {
+      return exportCalibration(
+        { ...input, format: "PDF" },
+        "application/pdf",
+        "bio-ems_calibration-history.pdf",
+      );
     },
   };
 }

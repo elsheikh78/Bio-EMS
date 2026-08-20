@@ -23,6 +23,7 @@ import { useAuthentication } from "../auth/useAuthentication";
 import { useSensors } from "../monitoredAreas/queries";
 import {
   useCalibrationReportCsvExport,
+  useCalibrationReportPdfExport,
   useCalibrationReportPreview,
   useReportCatalogue,
 } from "../reports/queries";
@@ -31,11 +32,21 @@ function dateValue(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+function downloadReport(file: { blob: Blob; filename: string }) {
+  const url = URL.createObjectURL(file.blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = file.filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
 export function ReportsCenterPage() {
   const catalogue = useReportCatalogue();
   const sensorsQuery = useSensors();
   const preview = useCalibrationReportPreview();
   const csvExport = useCalibrationReportCsvExport();
+  const pdfExport = useCalibrationReportPdfExport();
   const { user } = useAuthentication();
   const [from, setFrom] = useState(() => {
     const date = new Date();
@@ -50,6 +61,10 @@ export function ReportsCenterPage() {
   const calibrationFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === "CALIBRATION-HISTORY",
   );
+  const csvAvailable =
+    calibrationFamily?.exportFormats.includes("CSV") ?? false;
+  const pdfAvailable =
+    calibrationFamily?.exportFormats.includes("PDF") ?? false;
   const canExport = Boolean(user && hasPermission(user.role, "REPORT_EXPORT"));
 
   function reportRequest() {
@@ -75,12 +90,15 @@ export function ReportsCenterPage() {
       ...reportRequest(),
       format: "CSV",
     });
-    const url = URL.createObjectURL(file.blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = file.filename;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadReport(file);
+  }
+
+  async function exportPdf() {
+    const file = await pdfExport.mutateAsync({
+      ...reportRequest(),
+      format: "PDF",
+    });
+    downloadReport(file);
   }
 
   const loading = catalogue.isLoading || sensorsQuery.isLoading;
@@ -111,8 +129,16 @@ export function ReportsCenterPage() {
             color="primary"
             variant="outlined"
           />
-          <Chip label="CSV available" color="success" variant="outlined" />
-          <Chip label="PDF planned" variant="outlined" />
+          <Chip
+            label={csvAvailable ? "CSV available" : "CSV unavailable"}
+            color={csvAvailable ? "success" : "default"}
+            variant="outlined"
+          />
+          <Chip
+            label={pdfAvailable ? "PDF available" : "PDF unavailable"}
+            color={pdfAvailable ? "success" : "default"}
+            variant="outlined"
+          />
         </Stack>
       </Stack>
 
@@ -269,9 +295,14 @@ export function ReportsCenterPage() {
           <PreviewPanel
             preview={preview}
             canExport={canExport}
-            exporting={csvExport.isPending}
-            exportError={csvExport.isError}
-            onExport={() => void exportCsv()}
+            csvAvailable={csvAvailable}
+            pdfAvailable={pdfAvailable}
+            csvExporting={csvExport.isPending}
+            pdfExporting={pdfExport.isPending}
+            csvExportError={csvExport.isError}
+            pdfExportError={pdfExport.isError}
+            onExportCsv={() => void exportCsv()}
+            onExportPdf={() => void exportPdf()}
           />
         </Box>
       ) : null}
@@ -282,15 +313,25 @@ export function ReportsCenterPage() {
 function PreviewPanel({
   preview,
   canExport,
-  exporting,
-  exportError,
-  onExport,
+  csvAvailable,
+  pdfAvailable,
+  csvExporting,
+  pdfExporting,
+  csvExportError,
+  pdfExportError,
+  onExportCsv,
+  onExportPdf,
 }: {
   preview: ReturnType<typeof useCalibrationReportPreview>;
   canExport: boolean;
-  exporting: boolean;
-  exportError: boolean;
-  onExport: () => void;
+  csvAvailable: boolean;
+  pdfAvailable: boolean;
+  csvExporting: boolean;
+  pdfExporting: boolean;
+  csvExportError: boolean;
+  pdfExportError: boolean;
+  onExportCsv: () => void;
+  onExportPdf: () => void;
 }) {
   if (preview.isError)
     return (
@@ -324,9 +365,14 @@ function PreviewPanel({
   const data = preview.data;
   return (
     <Stack spacing={3}>
-      {exportError ? (
+      {csvExportError ? (
         <Alert severity="error">
           The CSV export could not be generated. The preview remains available.
+        </Alert>
+      ) : null}
+      {pdfExportError ? (
+        <Alert severity="error">
+          The PDF export could not be generated. The preview remains available.
         </Alert>
       ) : null}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
@@ -358,14 +404,26 @@ function PreviewPanel({
           </Box>
         </Stack>
         {canExport ? (
-          <Button
-            sx={{ mt: 3 }}
-            variant="outlined"
-            disabled={exporting}
-            onClick={onExport}
-          >
-            {exporting ? "Preparing CSV…" : "Export CSV"}
-          </Button>
+          <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
+            {csvAvailable ? (
+              <Button
+                variant="outlined"
+                disabled={csvExporting || pdfExporting}
+                onClick={onExportCsv}
+              >
+                {csvExporting ? "Preparing CSV…" : "Export CSV"}
+              </Button>
+            ) : null}
+            {pdfAvailable ? (
+              <Button
+                variant="outlined"
+                disabled={pdfExporting || csvExporting}
+                onClick={onExportPdf}
+              >
+                {pdfExporting ? "Preparing PDF…" : "Export PDF"}
+              </Button>
+            ) : null}
+          </Stack>
         ) : (
           <Typography sx={{ mt: 3 }} variant="caption" color="text.secondary">
             Your role permits preview but not export.
