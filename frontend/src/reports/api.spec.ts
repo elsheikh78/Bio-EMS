@@ -25,12 +25,12 @@ describe("reports API", () => {
       },
     });
 
-    let capturedPath: string | undefined;
+    let capturedPath: `/${string}` | undefined;
     let capturedOptions: Omit<ApiRequestOptions, "auth"> | undefined;
 
     const protectedRequest: AuthenticationContextValue["protectedRequest"] = <T>(
-      path,
-      options,
+      path: `/${string}`,
+      options?: Omit<ApiRequestOptions, "auth">,
     ) => {
       capturedPath = path;
       capturedOptions = options;
