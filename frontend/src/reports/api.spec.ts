@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { ApiRequestOptions } from "../api/client";
 import type { AuthenticationContextValue } from "../auth/AuthenticationContext";
 import { createReportsApi } from "./api";
@@ -24,16 +24,24 @@ describe("reports API", () => {
           'attachment; filename="bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf"',
       },
     });
-    const protectedRequest = vi.fn(<T>() =>
-      Promise.resolve(response as T),
-    ) as unknown as ReturnType<typeof vi.fn> & AuthenticationContextValue["protectedRequest"];
-    const api = createReportsApi(protectedRequest);
 
+    let capturedPath: string | undefined;
+    let capturedOptions: Omit<ApiRequestOptions, "auth"> | undefined;
+
+    const protectedRequest: AuthenticationContextValue["protectedRequest"] = <T>(
+      path,
+      options,
+    ) => {
+      capturedPath = path;
+      capturedOptions = options;
+      return Promise.resolve(response as T);
+    };
+
+    const api = createReportsApi(protectedRequest);
     const result = await api.exportCalibrationPdf(exportRequest);
 
-    expect(protectedRequest).toHaveBeenCalledTimes(1);
-    expect(protectedRequest).toHaveBeenCalledWith(
-      "/reports/exports",
+    expect(capturedPath).toBe("/reports/exports");
+    expect(capturedOptions).toEqual(
       expect.objectContaining({
         method: "POST",
         headers: {
@@ -43,12 +51,8 @@ describe("reports API", () => {
         responseMode: "response",
       }),
     );
-
-    const options = protectedRequest.mock.calls[0]?.[1] as
-      | Omit<ApiRequestOptions, "auth">
-      | undefined;
-    expect(options?.body).toBeTypeOf("string");
-    expect(JSON.parse(options?.body as string)).toEqual(exportRequest);
+    expect(capturedOptions?.body).toBeTypeOf("string");
+    expect(JSON.parse(capturedOptions?.body as string)).toEqual(exportRequest);
     expect(result.filename).toBe(
       "bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf",
     );
