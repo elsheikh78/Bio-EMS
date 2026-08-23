@@ -16,7 +16,7 @@ const exportRequest = {
 
 describe("reports API", () => {
   it("requests calibration PDF export with the approved media type and filename", async () => {
-    const response = new Response(new Blob(["%PDF-test"], { type: "application/pdf" }), {
+    const response = new Response("%PDF-test", {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
@@ -28,7 +28,9 @@ describe("reports API", () => {
     let capturedPath: `/${string}` | undefined;
     let capturedOptions: Omit<ApiRequestOptions, "auth"> | undefined;
 
-    const protectedRequest: AuthenticationContextValue["protectedRequest"] = <T>(
+    const protectedRequest: AuthenticationContextValue["protectedRequest"] = <
+      T,
+    >(
       path: `/${string}`,
       options?: Omit<ApiRequestOptions, "auth">,
     ) => {
@@ -51,8 +53,10 @@ describe("reports API", () => {
         responseMode: "response",
       }),
     );
+
     expect(capturedOptions?.body).toBeTypeOf("string");
     expect(JSON.parse(capturedOptions?.body as string)).toEqual(exportRequest);
+
     expect(result.filename).toBe(
       "bio-ems_calibration-history_2026-01-01_2026-02-01_rpt-test.pdf",
     );
