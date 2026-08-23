@@ -1,29 +1,53 @@
 # Project Status
 
-## Current reporting status — 19 August 2026
+## Current reporting status — 23 August 2026
 
-S16-07-02 Calibration History Preview is complete, merged through PR #53 at
-`305b1c0ea00e0d16cf7d5d41b268c03d6055abb5`, CI verified, and closed.
+S16-07 Reports Center has progressed through the controlled Calibration History
+reporting lifecycle.
 
-The next reporting item is S16-07-03 Reports Center UI. It may expose the merged
-Calibration History preview only. PDF and CSV remain unavailable until separately
-implemented and verified.
+Completed and integrated reporting slices include:
 
-Calibration history remains in SQLite; telemetry remains in InfluxDB 2.x. BIO EGYPT
-remains **NOT COMMISSIONED / NOT ACCEPTED**.
+- S16-07-02 Calibration History Preview;
+- S16-07-03 Reports Center UI;
+- S16-07-04 Calibration History CSV export;
+- S16-07-05 Calibration History PDF export;
+- frontend exposure of the approved Calibration History PDF export.
 
-S16-07-03 Reports Center UI is also complete, visually approved, merged through PR
-#55 at `c194bce9abc781d32f56e7d615a9455e9de33420`, CI verified, and closed. The next
-reporting slice is a controlled export capability consuming the same canonical
-Calibration History result. PDF and CSV are not yet available.
+The Calibration History PDF backend implementation was merged through PR #60.
+
+The frontend PDF export capability was subsequently verified and merged through
+PR #61 at `main` integration commit:
+
+`50ebdef4edd8dd342865d6381083b02069955fe3`
+
+The frontend PDF integration passed the local quality gate including:
+
+- TypeScript;
+- ESLint;
+- Prettier;
+- 212 frontend tests;
+- production build.
+
+Calibration History now supports the controlled preview, CSV export, and PDF
+export lifecycle through the Reports Center.
+
+Calibration history remains in SQLite; telemetry remains in InfluxDB 2.x.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
+The immediate Pilot priority is controlled BIO EGYPT field preparation and
+evidence-based closure of `BE-001` through `BE-012`.
+
+No field commissioning or Pilot acceptance is declared by the reporting work.
 
 ## Current Version
 
 Published release: [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
 The release contains later Sprint 13 work, the completed Sprint 14 frontend
-application, and the completed Sprint 15 Pilot-readiness foundation. It does not
-declare BIO EGYPT field commissioning or Pilot acceptance.
+application, and the completed Sprint 15 Pilot-readiness foundation.
+
+It does not declare BIO EGYPT field commissioning or Pilot acceptance.
 
 ## Implemented
 
@@ -62,20 +86,43 @@ declare BIO EGYPT field commissioning or Pilot acceptance.
 - [x] S16-04 Site Controller v1 Hardware Design Review
 - [x] S16-06 approved operational Dashboard, charts, and navigation treatment
 - [x] Sensors & Calibration register, recording, and actor-audited history
+- [x] S16-07-02 Calibration History Preview
+- [x] S16-07-03 Reports Center UI
+- [x] S16-07-04 Calibration History CSV export
+- [x] S16-07-05 Calibration History PDF export
+- [x] Frontend CSV and PDF export actions driven by the reporting catalogue
 
 ## Sprint 16
 
 Sprint 16 is **IN PROGRESS**.
 
-S16-01 through S16-04 and S16-06 are complete, merged, verified, and closed. S16-06
-was integrated through PR #50 at `main` commit
-`4ce1155156015d1983a93e637dde8f99f7be2337` after final Product Owner visual and
-functional approval and successful GitHub CI run `32179346503`.
+S16-01 through S16-04 and S16-06 are complete, merged, verified, and closed.
 
-The next Product/Reporting item is S16-07 Reports Center. Controlled S16-05 field
-evidence and S16-08 hardware work continue on the parallel field/hardware track.
+S16-06 was integrated through PR #50 at `main` commit:
+
+`4ce1155156015d1983a93e637dde8f99f7be2337`
+
+after final Product Owner visual and functional approval and successful GitHub CI.
+
+S16-07 reporting work has progressed through the controlled Calibration History
+reporting lifecycle:
+
+- S16-07-01 Reporting catalogue and permissions: COMPLETE;
+- S16-07-02 Calibration History Preview: COMPLETE;
+- S16-07-03 Reports Center UI: COMPLETE;
+- S16-07-04 Calibration History CSV export: COMPLETE;
+- S16-07-05 Calibration History PDF export: COMPLETE;
+- frontend PDF export integration: COMPLETE and merged through PR #61.
+
+Controlled S16-05 field evidence and S16-08 hardware work continue on the
+parallel field/hardware track.
 
 BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
+The immediate operational priority is not another reporting feature.
+
+The next controlled project action is preparation for the BIO EGYPT field Pilot
+and evidence-based closure of `BE-001` through `BE-012`.
 
 ## Sprint 14
 
@@ -108,7 +155,9 @@ Final S14-05 integration commit on `main`:
 
 GitHub CI completed successfully before the S14-05 merge.
 
-Local `main` and `origin/main` were subsequently synchronized and verified at the same integration commit before the documentation-only Sprint 14 closure branch was created.
+Local `main` and `origin/main` were subsequently synchronized and verified at
+the same integration commit before the documentation-only Sprint 14 closure
+branch was created.
 
 See:
 
@@ -118,7 +167,7 @@ See:
 
 ## Current Frontend Boundary
 
-The completed Sprint 14 frontend baseline includes:
+The completed frontend baseline includes:
 
 - professional responsive AppShell;
 - primary navigation;
@@ -129,65 +178,90 @@ The completed Sprint 14 frontend baseline includes:
 - protected frontend API boundary;
 - operational Dashboard;
 - operational Monitored Areas page;
+- Reports Center;
+- Calibration History preview;
+- Calibration History CSV export;
+- Calibration History PDF export;
 - Site → Monitored Area (Room) → Sensor hierarchy;
 - Sensor identification and configuration metadata;
 - configured Sensor threshold presentation;
-- loading, empty, error, success, refresh, and retry behavior for the implemented operational surfaces;
+- loading, empty, error, success, refresh, and retry behavior for implemented
+  operational surfaces;
 - frontend regression and quality-gate coverage.
 
 `Monitored Area` is presentation terminology for the existing backend Room domain.
 
 No separate Area backend abstraction was introduced by Sprint 14.
 
-Monitoring Points remain proposed and have no implemented backend table, repository, or API.
+Monitoring Points remain proposed and have no implemented backend table,
+repository, or API.
 
-Configured Sensor thresholds displayed by the frontend are configuration metadata and must not be interpreted as current telemetry, current alarm state, or device/Sensor connectivity health.
+Configured Sensor thresholds displayed by the frontend are configuration metadata
+and must not be interpreted as current telemetry, current alarm state, or
+device/Sensor connectivity health.
 
 ## Architecture Boundary Preserved
 
-Sprint 14 did not require unrelated changes to the established backend:
+The established backend boundaries remain intact.
 
-- database schema;
-- database migrations;
-- MQTT ingestion;
-- telemetry ingestion;
-- Device lifecycle;
-- Alarm Engine.
+Calibration evidence remains SQLite-backed.
+
+Telemetry remains InfluxDB 2.x-backed.
+
+The frontend continues to consume established backend contracts rather than
+creating a competing domain, persistence model, or authorization model.
 
 Backend authorization remains authoritative.
 
-The frontend continues to consume established backend contracts rather than creating a competing domain or authorization model.
+The reporting UI does not independently recalculate calibration evidence.
+
+The Calibration History CSV and PDF outputs consume the backend-owned canonical
+report result.
+
+No unrelated migration, MQTT ingestion, Device lifecycle, Alarm Engine, or
+telemetry ownership changes were introduced by the reporting work.
 
 ## Current Project Phase
 
-The immediate project phase after Sprint 14 is:
+Sprint 15 Pilot Readiness Foundation is complete.
 
-**Sprint 15 — Pilot Readiness Foundation**
+The Pilot Readiness Review is complete.
 
-The Pilot Readiness Review is complete. S15-01 is complete, merged, verified, and
-closed through PR #21 at `main` integration commit
-`d0a800dea252907d5f2a942571add2528a29666f`.
+S15-01 is complete, merged, verified, and closed through PR #21 at `main`
+integration commit:
 
-S15-02 and S15-03 are also complete, merged, verified, and closed. S15-03 was
-integrated through PR #25 at `main` integration commit
-`daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`.
+`d0a800dea252907d5f2a942571add2528a29666f`
+
+S15-02 and S15-03 are also complete, merged, verified, and closed.
+
+S15-03 was integrated through PR #25 at `main` integration commit:
+
+`daa64bed7bf6b6a7a5932ebc40c9c31da9536d1b`
 
 S15-04 is complete, merged, verified, and closed through PR #28 at `main`
-integration commit `f22945ccc5ce9d97a4991b6b923814d04802ade5`.
+integration commit:
+
+`f22945ccc5ce9d97a4991b6b923814d04802ade5`
 
 S15-05 is complete, merged, verified, and closed through PR #30 at `main`
-integration commit `2b2983433f0ea80ef00fd5359d1230b7f86254e3`.
+integration commit:
+
+`2b2983433f0ea80ef00fd5359d1230b7f86254e3`
 
 S15-06 is complete, merged, verified, and closed through PR #32 at `main`
-integration commit `8ee97931079d90d4f901e9500f06dc905d7e6049`.
+integration commit:
 
-S15-07 and Sprint 15 are complete, merged, verified, and closed. S15-07 was
-integrated through PR #34 at `main` integration commit
-`c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`.
+`8ee97931079d90d4f901e9500f06dc905d7e6049`
 
-The purpose of the review is to determine the shortest controlled path from the current integrated platform to a deployable Pilot system for the target customer.
+S15-07 and Sprint 15 are complete, merged, verified, and closed.
 
-Potential Pilot requirements must be classified as:
+S15-07 was integrated through PR #34 at `main` integration commit:
+
+`c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`
+
+The project is now in controlled Pilot execution preparation.
+
+Potential Pilot requirements remain classified as:
 
 - already implemented and ready;
 - implemented but requiring validation;
@@ -196,11 +270,12 @@ Potential Pilot requirements must be classified as:
 - documentation/procedure required;
 - genuine software gap.
 
-A possible requirement must not automatically become a new development story until the Pilot Readiness Review confirms an actual gap.
+A possible requirement must not automatically become a new development story
+until field preparation confirms an actual gap.
 
 ## Pilot Readiness Review Subjects
 
-The Pilot Readiness Review must evaluate, at minimum:
+The Pilot execution path must continue to evaluate:
 
 - target customer/site requirements;
 - production deployment topology;
@@ -221,11 +296,49 @@ The Pilot Readiness Review must evaluate, at minimum:
 - Pilot acceptance criteria;
 - commissioning, handover, and support procedures.
 
-The review determines which of these are already supported and which represent genuine remaining work.
+These subjects are not automatically new development stories.
+
+Each must be evaluated against the implemented system and the actual BIO EGYPT
+field requirements.
+
+## BIO EGYPT Open Items
+
+The controlled Pilot open-items register is maintained in:
+
+`docs/pilot/bio-egypt/BIO-EGYPT-OPEN-ITEMS.md`
+
+Current blocking items are:
+
+- `BE-001` — Confirm legal Site names, addresses, customer contacts, and access rules.
+- `BE-002` — Complete marked-up floor plans and approved Sensor positions.
+- `BE-003` — Confirm controller location/count and released channel/electrical capacity.
+- `BE-004` — Measure cable routes/lengths and approve cable/termination design.
+- `BE-005` — Assign controller, Device, channel, Sensor serial, and platform identities.
+- `BE-006` — Approve temperature warning/critical thresholds and delay requirements.
+- `BE-007` — Verify calibration certificates/status for all 20 Sensors.
+- `BE-008` — Confirm mains, protection, backup power, Internet, DNS/NTP/firewall, and 4G coverage.
+- `BE-009` — Approve primary notification channel, recipients, and escalation ownership.
+- `BE-010` — Select SMS implementation location/provider/SIM and approved E.164 test recipients.
+- `BE-011` — Confirm backup/restore, support, incident, maintenance, and handover procedures.
+- `BE-012` — Execute field deployment/commissioning using the approved S15-07 baseline.
+
+All twelve items remain subject to the controlled closure rule.
+
+Each closure entry must contain:
+
+- evidence reference;
+- approver;
+- closure date.
+
+Deleting an item is not closure.
+
+Any new survey finding receives the next sequential ID and explicit impact
+classification.
 
 ## Planned or Deferred
 
-The following items are not declared part of Sprint 14 and remain subject to separate prioritization or Pilot-gap confirmation:
+The following items remain subject to separate prioritization or Pilot-gap
+confirmation:
 
 - [ ] Monitoring Point architecture and APIs
 - [ ] Broader Device discovery, QR, activation-code, and provisioning workflows
@@ -234,10 +347,20 @@ The following items are not declared part of Sprint 14 and remain subject to sep
 - [ ] Additional operational frontend features
 - [ ] OTA update capabilities
 - [x] Pilot deployment-readiness foundation and controlled operating runbook
+- [x] Calibration History preview
+- [x] Calibration History CSV export
+- [x] Calibration History PDF export
 
-These items must not be assumed necessary for the first Pilot unless the Pilot Readiness Review establishes that requirement.
+These items must not be assumed necessary for the first Pilot unless the Pilot
+execution process establishes that requirement.
 
 ## Next Action
 
 Execute controlled BIO EGYPT field-pilot preparation and close `BE-001` through
-`BE-012` with evidence. Field commissioning and Pilot acceptance remain unexecuted.
+`BE-012` with evidence.
+
+The immediate first gate is `BE-001`.
+
+Field commissioning and Pilot acceptance remain unexecuted.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
