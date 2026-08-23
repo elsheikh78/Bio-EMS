@@ -34,3 +34,12 @@ export function useCalibrationReportCsvExport() {
       api.exportCalibrationCsv(input),
   });
 }
+
+export function useCalibrationReportPdfExport() {
+  const { protectedRequest } = useAuthentication();
+  const api = createReportsApi(protectedRequest);
+  return useMutation({
+    mutationFn: (input: CalibrationReportExportRequest) =>
+      api.exportCalibrationPdf(input),
+  });
+}
