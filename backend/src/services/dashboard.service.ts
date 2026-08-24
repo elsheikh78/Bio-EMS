@@ -12,6 +12,7 @@ import { getLatestRoomTelemetry } from "../../database/influx/queries/room-statu
 import { evaluateAlarm } from "../domain/engines/alarm-evaluation.engine";
 import { AlarmStatus } from "../domain/enums/alarm-status";
 import { SensorType } from "../domain/enums/sensor-type";
+import { shouldReplaceRoomSnapshot } from "../domain/dashboard-room-priority";
 
 export interface SensorSnapshot {
   value: number;
@@ -19,25 +20,6 @@ export interface SensorSnapshot {
   time: string;
 
   sensor: Sensor;
-}
-
-const ROOM_STATUS_PRIORITY: Record<RoomStatus["temperatureStatus"], number> = {
-  UNKNOWN: 0,
-  NORMAL: 1,
-  WARNING: 2,
-  CRITICAL: 3,
-};
-
-export function shouldReplaceRoomSnapshot(
-  currentStatus: RoomStatus["temperatureStatus"],
-  candidateStatus: RoomStatus["temperatureStatus"],
-  currentTime: string,
-  candidateTime: string
-): boolean {
-  const priorityDifference =
-    ROOM_STATUS_PRIORITY[candidateStatus] - ROOM_STATUS_PRIORITY[currentStatus];
-
-  return priorityDifference > 0 || (priorityDifference === 0 && candidateTime > currentTime);
 }
 
 interface RoomAggregate {
