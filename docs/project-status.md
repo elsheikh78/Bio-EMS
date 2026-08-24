@@ -1,5 +1,11 @@
 # Project Status
 
+## PVR-05 Devices UI — 24 August 2026
+
+PVR-05 replaces the Devices placeholder with the registered Device inventory, server-derived
+communication health, and permission-controlled metadata/lifecycle operations. Field commissioning
+and historical health reporting remain outside this review.
+
 ## PVR-04 Alarms UI — 24 August 2026
 
 PVR-04 replaces the Alarm placeholder with validated lifecycle views and controlled acknowledgement.
