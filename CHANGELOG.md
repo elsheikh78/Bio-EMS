@@ -9,6 +9,9 @@
 
 ## Added
 
+- Completed the Monitored Areas operational view with recoverable room telemetry status, Alarm
+  count, last update, and Sensor calibration presentation while preserving configuration access.
+
 - Replaced the stale application-shell landing placeholder with a permission-aware Operational
   Workspace that links to available workflows and labels staged platform capabilities.
 
