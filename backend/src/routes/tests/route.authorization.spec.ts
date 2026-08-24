@@ -61,6 +61,12 @@ vi.mock("../../controllers/audit-event.controller", () => ({
   listCustomerAuditEvents: controller,
   listPlatformAuditEvents: controller,
 }));
+vi.mock("../../controllers/notification-recipient.controller", () => ({
+  createNotificationRecipient: controller,
+  listNotificationRecipients: controller,
+  updateNotificationRecipient: controller,
+  updateNotificationRecipientStatus: controller,
+}));
 vi.mock("../../services/audit-event.service", () => ({
   auditEventService: { record: auditRecord },
 }));
@@ -70,6 +76,7 @@ import auditEventRouter from "../audit-event.route";
 import dashboardRouter from "../dashboard.route";
 import deviceRouter from "../device.route";
 import roomRouter from "../room.route";
+import notificationRecipientRouter from "../notification-recipient.route";
 import sensorRouter from "../sensor.route";
 import siteRouter from "../site.route";
 import userRouter from "../user.route";
@@ -111,6 +118,7 @@ const validSensor = {
   sensor_type: "TEMPERATURE",
   unit: "°C",
 };
+const recipientUuid = "b3d90e36-faf5-4a46-96dc-376dbc1475cb";
 
 const ROUTES: readonly RouteCase[] = [
   configurationRoute("Sites", "get", "/sites", siteRouter, "/"),
@@ -187,6 +195,49 @@ const ROUTES: readonly RouteCase[] = [
     router: auditEventRouter,
     routerPath: "/",
   },
+  {
+    area: "Notification-recipients",
+    method: "get",
+    path: "/notification-recipients?site_id=1",
+    permission: PERMISSION.NOTIFICATION_RECIPIENT_READ,
+    router: notificationRecipientRouter,
+    routerPath: "/",
+  },
+  {
+    area: "Notification-recipients",
+    method: "post",
+    path: "/notification-recipients",
+    permission: PERMISSION.NOTIFICATION_RECIPIENT_MANAGE,
+    router: notificationRecipientRouter,
+    routerPath: "/",
+    body: {
+      uuid: recipientUuid,
+      site_id: 1,
+      display_name: "Quality contact",
+      role: "QUALITY",
+      endpoints: [
+        { channel: "EMAIL", address: "quality@example.com", eligible_severities: ["CRITICAL"] },
+      ],
+    },
+  },
+  {
+    area: "Notification-recipients",
+    method: "patch",
+    path: `/notification-recipients/${recipientUuid}`,
+    permission: PERMISSION.NOTIFICATION_RECIPIENT_MANAGE,
+    router: notificationRecipientRouter,
+    routerPath: "/:recipientUuid",
+    body: { role: "MANAGEMENT" },
+  },
+  {
+    area: "Notification-recipients",
+    method: "patch",
+    path: `/notification-recipients/${recipientUuid}/status`,
+    permission: PERMISSION.NOTIFICATION_RECIPIENT_MANAGE,
+    router: notificationRecipientRouter,
+    routerPath: "/:recipientUuid/status",
+    body: { status: "inactive" },
+  },
 ];
 
 describe("actual route authorization matrix", () => {
@@ -205,6 +256,7 @@ describe("actual route authorization matrix", () => {
       ...registeredRoutes("Dashboard", dashboardRouter),
       ...registeredRoutes("Users", userRouter),
       ...registeredRoutes("Audit-events", auditEventRouter),
+      ...registeredRoutes("Notification-recipients", notificationRecipientRouter),
     ];
 
     expect(actual.sort()).toEqual(expected.sort());
@@ -299,6 +351,25 @@ describe("actual route authorization matrix", () => {
     );
     expect(auditRecord.mock.calls.at(-1)?.[0]).not.toHaveProperty("newValues");
     expect(controller).not.toHaveBeenCalled();
+  });
+
+  it("keeps recipient contact input outside denied audit evidence", async () => {
+    const createRoute = ROUTES.find(
+      (route) => route.area === "Notification-recipients" && route.method === "post"
+    );
+    if (!createRoute) throw new Error("Recipient create route missing from inventory");
+    const marker = "private-contact@example.com";
+
+    await executeRoute({ ...createRoute, body: { address: marker } }, "OPERATOR");
+
+    expect(auditRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "NOTIFICATION_RECIPIENT.CREATED",
+        result: "DENIED",
+        reason: "FORBIDDEN",
+      })
+    );
+    expect(JSON.stringify(auditRecord.mock.calls.at(-1)?.[0])).not.toContain(marker);
   });
 });
 

@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-06 Site-scoped notification recipients with normalized Email, SMS, and
+  WhatsApp endpoints plus per-channel Warning/Critical eligibility.
+- Added dedicated ADMIN-only recipient read/manage permissions, strict contact
+  validation, inactive-recipient exclusion, and contact-free atomic audit evidence.
 - Added BF-05 Sensor-scoped warning/critical Alarm activation delays with zero-delay
   backward compatibility and persisted activation candidates.
 - Added authorized `PATCH /api/v1/sensors/:sensorUuid/alarm-delay`, strict validation,
@@ -29,6 +33,8 @@
 
 ## Security
 
+- Notification contact values remain behind dedicated ADMIN-only routes and are
+  excluded from logs, URLs, deduplication keys, and audit prior/new values.
 - Alarm-delay configuration requires `CONFIGURATION_WRITE`; accepted mutation,
   pending-candidate invalidation, and audit evidence commit atomically.
 - Sensor threshold updates are restricted to `CONFIGURATION_WRITE`; denial is

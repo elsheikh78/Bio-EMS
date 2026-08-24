@@ -127,3 +127,12 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
   or severity-changing LIVE observations reset the candidate; REPLAY never affects it.
 - Delay changes invalidate pending state atomically. Recovery delay, hysteresis,
   escalation timing, and historical configuration remain separate decisions.
+- BF-06 stores notification recipients by Site with normalized Email, SMS, and
+  WhatsApp endpoints and per-channel Warning/Critical eligibility. Dedicated
+  ADMIN-only permissions protect both read and mutation boundaries.
+- Notification contact addresses are operational personal data. They are returned
+  only by the dedicated recipient API and are excluded from logs, URLs,
+  deduplication keys, and audit prior/new values.
+- Recipient resolution is read-only and excludes inactive recipients. BF-06 does
+  not send messages, consume the outbox, choose providers, define escalation, or
+  embed BIO EGYPT contacts in product constants.

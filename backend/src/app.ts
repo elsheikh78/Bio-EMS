@@ -20,6 +20,7 @@ import userRouter from "./routes/user.route";
 import { createBrowserSecurityMiddleware } from "./middleware/browser-security.middleware";
 import reportRouter from "./routes/report.route";
 import auditEventRouter from "./routes/audit-event.route";
+import notificationRecipientRouter from "./routes/notification-recipient.route";
 
 createTables();
 
@@ -49,6 +50,7 @@ app.use(`${config.apiPrefix}/dashboard`, dashboardRouter);
 app.use(`${config.apiPrefix}/users`, userRouter);
 app.use(`${config.apiPrefix}/reports`, reportRouter);
 app.use(`${config.apiPrefix}/audit-events`, auditEventRouter);
+app.use(`${config.apiPrefix}/notification-recipients`, notificationRecipientRouter);
 
 app.use(errorMiddleware);
 

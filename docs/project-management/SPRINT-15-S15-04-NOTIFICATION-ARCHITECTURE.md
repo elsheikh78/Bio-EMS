@@ -44,11 +44,18 @@ contract without changing channel adapters.
 adapter is registered in S15-04, so the durable event outbox cannot accidentally send
 external messages before recipient policy and provider behavior are approved.
 
+BF-06 subsequently adds a separate Site-scoped recipient directory and
+Warning/Critical eligibility resolver. It does not change the durable event payload,
+consume this outbox, or register a delivery adapter. Contact addresses remain outside
+events and deduplication keys.
+
 ## Scope boundaries
 
 - No SMS provider or failover logic; S15-05 owns that contract.
 - No Email, WhatsApp, Push, webhook, or external network delivery.
-- No recipient directory, escalation timing, template rendering, or frontend screen.
+- S15-04 itself included no recipient directory; BF-06 now supplies that separate
+  backend foundation. Escalation timing, template rendering, and frontend remain out
+  of scope.
 - No communication polling/scheduling worker.
 - No changes to Device health thresholds, Sensor Alarm evaluation, authentication,
   authorization policy, or published REST contracts.
