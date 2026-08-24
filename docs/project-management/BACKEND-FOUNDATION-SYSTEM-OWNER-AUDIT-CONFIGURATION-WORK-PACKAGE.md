@@ -21,9 +21,8 @@ Frontend configuration work may resume incrementally after the backend APIs requ
 
 ## 3. BF-01 — SYSTEM_OWNER authorization boundary
 
-Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
-PENDING. See `BF-01-SYSTEM-OWNER-BOUNDARY-CLOSURE.md`. This status does not claim
-integration into `main` before PR review, GitHub CI, and merge.
+Implementation status (2026-08-24): COMPLETE / MERGED / CI VERIFIED / CLOSED through
+PR #67. See `BF-01-SYSTEM-OWNER-BOUNDARY-CLOSURE.md`.
 
 ### Scope
 
@@ -45,6 +44,9 @@ integration into `main` before PR review, GitHub CI, and merge.
 - Documentation clearly distinguishes implemented behavior from MFA and future owner-portal target design.
 
 ## 4. BF-02 — Audit event persistence foundation
+
+Implementation status (2026-08-24): COMPLETE / MERGED / CI VERIFIED / CLOSED through
+PR #68. See `BF-02-AUDIT-FOUNDATION-CLOSURE.md`.
 
 ### Scope
 
@@ -76,6 +78,10 @@ Audit events must never persist plaintext passwords, password hashes, access/ref
 - Repository/service tests cover persistence, ordering/identity, and prohibited-secret handling.
 
 ## 5. BF-03 — Integrate existing User Management with audit
+
+Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
+PENDING on `agent/bf-03-user-audit-integration`. See
+`BF-03-USER-AUDIT-INTEGRATION.md` for the approved event and failure policy.
 
 ### Scope
 

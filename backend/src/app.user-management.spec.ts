@@ -96,6 +96,20 @@ describe("Admin User Management application boundary", () => {
       .prepare("SELECT password_hash FROM users WHERE username = 'new.user'")
       .get() as { password_hash: string };
     expect(stored.password_hash).toMatch(/^\$2[aby]\$12\$/);
+    expect(latestAudit("USER.CREATED")).toMatchObject({
+      actor_id: "1",
+      actor_role: "ADMIN",
+      target_type: "USER",
+      target_id: String(response.body.id),
+      result: "SUCCESS",
+      previous_values_json: null,
+      new_values_json: JSON.stringify({
+        username: "new.user",
+        email: "new@example.com",
+        role: "VIEWER",
+        status: "active",
+      }),
+    });
   });
 
   it.each([
@@ -118,6 +132,13 @@ describe("Admin User Management application boundary", () => {
       .send({ username: "viewer", password: "StrongPassword1", role: "VIEWER" })
       .expect(409);
     expect(response.body.error.code).toBe("RESOURCE_ALREADY_EXISTS");
+    expect(latestAudit("USER.CREATED")).toMatchObject({
+      actor_id: "1",
+      result: "FAILED",
+      reason: "RESOURCE_ALREADY_EXISTS",
+      previous_values_json: null,
+      new_values_json: null,
+    });
   });
 
   it("prevents self role changes and self disablement", async () => {
@@ -206,6 +227,11 @@ describe("Admin User Management application boundary", () => {
 
     expect(response.body).toMatchObject({ id: 3, email: "viewer@example.com", role: "OPERATOR" });
     expect(response.body).not.toHaveProperty("password_hash");
+    expect(latestAudit("USER.PROFILE_UPDATED", "3")).toMatchObject({
+      result: "SUCCESS",
+      previous_values_json: JSON.stringify({ email: null, role: "VIEWER" }),
+      new_values_json: JSON.stringify({ email: "viewer@example.com", role: "OPERATOR" }),
+    });
   });
 
   it("permits changing another ADMIN when the authenticated ADMIN remains active", async () => {
@@ -215,6 +241,11 @@ describe("Admin User Management application boundary", () => {
       .set(auth(1))
       .send({ status: "disabled" })
       .expect(200);
+    expect(latestAudit("USER.STATUS_UPDATED", "4")).toMatchObject({
+      result: "SUCCESS",
+      previous_values_json: JSON.stringify({ status: "active" }),
+      new_values_json: JSON.stringify({ status: "disabled" }),
+    });
   });
 
   it.each([
@@ -261,6 +292,13 @@ describe("Admin User Management application boundary", () => {
     ).password_hash;
     expect(storedHash).not.toBe(previousHash);
     expect(storedHash).not.toBe("ReplacementPass1");
+    const passwordAudit = latestAudit("USER.PASSWORD_UPDATED", "3");
+    expect(passwordAudit).toMatchObject({
+      result: "SUCCESS",
+      previous_values_json: null,
+      new_values_json: null,
+    });
+    expect(JSON.stringify(passwordAudit)).not.toMatch(/ReplacementPass1|\$2b\$/i);
     database.prepare("UPDATE users SET status = 'disabled' WHERE id = 1").run();
     await request(app).get("/api/v1/users").set(auth(1)).expect(401);
     database.prepare("DELETE FROM users WHERE id = 1").run();
@@ -284,6 +322,66 @@ describe("Admin User Management application boundary", () => {
       .send({ password: "ReplacementPass1" })
       .expect(404);
     expect(response.body.error.code).toBe("USER_NOT_FOUND");
+    expect(latestAudit("USER.PASSWORD_UPDATED", "99")).toMatchObject({
+      result: "FAILED",
+      reason: "USER_NOT_FOUND",
+    });
+  });
+
+  it("audits authenticated authorization denial without copying the request body", async () => {
+    const marker = "do-not-persist-request-body";
+    await request(app)
+      .patch("/api/v1/users/3")
+      .set(auth(2))
+      .send({ email: `${marker}@example.com` })
+      .expect(403);
+
+    const denied = latestAudit("USER.PROFILE_UPDATED", "3");
+    expect(denied).toMatchObject({
+      actor_id: "2",
+      actor_role: "OPERATOR",
+      result: "DENIED",
+      reason: "FORBIDDEN",
+      previous_values_json: null,
+      new_values_json: null,
+    });
+    expect(JSON.stringify(denied)).not.toContain(marker);
+  });
+
+  it("does not audit rejected validation input", async () => {
+    const before = auditCount("USER.PROFILE_UPDATED");
+    await request(app)
+      .patch("/api/v1/users/3")
+      .set(auth(1))
+      .send({ unexpected: "hostile-value" })
+      .expect(400);
+    expect(auditCount("USER.PROFILE_UPDATED")).toBe(before);
+  });
+
+  it("rolls back the User mutation when SUCCESS audit persistence fails", async () => {
+    database.exec(`
+      CREATE TRIGGER bf03_test_block_audit_insert
+      BEFORE INSERT ON audit_events
+      BEGIN
+        SELECT RAISE(ABORT, 'blocked audit insert');
+      END;
+    `);
+
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      await request(app)
+        .patch("/api/v1/users/3")
+        .set(auth(1))
+        .send({ email: "must-rollback@example.com" })
+        .expect(500);
+    } finally {
+      database.exec("DROP TRIGGER bf03_test_block_audit_insert");
+      consoleError.mockRestore();
+    }
+
+    expect(database.prepare("SELECT email FROM users WHERE id = 3").get()).toEqual({
+      email: null,
+    });
   });
 
   function insert(id: number, username: string, role: string) {
@@ -292,5 +390,28 @@ describe("Admin User Management application boundary", () => {
         "INSERT INTO users (id, username, password_hash, role, status) VALUES (?, ?, ?, ?, 'active')"
       )
       .run(id, username, hash, role);
+  }
+
+  function latestAudit(action: string, targetId?: string) {
+    return database
+      .prepare(
+        `SELECT actor_id, actor_role, target_type, target_id, result,
+                previous_values_json, new_values_json, reason
+         FROM audit_events
+         WHERE action = ? AND (? IS NULL OR target_id = ?)
+         ORDER BY rowid DESC
+         LIMIT 1`
+      )
+      .get(action, targetId ?? null, targetId ?? null) as Record<string, unknown>;
+  }
+
+  function auditCount(action: string): number {
+    return (
+      database
+        .prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action = ?")
+        .get(action) as {
+        count: number;
+      }
+    ).count;
   }
 });

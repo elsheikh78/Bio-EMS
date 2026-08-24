@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-03 atomic User Management audit evidence for creation, profile/role,
+  status, and password-management actions.
+- Added safe `SUCCESS`, authenticated `DENIED`, and controlled `FAILED` User audit
+  semantics without persisting rejected request bodies or credential values.
 - Added the BF-02 append-only `audit_events` persistence foundation with actor,
   action, target, Site, result, prior/new values, request context, reason, and
   authoritative event identity/time.
@@ -17,6 +21,10 @@
 
 ## Security
 
+- Successful User mutations and their audit events now commit in one SQLite
+  transaction; audit persistence failure rolls back the User change.
+- Password-management events contain action/result/target context only and never
+  contain the submitted password, bcrypt hash, or credential prior/new values.
 - Audit updates and deletes are rejected by SQLite triggers; customer audit reads
   require `AUDIT_READ`, which is assigned only to ADMIN.
 - Sensitive structured keys, bearer credentials, password hashes, private-key

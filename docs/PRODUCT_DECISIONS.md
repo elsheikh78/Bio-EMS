@@ -105,3 +105,11 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
   redaction before persistence.
 - Integrating individual mutation families is incremental work and must not be
   inferred merely from availability of the BF-02 foundation.
+- Existing User Management is the first integrated audit producer. Successful User
+  mutation and audit persistence are one transaction; a missing audit event causes
+  rollback rather than unaudited success.
+- Password audit events contain action/result/target context only. Validation-rejected
+  request bodies and all password/hash values remain outside audit persistence.
+- Customer User Management currently has no implemented Site/customer ownership
+  relation, so BF-03 does not invent a false `site_id`; future tenant modeling must
+  add explicit ownership and isolation.

@@ -131,11 +131,10 @@ Before declaring this foundation implemented:
 
 Frontend work resumes after the required backend contracts are stable enough to avoid fictitious controls. The frontend work package will consume, rather than invent, the approved APIs for configuration, user administration, audit viewing, and owner/customer authorization boundaries.
 
-## 9. BF-01 implemented boundary
+## 9. Implemented BF-01 and BF-02 boundaries
 
-BF-01 implements the first backend authorization boundary only. Until its PR is
-merged, the following statements describe the verified feature-branch state rather
-than the integrated `main` release:
+BF-01 is merged through PR #67 and implements the first backend authorization
+boundary:
 
 - `SYSTEM_OWNER` is stored in the singleton `platform_principals` table created by
   SQLite migration 009, outside the customer `users` table.
@@ -152,7 +151,19 @@ than the integrated `main` release:
 - Both customer and platform authentication reject duplicate `Authorization` header
   fields before token verification.
 
-### Not implemented by BF-01
+BF-02 is merged through PR #68 and implements the append-only audit persistence and
+read foundation:
+
+- migration 010 creates `audit_events` with immutable identity/time, actor, action,
+  target, Site, result, safe prior/new values, request context, reason, and source;
+- database triggers reject normal UPDATE and DELETE operations;
+- the audit service owns event identity/time and performs deterministic redaction;
+- customer reads require ADMIN `AUDIT_READ` and an explicit Site;
+- platform reads use the separate platform authentication boundary and may span
+  Sites;
+- audit writes remain internal-service-only.
+
+### Not implemented by BF-01 or BF-02
 
 BF-01 does not implement or claim:
 
@@ -161,9 +172,10 @@ BF-01 does not implement or claim:
 - an Owner Portal or frontend owner route;
 - commercial platform permissions such as customer lifecycle, licensing, support,
   updates, or cross-customer evidence access;
-- the append-only system-wide audit foundation or owner action audit integration;
+- owner action audit integration and action-specific audit producers beyond BF-02;
 - a customer-visible or API-driven owner-management lifecycle.
 
-Those items remain controlled follow-up work. Production owner activation must not be
-declared until applicable authentication hardening, audit, deployment-secret, and
-operational controls are implemented and verified.
+Those items remain controlled follow-up work. BF-03 begins the action-specific audit
+integration with existing customer User Management. Production owner activation must
+not be declared until applicable authentication hardening, audit, deployment-secret,
+and operational controls are implemented and verified.

@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { PERMISSION } from "../authorization/permissions";
 import {
   createUser,
   listUsers,
@@ -7,7 +6,7 @@ import {
   updateUserPassword,
   updateUserStatus,
 } from "../controllers/user.controller";
-import { requirePermission } from "../middleware/authorization.middleware";
+import { requireUserManagementPermission } from "../middleware/user-management-authorization.middleware";
 import { validateBody, validateParams } from "../middleware/validate-request";
 import {
   createUserSchema,
@@ -16,29 +15,34 @@ import {
   updateUserStatusSchema,
   userParamsSchema,
 } from "../modules/user/dto/user.schema";
+import { USER_AUDIT_ACTION } from "../modules/user/user-audit";
 
 const router = Router();
-const adminOnly = requirePermission(PERMISSION.USER_MANAGE);
 
-router.get("/", adminOnly, listUsers);
-router.post("/", adminOnly, validateBody(createUserSchema), createUser);
+router.get("/", requireUserManagementPermission(), listUsers);
+router.post(
+  "/",
+  requireUserManagementPermission(USER_AUDIT_ACTION.CREATED),
+  validateBody(createUserSchema),
+  createUser
+);
 router.patch(
   "/:user_id",
-  adminOnly,
+  requireUserManagementPermission(USER_AUDIT_ACTION.PROFILE_UPDATED),
   validateParams(userParamsSchema),
   validateBody(updateUserSchema),
   updateUser
 );
 router.patch(
   "/:user_id/status",
-  adminOnly,
+  requireUserManagementPermission(USER_AUDIT_ACTION.STATUS_UPDATED),
   validateParams(userParamsSchema),
   validateBody(updateUserStatusSchema),
   updateUserStatus
 );
 router.put(
   "/:user_id/password",
-  adminOnly,
+  requireUserManagementPermission(USER_AUDIT_ACTION.PASSWORD_UPDATED),
   validateParams(userParamsSchema),
   validateBody(updateUserPasswordSchema),
   updateUserPassword

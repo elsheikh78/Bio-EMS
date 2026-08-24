@@ -42,7 +42,8 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Centralized role-based authorization
 - ADMIN User Management with last-active-ADMIN protection
 - Isolated platform-level `SYSTEM_OWNER` authentication boundary
-- Append-only, redacted, Site-scoped audit-event foundation (BF-02 branch)
+- Append-only, redacted audit-event foundation with scoped reads
+- Atomic User Management audit production for success, denial, and controlled failure
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -101,8 +102,8 @@ Sprint 14 and Sprint 15 are **COMPLETE / MERGED / VERIFIED / CLOSED**.
   contracts, the controlled BIO EGYPT Pilot package, and deployment/commissioning
   readiness foundations.
 
-The backend commercial-foundation sequence has completed BF-01 and is progressing
-through BF-02. In the parallel Pilot track,
+The backend commercial-foundation sequence has completed BF-01 and BF-02 and is
+progressing through BF-03. In the parallel Pilot track,
 `BE-001` is closed and field gates `BE-002` through `BE-012` remain open. Repository
 completion does not represent installation, commissioning, or customer acceptance.
 
@@ -228,7 +229,9 @@ owner credential in source control, frontend code, documentation, or logs.
 
 BF-01 does not claim completion of MFA, authentication rate limiting/lockout, an Owner
 Portal, or commercial owner permissions. BF-02 adds the append-only audit persistence
-and read boundary, but action-specific producers remain controlled follow-up work.
+and read boundary. BF-03 integrates the existing User Management mutation family as
+an atomic audit producer; other action-specific producers remain controlled follow-up
+work.
 
 Customer ADMIN audit reads use
 `GET /api/v1/audit-events?site_id=<positive-id>&limit=<1..500>`. Platform audit reads

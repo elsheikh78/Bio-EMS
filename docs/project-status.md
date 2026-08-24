@@ -1,5 +1,19 @@
 # Project Status
 
+## BF-03 User Management audit integration — 24 August 2026
+
+BF-03 is implemented and locally verified on
+`agent/bf-03-user-audit-integration`. It remains feature-branch capability until PR,
+GitHub CI, review, and merge complete.
+
+User creation, profile/role changes, status changes, and password management now emit
+safe audit evidence. Successful mutation and audit persistence are atomic. Relevant
+authenticated denials and controlled failures are recorded without copying request
+bodies, passwords, or hashes.
+
+Backend gates pass with 63 files / 545 tests. The unchanged frontend passes 25 files /
+212 tests plus typecheck, lint, format, and production build.
+
 ## BF-02 audit foundation — 24 August 2026
 
 The BF-02 append-only audit foundation is merged and verified through PR #68 at
@@ -11,9 +25,8 @@ service-owned UUID/time, recursive secret redaction, deterministic repository re
 ADMIN-only Site-scoped reads, separately authenticated platform cross-Site reads,
 strict query validation, and security/regression tests.
 
-BF-02 establishes the shared persistence/read contract. It does not claim that every
-existing mutation already produces an audit event; BF-03 User Management integration
-and later action-specific producers remain separate controlled work.
+BF-02 establishes the shared persistence/read contract. BF-03 now integrates User
+Management; later action-specific producers remain separate controlled work.
 
 ## BF-01 backend foundation — 24 August 2026
 
@@ -26,8 +39,8 @@ one-time bootstrap, strict owner/customer separation, duplicate Authorization-he
 rejection, and REST/security/regression tests.
 
 BF-01 does not claim MFA, login rate limiting/lockout, Owner Portal UI, or commercial
-owner permissions. Its deferred append-only audit foundation is now implemented by
-BF-02 pending integration.
+owner permissions. Its deferred append-only audit foundation is implemented and
+integrated by BF-02.
 
 ## Current reporting status — 23 August 2026
 
