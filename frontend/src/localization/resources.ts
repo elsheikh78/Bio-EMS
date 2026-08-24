@@ -65,38 +65,6 @@ export interface TranslationResources {
     description: string;
   };
 
-  placeholders: {
-    dashboard: {
-      title: string;
-      description: string;
-    };
-
-    monitoredAreas: {
-      title: string;
-      description: string;
-    };
-
-    alarms: {
-      title: string;
-      description: string;
-    };
-
-    devices: {
-      title: string;
-      description: string;
-    };
-
-    configuration: {
-      title: string;
-      description: string;
-    };
-
-    users: {
-      title: string;
-      description: string;
-    };
-  };
-
   dashboard: {
     title: string;
     description: string;
@@ -314,7 +282,7 @@ export const englishResources = {
     title: "Operational workspace",
 
     description:
-      "The application shell is ready. Operational features remain explicitly staged for later Sprint 14 stories.",
+      "Open the available operational and administration workflows for the current Site scope.",
   },
 
   dashboard: {
@@ -488,47 +456,6 @@ export const englishResources = {
         maxValue: "Maximum value",
         notConfigured: "Not configured",
       },
-    },
-  },
-
-  placeholders: {
-    dashboard: {
-      title: "Dashboard",
-
-      description: "Dashboard data and widgets are not implemented in S14-02.",
-    },
-
-    monitoredAreas: {
-      title: "Monitored Areas",
-
-      description:
-        "Monitored Areas is the presentation name for existing Room contracts; no Asset or Monitoring Point model is introduced.",
-    },
-
-    alarms: {
-      title: "Alarms",
-
-      description: "Operational alarm views are not implemented in S14-02.",
-    },
-
-    devices: {
-      title: "Devices",
-
-      description: "Operational device views are not implemented in S14-02.",
-    },
-
-    configuration: {
-      title: "Configuration",
-
-      description:
-        "BF-09 configuration workflows are ADMIN-only; server authorization and backend validation remain authoritative.",
-    },
-
-    users: {
-      title: "Users",
-
-      description:
-        "ADMIN-only User Management and Site-scoped Audit Log are integrated through BF-09.",
     },
   },
 
