@@ -2,9 +2,26 @@
 
 ## Frontend Commercial Configuration
 
-### BF-09-02 — Sensor Threshold and Alarm-delay Editor
+### BF-09-03 — Notification Recipient Directory UI
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-03-notification-recipient-ui`;
+- base: BF-09-02 merge commit `78e94fef09f3170219bb880d8bc78033a9769994`;
+- Site-scoped recipient list and explicit Site selection;
+- create/edit workflows for role and up to three unique channels;
+- Email and E.164 validation with Warning/Critical eligibility;
+- dedicated active/inactive lifecycle action;
+- contact-minimized register and contact-free URL boundary;
+- loading, empty, validation, mutation failure, and retry states.
+- frontend verification: 29 files / 232 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build.
+
+Remote PR, CI, and merge evidence remain pending.
+
+### BF-09-02 — Sensor Threshold and Alarm-delay Editor
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-09-02-sensor-configuration-ui`;
 - base: BF-09-01 merge commit `a4e33bf9686141596b1580f5b925a64487348ba0`;
@@ -16,7 +33,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - frontend verification: 28 files / 227 tests PASS plus build;
 - backend regression verification: 71 files / 600 tests PASS plus build.
 
-Remote PR, CI, and merge evidence remain pending.
+- PR: #78;
+- integration commit: `78e94fef09f3170219bb880d8bc78033a9769994`;
+- GitHub CI run number: 212 — SUCCESS.
 
 ### BF-09-01 — Frontend Readiness and API Contracts
 

@@ -19,6 +19,7 @@ import {
 } from "../configuration/queries";
 import type { Sensor } from "../monitoredAreas/contracts";
 import { useSensors } from "../monitoredAreas/queries";
+import { NotificationRecipientsPanel } from "../configuration/NotificationRecipientsPanel";
 
 export function ConfigurationPage() {
   const sensorsQuery = useSensors();
@@ -116,6 +117,7 @@ export function ConfigurationPage() {
           onClose={() => setSelected(undefined)}
         />
       ) : null}
+      <NotificationRecipientsPanel />
     </Stack>
   );
 }

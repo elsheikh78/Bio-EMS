@@ -1,9 +1,26 @@
 # Project Status
 
+## BF-09-03 notification recipient UI — 24 August 2026
+
+BF-09-03 is implemented on `agent/bf-09-03-notification-recipient-ui` from the
+verified BF-09-02 merge. ADMIN can select a Site, list its recipients, create or edit
+a recipient with unique Email/SMS/WhatsApp channels and Warning/Critical eligibility,
+and activate or deactivate the profile through the dedicated lifecycle route.
+
+The list exposes channel and severity metadata without displaying contact addresses.
+Email and E.164 contact validation occurs before protected mutations, while backend
+validation and authorization remain authoritative. Delivery providers and message
+sending remain explicitly outside this UI slice.
+
+Frontend gates pass with 29 files / 232 tests plus production build. Backend
+regression gates pass with 71 files / 600 tests plus build. Both applications pass
+format, lint, and typecheck.
+
 ## BF-09-02 Sensor configuration UI — 24 August 2026
 
-BF-09-02 is implemented on `agent/bf-09-02-sensor-configuration-ui` from the verified
-BF-09-01 merge. The ADMIN-only Configuration route now exposes a searchable Sensor
+BF-09-02 is merged through PR #78 at integration commit
+`78e94fef09f3170219bb880d8bc78033a9769994`; GitHub CI run 212 succeeded. The
+ADMIN-only Configuration route now exposes a searchable Sensor
 register and a controlled editor for persisted warning/alarm thresholds and
 warning/critical activation delays.
 
