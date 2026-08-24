@@ -1,10 +1,24 @@
 # Project Status
 
+## BF-04 editable Sensor alarm thresholds — 24 August 2026
+
+BF-04 is implemented and locally verified on
+`agent/bf-04-editable-alarm-thresholds`. It remains feature-branch capability until
+PR, GitHub CI, review, and merge complete.
+
+ADMIN can partially update or clear the four existing Sensor warning/alarm thresholds
+through a strict post-creation route. Effective values must remain strictly ordered
+and within the Sensor measurement range when configured. SUCCESS persistence and
+Site-scoped prior/new audit evidence are atomic.
+
+Backend gates pass with 64 files / 558 tests. The frontend regression suite passes 25 files /
+212 tests plus typecheck, lint, format, and production build.
+
 ## BF-03 User Management audit integration — 24 August 2026
 
-BF-03 is implemented and locally verified on
-`agent/bf-03-user-audit-integration`. It remains feature-branch capability until PR,
-GitHub CI, review, and merge complete.
+BF-03 is merged and verified through PR #70 at `main` integration commit
+`4ff9882a571f90761a5eb3bdc25e427867e76e95`. GitHub CI run 196 completed
+successfully before merge.
 
 User creation, profile/role changes, status changes, and password management now emit
 safe audit evidence. Successful mutation and audit persistence are atomic. Relevant

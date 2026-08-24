@@ -5,6 +5,7 @@ import { errorMiddleware } from "../../middleware/error.middleware";
 import type { Sensor } from "../../entities/Sensor";
 import * as calibrationService from "../../services/calibration.service";
 import * as sensorService from "../../services/sensor.service";
+import { sensorThresholdService } from "../../services/sensor-threshold.service";
 import sensorRouter from "../sensor.route";
 
 vi.mock("../../services/sensor.service", () => ({
@@ -15,6 +16,14 @@ vi.mock("../../services/sensor.service", () => ({
 vi.mock("../../services/calibration.service", () => ({
   createCalibrationRecord: vi.fn(),
   getCalibrationHistory: vi.fn(),
+}));
+
+vi.mock("../../services/sensor-threshold.service", () => ({
+  sensorThresholdService: { updateThresholds: vi.fn() },
+}));
+
+vi.mock("../../services/audit-event.service", () => ({
+  auditEventService: { record: vi.fn() },
 }));
 
 const app = express();
@@ -108,6 +117,50 @@ describe("Sensor REST API", () => {
     const response = await request(app).get("/api/v1/sensors").expect(200);
 
     expect(response.body).toEqual(sensors);
+  });
+
+  it("updates a strict partial threshold body through the authenticated actor", async () => {
+    const updated = {
+      ...validSensor,
+      warning_low: 3,
+      alarm_low: 1,
+      warning_high: 8,
+      alarm_high: 10,
+    } satisfies Sensor;
+    vi.mocked(sensorThresholdService.updateThresholds).mockReturnValue(updated);
+
+    const response = await request(app)
+      .patch(`/api/v1/sensors/${validSensor.uuid}/thresholds`)
+      .send({ warning_low: 3, alarm_low: 1 })
+      .expect(200);
+
+    expect(sensorThresholdService.updateThresholds).toHaveBeenCalledWith(
+      { kind: "CUSTOMER_USER", id: "1", username: "admin", role: "ADMIN" },
+      validSensor.uuid,
+      { warning_low: 3, alarm_low: 1 },
+      { source: "SENSOR_CONFIGURATION_API" }
+    );
+    expect(response.body).toEqual(updated);
+  });
+
+  it.each([
+    ["an empty body", {}],
+    ["an unknown key", { critical_high: 10 }],
+    ["a non-numeric threshold", { warning_low: "3" }],
+  ])("rejects threshold update with %s", async (_case, body) => {
+    await request(app)
+      .patch(`/api/v1/sensors/${validSensor.uuid}/thresholds`)
+      .send(body)
+      .expect(400);
+    expect(sensorThresholdService.updateThresholds).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid threshold Sensor UUID before the service", async () => {
+    await request(app)
+      .patch("/api/v1/sensors/not-a-uuid/thresholds")
+      .send({ warning_low: 3 })
+      .expect(400);
+    expect(sensorThresholdService.updateThresholds).not.toHaveBeenCalled();
   });
 });
 

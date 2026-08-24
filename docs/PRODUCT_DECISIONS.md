@@ -113,3 +113,11 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - Customer User Management currently has no implemented Site/customer ownership
   relation, so BF-03 does not invent a false `site_id`; future tenant modeling must
   add explicit ownership and isolation.
+- Sensor warning/alarm thresholds are editable configuration, not customer-specific
+  code constants. Partial updates merge with persisted values and `null` explicitly
+  clears a threshold.
+- Every configured threshold subset must be strictly increasing in Domain rank:
+  `alarm_low < warning_low < warning_high < alarm_high`, and must remain inside a
+  configured Sensor measurement range.
+- BF-04 changes current effective configuration only. It does not claim historical
+  effective dating or reconstruct old reports against later threshold changes.

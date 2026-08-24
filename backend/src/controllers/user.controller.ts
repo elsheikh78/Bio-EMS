@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import { userService } from "../services/user.service";
-import { customerAuditActor, userManagementRequestContext } from "../modules/user/user-audit";
+import {
+  customerAuditActor,
+  customerRequestContext,
+} from "../modules/audit/customer-audit-context";
 
 const userId = (req: Request) => Number(req.params.user_id);
 
@@ -16,7 +19,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
       await userService.createUser(
         customerAuditActor(req),
         req.body,
-        userManagementRequestContext()
+        customerRequestContext("USER_MANAGEMENT_API")
       )
     );
 });
@@ -27,7 +30,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
       customerAuditActor(req),
       userId(req),
       req.body,
-      userManagementRequestContext()
+      customerRequestContext("USER_MANAGEMENT_API")
     )
   );
 });
@@ -38,7 +41,7 @@ export const updateUserStatus = asyncHandler(async (req: Request, res: Response)
       customerAuditActor(req),
       userId(req),
       req.body,
-      userManagementRequestContext()
+      customerRequestContext("USER_MANAGEMENT_API")
     )
   );
 });
@@ -49,7 +52,7 @@ export const updateUserPassword = asyncHandler(async (req: Request, res: Respons
       customerAuditActor(req),
       userId(req),
       req.body,
-      userManagementRequestContext()
+      customerRequestContext("USER_MANAGEMENT_API")
     )
   );
 });

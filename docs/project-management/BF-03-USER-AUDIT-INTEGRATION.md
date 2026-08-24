@@ -1,6 +1,6 @@
 # BF-03 — User Management Audit Integration
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-03-user-audit-integration`
 Base: `main` at `07e65dee84a8f4ea335f857f897d242cd6895098`
@@ -122,5 +122,11 @@ Frontend source is unchanged from the BF-02 baseline. Final regression gates:
 
 ## 10. Integration gate
 
-BF-03 becomes complete only after PR review, GitHub CI success, merge, and integration
-evidence update. BF-04 must start from the verified merged BF-03 `main`.
+BF-03 completed its integration gate:
+
+- PR: #70;
+- GitHub feature commit: `9213360b70ceb44b6e71b95c6b429fa5dd86e820`;
+- GitHub CI run number: 196 — SUCCESS;
+- merge commit: `4ff9882a571f90761a5eb3bdc25e427867e76e95`.
+
+BF-04 starts from the verified merged BF-03 `main`.

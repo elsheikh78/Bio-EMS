@@ -44,6 +44,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Isolated platform-level `SYSTEM_OWNER` authentication boundary
 - Append-only, redacted audit-event foundation with scoped reads
 - Atomic User Management audit production for success, denial, and controlled failure
+- Authorized, validated, auditable post-creation Sensor threshold updates
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -199,7 +200,7 @@ The current API prefix is normally `/api/v1`.
 | Health         | `GET /health`                                                  |
 | Sites          | Management/read endpoints                                      |
 | Rooms          | Management/read endpoints                                      |
-| Sensors        | Management/read endpoints                                      |
+| Sensors        | Management/read, threshold update, and calibration operations  |
 | Devices        | Create, list, read, metadata update, activate, and disable     |
 | Alarms         | List, active, detail, and acknowledgement operations           |
 | Dashboard      | Summary, latest telemetry, room status, and alarm statistics   |

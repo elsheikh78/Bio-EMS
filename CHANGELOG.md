@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-04 `PATCH /api/v1/sensors/:sensorUuid/thresholds` for authorized partial
+  threshold update/clear operations with effective ordering and range validation.
+- Added Site-scoped atomic `SENSOR.THRESHOLDS_UPDATED` audit evidence and shared
+  audited-denial middleware for configuration mutations.
 - Added BF-03 atomic User Management audit evidence for creation, profile/role,
   status, and password-management actions.
 - Added safe `SUCCESS`, authenticated `DENIED`, and controlled `FAILED` User audit
@@ -21,6 +25,10 @@
 
 ## Security
 
+- Sensor threshold updates are restricted to `CONFIGURATION_WRITE`; denial is
+  recorded before body validation without copying the submitted body.
+- Successful threshold persistence and its prior/new audit evidence commit in one
+  SQLite transaction, with rollback on audit failure.
 - Successful User mutations and their audit events now commit in one SQLite
   transaction; audit persistence failure rolls back the User change.
 - Password-management events contain action/result/target context only and never

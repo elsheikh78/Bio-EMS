@@ -79,8 +79,8 @@ Audit events must never persist plaintext passwords, password hashes, access/ref
 
 ## 5. BF-03 — Integrate existing User Management with audit
 
-Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
-PENDING on `agent/bf-03-user-audit-integration`. See
+Implementation status (2026-08-24): COMPLETE / MERGED / CI VERIFIED / CLOSED through
+PR #70. See
 `BF-03-USER-AUDIT-INTEGRATION.md` for the approved event and failure policy.
 
 ### Scope
@@ -104,6 +104,10 @@ Password events record action/result only and must not capture the password or p
 - Last-active-admin concurrency protections remain green.
 
 ## 6. BF-04 — Editable Sensor alarm thresholds
+
+Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
+PENDING on `agent/bf-04-editable-alarm-thresholds`. See
+`BF-04-EDITABLE-ALARM-THRESHOLDS.md` for the approved mutation contract.
 
 ### Scope
 
