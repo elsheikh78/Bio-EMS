@@ -2,12 +2,18 @@
 
 **Published version:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
-**Current phase:** Post-Sprint 15 — BIO EGYPT Field-Pilot Preparation
+**Current phase:** Backend commercial-foundation implementation in parallel with
+BIO EGYPT Field-Pilot Preparation
 
-**Current integrated `main` baseline:** `c18ca46b3b7c3a68e3ddac1dfab10fdcd76c49f4`
+**Current integrated `main` baseline:** `47bdf03510613380eb5ebafb13f4c093bbdc84f6`
 
-**Next action:** close BIO EGYPT field gates `BE-001` through `BE-012`; Pilot remains
-NOT COMMISSIONED / NOT ACCEPTED.
+**Current feature work:** BF-01 `SYSTEM_OWNER` backend boundary is implemented and
+locally verified on `agent/bf-01-system-owner-boundary`; PR, GitHub CI, review, and
+merge remain required before it becomes part of `main`.
+
+**Next actions:** complete BF-01 integration, then proceed to BF-02. In parallel,
+close BIO EGYPT field gates `BE-002` through `BE-012`; `BE-001` is closed. The Pilot
+remains NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
@@ -16,6 +22,8 @@ NOT COMMISSIONED / NOT ACCEPTED.
 - MQTT telemetry ingestion, Alarm evaluation, Dashboard APIs, and Site/Room/Device/Sensor APIs.
 - Device onboarding lifecycle and telemetry trust-boundary enforcement.
 - JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Management.
+- BF-01 branch: isolated platform `SYSTEM_OWNER` storage, authentication, token, and
+  controlled bootstrap boundary; not yet merged into `main`.
 - Authenticated Alarm acknowledgment with actor audit persistence.
 - React frontend foundation, responsive AppShell, authenticated session lifecycle,
   authorization-aware routing, operational Dashboard, and Monitored Areas.

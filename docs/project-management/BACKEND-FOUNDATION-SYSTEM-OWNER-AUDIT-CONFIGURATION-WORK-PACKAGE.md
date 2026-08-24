@@ -21,6 +21,10 @@ Frontend configuration work may resume incrementally after the backend APIs requ
 
 ## 3. BF-01 — SYSTEM_OWNER authorization boundary
 
+Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
+PENDING. See `BF-01-SYSTEM-OWNER-BOUNDARY-CLOSURE.md`. This status does not claim
+integration into `main` before PR review, GitHub CI, and merge.
+
 ### Scope
 
 - Introduce platform-level `SYSTEM_OWNER` identity above customer `ADMIN`.

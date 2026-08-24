@@ -238,5 +238,5 @@ The review will determine which Pilot requirements are:
 Only confirmed gaps should create new implementation scope.
 
 Sprint 15 is closed. The immediate project critical path is controlled BIO EGYPT
-field-pilot preparation and closure of `BE-001` through `BE-012`. The Pilot remains
+field-pilot preparation and closure of `BE-002` through `BE-012`; `BE-001` is closed. The Pilot remains
 not commissioned and not accepted.

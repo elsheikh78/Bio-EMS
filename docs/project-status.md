@@ -1,5 +1,19 @@
 # Project Status
 
+## BF-01 backend foundation — 24 August 2026
+
+The BF-01 `SYSTEM_OWNER` authorization boundary is implemented and locally verified
+on `agent/bf-01-system-owner-boundary`. It remains a feature-branch capability until
+its PR, GitHub CI, review, and merge are complete.
+
+Implemented BF-01 evidence includes isolated platform-principal persistence through
+migration 009, separate platform authentication and JWT trust domains, controlled
+one-time bootstrap, strict owner/customer separation, duplicate Authorization-header
+rejection, and REST/security/regression tests.
+
+BF-01 does not claim MFA, login rate limiting/lockout, Owner Portal UI, commercial
+owner permissions, or the BF-02 append-only audit foundation.
+
 ## Current reporting status — 23 August 2026
 
 S16-07 Reports Center has progressed through the controlled Calibration History
@@ -36,7 +50,7 @@ Calibration history remains in SQLite; telemetry remains in InfluxDB 2.x.
 BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 The immediate Pilot priority is controlled BIO EGYPT field preparation and
-evidence-based closure of `BE-001` through `BE-012`.
+evidence-based closure of `BE-002` through `BE-012`; `BE-001` is closed.
 
 No field commissioning or Pilot acceptance is declared by the reporting work.
 
@@ -122,7 +136,7 @@ BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 The immediate operational priority is not another reporting feature.
 
 The next controlled project action is preparation for the BIO EGYPT field Pilot
-and evidence-based closure of `BE-001` through `BE-012`.
+and evidence-based closure of `BE-002` through `BE-012`; `BE-001` is closed.
 
 ## Sprint 14
 
@@ -307,9 +321,9 @@ The controlled Pilot open-items register is maintained in:
 
 `docs/pilot/bio-egypt/BIO-EGYPT-OPEN-ITEMS.md`
 
-Current blocking items are:
+Current open items are:
 
-- `BE-001` — Confirm legal Site names, addresses, customer contacts, and access rules.
+- `BE-001` — CLOSED through signed evidence `BE001-EV-001`.
 - `BE-002` — Complete marked-up floor plans and approved Sensor positions.
 - `BE-003` — Confirm controller location/count and released channel/electrical capacity.
 - `BE-004` — Measure cable routes/lengths and approve cable/termination design.
@@ -322,7 +336,7 @@ Current blocking items are:
 - `BE-011` — Confirm backup/restore, support, incident, maintenance, and handover procedures.
 - `BE-012` — Execute field deployment/commissioning using the approved S15-07 baseline.
 
-All twelve items remain subject to the controlled closure rule.
+Items `BE-002` through `BE-012` remain subject to the controlled closure rule.
 
 Each closure entry must contain:
 

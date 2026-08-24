@@ -13,6 +13,7 @@ import sensorRouter from "./routes/sensor.route";
 import alarmRouter from "./routes/alarm.route";
 import dashboardRouter from "./routes/dashboard.route";
 import authRouter from "./routes/auth.route";
+import platformAuthRouter from "./routes/platform-auth.route";
 import { authenticationMiddleware } from "./middleware/authentication.middleware";
 import userRouter from "./routes/user.route";
 import { createBrowserSecurityMiddleware } from "./middleware/browser-security.middleware";
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 getMqttClient();
 
+app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/auth`, authRouter);

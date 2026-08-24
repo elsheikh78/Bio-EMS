@@ -1,3 +1,4 @@
+import { PlatformPrincipal } from "../entities/PlatformPrincipal";
 import { UserRole } from "../entities/User";
 
 declare global {
@@ -8,6 +9,7 @@ declare global {
         username: string;
         role: UserRole;
       };
+      platformPrincipal?: PlatformPrincipal;
     }
   }
 }

@@ -22,6 +22,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
+    "bootstrap:system-owner": "tsx src/scripts/bootstrap-system-owner.ts",
     "validate:deployment": "node --import tsx src/scripts/validate-deployment.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",

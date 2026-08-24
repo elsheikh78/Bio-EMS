@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { loadJwtConfig } from "./jwt.config";
+import { loadPlatformJwtConfig } from "./platform-jwt.config";
 import { loadCorsConfig } from "./cors.config";
 import { loadMqttConfig } from "./mqtt.config";
 
@@ -22,6 +23,8 @@ export const config = {
   },
 
   jwt: loadJwtConfig(process.env),
+
+  platformJwt: loadPlatformJwtConfig(process.env),
 
   cors: loadCorsConfig(process.env),
 
