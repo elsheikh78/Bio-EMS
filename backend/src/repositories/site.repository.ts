@@ -12,6 +12,8 @@ export interface Site {
   timezone?: string;
 
   active?: number;
+
+  created_at?: string | null;
 }
 
 export class SiteRepository {

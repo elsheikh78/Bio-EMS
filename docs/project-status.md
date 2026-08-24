@@ -1,5 +1,16 @@
 # Project Status
 
+## PVR-01 platform integration recovery — 24 August 2026
+
+PVR-01 repairs the production Site response mismatch observed during manual platform review. The
+backend returns the schema-owned `created_at` field while the strict frontend Site contract had
+omitted it, causing the shared Site query to fail in Monitored Areas, Notification Recipients,
+Escalation Policies, and the customer Audit Log.
+
+The frontend contract and its API regression fixture now match the production response while
+retaining strict unknown-field rejection. Automated gates and the required manual browser smoke
+test remain closure evidence; PVR-01 does not claim completion of the operational platform tabs.
+
 ## BF-09-06 final frontend closure — 24 August 2026
 
 BF-09-06 is merged through PR #82 at integration commit

@@ -11,6 +11,7 @@ describe("monitored areas API", () => {
         location: null,
         timezone: "Africa/Cairo",
         active: 1,
+        created_at: "2026-08-24 06:00:00",
       },
     ];
 
