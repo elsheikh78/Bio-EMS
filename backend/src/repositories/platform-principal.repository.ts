@@ -3,11 +3,21 @@ import { sqlite } from "../../database/sqlite/client";
 import {
   normalizePlatformUsername,
   PlatformPrincipalCredentialRecord,
+  PlatformPrincipalRecord,
 } from "../entities/PlatformPrincipal";
 
 const BCRYPT_HASH_PATTERN = /^\$2[aby]\$(\d{2})\$[./A-Za-z0-9]{53}$/;
 const MINIMUM_BCRYPT_COST = 12;
 const MAXIMUM_BCRYPT_COST = 31;
+
+const PUBLIC_PLATFORM_PRINCIPAL_COLUMNS = `
+  id,
+  principal_type,
+  username,
+  status,
+  created_at,
+  updated_at
+`;
 
 export interface CreateSystemOwnerRecord {
   id: string;
@@ -47,17 +57,23 @@ export class PlatformPrincipalRepository {
     })();
   }
 
+  findById(id: string): PlatformPrincipalRecord | undefined {
+    return this.database
+      .prepare(`
+        SELECT ${PUBLIC_PLATFORM_PRINCIPAL_COLUMNS}
+        FROM platform_principals
+        WHERE id = ?
+        LIMIT 1
+      `)
+      .get(id) as PlatformPrincipalRecord | undefined;
+  }
+
   findCredentialsByUsername(username: string): PlatformPrincipalCredentialRecord | undefined {
     return this.database
       .prepare(`
         SELECT
-          id,
-          principal_type,
-          username,
-          password_hash,
-          status,
-          created_at,
-          updated_at
+          ${PUBLIC_PLATFORM_PRINCIPAL_COLUMNS},
+          password_hash
         FROM platform_principals
         WHERE username = ?
         LIMIT 1
