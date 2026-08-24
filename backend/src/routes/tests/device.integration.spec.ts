@@ -12,6 +12,7 @@ vi.mock("../../../database/sqlite/client", async () => {
 
 import { sqlite } from "../../../database/sqlite/client";
 import { createTables } from "../../../database/sqlite/schema";
+import { migration010 } from "../../../database/sqlite/migrations/010_create_audit_events";
 import { errorMiddleware } from "../../middleware/error.middleware";
 import deviceRouter from "../device.route";
 
@@ -66,11 +67,13 @@ describe("Device REST integration", () => {
 
   beforeEach(() => {
     database.exec(`
+      DROP TABLE IF EXISTS audit_events;
       DELETE FROM devices;
       DELETE FROM sites;
       DELETE FROM sqlite_sequence WHERE name IN ('devices', 'sites');
       INSERT INTO sites (id, code, name) VALUES (1, 'CAIRO01', 'Cairo');
     `);
+    migration010.up(database);
   });
 
   afterAll(() => database.close());
@@ -181,6 +184,34 @@ describe("Device REST integration", () => {
     const disabled = await request(app).post("/api/v1/devices/ZC-FW-001/disable").expect(200);
     expect(disabled.body).toMatchObject({ status: "disabled", activated: 0 });
     expect(persistedDevice()).toMatchObject({ status: "disabled", activated: 0 });
+
+    const reactivated = await request(app).post("/api/v1/devices/ZC-FW-001/activate").expect(200);
+    expect(reactivated.body).toMatchObject({ status: "active", activated: 1 });
+    expect(persistedDevice()).toMatchObject({ status: "active", activated: 1 });
+    expect(
+      database
+        .prepare("SELECT action, target_id, site_id, result FROM audit_events ORDER BY rowid")
+        .all()
+    ).toEqual([
+      {
+        action: "DEVICE.ACTIVATED_OR_REACTIVATED",
+        target_id: "ZC-FW-001",
+        site_id: 1,
+        result: "SUCCESS",
+      },
+      {
+        action: "DEVICE.DISABLED",
+        target_id: "ZC-FW-001",
+        site_id: 1,
+        result: "SUCCESS",
+      },
+      {
+        action: "DEVICE.ACTIVATED_OR_REACTIVATED",
+        target_id: "ZC-FW-001",
+        site_id: 1,
+        result: "SUCCESS",
+      },
+    ]);
   });
 
   it("rejects repeated and out-of-order transitions without mutating the row", async () => {

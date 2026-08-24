@@ -148,6 +148,21 @@ describe("Device lifecycle service", () => {
     );
   });
 
+  it("reactivates disabled/0 through the same atomic activation boundary", () => {
+    const activated = device("active", 1);
+    mocks.deviceRepository.findByDeviceId.mockReturnValue(device("disabled", 0));
+    mocks.deviceRepository.transitionLifecycle.mockReturnValue(activated);
+
+    expect(activateDevice("ZC-FW-001")).toEqual(activated);
+    expect(mocks.deviceRepository.transitionLifecycle).toHaveBeenCalledWith(
+      "ZC-FW-001",
+      "disabled",
+      0,
+      "active",
+      1
+    );
+  });
+
   it("disables only active/1 and returns the repository result without checking Site", () => {
     const disabled = device("disabled", 0);
     mocks.deviceRepository.findByDeviceId.mockReturnValue(device("active", 1));
@@ -194,7 +209,7 @@ describe("Device lifecycle service", () => {
   it.each([
     ["pending", 1],
     ["active", 1],
-    ["disabled", 0],
+    ["disabled", 1],
   ])("rejects activate from %s/%i", (status, activated) => {
     mocks.deviceRepository.findByDeviceId.mockReturnValue(device(status, activated));
 
