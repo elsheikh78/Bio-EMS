@@ -9,6 +9,7 @@ export const PERMISSION = {
   USER_MANAGE: "USER_MANAGE",
   REPORT_READ: "REPORT_READ",
   REPORT_EXPORT: "REPORT_EXPORT",
+  AUDIT_READ: "AUDIT_READ",
 } as const;
 
 export const PERMISSIONS = Object.values(PERMISSION);

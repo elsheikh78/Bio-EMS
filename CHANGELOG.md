@@ -2,6 +2,13 @@
 
 ## Added
 
+- Added the BF-02 append-only `audit_events` persistence foundation with actor,
+  action, target, Site, result, prior/new values, request context, reason, and
+  authoritative event identity/time.
+- Added ADMIN Site-scoped audit reads and separately authenticated platform
+  cross-Site audit reads with deterministic ordering and bounded pagination.
+- Added recursive audit redaction, immutable SQLite enforcement, authorization,
+  repository, service, migration, and REST regression coverage.
 - Added the BF-01 platform-level `SYSTEM_OWNER` identity in isolated SQLite storage,
   separate platform JWT configuration, dedicated login/current-principal REST APIs,
   and a one-time environment-driven bootstrap command.
@@ -10,6 +17,10 @@
 
 ## Security
 
+- Audit updates and deletes are rejected by SQLite triggers; customer audit reads
+  require `AUDIT_READ`, which is assigned only to ADMIN.
+- Sensitive structured keys, bearer credentials, password hashes, private-key
+  material, and recognized credential assignments are redacted before persistence.
 - Customer roles remain limited to `ADMIN`, `OPERATOR`, and `VIEWER`; customer User
   Management cannot create, assign, enumerate, mutate, or impersonate a
   `SYSTEM_OWNER`.

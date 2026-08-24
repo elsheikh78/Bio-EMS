@@ -41,7 +41,8 @@ field commissioning and Pilot acceptance have not yet occurred.
 - JWT authentication with active-User enforcement
 - Centralized role-based authorization
 - ADMIN User Management with last-active-ADMIN protection
-- Isolated platform-level `SYSTEM_OWNER` authentication boundary (BF-01 branch)
+- Isolated platform-level `SYSTEM_OWNER` authentication boundary
+- Append-only, redacted, Site-scoped audit-event foundation (BF-02 branch)
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -72,7 +73,8 @@ field commissioning and Pilot acceptance have not yet occurred.
 | Device Lifecycle Onboarding           | Implemented        |
 | Authentication and RBAC               | Implemented        |
 | ADMIN User Management                 | Implemented        |
-| SYSTEM_OWNER backend boundary         | BF-01 PR pending   |
+| SYSTEM_OWNER backend boundary         | Implemented        |
+| System-wide Audit foundation          | BF-02 PR pending   |
 | Alarm Acknowledgment Audit            | Implemented        |
 | Frontend Architecture                 | Implemented        |
 | Frontend AppShell                     | Implemented        |
@@ -99,7 +101,8 @@ Sprint 14 and Sprint 15 are **COMPLETE / MERGED / VERIFIED / CLOSED**.
   contracts, the controlled BIO EGYPT Pilot package, and deployment/commissioning
   readiness foundations.
 
-The backend sequence currently starts with BF-01. In the parallel Pilot track,
+The backend commercial-foundation sequence has completed BF-01 and is progressing
+through BF-02. In the parallel Pilot track,
 `BE-001` is closed and field gates `BE-002` through `BE-012` remain open. Repository
 completion does not represent installation, commissioning, or customer acceptance.
 
@@ -190,18 +193,19 @@ On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` 
 
 The current API prefix is normally `/api/v1`.
 
-| Area           | Current endpoints or operations                              |
-| -------------- | ------------------------------------------------------------ |
-| Health         | `GET /health`                                                |
-| Sites          | Management/read endpoints                                    |
-| Rooms          | Management/read endpoints                                    |
-| Sensors        | Management/read endpoints                                    |
-| Devices        | Create, list, read, metadata update, activate, and disable   |
-| Alarms         | List, active, detail, and acknowledgement operations         |
-| Dashboard      | Summary, latest telemetry, room status, and alarm statistics |
-| Authentication | Customer login/current-principal support                     |
-| Platform Auth  | `POST /platform-auth/login`, `GET /platform-auth/me`          |
-| Users          | ADMIN management operations                                  |
+| Area           | Current endpoints or operations                                |
+| -------------- | -------------------------------------------------------------- |
+| Health         | `GET /health`                                                  |
+| Sites          | Management/read endpoints                                      |
+| Rooms          | Management/read endpoints                                      |
+| Sensors        | Management/read endpoints                                      |
+| Devices        | Create, list, read, metadata update, activate, and disable     |
+| Alarms         | List, active, detail, and acknowledgement operations           |
+| Dashboard      | Summary, latest telemetry, room status, and alarm statistics   |
+| Authentication | Customer login/current-principal support                       |
+| Platform Auth  | `POST /platform-auth/login`, `GET /platform-auth/me`           |
+| Users          | ADMIN management operations                                    |
+| Audit Events   | ADMIN Site-scoped read; authenticated platform cross-Site read |
 
 ### SYSTEM_OWNER bootstrap and configuration
 
@@ -223,8 +227,15 @@ independent secret of at least 32 UTF-8 bytes. Optional platform settings are
 owner credential in source control, frontend code, documentation, or logs.
 
 BF-01 does not claim completion of MFA, authentication rate limiting/lockout, an Owner
-Portal, commercial owner permissions, or the system-wide audit trail. Those remain
-gated follow-up work before production owner activation.
+Portal, or commercial owner permissions. BF-02 adds the append-only audit persistence
+and read boundary, but action-specific producers remain controlled follow-up work.
+
+Customer ADMIN audit reads use
+`GET /api/v1/audit-events?site_id=<positive-id>&limit=<1..500>`. Platform audit reads
+use `GET /api/v1/platform-audit-events` with the isolated platform bearer token and
+an optional `site_id`. Audit writes are internal-service-only: callers supply
+structured semantic fields, while the service owns event identity/time and redacts
+sensitive keys and recognized credential patterns before persistence.
 
 See the [Engineering Handbook](docs/engineering/README.md) and current ADRs for the authoritative architecture and security boundaries.
 

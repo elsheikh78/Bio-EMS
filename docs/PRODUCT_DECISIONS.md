@@ -7,6 +7,7 @@ This document records the agreed product decisions for BIO-EMS Pilot readiness.
 ## Product Versions
 
 ### BIO-EMS Standard
+
 - Target: cold rooms, warehouses, general environmental monitoring.
 - Temperature sensor: Industrial DS18B20.
 - Controller: BIO-EMS Site Controller v1.
@@ -14,6 +15,7 @@ This document records the agreed product decisions for BIO-EMS Pilot readiness.
 - Backup communication: 4G/SMS failover.
 
 ### BIO-EMS Advanced
+
 - Target: GMP critical applications and validation-focused customers.
 - Temperature sensor: PT100 Class A.
 - Same BIO-EMS platform and backend.
@@ -38,21 +40,26 @@ Normal operation:
 Sensors -> Site Controller -> Internet -> BIO-EMS Backend -> Notifications
 
 Primary notifications:
+
 - WhatsApp / online notifications.
 
 Fallback:
+
 - SMS used when communication failure occurs or during critical offline scenarios.
 
 ## BIO EGYPT Pilot Scope
 
 Sites:
+
 - El Manial.
 - CPC October.
 
 Monitoring scope:
+
 - Temperature only (Phase 1).
 
 Sensors:
+
 - Cold rooms: 2 sensors per room.
 - Anti-chamber: 1 sensor.
 - Dry warehouse sensors as defined in site mapping.
@@ -60,6 +67,7 @@ Sensors:
 ## Sensor Lifecycle & Calibration
 
 BIO-EMS will support:
+
 - Sensor grade (STANDARD / ADVANCED).
 - Sensor model (DS18B20 / PT100).
 - Installation date.
@@ -73,6 +81,7 @@ Calibration history will be implemented as a separate module.
 ## Documentation Policy
 
 Documentation is part of the product and will include:
+
 - Product specifications.
 - Hardware specifications.
 - Installation procedures.
@@ -82,3 +91,17 @@ Documentation is part of the product and will include:
 ## Implementation Principle
 
 Changes must preserve existing telemetry and alarm architecture. New capabilities should be added through versioned migrations and backward-compatible changes.
+
+## Platform Ownership and Audit Boundary
+
+- `SYSTEM_OWNER` remains an isolated platform identity and is never a customer role.
+- System-wide audit evidence uses one append-only persistence contract with
+  service-owned identity and time.
+- Customer audit access is ADMIN-only and must be constrained to an explicit Site.
+- Platform audit access uses the separate platform authentication trust domain and
+  may read across Sites.
+- Audit producers must provide structured semantic fields and must never submit
+  plaintext credentials; the audit service applies deterministic defense-in-depth
+  redaction before persistence.
+- Integrating individual mutation families is incremental work and must not be
+  inferred merely from availability of the BF-02 foundation.
