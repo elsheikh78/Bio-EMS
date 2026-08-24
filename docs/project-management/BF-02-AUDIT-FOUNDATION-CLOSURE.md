@@ -1,6 +1,6 @@
 # BF-02 — Append-only Audit Foundation Closure
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-02-audit-foundation`
 Base: `main` at `85a2d51f8d6887605c6a3390281a690966d4f391`
@@ -75,7 +75,10 @@ build, and the complete 25-file / 212-test suite passed on the final documented 
 
 ## 7. Integration gate
 
-BF-02 becomes PR-ready only when final backend and frontend gates pass on the
-documented tree, the branch is current with `main`, the GitHub diff contains no
-unrelated/generated files, and GitHub CI succeeds. PR/CI/merge identifiers must be
-appended after their lifecycle completes.
+The final backend and frontend gates passed, the branch was current with `main`, and
+the GitHub diff contained no unrelated/generated files.
+
+- PR: #68;
+- GitHub feature commit: `3b50406d3ecea6cafcc598d8a94c59c3c217d612`;
+- GitHub CI run number: 192 — SUCCESS;
+- merge commit: `9ca22d6f5a72a155203227c7ff0a0ad5b296b516`.

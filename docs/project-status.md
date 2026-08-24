@@ -2,9 +2,9 @@
 
 ## BF-02 audit foundation — 24 August 2026
 
-The BF-02 append-only audit foundation is implemented and locally verified on
-`agent/bf-02-audit-foundation`. It remains feature-branch capability until its PR,
-GitHub CI, review, and merge complete.
+The BF-02 append-only audit foundation is merged and verified through PR #68 at
+`main` integration commit `9ca22d6f5a72a155203227c7ff0a0ad5b296b516`.
+GitHub CI run 192 completed successfully before merge.
 
 Implemented evidence includes migration 010, immutable database enforcement,
 service-owned UUID/time, recursive secret redaction, deterministic repository reads,
@@ -90,7 +90,7 @@ It does not declare BIO EGYPT field commissioning or Pilot acceptance.
 - [x] ADMIN User Management
 - [x] Last-active-ADMIN transactional and concurrency protection
 - [x] BF-01 isolated SYSTEM_OWNER authentication boundary
-- [x] BF-02 append-only audit persistence and scoped read foundation (PR pending)
+- [x] BF-02 append-only audit persistence and scoped read foundation
 - [x] Security hardening and regression coverage
 - [x] ESLint, Prettier, and GitHub Actions quality gates
 - [x] S14-01 frontend architecture and quality foundation
