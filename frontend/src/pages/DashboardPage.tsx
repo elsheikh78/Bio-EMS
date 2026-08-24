@@ -22,6 +22,10 @@ import {
   useLatestTelemetry,
 } from "../dashboard/queries";
 import { OperationalOverview } from "../dashboard/DashboardVisuals";
+import {
+  roomOperationalPriority,
+  roomPriorityTone,
+} from "../dashboard/roomPriority";
 import { useLocalization } from "../localization/useLocalization";
 
 type DashboardResources = ReturnType<
@@ -327,20 +331,6 @@ function CurrentTelemetryProfile({
   );
 }
 
-const ROOM_PRIORITY: Record<DashboardSensorStatus, number> = {
-  UNKNOWN: 0,
-  NORMAL: 1,
-  WARNING: 2,
-  CRITICAL: 3,
-};
-
-export function roomOperationalPriority(room: DashboardRoomStatus): number {
-  return Math.max(
-    ROOM_PRIORITY[room.temperatureStatus],
-    ROOM_PRIORITY[room.humidityStatus],
-  );
-}
-
 function PriorityAreasPanel({
   rooms,
   resources,
@@ -374,14 +364,7 @@ function PriorityAreasPanel({
           </Typography>
         ) : (
           prioritized.map((room) => {
-            const operationalPriority = roomOperationalPriority(room);
-            const tone =
-              !room.online || operationalPriority === ROOM_PRIORITY.CRITICAL
-                ? "error.main"
-                : operationalPriority === ROOM_PRIORITY.WARNING ||
-                    room.activeAlarms > 0
-                  ? "warning.main"
-                  : "success.main";
+            const tone = roomPriorityTone(room);
             return (
               <Box
                 key={room.roomId}
