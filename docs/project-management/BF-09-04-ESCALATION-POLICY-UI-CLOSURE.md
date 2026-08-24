@@ -1,6 +1,6 @@
 # BF-09-04 — Escalation Policy UI Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-09-04-escalation-policy-ui`
 Base: BF-09-03 integration commit `40b5fc7f6e47f1ba581426b757b9afb169e36fbd`
@@ -28,4 +28,5 @@ resolver rules remain authoritative.
 - frontend format, lint, typecheck, build and 30 files / 237 tests: PASS;
 - backend format, lint, typecheck, build and 71 files / 600 tests: PASS;
 - documentation consistency audit and `git diff --check`: PASS;
-- remote PR, CI, and merge evidence remain pending.
+- PR #80, GitHub CI run 216 SUCCESS;
+- integration commit: `1d4e7a1ca4bb464bf68448dce962947e776ed009`.

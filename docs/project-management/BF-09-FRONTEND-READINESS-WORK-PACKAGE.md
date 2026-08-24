@@ -1,8 +1,8 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01/02/03 MERGED / BF-09-04 LOCAL IMPLEMENTATION COMPLETE
+Status: BF-09-01/02/03/04 MERGED / BF-09-05 LOCAL IMPLEMENTATION COMPLETE
 Date: 2026-08-24
-Branch: `agent/bf-09-04-escalation-policy-ui`
+Branch: `agent/bf-09-05-audit-user-management-ui`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
 
 ## Objective and slices
@@ -69,3 +69,13 @@ remains authoritative; frontend permission filtering is presentation defense onl
 - each step selects one or more unique Email/SMS/WhatsApp channels;
 - lifecycle changes use the dedicated status route;
 - no message dispatch, provider, or field-operation claim is introduced.
+
+## BF-09-05 acceptance
+
+- the Users placeholder becomes an ADMIN user-management and Audit center;
+- list/create/profile/role/lifecycle/password operations use protected routes;
+- passwords are never rendered after submission or placed in URLs;
+- Audit Log requires explicit Site scope and remains customer-bound;
+- compact audit rows show identity/action/result/target/time without prior/new blobs;
+- Platform audit remains isolated behind the SYSTEM_OWNER boundary;
+- backend last-active-ADMIN and audit atomicity remain authoritative.

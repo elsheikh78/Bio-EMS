@@ -1,9 +1,25 @@
 # Project Status
 
+## BF-09-05 Audit Log and User Management UI — 24 August 2026
+
+BF-09-05 is implemented on `agent/bf-09-05-audit-user-management-ui` from the
+verified BF-09-04 merge. The ADMIN-only Users route now provides list/create,
+profile/role, lifecycle, and password workflows plus an explicit Site-scoped Audit
+Log showing actor, action, result, target, and event time.
+
+Password values are never displayed after submission or placed in paths. The compact
+Audit UI deliberately omits structured prior/new values while the immutable backend
+record remains authoritative. Platform audit remains isolated from customer ADMIN.
+
+Frontend gates pass with 32 files / 244 tests plus production build. Backend
+regression gates pass with 71 files / 600 tests plus build. Both applications pass
+format, lint, and typecheck.
+
 ## BF-09-04 escalation-policy UI — 24 August 2026
 
-BF-09-04 is implemented on `agent/bf-09-04-escalation-policy-ui` from the verified
-BF-09-03 merge. ADMIN can select a Site, manage policy identity/ownership/severity,
+BF-09-04 is merged through PR #80 at integration commit
+`1d4e7a1ca4bb464bf68448dce962947e776ed009`; GitHub CI run 216 succeeded. ADMIN can
+select a Site, manage policy identity/ownership/severity,
 define one through twenty ordered recipient-role/channel steps with strictly
 increasing elapsed delays, and use the dedicated lifecycle boundary.
 

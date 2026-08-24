@@ -2,9 +2,25 @@
 
 ## Frontend Commercial Configuration
 
-### BF-09-04 — Escalation Policy Management UI
+### BF-09-05 — Audit Log and User Management Integration
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-05-audit-user-management-ui`;
+- base: BF-09-04 merge commit `1d4e7a1ca4bb464bf68448dce962947e776ed009`;
+- ADMIN user list/create/profile/role/status/password workflows;
+- password fields are never displayed after submission or placed in URLs;
+- explicit Site-scoped Audit Log with newest actor/action/result/target/time summary;
+- prior/new structured values are deliberately omitted from the compact UI;
+- runtime response validation, protected adapters, and recoverable states.
+- frontend verification: 32 files / 244 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build.
+
+Remote PR, CI, and merge evidence remain pending.
+
+### BF-09-04 — Escalation Policy Management UI
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-09-04-escalation-policy-ui`;
 - base: BF-09-03 merge commit `40b5fc7f6e47f1ba581426b757b9afb169e36fbd`;
@@ -17,7 +33,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - frontend verification: 30 files / 237 tests PASS plus build;
 - backend regression verification: 71 files / 600 tests PASS plus build.
 
-Remote PR, CI, and merge evidence remain pending.
+- PR: #80;
+- integration commit: `1d4e7a1ca4bb464bf68448dce962947e776ed009`;
+- GitHub CI run number: 216 — SUCCESS.
 
 ### BF-09-03 — Notification Recipient Directory UI
 
