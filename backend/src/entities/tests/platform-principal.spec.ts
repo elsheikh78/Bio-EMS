@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { USER_ROLES } from "../User";
-import { isPlatformPrincipal, PLATFORM_PRINCIPAL_TYPES } from "../PlatformPrincipal";
+import { hasPermission } from "../../authorization/authorization.policy";
 import { createUserSchema, updateUserSchema } from "../../modules/user/dto/user.schema";
+import { isPlatformPrincipal, PLATFORM_PRINCIPAL_TYPES } from "../PlatformPrincipal";
+import { USER_ROLES } from "../User";
 
 describe("SYSTEM_OWNER platform boundary", () => {
   it("keeps SYSTEM_OWNER outside customer user roles", () => {
@@ -25,6 +26,11 @@ describe("SYSTEM_OWNER platform boundary", () => {
     const result = updateUserSchema.safeParse({ role: "SYSTEM_OWNER" });
 
     expect(result.success).toBe(false);
+  });
+
+  it("does not grant customer-role permissions to SYSTEM_OWNER implicitly", () => {
+    expect(hasPermission("SYSTEM_OWNER", "USER_MANAGE")).toBe(false);
+    expect(hasPermission("SYSTEM_OWNER", "CONFIGURATION_WRITE")).toBe(false);
   });
 
   it("recognizes only the explicit SYSTEM_OWNER platform principal shape", () => {
