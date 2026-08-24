@@ -11,14 +11,17 @@ export interface SystemOwnerPrincipal {
   username: string;
 }
 
-export interface PlatformPrincipalCredentialRecord {
+export interface PlatformPrincipalRecord {
   id: string;
   principal_type: PlatformPrincipalType;
   username: string;
-  password_hash: string;
   status: PlatformPrincipalStatus;
   created_at: string;
   updated_at: string | null;
+}
+
+export interface PlatformPrincipalCredentialRecord extends PlatformPrincipalRecord {
+  password_hash: string;
 }
 
 export type PlatformPrincipal = SystemOwnerPrincipal;
