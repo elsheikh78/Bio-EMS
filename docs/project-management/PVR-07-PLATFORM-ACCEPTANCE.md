@@ -27,6 +27,12 @@ This decision distinguishes merged implementation evidence from actual platform 
 5. Complete Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations reports. Calibration is the only controlled report currently accepted.
 6. Record customer/UAT evidence and production deployment/commissioning evidence. Automated unit/integration tests are not substitutes.
 
+## Live retest findings
+
+- Site loading is verified in Monitored Areas, Configuration, and Users/Audit.
+- The Devices retest found two legacy non-UUID identifiers in the local database; these were repaired with a retained SQLite backup while preserving `device_id`.
+- The same retest exposed a contract mismatch for a never-updated Device: SQLite correctly returns `updated_at: null`. The frontend contract now accepts that persisted state and retains strict validation for every other Device field.
+
 ## Automated repository evidence
 
 - Backend: typecheck, lint, build, 71 test files / 600 tests.
