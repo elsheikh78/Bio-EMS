@@ -10,6 +10,7 @@ import { ShellLandingPage } from "./pages/ShellLandingPage";
 import { SensorsCalibrationPage } from "./pages/SensorsCalibrationPage";
 import { ReportsCenterPage } from "./pages/ReportsCenterPage";
 import { AdministrationPage } from "./pages/AdministrationPage";
+import { AlarmsPage } from "./pages/AlarmsPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -61,7 +62,7 @@ export function App() {
             path="alarms"
             element={
               <PermissionBoundary path="/alarms">
-                <FeaturePlaceholderPage feature="alarms" />
+                <AlarmsPage />
               </PermissionBoundary>
             }
           />
