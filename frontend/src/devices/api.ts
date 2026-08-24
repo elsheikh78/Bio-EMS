@@ -20,6 +20,7 @@ export function createDevicesApi(request: ProtectedRequest) {
       return deviceSchema.parse(
         await request<unknown>(`/devices/${encodeURIComponent(id)}`, {
           method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(update),
         }),
       );
