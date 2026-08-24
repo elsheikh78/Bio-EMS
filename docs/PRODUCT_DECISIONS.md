@@ -149,3 +149,10 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
   replacement fails. Without one, offline external notification is disabled and the
   controller signals not-ready. Firmware, transport, and field evidence remain
   required before claiming deployed capability.
+- BF-09 frontend permission vocabulary must mirror the backend exactly. Frontend
+  visibility is presentation defense; server authorization remains authoritative.
+- The mutation-capable Configuration route requires `CONFIGURATION_WRITE`. Read-only
+  Monitored Areas and Calibration presentation continue to use
+  `CONFIGURATION_READ`.
+- BF-09-01 establishes runtime-validated API adapters only. Their presence is not
+  evidence that configuration management screens or workflows are complete.

@@ -274,6 +274,20 @@ describe("authenticated application routing", () => {
     },
   );
 
+  it.each(["OPERATOR", "VIEWER"] as const)(
+    "denies direct configuration management access for %s",
+    async (role) => {
+      renderWithAuthentication("/configuration", authenticationValue(role));
+
+      const heading = screen.getByRole("heading", { name: "Not authorized" });
+      expect(heading).toBeInTheDocument();
+      await waitFor(() => expect(heading).toHaveFocus());
+      expect(
+        screen.queryByRole("link", { name: "Configuration", hidden: true }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("filters navigation from the centralized role permission matrix", () => {
     const { unmount } = renderWithAuthentication(
       "/dashboard",
@@ -299,11 +313,11 @@ describe("authenticated application routing", () => {
     ).not.toBeInTheDocument();
 
     expect(
-      screen.getByRole("link", {
+      screen.queryByRole("link", {
         name: "Configuration",
         hidden: true,
       }),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 
   it("redirects authenticated /login access and preserves the legacy foundation redirect", () => {

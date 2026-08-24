@@ -29,10 +29,13 @@ describe("safe post-Login return policy", () => {
     expect(resolveSafeReturnPath({ returnTo: "/users" }, "VIEWER")).toBe("/");
   });
 
-  it("uses CONFIGURATION_READ for both configuration presentation routes", () => {
+  it("keeps read-only presentation separate from ADMIN configuration mutation", () => {
     expect(routePolicies["/monitored-areas"]).toBe("CONFIGURATION_READ");
     expect(routePolicies["/sensors-calibration"]).toBe("CONFIGURATION_READ");
-    expect(routePolicies["/configuration"]).toBe("CONFIGURATION_READ");
+    expect(routePolicies["/configuration"]).toBe("CONFIGURATION_WRITE");
+    expect(
+      resolveSafeReturnPath({ returnTo: "/configuration" }, "OPERATOR"),
+    ).toBe("/");
   });
 
   it("uses REPORT_READ for the Reports Center", () => {

@@ -1,5 +1,24 @@
 # Sprint Progress
 
+## Frontend Commercial Configuration
+
+### BF-09-01 — Frontend Readiness and API Contracts
+
+Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-01-frontend-readiness`;
+- base: BF-01 through BF-08 final closure commit
+  `6297d0d083e5864488a2ce1cdd7f421fd519bff9`;
+- permission parity: backend vocabulary through Audit/Recipients/Escalation;
+- route boundary: Configuration requires `CONFIGURATION_WRITE` and is ADMIN-only;
+- contracts: runtime-validated BF-04 through BF-07 response shapes;
+- adapters: authenticated threshold/delay/recipient/escalation operations;
+- frontend verification: 27 files / 223 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending. BF-09-02 follows only from the
+verified BF-09-01 merge.
+
 ## Backend Commercial Foundation
 
 ### BF-08 — Site Controller Offline-Critical Configuration Sync Contract

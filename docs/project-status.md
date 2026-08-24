@@ -1,5 +1,19 @@
 # Project Status
 
+## BF-09-01 frontend readiness and API contracts — 24 August 2026
+
+BF-09-01 is implemented and locally verified on
+`agent/bf-09-01-frontend-readiness`; PR, GitHub CI, and merge remain pending.
+
+The frontend permission vocabulary now mirrors the backend through BF-07. The
+mutation-capable Configuration route/navigation is ADMIN-only while read-only
+Monitored Areas and Calibration access remains unchanged. Runtime-validated protected
+API adapters now cover Sensor threshold/delay, recipient, and escalation contracts;
+management screens remain deliberately unclaimed.
+
+Frontend gates pass with 27 files / 223 tests. Backend regression gates pass with 71
+files / 600 tests. Both applications pass format, lint, typecheck, and build.
+
 ## BF-08 controller configuration synchronization contract — 24 August 2026
 
 BF-08 is merged and verified through PR #75 at `main` integration commit

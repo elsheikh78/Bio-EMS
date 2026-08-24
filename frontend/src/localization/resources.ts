@@ -521,7 +521,7 @@ export const englishResources = {
       title: "Configuration",
 
       description:
-        "Configuration management screens are not implemented in S14-02.",
+        "Configuration workflows are being delivered through BF-09. This ADMIN-only route does not yet expose management controls.",
     },
 
     users: {
