@@ -134,6 +134,8 @@ Recipient membership, contact details, severity eligibility, escalation order, a
 - **Status:** `BLOCKING / EVIDENCE PACK READY`
 - **Evidence target:** `BE002-EV-001`
 - **Prepared record:** `BE-002-MARKED-UP-SENSOR-POSITION-PACK.md`
+- **Repository readiness:** PR #84; GitHub CI run 225 — SUCCESS; integration commit
+  `315a00eb51071c640b6f344477477810df50a4e6`.
 - **Required closure evidence:** signed marked-up plans for both Sites and approved
   position schedule for all 20 Map IDs.
 - **Current limitation:** customer drawing revisions, field markups, position
