@@ -23,8 +23,8 @@ function room(
 
 describe("Dashboard Priority areas", () => {
   it("prioritizes a critical current Sensor state even after its Alarm is acknowledged", () => {
-    expect(roomOperationalPriority(room("CRITICAL", "UNKNOWN"))).toBeGreaterThan(
-      roomOperationalPriority(room("NORMAL", "UNKNOWN")),
-    );
+    expect(
+      roomOperationalPriority(room("CRITICAL", "UNKNOWN")),
+    ).toBeGreaterThan(roomOperationalPriority(room("NORMAL", "UNKNOWN")));
   });
 });
