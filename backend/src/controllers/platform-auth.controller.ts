@@ -21,3 +21,7 @@ export const platformLoginController = asyncHandler(async (req: Request, res: Re
 
   res.status(200).json(await service.login(req.body));
 });
+
+export const currentPlatformPrincipalController = (req: Request, res: Response): void => {
+  res.status(200).json({ principal: req.platformPrincipal! });
+};
