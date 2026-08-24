@@ -2,6 +2,9 @@
 
 ## Added
 
+- Added the BF-09-05 ADMIN User Management and Site-scoped Audit Log center.
+- Added runtime-validated user/audit contracts, protected lifecycle/password/API
+  adapters, secret-safe password presentation, and summarized immutable evidence.
 - Added the BF-09-04 ADMIN escalation-policy directory and editor with Site scope,
   severity eligibility, ordered recipient-role/channel steps, and lifecycle controls.
 - Added contiguous step generation, strict increasing-delay validation, protected

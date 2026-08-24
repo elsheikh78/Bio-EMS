@@ -236,7 +236,7 @@ describe("authenticated application routing", () => {
     ["/devices", "Devices"],
     ["/reports", "Reports Center"],
     ["/configuration", "Sensor thresholds & alarm delays"],
-    ["/users", "Users"],
+    ["/users", "Users & Audit Log"],
   ])("renders the permitted ADMIN route %s", (path, heading) => {
     renderWithAuthentication(path, authenticationValue("ADMIN"));
 

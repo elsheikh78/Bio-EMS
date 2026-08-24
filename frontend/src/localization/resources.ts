@@ -528,7 +528,7 @@ export const englishResources = {
       title: "Users",
 
       description:
-        "User management operations are not implemented in this frontend story.",
+        "ADMIN-only User Management and Site-scoped Audit Log are integrated through BF-09.",
     },
   },
 
