@@ -1,5 +1,13 @@
 # Project Status
 
+## PVR-06 reporting readiness audit — 24 August 2026
+
+PVR-06 confirms Calibration Status and History as the only available controlled report family.
+Temperature Performance and Alarm History remain partial, Device Communication Health remains
+blocked by a durable history ledger, and Audit and Operations is ready for implementation over the
+existing immutable Audit store. The Reports Center now exposes this full readiness matrix and no
+longer reports the obsolete `AUDIT_STORE_REQUIRED` dependency.
+
 ## PVR-05 Devices UI — 24 August 2026
 
 PVR-05 replaces the Devices placeholder with the registered Device inventory, server-derived

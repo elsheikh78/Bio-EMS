@@ -166,6 +166,58 @@ export function ReportsCenterPage() {
         </Alert>
       ) : null}
 
+      {catalogue.data ? (
+        <Paper variant="outlined" sx={{ p: 3, borderRadius: 4 }}>
+          <Typography variant="h6">Report family readiness</Typography>
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            Availability is contract-driven. A family is not presented as
+            complete until its preview and controlled exports exist.
+          </Typography>
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Report family</TableCell>
+                  <TableCell>Readiness</TableCell>
+                  <TableCell>Preview</TableCell>
+                  <TableCell>Exports</TableCell>
+                  <TableCell>Remaining dependency</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {catalogue.data.reportTypes.map((family) => (
+                  <TableRow key={family.id}>
+                    <TableCell>{family.title}</TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        color={
+                          family.readiness === "AVAILABLE"
+                            ? "success"
+                            : family.readiness === "BLOCKED"
+                              ? "error"
+                              : "warning"
+                        }
+                        label={family.readiness.replaceAll("_", " ")}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {family.previewAvailable ? "Available" : "Not available"}
+                    </TableCell>
+                    <TableCell>
+                      {family.exportFormats.join(" / ") || "None"}
+                    </TableCell>
+                    <TableCell>
+                      {family.unavailableReason?.replaceAll("_", " ") ?? "None"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      ) : null}
+
       {!loading && !loadError ? (
         <Box
           sx={{

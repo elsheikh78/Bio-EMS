@@ -1,5 +1,11 @@
 # [Unreleased]
 
+## PVR-06
+
+- Added a complete report-family readiness matrix to the Reports Center.
+- Corrected the obsolete Audit-store blocker to the outstanding operations-report projection.
+- Documented report readiness and release blockers without overstating unavailable exports.
+
 ## PVR-05
 
 - Replaced the Devices placeholder with registry and communication-health views.
