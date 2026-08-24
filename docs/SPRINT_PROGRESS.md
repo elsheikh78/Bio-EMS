@@ -4,7 +4,7 @@
 
 ### BF-09-06 — Final Accessibility, UX, Documentation, and Regression Closure
 
-Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-09-06-final-closure`;
 - base: BF-09-05 merge commit `79c40bb38cdfb169a15aa211e973e6ab3818d1f4`;
@@ -16,7 +16,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - backend regression verification: 71 files / 600 tests PASS plus build;
 - documentation consistency and whitespace audit: PASS.
 
-Remote PR, CI, and merge evidence remain pending.
+- PR: #82;
+- integration commit: `651699413e1d7d254b005ee5f12ff93b20cd1046`;
+- GitHub CI run number: 221 — SUCCESS.
 
 ### BF-09-05 — Audit Log and User Management Integration
 

@@ -1,6 +1,6 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01/02/03/04/05 MERGED / BF-09-06 FINAL CLOSURE IN PROGRESS
+Status: BF-09-01/02/03/04/05/06 COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-09-06-final-closure`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
@@ -95,3 +95,11 @@ remains authoritative; frontend permission filtering is presentation defense onl
 - BF-09 evidence and product-status documents agree with merged reality;
 - complete frontend/backend gates and a documentation consistency audit pass;
 - field, provider, controller-runtime, and customer-acceptance exclusions remain explicit.
+
+## BF-09-06 verification
+
+- frontend: 32 files / 244 tests plus format, lint, typecheck, and build PASS;
+- backend: 71 files / 600 tests plus format, lint, typecheck, and build PASS;
+- documentation consistency and whitespace audit: PASS;
+- PR #82, GitHub CI run 221 SUCCESS;
+- integration commit: `651699413e1d7d254b005ee5f12ff93b20cd1046`.
