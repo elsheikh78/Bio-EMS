@@ -37,10 +37,12 @@ export const acknowledgeAlarm = asyncHandler(async (req: Request, res: Response)
   const id = Number(req.params.id);
 
   const alarm = alarmService.acknowledgeAlarm(id, req.user!.id);
-  const sensor = sensorRepository.getAll().find((candidate) => candidate.id === alarm.id ? false : candidate.id === alarm.sensor_id);
+  const sensor = alarm
+    ? sensorRepository.getAll().find((candidate) => candidate.id === alarm.sensor_id)
+    : undefined;
   const room = sensor ? roomRepository.findById(sensor.room_id) : undefined;
 
-  if (sensor && room) {
+  if (alarm && sensor && room) {
     auditEventService.record({
       actor: customerAuditActor(req),
       action: "ALARM.ACKNOWLEDGED",
