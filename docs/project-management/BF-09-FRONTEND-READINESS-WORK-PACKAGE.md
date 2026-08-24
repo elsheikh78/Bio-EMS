@@ -1,8 +1,8 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01/02 MERGED / BF-09-03 LOCAL IMPLEMENTATION COMPLETE
+Status: BF-09-01/02/03 MERGED / BF-09-04 LOCAL IMPLEMENTATION COMPLETE
 Date: 2026-08-24
-Branch: `agent/bf-09-03-notification-recipient-ui`
+Branch: `agent/bf-09-04-escalation-policy-ui`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
 
 ## Objective and slices
@@ -59,3 +59,13 @@ remains authoritative; frontend permission filtering is presentation defense onl
 - lifecycle changes use the dedicated status route;
 - contact values remain absent from URLs and minimized in register presentation;
 - no delivery-provider or sent-message capability is claimed.
+
+## BF-09-04 acceptance
+
+- ADMIN selects an explicit Site and sees only that policy directory;
+- policy owner role and eligible Warning/Critical severities are controlled;
+- one through twenty steps receive contiguous positions from UI order;
+- step elapsed delays are whole seconds, bounded, and strictly increasing;
+- each step selects one or more unique Email/SMS/WhatsApp channels;
+- lifecycle changes use the dedicated status route;
+- no message dispatch, provider, or field-operation claim is introduced.
