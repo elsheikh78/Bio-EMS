@@ -4,10 +4,13 @@
 
 ### BF-02 — Append-only Audit Foundation
 
-Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-02-audit-foundation`;
 - base: BF-01 integration commit `85a2d51f8d6887605c6a3390281a690966d4f391`;
+- PR: #68;
+- integration commit: `9ca22d6f5a72a155203227c7ff0a0ad5b296b516`;
+- GitHub CI run number: 192 — SUCCESS;
 - migration: 010 `audit_events`;
 - customer read: ADMIN-only and Site-scoped;
 - platform read: isolated platform authentication with optional Site filter;

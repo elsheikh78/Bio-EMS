@@ -74,7 +74,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 | Authentication and RBAC               | Implemented        |
 | ADMIN User Management                 | Implemented        |
 | SYSTEM_OWNER backend boundary         | Implemented        |
-| System-wide Audit foundation          | BF-02 PR pending   |
+| System-wide Audit foundation          | Implemented        |
 | Alarm Acknowledgment Audit            | Implemented        |
 | Frontend Architecture                 | Implemented        |
 | Frontend AppShell                     | Implemented        |
