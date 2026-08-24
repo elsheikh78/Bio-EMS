@@ -56,8 +56,8 @@ export function recoverAlarm(id: number): void {
   }
 }
 
-export function acknowledgeAlarm(id: number, acknowledgingUserId: number): void {
-  sqlite.transaction(() => {
+export function acknowledgeAlarm(id: number, acknowledgingUserId: number): Alarm {
+  return sqlite.transaction(() => {
     const alarm = repository.getById(id);
 
     if (!alarm) {
@@ -75,6 +75,11 @@ export function acknowledgeAlarm(id: number, acknowledgingUserId: number): void 
     }
 
     notificationService.publishAlarmAcknowledged(id, acknowledgingUserId, new Date().toISOString());
+
+    return {
+      ...alarm,
+      status: "ACKNOWLEDGED",
+    };
   })();
 }
 
