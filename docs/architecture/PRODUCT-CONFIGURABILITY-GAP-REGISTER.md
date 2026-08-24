@@ -15,7 +15,7 @@ This register distinguishes implemented capability from commercial-product confi
 | CFG-006 | Configuration RBAC            | BF-07 adds dedicated ADMIN-only escalation-policy read/manage permissions                              | Apply least-privilege authorization to every later configuration workflow                | PARTIAL / BF-07 VERIFIED       |
 | CFG-007 | Configuration audit           | BF-07 policy mutations add Site-scoped atomic prior/new evidence                                       | Extend the same atomic rule to later controlled configuration families                   | PARTIAL / BF-07 VERIFIED       |
 | CFG-008 | Controller synchronization    | BF-08 adds versioned checksum envelope, acknowledgement state, reconnect, and safe fallback contract   | Transport, persistence, firmware, and field/controller evidence remain separate          | IMPLEMENTED BACKEND CONTRACT   |
-| CFG-009 | Configuration UI              | BF-09-01 adds permission parity and typed/runtime-validated protected API adapters                     | Admin forms and complete threshold/delay/recipient/escalation workflows remain            | PARTIAL / READINESS VERIFIED   |
+| CFG-009 | Configuration UI              | BF-09-02 adds the ADMIN Sensor threshold and Alarm-delay register/editor                               | Recipient, escalation, and integrated Audit/User workflows remain                         | PARTIAL / SENSOR UI VERIFIED   |
 | CFG-010 | Customer-specific hard-coding | Product already models reusable entities in several domains                                           | Audit new work to prevent BIO EGYPT names/values becoming source-code product rules      | CONTINUOUS CONTROL             |
 
 ## Implementation evidence rule

@@ -1,9 +1,25 @@
 # Project Status
 
+## BF-09-02 Sensor configuration UI — 24 August 2026
+
+BF-09-02 is implemented on `agent/bf-09-02-sensor-configuration-ui` from the verified
+BF-09-01 merge. The ADMIN-only Configuration route now exposes a searchable Sensor
+register and a controlled editor for persisted warning/alarm thresholds and
+warning/critical activation delays.
+
+The editor rejects invalid threshold ordering and delay values outside whole seconds
+0 through 86400 before sending either protected mutation. Successful operations
+refresh the shared Sensor register. This is configuration UI only; it does not claim
+live telemetry changes, provider delivery, or field commissioning.
+
+Frontend gates pass with 28 files / 227 tests plus production build. Backend
+regression gates pass with 71 files / 600 tests plus build. Both applications pass
+format, lint, and typecheck.
+
 ## BF-09-01 frontend readiness and API contracts — 24 August 2026
 
-BF-09-01 is implemented and locally verified on
-`agent/bf-09-01-frontend-readiness`; PR, GitHub CI, and merge remain pending.
+BF-09-01 is merged through PR #77 at integration commit
+`a4e33bf9686141596b1580f5b925a64487348ba0`.
 
 The frontend permission vocabulary now mirrors the backend through BF-07. The
 mutation-capable Configuration route/navigation is ADMIN-only while read-only
@@ -13,6 +29,8 @@ management screens remain deliberately unclaimed.
 
 Frontend gates pass with 27 files / 223 tests. Backend regression gates pass with 71
 files / 600 tests. Both applications pass format, lint, typecheck, and build.
+The GitHub connector returned no commit-associated workflow run for the PR; the
+protected merge accepted the exact reviewed head SHA.
 
 ## BF-08 controller configuration synchronization contract — 24 August 2026
 

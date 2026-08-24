@@ -42,6 +42,15 @@ export function useSensors() {
   });
 }
 
+export function useRefreshSensorsAfterMutation() {
+  const queryClient = useQueryClient();
+
+  return () =>
+    queryClient.invalidateQueries({
+      queryKey: monitoredAreasQueryKeys.sensors(),
+    });
+}
+
 export function useCalibrationHistory(sensorUuid?: string) {
   const { protectedRequest } = useAuthentication();
   const api = createMonitoredAreasApi(protectedRequest);

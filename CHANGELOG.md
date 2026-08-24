@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added the BF-09-02 ADMIN Sensor configuration register and editor for persisted
+  warning/alarm thresholds and warning/critical activation delays.
+- Added client-side ordering/range validation, controlled mutations, query refresh,
+  and explicit loading, empty, failure, and success presentation.
 - Added BF-09-01 frontend permission parity for Audit, notification recipients, and
   escalation policies plus ADMIN-only Configuration navigation/route presentation.
 - Added runtime-validated frontend contracts and authenticated API adapters for
