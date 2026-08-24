@@ -1,6 +1,6 @@
 # BF-05 — Configurable Alarm Persistence/Delay
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-05-configurable-alarm-delay`
 Base: `main` at `d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`

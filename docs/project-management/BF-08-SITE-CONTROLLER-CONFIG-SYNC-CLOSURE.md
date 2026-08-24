@@ -1,6 +1,6 @@
 # BF-08 — Site Controller Configuration Sync Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-08-controller-config-sync`
 Base: BF-07 merge `5890629b938a8b4dfe0364b1f41abbc72b2dc16f`
@@ -28,4 +28,5 @@ is claimed without separate controller evidence.
 - unchanged frontend format, lint, typecheck, build and 25 files / 212 tests PASS;
 - documentation audit and gap-register reconciliation PASS.
 
-Remote evidence will be recorded after PR, CI, and merge.
+Remote verification: PR #75, GitHub CI run 206 SUCCESS, integration commit
+`55a2031dc404d9c9cfdf51fac157261b3d0dd8c7`.

@@ -189,8 +189,8 @@ Implement configurable escalation order, timing, ownership, and eligibility.
 
 ## 10. BF-08 — Site Controller offline-critical configuration synchronization contract
 
-Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
-PENDING. See `BF-08-SITE-CONTROLLER-CONFIG-SYNC-CONTRACT.md`.
+Implementation status (2026-08-24): COMPLETE / MERGED / CI VERIFIED / CLOSED through
+PR #75 and CI run 206. See `BF-08-SITE-CONTROLLER-CONFIG-SYNC-CONTRACT.md`.
 
 ### Scope
 
