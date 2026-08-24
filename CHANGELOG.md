@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-07 Site-scoped escalation policies with owner role, active lifecycle,
+  severity eligibility, and ordered role/channel steps with strict elapsed timing.
+- Added dedicated ADMIN-only policy read/manage boundaries, deterministic due-step
+  resolution, atomic audit evidence, and migration/REST/rollback coverage.
 - Added BF-06 Site-scoped notification recipients with normalized Email, SMS, and
   WhatsApp endpoints plus per-channel Warning/Critical eligibility.
 - Added dedicated ADMIN-only recipient read/manage permissions, strict contact

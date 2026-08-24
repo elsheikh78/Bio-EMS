@@ -1,10 +1,23 @@
 # Project Status
 
+## BF-07 escalation policy — 24 August 2026
+
+BF-07 is implemented and locally verified on `agent/bf-07-escalation-policy`; PR,
+GitHub CI, and merge remain pending.
+
+Site-scoped active/inactive policies now define owner role, Warning/Critical
+eligibility, and contiguous steps with strictly increasing elapsed delays, target
+recipient role, and eligible channels. The resolver returns due steps
+deterministically without sending messages or consuming the outbox.
+
+Backend gates pass with 70 files / 596 tests. The unchanged frontend passes 25 files /
+212 tests plus typecheck, lint, format, and production build.
+
 ## BF-06 notification recipient directory — 24 August 2026
 
-BF-06 is implemented and locally verified on
-`agent/bf-06-notification-recipient-directory`; PR, GitHub CI, and merge remain
-pending.
+BF-06 is merged and verified through PR #73 at `main` integration commit
+`0532d2557d6d190275d611df27cf38cb857f43c6`. GitHub CI run 202 completed
+successfully before merge.
 
 The backend now supports Site-scoped recipient profiles, normalized Email/SMS/
 WhatsApp endpoints, active/inactive lifecycle, and per-channel Warning/Critical
