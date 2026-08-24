@@ -7,6 +7,10 @@ production acceptance** pending a same-commit browser retest, closure of the fou
 families, commissioned Alarm/Device evidence, and customer/UAT evidence. Repository CI is necessary
 evidence but is not treated as field or production acceptance.
 
+The live Device retest subsequently verified the API response and identified the valid SQLite
+`updated_at: null` state for a never-updated Device. The strict frontend contract is reconciled with
+that state; two legacy local UUID values were repaired without changing their MQTT `device_id`.
+
 ## PVR-06 reporting readiness audit — 24 August 2026
 
 PVR-06 confirms Calibration Status and History as the only available controlled report family.

@@ -16,6 +16,7 @@ describe("Device contracts", () => {
         activated: 1,
         last_seen_at: null,
         last_heartbeat_at: null,
+        updated_at: null,
       }).device_id,
     ).toBe("ZC-1");
     expect(
@@ -30,5 +31,22 @@ describe("Device contracts", () => {
         offline_after_seconds: 300,
       }).communication_status,
     ).toBe("ONLINE");
+  });
+
+  it("accepts a never-updated SQLite Device", () => {
+    expect(
+      deviceSchema.parse({
+        uuid: "550e8400-e29b-41d4-a716-446655440001",
+        device_id: "ESP32-0001",
+        site_id: 1,
+        device_type: "controller",
+        protocol: "MQTT",
+        status: "pending",
+        activated: 0,
+        last_seen_at: null,
+        last_heartbeat_at: null,
+        updated_at: null,
+      }).updated_at,
+    ).toBeNull();
   });
 });

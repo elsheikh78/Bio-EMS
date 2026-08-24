@@ -5,6 +5,7 @@
 - Added the platform acceptance matrix, release blockers, and explicit NO-GO decision.
 - Removed the obsolete runtime feature-placeholder component and localization copy.
 - Replaced stale workspace staging text with the current operational scope description.
+- Reconciled the strict Device contract with SQLite's valid `updated_at: null` state and added regression coverage.
 
 ## PVR-06
 

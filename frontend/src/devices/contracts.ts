@@ -16,7 +16,7 @@ export const deviceSchema = z
     last_seen_at: z.string().nullable().optional(),
     last_heartbeat_at: z.string().nullable().optional(),
     created_at: z.string().optional(),
-    updated_at: z.string().optional(),
+    updated_at: z.string().nullable().optional(),
   })
   .strict();
 export const deviceHealthSchema = z
