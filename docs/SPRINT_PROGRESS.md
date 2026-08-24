@@ -289,7 +289,8 @@ completed navigation, and the authorized Sensors & Calibration register and hist
 ### Current next actions
 
 - Product/Reporting: start S16-07 Reports Center.
-- Field: continue S16-05 controlled BIO EGYPT survey evidence.
+- Field: execute the prepared `BE002-EV-001` marked-up plan and Sensor-position pack;
+  `BE-002` remains blocking until signed evidence is recorded.
 - Hardware: progress S16-08 only from approved S16-04 and applicable S16-05 evidence.
 
 BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.

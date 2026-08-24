@@ -395,11 +395,11 @@ documents may be referenced by controlled ID rather than copied.
 Never delete an existing `BE` item. A finding that changes Site/area/Sensor totals is a
 scope change and records technical and commercial impact plus customer approval.
 
-## 19. Existing open-item evidence map
+## 19. Open-item evidence map
 
 | ID       | Survey-pack evidence                                | Status before field execution |
 | -------- | --------------------------------------------------- | ----------------------------- |
-| `BE-001` | Sections 3, 4, and 6                                | BLOCKING                      |
+| `BE-001` | Sections 3, 4, and 6 plus `BE001-EV-001`            | CLOSED — 23 August 2026       |
 | `BE-002` | Sections 7, 8, and 10                               | BLOCKING                      |
 | `BE-003` | Section 9 plus S16-08 released design               | BLOCKING                      |
 | `BE-004` | Sections 8 and 11 plus tested cable design          | BLOCKING                      |
