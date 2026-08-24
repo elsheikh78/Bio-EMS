@@ -8,8 +8,11 @@ const labels = {
   deviceTitle: "Device connectivity",
   deviceDescription: "Current distribution",
   online: "Online",
+  stale: "Stale",
   offline: "Offline",
-  staleUnavailable: "Stale status is unavailable.",
+  neverSeen: "Never seen",
+  notOperational: "Not operational",
+  statusEvidence: "All communication states are explicit.",
   severityTitle: "Alarm severity",
   severityDescription: "Current severity distribution",
   critical: "Critical",
@@ -32,7 +35,11 @@ describe("OperationalOverview", () => {
           totalDevices: 5,
           totalSensors: 20,
           activeAlarms: 4,
+          onlineDevices: 1,
+          staleDevices: 1,
           offlineDevices: 2,
+          neverSeenDevices: 1,
+          notOperationalDevices: 0,
         }}
         alarmStatistics={{
           active: 4,
@@ -56,13 +63,21 @@ describe("OperationalOverview", () => {
     expect(devicePanel).not.toBeNull();
     expect(severityPanel).not.toBeNull();
 
-    expect(within(devicePanel!).getByText(labels.online)).toBeInTheDocument();
-    expect(within(devicePanel!).getByText("3")).toBeInTheDocument();
+    const onlineRow = within(devicePanel!).getByText(
+      labels.online,
+    ).parentElement;
+    expect(onlineRow).not.toBeNull();
+    expect(within(onlineRow!).getByText("1")).toBeInTheDocument();
     expect(
       within(severityPanel!).getByText(labels.critical),
     ).toBeInTheDocument();
     expect(within(severityPanel!).getByText("2")).toBeInTheDocument();
-    expect(screen.getByText(/Stale status is unavailable/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/All communication states are explicit/),
+    ).toBeInTheDocument();
+    expect(
+      within(devicePanel!).getByText(labels.neverSeen),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/Historical trends are unavailable/),
     ).toBeInTheDocument();
@@ -77,7 +92,11 @@ describe("OperationalOverview", () => {
           totalDevices: 1,
           totalSensors: 0,
           activeAlarms: 0,
+          onlineDevices: 0,
+          staleDevices: 0,
           offlineDevices: 2,
+          neverSeenDevices: 0,
+          notOperationalDevices: 0,
         }}
         alarmStatistics={{
           active: 0,
@@ -104,7 +123,11 @@ describe("OperationalOverview", () => {
           totalDevices: 3,
           totalSensors: 4,
           activeAlarms: 0,
+          onlineDevices: 1,
+          staleDevices: 0,
           offlineDevices: 1,
+          neverSeenDevices: 1,
+          notOperationalDevices: 0,
         }}
         labels={labels}
       />,

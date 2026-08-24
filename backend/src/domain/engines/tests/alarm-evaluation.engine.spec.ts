@@ -66,6 +66,24 @@ describe("AlarmEvaluationEngine", () => {
     expect(result.status).toBe(AlarmStatus.NORMAL);
   });
 
+  it("treats persisted null thresholds as not configured", () => {
+    const result = evaluateAlarm(
+      {
+        sensorType: SensorType.TEMPERATURE,
+        value: 6.1,
+      },
+      {
+        alarmLow: 2,
+        warningLow: null,
+        warningHigh: null,
+        alarmHigh: 8,
+      }
+    );
+
+    expect(result.status).toBe(AlarmStatus.NORMAL);
+    expect(result.isAlarm).toBe(false);
+  });
+
   it("should return WARNING_HIGH", () => {
     const result = evaluateAlarm(
       {

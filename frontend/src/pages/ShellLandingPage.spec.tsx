@@ -31,7 +31,12 @@ describe("Operational workspace", () => {
       "Operational workspace",
     );
     expect(screen.getAllByRole("link", { name: /Continue/ })).toHaveLength(6);
-    expect(screen.getByText("Scheduled in PVR-04")).toBeInTheDocument();
+    expect(
+      screen.getByText("Available / acknowledgement retest pending"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Scheduled in PVR-0[45]/),
+    ).not.toBeInTheDocument();
   });
 
   it("does not expose ADMIN actions to VIEWER", () => {

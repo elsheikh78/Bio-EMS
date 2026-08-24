@@ -22,8 +22,8 @@ This decision distinguishes merged implementation evidence from actual platform 
 
 1. Repeat the real browser smoke test with frontend and backend running from the same accepted `main`, valid environment configuration, migrations, and seeded Site scope.
 2. Exercise the permission-controlled Alarm acknowledgement action against a newly triggered active Alarm. Active/History loading and historical acknowledged/recovered evidence have passed.
-3. Reconcile Dashboard Device connectivity with authoritative health states; `NEVER_SEEN` and `NOT_OPERATIONAL` must not be presented as Online.
-4. Investigate the Monitored Areas warning presentation where warning thresholds are not configured, and replace obsolete Workspace completion labels for Alarms and Devices.
+3. Repeat the Dashboard browser retest after the communication-summary correction and verify `ONLINE`, `STALE`, `OFFLINE`, `NEVER_SEEN`, and `NOT_OPERATIONAL` counts reconcile to total Devices.
+4. Repeat the Monitored Areas browser retest after the null-threshold correction and verify an unconfigured warning boundary cannot produce a false `WARNING` state.
 5. Complete Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations reports. Calibration is the only controlled report family currently available.
 6. Record customer/UAT evidence and production deployment/commissioning evidence. Automated unit/integration tests are not substitutes.
 
@@ -37,11 +37,14 @@ This decision distinguishes merged implementation evidence from actual platform 
 - The Devices browser retest passed list loading, `NOT_OPERATIONAL`/`NEVER_SEEN` health presentation, metadata edit, activation, disablement, reactivation, and the corresponding immutable Audit events.
 - The Alarms browser retest passed an empty Active view and a populated History view containing acknowledged and recovered `HIGH_TEMPERATURE` evidence. A fresh triggered-to-acknowledged action remains required.
 - The Calibration report preview and CSV export passed with four Sensors, four PASS attempts, zero FAIL, and explicit missing-hardware-model warnings. Inspection of the first exported PDF found cursor drift, clipped identity/approval content, and two footer-only pages. PR #96 corrected the cursor and footer boundaries and added a page-count regression test. The subsequent live export `RPT-20260824-01M0TGP0043CJ7E1DDKW82N517` passed visual and textual review as two complete A4 pages with no clipping, overlap, or blank pages. Calibration Preview, CSV, and PDF are accepted.
+- Dashboard Device connectivity no longer derives Online as `total - offline`. The backend now returns mutually exclusive counts for all five authoritative communication/lifecycle states, and the frontend contract rejects totals that do not reconcile.
+- The false Monitored Areas warning was traced to persisted SQLite `null` thresholds being compared numerically as zero. The domain Alarm engine now treats `null` as not configured, protecting both Dashboard status evaluation and live telemetry Alarm evaluation. A 6.1 °C regression case with null warning boundaries and alarm limits 2-8 °C resolves to `NORMAL`.
+- Workspace completion labels now describe the implemented Alarms and Devices routes and retain only the actual pending live validation/expansion work.
 
 ## Automated repository evidence
 
-- Backend: typecheck, lint, build, 71 test files / 601 tests.
-- Frontend: typecheck, lint, build, and 35 test files / 247 current tests. At the PVR-05 gate, a pre-existing Login timing test failed once under the full serial load and passed 11/11 when repeated in isolation; GitHub CI passed. The full PVR-07 suite passed without the obsolete placeholder test.
+- Backend: typecheck, lint, build, 71 test files / 603 tests.
+- Frontend: typecheck, lint, build, and 36 test files / 250 current tests. At the PVR-05 gate, a pre-existing Login timing test failed once under the full serial load and passed 11/11 when repeated in isolation; GitHub CI passed. The full PVR-07 suite passed without the obsolete placeholder test.
 - PVR-05 GitHub CI run 237: success.
 - PVR-06 GitHub CI run 239: success.
 - Calibration PDF correction GitHub CI run 249: success; PR #96 merged as `f9ef8eb47e1d7cda806aea939adf40ddaf4de355`.

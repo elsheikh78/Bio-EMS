@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Device } from "../../repositories/device.repository";
-import { deriveCommunicationStatus, toDeviceHealth } from "../device-health.service";
+import {
+  deriveCommunicationStatus,
+  summarizeDeviceCommunicationStatuses,
+  toDeviceHealth,
+} from "../device-health.service";
 
 const now = new Date("2026-08-17T10:00:00.000Z");
 const device = {
@@ -43,6 +47,27 @@ describe("Device communication health", () => {
       seconds_since_seen: 30,
       stale_after_seconds: 120,
       offline_after_seconds: 300,
+    });
+  });
+
+  it("summarizes every authoritative communication state without treating never-seen Devices as Online", () => {
+    expect(
+      summarizeDeviceCommunicationStatuses(
+        [
+          { ...device, status: "pending", activated: 0 },
+          device,
+          { ...device, device_id: "ONLINE", last_seen_at: "2026-08-17T09:59:00.000Z" },
+          { ...device, device_id: "STALE", last_seen_at: "2026-08-17T09:57:00.000Z" },
+          { ...device, device_id: "OFFLINE", last_seen_at: "2026-08-17T09:54:00.000Z" },
+        ],
+        now
+      )
+    ).toEqual({
+      NOT_OPERATIONAL: 1,
+      NEVER_SEEN: 1,
+      ONLINE: 1,
+      STALE: 1,
+      OFFLINE: 1,
     });
   });
 });

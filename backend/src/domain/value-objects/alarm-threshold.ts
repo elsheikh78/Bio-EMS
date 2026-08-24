@@ -1,9 +1,9 @@
 export type AlarmThreshold = {
-  warningLow?: number;
+  warningLow?: number | null;
 
-  alarmLow?: number;
+  alarmLow?: number | null;
 
-  warningHigh?: number;
+  warningHigh?: number | null;
 
-  alarmHigh?: number;
+  alarmHigh?: number | null;
 };

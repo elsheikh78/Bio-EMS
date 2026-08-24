@@ -9,7 +9,11 @@ describe("dashboard API", () => {
       totalDevices: 4,
       totalSensors: 18,
       activeAlarms: 3,
+      onlineDevices: 1,
+      staleDevices: 1,
       offlineDevices: 1,
+      neverSeenDevices: 1,
+      notOperationalDevices: 0,
     });
 
     const api = createDashboardApi(protectedRequest);
@@ -20,7 +24,11 @@ describe("dashboard API", () => {
       totalDevices: 4,
       totalSensors: 18,
       activeAlarms: 3,
+      onlineDevices: 1,
+      staleDevices: 1,
       offlineDevices: 1,
+      neverSeenDevices: 1,
+      notOperationalDevices: 0,
     });
 
     expect(protectedRequest).toHaveBeenCalledWith("/dashboard/summary");
@@ -101,7 +109,11 @@ describe("dashboard API", () => {
       totalDevices: 4,
       totalSensors: 18,
       activeAlarms: 3,
+      onlineDevices: 1,
+      staleDevices: 1,
       offlineDevices: 1,
+      neverSeenDevices: 1,
+      notOperationalDevices: 0,
     });
 
     const api = createDashboardApi(protectedRequest);

@@ -9,7 +9,11 @@ export interface DashboardSummary {
   totalDevices: number;
   totalSensors: number;
   activeAlarms: number;
+  onlineDevices: number;
+  staleDevices: number;
   offlineDevices: number;
+  neverSeenDevices: number;
+  notOperationalDevices: number;
 }
 
 export interface RoomStatus {

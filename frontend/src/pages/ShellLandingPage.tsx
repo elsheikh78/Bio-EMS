@@ -63,9 +63,9 @@ const operationalActions: readonly WorkspaceAction[] = [
 
 const readiness = [
   ["Dashboard", "Available"],
-  ["Monitored Areas", "Integration recovered / completion scheduled"],
-  ["Alarms", "Scheduled in PVR-04"],
-  ["Devices", "Scheduled in PVR-05"],
+  ["Monitored Areas", "Available / live telemetry validation pending"],
+  ["Alarms", "Available / acknowledgement retest pending"],
+  ["Devices", "Available"],
   ["Reports", "Calibration available / expansion scheduled"],
 ] as const;
 

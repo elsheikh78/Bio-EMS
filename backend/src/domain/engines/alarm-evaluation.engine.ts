@@ -29,7 +29,7 @@ function evaluateNumeric(value: number, threshold: AlarmThreshold): AlarmEvaluat
   // 4. Warning High
   // 5. Normal
 
-  if (threshold.alarmLow !== undefined && value <= threshold.alarmLow) {
+  if (typeof threshold.alarmLow === "number" && value <= threshold.alarmLow) {
     return createResult(
       AlarmStatus.CRITICAL_LOW,
       AlarmSeverity.CRITICAL,
@@ -39,7 +39,7 @@ function evaluateNumeric(value: number, threshold: AlarmThreshold): AlarmEvaluat
     );
   }
 
-  if (threshold.warningLow !== undefined && value <= threshold.warningLow) {
+  if (typeof threshold.warningLow === "number" && value <= threshold.warningLow) {
     return createResult(
       AlarmStatus.WARNING_LOW,
       AlarmSeverity.WARNING,
@@ -49,7 +49,7 @@ function evaluateNumeric(value: number, threshold: AlarmThreshold): AlarmEvaluat
     );
   }
 
-  if (threshold.alarmHigh !== undefined && value >= threshold.alarmHigh) {
+  if (typeof threshold.alarmHigh === "number" && value >= threshold.alarmHigh) {
     return createResult(
       AlarmStatus.CRITICAL_HIGH,
       AlarmSeverity.CRITICAL,
@@ -59,7 +59,7 @@ function evaluateNumeric(value: number, threshold: AlarmThreshold): AlarmEvaluat
     );
   }
 
-  if (threshold.warningHigh !== undefined && value >= threshold.warningHigh) {
+  if (typeof threshold.warningHigh === "number" && value >= threshold.warningHigh) {
     return createResult(
       AlarmStatus.WARNING_HIGH,
       AlarmSeverity.WARNING,

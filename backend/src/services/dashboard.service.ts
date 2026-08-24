@@ -2,7 +2,7 @@ import { SiteRepository } from "../repositories/site.repository";
 import { RoomRepository } from "../repositories/room.repository";
 import { DeviceRepository } from "../repositories/device.repository";
 import { Sensor, SensorRepository } from "../repositories/sensor.repository";
-import { deriveCommunicationStatus } from "./device-health.service";
+import { summarizeDeviceCommunicationStatuses } from "./device-health.service";
 import { AlarmRepository } from "../repositories/alarm.repository";
 import { AlarmStatistics } from "../types/alarm-statistics.types";
 import { DashboardSummary } from "../types/dashboard.types";
@@ -238,10 +238,7 @@ export class DashboardService {
     const sensors = this.sensorRepository.getAll();
     const activeAlarms = this.alarmRepository.getActive();
 
-    const now = new Date();
-    const offlineDevices = devices.filter(
-      (device) => deriveCommunicationStatus(device, now) === "OFFLINE"
-    );
+    const communication = summarizeDeviceCommunicationStatuses(devices);
 
     return {
       totalSites: sites.length,
@@ -253,8 +250,11 @@ export class DashboardService {
       totalSensors: sensors.length,
 
       activeAlarms: activeAlarms.length,
-
-      offlineDevices: offlineDevices.length,
+      onlineDevices: communication.ONLINE,
+      staleDevices: communication.STALE,
+      offlineDevices: communication.OFFLINE,
+      neverSeenDevices: communication.NEVER_SEEN,
+      notOperationalDevices: communication.NOT_OPERATIONAL,
     };
   }
 }

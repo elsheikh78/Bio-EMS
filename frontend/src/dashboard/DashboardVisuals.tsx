@@ -167,8 +167,11 @@ interface OperationalOverviewProps {
     deviceTitle: string;
     deviceDescription: string;
     online: string;
+    stale: string;
     offline: string;
-    staleUnavailable: string;
+    neverSeen: string;
+    notOperational: string;
+    statusEvidence: string;
     severityTitle: string;
     severityDescription: string;
     critical: string;
@@ -187,10 +190,6 @@ export function OperationalOverview({
   alarmStatistics,
   labels,
 }: OperationalOverviewProps) {
-  const onlineDevices = summary
-    ? Math.max(summary.totalDevices - summary.offlineDevices, 0)
-    : 0;
-
   return (
     <Box component="section" aria-labelledby="operational-overview-title">
       <Stack spacing={2}>
@@ -219,13 +218,28 @@ export function OperationalOverview({
               items={[
                 {
                   label: labels.online,
-                  value: onlineDevices,
+                  value: summary.onlineDevices,
                   color: "success.main",
+                },
+                {
+                  label: labels.stale,
+                  value: summary.staleDevices,
+                  color: "warning.main",
                 },
                 {
                   label: labels.offline,
                   value: summary.offlineDevices,
                   color: "error.main",
+                },
+                {
+                  label: labels.neverSeen,
+                  value: summary.neverSeenDevices,
+                  color: "info.main",
+                },
+                {
+                  label: labels.notOperational,
+                  value: summary.notOperationalDevices,
+                  color: "info.main",
                 },
               ]}
               totalLabel={labels.total}
@@ -279,7 +293,7 @@ export function OperationalOverview({
           sx={{ p: 2, borderRadius: 2, bgcolor: "action.hover" }}
         >
           <Typography variant="body2" color="text.secondary">
-            {labels.staleUnavailable} {labels.trendUnavailable}
+            {labels.statusEvidence} {labels.trendUnavailable}
           </Typography>
         </Paper>
       </Stack>
