@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-09-01 frontend permission parity for Audit, notification recipients, and
+  escalation policies plus ADMIN-only Configuration navigation/route presentation.
+- Added runtime-validated frontend contracts and authenticated API adapters for
+  Sensor thresholds/delays, recipients, and escalation-policy lifecycle operations.
 - Added BF-08 versioned offline-critical controller configuration bundles with
   validated minimum subsets and deterministic SHA-256 delivery envelopes.
 - Added explicit acknowledgement/currentness evaluation, stale/rejected/mismatch/

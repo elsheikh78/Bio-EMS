@@ -15,6 +15,11 @@ describe("frontend presentation permission matrix", () => {
       "USER_MANAGE",
       "REPORT_READ",
       "REPORT_EXPORT",
+      "AUDIT_READ",
+      "NOTIFICATION_RECIPIENT_READ",
+      "NOTIFICATION_RECIPIENT_MANAGE",
+      "ESCALATION_POLICY_READ",
+      "ESCALATION_POLICY_MANAGE",
     ]);
     expect(permissions).not.toContain("CONFIG_READ");
   });
@@ -49,6 +54,10 @@ describe("frontend presentation permission matrix", () => {
     ["OPERATOR", "REPORT_EXPORT", true],
     ["VIEWER", "REPORT_READ", true],
     ["VIEWER", "REPORT_EXPORT", false],
+    ["ADMIN", "NOTIFICATION_RECIPIENT_MANAGE", true],
+    ["OPERATOR", "NOTIFICATION_RECIPIENT_READ", false],
+    ["VIEWER", "ESCALATION_POLICY_READ", false],
+    ["ADMIN", "AUDIT_READ", true],
   ] as const)("evaluates %s × %s as %s", (role, permission, expected) => {
     expect(hasPermission(role satisfies UserRole, permission)).toBe(expected);
   });

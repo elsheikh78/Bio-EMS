@@ -66,7 +66,7 @@ export const navigationItems = [
     id: "configuration",
     path: "/configuration",
     labelKey: "configuration",
-    permission: "CONFIGURATION_READ",
+    permission: "CONFIGURATION_WRITE",
   },
   {
     group: "administration",

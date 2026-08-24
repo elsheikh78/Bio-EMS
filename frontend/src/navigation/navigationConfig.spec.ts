@@ -13,7 +13,7 @@ describe("permission-aware navigation registry", () => {
       ["/devices", "DEVICE_READ"],
       ["/sensors-calibration", "CONFIGURATION_READ"],
       ["/reports", "REPORT_READ"],
-      ["/configuration", "CONFIGURATION_READ"],
+      ["/configuration", "CONFIGURATION_WRITE"],
       ["/users", "USER_MANAGE"],
     ]);
   });

@@ -49,6 +49,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Site-scoped, ADMIN-only notification recipient and severity-eligibility directory
 - Site-scoped, deterministic notification escalation-policy foundation
 - Versioned Site Controller offline-critical configuration synchronization contract
+- Frontend permission parity and runtime-validated configuration API adapters
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage

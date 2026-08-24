@@ -11,6 +11,11 @@ export const permissions = [
   "USER_MANAGE",
   "REPORT_READ",
   "REPORT_EXPORT",
+  "AUDIT_READ",
+  "NOTIFICATION_RECIPIENT_READ",
+  "NOTIFICATION_RECIPIENT_MANAGE",
+  "ESCALATION_POLICY_READ",
+  "ESCALATION_POLICY_MANAGE",
 ] as const;
 
 export type Permission = (typeof permissions)[number];

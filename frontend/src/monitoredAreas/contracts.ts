@@ -61,6 +61,8 @@ export const sensorSchema = z
     alarm_low: finiteNumberSchema.nullable().optional(),
     warning_high: finiteNumberSchema.nullable().optional(),
     alarm_high: finiteNumberSchema.nullable().optional(),
+    warning_delay_seconds: z.number().int().min(0).max(86_400).optional(),
+    critical_delay_seconds: z.number().int().min(0).max(86_400).optional(),
     enabled: databaseFlagSchema.optional(),
     created_at: z.string().nullable().optional(),
     updated_at: z.string().nullable().optional(),
