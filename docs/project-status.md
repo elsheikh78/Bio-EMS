@@ -2,8 +2,11 @@
 
 ## BF-08 controller configuration synchronization contract — 24 August 2026
 
-BF-08 is implemented and locally verified on `agent/bf-08-controller-config-sync`;
-PR, GitHub CI, and merge remain pending.
+BF-08 is merged and verified through PR #75 at `main` integration commit
+`55a2031dc404d9c9cfdf51fac157261b3d0dd8c7`. GitHub CI run 206 completed
+successfully before merge. The BF-01 through BF-08 backend-foundation sequence is
+therefore complete at repository-contract level, subject to each slice's documented
+field/UI/provider exclusions.
 
 Contract version 1 defines the minimum Site Controller offline-critical bundle,
 canonical checksum envelope, explicit APPLIED/REJECTED acknowledgement, exact

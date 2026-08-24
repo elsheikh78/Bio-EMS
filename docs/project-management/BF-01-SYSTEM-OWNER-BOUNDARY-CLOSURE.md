@@ -1,6 +1,6 @@
 # BF-01 — SYSTEM_OWNER Authorization Boundary Closure
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-01-system-owner-boundary`
 Base: `main` at `47bdf03510613380eb5ebafb13f4c093bbdc84f6`
@@ -101,12 +101,13 @@ for the audit foundation.
 - Work package acceptance criteria: mapped to implementation and tests.
 - README API and secure bootstrap operations: documented.
 - Changelog: recorded under Unreleased without changing published `v0.15.0`.
-- Project state/status: BF-01 identified as feature-branch work pending integration.
+- Project state/status: BF-01 merged through PR #67 at integration commit
+  `85a2d51f8d6887605c6a3390281a690966d4f391`.
 - BIO EGYPT status: stale BE-001 references corrected; BE-001 remains closed while
   BE-002 through BE-012 remain open.
 
 ## 8. Integration gate
 
-BF-01 may be declared PR-ready only after the final backend and frontend quality
-gates pass on the documented commit, the branch remains zero commits behind current
-`main`, and the GitHub diff contains no unrelated or runtime-generated files.
+BF-01 passed its integration gate and was merged through PR #67. Its deferred audit
+foundation and subsequent configuration work were completed incrementally by
+BF-02 through BF-08 without expanding BF-01's original identity boundary claims.

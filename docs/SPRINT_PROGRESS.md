@@ -4,7 +4,7 @@
 
 ### BF-08 — Site Controller Offline-Critical Configuration Sync Contract
 
-Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-08-controller-config-sync`;
 - base: BF-07 merge commit `5890629b938a8b4dfe0364b1f41abbc72b2dc16f`;
@@ -13,9 +13,10 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - effectiveness: exact Site/version/checksum APPLIED acknowledgement only;
 - reconnect/fallback: deterministic redelivery/block decisions and last-acknowledged retention;
 - backend verification: 71 files / 600 tests PASS;
-- frontend verification: 25 files / 212 tests PASS plus build.
-
-PR, GitHub CI, and merge evidence remain pending.
+- frontend verification: 25 files / 212 tests PASS plus build;
+- PR: #75;
+- integration commit: `55a2031dc404d9c9cfdf51fac157261b3d0dd8c7`;
+- GitHub CI run number: 206 — SUCCESS.
 
 ### BF-07 — Escalation Policy
 
