@@ -7,6 +7,7 @@ const PAGE_MARGIN = 48;
 const TABLE_HEADER_HEIGHT = 20;
 const ROW_PADDING = 5;
 const COLUMN_GAP = 4;
+const FOOTER_HEIGHT = 20;
 
 function text(value: unknown): string {
   if (value === null || value === undefined || value === "") {
@@ -39,7 +40,7 @@ function ensureVerticalSpace(
   requiredHeight: number,
   onNewPage?: () => void
 ) {
-  const bottom = doc.page.height - PAGE_MARGIN;
+  const bottom = doc.page.height - PAGE_MARGIN - FOOTER_HEIGHT;
 
   if (doc.y + requiredHeight > bottom) {
     doc.addPage();
@@ -56,9 +57,15 @@ function addSectionTitle(doc: PDFKit.PDFDocument, title: string) {
 function addKeyValue(doc: PDFKit.PDFDocument, label: string, value: unknown) {
   ensureVerticalSpace(doc, 18);
 
-  const x = doc.x;
+  const x = PAGE_MARGIN;
   const y = doc.y;
   const labelWidth = 135;
+  const valueWidth = doc.page.width - PAGE_MARGIN - (x + labelWidth);
+  const valueText = text(value);
+  const height = Math.max(
+    doc.heightOfString(label, { width: labelWidth }),
+    doc.heightOfString(valueText, { width: valueWidth })
+  );
 
   doc.font("Helvetica-Bold").fontSize(9).text(label, x, y, {
     width: labelWidth,
@@ -68,11 +75,12 @@ function addKeyValue(doc: PDFKit.PDFDocument, label: string, value: unknown) {
   doc
     .font("Helvetica")
     .fontSize(9)
-    .text(text(value), x + labelWidth, y, {
-      width: doc.page.width - PAGE_MARGIN - (x + labelWidth),
+    .text(valueText, x + labelWidth, y, {
+      width: valueWidth,
     });
 
-  doc.moveDown(0.25);
+  doc.x = PAGE_MARGIN;
+  doc.y = y + height + 4;
 }
 
 function addSummaryBox(
@@ -83,6 +91,8 @@ function addSummaryBox(
   y: number,
   width: number
 ) {
+  const previousX = doc.x;
+  const previousY = doc.y;
   const height = 42;
 
   doc.rect(x, y, width, height).stroke();
@@ -102,19 +112,30 @@ function addSummaryBox(
       width: width - 14,
       align: "center",
     });
+
+  doc.x = previousX;
+  doc.y = previousY;
 }
 
 function addPageNumber(doc: PDFKit.PDFDocument, pageNumber: number) {
+  const previousX = doc.x;
   const previousY = doc.y;
 
   doc
     .font("Helvetica")
     .fontSize(8)
-    .text(`BIO-EMS Calibration History · Page ${pageNumber}`, PAGE_MARGIN, doc.page.height - 32, {
-      width: doc.page.width - PAGE_MARGIN * 2,
-      align: "center",
-    });
+    .text(
+      `BIO-EMS Calibration History · Page ${pageNumber}`,
+      PAGE_MARGIN,
+      doc.page.height - PAGE_MARGIN - 12,
+      {
+        width: doc.page.width - PAGE_MARGIN * 2,
+        align: "center",
+        lineBreak: false,
+      }
+    );
 
+  doc.x = previousX;
   doc.y = previousY;
 }
 
@@ -138,6 +159,7 @@ function addTableHeader(doc: PDFKit.PDFDocument, columns: Array<{ title: string;
     x += column.width + COLUMN_GAP;
   }
 
+  doc.x = PAGE_MARGIN;
   doc.y = startY + TABLE_HEADER_HEIGHT + COLUMN_GAP;
 }
 
@@ -175,6 +197,7 @@ function addTableRow(doc: PDFKit.PDFDocument, values: string[], columns: Array<{
     x += column.width + COLUMN_GAP;
   });
 
+  doc.x = PAGE_MARGIN;
   doc.y = startY + height + COLUMN_GAP;
 }
 
@@ -358,11 +381,11 @@ export function renderCalibrationPdf(result: Result, generatedBy: string): Promi
       }
     }
 
+    ensureVerticalSpace(doc, 95);
+
     addSectionTitle(doc, "Approval fields");
 
     const approvalStartY = doc.y;
-
-    ensureVerticalSpace(doc, 95);
 
     const approvalWidth = (usableWidth - 12) / 2;
     const approvalHeight = 74;
@@ -390,6 +413,7 @@ export function renderCalibrationPdf(result: Result, generatedBy: string): Promi
         .text("Date:", x + 8, approvalStartY + 56);
     });
 
+    doc.x = PAGE_MARGIN;
     doc.y = approvalStartY + approvalHeight + 10;
 
     const range = doc.bufferedPageRange();
