@@ -4,7 +4,7 @@ import { roomOperationalPriority } from "../dashboard/roomPriority";
 
 function room(
   temperatureStatus: DashboardRoomStatus["temperatureStatus"],
-  humidityStatus: DashboardRoomStatus["humidityStatus"]
+  humidityStatus: DashboardRoomStatus["humidityStatus"],
 ): DashboardRoomStatus {
   return {
     roomId: 1,
@@ -24,7 +24,7 @@ function room(
 describe("Dashboard Priority areas", () => {
   it("prioritizes a critical current Sensor state even after its Alarm is acknowledged", () => {
     expect(roomOperationalPriority(room("CRITICAL", "UNKNOWN"))).toBeGreaterThan(
-      roomOperationalPriority(room("NORMAL", "UNKNOWN"))
+      roomOperationalPriority(room("NORMAL", "UNKNOWN")),
     );
   });
 });
