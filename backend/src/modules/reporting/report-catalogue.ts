@@ -48,10 +48,10 @@ export const reportCatalogue = {
     {
       id: "AUDIT-OPERATIONS",
       title: "Audit and Operations",
-      readiness: "BLOCKED",
+      readiness: "READY_FOR_IMPLEMENTATION",
       previewAvailable: false,
       exportFormats: [],
-      unavailableReason: "AUDIT_STORE_REQUIRED",
+      unavailableReason: "OPERATIONS_REPORT_PROJECTION_REQUIRED",
     },
   ],
 } as const;
