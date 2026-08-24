@@ -1,5 +1,12 @@
 # Project Status
 
+## PVR-03 monitored areas completion — 24 August 2026
+
+PVR-03 combines configured Site/Room/Sensor hierarchy with current room telemetry evidence. An
+operational-store failure is isolated as a warning and no longer hides valid configuration. The
+view exposes communication state, temperature/humidity snapshots, Alarm count, update time,
+thresholds, and calibration state without claiming historical trend or commissioning evidence.
+
 ## PVR-02 operational workspace — 24 August 2026
 
 PVR-02 replaces the authenticated root placeholder with a permission-aware operational entry

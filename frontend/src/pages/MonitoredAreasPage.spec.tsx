@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import type { Room, Sensor, Site } from "../monitoredAreas/contracts";
 import { useRooms, useSensors, useSites } from "../monitoredAreas/queries";
+import { useDashboardRoomStatuses } from "../dashboard/queries";
 import { MonitoredAreasPage } from "./MonitoredAreasPage";
 
 vi.mock("../monitoredAreas/queries", () => ({
@@ -10,10 +11,12 @@ vi.mock("../monitoredAreas/queries", () => ({
   useRooms: vi.fn(),
   useSensors: vi.fn(),
 }));
+vi.mock("../dashboard/queries", () => ({ useDashboardRoomStatuses: vi.fn() }));
 
 const mockedUseSites = vi.mocked(useSites);
 const mockedUseRooms = vi.mocked(useRooms);
 const mockedUseSensors = vi.mocked(useSensors);
+const mockedRoomStatuses = vi.mocked(useDashboardRoomStatuses);
 
 const site: Site = {
   id: 1,
@@ -111,6 +114,11 @@ function setSuccessfulQueries({
 describe("MonitoredAreasPage", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mockedRoomStatuses.mockReturnValue({
+      data: [],
+      isError: false,
+      refetch: createRefetch(),
+    } as unknown as ReturnType<typeof useDashboardRoomStatuses>);
   });
 
   it("renders an accessible loading state", () => {
@@ -548,3 +556,8 @@ describe("MonitoredAreasPage", () => {
     expect(screen.getByText("Disabled")).toBeInTheDocument();
   });
 });
+mockedRoomStatuses.mockReturnValue({
+  data: [],
+  isError: false,
+  refetch: vi.fn(),
+} as unknown as ReturnType<typeof useDashboardRoomStatuses>);

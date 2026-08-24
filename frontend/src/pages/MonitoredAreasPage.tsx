@@ -10,6 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocalization } from "../localization/useLocalization";
+import type { DashboardRoomStatus } from "../dashboard/contracts";
+import { useDashboardRoomStatuses } from "../dashboard/queries";
 import type { Room, Sensor, Site } from "../monitoredAreas/contracts";
 import { useRooms, useSensors, useSites } from "../monitoredAreas/queries";
 
@@ -24,6 +26,7 @@ export function MonitoredAreasPage() {
   const sitesQuery = useSites();
   const roomsQuery = useRooms();
   const sensorsQuery = useSensors();
+  const operationalStatusQuery = useDashboardRoomStatuses();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -39,6 +42,7 @@ export function MonitoredAreasPage() {
         sitesQuery.refetch(),
         roomsQuery.refetch(),
         sensorsQuery.refetch(),
+        operationalStatusQuery.refetch(),
       ]);
     } finally {
       setIsRefreshing(false);
@@ -102,6 +106,13 @@ export function MonitoredAreasPage() {
         onRefresh={() => void refreshMonitoredAreas()}
       />
 
+      {operationalStatusQuery.isError ? (
+        <Alert severity="warning">
+          Configuration is available, but current telemetry status could not be
+          loaded.
+        </Alert>
+      ) : null}
+
       {sites.length === 0 ? (
         <Alert severity="info">{copy.noSites}</Alert>
       ) : (
@@ -112,6 +123,7 @@ export function MonitoredAreasPage() {
               site={site}
               rooms={rooms}
               sensors={sensors}
+              roomStatuses={operationalStatusQuery.data ?? []}
               copy={copy}
             />
           ))}
@@ -185,10 +197,17 @@ interface SiteSectionProps {
   site: Site;
   rooms: Room[];
   sensors: Sensor[];
+  roomStatuses: DashboardRoomStatus[];
   copy: MonitoredAreasResources;
 }
 
-function SiteSection({ site, rooms, sensors, copy }: SiteSectionProps) {
+function SiteSection({
+  site,
+  rooms,
+  sensors,
+  roomStatuses,
+  copy,
+}: SiteSectionProps) {
   const siteRooms =
     site.id === undefined
       ? []
@@ -248,6 +267,9 @@ function SiteSection({ site, rooms, sensors, copy }: SiteSectionProps) {
                 key={room.id ?? room.uuid}
                 room={room}
                 sensors={sensors}
+                operationalStatus={roomStatuses.find(
+                  (status) => status.roomId === room.id,
+                )}
                 copy={copy}
               />
             ))}
@@ -261,10 +283,16 @@ function SiteSection({ site, rooms, sensors, copy }: SiteSectionProps) {
 interface RoomSectionProps {
   room: Room;
   sensors: Sensor[];
+  operationalStatus?: DashboardRoomStatus;
   copy: MonitoredAreasResources;
 }
 
-function RoomSection({ room, sensors, copy }: RoomSectionProps) {
+function RoomSection({
+  room,
+  sensors,
+  operationalStatus,
+  copy,
+}: RoomSectionProps) {
   const roomSensors =
     room.id === undefined
       ? []
@@ -317,6 +345,8 @@ function RoomSection({ room, sensors, copy }: RoomSectionProps) {
           />
         </Box>
 
+        <OperationalRoomStatus status={operationalStatus} />
+
         {roomSensors.length === 0 ? (
           <Alert severity="info">{copy.noSensors}</Alert>
         ) : (
@@ -330,6 +360,78 @@ function RoomSection({ room, sensors, copy }: RoomSectionProps) {
             ))}
           </Stack>
         )}
+      </Stack>
+    </Paper>
+  );
+}
+
+function OperationalRoomStatus({ status }: { status?: DashboardRoomStatus }) {
+  if (!status) {
+    return (
+      <Paper variant="outlined" sx={{ p: 2, bgcolor: "background.default" }}>
+        <Typography color="text.secondary">
+          No current telemetry snapshot is available for this area.
+        </Typography>
+      </Paper>
+    );
+  }
+
+  const severity = status.online
+    ? status.temperatureStatus === "CRITICAL"
+      ? "error"
+      : status.temperatureStatus === "WARNING"
+        ? "warning"
+        : "success"
+    : "error";
+
+  return (
+    <Paper variant="outlined" sx={{ p: 2, bgcolor: "background.default" }}>
+      <Stack spacing={1.5}>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <Chip
+            size="small"
+            color={status.online ? "success" : "error"}
+            label={status.online ? "Online" : "Offline"}
+          />
+          <Chip
+            size="small"
+            color={severity}
+            label={`Temperature: ${status.temperatureStatus}`}
+          />
+          <Chip
+            size="small"
+            color={status.activeAlarms > 0 ? "error" : "default"}
+            label={`${status.activeAlarms} active alarms`}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, minmax(0, 1fr))" },
+            gap: 1,
+          }}
+        >
+          <MetadataItem
+            label="Temperature"
+            value={
+              status.temperature === null
+                ? "Unavailable"
+                : `${status.temperature} °C`
+            }
+          />
+          <MetadataItem
+            label="Humidity"
+            value={
+              status.humidity === null
+                ? "Unavailable"
+                : `${status.humidity} %RH`
+            }
+          />
+          <MetadataItem
+            label="Last update"
+            value={status.lastUpdate ?? "Unavailable"}
+          />
+        </Box>
       </Stack>
     </Paper>
   );
@@ -381,6 +483,11 @@ function SensorRow({ sensor, copy }: SensorRowProps) {
             value={sensor.enabled}
             activeLabel={copy.sensor.enabled}
             inactiveLabel={copy.sensor.disabled}
+          />
+          <Chip
+            size="small"
+            variant="outlined"
+            label={`Calibration: ${sensor.calibration_status ?? "NOT_CALIBRATED"}`}
           />
         </Box>
 
