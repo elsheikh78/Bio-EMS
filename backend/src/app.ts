@@ -33,10 +33,10 @@ app.use(express.urlencoded({ extended: true }));
 
 getMqttClient();
 
+app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/auth`, authRouter);
-app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);
 app.use(`${config.apiPrefix}/devices`, deviceRouter);
 app.use(`${config.apiPrefix}/rooms`, roomRouter);
