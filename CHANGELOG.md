@@ -6,6 +6,7 @@
 - Removed the obsolete runtime feature-placeholder component and localization copy.
 - Replaced stale workspace staging text with the current operational scope description.
 - Reconciled the strict Device contract with SQLite's valid `updated_at: null` state and added regression coverage.
+- Corrected Device metadata PATCH requests to declare their JSON media type.
 
 ## PVR-06
 
