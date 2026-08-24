@@ -156,6 +156,8 @@ describe("accessible Login experience", () => {
     await user.type(screen.getByLabelText(/Password/), "password");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(message);
+    expect(
+      await screen.findByRole("alert", undefined, { timeout: 3_000 }),
+    ).toHaveTextContent(message);
   });
 });

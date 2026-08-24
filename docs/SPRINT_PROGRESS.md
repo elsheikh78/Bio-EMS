@@ -2,9 +2,23 @@
 
 ## Backend Commercial Foundation
 
-### BF-03 — User Management Audit Integration
+### BF-04 — Editable Sensor Alarm Thresholds
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-04-editable-alarm-thresholds`;
+- base: BF-03 merge commit `4ff9882a571f90761a5eb3bdc25e427867e76e95`;
+- route: `PATCH /api/v1/sensors/:sensorUuid/thresholds`;
+- validation: strict partial merge, explicit clear, ordering, and Sensor range;
+- persistence/audit: one Site-scoped SQLite transaction;
+- backend verification: 64 files / 558 tests PASS.
+- frontend regression verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
+### BF-03 — User Management Audit Integration
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-03-user-audit-integration`;
 - base: BF-02 documentation closure commit
@@ -14,8 +28,11 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - password events: no submitted password, hash, or credential values;
 - backend verification: 63 files / 545 tests PASS;
 - unchanged frontend verification: 25 files / 212 tests PASS plus build.
+- PR: #70;
+- integration commit: `4ff9882a571f90761a5eb3bdc25e427867e76e95`;
+- GitHub CI run number: 196 — SUCCESS.
 
-PR, GitHub CI, and merge evidence remain pending.
+BF-04 is the next controlled backend slice.
 
 ### BF-02 — Append-only Audit Foundation
 

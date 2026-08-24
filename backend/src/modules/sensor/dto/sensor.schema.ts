@@ -56,4 +56,23 @@ export const createSensorSchema = z
 
 export const sensorListQuerySchema = z.object({}).strict();
 
+export const sensorThresholdParamsSchema = z
+  .object({ sensorUuid: z.string().trim().uuid("sensorUuid must be a valid UUID") })
+  .strict();
+
+const thresholdValue = z.number().finite().nullable().optional();
+
+export const updateSensorThresholdsSchema = z
+  .object({
+    warning_low: thresholdValue,
+    alarm_low: thresholdValue,
+    warning_high: thresholdValue,
+    alarm_high: thresholdValue,
+  })
+  .strict()
+  .refine((thresholds) => Object.values(thresholds).some((value) => value !== undefined), {
+    message: "At least one threshold is required",
+  });
+
 export type CreateSensorInput = z.infer<typeof createSensorSchema>;
+export type UpdateSensorThresholdsInput = z.infer<typeof updateSensorThresholdsSchema>;

@@ -204,6 +204,12 @@ Sprint 14 بالكامل **COMPLETE / MERGED / VERIFIED / CLOSED**. كما أن 
 
 ويجب الفصل بوضوح بين **Configuration** وبين **Live Telemetry / Online Health / Alarm State**.
 
+في BF-04 أصبحت القيم الأربع `warning_low` و`alarm_low` و`warning_high` و`alarm_high`
+قابلة للتعديل أو المسح بعد إنشاء Sensor من خلال Backend API مصرح به. يتم دمج التعديل
+الجزئي مع القيم الحالية والتحقق من الترتيب والمدى، ثم حفظ التغيير وAudit prior/new في
+Transaction واحدة مرتبطة بالـSite. هذا لا يعني وجود Threshold history effective-dated
+لإعادة بناء التقارير القديمة.
+
 ## 21. Monitoring Point — Future Architecture
 
 التصور المستقبلي الأقوى هو:

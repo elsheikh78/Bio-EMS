@@ -6,7 +6,8 @@ import { PERMISSION, Permission } from "../../authorization/permissions";
 import { UserRole } from "../../entities/User";
 import { errorMiddleware } from "../../middleware/error.middleware";
 
-const { controller } = vi.hoisted(() => ({
+const { auditRecord, controller } = vi.hoisted(() => ({
+  auditRecord: vi.fn(),
   controller: vi.fn((_req, res) => res.status(204).end()),
 }));
 
@@ -23,6 +24,7 @@ vi.mock("../../controllers/sensor.controller", () => ({
   createSensor: controller,
   getCalibrationHistory: controller,
   getSensors: controller,
+  updateSensorThresholds: controller,
 }));
 vi.mock("../../controllers/device.controller", () => ({
   activateDeviceController: controller,
@@ -59,7 +61,7 @@ vi.mock("../../controllers/audit-event.controller", () => ({
   listPlatformAuditEvents: controller,
 }));
 vi.mock("../../services/audit-event.service", () => ({
-  auditEventService: { record: vi.fn() },
+  auditEventService: { record: auditRecord },
 }));
 
 import alarmRouter from "../alarm.route";
@@ -116,6 +118,14 @@ const ROUTES: readonly RouteCase[] = [
   configurationRoute("Rooms", "post", "/rooms", roomRouter, "/"),
   configurationRoute("Sensors", "get", "/sensors", sensorRouter, "/"),
   configurationRoute("Sensors", "post", "/sensors", sensorRouter, "/", validSensor),
+  configurationRoute(
+    "Sensors",
+    "patch",
+    `/sensors/${validSensor.uuid}/thresholds`,
+    sensorRouter,
+    "/:sensorUuid/thresholds",
+    { warning_low: 3, alarm_low: 1, warning_high: 8, alarm_high: 10 }
+  ),
   configurationRoute(
     "Sensors",
     "get",
@@ -243,11 +253,30 @@ describe("actual route authorization matrix", () => {
     expect(response.status).toBe(403);
     expect(controller).not.toHaveBeenCalled();
   });
+
+  it("audits a Sensor-threshold denial before body validation", async () => {
+    const thresholdRoute = ROUTES.find((route) => route.path.endsWith("/thresholds"));
+    if (!thresholdRoute) throw new Error("Sensor threshold route missing from inventory");
+
+    const response = await executeRoute({ ...thresholdRoute, body: {} }, "VIEWER");
+
+    expect(response.status).toBe(403);
+    expect(auditRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "SENSOR.THRESHOLDS_UPDATED",
+        target: { type: "SENSOR", id: validSensor.uuid },
+        result: "DENIED",
+        reason: "FORBIDDEN",
+      })
+    );
+    expect(auditRecord.mock.calls.at(-1)?.[0]).not.toHaveProperty("newValues");
+    expect(controller).not.toHaveBeenCalled();
+  });
 });
 
 function configurationRoute(
   area: string,
-  method: "get" | "post",
+  method: Method,
   path: string,
   router: Router,
   routerPath: string,

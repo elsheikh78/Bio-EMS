@@ -1,5 +1,3 @@
-import { Request } from "express";
-import { AuditActorSnapshot, AuditRequestContext } from "../../entities/AuditEvent";
 import { User } from "../../entities/User";
 
 export const USER_AUDIT_ACTION = {
@@ -10,20 +8,6 @@ export const USER_AUDIT_ACTION = {
 } as const;
 
 export type UserAuditAction = (typeof USER_AUDIT_ACTION)[keyof typeof USER_AUDIT_ACTION];
-
-export function customerAuditActor(req: Request): AuditActorSnapshot {
-  const actor = req.user!;
-  return {
-    kind: "CUSTOMER_USER",
-    id: String(actor.id),
-    username: actor.username,
-    role: actor.role,
-  };
-}
-
-export function userManagementRequestContext(): AuditRequestContext {
-  return { source: "USER_MANAGEMENT_API" };
-}
 
 export function publicUserAuditValues(user: User): Record<string, unknown> {
   return {
