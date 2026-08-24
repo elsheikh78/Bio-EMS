@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldReplaceRoomSnapshot } from "../dashboard.service";
+import { shouldReplaceRoomSnapshot } from "../../domain/dashboard-room-priority";
 
 describe("Dashboard room priority aggregation", () => {
   it("keeps the most severe Sensor snapshot even when a normal reading is newer", () => {
