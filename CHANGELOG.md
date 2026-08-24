@@ -1,5 +1,11 @@
 # [Unreleased]
 
+## PVR-05
+
+- Replaced the Devices placeholder with registry and communication-health views.
+- Added permission-controlled Device metadata editing and lifecycle operations.
+- Added strict frontend Device response contracts and regression coverage.
+
 ## Fixed
 
 - Reconciled the strict frontend Site contract with the production SQLite response so shared Site

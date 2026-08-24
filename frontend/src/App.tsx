@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
-import { FeaturePlaceholderPage } from "./pages/FeaturePlaceholderPage";
 import { ConfigurationPage } from "./pages/ConfigurationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MonitoredAreasPage } from "./pages/MonitoredAreasPage";
@@ -11,6 +10,7 @@ import { SensorsCalibrationPage } from "./pages/SensorsCalibrationPage";
 import { ReportsCenterPage } from "./pages/ReportsCenterPage";
 import { AdministrationPage } from "./pages/AdministrationPage";
 import { AlarmsPage } from "./pages/AlarmsPage";
+import { DevicesPage } from "./pages/DevicesPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -71,7 +71,7 @@ export function App() {
             path="devices"
             element={
               <PermissionBoundary path="/devices">
-                <FeaturePlaceholderPage feature="devices" />
+                <DevicesPage />
               </PermissionBoundary>
             }
           />
