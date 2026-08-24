@@ -16,6 +16,11 @@ export interface SensorThresholdContext {
   siteId: number;
 }
 
+export interface SensorAlarmDelayValues {
+  warning_delay_seconds: number;
+  critical_delay_seconds: number;
+}
+
 export class SensorRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
@@ -165,6 +170,19 @@ export class SensorRepository {
         thresholds.alarm_high,
         uuid
       );
+
+    return result.changes === 0 ? undefined : this.findThresholdContextByUuid(uuid)?.sensor;
+  }
+
+  updateAlarmDelay(uuid: string, values: SensorAlarmDelayValues): Sensor | undefined {
+    const result = this.database
+      .prepare(
+        `UPDATE sensors
+         SET warning_delay_seconds = ?, critical_delay_seconds = ?,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE uuid = ?`
+      )
+      .run(values.warning_delay_seconds, values.critical_delay_seconds, uuid);
 
     return result.changes === 0 ? undefined : this.findThresholdContextByUuid(uuid)?.sensor;
   }

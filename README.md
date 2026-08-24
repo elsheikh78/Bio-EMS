@@ -45,6 +45,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Append-only, redacted audit-event foundation with scoped reads
 - Atomic User Management audit production for success, denial, and controlled failure
 - Authorized, validated, auditable post-creation Sensor threshold updates
+- Persisted, configurable warning/critical Alarm activation delays
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -195,19 +196,19 @@ On Windows PowerShell environments where `npm.ps1` is restricted, use `npm.cmd` 
 
 The current API prefix is normally `/api/v1`.
 
-| Area           | Current endpoints or operations                                |
-| -------------- | -------------------------------------------------------------- |
-| Health         | `GET /health`                                                  |
-| Sites          | Management/read endpoints                                      |
-| Rooms          | Management/read endpoints                                      |
-| Sensors        | Management/read, threshold update, and calibration operations  |
-| Devices        | Create, list, read, metadata update, activate, and disable     |
-| Alarms         | List, active, detail, and acknowledgement operations           |
-| Dashboard      | Summary, latest telemetry, room status, and alarm statistics   |
-| Authentication | Customer login/current-principal support                       |
-| Platform Auth  | `POST /platform-auth/login`, `GET /platform-auth/me`           |
-| Users          | ADMIN management operations                                    |
-| Audit Events   | ADMIN Site-scoped read; authenticated platform cross-Site read |
+| Area           | Current endpoints or operations                                     |
+| -------------- | ------------------------------------------------------------------- |
+| Health         | `GET /health`                                                       |
+| Sites          | Management/read endpoints                                           |
+| Rooms          | Management/read endpoints                                           |
+| Sensors        | Management/read, threshold/delay update, and calibration operations |
+| Devices        | Create, list, read, metadata update, activate, and disable          |
+| Alarms         | List, active, detail, and acknowledgement operations                |
+| Dashboard      | Summary, latest telemetry, room status, and alarm statistics        |
+| Authentication | Customer login/current-principal support                            |
+| Platform Auth  | `POST /platform-auth/login`, `GET /platform-auth/me`                |
+| Users          | ADMIN management operations                                         |
+| Audit Events   | ADMIN Site-scoped read; authenticated platform cross-Site read      |
 
 ### SYSTEM_OWNER bootstrap and configuration
 

@@ -32,6 +32,10 @@ export interface Sensor {
 
   alarm_high?: number;
 
+  warning_delay_seconds?: number;
+
+  critical_delay_seconds?: number;
+
   product_grade?: SensorProductGrade;
 
   hardware_model?: string;

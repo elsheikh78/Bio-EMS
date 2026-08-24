@@ -210,6 +210,13 @@ Sprint 14 بالكامل **COMPLETE / MERGED / VERIFIED / CLOSED**. كما أن 
 Transaction واحدة مرتبطة بالـSite. هذا لا يعني وجود Threshold history effective-dated
 لإعادة بناء التقارير القديمة.
 
+في BF-05 أصبح لكل Sensor إعدادان مستقلان `warning_delay_seconds` و
+`critical_delay_seconds` من صفر إلى 86400 ثانية. الصفر يحافظ على التشغيل الفوري، أما
+القيمة الموجبة فتحفظ Pending candidate في SQLite حتى قراءة LIVE لاحقة تحقق المدة. الرجوع
+للطبيعي أو تغيير الاتجاه أو Severity يبدأ التقييم من جديد، وREPLAY لا يغير هذه الحالة.
+تعديل التأخير يمسح الـcandidate القديم داخل نفس Transaction مع Audit event. قيم BIO
+EGYPT الفعلية ما زالت مرتبطة باعتماد BE-006 وليست ثوابت داخل المنتج.
+
 ## 21. Monitoring Point — Future Architecture
 
 التصور المستقبلي الأقوى هو:

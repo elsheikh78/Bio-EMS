@@ -182,6 +182,10 @@ export class TelemetryService {
           warningHigh: sensor.warning_high,
 
           alarmHigh: sensor.alarm_high,
+
+          warningDelaySeconds: sensor.warning_delay_seconds ?? 0,
+
+          criticalDelaySeconds: sensor.critical_delay_seconds ?? 0,
         });
       }
 

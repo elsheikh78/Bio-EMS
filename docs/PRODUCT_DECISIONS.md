@@ -121,3 +121,9 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
   configured Sensor measurement range.
 - BF-04 changes current effective configuration only. It does not claim historical
   effective dating or reconstruct old reports against later threshold changes.
+- BF-05 stores independent Sensor-scoped warning/critical activation delays as
+  integer seconds from 0 through 86400. Zero preserves immediate legacy activation.
+- Positive delay uses persisted operational candidates. Normal, opposite-direction,
+  or severity-changing LIVE observations reset the candidate; REPLAY never affects it.
+- Delay changes invalidate pending state atomically. Recovery delay, hysteresis,
+  escalation timing, and historical configuration remain separate decisions.

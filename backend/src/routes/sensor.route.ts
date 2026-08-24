@@ -14,13 +14,36 @@ import {
   sensorListQuerySchema,
   sensorThresholdParamsSchema,
   updateSensorThresholdsSchema,
+  updateSensorAlarmDelaySchema,
 } from "../modules/sensor/dto/sensor.schema";
+import {
+  SENSOR_ALARM_DELAY_AUDIT_ACTION,
+  SENSOR_ALARM_DELAY_AUDIT_SOURCE,
+} from "../modules/sensor/sensor-alarm-delay-audit";
 import {
   SENSOR_THRESHOLD_AUDIT_ACTION,
   SENSOR_THRESHOLD_AUDIT_SOURCE,
 } from "../modules/sensor/sensor-threshold-audit";
 
 const router = Router();
+
+router.patch(
+  "/:sensorUuid/alarm-delay",
+  requireAuditedPermission({
+    permission: PERMISSION.CONFIGURATION_WRITE,
+    deniedAudit: {
+      action: SENSOR_ALARM_DELAY_AUDIT_ACTION,
+      source: SENSOR_ALARM_DELAY_AUDIT_SOURCE,
+      target: (req) => {
+        const parsed = sensorThresholdParamsSchema.safeParse(req.params);
+        return parsed.success ? { type: "SENSOR", id: parsed.data.sensorUuid } : undefined;
+      },
+    },
+  }),
+  validateParams(sensorThresholdParamsSchema),
+  validateBody(updateSensorAlarmDelaySchema),
+  sensorController.updateSensorAlarmDelay
+);
 
 router.patch(
   "/:sensorUuid/thresholds",

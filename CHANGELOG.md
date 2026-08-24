@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-05 Sensor-scoped warning/critical Alarm activation delays with zero-delay
+  backward compatibility and persisted activation candidates.
+- Added authorized `PATCH /api/v1/sensors/:sensorUuid/alarm-delay`, strict validation,
+  Site-scoped atomic audit evidence, and lifecycle/migration regression coverage.
 - Added BF-04 `PATCH /api/v1/sensors/:sensorUuid/thresholds` for authorized partial
   threshold update/clear operations with effective ordering and range validation.
 - Added Site-scoped atomic `SENSOR.THRESHOLDS_UPDATED` audit evidence and shared
@@ -25,6 +29,8 @@
 
 ## Security
 
+- Alarm-delay configuration requires `CONFIGURATION_WRITE`; accepted mutation,
+  pending-candidate invalidation, and audit evidence commit atomically.
 - Sensor threshold updates are restricted to `CONFIGURATION_WRITE`; denial is
   recorded before body validation without copying the submitted body.
 - Successful threshold persistence and its prior/new audit evidence commit in one

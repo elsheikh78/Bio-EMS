@@ -127,6 +127,12 @@ export function createTables(database: Database.Database = sqlite): void {
 
         alarm_high REAL,
 
+        warning_delay_seconds INTEGER NOT NULL DEFAULT 0
+            CHECK(warning_delay_seconds BETWEEN 0 AND 86400),
+
+        critical_delay_seconds INTEGER NOT NULL DEFAULT 0
+            CHECK(critical_delay_seconds BETWEEN 0 AND 86400),
+
         product_grade TEXT NOT NULL DEFAULT 'STANDARD'
             CHECK(product_grade IN ('STANDARD', 'ADVANCED')),
 
@@ -236,6 +242,18 @@ export function createTables(database: Database.Database = sqlite): void {
     `);
 
   console.log("Alarms table ready");
+
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS alarm_activation_candidates (
+      sensor_id INTEGER PRIMARY KEY,
+      alarm_type TEXT NOT NULL,
+      severity TEXT NOT NULL CHECK(severity IN ('WARNING', 'CRITICAL')),
+      first_observed_at TEXT NOT NULL,
+      last_observed_at TEXT NOT NULL,
+      latest_value REAL NOT NULL,
+      FOREIGN KEY (sensor_id) REFERENCES sensors(id) ON DELETE CASCADE
+    );
+  `);
 
   database.exec(`
     CREATE TABLE IF NOT EXISTS notification_events (

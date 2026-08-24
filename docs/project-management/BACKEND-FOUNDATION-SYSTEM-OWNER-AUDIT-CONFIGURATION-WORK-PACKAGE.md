@@ -105,8 +105,8 @@ Password events record action/result only and must not capture the password or p
 
 ## 6. BF-04 — Editable Sensor alarm thresholds
 
-Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
-PENDING on `agent/bf-04-editable-alarm-thresholds`. See
+Implementation status (2026-08-24): COMPLETE / MERGED / CI VERIFIED / CLOSED through
+PR #71. See
 `BF-04-EDITABLE-ALARM-THRESHOLDS.md` for the approved mutation contract.
 
 ### Scope
@@ -124,6 +124,9 @@ Target fields include the approved warning/alarm low/high threshold set supporte
 - Alarm Engine compatibility/regression tests remain green.
 
 ## 7. BF-05 — Configurable Alarm persistence/delay
+
+Implementation status (2026-08-24): IMPLEMENTED / LOCAL QUALITY GATES PASS / PR
+PENDING. See `BF-05-CONFIGURABLE-ALARM-DELAY.md`.
 
 ### Scope
 

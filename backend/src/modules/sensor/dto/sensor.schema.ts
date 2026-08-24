@@ -74,5 +74,17 @@ export const updateSensorThresholdsSchema = z
     message: "At least one threshold is required",
   });
 
+const alarmDelaySeconds = z.number().int().min(0).max(86_400).optional();
+export const updateSensorAlarmDelaySchema = z
+  .object({
+    warning_delay_seconds: alarmDelaySeconds,
+    critical_delay_seconds: alarmDelaySeconds,
+  })
+  .strict()
+  .refine((values) => Object.values(values).some((value) => value !== undefined), {
+    message: "At least one Alarm delay is required",
+  });
+
 export type CreateSensorInput = z.infer<typeof createSensorSchema>;
 export type UpdateSensorThresholdsInput = z.infer<typeof updateSensorThresholdsSchema>;
+export type UpdateSensorAlarmDelayInput = z.infer<typeof updateSensorAlarmDelaySchema>;

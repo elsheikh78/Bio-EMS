@@ -25,6 +25,7 @@ vi.mock("../../controllers/sensor.controller", () => ({
   getCalibrationHistory: controller,
   getSensors: controller,
   updateSensorThresholds: controller,
+  updateSensorAlarmDelay: controller,
 }));
 vi.mock("../../controllers/device.controller", () => ({
   activateDeviceController: controller,
@@ -125,6 +126,14 @@ const ROUTES: readonly RouteCase[] = [
     sensorRouter,
     "/:sensorUuid/thresholds",
     { warning_low: 3, alarm_low: 1, warning_high: 8, alarm_high: 10 }
+  ),
+  configurationRoute(
+    "Sensors",
+    "patch",
+    `/sensors/${validSensor.uuid}/alarm-delay`,
+    sensorRouter,
+    "/:sensorUuid/alarm-delay",
+    { warning_delay_seconds: 30, critical_delay_seconds: 10 }
   ),
   configurationRoute(
     "Sensors",
@@ -264,6 +273,25 @@ describe("actual route authorization matrix", () => {
     expect(auditRecord).toHaveBeenCalledWith(
       expect.objectContaining({
         action: "SENSOR.THRESHOLDS_UPDATED",
+        target: { type: "SENSOR", id: validSensor.uuid },
+        result: "DENIED",
+        reason: "FORBIDDEN",
+      })
+    );
+    expect(auditRecord.mock.calls.at(-1)?.[0]).not.toHaveProperty("newValues");
+    expect(controller).not.toHaveBeenCalled();
+  });
+
+  it("audits an Alarm-delay denial before body validation", async () => {
+    const delayRoute = ROUTES.find((route) => route.path.endsWith("/alarm-delay"));
+    if (!delayRoute) throw new Error("Sensor Alarm-delay route missing from inventory");
+
+    const response = await executeRoute({ ...delayRoute, body: {} }, "VIEWER");
+
+    expect(response.status).toBe(403);
+    expect(auditRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "SENSOR.ALARM_DELAY_UPDATED",
         target: { type: "SENSOR", id: validSensor.uuid },
         result: "DENIED",
         reason: "FORBIDDEN",
