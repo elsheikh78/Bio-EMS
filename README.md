@@ -113,8 +113,8 @@ Sprint 14 and Sprint 15 are **COMPLETE / MERGED / VERIFIED / CLOSED**.
   contracts, the controlled BIO EGYPT Pilot package, and deployment/commissioning
   readiness foundations.
 
-The BF-01 through BF-08 backend commercial foundation is merged and BF-09 frontend
-commercial configuration is in final closure. In the parallel Pilot track,
+The BF-01 through BF-08 backend commercial foundation and BF-09 frontend commercial
+configuration sequence are complete, merged, and CI verified. In the parallel Pilot track,
 `BE-001` is closed and field gates `BE-002` through `BE-012` remain open. Repository
 completion does not represent installation, commissioning, or customer acceptance.
 

@@ -2,7 +2,8 @@
 
 ## BF-09-06 final frontend closure — 24 August 2026
 
-BF-09-06 is implemented locally from the verified BF-09-05 merge. The ADMIN route is
+BF-09-06 is merged through PR #82 at integration commit
+`651699413e1d7d254b005ee5f12ff93b20cd1046`; GitHub CI run 221 succeeded. The ADMIN route is
 now presented as one Commercial Configuration center, and recipient, escalation,
 and customer Audit data is not requested until the operator deliberately selects a
 Site. Repeated lifecycle controls expose user-specific accessible names.
@@ -11,7 +12,7 @@ Frontend gates pass with 32 files / 244 tests plus build. Backend gates pass wit
 files / 600 tests plus build; formatting, lint, typecheck, and documentation
 consistency checks pass. The slice closes UX, accessibility, documentation
 consistency, and full-regression evidence only. It does not add provider delivery, controller runtime, field
-commissioning, or customer acceptance. Remote PR, CI, and merge evidence are pending.
+commissioning, or customer acceptance. BF-09 is complete, merged, CI verified, and closed.
 
 ## BF-09-05 Audit Log and User Management UI — 24 August 2026
 

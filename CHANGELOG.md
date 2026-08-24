@@ -6,6 +6,7 @@
   recipient, escalation-policy, or customer Audit retrieval.
 - Unified the Configuration page identity and added distinguishable accessible names
   for repeated user lifecycle controls.
+- Recorded BF-09 final integration through PR #82 and successful GitHub CI run 221.
 
 - Added the BF-09-05 ADMIN User Management and Site-scoped Audit Log center.
 - Added runtime-validated user/audit contracts, protected lifecycle/password/API
