@@ -11,6 +11,26 @@ vi.mock("../../services/alarm.service", () => ({
   acknowledgeAlarm: vi.fn(),
 }));
 
+const { auditRecord } = vi.hoisted(() => ({
+  auditRecord: vi.fn(),
+}));
+
+vi.mock("../../services/audit-event.service", () => ({
+  auditEventService: { record: auditRecord },
+}));
+
+vi.mock("../../repositories/sensor.repository", () => ({
+  SensorRepository: class {
+    getAll = vi.fn(() => [{ id: 3, room_id: 7 }]);
+  },
+}));
+
+vi.mock("../../repositories/room.repository", () => ({
+  RoomRepository: class {
+    findById = vi.fn(() => ({ id: 7, site_id: 11 }));
+  },
+}));
+
 const app = express();
 app.use(express.json());
 app.use((req, _res, next) => {
@@ -41,10 +61,27 @@ describe("Alarm REST API", () => {
     ]);
   });
 
-  it("preserves the acknowledgement response contract", async () => {
+  it("preserves the acknowledgement response contract and records Site Audit", async () => {
+    vi.mocked(alarmService.acknowledgeAlarm).mockReturnValue({
+      id: 4,
+      sensor_id: 3,
+      type: "HIGH_TEMPERATURE",
+      severity: "CRITICAL",
+      status: "ACKNOWLEDGED",
+      trigger_value: 9,
+    });
+
     const response = await request(app).post("/api/v1/alarms/4/acknowledge").expect(200);
 
     expect(alarmService.acknowledgeAlarm).toHaveBeenCalledWith(4, 1);
+    expect(auditRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ALARM.ACKNOWLEDGED",
+        siteId: 11,
+        result: "SUCCESS",
+        target: { type: "ALARM", id: "4" },
+      })
+    );
     expect(response.body).toEqual({ success: true });
   });
 });

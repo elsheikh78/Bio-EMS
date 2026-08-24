@@ -22,6 +22,10 @@ import {
   useLatestTelemetry,
 } from "../dashboard/queries";
 import { OperationalOverview } from "../dashboard/DashboardVisuals";
+import {
+  roomOperationalPriority,
+  roomPriorityTone,
+} from "../dashboard/roomPriority";
 import { useLocalization } from "../localization/useLocalization";
 
 type DashboardResources = ReturnType<
@@ -337,8 +341,9 @@ function PriorityAreasPanel({
   const prioritized = [...rooms]
     .sort(
       (first, second) =>
-        second.activeAlarms - first.activeAlarms ||
-        Number(first.online) - Number(second.online),
+        Number(first.online) - Number(second.online) ||
+        roomOperationalPriority(second) - roomOperationalPriority(first) ||
+        second.activeAlarms - first.activeAlarms,
     )
     .slice(0, 3);
 
@@ -359,11 +364,7 @@ function PriorityAreasPanel({
           </Typography>
         ) : (
           prioritized.map((room) => {
-            const tone = !room.online
-              ? "error.main"
-              : room.activeAlarms > 0
-                ? "warning.main"
-                : "success.main";
+            const tone = roomPriorityTone(room);
             return (
               <Box
                 key={room.roomId}

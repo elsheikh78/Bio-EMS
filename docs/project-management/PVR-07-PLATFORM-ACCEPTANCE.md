@@ -40,6 +40,7 @@ This decision distinguishes merged implementation evidence from actual platform 
 - Dashboard Device connectivity no longer derives Online as `total - offline`. The backend now returns mutually exclusive counts for all five authoritative communication/lifecycle states, and the frontend contract rejects totals that do not reconcile.
 - The false Monitored Areas warning was traced to persisted SQLite `null` thresholds being compared numerically as zero. The domain Alarm engine now treats `null` as not configured, protecting both Dashboard status evaluation and live telemetry Alarm evaluation. A 6.1 °C regression case with null warning boundaries and alarm limits 2-8 °C resolves to `NORMAL`.
 - Workspace completion labels now describe the implemented Alarms and Devices routes and retain only the actual pending live validation/expansion work.
+- The live Alarm acknowledgement retest passed `TRIGGERED -> ACKNOWLEDGED` for Sensor 2 at 9 °C and removed the event from Active while retaining it in History. The same retest exposed two acceptance defects: room aggregation could overwrite a critical temperature with another normal Sensor of the same type, and acknowledgement emitted a Notification Event without Site Audit evidence. The corrective package selects the worst current Sensor state per room, counts active room Alarms, ranks Priority areas by operational severity, and records `ALARM.ACKNOWLEDGED` in the immutable Site Audit Log. Browser revalidation remains required after merge.
 
 ## Automated repository evidence
 
