@@ -9,7 +9,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { ShellLandingPage } from "./pages/ShellLandingPage";
 import { SensorsCalibrationPage } from "./pages/SensorsCalibrationPage";
 import { ReportsCenterPage } from "./pages/ReportsCenterPage";
-import { UsersPlaceholderPage } from "./pages/UsersPlaceholderPage";
+import { AdministrationPage } from "./pages/AdministrationPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -106,7 +106,7 @@ export function App() {
             path="users"
             element={
               <PermissionBoundary path="/users">
-                <UsersPlaceholderPage />
+                <AdministrationPage />
               </PermissionBoundary>
             }
           />

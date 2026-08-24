@@ -50,6 +50,8 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Site-scoped, deterministic notification escalation-policy foundation
 - Versioned Site Controller offline-critical configuration synchronization contract
 - Frontend permission parity and runtime-validated configuration API adapters
+- ADMIN Commercial Configuration UI for Sensor thresholds/delays, recipient and
+  escalation-policy management, plus User Management and Site-scoped Audit review
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -111,8 +113,8 @@ Sprint 14 and Sprint 15 are **COMPLETE / MERGED / VERIFIED / CLOSED**.
   contracts, the controlled BIO EGYPT Pilot package, and deployment/commissioning
   readiness foundations.
 
-The backend commercial-foundation sequence has completed BF-01 and BF-02 and is
-progressing through BF-03. In the parallel Pilot track,
+The BF-01 through BF-08 backend commercial foundation is merged and BF-09 frontend
+commercial configuration is in final closure. In the parallel Pilot track,
 `BE-001` is closed and field gates `BE-002` through `BE-012` remain open. Repository
 completion does not represent installation, commissioning, or customer acceptance.
 

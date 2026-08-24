@@ -24,6 +24,12 @@ const statusHook = vi.mocked(useUpdateEscalationPolicyStatus);
 const createPolicy = vi.fn();
 const updatePolicy = vi.fn();
 const updateStatus = vi.fn();
+function renderForSite() {
+  const view = render(<EscalationPoliciesPanel />);
+  fireEvent.mouseDown(screen.getByLabelText("Policy Site"));
+  fireEvent.click(screen.getByRole("option", { name: "Cairo (CAI)" }));
+  return view;
+}
 const policy = {
   id: 1,
   uuid: "11111111-1111-4111-8111-111111111111",
@@ -80,14 +86,14 @@ describe("EscalationPoliciesPanel", () => {
   });
 
   it("lists Site-scoped ordered policy evidence", () => {
-    render(<EscalationPoliciesPanel />);
+    renderForSite();
     expect(policies).toHaveBeenCalledWith(7);
     expect(screen.getByText("Critical response")).toBeInTheDocument();
     expect(screen.getByText(/Delays: 0s/)).toBeInTheDocument();
   });
 
   it("uses the dedicated lifecycle mutation", () => {
-    render(<EscalationPoliciesPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
     expect(updateStatus).toHaveBeenCalledWith({
       uuid: policy.uuid,
@@ -96,7 +102,7 @@ describe("EscalationPoliciesPanel", () => {
   });
 
   it("rejects non-increasing step delays", () => {
-    render(<EscalationPoliciesPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Add policy" }));
     fireEvent.change(screen.getByLabelText(/Policy name/), {
       target: { value: "Warning response" },
@@ -114,7 +120,7 @@ describe("EscalationPoliciesPanel", () => {
 
   it("creates contiguous steps with selected channels", async () => {
     createPolicy.mockResolvedValue(policy);
-    render(<EscalationPoliciesPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Add policy" }));
     fireEvent.change(screen.getByLabelText(/Policy name/), {
       target: { value: " Warning response " },
@@ -153,7 +159,7 @@ describe("EscalationPoliciesPanel", () => {
       isPending: false,
       isError: false,
     } as unknown as ReturnType<typeof useEscalationPolicies>);
-    const { rerender } = render(<EscalationPoliciesPanel />);
+    const { rerender } = renderForSite();
     expect(screen.getByText(/No escalation policies/)).toBeInTheDocument();
     const refetch = vi.fn();
     policies.mockReturnValue({

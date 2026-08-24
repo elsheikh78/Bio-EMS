@@ -1,9 +1,23 @@
 # Project Status
 
+## BF-09-06 final frontend closure — 24 August 2026
+
+BF-09-06 is implemented locally from the verified BF-09-05 merge. The ADMIN route is
+now presented as one Commercial Configuration center, and recipient, escalation,
+and customer Audit data is not requested until the operator deliberately selects a
+Site. Repeated lifecycle controls expose user-specific accessible names.
+
+Frontend gates pass with 32 files / 244 tests plus build. Backend gates pass with 71
+files / 600 tests plus build; formatting, lint, typecheck, and documentation
+consistency checks pass. The slice closes UX, accessibility, documentation
+consistency, and full-regression evidence only. It does not add provider delivery, controller runtime, field
+commissioning, or customer acceptance. Remote PR, CI, and merge evidence are pending.
+
 ## BF-09-05 Audit Log and User Management UI — 24 August 2026
 
-BF-09-05 is implemented on `agent/bf-09-05-audit-user-management-ui` from the
-verified BF-09-04 merge. The ADMIN-only Users route now provides list/create,
+BF-09-05 is merged through PR #81 at integration commit
+`79c40bb38cdfb169a15aa211e973e6ab3818d1f4`; GitHub CI run 219 succeeded. The
+ADMIN-only Users route provides list/create,
 profile/role, lifecycle, and password workflows plus an explicit Site-scoped Audit
 Log showing actor, action, result, target, and event time.
 

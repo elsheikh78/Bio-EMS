@@ -38,7 +38,7 @@ import {
 export function EscalationPoliciesPanel() {
   const sites = useSites();
   const [selectedSite, setSelectedSite] = useState<number>();
-  const siteId = selectedSite ?? sites.data?.[0]?.id;
+  const siteId = selectedSite;
   const policies = useEscalationPolicies(siteId);
   const status = useUpdateEscalationPolicyStatus(siteId);
   const [editing, setEditing] = useState<EscalationPolicy | "new">();
@@ -87,6 +87,9 @@ export function EscalationPoliciesPanel() {
               value={siteId ?? ""}
               onChange={(event) => setSelectedSite(Number(event.target.value))}
             >
+              <MenuItem value="" disabled>
+                Select a Site
+              </MenuItem>
               {sites.data
                 ?.filter((site) => site.id)
                 .map((site) => (
@@ -100,6 +103,14 @@ export function EscalationPoliciesPanel() {
         {!sites.isPending && !sites.isError && sites.data?.length === 0 ? (
           <Alert severity="info">
             Create a Site before configuring escalation policies.
+          </Alert>
+        ) : null}
+        {!sites.isPending &&
+        !sites.isError &&
+        !siteId &&
+        (sites.data?.length ?? 0) > 0 ? (
+          <Alert severity="info">
+            Select a Site before loading or changing escalation policies.
           </Alert>
         ) : null}
         {policies.isPending && siteId ? (

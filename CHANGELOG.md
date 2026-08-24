@@ -2,6 +2,11 @@
 
 ## Added
 
+- Closed BF-09 commercial configuration UX with deliberate Site selection before
+  recipient, escalation-policy, or customer Audit retrieval.
+- Unified the Configuration page identity and added distinguishable accessible names
+  for repeated user lifecycle controls.
+
 - Added the BF-09-05 ADMIN User Management and Site-scoped Audit Log center.
 - Added runtime-validated user/audit contracts, protected lifecycle/password/API
   adapters, secret-safe password presentation, and summarized immutable evidence.

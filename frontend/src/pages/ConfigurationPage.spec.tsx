@@ -69,7 +69,7 @@ describe("ConfigurationPage", () => {
   it("renders and filters the sensor configuration register", () => {
     render(<ConfigurationPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Sensor thresholds & alarm delays",
+      "Commercial configuration",
     );
     fireEvent.change(screen.getByLabelText("Search sensors"), {
       target: { value: "missing" },

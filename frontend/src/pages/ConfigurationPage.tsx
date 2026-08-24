@@ -44,11 +44,12 @@ export function ConfigurationPage() {
           Controlled configuration
         </Typography>
         <Typography component="h1" variant="h4">
-          Sensor thresholds &amp; alarm delays
+          Commercial configuration
         </Typography>
         <Typography color="text.secondary">
-          ADMIN-only editing of persisted alarm evaluation settings. Live
-          telemetry is not changed here.
+          ADMIN-only control of persisted Sensor alarm settings, notification
+          recipients, and escalation policies. Live telemetry is not changed
+          here.
         </Typography>
       </Box>
 
