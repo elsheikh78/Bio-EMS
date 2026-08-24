@@ -54,8 +54,13 @@ vi.mock("../../controllers/user.controller", () => ({
   updateUserPassword: controller,
   updateUserStatus: controller,
 }));
+vi.mock("../../controllers/audit-event.controller", () => ({
+  listCustomerAuditEvents: controller,
+  listPlatformAuditEvents: controller,
+}));
 
 import alarmRouter from "../alarm.route";
+import auditEventRouter from "../audit-event.route";
 import dashboardRouter from "../dashboard.route";
 import deviceRouter from "../device.route";
 import roomRouter from "../room.route";
@@ -152,6 +157,14 @@ const ROUTES: readonly RouteCase[] = [
   userRoute("patch", "/users/2", "/:user_id", { role: "VIEWER" }),
   userRoute("patch", "/users/2/status", "/:user_id/status", { status: "disabled" }),
   userRoute("put", "/users/2/password", "/:user_id/password", { password: "Password1234" }),
+  {
+    area: "Audit-events",
+    method: "get",
+    path: "/audit-events?site_id=1",
+    permission: PERMISSION.AUDIT_READ,
+    router: auditEventRouter,
+    routerPath: "/",
+  },
 ];
 
 describe("actual route authorization matrix", () => {
@@ -169,6 +182,7 @@ describe("actual route authorization matrix", () => {
       ...registeredRoutes("Alarms", alarmRouter),
       ...registeredRoutes("Dashboard", dashboardRouter),
       ...registeredRoutes("Users", userRouter),
+      ...registeredRoutes("Audit-events", auditEventRouter),
     ];
 
     expect(actual.sort()).toEqual(expected.sort());

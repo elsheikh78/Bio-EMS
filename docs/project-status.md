@@ -1,18 +1,33 @@
 # Project Status
 
+## BF-02 audit foundation — 24 August 2026
+
+The BF-02 append-only audit foundation is implemented and locally verified on
+`agent/bf-02-audit-foundation`. It remains feature-branch capability until its PR,
+GitHub CI, review, and merge complete.
+
+Implemented evidence includes migration 010, immutable database enforcement,
+service-owned UUID/time, recursive secret redaction, deterministic repository reads,
+ADMIN-only Site-scoped reads, separately authenticated platform cross-Site reads,
+strict query validation, and security/regression tests.
+
+BF-02 establishes the shared persistence/read contract. It does not claim that every
+existing mutation already produces an audit event; BF-03 User Management integration
+and later action-specific producers remain separate controlled work.
+
 ## BF-01 backend foundation — 24 August 2026
 
-The BF-01 `SYSTEM_OWNER` authorization boundary is implemented and locally verified
-on `agent/bf-01-system-owner-boundary`. It remains a feature-branch capability until
-its PR, GitHub CI, review, and merge are complete.
+The BF-01 `SYSTEM_OWNER` authorization boundary is merged and verified through PR
+#67 at `main` integration commit `85a2d51f8d6887605c6a3390281a690966d4f391`.
 
 Implemented BF-01 evidence includes isolated platform-principal persistence through
 migration 009, separate platform authentication and JWT trust domains, controlled
 one-time bootstrap, strict owner/customer separation, duplicate Authorization-header
 rejection, and REST/security/regression tests.
 
-BF-01 does not claim MFA, login rate limiting/lockout, Owner Portal UI, commercial
-owner permissions, or the BF-02 append-only audit foundation.
+BF-01 does not claim MFA, login rate limiting/lockout, Owner Portal UI, or commercial
+owner permissions. Its deferred append-only audit foundation is now implemented by
+BF-02 pending integration.
 
 ## Current reporting status — 23 August 2026
 
@@ -74,6 +89,8 @@ It does not declare BIO EGYPT field commissioning or Pilot acceptance.
 - [x] Authenticated Alarm acknowledgment audit persistence
 - [x] ADMIN User Management
 - [x] Last-active-ADMIN transactional and concurrency protection
+- [x] BF-01 isolated SYSTEM_OWNER authentication boundary
+- [x] BF-02 append-only audit persistence and scoped read foundation (PR pending)
 - [x] Security hardening and regression coverage
 - [x] ESLint, Prettier, and GitHub Actions quality gates
 - [x] S14-01 frontend architecture and quality foundation

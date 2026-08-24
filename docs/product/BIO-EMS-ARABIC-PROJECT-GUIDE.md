@@ -220,7 +220,7 @@ Monitoring Point يمثل **ما الذي يتم قياسه**، بينما Senso
 
 سيكون مسؤولًا مستقبلًا عن تحويل Alarm إلى Notification workflow مثل Email أوSMS أوWhatsApp أوPush، مع Escalation rules حسب الزمن وعدم الـAcknowledgement.
 
-## 23. Reports وAudit Trail — Planned
+## 23. Reports وAudit Trail
 
 من الأهداف المستقبلية:
 
@@ -229,7 +229,12 @@ Monitoring Point يمثل **ما الذي يتم قياسه**، بينما Senso
 - Deviation Reports
 - Calibration Reports
 - Sensor Status Reports
-- Audit Trail أوسع لتغييرات Configuration والقيم القديمة والجديدة والمستخدم والتوقيت والسبب.
+- تم تنفيذ أساس Audit Trail مركزي append-only في BF-02، ويشمل Actor وAction وTarget
+  وSite والنتيجة والقيم القديمة والجديدة وسياق الطلب والسبب، مع Redaction قبل الحفظ.
+- قراءة العميل مقيدة بدور ADMIN وSite محدد، بينما القراءة عبر المنصة تستخدم
+  SYSTEM_OWNER authentication boundary المنفصل.
+- ربط كل عمليات Configuration الحالية كمنتجين للأحداث يتم تدريجيًا في Work Packages
+  مستقلة؛ وجود الأساس لا يعني أن كل Mutation مغطاة بالفعل.
 
 ## 24. Customer Management وLicensing — Planned
 
@@ -284,13 +289,13 @@ Sensors / Devices
 
 ## 28. الحالة الحالية للمنتج
 
-الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وAlarm Acknowledgement وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
+الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وSYSTEM_OWNER boundary وAlarm Acknowledgement وAudit persistence foundation وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
 
 الـPublished Release الموثق حاليًا هو `v0.15.0`، ويشمل أعمال Sprint 14 وSprint 15 المعتمدة داخل المستودع، لكنه لا يعني تنفيذ أو قبول الـPilot ميدانيًا.
 
 ## 29. ما المتبقي للوصول إلى Commercial Production-Ready EMS؟
 
-من أهم المسارات المتبقية: التنفيذ والتوثيق الميداني لـBIO EGYPT، استكمال الواجهات التشغيلية، Monitoring Point architecture، Channel provider implementations، Reports، Audit Trail الأوسع، Advanced Device Provisioning، Customer/Licensing Management، OTA، وعمليات الإنتاج التجارية الأوسع.
+من أهم المسارات المتبقية: التنفيذ والتوثيق الميداني لـBIO EGYPT، استكمال الواجهات التشغيلية، Monitoring Point architecture، Channel provider implementations، Reports، ربط Audit Trail بباقي عمليات التغيير، Advanced Device Provisioning، Customer/Licensing Management، OTA، وعمليات الإنتاج التجارية الأوسع.
 
 ## 30. الصورة النهائية المستهدفة
 

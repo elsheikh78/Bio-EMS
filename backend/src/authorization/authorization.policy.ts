@@ -13,6 +13,7 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "USER_MANAGE",
     "REPORT_READ",
     "REPORT_EXPORT",
+    "AUDIT_READ",
   ]),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",

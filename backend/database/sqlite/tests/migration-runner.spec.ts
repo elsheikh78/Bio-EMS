@@ -10,8 +10,9 @@ import { migration006 } from "../migrations/006_create_calibration_records";
 import { migration007 } from "../migrations/007_add_device_communication_health";
 import { migration008 } from "../migrations/008_create_notification_events";
 import { migration009 } from "../migrations/009_create_platform_principals";
+import { migration010 } from "../migrations/010_create_audit_events";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -80,6 +81,11 @@ describe("SQLite migrations", () => {
         )
         .get()
     ).toEqual({ name: "platform_principals" });
+    expect(
+      database
+        .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'audit_events'")
+        .get()
+    ).toEqual({ name: "audit_events" });
   });
 
   it("is idempotent when the migration runner executes more than once", () => {
@@ -93,7 +99,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => column.name.startsWith("warning_"));
 
-    expect(historyCount.count).toBe(9);
+    expect(historyCount.count).toBe(10);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -202,6 +208,23 @@ describe("SQLite migrations", () => {
           name: "idx_platform_principals_system_owner_singleton",
           unique: 1,
         }),
+      ])
+    );
+  });
+
+  it("is idempotent when migration 010 executes directly more than once", () => {
+    migration010.up(database);
+    migration010.up(database);
+
+    expect(
+      database
+        .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'audit_events'")
+        .get()
+    ).toEqual({ name: "audit_events" });
+    expect(database.prepare("PRAGMA index_list(audit_events)").all()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "idx_audit_events_site_order" }),
+        expect.objectContaining({ name: "idx_audit_events_actor_order" }),
       ])
     );
   });

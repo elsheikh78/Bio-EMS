@@ -14,10 +14,12 @@ import alarmRouter from "./routes/alarm.route";
 import dashboardRouter from "./routes/dashboard.route";
 import authRouter from "./routes/auth.route";
 import platformAuthRouter from "./routes/platform-auth.route";
+import platformAuditEventRouter from "./routes/platform-audit-event.route";
 import { authenticationMiddleware } from "./middleware/authentication.middleware";
 import userRouter from "./routes/user.route";
 import { createBrowserSecurityMiddleware } from "./middleware/browser-security.middleware";
 import reportRouter from "./routes/report.route";
+import auditEventRouter from "./routes/audit-event.route";
 
 createTables();
 
@@ -34,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 getMqttClient();
 
 app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
+app.use(`${config.apiPrefix}/platform-audit-events`, platformAuditEventRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/auth`, authRouter);
@@ -45,6 +48,7 @@ app.use(`${config.apiPrefix}/alarms`, alarmRouter);
 app.use(`${config.apiPrefix}/dashboard`, dashboardRouter);
 app.use(`${config.apiPrefix}/users`, userRouter);
 app.use(`${config.apiPrefix}/reports`, reportRouter);
+app.use(`${config.apiPrefix}/audit-events`, auditEventRouter);
 
 app.use(errorMiddleware);
 

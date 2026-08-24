@@ -1,5 +1,29 @@
 # Sprint Progress
 
+## Backend Commercial Foundation
+
+### BF-02 — Append-only Audit Foundation
+
+Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-02-audit-foundation`;
+- base: BF-01 integration commit `85a2d51f8d6887605c6a3390281a690966d4f391`;
+- migration: 010 `audit_events`;
+- customer read: ADMIN-only and Site-scoped;
+- platform read: isolated platform authentication with optional Site filter;
+- persistence: append-only with deterministic secret redaction.
+
+BF-02 supplies the shared audit contract and read boundaries. Existing domain
+mutations are not retroactively claimed as integrated producers; BF-03 remains the
+next controlled User Management integration slice.
+
+### BF-01 — SYSTEM_OWNER Authorization Boundary
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
+
+- PR: #67;
+- integration commit: `85a2d51f8d6887605c6a3390281a690966d4f391`.
+
 ## Sprint 16 — Product Experience, Reporting, Hardware, and Pilot Readiness
 
 Status: **IN PROGRESS**
