@@ -1,9 +1,25 @@
 # Project Status
 
+## BF-06 notification recipient directory — 24 August 2026
+
+BF-06 is implemented and locally verified on
+`agent/bf-06-notification-recipient-directory`; PR, GitHub CI, and merge remain
+pending.
+
+The backend now supports Site-scoped recipient profiles, normalized Email/SMS/
+WhatsApp endpoints, active/inactive lifecycle, and per-channel Warning/Critical
+eligibility through dedicated ADMIN-only read/manage permissions. Contact addresses
+are excluded from audit evidence, logs, URLs, and deduplication keys. No delivery
+provider, escalation engine, or customer contact is activated.
+
+Backend gates pass with 68 files / 587 tests. The unchanged frontend passes 25 files /
+212 tests plus typecheck, lint, format, and production build.
+
 ## BF-05 configurable Alarm persistence/delay — 24 August 2026
 
-BF-05 is implemented and locally verified on
-`agent/bf-05-configurable-alarm-delay`; PR, GitHub CI, and merge remain pending.
+BF-05 is merged and verified through PR #72 at `main` integration commit
+`d67ea4ac5ccecc07840a9e391df83d74911e7328`. GitHub CI run 200 completed
+successfully before merge.
 
 Sensors now persist independent warning/critical activation delays from 0 through
 86400 seconds. A positive delay uses restart-safe pending state; normal, opposite,

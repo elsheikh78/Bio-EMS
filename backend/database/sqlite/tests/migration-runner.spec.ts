@@ -12,8 +12,9 @@ import { migration008 } from "../migrations/008_create_notification_events";
 import { migration009 } from "../migrations/009_create_platform_principals";
 import { migration010 } from "../migrations/010_create_audit_events";
 import { migration011 } from "../migrations/011_add_alarm_delay_configuration";
+import { migration012 } from "../migrations/012_create_notification_recipients";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -100,7 +101,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(11);
+    expect(historyCount.count).toBe(12);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -251,6 +252,23 @@ describe("SQLite migrations", () => {
         )
         .get()
     ).toEqual({ name: "alarm_activation_candidates" });
+  });
+
+  it("is idempotent when migration 012 executes directly more than once", () => {
+    database.exec("CREATE TABLE sites (id INTEGER PRIMARY KEY)");
+    migration012.up(database);
+    migration012.up(database);
+
+    expect(
+      database
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'notification_recipients'"
+        )
+        .get()
+    ).toEqual({ name: "notification_recipients" });
+    expect(
+      database.prepare("PRAGMA index_list(notification_recipient_endpoints)").all()
+    ).toContainEqual(expect.objectContaining({ unique: 1 }));
   });
 
   it("creates the approved User schema and username index on a fresh application database", () => {

@@ -46,6 +46,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Atomic User Management audit production for success, denial, and controlled failure
 - Authorized, validated, auditable post-creation Sensor threshold updates
 - Persisted, configurable warning/critical Alarm activation delays
+- Site-scoped, ADMIN-only notification recipient and severity-eligibility directory
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -87,6 +88,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 | Sensor Calibration Foundation         | Implemented        |
 | Device Communication Health           | Implemented        |
 | Notification Event Architecture       | Implemented        |
+| Notification Recipient Directory      | Implemented        |
 | SMS Failover Contract                 | Implemented        |
 | Pilot Deployment-Readiness Foundation | Implemented        |
 | BIO EGYPT Field Commissioning         | Not executed       |

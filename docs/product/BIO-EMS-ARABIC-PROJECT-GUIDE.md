@@ -233,6 +233,12 @@ Monitoring Point يمثل **ما الذي يتم قياسه**، بينما Senso
 
 سيكون مسؤولًا مستقبلًا عن تحويل Alarm إلى Notification workflow مثل Email أوSMS أوWhatsApp أوPush، مع Escalation rules حسب الزمن وعدم الـAcknowledgement.
 
+تم في BF-06 تنفيذ أساس Backend مستقل لدليل المستلمين حسب الـSite. يدعم ملفات مستلمين
+نشطة أو غير نشطة، ونقاط اتصال Email وSMS وWhatsApp، وتحديد أهلية WARNING وCRITICAL لكل
+قناة. القراءة والتعديل محميان بصلاحيات ADMIN مخصصة، ولا تدخل عناوين الاتصال في Audit
+prior/new أو Logs أو URLs أو deduplication keys. هذا الأساس لا يرسل رسائل ولا يستهلك
+الـOutbox ولا يحدد Provider أو Escalation، ولا يحتوي على بيانات اتصال BIO EGYPT.
+
 ## 23. Reports وAudit Trail
 
 من الأهداف المستقبلية:

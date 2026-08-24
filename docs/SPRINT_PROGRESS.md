@@ -2,9 +2,24 @@
 
 ## Backend Commercial Foundation
 
-### BF-05 — Configurable Alarm Persistence/Delay
+### BF-06 — Notification Recipient Directory
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-06-notification-recipient-directory`;
+- base: BF-05 merge commit `d67ea4ac5ccecc07840a9e391df83d74911e7328`;
+- routes: ADMIN-only recipient list/create/profile/status boundaries;
+- persistence: Site-scoped recipients and normalized Email/SMS/WhatsApp endpoints;
+- policy: active lifecycle and per-channel Warning/Critical eligibility;
+- audit: atomic safe metadata only; contact values excluded;
+- backend verification: 68 files / 587 tests PASS;
+- frontend verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
+### BF-05 — Configurable Alarm Persistence/Delay
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-05-configurable-alarm-delay`;
 - base: BF-04 merge commit `d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`;
@@ -13,9 +28,10 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - lifecycle: persisted candidates, reset rules, LIVE-only evaluation, immediate recovery;
 - persistence/audit: atomic Sensor update, candidate invalidation, and Site-scoped event;
 - backend verification: 66 files / 573 tests PASS.
-- frontend verification: 25 files / 212 tests PASS plus build.
-
-PR, GitHub CI, and merge evidence remain pending.
+- frontend verification: 25 files / 212 tests PASS plus build;
+- PR: #72;
+- integration commit: `d67ea4ac5ccecc07840a9e391df83d74911e7328`;
+- GitHub CI run number: 200 — SUCCESS.
 
 ### BF-04 — Editable Sensor Alarm Thresholds
 
