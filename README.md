@@ -48,6 +48,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 - Persisted, configurable warning/critical Alarm activation delays
 - Site-scoped, ADMIN-only notification recipient and severity-eligibility directory
 - Site-scoped, deterministic notification escalation-policy foundation
+- Versioned Site Controller offline-critical configuration synchronization contract
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -91,6 +92,7 @@ field commissioning and Pilot acceptance have not yet occurred.
 | Notification Event Architecture       | Implemented        |
 | Notification Recipient Directory      | Implemented        |
 | Notification Escalation Policy        | Implemented        |
+| Controller Configuration Sync Contract | Implemented       |
 | SMS Failover Contract                 | Implemented        |
 | Pilot Deployment-Readiness Foundation | Implemented        |
 | BIO EGYPT Field Commissioning         | Not executed       |

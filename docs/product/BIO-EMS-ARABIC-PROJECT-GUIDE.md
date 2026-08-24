@@ -244,6 +244,13 @@ WARNING/CRITICAL، وحالة active/inactive، وخطوات متتابعة بز
 وقنوات محددة. الـresolver يعيد الخطوات المستحقة فقط ولا يرسل رسالة ولا يعتبر أي خطوة
 Delivered أو Acknowledged، ولا يثبت توقيتًا خاصًا بعميل داخل الكود.
 
+BF-08 يعرّف Contract إصدار 1 لمزامنة الحد الأدنى من إعدادات التشغيل Critical offline
+مع Site Controller. الـBundle يحمل Version وSHA-256 checksum، ولا يصبح Effective إلا
+بعد APPLIED acknowledgement مطابق للـSite والـVersion والـchecksum. عند Reconnect يتم
+تحديد CURRENT أو Redelivery أو Block، وعند الفشل يبقى آخر Bundle معتمد فقط؛ وإذا لم
+يوجد تُعطّل Offline external notification ويظهر Not-ready. هذا لا يعني أن Firmware أو
+Transport أو التشغيل الميداني تم تنفيذه.
+
 ## 23. Reports وAudit Trail
 
 من الأهداف المستقبلية:

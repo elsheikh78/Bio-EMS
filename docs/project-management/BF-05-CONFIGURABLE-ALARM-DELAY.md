@@ -103,4 +103,5 @@ delay values. Authenticated denial is body-free and fail-closed.
 
 Backend local gates: typecheck, ESLint, Prettier, production build, and 66 files / 573
 tests PASS. Frontend gates: typecheck, ESLint, Prettier, production build, and 25 files
-/ 212 tests PASS. GitHub integration evidence remains pending.
+/ 212 tests PASS. BF-05 merged through PR #72 after successful GitHub CI run 200 at
+integration commit `d67ea4ac5ccecc07840a9e391df83d74911e7328`.

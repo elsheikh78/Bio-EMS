@@ -2,9 +2,24 @@
 
 ## Backend Commercial Foundation
 
-### BF-07 — Escalation Policy
+### BF-08 — Site Controller Offline-Critical Configuration Sync Contract
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-08-controller-config-sync`;
+- base: BF-07 merge commit `5890629b938a8b4dfe0364b1f41abbc72b2dc16f`;
+- bundle: versioned minimum offline-critical Sensor/SMS/escalation subset;
+- integrity: canonical SHA-256 delivery envelope;
+- effectiveness: exact Site/version/checksum APPLIED acknowledgement only;
+- reconnect/fallback: deterministic redelivery/block decisions and last-acknowledged retention;
+- backend verification: 71 files / 600 tests PASS;
+- frontend verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
+### BF-07 — Escalation Policy
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-07-escalation-policy`;
 - base: BF-06 merge commit `0532d2557d6d190275d611df27cf38cb857f43c6`;
@@ -13,9 +28,10 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - authorization/audit: dedicated ADMIN-only read/manage and atomic evidence;
 - runtime: deterministic due-step resolver with no delivery side effects;
 - backend verification: 70 files / 596 tests PASS;
-- frontend verification: 25 files / 212 tests PASS plus build.
-
-PR, GitHub CI, and merge evidence remain pending.
+- frontend verification: 25 files / 212 tests PASS plus build;
+- PR: #74;
+- integration commit: `5890629b938a8b4dfe0364b1f41abbc72b2dc16f`;
+- GitHub CI run number: 204 — SUCCESS.
 
 ### BF-06 — Notification Recipient Directory
 

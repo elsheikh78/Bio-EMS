@@ -1,6 +1,6 @@
 # BF-06 — Notification Recipient Directory Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-06-notification-recipient-directory`
 Base: BF-05 merge `d67ea4ac5ccecc07840a9e391df83d74911e7328`
@@ -32,5 +32,5 @@ consume the outbox, choose a provider, define escalation, or embed Pilot contact
 - frontend tests: 25 files / 212 tests PASS;
 - documentation consistency and gap-register audit: PASS.
 
-PR, GitHub CI run, and integration commit are intentionally recorded only after
-remote verification and merge.
+Remote verification: PR #73, GitHub CI run 202 SUCCESS, integration commit
+`0532d2557d6d190275d611df27cf38cb857f43c6`.

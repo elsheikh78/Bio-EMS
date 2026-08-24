@@ -1,6 +1,6 @@
 # BF-07 — Escalation Policy Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-07-escalation-policy`
 Base: BF-06 merge `0532d2557d6d190275d611df27cf38cb857f43c6`
@@ -27,4 +27,5 @@ acknowledgement timers, or embed customer-specific escalation values.
 - unchanged frontend: format, lint, typecheck, build and 25 files / 212 tests PASS;
 - documentation audit and gap-register reconciliation PASS.
 
-Remote evidence will be recorded after PR, CI, and merge.
+Remote verification: PR #74, GitHub CI run 204 SUCCESS, integration commit
+`5890629b938a8b4dfe0364b1f41abbc72b2dc16f`.

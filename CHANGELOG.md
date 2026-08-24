@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added BF-08 versioned offline-critical controller configuration bundles with
+  validated minimum subsets and deterministic SHA-256 delivery envelopes.
+- Added explicit acknowledgement/currentness evaluation, stale/rejected/mismatch/
+  controller-ahead handling, reconnect actions, and safe fallback semantics.
 - Added BF-07 Site-scoped escalation policies with owner role, active lifecycle,
   severity eligibility, and ordered role/channel steps with strict elapsed timing.
 - Added dedicated ADMIN-only policy read/manage boundaries, deterministic due-step

@@ -1,9 +1,23 @@
 # Project Status
 
+## BF-08 controller configuration synchronization contract — 24 August 2026
+
+BF-08 is implemented and locally verified on `agent/bf-08-controller-config-sync`;
+PR, GitHub CI, and merge remain pending.
+
+Contract version 1 defines the minimum Site Controller offline-critical bundle,
+canonical checksum envelope, explicit APPLIED/REJECTED acknowledgement, exact
+effective-state comparison, reconnect decision, and last-acknowledged safe fallback.
+It does not claim transport, controller firmware/storage, or field commissioning.
+
+Backend gates pass with 71 files / 600 tests. The unchanged frontend passes 25 files /
+212 tests plus typecheck, lint, format, and production build.
+
 ## BF-07 escalation policy — 24 August 2026
 
-BF-07 is implemented and locally verified on `agent/bf-07-escalation-policy`; PR,
-GitHub CI, and merge remain pending.
+BF-07 is merged and verified through PR #74 at `main` integration commit
+`5890629b938a8b4dfe0364b1f41abbc72b2dc16f`. GitHub CI run 204 completed
+successfully before merge.
 
 Site-scoped active/inactive policies now define owner role, Warning/Critical
 eligibility, and contiguous steps with strictly increasing elapsed delays, target
