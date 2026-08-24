@@ -1,5 +1,12 @@
 # Project Status
 
+## PVR-07 platform acceptance — 24 August 2026
+
+PVR-01 through PVR-07 are review-complete. The release decision is **NO-GO for BF-10 and
+production acceptance** pending a same-commit browser retest, closure of the four incomplete report
+families, commissioned Alarm/Device evidence, and customer/UAT evidence. Repository CI is necessary
+evidence but is not treated as field or production acceptance.
+
 ## PVR-06 reporting readiness audit — 24 August 2026
 
 PVR-06 confirms Calibration Status and History as the only available controlled report family.

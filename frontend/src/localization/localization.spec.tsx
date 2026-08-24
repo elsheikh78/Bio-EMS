@@ -9,7 +9,6 @@ import {
   type AuthenticationContextValue,
 } from "../auth/AuthenticationContext";
 import { AppNavigation } from "../components/AppNavigation";
-import { FeaturePlaceholderPage } from "../pages/FeaturePlaceholderPage";
 import { FoundationPage } from "../pages/FoundationPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ShellLandingPage } from "../pages/ShellLandingPage";
@@ -177,38 +176,6 @@ const alternativeResources = {
         maxValue: "Alt Maximum Value",
         notConfigured: "Alt Not Configured",
       },
-    },
-  },
-
-  placeholders: {
-    dashboard: {
-      title: "Alt dashboard title",
-      description: "Alt dashboard description",
-    },
-
-    monitoredAreas: {
-      title: "Alt monitored areas title",
-      description: "Alt monitored areas description",
-    },
-
-    alarms: {
-      title: "Alt alarms title",
-      description: "Alt alarms description",
-    },
-
-    devices: {
-      title: "Alt devices title",
-      description: "Alt devices description",
-    },
-
-    configuration: {
-      title: "Alt configuration title",
-      description: "Alt configuration description",
-    },
-
-    users: {
-      title: "Alt users title",
-      description: "Alt users description",
     },
   },
 
@@ -470,30 +437,6 @@ describe("localization contracts", () => {
         name: "Alt workspace title",
       }),
     ).toBeInTheDocument();
-  });
-
-  it("renders the alternative placeholder page copy", () => {
-    render(
-      <LocalizationProvider
-        language={futureLanguage}
-        direction={futureDirection}
-        resources={alternativeResources}
-      >
-        <ThemeProvider theme={createAppTheme(futureDirection)}>
-          <CssBaseline />
-
-          <FeaturePlaceholderPage feature="alarms" />
-        </ThemeProvider>
-      </LocalizationProvider>,
-    );
-
-    expect(
-      screen.getByRole("heading", {
-        name: "Alt alarms title",
-      }),
-    ).toBeInTheDocument();
-
-    expect(screen.getByText("Alt alarms description")).toBeInTheDocument();
   });
 
   it("renders the navigation copy through localization resources", () => {

@@ -1,5 +1,11 @@
 # [Unreleased]
 
+## PVR-07
+
+- Added the platform acceptance matrix, release blockers, and explicit NO-GO decision.
+- Removed the obsolete runtime feature-placeholder component and localization copy.
+- Replaced stale workspace staging text with the current operational scope description.
+
 ## PVR-06
 
 - Added a complete report-family readiness matrix to the Reports Center.
