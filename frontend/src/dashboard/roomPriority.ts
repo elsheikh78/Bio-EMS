@@ -26,10 +26,7 @@ export function roomPriorityTone(
     return "error.main";
   }
 
-  if (
-    operationalPriority === ROOM_PRIORITY.WARNING ||
-    room.activeAlarms > 0
-  ) {
+  if (operationalPriority === ROOM_PRIORITY.WARNING || room.activeAlarms > 0) {
     return "warning.main";
   }
 
