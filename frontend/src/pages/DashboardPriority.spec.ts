@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DashboardRoomStatus } from "../dashboard/contracts";
-import { roomOperationalPriority } from "./DashboardPage";
+import { roomOperationalPriority } from "../dashboard/roomPriority";
 
 function room(
   temperatureStatus: DashboardRoomStatus["temperatureStatus"],
