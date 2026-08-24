@@ -1,5 +1,15 @@
 # Project Status
 
+## PVR-02 operational workspace — 24 August 2026
+
+PVR-02 replaces the authenticated root placeholder with a permission-aware operational entry
+point. Available workflows are linked according to the shared frontend role policy, while Alarms,
+Devices, and incomplete report families remain explicitly labelled as staged work rather than
+completed production capability.
+
+Automated verification and merge evidence remain required before closure. PVR-02 does not change
+backend authorization or claim completion of the operational tabs.
+
 ## PVR-01 platform integration recovery — 24 August 2026
 
 PVR-01 repairs the production Site response mismatch observed during manual platform review. The
