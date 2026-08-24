@@ -9,6 +9,9 @@
 
 ## Added
 
+- Replaced the stale application-shell landing placeholder with a permission-aware Operational
+  Workspace that links to available workflows and labels staged platform capabilities.
+
 - Added the controlled `BE002-EV-001` field pack for two-Site drawing control, all
   20 Sensor positions, mapping rationale, completeness review, and Quality approval.
 

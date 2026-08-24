@@ -456,7 +456,11 @@ describe("localization contracts", () => {
       >
         <ThemeProvider theme={createAppTheme(futureDirection)}>
           <CssBaseline />
-          <ShellLandingPage />
+          <MemoryRouter>
+            <AuthenticationContext.Provider value={authenticatedAdmin}>
+              <ShellLandingPage />
+            </AuthenticationContext.Provider>
+          </MemoryRouter>
         </ThemeProvider>
       </LocalizationProvider>,
     );
