@@ -15,7 +15,11 @@ describe("dashboard contracts", () => {
         totalDevices: 4,
         totalSensors: 18,
         activeAlarms: 3,
+        onlineDevices: 1,
+        staleDevices: 1,
         offlineDevices: 1,
+        neverSeenDevices: 1,
+        notOperationalDevices: 0,
       }),
     ).toEqual({
       totalSites: 2,
@@ -23,7 +27,11 @@ describe("dashboard contracts", () => {
       totalDevices: 4,
       totalSensors: 18,
       activeAlarms: 3,
+      onlineDevices: 1,
+      staleDevices: 1,
       offlineDevices: 1,
+      neverSeenDevices: 1,
+      notOperationalDevices: 0,
     });
   });
 
@@ -35,8 +43,29 @@ describe("dashboard contracts", () => {
         totalDevices: 4,
         totalSensors: 18,
         activeAlarms: 3,
+        onlineDevices: 1,
+        staleDevices: 1,
         offlineDevices: 1,
+        neverSeenDevices: 1,
+        notOperationalDevices: 0,
         unexpected: true,
+      }),
+    ).toThrow();
+  });
+
+  it("rejects a summary whose authoritative Device states do not reconcile", () => {
+    expect(() =>
+      dashboardSummarySchema.parse({
+        totalSites: 1,
+        totalRooms: 1,
+        totalDevices: 3,
+        totalSensors: 1,
+        activeAlarms: 0,
+        onlineDevices: 3,
+        staleDevices: 0,
+        offlineDevices: 0,
+        neverSeenDevices: 1,
+        notOperationalDevices: 0,
       }),
     ).toThrow();
   });

@@ -86,8 +86,11 @@ export interface TranslationResources {
       deviceTitle: string;
       deviceDescription: string;
       online: string;
+      stale: string;
       offline: string;
-      staleUnavailable: string;
+      neverSeen: string;
+      notOperational: string;
+      statusEvidence: string;
       severityTitle: string;
       severityDescription: string;
       critical: string;
@@ -309,11 +312,14 @@ export const englishResources = {
         "A current, evidence-based view of device health and alarm severity.",
       deviceTitle: "Device connectivity",
       deviceDescription:
-        "Current Online and Offline distribution from the device snapshot.",
+        "Current authoritative communication and lifecycle distribution.",
       online: "Online",
+      stale: "Stale",
       offline: "Offline",
-      staleUnavailable:
-        "Stale status is not separated by the current backend contract.",
+      neverSeen: "Never seen",
+      notOperational: "Not operational",
+      statusEvidence:
+        "Online, Stale, Offline, Never seen, and Not operational are reported independently.",
       severityTitle: "Alarm severity",
       severityDescription: "Current recorded alarm severity distribution.",
       critical: "Critical",

@@ -37,6 +37,25 @@ export function deriveCommunicationStatus(
   return "OFFLINE";
 }
 
+export function summarizeDeviceCommunicationStatuses(
+  devices: Device[],
+  now: Date = new Date()
+): Record<DeviceCommunicationStatus, number> {
+  const summary: Record<DeviceCommunicationStatus, number> = {
+    NOT_OPERATIONAL: 0,
+    NEVER_SEEN: 0,
+    ONLINE: 0,
+    STALE: 0,
+    OFFLINE: 0,
+  };
+
+  for (const device of devices) {
+    summary[deriveCommunicationStatus(device, now)] += 1;
+  }
+
+  return summary;
+}
+
 export function getDeviceHealth(deviceId: string, now: Date = new Date()): DeviceHealth {
   const device = repository.findByDeviceId(deviceId);
   if (!device) throw new AppError("Device not found", 404, "DEVICE_NOT_FOUND");

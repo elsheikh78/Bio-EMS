@@ -10,9 +10,28 @@ export const dashboardSummarySchema = z
     totalDevices: nonNegativeInteger,
     totalSensors: nonNegativeInteger,
     activeAlarms: nonNegativeInteger,
+    onlineDevices: nonNegativeInteger,
+    staleDevices: nonNegativeInteger,
     offlineDevices: nonNegativeInteger,
+    neverSeenDevices: nonNegativeInteger,
+    notOperationalDevices: nonNegativeInteger,
   })
-  .strict();
+  .strict()
+  .superRefine((summary, context) => {
+    const classifiedDevices =
+      summary.onlineDevices +
+      summary.staleDevices +
+      summary.offlineDevices +
+      summary.neverSeenDevices +
+      summary.notOperationalDevices;
+
+    if (classifiedDevices !== summary.totalDevices) {
+      context.addIssue({
+        code: "custom",
+        message: "Device communication counts must equal totalDevices",
+      });
+    }
+  });
 
 export const dashboardSensorStatusSchema = z.enum([
   "NORMAL",
