@@ -50,3 +50,7 @@ export class AuditEventService {
     return this.dependencies.repository.list({ siteId, limit });
   }
 }
+
+export const auditEventService = new AuditEventService({
+  repository: new AuditEventRepository(),
+});

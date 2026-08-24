@@ -13,6 +13,10 @@ vi.mock("../../repositories/audit-event.repository", () => ({
 }));
 
 vi.mock("../../services/audit-event.service", () => ({
+  auditEventService: {
+    listForCustomerSite: mocks.listForCustomerSite,
+    listForPlatform: mocks.listForPlatform,
+  },
   AuditEventService: class {
     listForCustomerSite = mocks.listForCustomerSite;
     listForPlatform = mocks.listForPlatform;

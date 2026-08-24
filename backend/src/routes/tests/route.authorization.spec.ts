@@ -58,6 +58,9 @@ vi.mock("../../controllers/audit-event.controller", () => ({
   listCustomerAuditEvents: controller,
   listPlatformAuditEvents: controller,
 }));
+vi.mock("../../services/audit-event.service", () => ({
+  auditEventService: { record: vi.fn() },
+}));
 
 import alarmRouter from "../alarm.route";
 import auditEventRouter from "../audit-event.route";

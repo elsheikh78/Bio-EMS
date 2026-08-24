@@ -2,6 +2,21 @@
 
 ## Backend Commercial Foundation
 
+### BF-03 — User Management Audit Integration
+
+Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-03-user-audit-integration`;
+- base: BF-02 documentation closure commit
+  `07e65dee84a8f4ea335f857f897d242cd6895098`;
+- successful User mutations: atomic with audit persistence;
+- denial/failure policy: safe and route/action-derived;
+- password events: no submitted password, hash, or credential values;
+- backend verification: 63 files / 545 tests PASS;
+- unchanged frontend verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
 ### BF-02 — Append-only Audit Foundation
 
 Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
@@ -17,8 +32,8 @@ Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 - persistence: append-only with deterministic secret redaction.
 
 BF-02 supplies the shared audit contract and read boundaries. Existing domain
-mutations are not retroactively claimed as integrated producers; BF-03 remains the
-next controlled User Management integration slice.
+mutations are not retroactively claimed as integrated producers. BF-03 supplies the
+first controlled mutation-family integration.
 
 ### BF-01 — SYSTEM_OWNER Authorization Boundary
 

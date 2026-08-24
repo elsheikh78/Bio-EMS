@@ -235,6 +235,10 @@ Monitoring Point يمثل **ما الذي يتم قياسه**، بينما Senso
   SYSTEM_OWNER authentication boundary المنفصل.
 - ربط كل عمليات Configuration الحالية كمنتجين للأحداث يتم تدريجيًا في Work Packages
   مستقلة؛ وجود الأساس لا يعني أن كل Mutation مغطاة بالفعل.
+- تم ربط User Management في BF-03: إنشاء المستخدم وتغيير Profile/Role وStatus وإدارة
+  كلمة المرور تنتج Audit evidence. نجاح التغيير وحفظ الحدث يتمان في Transaction واحدة.
+- أحداث كلمة المرور لا تحتوي على Password أوHash أو قيم قديمة/جديدة للCredential، كما
+  لا يتم نسخ body الخاص بطلبات Validation المرفوضة إلى Audit Trail.
 
 ## 24. Customer Management وLicensing — Planned
 
@@ -289,7 +293,7 @@ Sensors / Devices
 
 ## 28. الحالة الحالية للمنتج
 
-الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management وSYSTEM_OWNER boundary وAlarm Acknowledgement وAudit persistence foundation وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
+الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management مع Audit integration وSYSTEM_OWNER boundary وAlarm Acknowledgement وAudit persistence foundation وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
 
 الـPublished Release الموثق حاليًا هو `v0.15.0`، ويشمل أعمال Sprint 14 وSprint 15 المعتمدة داخل المستودع، لكنه لا يعني تنفيذ أو قبول الـPilot ميدانيًا.
 
