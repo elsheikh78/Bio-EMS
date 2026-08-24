@@ -5,6 +5,9 @@ Date: 2026-08-24
 Evidence target: `BE002-EV-001`
 Sites: El Manial; CPC / 6th of October
 
+Repository readiness evidence: PR #84, GitHub CI run 225 — SUCCESS, integration
+commit `315a00eb51071c640b6f344477477810df50a4e6`.
+
 ## Purpose
 
 This pack controls the floor plans and final physical positions required to close
