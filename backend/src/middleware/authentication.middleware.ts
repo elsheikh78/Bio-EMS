@@ -73,7 +73,8 @@ export function createAuthenticationMiddleware(
 function isPublicRequest(req: Request): boolean {
   return (
     (req.method === "GET" && req.path === "/health") ||
-    (req.method === "POST" && req.path === "/auth/login")
+    (req.method === "POST" && req.path === "/auth/login") ||
+    (req.method === "POST" && req.path === "/platform-auth/login")
   );
 }
 
