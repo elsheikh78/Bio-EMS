@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
 import { FeaturePlaceholderPage } from "./pages/FeaturePlaceholderPage";
+import { ConfigurationPage } from "./pages/ConfigurationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MonitoredAreasPage } from "./pages/MonitoredAreasPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -96,7 +97,7 @@ export function App() {
             path="configuration"
             element={
               <PermissionBoundary path="/configuration">
-                <FeaturePlaceholderPage feature="configuration" />
+                <ConfigurationPage />
               </PermissionBoundary>
             }
           />

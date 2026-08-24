@@ -521,7 +521,7 @@ export const englishResources = {
       title: "Configuration",
 
       description:
-        "Configuration workflows are being delivered through BF-09. This ADMIN-only route does not yet expose management controls.",
+        "BF-09 configuration workflows are ADMIN-only; server authorization and backend validation remain authoritative.",
     },
 
     users: {

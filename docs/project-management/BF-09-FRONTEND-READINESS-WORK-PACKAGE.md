@@ -1,8 +1,8 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01 IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: BF-09-01 MERGED / BF-09-02 LOCAL IMPLEMENTATION COMPLETE
 Date: 2026-08-24
-Branch: `agent/bf-09-01-frontend-readiness`
+Branch: `agent/bf-09-02-sensor-configuration-ui`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
 
 ## Objective and slices
@@ -33,7 +33,16 @@ BF-09 converts stable backend contracts into controlled ADMIN frontend workflows
 - permission, navigation, direct-route denial, contract rejection, and API mapping
   tests: PASS;
 - documentation audit: PASS;
-- PR, GitHub CI, and merge evidence remain pending.
+- PR #77 merged at `a4e33bf9686141596b1580f5b925a64487348ba0`.
+
+## BF-09-02 acceptance
+
+- the placeholder is replaced by an ADMIN-only Sensor configuration register;
+- search and loading/error/empty presentation are explicit;
+- the editor uses persisted values and validates effective threshold ordering;
+- warning/critical delay fields enforce whole seconds from 0 through 86400;
+- mutations use the BF-09-01 protected adapters and refresh shared Sensor data;
+- failure does not claim completion and no customer-specific default is introduced.
 
 ## Boundaries
 

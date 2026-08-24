@@ -2,9 +2,25 @@
 
 ## Frontend Commercial Configuration
 
-### BF-09-01 — Frontend Readiness and API Contracts
+### BF-09-02 — Sensor Threshold and Alarm-delay Editor
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-02-sensor-configuration-ui`;
+- base: BF-09-01 merge commit `a4e33bf9686141596b1580f5b925a64487348ba0`;
+- ADMIN Configuration route now presents the Sensor register and editor;
+- all four persisted thresholds are checked in effective order before mutation;
+- warning/critical delays accept whole seconds from 0 through 86400;
+- successful mutations invalidate the shared Sensor register;
+- loading, filtering, empty, validation, API failure, and success states are explicit.
+- frontend verification: 28 files / 227 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build.
+
+Remote PR, CI, and merge evidence remain pending.
+
+### BF-09-01 — Frontend Readiness and API Contracts
+
+Status: **COMPLETE / MERGED / CLOSED**
 
 - branch: `agent/bf-09-01-frontend-readiness`;
 - base: BF-01 through BF-08 final closure commit
@@ -15,9 +31,11 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - adapters: authenticated threshold/delay/recipient/escalation operations;
 - frontend verification: 27 files / 223 tests PASS plus build;
 - backend regression verification: 71 files / 600 tests PASS plus build.
+- PR: #77;
+- integration commit: `a4e33bf9686141596b1580f5b925a64487348ba0`.
 
-PR, GitHub CI, and merge evidence remain pending. BF-09-02 follows only from the
-verified BF-09-01 merge.
+The GitHub connector did not expose a commit-associated workflow run for this PR;
+protected merge acceptance plus recorded local gates are the available evidence.
 
 ## Backend Commercial Foundation
 

@@ -1,6 +1,6 @@
 # BF-09-01 — Frontend Readiness and API Contracts Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-09-01-frontend-readiness`
 Base: final BF-01 through BF-08 closure `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
@@ -28,4 +28,7 @@ authorization remains authoritative.
 - backend format, lint, typecheck, build and 71 files / 600 tests PASS;
 - documentation audit and `git diff --check` PASS.
 
-Remote PR, CI, and merge evidence will be recorded after integration.
+PR #77 merged the exact reviewed head at integration commit
+`a4e33bf9686141596b1580f5b925a64487348ba0`. The GitHub connector returned no
+commit-associated workflow run; protected merge acceptance and the recorded local
+gates are the available integration evidence.
