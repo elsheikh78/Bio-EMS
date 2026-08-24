@@ -13,12 +13,31 @@ import { evaluateAlarm } from "../domain/engines/alarm-evaluation.engine";
 import { AlarmStatus } from "../domain/enums/alarm-status";
 import { SensorType } from "../domain/enums/sensor-type";
 
-interface SensorSnapshot {
+export interface SensorSnapshot {
   value: number;
 
   time: string;
 
   sensor: Sensor;
+}
+
+const ROOM_STATUS_PRIORITY: Record<RoomStatus["temperatureStatus"], number> = {
+  UNKNOWN: 0,
+  NORMAL: 1,
+  WARNING: 2,
+  CRITICAL: 3,
+};
+
+export function shouldReplaceRoomSnapshot(
+  currentStatus: RoomStatus["temperatureStatus"],
+  candidateStatus: RoomStatus["temperatureStatus"],
+  currentTime: string,
+  candidateTime: string
+): boolean {
+  const priorityDifference =
+    ROOM_STATUS_PRIORITY[candidateStatus] - ROOM_STATUS_PRIORITY[currentStatus];
+
+  return priorityDifference > 0 || (priorityDifference === 0 && candidateTime > currentTime);
 }
 
 interface RoomAggregate {
@@ -124,17 +143,41 @@ export class DashboardService {
         aggregates.set(room.id, aggregate);
       }
 
-      aggregate.sensors.set(
-        record.sensorType,
+      const sensorType = record.sensorType.toLowerCase();
+      const candidate: SensorSnapshot = {
+        value: record.value,
+        time: record.time,
+        sensor,
+      };
+      const current = aggregate.sensors.get(sensorType);
 
-        {
-          value: record.value,
+      if (
+        !current ||
+        shouldReplaceRoomSnapshot(
+          this.evaluateSensorStatus(current),
+          this.evaluateSensorStatus(candidate),
+          current.time,
+          candidate.time
+        )
+      ) {
+        aggregate.sensors.set(sensorType, candidate);
+      }
+    }
 
-          time: record.time,
+    const sensorsById = new Map(
+      this.sensorRepository
+        .getAll()
+        .filter((sensor) => sensor.id !== undefined)
+        .map((sensor) => [sensor.id!, sensor])
+    );
 
-          sensor,
-        }
-      );
+    for (const alarm of this.alarmRepository.getActive()) {
+      const sensor = sensorsById.get(alarm.sensor_id);
+      const aggregate = sensor ? aggregates.get(sensor.room_id) : undefined;
+
+      if (aggregate) {
+        aggregate.activeAlarms += 1;
+      }
     }
 
     return Array.from(aggregates.values()).map((room) => {
