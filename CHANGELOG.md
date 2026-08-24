@@ -2,6 +2,9 @@
 
 ## Added
 
+- Added the controlled `BE002-EV-001` field pack for two-Site drawing control, all
+  20 Sensor positions, mapping rationale, completeness review, and Quality approval.
+
 - Closed BF-09 commercial configuration UX with deliberate Site selection before
   recipient, escalation-policy, or customer Audit retrieval.
 - Unified the Configuration page identity and added distinguishable accessible names

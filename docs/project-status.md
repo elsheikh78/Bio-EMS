@@ -569,10 +569,12 @@ execution process establishes that requirement.
 
 ## Next Action
 
-Execute controlled BIO EGYPT field-pilot preparation and close `BE-001` through
-`BE-012` with evidence.
+Execute controlled BIO EGYPT field-pilot preparation and close `BE-002` through
+`BE-012` with evidence. `BE-001` is already closed through `BE001-EV-001`.
 
-The immediate first gate is `BE-001`.
+The immediate open gate is `BE-002`: obtain and mark up the controlled plans for both
+Sites, record all 20 Sensor positions, and secure BIO EGYPT Quality approval using the
+prepared `BE002-EV-001` evidence pack.
 
 Field commissioning and Pilot acceptance remain unexecuted.
 

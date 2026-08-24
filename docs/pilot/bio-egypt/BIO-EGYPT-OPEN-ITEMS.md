@@ -31,6 +31,11 @@ The following decisions have been captured from Pilot planning. They reduce unce
 
 ### BE-002 — Sensor quantities pending final marked-up positions
 
+- Controlled field/approval template prepared in
+  `BE-002-MARKED-UP-SENSOR-POSITION-PACK.md` with evidence target `BE002-EV-001`.
+- Template readiness is not closure; both marked-up Site plans and all 20 approved
+  position records remain required.
+
 - El Manial: 2 Sensors in the Cold Room, 1 in the Antechamber, and 4 total across Dry Storage / corridor areas — 7 Sensors total.
 - CPC / 6th of October: 2 Sensors in each of 3 Cold Rooms, 1 in the Antechamber, and 6 total in Dry Storage — 13 Sensors total.
 - The room previously labelled `Freezer` at CPC / 6th of October is operationally a Cold Room for this Pilot.
@@ -123,6 +128,18 @@ Recipient membership, contact details, severity eligibility, escalation order, a
 - **Sites covered:** El Manial and CPC / 6th of October
 - **Repository handling:** The signed controlled customer record is retained outside the repository; the repository records its evidence reference only.
 - **Pilot effect:** `BE-001` is closed. This closure does not constitute installation, commissioning, or Pilot acceptance.
+
+### BE-002 — Marked-up floor plans and Sensor positions
+
+- **Status:** `BLOCKING / EVIDENCE PACK READY`
+- **Evidence target:** `BE002-EV-001`
+- **Prepared record:** `BE-002-MARKED-UP-SENSOR-POSITION-PACK.md`
+- **Required closure evidence:** signed marked-up plans for both Sites and approved
+  position schedule for all 20 Map IDs.
+- **Current limitation:** customer drawing revisions, field markups, position
+  references/rationales, and Quality signature have not been recorded.
+- **Pilot effect:** installation remains blocked; no commissioning or acceptance is
+  claimed.
 
 ## Register rule
 

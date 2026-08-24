@@ -24,6 +24,7 @@ been surveyed or accepted.
 4. [Commissioning and acceptance record](BIO-EGYPT-COMMISSIONING.md)
 5. [Open-items register](BIO-EGYPT-OPEN-ITEMS.md)
 6. [Controlled Site Survey Pack](BIO-EGYPT-SITE-SURVEY-PACK.md)
+7. [BE-002 Marked-up Sensor Position Evidence Pack](BE-002-MARKED-UP-SENSOR-POSITION-PACK.md)
 
 ## Deployment and readiness references
 
