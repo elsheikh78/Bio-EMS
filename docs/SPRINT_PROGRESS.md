@@ -2,9 +2,24 @@
 
 ## Backend Commercial Foundation
 
-### BF-04 — Editable Sensor Alarm Thresholds
+### BF-05 — Configurable Alarm Persistence/Delay
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-05-configurable-alarm-delay`;
+- base: BF-04 merge commit `d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`;
+- route: `PATCH /api/v1/sensors/:sensorUuid/alarm-delay`;
+- defaults/validation: independent integer seconds, 0 through 86400, default 0;
+- lifecycle: persisted candidates, reset rules, LIVE-only evaluation, immediate recovery;
+- persistence/audit: atomic Sensor update, candidate invalidation, and Site-scoped event;
+- backend verification: 66 files / 573 tests PASS.
+- frontend verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
+### BF-04 — Editable Sensor Alarm Thresholds
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-04-editable-alarm-thresholds`;
 - base: BF-03 merge commit `4ff9882a571f90761a5eb3bdc25e427867e76e95`;
@@ -14,7 +29,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - backend verification: 64 files / 558 tests PASS.
 - frontend regression verification: 25 files / 212 tests PASS plus build.
 
-PR, GitHub CI, and merge evidence remain pending.
+- PR: #71;
+- integration commit: `d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`;
+- GitHub CI run number: 198 — SUCCESS.
 
 ### BF-03 — User Management Audit Integration
 

@@ -6,6 +6,7 @@ import type { Sensor } from "../../entities/Sensor";
 import * as calibrationService from "../../services/calibration.service";
 import * as sensorService from "../../services/sensor.service";
 import { sensorThresholdService } from "../../services/sensor-threshold.service";
+import { sensorAlarmDelayService } from "../../services/sensor-alarm-delay.service";
 import sensorRouter from "../sensor.route";
 
 vi.mock("../../services/sensor.service", () => ({
@@ -20,6 +21,10 @@ vi.mock("../../services/calibration.service", () => ({
 
 vi.mock("../../services/sensor-threshold.service", () => ({
   sensorThresholdService: { updateThresholds: vi.fn() },
+}));
+
+vi.mock("../../services/sensor-alarm-delay.service", () => ({
+  sensorAlarmDelayService: { update: vi.fn() },
 }));
 
 vi.mock("../../services/audit-event.service", () => ({
@@ -161,6 +166,42 @@ describe("Sensor REST API", () => {
       .send({ warning_low: 3 })
       .expect(400);
     expect(sensorThresholdService.updateThresholds).not.toHaveBeenCalled();
+  });
+
+  it("updates a strict partial Alarm delay body through the authenticated actor", async () => {
+    const updated = {
+      ...validSensor,
+      warning_delay_seconds: 30,
+      critical_delay_seconds: 0,
+    } satisfies Sensor;
+    vi.mocked(sensorAlarmDelayService.update).mockReturnValue(updated);
+
+    const response = await request(app)
+      .patch(`/api/v1/sensors/${validSensor.uuid}/alarm-delay`)
+      .send({ warning_delay_seconds: 30 })
+      .expect(200);
+
+    expect(sensorAlarmDelayService.update).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "1", role: "ADMIN" }),
+      validSensor.uuid,
+      { warning_delay_seconds: 30 },
+      { source: "SENSOR_CONFIGURATION_API" }
+    );
+    expect(response.body).toEqual(updated);
+  });
+
+  it.each([
+    ["an empty body", {}],
+    ["an unknown field", { delay_seconds: 5 }],
+    ["a negative delay", { warning_delay_seconds: -1 }],
+    ["a fractional delay", { warning_delay_seconds: 1.5 }],
+    ["a delay above one day", { critical_delay_seconds: 86_401 }],
+  ])("rejects Alarm delay update with %s", async (_case, body) => {
+    await request(app)
+      .patch(`/api/v1/sensors/${validSensor.uuid}/alarm-delay`)
+      .send(body)
+      .expect(400);
+    expect(sensorAlarmDelayService.update).not.toHaveBeenCalled();
   });
 });
 

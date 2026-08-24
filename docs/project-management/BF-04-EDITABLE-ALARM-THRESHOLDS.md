@@ -1,6 +1,6 @@
 # BF-04 — Editable Sensor Alarm Thresholds
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-04-editable-alarm-thresholds`
 Base: `main` at `4ff9882a571f90761a5eb3bdc25e427867e76e95`
@@ -118,5 +118,5 @@ Frontend source is unchanged. Final regression gates:
 
 ## 10. Integration gate
 
-BF-04 becomes complete only after PR review, GitHub CI, merge, and
-integration-evidence update. BF-05 starts only from verified merged BF-04 `main`.
+BF-04 was merged through PR #71 after successful GitHub CI run 198. Integration commit:
+`d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`. BF-05 starts from this verified merge.

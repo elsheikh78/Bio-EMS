@@ -11,8 +11,9 @@ import { migration007 } from "../migrations/007_add_device_communication_health"
 import { migration008 } from "../migrations/008_create_notification_events";
 import { migration009 } from "../migrations/009_create_platform_principals";
 import { migration010 } from "../migrations/010_create_audit_events";
+import { migration011 } from "../migrations/011_add_alarm_delay_configuration";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -97,9 +98,9 @@ describe("SQLite migrations", () => {
       .get() as { count: number };
     const warningColumns = (
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
-    ).filter((column) => column.name.startsWith("warning_"));
+    ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(10);
+    expect(historyCount.count).toBe(11);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -227,6 +228,29 @@ describe("SQLite migrations", () => {
         expect.objectContaining({ name: "idx_audit_events_actor_order" }),
       ])
     );
+  });
+
+  it("is idempotent when migration 011 executes directly more than once", () => {
+    migration011.up(database);
+    migration011.up(database);
+
+    const sensorColumns = database.prepare("PRAGMA table_info(sensors)").all() as Array<{
+      name: string;
+      dflt_value: string | null;
+    }>;
+    expect(sensorColumns).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "warning_delay_seconds", dflt_value: "0" }),
+        expect.objectContaining({ name: "critical_delay_seconds", dflt_value: "0" }),
+      ])
+    );
+    expect(
+      database
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'alarm_activation_candidates'"
+        )
+        .get()
+    ).toEqual({ name: "alarm_activation_candidates" });
   });
 
   it("creates the approved User schema and username index on a fresh application database", () => {

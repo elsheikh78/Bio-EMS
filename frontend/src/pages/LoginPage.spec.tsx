@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
@@ -150,14 +150,16 @@ describe("accessible Login experience", () => {
     renderLogin({
       login: vi.fn().mockRejectedValue(new AuthenticationFailure(kind)),
     });
-    const user = userEvent.setup();
+    fireEvent.change(screen.getByRole("textbox", { name: "Username" }), {
+      target: { value: "user" },
+    });
+    fireEvent.change(screen.getByLabelText(/Password/), {
+      target: { value: "password" },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Sign in" }).closest("form")!,
+    );
 
-    await user.type(screen.getByRole("textbox", { name: "Username" }), "user");
-    await user.type(screen.getByLabelText(/Password/), "password");
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
-
-    expect(
-      await screen.findByRole("alert", undefined, { timeout: 3_000 }),
-    ).toHaveTextContent(message);
+    expect(await screen.findByRole("alert")).toHaveTextContent(message);
   });
 });

@@ -1,10 +1,23 @@
 # Project Status
 
+## BF-05 configurable Alarm persistence/delay — 24 August 2026
+
+BF-05 is implemented and locally verified on
+`agent/bf-05-configurable-alarm-delay`; PR, GitHub CI, and merge remain pending.
+
+Sensors now persist independent warning/critical activation delays from 0 through
+86400 seconds. A positive delay uses restart-safe pending state; normal, opposite,
+or severity-changing LIVE readings reset it. REPLAY remains excluded, recovery
+remains immediate, and no BIO EGYPT timing value is hard-coded.
+
+Backend gates pass with 66 files / 573 tests. The frontend passes 25 files / 212
+tests plus typecheck, lint, format, and production build.
+
 ## BF-04 editable Sensor alarm thresholds — 24 August 2026
 
-BF-04 is implemented and locally verified on
-`agent/bf-04-editable-alarm-thresholds`. It remains feature-branch capability until
-PR, GitHub CI, review, and merge complete.
+BF-04 is merged and verified through PR #71 at `main` integration commit
+`d2fe86ab715ab8eb5ec5c89b7b37dfbf82e6d6c2`. GitHub CI run 198 completed
+successfully before merge.
 
 ADMIN can partially update or clear the four existing Sensor warning/alarm thresholds
 through a strict post-creation route. Effective values must remain strictly ordered

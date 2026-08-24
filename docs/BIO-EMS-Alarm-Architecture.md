@@ -37,7 +37,6 @@ The alarm system follows these principles:
 
 Complete alarm flow:
 
-
 ---
 
 # 4. Alarm Sources
@@ -48,9 +47,7 @@ The alarm engine evaluates sensor values based on:
 
 Example:
 
-
 Result:
-
 
 ---
 
@@ -58,9 +55,7 @@ Result:
 
 Example:
 
-
 Result:
-
 
 ---
 
@@ -68,9 +63,7 @@ Result:
 
 Example:
 
-
 Result:
-
 
 ---
 
@@ -110,7 +103,6 @@ Alarm Event:
 Each alarm follows a lifecycle:
 
 ---
-
 
 ---
 
@@ -157,6 +149,7 @@ Alarm Configuration and Events:
 Future alarm table:
 
 ---
+
 # 11. Severity Levels
 
 Supported severity levels:
@@ -177,12 +170,15 @@ Notification flow:
 
 Planned features:
 
-- Alarm delay.
-- Alarm persistence.
 - Escalation rules.
 - User acknowledgement.
 - Alarm reports.
 - Notification scheduling.
+
+BF-05 now implements Sensor-scoped warning/critical activation delay and persisted
+pending candidates for LIVE telemetry. A zero delay preserves immediate activation;
+candidate state resets on normal, opposite-direction, or severity-changing readings.
+Recovery delay, hysteresis, escalation, and notification scheduling remain future work.
 
 ---
 
