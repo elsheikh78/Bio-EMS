@@ -2,6 +2,8 @@ export const PLATFORM_PRINCIPAL_TYPES = ["SYSTEM_OWNER"] as const;
 
 export type PlatformPrincipalType = (typeof PLATFORM_PRINCIPAL_TYPES)[number];
 
+export type PlatformPrincipalStatus = "active" | "disabled";
+
 export interface SystemOwnerPrincipal {
   kind: "platform";
   type: "SYSTEM_OWNER";
@@ -9,7 +11,21 @@ export interface SystemOwnerPrincipal {
   username: string;
 }
 
+export interface PlatformPrincipalCredentialRecord {
+  id: string;
+  principal_type: PlatformPrincipalType;
+  username: string;
+  password_hash: string;
+  status: PlatformPrincipalStatus;
+  created_at: string;
+  updated_at: string | null;
+}
+
 export type PlatformPrincipal = SystemOwnerPrincipal;
+
+export function normalizePlatformUsername(username: string): string {
+  return username.trim().toLowerCase();
+}
 
 export function isPlatformPrincipal(value: unknown): value is PlatformPrincipal {
   if (!value || typeof value !== "object") {
