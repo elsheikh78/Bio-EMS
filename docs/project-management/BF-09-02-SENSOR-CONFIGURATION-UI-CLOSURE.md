@@ -1,6 +1,6 @@
 # BF-09-02 — Sensor Configuration UI Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-09-02-sensor-configuration-ui`
 Base: BF-09-01 integration commit `a4e33bf9686141596b1580f5b925a64487348ba0`
@@ -28,4 +28,5 @@ remain authoritative.
 - frontend format, lint, typecheck, build and 28 files / 227 tests: PASS;
 - backend format, lint, typecheck, build and 71 files / 600 tests: PASS;
 - documentation consistency audit and `git diff --check`: PASS;
-- remote PR, CI, and merge evidence remain pending.
+- PR #78, GitHub CI run 212 SUCCESS;
+- integration commit: `78e94fef09f3170219bb880d8bc78033a9769994`.

@@ -1,8 +1,8 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01 MERGED / BF-09-02 LOCAL IMPLEMENTATION COMPLETE
+Status: BF-09-01/02 MERGED / BF-09-03 LOCAL IMPLEMENTATION COMPLETE
 Date: 2026-08-24
-Branch: `agent/bf-09-02-sensor-configuration-ui`
+Branch: `agent/bf-09-03-notification-recipient-ui`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
 
 ## Objective and slices
@@ -49,3 +49,13 @@ BF-09 converts stable backend contracts into controlled ADMIN frontend workflows
 BF-09-01 does not add configuration forms, provider delivery, controller UI,
 customer-specific defaults, or field/commissioning claims. Server authorization
 remains authoritative; frontend permission filtering is presentation defense only.
+
+## BF-09-03 acceptance
+
+- ADMIN selects one explicit Site scope and sees only its recipient directory;
+- create/edit supports role and unique Email/SMS/WhatsApp endpoints;
+- each endpoint requires at least one Warning/Critical eligibility value;
+- Email and E.164 values are validated before protected mutation;
+- lifecycle changes use the dedicated status route;
+- contact values remain absent from URLs and minimized in register presentation;
+- no delivery-provider or sent-message capability is claimed.

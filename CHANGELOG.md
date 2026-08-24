@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added the BF-09-03 ADMIN notification recipient directory with Site selection,
+  create/edit workflows, channel/severity eligibility, and lifecycle controls.
+- Added contact validation, duplicate-channel prevention, contact-minimized register
+  presentation, protected mutations, and query refresh behavior.
 - Added the BF-09-02 ADMIN Sensor configuration register and editor for persisted
   warning/alarm thresholds and warning/critical activation delays.
 - Added client-side ordering/range validation, controlled mutations, query refresh,

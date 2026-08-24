@@ -12,6 +12,9 @@ vi.mock("../configuration/queries", () => ({
   useUpdateSensorThresholds: vi.fn(),
   useUpdateSensorAlarmDelay: vi.fn(),
 }));
+vi.mock("../configuration/NotificationRecipientsPanel", () => ({
+  NotificationRecipientsPanel: () => <div>Recipient panel</div>,
+}));
 
 const mockedSensors = vi.mocked(useSensors);
 const mockedThresholds = vi.mocked(useUpdateSensorThresholds);
