@@ -9,6 +9,9 @@
 
 ## Added
 
+- Replaced the Alarms placeholder with protected Active/History views and permission-controlled
+  acknowledgement over the existing Alarm lifecycle API.
+
 - Completed the Monitored Areas operational view with recoverable room telemetry status, Alarm
   count, last update, and Sensor calibration presentation while preserving configuration access.
 

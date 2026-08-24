@@ -1,5 +1,11 @@
 # Project Status
 
+## PVR-04 Alarms UI — 24 August 2026
+
+PVR-04 replaces the Alarm placeholder with validated lifecycle views and controlled acknowledgement.
+Automated and GitHub evidence remain required before closure; provider delivery and escalation
+execution remain separate.
+
 ## PVR-03 monitored areas completion — 24 August 2026
 
 PVR-03 combines configured Site/Room/Sensor hierarchy with current room telemetry evidence. An
