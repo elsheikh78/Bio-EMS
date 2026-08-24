@@ -20,6 +20,10 @@ vi.mock("../../services/device-health.service", () => ({
   getDeviceHealth: vi.fn(),
 }));
 
+vi.mock("../../services/audit-event.service", () => ({
+  auditEventService: { record: vi.fn() },
+}));
+
 const app = express();
 app.use(express.json());
 app.use((req, _res, next) => {

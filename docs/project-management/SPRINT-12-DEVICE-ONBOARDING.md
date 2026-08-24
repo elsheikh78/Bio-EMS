@@ -69,15 +69,17 @@ create/list REST operations without boundary validation.
 
 ```text
 pending  --activate-->  active  --disable-->  disabled
+                           ^                     |
+                           +-----reactivate------+
 ```
 
 ### State Invariants
 
-| Status | `activated` | Operational telemetry |
-| --- | ---: | --- |
-| `pending` | `0` | Rejected |
-| `active` | `1` | Eligible after all other policy checks pass |
-| `disabled` | `0` | Rejected |
+| Status     | `activated` | Operational telemetry                       |
+| ---------- | ----------: | ------------------------------------------- |
+| `pending`  |         `0` | Rejected                                    |
+| `active`   |         `1` | Eligible after all other policy checks pass |
+| `disabled` |         `0` | Rejected                                    |
 
 The service layer owns transitions and writes `status` and `activated` atomically.
 REST update input must never set either field directly.
@@ -86,9 +88,10 @@ REST update input must never set either field directly.
 
 - Create always produces `pending` plus `activated = 0`; client-supplied lifecycle
   fields are rejected rather than trusted.
-- Activate permits only `pending -> active`. The Site must exist before activation.
+- Activate permits `pending -> active` and the later-approved `disabled -> active`
+  reactivation. The Site must exist before either transition.
 - Disable permits only `active -> disabled`.
-- `pending -> disabled`, `disabled -> active`, `active -> pending`, and every other
+- `pending -> disabled`, `active -> pending`, and every other
   transition are rejected with a domain conflict response.
 - Repeating activation of an active Device or disablement of a disabled Device is
   rejected consistently as an invalid transition; it must not silently mutate data.
@@ -105,14 +108,14 @@ the current Device endpoints, including their error behavior. Those characterize
 contracts must remain unchanged throughout Sprint 12 unless a separate approved
 contract decision explicitly supersedes them.
 
-| Operation | Planned route | Validation and behavior |
-| --- | --- | --- |
-| List | `GET /api/v1/devices` | Optional query schema only if filtering is added; otherwise reject unsupported query behavior consistently. |
-| Read | `GET /api/v1/devices/:deviceId` | Zod validates a non-empty bounded `deviceId`; return the Device or not found. |
-| Create | `POST /api/v1/devices` | Strict Zod object for existing writable identity, Site, type, protocol, and optional metadata fields; lifecycle fields are forbidden; verify Site exists. |
-| Update | `PATCH /api/v1/devices/:deviceId` | Strict, non-empty partial schema limited to `device_type`, `protocol`, `manufacturer`, `model`, and `firmware_version`; identity, `site_id`, `status`, and `activated` are forbidden. |
-| Activate | `POST /api/v1/devices/:deviceId/activate` | Parameter schema only; apply the pending-to-active transition atomically. |
-| Disable | `POST /api/v1/devices/:deviceId/disable` | Parameter schema only; apply the active-to-disabled transition atomically. |
+| Operation | Planned route                             | Validation and behavior                                                                                                                                                               |
+| --------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| List      | `GET /api/v1/devices`                     | Optional query schema only if filtering is added; otherwise reject unsupported query behavior consistently.                                                                           |
+| Read      | `GET /api/v1/devices/:deviceId`           | Zod validates a non-empty bounded `deviceId`; return the Device or not found.                                                                                                         |
+| Create    | `POST /api/v1/devices`                    | Strict Zod object for existing writable identity, Site, type, protocol, and optional metadata fields; lifecycle fields are forbidden; verify Site exists.                             |
+| Update    | `PATCH /api/v1/devices/:deviceId`         | Strict, non-empty partial schema limited to `device_type`, `protocol`, `manufacturer`, `model`, and `firmware_version`; identity, `site_id`, `status`, and `activated` are forbidden. |
+| Activate  | `POST /api/v1/devices/:deviceId/activate` | Parameter schema only; apply the pending-to-active transition atomically.                                                                                                             |
+| Disable   | `POST /api/v1/devices/:deviceId/disable`  | Parameter schema only; apply the active-to-disabled transition atomically.                                                                                                            |
 
 Implementation schemas should be colocated in a Device DTO/schema module and inferred
 to TypeScript types with `z.infer`. All objects must be strict, strings trimmed and
@@ -244,40 +247,40 @@ four-phase workflow that remains deferred.
 ## Acceptance Criteria
 
 - [x] New Devices are persisted as `pending` with `activated = 0`, regardless of REST
-  input, and invalid lifecycle input is rejected.
+      input, and invalid lifecycle input is rejected.
 - [x] The Device API can list, read, update allowed metadata, activate, and disable a
-  Device through Zod-validated inputs.
+      Device through Zod-validated inputs.
 - [x] Only `pending -> active -> disabled` transitions succeed; all other transitions
-  return a tested conflict and leave the row unchanged.
+      return a tested conflict and leave the row unchanged.
 - [x] Telemetry from unknown, pending, disabled, or lifecycle-inconsistent Devices
-  produces no alarm evaluation and no InfluxDB write.
+      produces no alarm evaluation and no InfluxDB write.
 - [x] Telemetry is rejected when the Device's configured Site code does not exactly
-  match the Site code in the existing MQTT topic.
+      match the Site code in the existing MQTT topic.
 - [x] Unknown channels and channels mapped to Sensors with `enabled !== 1` are not
-  evaluated or persisted; valid channels in the same payload retain the documented
-  partial-message behavior.
+      evaluated or persisted; valid channels in the same payload retain the documented
+      partial-message behavior.
 - [x] Existing REST create/list contracts and the approved MQTT topic shape remain
-  backward compatible; no SQLite schema migration is introduced.
+      backward compatible; no SQLite schema migration is introduced.
 - [x] Device REST errors return `400` for Zod/invalid requests, `404` for missing
-  Devices or Sites, and `409` for invalid lifecycle transitions or uniqueness
-  conflicts, without leaking SQLite details.
+      Devices or Sites, and `409` for invalid lifecycle transitions or uniqueness
+      conflicts, without leaking SQLite details.
 - [x] Characterization tests pin existing Device response envelopes and status codes
-  before new endpoints are implemented and continue to pass unchanged throughout the
-  Sprint.
+      before new endpoints are implemented and continue to pass unchanged throughout the
+      Sprint.
 - [x] `src/mqtt/topics.ts` is unified with
-  `bioems/{siteCode}/telemetry/{deviceId}` without adding, changing, or migrating any
-  MQTT topic.
+      `bioems/{siteCode}/telemetry/{deviceId}` without adding, changing, or migrating any
+      MQTT topic.
 - [x] Repository, REST, and telemetry-policy suites cover every success and rejection
-  path listed in this plan and pass in isolation.
+      path listed in this plan and pass in isolation.
 - [x] GitHub Actions runs and passes `typecheck`, `build`, `lint`, `format:check`, and
-  `test:run` using clean dependency installation.
+      `test:run` using clean dependency installation.
 - [x] Roadmap, project status, Sprint progress, ADR implementation status, protocol
-  documentation, changelog, and version files accurately describe the delivered
-  v0.12.0 boundary.
+      documentation, changelog, and version files accurately describe the delivered
+      v0.12.0 boundary.
 - [x] Monitoring Points, Authentication, Users/Roles, Notification Engine, Frontend,
-  OTA Updates, and npm-audit remediation are absent from the implementation diff.
+      OTA Updates, and npm-audit remediation are absent from the implementation diff.
 - [x] The release candidate reports v0.12.0 and passes `git diff --check` with no
-  commit or push performed until review approval.
+      commit or push performed until review approval.
 
 ## Definition of Done
 

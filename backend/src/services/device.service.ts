@@ -73,7 +73,7 @@ export function activateDevice(deviceId: string): Device {
     throw deviceNotFound();
   }
 
-  if (device.status !== "pending" || device.activated !== 0) {
+  if ((device.status !== "pending" && device.status !== "disabled") || device.activated !== 0) {
     throw stateConflict();
   }
 
@@ -81,7 +81,7 @@ export function activateDevice(deviceId: string): Device {
     throw siteNotFound();
   }
 
-  const activated = repository.transitionLifecycle(deviceId, "pending", 0, "active", 1);
+  const activated = repository.transitionLifecycle(deviceId, device.status, 0, "active", 1);
 
   if (!activated) {
     return resolveFailedTransition(deviceId);

@@ -33,6 +33,7 @@ This decision distinguishes merged implementation evidence from actual platform 
 - The Devices retest found two legacy non-UUID identifiers in the local database; these were repaired with a retained SQLite backup while preserving `device_id`.
 - The same retest exposed a contract mismatch for a never-updated Device: SQLite correctly returns `updated_at: null`. The frontend contract now accepts that persisted state and retains strict validation for every other Device field.
 - The metadata-edit retest exposed a missing JSON media type on the Device PATCH adapter. The adapter now sends `Content-Type: application/json`, with regression coverage asserting the exact protected request.
+- Customer approval extended the lifecycle with controlled `disabled -> active` reactivation. Metadata changes, activation, reactivation, and disablement now append Site-scoped Audit events.
 
 ## Automated repository evidence
 
