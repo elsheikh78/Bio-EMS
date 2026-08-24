@@ -41,7 +41,8 @@ export class PlatformPrincipalRepository {
       }
 
       this.database
-        .prepare(`
+        .prepare(
+          `
           INSERT INTO platform_principals (
             id,
             principal_type,
@@ -50,7 +51,8 @@ export class PlatformPrincipalRepository {
             status
           )
           VALUES (?, 'SYSTEM_OWNER', ?, ?, 'active')
-        `)
+        `
+        )
         .run(input.id, normalizePlatformUsername(input.username), input.passwordHash);
 
       return this.findCredentialsByUsername(input.username)!;
@@ -59,25 +61,29 @@ export class PlatformPrincipalRepository {
 
   findById(id: string): PlatformPrincipalRecord | undefined {
     return this.database
-      .prepare(`
+      .prepare(
+        `
         SELECT ${PUBLIC_PLATFORM_PRINCIPAL_COLUMNS}
         FROM platform_principals
         WHERE id = ?
         LIMIT 1
-      `)
+      `
+      )
       .get(id) as PlatformPrincipalRecord | undefined;
   }
 
   findCredentialsByUsername(username: string): PlatformPrincipalCredentialRecord | undefined {
     return this.database
-      .prepare(`
+      .prepare(
+        `
         SELECT
           ${PUBLIC_PLATFORM_PRINCIPAL_COLUMNS},
           password_hash
         FROM platform_principals
         WHERE username = ?
         LIMIT 1
-      `)
+      `
+      )
       .get(normalizePlatformUsername(username)) as PlatformPrincipalCredentialRecord | undefined;
   }
 }

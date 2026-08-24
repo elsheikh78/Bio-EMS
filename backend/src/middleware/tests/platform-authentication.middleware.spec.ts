@@ -62,7 +62,11 @@ describe("platform authentication middleware", () => {
   });
 
   it("rejects tokens from another trust domain without consulting platform storage", () => {
-    const verifier = { verifyAccessToken: vi.fn(() => { throw new Error("invalid"); }) };
+    const verifier = {
+      verifyAccessToken: vi.fn(() => {
+        throw new Error("invalid");
+      }),
+    };
     const repository = { findById: vi.fn() };
     const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
     const next = vi.fn() as unknown as NextFunction;

@@ -54,9 +54,7 @@ export class PlatformTokenService {
   }
 }
 
-function isValidPlatformAccessTokenPayload(
-  payload: string | JwtPayload
-): payload is JwtPayload & {
+function isValidPlatformAccessTokenPayload(payload: string | JwtPayload): payload is JwtPayload & {
   exp: number;
   sub: string;
   principal_kind: "platform";

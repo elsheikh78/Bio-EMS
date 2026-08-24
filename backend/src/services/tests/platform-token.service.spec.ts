@@ -67,7 +67,9 @@ describe("platform JWT access-token service", () => {
       subject: "1",
     });
 
-    expect(() => new PlatformTokenService(configuration).verifyAccessToken(customerToken)).toThrow();
+    expect(() =>
+      new PlatformTokenService(configuration).verifyAccessToken(customerToken)
+    ).toThrow();
   });
 });
 

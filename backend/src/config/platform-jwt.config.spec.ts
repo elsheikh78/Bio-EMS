@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  loadPlatformJwtConfig,
-  PlatformJwtConfigurationError,
-} from "./platform-jwt.config";
+import { loadPlatformJwtConfig, PlatformJwtConfigurationError } from "./platform-jwt.config";
 
 describe("platform JWT configuration", () => {
   it("keeps platform authentication disabled when no platform JWT settings exist", () => {
@@ -10,9 +7,7 @@ describe("platform JWT configuration", () => {
   });
 
   it("loads an isolated platform trust domain with safe defaults", () => {
-    expect(
-      loadPlatformJwtConfig({ BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32) })
-    ).toEqual({
+    expect(loadPlatformJwtConfig({ BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32) })).toEqual({
       secret: "p".repeat(32),
       expireMinutes: 15,
       issuer: "bio-ems-platform",
