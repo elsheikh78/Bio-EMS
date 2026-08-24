@@ -2,9 +2,25 @@
 
 ## Frontend Commercial Configuration
 
-### BF-09-05 — Audit Log and User Management Integration
+### BF-09-06 — Final Accessibility, UX, Documentation, and Regression Closure
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-06-final-closure`;
+- base: BF-09-05 merge commit `79c40bb38cdfb169a15aa211e973e6ab3818d1f4`;
+- coherent Commercial Configuration page identity;
+- deliberate Site selection before recipient, policy, or Audit retrieval;
+- accessible per-user lifecycle action names;
+- documentation and regression closure without expanding provider/field claims.
+- frontend verification: 32 files / 244 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build;
+- documentation consistency and whitespace audit: PASS.
+
+Remote PR, CI, and merge evidence remain pending.
+
+### BF-09-05 — Audit Log and User Management Integration
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-09-05-audit-user-management-ui`;
 - base: BF-09-04 merge commit `1d4e7a1ca4bb464bf68448dce962947e776ed009`;
@@ -16,7 +32,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - frontend verification: 32 files / 244 tests PASS plus build;
 - backend regression verification: 71 files / 600 tests PASS plus build.
 
-Remote PR, CI, and merge evidence remain pending.
+- PR: #81;
+- integration commit: `79c40bb38cdfb169a15aa211e973e6ab3818d1f4`;
+- GitHub CI run number: 219 — SUCCESS.
 
 ### BF-09-04 — Escalation Policy Management UI
 

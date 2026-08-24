@@ -25,6 +25,12 @@ const mockedStatus = vi.mocked(useUpdateNotificationRecipientStatus);
 const createRecipient = vi.fn();
 const updateRecipient = vi.fn();
 const updateStatus = vi.fn();
+function renderForSite() {
+  const view = render(<NotificationRecipientsPanel />);
+  fireEvent.mouseDown(screen.getByLabelText("Site"));
+  fireEvent.click(screen.getByRole("option", { name: "Cairo (CAI)" }));
+  return view;
+}
 const recipient = {
   id: 1,
   uuid: "11111111-1111-4111-8111-111111111111",
@@ -79,7 +85,7 @@ describe("NotificationRecipientsPanel", () => {
   });
 
   it("lists Site-scoped recipients without presenting contact addresses", () => {
-    render(<NotificationRecipientsPanel />);
+    renderForSite();
     expect(mockedRecipients).toHaveBeenCalledWith(7);
     expect(screen.getByText("Quality manager")).toBeInTheDocument();
     expect(screen.getByText("EMAIL: WARNING/CRITICAL")).toBeInTheDocument();
@@ -87,7 +93,7 @@ describe("NotificationRecipientsPanel", () => {
   });
 
   it("changes lifecycle status through the dedicated mutation", () => {
-    render(<NotificationRecipientsPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Deactivate" }));
     expect(updateStatus).toHaveBeenCalledWith({
       uuid: recipient.uuid,
@@ -96,7 +102,7 @@ describe("NotificationRecipientsPanel", () => {
   });
 
   it("validates contact values before create", () => {
-    render(<NotificationRecipientsPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Add recipient" }));
     fireEvent.change(screen.getByLabelText(/Display name/), {
       target: { value: "Duty engineer" },
@@ -111,7 +117,7 @@ describe("NotificationRecipientsPanel", () => {
 
   it("creates a normalized recipient for the selected Site", async () => {
     createRecipient.mockResolvedValue(recipient);
-    render(<NotificationRecipientsPanel />);
+    renderForSite();
     fireEvent.click(screen.getByRole("button", { name: "Add recipient" }));
     fireEvent.change(screen.getByLabelText(/Display name/), {
       target: { value: " Duty engineer " },
@@ -143,7 +149,7 @@ describe("NotificationRecipientsPanel", () => {
       isPending: false,
       isError: false,
     } as unknown as ReturnType<typeof useNotificationRecipients>);
-    const { rerender } = render(<NotificationRecipientsPanel />);
+    const { rerender } = renderForSite();
     expect(screen.getByText(/No notification recipients/)).toBeInTheDocument();
     const refetch = vi.fn();
     mockedRecipients.mockReturnValue({

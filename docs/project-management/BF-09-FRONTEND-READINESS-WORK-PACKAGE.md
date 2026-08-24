@@ -1,8 +1,8 @@
 # BF-09 — Frontend Readiness Work Package
 
-Status: BF-09-01/02/03/04 MERGED / BF-09-05 LOCAL IMPLEMENTATION COMPLETE
+Status: BF-09-01/02/03/04/05 MERGED / BF-09-06 FINAL CLOSURE IN PROGRESS
 Date: 2026-08-24
-Branch: `agent/bf-09-05-audit-user-management-ui`
+Branch: `agent/bf-09-06-final-closure`
 Base: final BF-01 through BF-08 documentation merge `6297d0d083e5864488a2ce1cdd7f421fd519bff9`
 
 ## Objective and slices
@@ -79,3 +79,19 @@ remains authoritative; frontend permission filtering is presentation defense onl
 - compact audit rows show identity/action/result/target/time without prior/new blobs;
 - Platform audit remains isolated behind the SYSTEM_OWNER boundary;
 - backend last-active-ADMIN and audit atomicity remain authoritative.
+
+## BF-09-05 verification
+
+- frontend: 32 files / 244 tests plus all quality gates and build PASS;
+- backend: 71 files / 600 tests plus all quality gates and build PASS;
+- PR #81 merged at `79c40bb38cdfb169a15aa211e973e6ab3818d1f4`;
+- GitHub CI run 219: SUCCESS.
+
+## BF-09-06 acceptance
+
+- Configuration is presented as one coherent commercial configuration center;
+- recipient, policy, and customer Audit queries require deliberate Site selection;
+- repeated controls expose distinguishable accessible names;
+- BF-09 evidence and product-status documents agree with merged reality;
+- complete frontend/backend gates and a documentation consistency audit pass;
+- field, provider, controller-runtime, and customer-acceptance exclusions remain explicit.

@@ -39,7 +39,7 @@ export function NotificationRecipientsPanel() {
   const sitesQuery = useSites();
   const [siteId, setSiteId] = useState<number>();
   const [editing, setEditing] = useState<NotificationRecipient | "new">();
-  const effectiveSiteId = siteId ?? sitesQuery.data?.[0]?.id;
+  const effectiveSiteId = siteId;
   const recipientsQuery = useNotificationRecipients(effectiveSiteId);
   const statusMutation = useUpdateNotificationRecipientStatus(effectiveSiteId);
 
@@ -87,6 +87,9 @@ export function NotificationRecipientsPanel() {
               value={effectiveSiteId ?? ""}
               onChange={(event) => setSiteId(Number(event.target.value))}
             >
+              <MenuItem value="" disabled>
+                Select a Site
+              </MenuItem>
               {sitesQuery.data
                 ?.filter((site) => site.id)
                 .map((site) => (
@@ -102,6 +105,14 @@ export function NotificationRecipientsPanel() {
         sitesQuery.data?.length === 0 ? (
           <Alert severity="info">
             Create a Site before configuring recipients.
+          </Alert>
+        ) : null}
+        {!sitesQuery.isPending &&
+        !sitesQuery.isError &&
+        !effectiveSiteId &&
+        (sitesQuery.data?.length ?? 0) > 0 ? (
+          <Alert severity="info">
+            Select a Site before loading or changing notification recipients.
           </Alert>
         ) : null}
 

@@ -251,11 +251,12 @@ BF-08 يعرّف Contract إصدار 1 لمزامنة الحد الأدنى من
 يوجد تُعطّل Offline external notification ويظهر Not-ready. هذا لا يعني أن Firmware أو
 Transport أو التشغيل الميداني تم تنفيذه.
 
-بدأ BF-09 بتنفيذ جاهزية الواجهة. في BF-09-01 أصبحت صلاحيات Frontend مطابقة للـBackend،
-وأصبح مسار Configuration الخاص بالتعديل ظاهرًا ومتاحًا للـADMIN فقط، مع بقاء صفحات
-القراءة الحالية بصلاحياتها السابقة. كما أضيفت عقود Runtime validation وAPI adapters
-للـThresholds والـAlarm delays والمستلمين وسياسات Escalation. هذا لا يعني أن Forms أو
-شاشات الإدارة اكتملت؛ سيتم تنفيذها في الـSlices التالية.
+أغلق BF-09 واجهة Commercial Configuration للـADMIN. تشمل الواجهة تعديل Thresholds
+وAlarm delays، وإدارة Notification recipients وسياسات Escalation، وإدارة المستخدمين
+وعرض Audit Log المقيد بالـSite. اختيار الـSite صريح قبل تحميل بيانات المستلمين أو
+السياسات أو الـAudit، والـBackend يظل السلطة النهائية في Authorization والتحقق والحفظ.
+هذا الإغلاق لا يعني وجود Provider للإرسال أو Controller runtime أو تشغيل ميداني أو
+Customer acceptance؛ هذه أدلة وقدرات مستقلة.
 
 ## 23. Reports وAudit Trail
 

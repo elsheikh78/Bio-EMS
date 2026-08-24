@@ -1,6 +1,6 @@
 # BF-09-05 — Audit Log and User Management UI Closure
 
-Status: LOCAL IMPLEMENTATION COMPLETE / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-09-05-audit-user-management-ui`
 Base: BF-09-04 integration commit `1d4e7a1ca4bb464bf68448dce962947e776ed009`
@@ -26,6 +26,12 @@ or put into URLs. Backend authorization, last-active-ADMIN invariants, credentia
 hashing, audit redaction, and atomic persistence remain authoritative.
 
 ## Verification
+
+- frontend: format, lint, typecheck, 32 files / 244 tests, and build PASS;
+- backend: format, lint, typecheck, 71 files / 600 tests, and build PASS;
+- PR: #81;
+- GitHub CI run: 219 — SUCCESS;
+- integration commit: `79c40bb38cdfb169a15aa211e973e6ab3818d1f4`.
 
 - frontend format, lint, typecheck, build and 32 files / 244 tests: PASS;
 - backend format, lint, typecheck, build and 71 files / 600 tests: PASS;

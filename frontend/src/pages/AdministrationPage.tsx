@@ -29,7 +29,7 @@ import {
 } from "../administration/queries";
 import { useSites } from "../monitoredAreas/queries";
 
-export function UsersPlaceholderPage() {
+export function AdministrationPage() {
   return (
     <Stack spacing={4}>
       <Box>
@@ -129,6 +129,7 @@ function UsersPanel() {
               <Button
                 disabled={status.isPending}
                 color={user.status === "active" ? "warning" : "success"}
+                aria-label={`${user.status === "active" ? "Disable" : "Activate"} ${user.username}`}
                 onClick={() =>
                   void status.mutateAsync({
                     id: user.id,
@@ -308,7 +309,7 @@ function PasswordDialog({
 function AuditPanel() {
   const sites = useSites();
   const [selected, setSelected] = useState<number>();
-  const siteId = selected ?? sites.data?.[0]?.id;
+  const siteId = selected;
   const events = useAuditEvents(siteId);
   return (
     <Paper component="section" variant="outlined" sx={{ p: 3 }}>
@@ -337,6 +338,9 @@ function AuditPanel() {
               value={siteId ?? ""}
               onChange={(event) => setSelected(Number(event.target.value))}
             >
+              <MenuItem value="" disabled>
+                Select a Site
+              </MenuItem>
               {sites.data
                 ?.filter((site) => site.id)
                 .map((site) => (
@@ -346,6 +350,11 @@ function AuditPanel() {
                 ))}
             </Select>
           </FormControl>
+        ) : null}
+        {!sites.isPending && !sites.isError && !siteId ? (
+          <Alert severity="info">
+            Select a Site to load its customer-bound Audit Log.
+          </Alert>
         ) : null}
         {events.isPending && siteId ? (
           <CircularProgress aria-label="Loading audit events" />

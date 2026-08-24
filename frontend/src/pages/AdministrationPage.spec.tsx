@@ -9,7 +9,7 @@ import {
   useUpdateUserStatus,
 } from "../administration/queries";
 import { useSites } from "../monitoredAreas/queries";
-import { UsersPlaceholderPage } from "./UsersPlaceholderPage";
+import { AdministrationPage } from "./AdministrationPage";
 vi.mock("../administration/queries", () => ({
   useAuditEvents: vi.fn(),
   useCreateUser: vi.fn(),
@@ -98,17 +98,20 @@ describe("Users & Audit Log", () => {
     } as unknown as ReturnType<typeof useAuditEvents>);
   });
   it("renders users and safe Audit summary", () => {
-    render(<UsersPlaceholderPage />);
+    render(<AdministrationPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Users & Audit Log",
     );
     expect(screen.getByText("USER.CREATED")).toBeInTheDocument();
     expect(screen.queryByText("must-not-render")).not.toBeInTheDocument();
-    expect(audit).toHaveBeenCalledWith(7);
+    expect(audit).toHaveBeenCalledWith(undefined);
+    fireEvent.mouseDown(screen.getByLabelText("Audit Site"));
+    fireEvent.click(screen.getByRole("option", { name: "Cairo (CAI)" }));
+    expect(audit).toHaveBeenLastCalledWith(7);
   });
   it("creates a normalized user", async () => {
     createUser.mockResolvedValue(user);
-    render(<UsersPlaceholderPage />);
+    render(<AdministrationPage />);
     fireEvent.click(screen.getByRole("button", { name: "Add user" }));
     fireEvent.change(screen.getByLabelText(/Username/), {
       target: { value: " Viewer.One " },
@@ -127,13 +130,13 @@ describe("Users & Audit Log", () => {
     );
   });
   it("changes status through dedicated mutation", () => {
-    render(<UsersPlaceholderPage />);
-    fireEvent.click(screen.getByRole("button", { name: "Disable" }));
+    render(<AdministrationPage />);
+    fireEvent.click(screen.getByRole("button", { name: "Disable admin" }));
     expect(changeStatus).toHaveBeenCalledWith({ id: 1, status: "disabled" });
   });
   it("changes password without displaying its value", async () => {
     changePassword.mockResolvedValue(user);
-    render(<UsersPlaceholderPage />);
+    render(<AdministrationPage />);
     fireEvent.click(screen.getByRole("button", { name: "Password admin" }));
     fireEvent.change(screen.getByLabelText(/New password/), {
       target: { value: "NewSecret1234" },
@@ -160,7 +163,7 @@ describe("Users & Audit Log", () => {
       isError: true,
       refetch: auditRetry,
     } as unknown as ReturnType<typeof useAuditEvents>);
-    render(<UsersPlaceholderPage />);
+    render(<AdministrationPage />);
     screen
       .getAllByRole("button", { name: "Retry" })
       .forEach((button) => fireEvent.click(button));
