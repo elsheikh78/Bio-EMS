@@ -53,8 +53,8 @@ describe("append-only AuditEvent repository", () => {
     repository.append(eventInput("evt-other", "2026-08-24T11:00:00.000Z", 2));
 
     expect(repository.list({ siteId: 1, limit: 10 }).map(({ id }) => id)).toEqual([
-      "evt-b",
       "evt-a",
+      "evt-b",
     ]);
     expect(repository.list({ siteId: 2, limit: 10 }).map(({ id }) => id)).toEqual(["evt-other"]);
   });

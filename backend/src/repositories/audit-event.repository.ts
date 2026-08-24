@@ -91,7 +91,7 @@ export class AuditEventRepository {
         `SELECT ${SELECT_COLUMNS}
          FROM audit_events
          ${where}
-         ORDER BY occurred_at DESC, id DESC
+         ORDER BY occurred_at DESC, rowid DESC
          LIMIT ?`
       )
       .all(...parameters) as AuditEventRow[];

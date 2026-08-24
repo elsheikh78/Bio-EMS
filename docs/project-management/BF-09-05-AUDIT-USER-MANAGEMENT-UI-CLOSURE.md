@@ -15,6 +15,8 @@ Base: BF-09-04 integration commit `1d4e7a1ca4bb464bf68448dce962947e776ed009`
 - actor/action/result/target/time summary without structured prior/new values;
 - runtime-validated user/audit response contracts and protected API adapters;
 - loading, empty, retry, mutation failure, and pending presentation.
+- newest-first Audit ordering now uses insertion order when occurred timestamps tie,
+  preventing a random UUID tie-break from presenting an older event first.
 
 ## Boundary conclusion
 
