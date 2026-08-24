@@ -28,9 +28,9 @@ AppShell, operational Dashboard and Monitored Areas views, Sensor calibration an
 Device-health contracts, durable notification events, SMS failover policy, production
 configuration validation, recovery semantics, and controlled BIO EGYPT Pilot records.
 
-Sprint 15 repository scope is closed. The current project phase is controlled BIO
-EGYPT field-pilot preparation; field commissioning and Pilot acceptance have not yet
-occurred.
+Sprint 15 repository scope is closed. Current work combines the approved backend
+commercial-foundation sequence with controlled BIO EGYPT field-pilot preparation;
+field commissioning and Pilot acceptance have not yet occurred.
 
 ## Key Capabilities
 
@@ -41,6 +41,7 @@ occurred.
 - JWT authentication with active-User enforcement
 - Centralized role-based authorization
 - ADMIN User Management with last-active-ADMIN protection
+- Isolated platform-level `SYSTEM_OWNER` authentication boundary (BF-01 branch)
 - Authenticated Alarm acknowledgment audit persistence
 - SQLite configuration management
 - InfluxDB time-series telemetry storage
@@ -71,6 +72,7 @@ occurred.
 | Device Lifecycle Onboarding           | Implemented        |
 | Authentication and RBAC               | Implemented        |
 | ADMIN User Management                 | Implemented        |
+| SYSTEM_OWNER backend boundary         | BF-01 PR pending   |
 | Alarm Acknowledgment Audit            | Implemented        |
 | Frontend Architecture                 | Implemented        |
 | Frontend AppShell                     | Implemented        |
@@ -97,9 +99,9 @@ Sprint 14 and Sprint 15 are **COMPLETE / MERGED / VERIFIED / CLOSED**.
   contracts, the controlled BIO EGYPT Pilot package, and deployment/commissioning
   readiness foundations.
 
-The authoritative next step is closure of BIO EGYPT field gates `BE-001` through
-`BE-012`. Repository completion does not represent installation, commissioning, or
-customer acceptance.
+The backend sequence currently starts with BF-01. In the parallel Pilot track,
+`BE-001` is closed and field gates `BE-002` through `BE-012` remain open. Repository
+completion does not represent installation, commissioning, or customer acceptance.
 
 ## Domain Terminology
 
@@ -197,8 +199,32 @@ The current API prefix is normally `/api/v1`.
 | Devices        | Create, list, read, metadata update, activate, and disable   |
 | Alarms         | List, active, detail, and acknowledgement operations         |
 | Dashboard      | Summary, latest telemetry, room status, and alarm statistics |
-| Authentication | Login/current-principal support                              |
+| Authentication | Customer login/current-principal support                     |
+| Platform Auth  | `POST /platform-auth/login`, `GET /platform-auth/me`          |
 | Users          | ADMIN management operations                                  |
+
+### SYSTEM_OWNER bootstrap and configuration
+
+BF-01 keeps the platform owner outside customer User Management. Create the first and
+only owner through the controlled backend command after supplying
+`BIOEMS_BOOTSTRAP_SYSTEM_OWNER_USERNAME` and
+`BIOEMS_BOOTSTRAP_SYSTEM_OWNER_PASSWORD` through the deployment environment or
+secret store:
+
+```bash
+cd backend
+npm run bootstrap:system-owner
+```
+
+Platform token issuance is disabled unless `BIOEMS_PLATFORM_JWT_SECRET` is set to an
+independent secret of at least 32 UTF-8 bytes. Optional platform settings are
+`BIOEMS_PLATFORM_JWT_EXPIRE_MINUTES`, `BIOEMS_PLATFORM_JWT_ISSUER`, and
+`BIOEMS_PLATFORM_JWT_AUDIENCE`. Do not reuse the customer JWT secret or place any
+owner credential in source control, frontend code, documentation, or logs.
+
+BF-01 does not claim completion of MFA, authentication rate limiting/lockout, an Owner
+Portal, commercial owner permissions, or the system-wide audit trail. Those remain
+gated follow-up work before production owner activation.
 
 See the [Engineering Handbook](docs/engineering/README.md) and current ADRs for the authoritative architecture and security boundaries.
 

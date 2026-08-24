@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { describe, expect, it, vi } from "vitest";
+
+vi.hoisted(() => {
+  process.env.BIOEMS_JWT_SECRET = "s".repeat(32);
+});
+
 import { createPlatformAuthenticationMiddleware } from "../platform-authentication.middleware";
 
 function request(authorization?: string): Request {
   return {
     headers: authorization ? { authorization } : {},
+    rawHeaders: authorization ? ["Authorization", authorization] : [],
   } as Request;
 }
 
@@ -77,6 +83,23 @@ describe("platform authentication middleware", () => {
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
     );
+  });
+
+  it("rejects duplicate Authorization headers before platform token verification", () => {
+    const verifier = { verifyAccessToken: vi.fn() };
+    const repository = { findById: vi.fn() };
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
+    const req = request("Bearer first");
+    req.rawHeaders = ["Authorization", "Bearer first", "authorization", "Bearer second"];
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(req, response, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
+    );
+    expect(verifier.verifyAccessToken).not.toHaveBeenCalled();
+    expect(repository.findById).not.toHaveBeenCalled();
   });
 
   it("rejects disabled or missing platform principals", () => {

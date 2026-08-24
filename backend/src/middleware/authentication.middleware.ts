@@ -24,6 +24,21 @@ export function parseAuthorizationHeader(value: unknown): string | undefined {
   return /^Bearer +([^\s]+)$/i.exec(value)?.[1];
 }
 
+export function parseSingleAuthorizationHeader(req: Request): string | undefined {
+  let authorizationHeaderCount = 0;
+  for (let index = 0; index < req.rawHeaders.length; index += 2) {
+    if (req.rawHeaders[index]?.toLowerCase() === "authorization") {
+      authorizationHeaderCount += 1;
+    }
+  }
+
+  if (authorizationHeaderCount !== 1) {
+    return undefined;
+  }
+
+  return parseAuthorizationHeader(req.headers.authorization);
+}
+
 export function createAuthenticationMiddleware(
   tokenVerifier: AccessTokenVerifier,
   userRepository: AuthenticationUserRepository
@@ -34,15 +49,9 @@ export function createAuthenticationMiddleware(
       return;
     }
 
-    let authorizationHeaderCount = 0;
-    for (let index = 0; index < req.rawHeaders.length; index += 2) {
-      if (req.rawHeaders[index]?.toLowerCase() === "authorization") {
-        authorizationHeaderCount += 1;
-      }
-    }
-    const token = parseAuthorizationHeader(req.headers.authorization);
+    const token = parseSingleAuthorizationHeader(req);
 
-    if (authorizationHeaderCount !== 1 || !token) {
+    if (!token) {
       next(authenticationRequired());
       return;
     }

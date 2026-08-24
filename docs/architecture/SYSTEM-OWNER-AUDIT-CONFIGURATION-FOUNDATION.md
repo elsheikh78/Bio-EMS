@@ -130,3 +130,40 @@ Before declaring this foundation implemented:
 ## 8. Frontend sequencing
 
 Frontend work resumes after the required backend contracts are stable enough to avoid fictitious controls. The frontend work package will consume, rather than invent, the approved APIs for configuration, user administration, audit viewing, and owner/customer authorization boundaries.
+
+## 9. BF-01 implemented boundary
+
+BF-01 implements the first backend authorization boundary only. Until its PR is
+merged, the following statements describe the verified feature-branch state rather
+than the integrated `main` release:
+
+- `SYSTEM_OWNER` is stored in the singleton `platform_principals` table created by
+  SQLite migration 009, outside the customer `users` table.
+- Customer role schemas remain limited to `ADMIN`, `OPERATOR`, and `VIEWER`.
+- Customer User Management has no repository, route, service, or schema path to
+  enumerate, assign, or mutate the platform principal.
+- Platform login and current-principal APIs are isolated under
+  `/api/v1/platform-auth` and use a separate JWT secret, issuer, audience, claims,
+  verification middleware, and persisted active-principal lookup.
+- The first and only owner is provisioned through an environment-driven backend
+  bootstrap command. Passwords are validated and bcrypt-hashed through the approved
+  password service and are never printed or returned.
+- Platform authentication fails closed when its JWT trust domain is not configured.
+- Both customer and platform authentication reject duplicate `Authorization` header
+  fields before token verification.
+
+### Not implemented by BF-01
+
+BF-01 does not implement or claim:
+
+- MFA/TOTP or another second factor;
+- rate limiting, failed-login lockout, or production session-management controls;
+- an Owner Portal or frontend owner route;
+- commercial platform permissions such as customer lifecycle, licensing, support,
+  updates, or cross-customer evidence access;
+- the append-only system-wide audit foundation or owner action audit integration;
+- a customer-visible or API-driven owner-management lifecycle.
+
+Those items remain controlled follow-up work. Production owner activation must not be
+declared until applicable authentication hardening, audit, deployment-secret, and
+operational controls are implemented and verified.

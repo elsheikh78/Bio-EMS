@@ -1,5 +1,25 @@
 # [Unreleased]
 
+## Added
+
+- Added the BF-01 platform-level `SYSTEM_OWNER` identity in isolated SQLite storage,
+  separate platform JWT configuration, dedicated login/current-principal REST APIs,
+  and a one-time environment-driven bootstrap command.
+- Added platform authentication, authorization-boundary, persistence, migration,
+  bootstrap, and REST contract coverage.
+
+## Security
+
+- Customer roles remain limited to `ADMIN`, `OPERATOR`, and `VIEWER`; customer User
+  Management cannot create, assign, enumerate, mutate, or impersonate a
+  `SYSTEM_OWNER`.
+- Platform access tokens use a separate secret, issuer, audience, claims, middleware,
+  and persisted-principal lookup from customer authentication.
+- Customer and platform authentication now share strict single-`Authorization`
+  header enforcement and reject duplicate header fields before token verification.
+- No master password, universal credential, plaintext password, or frontend-embedded
+  owner secret was introduced.
+
 ## Fixed
 
 - Made SQLite deployment-path tests use platform-native absolute paths so the release

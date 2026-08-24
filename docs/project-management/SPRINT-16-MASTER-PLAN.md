@@ -48,7 +48,8 @@ acceptance unless every field gate and signature is separately completed.
 - Site Controller v1 is an approved product direction, not a released production
   hardware design.
 - BIO EGYPT scope remains two Sites, eight monitored areas, and 20 temperature Sensors.
-- BIO EGYPT open items `BE-001` through `BE-012` remain evidence gates.
+- BIO EGYPT items `BE-002` through `BE-012` remain open evidence gates; `BE-001`
+  closed on 23 August 2026 through signed evidence `BE001-EV-001`.
 
 ## 4. Parallel workstream model
 

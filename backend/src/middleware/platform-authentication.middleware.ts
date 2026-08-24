@@ -4,7 +4,7 @@ import { AppError } from "../errors/app-error";
 import { PlatformPrincipalRecord } from "../entities/PlatformPrincipal";
 import { PlatformPrincipalRepository } from "../repositories/platform-principal.repository";
 import { PlatformTokenService } from "../services/platform-token.service";
-import { parseAuthorizationHeader } from "./authentication.middleware";
+import { parseSingleAuthorizationHeader } from "./authentication.middleware";
 
 export interface PlatformAccessTokenVerifier {
   verifyAccessToken(token: string): {
@@ -25,7 +25,7 @@ export function createPlatformAuthenticationMiddleware(
   repository: PlatformAuthenticationRepository
 ): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
-    const token = parseAuthorizationHeader(req.headers.authorization);
+    const token = parseSingleAuthorizationHeader(req);
     if (!tokenVerifier || !token) {
       next(authenticationRequired());
       return;
