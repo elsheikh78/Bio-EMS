@@ -20,6 +20,7 @@ import {
 import type { Sensor } from "../monitoredAreas/contracts";
 import { useSensors } from "../monitoredAreas/queries";
 import { NotificationRecipientsPanel } from "../configuration/NotificationRecipientsPanel";
+import { EscalationPoliciesPanel } from "../configuration/EscalationPoliciesPanel";
 
 export function ConfigurationPage() {
   const sensorsQuery = useSensors();
@@ -118,6 +119,7 @@ export function ConfigurationPage() {
         />
       ) : null}
       <NotificationRecipientsPanel />
+      <EscalationPoliciesPanel />
     </Stack>
   );
 }

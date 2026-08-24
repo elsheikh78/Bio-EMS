@@ -2,6 +2,10 @@
 
 ## Added
 
+- Added the BF-09-04 ADMIN escalation-policy directory and editor with Site scope,
+  severity eligibility, ordered recipient-role/channel steps, and lifecycle controls.
+- Added contiguous step generation, strict increasing-delay validation, protected
+  policy mutations, query refresh, and recoverable UI states.
 - Added the BF-09-03 ADMIN notification recipient directory with Site selection,
   create/edit workflows, channel/severity eligibility, and lifecycle controls.
 - Added contact validation, duplicate-channel prevention, contact-minimized register

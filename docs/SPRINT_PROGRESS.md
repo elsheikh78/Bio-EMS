@@ -2,9 +2,26 @@
 
 ## Frontend Commercial Configuration
 
-### BF-09-03 — Notification Recipient Directory UI
+### BF-09-04 — Escalation Policy Management UI
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-09-04-escalation-policy-ui`;
+- base: BF-09-03 merge commit `40b5fc7f6e47f1ba581426b757b9afb169e36fbd`;
+- explicit Site-scoped policy list and selection;
+- create/edit owner role and Warning/Critical eligibility;
+- one through twenty contiguous ordered steps;
+- strictly increasing 0-through-604800 elapsed delays;
+- one or more unique eligible channels per step;
+- dedicated active/inactive lifecycle action and recoverable states.
+- frontend verification: 30 files / 237 tests PASS plus build;
+- backend regression verification: 71 files / 600 tests PASS plus build.
+
+Remote PR, CI, and merge evidence remain pending.
+
+### BF-09-03 — Notification Recipient Directory UI
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-09-03-notification-recipient-ui`;
 - base: BF-09-02 merge commit `78e94fef09f3170219bb880d8bc78033a9769994`;
@@ -17,7 +34,9 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - frontend verification: 29 files / 232 tests PASS plus build;
 - backend regression verification: 71 files / 600 tests PASS plus build.
 
-Remote PR, CI, and merge evidence remain pending.
+- PR: #79;
+- integration commit: `40b5fc7f6e47f1ba581426b757b9afb169e36fbd`;
+- GitHub CI run number: 214 — SUCCESS.
 
 ### BF-09-02 — Sensor Threshold and Alarm-delay Editor
 

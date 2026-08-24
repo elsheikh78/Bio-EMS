@@ -7,12 +7,16 @@ import type {
   UpdateSensorThresholdsInput,
   CreateNotificationRecipientInput,
   UpdateNotificationRecipientInput,
+  CreateEscalationPolicyInput,
+  UpdateEscalationPolicyInput,
 } from "./contracts";
 
 export const configurationQueryKeys = {
   all: ["configuration"] as const,
   recipients: (siteId: number) =>
     [...configurationQueryKeys.all, "recipients", siteId] as const,
+  policies: (siteId: number) =>
+    [...configurationQueryKeys.all, "policies", siteId] as const,
 };
 
 export function useUpdateSensorThresholds(sensorUuid?: string) {
@@ -96,6 +100,67 @@ export function useUpdateNotificationRecipientStatus(siteId?: number) {
       uuid: string;
       status: "active" | "inactive";
     }) => api.updateRecipientStatus(uuid, status),
+    onSuccess: refresh,
+  });
+}
+
+export function useEscalationPolicies(siteId?: number) {
+  const { protectedRequest } = useAuthentication();
+  const api = createConfigurationApi(protectedRequest);
+  return useQuery({
+    queryKey: configurationQueryKeys.policies(siteId ?? 0),
+    queryFn: () => api.listEscalationPolicies(siteId!),
+    enabled: Boolean(siteId),
+  });
+}
+
+function useRefreshPolicies(siteId?: number) {
+  const queryClient = useQueryClient();
+  return () =>
+    queryClient.invalidateQueries({
+      queryKey: configurationQueryKeys.policies(siteId ?? 0),
+    });
+}
+
+export function useCreateEscalationPolicy(siteId?: number) {
+  const { protectedRequest } = useAuthentication();
+  const api = createConfigurationApi(protectedRequest);
+  const refresh = useRefreshPolicies(siteId);
+  return useMutation({
+    mutationFn: (input: CreateEscalationPolicyInput) =>
+      api.createEscalationPolicy(input),
+    onSuccess: refresh,
+  });
+}
+
+export function useUpdateEscalationPolicy(siteId?: number) {
+  const { protectedRequest } = useAuthentication();
+  const api = createConfigurationApi(protectedRequest);
+  const refresh = useRefreshPolicies(siteId);
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      input,
+    }: {
+      uuid: string;
+      input: UpdateEscalationPolicyInput;
+    }) => api.updateEscalationPolicy(uuid, input),
+    onSuccess: refresh,
+  });
+}
+
+export function useUpdateEscalationPolicyStatus(siteId?: number) {
+  const { protectedRequest } = useAuthentication();
+  const api = createConfigurationApi(protectedRequest);
+  const refresh = useRefreshPolicies(siteId);
+  return useMutation({
+    mutationFn: ({
+      uuid,
+      status,
+    }: {
+      uuid: string;
+      status: "active" | "inactive";
+    }) => api.updateEscalationPolicyStatus(uuid, status),
     onSuccess: refresh,
   });
 }

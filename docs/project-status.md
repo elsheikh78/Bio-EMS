@@ -1,9 +1,25 @@
 # Project Status
 
+## BF-09-04 escalation-policy UI — 24 August 2026
+
+BF-09-04 is implemented on `agent/bf-09-04-escalation-policy-ui` from the verified
+BF-09-03 merge. ADMIN can select a Site, manage policy identity/ownership/severity,
+define one through twenty ordered recipient-role/channel steps with strictly
+increasing elapsed delays, and use the dedicated lifecycle boundary.
+
+The UI generates contiguous positions and rejects invalid delay/channel/severity
+states before protected mutation. It configures deterministic policy data only; it
+does not send messages, consume the outbox, or claim provider/field capability.
+
+Frontend gates pass with 30 files / 237 tests plus production build. Backend
+regression gates pass with 71 files / 600 tests plus build. Both applications pass
+format, lint, and typecheck.
+
 ## BF-09-03 notification recipient UI — 24 August 2026
 
-BF-09-03 is implemented on `agent/bf-09-03-notification-recipient-ui` from the
-verified BF-09-02 merge. ADMIN can select a Site, list its recipients, create or edit
+BF-09-03 is merged through PR #79 at integration commit
+`40b5fc7f6e47f1ba581426b757b9afb169e36fbd`; GitHub CI run 214 succeeded. ADMIN can
+select a Site, list its recipients, create or edit
 a recipient with unique Email/SMS/WhatsApp channels and Warning/Critical eligibility,
 and activate or deactivate the profile through the dedicated lifecycle route.
 
