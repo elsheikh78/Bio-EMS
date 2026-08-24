@@ -12,6 +12,7 @@ export const siteSchema = z
     location: z.string().nullable().optional(),
     timezone: z.string().nullable().optional(),
     active: databaseFlagSchema.optional(),
+    created_at: z.string().nullable().optional(),
   })
   .strict();
 

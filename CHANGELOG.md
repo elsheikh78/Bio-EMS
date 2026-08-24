@@ -1,5 +1,12 @@
 # [Unreleased]
 
+## Fixed
+
+- Reconciled the strict frontend Site contract with the production SQLite response so shared Site
+  selection no longer fails when `created_at` is returned.
+- Added production-shaped Site contract/API regression evidence for the Monitored Areas,
+  Configuration, and Audit consumers.
+
 ## Added
 
 - Added the controlled `BE002-EV-001` field pack for two-Site drawing control, all
