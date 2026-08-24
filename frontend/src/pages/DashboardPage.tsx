@@ -327,6 +327,20 @@ function CurrentTelemetryProfile({
   );
 }
 
+const ROOM_PRIORITY: Record<DashboardSensorStatus, number> = {
+  UNKNOWN: 0,
+  NORMAL: 1,
+  WARNING: 2,
+  CRITICAL: 3,
+};
+
+export function roomOperationalPriority(room: DashboardRoomStatus): number {
+  return Math.max(
+    ROOM_PRIORITY[room.temperatureStatus],
+    ROOM_PRIORITY[room.humidityStatus],
+  );
+}
+
 function PriorityAreasPanel({
   rooms,
   resources,
@@ -337,8 +351,9 @@ function PriorityAreasPanel({
   const prioritized = [...rooms]
     .sort(
       (first, second) =>
-        second.activeAlarms - first.activeAlarms ||
-        Number(first.online) - Number(second.online),
+        Number(first.online) - Number(second.online) ||
+        roomOperationalPriority(second) - roomOperationalPriority(first) ||
+        second.activeAlarms - first.activeAlarms,
     )
     .slice(0, 3);
 
@@ -359,11 +374,14 @@ function PriorityAreasPanel({
           </Typography>
         ) : (
           prioritized.map((room) => {
-            const tone = !room.online
-              ? "error.main"
-              : room.activeAlarms > 0
-                ? "warning.main"
-                : "success.main";
+            const operationalPriority = roomOperationalPriority(room);
+            const tone =
+              !room.online || operationalPriority === ROOM_PRIORITY.CRITICAL
+                ? "error.main"
+                : operationalPriority === ROOM_PRIORITY.WARNING ||
+                    room.activeAlarms > 0
+                  ? "warning.main"
+                  : "success.main";
             return (
               <Box
                 key={room.roomId}
