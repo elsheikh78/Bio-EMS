@@ -84,6 +84,7 @@ describe("Calibration PDF renderer", () => {
 
     expect(pdf.subarray(0, 5).toString("ascii")).toBe("%PDF-");
     expect(pdf.length).toBeGreaterThan(500);
+    expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)).toHaveLength(1);
   });
 
   it("renders multi-page calibration evidence", async () => {
