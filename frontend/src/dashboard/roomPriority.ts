@@ -1,7 +1,4 @@
-import type {
-  DashboardRoomStatus,
-  DashboardSensorStatus,
-} from "./contracts";
+import type { DashboardRoomStatus, DashboardSensorStatus } from "./contracts";
 
 const ROOM_PRIORITY: Record<DashboardSensorStatus, number> = {
   UNKNOWN: 0,
