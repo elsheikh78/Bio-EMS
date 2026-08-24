@@ -2,9 +2,24 @@
 
 ## Backend Commercial Foundation
 
-### BF-06 — Notification Recipient Directory
+### BF-07 — Escalation Policy
 
 Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
+
+- branch: `agent/bf-07-escalation-policy`;
+- base: BF-06 merge commit `0532d2557d6d190275d611df27cf38cb857f43c6`;
+- policy: Site, owner role, lifecycle, Warning/Critical eligibility;
+- steps: contiguous order, strictly increasing elapsed time, target role/channels;
+- authorization/audit: dedicated ADMIN-only read/manage and atomic evidence;
+- runtime: deterministic due-step resolver with no delivery side effects;
+- backend verification: 70 files / 596 tests PASS;
+- frontend verification: 25 files / 212 tests PASS plus build.
+
+PR, GitHub CI, and merge evidence remain pending.
+
+### BF-06 — Notification Recipient Directory
+
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - branch: `agent/bf-06-notification-recipient-directory`;
 - base: BF-05 merge commit `d67ea4ac5ccecc07840a9e391df83d74911e7328`;
@@ -13,9 +28,10 @@ Status: **IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING**
 - policy: active lifecycle and per-channel Warning/Critical eligibility;
 - audit: atomic safe metadata only; contact values excluded;
 - backend verification: 68 files / 587 tests PASS;
-- frontend verification: 25 files / 212 tests PASS plus build.
-
-PR, GitHub CI, and merge evidence remain pending.
+- frontend verification: 25 files / 212 tests PASS plus build;
+- PR: #73;
+- integration commit: `0532d2557d6d190275d611df27cf38cb857f43c6`;
+- GitHub CI run number: 202 — SUCCESS.
 
 ### BF-05 — Configurable Alarm Persistence/Delay
 

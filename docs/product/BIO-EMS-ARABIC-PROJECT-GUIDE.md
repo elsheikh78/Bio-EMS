@@ -239,6 +239,11 @@ Monitoring Point يمثل **ما الذي يتم قياسه**، بينما Senso
 prior/new أو Logs أو URLs أو deduplication keys. هذا الأساس لا يرسل رسائل ولا يستهلك
 الـOutbox ولا يحدد Provider أو Escalation، ولا يحتوي على بيانات اتصال BIO EGYPT.
 
+وفي BF-07 تم تنفيذ سياسة Escalation قابلة للتهيئة حسب الـSite: Owner role، أهلية
+WARNING/CRITICAL، وحالة active/inactive، وخطوات متتابعة بزمن متزايد وRecipient role
+وقنوات محددة. الـresolver يعيد الخطوات المستحقة فقط ولا يرسل رسالة ولا يعتبر أي خطوة
+Delivered أو Acknowledged، ولا يثبت توقيتًا خاصًا بعميل داخل الكود.
+
 ## 23. Reports وAudit Trail
 
 من الأهداف المستقبلية:

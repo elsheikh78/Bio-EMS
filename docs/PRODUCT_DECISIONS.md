@@ -136,3 +136,9 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - Recipient resolution is read-only and excludes inactive recipients. BF-06 does
   not send messages, consume the outbox, choose providers, define escalation, or
   embed BIO EGYPT contacts in product constants.
+- BF-07 escalation policies are Site-scoped configuration. Each policy owns an
+  accountable recipient role, severity eligibility, lifecycle, and contiguous
+  role/channel steps whose elapsed delays increase strictly.
+- Due-step resolution is deterministic and read-only. It does not resolve actual
+  contact addresses, send externally, consume the outbox, or claim that a step has
+  been delivered or acknowledged.
