@@ -142,3 +142,10 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - Due-step resolution is deterministic and read-only. It does not resolve actual
   contact addresses, send externally, consume the outbox, or claim that a step has
   been delivered or acknowledged.
+- BF-08 contract version 1 treats controller configuration as effective only after
+  an `APPLIED` acknowledgement exactly matches Site, positive config version, and
+  SHA-256 checksum. Delivery alone is never proof of application.
+- A controller keeps its last acknowledged valid bundle and marks it stale when a
+  replacement fails. Without one, offline external notification is disabled and the
+  controller signals not-ready. Firmware, transport, and field evidence remain
+  required before claiming deployed capability.

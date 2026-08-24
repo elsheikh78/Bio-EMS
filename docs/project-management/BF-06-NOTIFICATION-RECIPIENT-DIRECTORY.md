@@ -1,6 +1,6 @@
 # BF-06 — Notification Recipient Directory
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-06-notification-recipient-directory`
 Base: `main` at `d67ea4ac5ccecc07840a9e391df83d74911e7328`
@@ -94,4 +94,6 @@ recipient mutation.
 - active Site/channel/severity resolution with inactive exclusion;
 - backend format, lint, typecheck, 68 files / 587 tests, and build pass;
 - unchanged frontend format, lint, typecheck, 25 files / 212 tests, and build pass;
-- documentation audit complete; PR, GitHub CI, and merge evidence remain pending.
+- documentation audit complete;
+- PR #73, GitHub CI run 202 SUCCESS, integration commit
+  `0532d2557d6d190275d611df27cf38cb857f43c6`.

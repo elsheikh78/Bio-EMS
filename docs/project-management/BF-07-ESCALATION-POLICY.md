@@ -1,6 +1,6 @@
 # BF-07 — Escalation Policy
 
-Status: IMPLEMENTED / LOCAL QUALITY GATES PASS / PR PENDING
+Status: COMPLETE / MERGED / CI VERIFIED / CLOSED
 Date: 2026-08-24
 Branch: `agent/bf-07-escalation-policy`
 Base: BF-06 merge `0532d2557d6d190275d611df27cf38cb857f43c6`
@@ -44,4 +44,5 @@ roles resolve against BF-06 recipients at runtime in a later delivery workflow.
 - backend format, lint, typecheck, build, 70 files / 596 tests: PASS;
 - unchanged frontend format, lint, typecheck, build, 25 files / 212 tests: PASS;
 - documentation consistency audit: PASS;
-- PR, GitHub CI, and merge evidence remain pending.
+- PR #74, GitHub CI run 204 SUCCESS, integration commit
+  `5890629b938a8b4dfe0364b1f41abbc72b2dc16f`.
