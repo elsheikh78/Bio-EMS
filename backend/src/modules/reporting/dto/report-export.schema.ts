@@ -1,17 +1,10 @@
 import { z } from "zod";
 
-const sensorIdentifier = z
-  .string()
-  .trim()
-  .min(1)
-  .max(100);
+const sensorIdentifier = z.string().trim().min(1).max(100);
 
 export const reportExportSchema = z
   .object({
-    reportType: z.enum([
-      "CALIBRATION-HISTORY",
-      "TEMP-PERFORMANCE",
-    ]),
+    reportType: z.enum(["CALIBRATION-HISTORY", "TEMP-PERFORMANCE"]),
 
     contractVersion: z.literal("1.0"),
 
@@ -20,9 +13,8 @@ export const reportExportSchema = z
       .min(1)
       .max(100)
       .refine(
-        (values) =>
-          new Set(values).size === values.length,
-        "sensorUuids must not contain duplicates",
+        (values) => new Set(values).size === values.length,
+        "sensorUuids must not contain duplicates"
       ),
 
     from: z.iso.datetime({
@@ -33,20 +25,11 @@ export const reportExportSchema = z
       offset: true,
     }),
 
-    timeZone: z
-      .string()
-      .trim()
-      .min(1),
+    timeZone: z.string().trim().min(1),
 
-    language: z.enum([
-      "en",
-      "ar",
-    ]),
+    language: z.enum(["en", "ar"]),
 
-    format: z.enum([
-      "CSV",
-      "PDF",
-    ]),
+    format: z.enum(["CSV", "PDF"]),
   })
   .strict()
   .superRefine((value, context) => {
@@ -57,11 +40,9 @@ export const reportExportSchema = z
       context.addIssue({
         code: "custom",
         path: ["to"],
-        message:
-          "to must be later than from",
+        message: "to must be later than from",
       });
     }
   });
 
-export type ReportExportRequest =
-  z.infer<typeof reportExportSchema>;
+export type ReportExportRequest = z.infer<typeof reportExportSchema>;

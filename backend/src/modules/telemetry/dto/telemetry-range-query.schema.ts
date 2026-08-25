@@ -8,12 +8,7 @@ export const telemetryRangeQuerySchema = z
 
     to: z.string().datetime(),
   })
-  .refine(
-    (value) =>
-      new Date(value.from).getTime() <
-      new Date(value.to).getTime(),
-    {
-      message: "from must be earlier than to",
-      path: ["to"],
-    },
-  );
+  .refine((value) => new Date(value.from).getTime() < new Date(value.to).getTime(), {
+    message: "from must be earlier than to",
+    path: ["to"],
+  });

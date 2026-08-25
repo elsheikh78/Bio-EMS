@@ -3,13 +3,9 @@ import { TemperaturePerformanceReportService } from "../temperature-performance-
 
 const mockGetTemperaturePerformanceSummary = vi.fn();
 
-vi.mock(
-  "../../../../database/influx/queries/temperature-performance.query",
-  () => ({
-    getTemperaturePerformanceSummary:
-      mockGetTemperaturePerformanceSummary,
-  }),
-);
+vi.mock("../../../../database/influx/queries/temperature-performance.query", () => ({
+  getTemperaturePerformanceSummary: mockGetTemperaturePerformanceSummary,
+}));
 
 describe("TemperaturePerformanceReportService", () => {
   const service = new TemperaturePerformanceReportService();
@@ -38,17 +34,13 @@ describe("TemperaturePerformanceReportService", () => {
 
     const result = await service.preview(request);
 
-    expect(
-      mockGetTemperaturePerformanceSummary,
-    ).toHaveBeenCalledWith({
+    expect(mockGetTemperaturePerformanceSummary).toHaveBeenCalledWith({
       sensorCode: "sensor-temp-001",
       from: "2026-08-01T00:00:00Z",
       to: "2026-08-24T00:00:00Z",
     });
 
-    expect(result.identity.reportType).toBe(
-      "TEMP-PERFORMANCE",
-    );
+    expect(result.identity.reportType).toBe("TEMP-PERFORMANCE");
 
     expect(result.quality.complete).toBe(true);
 
@@ -68,31 +60,22 @@ describe("TemperaturePerformanceReportService", () => {
         minimum: 2,
         maximum: 8,
         average: 5,
-        firstReadingAt:
-          "2026-08-01T00:00:00Z",
-        lastReadingAt:
-          "2026-08-24T00:00:00Z",
+        firstReadingAt: "2026-08-01T00:00:00Z",
+        lastReadingAt: "2026-08-24T00:00:00Z",
       },
     ]);
   });
 
-
   it("returns incomplete report when telemetry is missing", async () => {
-    mockGetTemperaturePerformanceSummary.mockResolvedValue(
-      null,
-    );
+    mockGetTemperaturePerformanceSummary.mockResolvedValue(null);
 
     const result = await service.preview(request);
 
     expect(result.quality.complete).toBe(false);
 
-    expect(result.quality.warnings).toEqual([
-      "some sensors have no telemetry",
-    ]);
+    expect(result.quality.warnings).toEqual(["some sensors have no telemetry"]);
 
-    expect(result.quality.unavailableSections).toEqual([
-      "temperature-data",
-    ]);
+    expect(result.quality.unavailableSections).toEqual(["temperature-data"]);
 
     expect(result.summary).toEqual({
       sensors: 0,

@@ -10,7 +10,7 @@ const sensorIdentifier = z
       z.string().uuid().safeParse(value).success ||
       /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(value) ||
       /^sensor-[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(value),
-    "sensorUuids contains an unsupported Sensor identifier",
+    "sensorUuids contains an unsupported Sensor identifier"
   );
 
 export const temperaturePerformanceReportPreviewSchema = z
@@ -25,18 +25,14 @@ export const temperaturePerformanceReportPreviewSchema = z
       .max(100)
       .refine(
         (values) => new Set(values).size === values.length,
-        "sensorUuids must not contain duplicates",
+        "sensorUuids must not contain duplicates"
       ),
 
     from: z.iso.datetime({ offset: true }),
 
     to: z.iso.datetime({ offset: true }),
 
-    timeZone: z
-      .string()
-      .trim()
-      .min(1)
-      .max(100),
+    timeZone: z.string().trim().min(1).max(100),
 
     language: z.enum(["en", "ar"]),
   })
@@ -60,5 +56,6 @@ export const temperaturePerformanceReportPreviewSchema = z
     }
   });
 
-export type TemperaturePerformanceReportPreviewRequest =
-  z.infer<typeof temperaturePerformanceReportPreviewSchema>;
+export type TemperaturePerformanceReportPreviewRequest = z.infer<
+  typeof temperaturePerformanceReportPreviewSchema
+>;

@@ -1,16 +1,9 @@
 import { z } from "zod";
 
-const sensorIdentifier = z
-  .string()
-  .trim()
-  .min(1)
-  .max(100);
+const sensorIdentifier = z.string().trim().min(1).max(100);
 
 const baseReportSchema = z.object({
-  reportType: z.enum([
-    "CALIBRATION-HISTORY",
-    "TEMP-PERFORMANCE",
-  ]),
+  reportType: z.enum(["CALIBRATION-HISTORY", "TEMP-PERFORMANCE"]),
 
   contractVersion: z.literal("1.0"),
 
@@ -19,9 +12,8 @@ const baseReportSchema = z.object({
     .min(1)
     .max(100)
     .refine(
-      (values) =>
-        new Set(values).size === values.length,
-      "sensorUuids must not contain duplicates",
+      (values) => new Set(values).size === values.length,
+      "sensorUuids must not contain duplicates"
     ),
 
   from: z.iso.datetime({
@@ -34,28 +26,20 @@ const baseReportSchema = z.object({
 
   timeZone: z.string().trim().min(1),
 
-  language: z.enum([
-    "en",
-    "ar",
-  ]),
+  language: z.enum(["en", "ar"]),
 });
 
-export const reportPreviewSchema =
-  baseReportSchema
-    .strict()
-    .superRefine((value, context) => {
-      const from = Date.parse(value.from);
-      const to = Date.parse(value.to);
+export const reportPreviewSchema = baseReportSchema.strict().superRefine((value, context) => {
+  const from = Date.parse(value.from);
+  const to = Date.parse(value.to);
 
-      if (to <= from) {
-        context.addIssue({
-          code: "custom",
-          path: ["to"],
-          message:
-            "to must be later than from",
-        });
-      }
+  if (to <= from) {
+    context.addIssue({
+      code: "custom",
+      path: ["to"],
+      message: "to must be later than from",
     });
+  }
+});
 
-export type ReportPreviewRequest =
-  z.infer<typeof reportPreviewSchema>;
+export type ReportPreviewRequest = z.infer<typeof reportPreviewSchema>;

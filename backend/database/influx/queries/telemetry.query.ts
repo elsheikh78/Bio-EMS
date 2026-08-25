@@ -42,9 +42,7 @@ export interface TelemetryRangeQuery {
 
 const queryApi = influxDB.getQueryApi(org);
 
-export async function getLatestTelemetry(
-  limit = 100,
-): Promise<LatestTelemetryRecord[]> {
+export async function getLatestTelemetry(limit = 100): Promise<LatestTelemetryRecord[]> {
   const fluxQuery = `
         from(bucket: "${bucket}")
             |> range(start: -30d)
@@ -76,7 +74,7 @@ export async function getLatestTelemetry(
 }
 
 export async function getTelemetryRange(
-  query: TelemetryRangeQuery,
+  query: TelemetryRangeQuery
 ): Promise<TelemetryRangeRecord[]> {
   const fluxQuery = `
         from(bucket: "${bucket}")

@@ -39,10 +39,7 @@ describe("reportPreviewSchema", () => {
   it("rejects duplicated sensor identifiers", () => {
     const result = reportPreviewSchema.safeParse({
       ...validPayload,
-      sensorUuids: [
-        "sensor-temp-001",
-        "sensor-temp-001",
-      ],
+      sensorUuids: ["sensor-temp-001", "sensor-temp-001"],
     });
 
     expect(result.success).toBe(false);

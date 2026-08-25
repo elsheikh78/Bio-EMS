@@ -20,9 +20,8 @@ export interface TemperaturePerformanceSummary {
 const queryApi = influxDB.getQueryApi(org);
 
 export async function getTemperaturePerformanceSummary(
-  query: TemperaturePerformanceQuery,
+  query: TemperaturePerformanceQuery
 ): Promise<TemperaturePerformanceSummary | null> {
-
   const fluxQuery = `
     data =
       from(bucket: "${bucket}")
@@ -88,84 +87,37 @@ export async function getTemperaturePerformanceSummary(
     )
   `;
 
-
-  const rows =
-    (await queryApi.collectRows(
-      fluxQuery,
-    )) as Array<Record<string, unknown>>;
-
+  const rows = (await queryApi.collectRows(fluxQuery)) as Array<Record<string, unknown>>;
 
   if (rows.length === 0) {
     return null;
   }
 
+  const summaryRow = rows.find((row) => row.count !== undefined) ?? {};
 
-  const summaryRow =
-    rows.find(
-      (row) => row.count !== undefined,
-    ) ?? {};
+  const firstRow = rows.find((row) => row.type === "first");
 
+  const lastRow = rows.find((row) => row.type === "last");
 
-  const firstRow =
-    rows.find(
-      (row) => row.type === "first",
-    );
+  const count = Number(summaryRow.count ?? 0);
 
-
-  const lastRow =
-    rows.find(
-      (row) => row.type === "last",
-    );
-
-
-  const count =
-    Number(summaryRow.count ?? 0);
-
-
-  const total =
-    Number(summaryRow.total ?? 0);
-
+  const total = Number(summaryRow.total ?? 0);
 
   return {
-
     sensor: query.sensorCode,
 
-    unit:
-      typeof summaryRow.unit === "string"
-        ? summaryRow.unit
-        : "°C",
+    unit: typeof summaryRow.unit === "string" ? summaryRow.unit : "°C",
 
     count,
 
+    minimum: summaryRow.minimum !== undefined ? Number(summaryRow.minimum) : null,
 
-    minimum:
-      summaryRow.minimum !== undefined
-        ? Number(summaryRow.minimum)
-        : null,
+    maximum: summaryRow.maximum !== undefined ? Number(summaryRow.maximum) : null,
 
+    average: count > 0 ? total / count : null,
 
-    maximum:
-      summaryRow.maximum !== undefined
-        ? Number(summaryRow.maximum)
-        : null,
+    firstReadingAt: typeof firstRow?._time === "string" ? firstRow._time : null,
 
-
-    average:
-      count > 0
-        ? total / count
-        : null,
-
-
-    firstReadingAt:
-      typeof firstRow?._time === "string"
-        ? firstRow._time
-        : null,
-
-
-    lastReadingAt:
-      typeof lastRow?._time === "string"
-        ? lastRow._time
-        : null,
-
+    lastReadingAt: typeof lastRow?._time === "string" ? lastRow._time : null,
   };
 }

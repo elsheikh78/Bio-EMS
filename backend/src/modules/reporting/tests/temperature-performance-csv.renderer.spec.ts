@@ -39,10 +39,8 @@ describe("TemperaturePerformanceCsvRenderer", () => {
         minimum: 2,
         maximum: 8,
         average: 5,
-        firstReadingAt:
-          "2026-08-01T00:00:00Z",
-        lastReadingAt:
-          "2026-08-24T00:00:00Z",
+        firstReadingAt: "2026-08-01T00:00:00Z",
+        lastReadingAt: "2026-08-24T00:00:00Z",
       },
     ],
 
@@ -56,38 +54,20 @@ describe("TemperaturePerformanceCsvRenderer", () => {
   };
 
   it("generates temperature performance csv", () => {
-    const csv =
-      renderTemperaturePerformanceCsv(
-        report,
-        "admin",
-      );
+    const csv = renderTemperaturePerformanceCsv(report, "admin");
 
-    expect(csv).toContain(
-      "BIO-EMS Temperature Performance Report",
-    );
+    expect(csv).toContain("BIO-EMS Temperature Performance Report");
 
-    expect(csv).toContain(
-      "sensor-temp-001",
-    );
+    expect(csv).toContain("sensor-temp-001");
 
-    expect(csv).toContain(
-      "100",
-    );
+    expect(csv).toContain("100");
   });
 
-
   it("generates csv filename", () => {
-    const filename =
-      temperaturePerformanceCsvFilename(
-        report,
-      );
+    const filename = temperaturePerformanceCsvFilename(report);
 
-    expect(filename).toContain(
-      "temp-performance",
-    );
+    expect(filename).toContain("temp-performance");
 
-    expect(filename).toContain(
-      ".csv",
-    );
+    expect(filename).toContain(".csv");
   });
 });
