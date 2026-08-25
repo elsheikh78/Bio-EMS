@@ -2,6 +2,7 @@ export const REPORT_CONTRACT_VERSION = "1.0" as const;
 
 export const reportCatalogue = {
   contractVersion: REPORT_CONTRACT_VERSION,
+
   limits: {
     previewMaximumDays: 31,
     previewMaximumPoints: 5000,
@@ -11,24 +12,26 @@ export const reportCatalogue = {
     aggregatedMaximumRows: 25000,
     recordReportMaximumDays: 366,
   },
+
   formats: ["PREVIEW", "PDF", "CSV"],
+
   reportTypes: [
     {
       id: "TEMP-PERFORMANCE",
       title: "Temperature Performance",
-      readiness: "PARTIAL",
-      previewAvailable: false,
+      readiness: "AVAILABLE",
+      previewAvailable: true,
       exportFormats: [],
-      unavailableReason: "RANGE_QUERY_CONTRACT_REQUIRED",
+      unavailableReason: null,
     },
+
     {
       id: "ALARM-HISTORY",
-      title: "Alarm History",
-      readiness: "PARTIAL",
       previewAvailable: false,
       exportFormats: [],
       unavailableReason: "LIFECYCLE_PROJECTION_REQUIRED",
     },
+
     {
       id: "CALIBRATION-HISTORY",
       title: "Calibration Status and History",
@@ -37,6 +40,7 @@ export const reportCatalogue = {
       exportFormats: ["CSV", "PDF"],
       unavailableReason: null,
     },
+
     {
       id: "DEVICE-HEALTH",
       title: "Device Communication Health",
@@ -45,6 +49,7 @@ export const reportCatalogue = {
       exportFormats: [],
       unavailableReason: "HISTORY_LEDGER_REQUIRED",
     },
+
     {
       id: "AUDIT-OPERATIONS",
       title: "Audit and Operations",
