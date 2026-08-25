@@ -8,29 +8,55 @@ import {
   renderCalibrationPdf,
 } from "../modules/reporting/calibration-pdf.renderer";
 import { CalibrationReportService } from "../modules/reporting/calibration-report.service";
+import { TemperaturePerformanceReportService } from "../modules/reporting/temperature-performance-report.service";
 import { reportCatalogue } from "../modules/reporting/report-catalogue";
 
 const calibrationReportService = new CalibrationReportService();
+
+const temperaturePerformanceReportService =
+  new TemperaturePerformanceReportService();
 
 export function getReportCatalogue(_req: Request, res: Response): void {
   res.json(reportCatalogue);
 }
 
 export function previewReport(req: Request, res: Response): void {
-  res.json(calibrationReportService.preview(req.body));
+  switch (req.body.reportType) {
+    case "CALIBRATION-HISTORY":
+      res.json(calibrationReportService.preview(req.body));
+      return;
+
+    case "TEMP-PERFORMANCE":
+      res.json(temperaturePerformanceReportService.preview(req.body));
+      return;
+
+    default:
+      res.status(400).json({
+        error: "UNSUPPORTED_REPORT_TYPE",
+      });
+  }
 }
 
-export async function exportReport(req: Request, res: Response): Promise<void> {
+export async function exportReport(
+  req: Request,
+  res: Response,
+): Promise<void> {
   const result = calibrationReportService.preview(req.body);
 
   res.setHeader("X-Content-Type-Options", "nosniff");
 
   if (req.body.format === "PDF") {
     const filename = calibrationPdfFilename(result);
-    const pdf = await renderCalibrationPdf(result, req.user!.username);
+    const pdf = await renderCalibrationPdf(
+      result,
+      req.user!.username,
+    );
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
     res.send(pdf);
 
     return;
@@ -39,6 +65,15 @@ export async function exportReport(req: Request, res: Response): Promise<void> {
   const filename = calibrationCsvFilename(result);
 
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
-  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-  res.send(renderCalibrationCsv(result, req.user!.username));
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${filename}"`,
+  );
+
+  res.send(
+    renderCalibrationCsv(
+      result,
+      req.user!.username,
+    ),
+  );
 }
