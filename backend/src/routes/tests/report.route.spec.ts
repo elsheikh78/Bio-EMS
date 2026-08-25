@@ -12,6 +12,7 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
           reportType: "CALIBRATION-HISTORY",
           contractVersion: "1.0",
         },
+
         scope: {
           sensorUuids: ["sensor-temp-001"],
           from: "2026-01-01T00:00:00Z",
@@ -19,16 +20,19 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
           timeZone: "Africa/Cairo",
           language: "en",
         },
+
         provenance: {
           generatedAt: "2026-08-19T12:00:00Z",
           source: "SQLITE",
           rangeSemantics: "[from,to)",
         },
+
         quality: {
           complete: true,
           warnings: [],
           unavailableSections: [],
         },
+
         summary: {
           sensors: 1,
           records: 1,
@@ -37,6 +41,7 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
           overdue: 0,
           notCalibrated: 0,
         },
+
         sensors: [
           {
             uuid: "sensor-temp-001",
@@ -50,6 +55,7 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
             room_name: "Cold Room 1",
           },
         ],
+
         records: [
           {
             sensor_uuid: "sensor-temp-001",
@@ -67,7 +73,44 @@ vi.mock("../../modules/reporting/calibration-report.service", () => {
   };
 });
 
+
+vi.mock(
+  "../../modules/reporting/temperature-performance-report.service",
+  () => {
+    return {
+      TemperaturePerformanceReportService:
+        vi.fn().mockImplementation(() => ({
+          preview: vi.fn(() => ({
+            identity: {
+              reportId: "RPT-TEMP-20260824-TEST",
+              reportType: "TEMP-PERFORMANCE",
+              contractVersion: "1.0",
+            },
+
+            scope: {
+              sensorUuids: ["sensor-temp-001"],
+              from: "2026-08-01T00:00:00Z",
+              to: "2026-08-24T00:00:00Z",
+              timeZone: "Africa/Cairo",
+              language: "en",
+            },
+
+            summary: {
+              sensors: 1,
+              records: 100,
+              minimum: 2,
+              maximum: 8,
+              average: 5,
+            },
+          })),
+        })),
+    };
+  },
+);
+
+
 import reportRouter from "../report.route";
+
 
 function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
   const app = express();
@@ -85,20 +128,56 @@ function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
   });
 
   app.use("/api/v1/reports", reportRouter);
+
   app.use(errorMiddleware);
 
   return app;
 }
 
-describe("Reporting catalogue REST API", () => {
+
+describe("Reporting REST API", () => {
+
+  it("previews temperature performance report", async () => {
+
+    const response = await request(createApp("ADMIN"))
+      .post("/api/v1/reports/preview")
+      .send({
+        reportType: "TEMP-PERFORMANCE",
+        contractVersion: "1.0",
+        sensorUuids: [
+          "sensor-temp-001",
+        ],
+        from: "2026-08-01T00:00:00Z",
+        to: "2026-08-24T00:00:00Z",
+        timeZone: "Africa/Cairo",
+        language: "en",
+      })
+      .expect(200);
+
+
+    expect(
+      response.body.identity.reportType,
+    ).toBe("TEMP-PERFORMANCE");
+
+
+    expect(
+      response.body.summary.average,
+    ).toBe(5);
+
+  });
+
+
   it("exports calibration history as PDF for ADMIN", async () => {
+
     const response = await request(createApp("ADMIN"))
       .post("/api/v1/reports/exports")
       .send({
         reportType: "CALIBRATION-HISTORY",
         contractVersion: "1.0",
         format: "PDF",
-        sensorUuids: ["sensor-temp-001"],
+        sensorUuids: [
+          "sensor-temp-001",
+        ],
         from: "2026-01-01T00:00:00Z",
         to: "2027-01-01T00:00:00Z",
         timeZone: "Africa/Cairo",
@@ -106,12 +185,26 @@ describe("Reporting catalogue REST API", () => {
       })
       .expect(200);
 
-    expect(response.headers["content-type"]).toContain("application/pdf");
 
-    expect(response.headers["content-disposition"]).toContain(".pdf");
+    expect(
+      response.headers["content-type"],
+    ).toContain("application/pdf");
 
-    expect(response.headers["x-content-type-options"]).toBe("nosniff");
 
-    expect(response.body.subarray(0, 5).toString("ascii")).toBe("%PDF-");
+    expect(
+      response.headers["content-disposition"],
+    ).toContain(".pdf");
+
+
+    expect(
+      response.headers["x-content-type-options"],
+    ).toBe("nosniff");
+
+
+    expect(
+      response.body.subarray(0, 5).toString("ascii"),
+    ).toBe("%PDF-");
+
   });
+
 });
