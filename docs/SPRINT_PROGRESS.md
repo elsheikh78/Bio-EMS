@@ -1,5 +1,33 @@
 # Sprint Progress
 
+## Current Work Package Update - BF-10 Reporting Expansion - 25 August 2026
+
+BF-10 continues the controlled Reporting Center expansion after the PVR-06 reporting readiness audit.
+
+Current reporting baseline:
+
+- Calibration History: COMPLETE and available through Preview, CSV, and PDF.
+- Temperature Performance: IMPLEMENTATION IN PROGRESS (validation pending).
+- Alarm History: BLOCKED pending lifecycle projection.
+- Device Communication Health: BLOCKED pending history ledger foundation.
+- Audit and Operations: READY_FOR_IMPLEMENTATION pending operations projection.
+
+BF-10 implementation evidence:
+
+- Reporting catalogue readiness matrix extended.
+- Temperature Performance preview contract implemented.
+- Temperature Performance CSV export implemented.
+- Temperature Performance PDF export implementation added; build validation pending.
+- Reporting API regression coverage extended.
+
+Current validation requirements:
+
+- Backend build must pass.
+- Reporting regression tests must pass.
+- Documentation updates must preserve historical Sprint and PVR records.
+
+BF-10 does not declare production acceptance, field commissioning, or BIO EGYPT Pilot acceptance.
+
 ## Frontend Commercial Configuration
 
 ### BF-09-06 — Final Accessibility, UX, Documentation, and Regression Closure
