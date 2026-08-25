@@ -1,5 +1,33 @@
 # Project Status
 
+## Current Active Work Package: BF-10 Reporting Expansion - 25 August 2026
+
+BF-10 continues the controlled Reporting Center expansion after PVR-06 readiness audit.
+
+Current baseline:
+
+- Calibration History: AVAILABLE (Preview / CSV / PDF)
+- Temperature Performance: IMPLEMENTATION IN PROGRESS (validation pending)
+- Alarm History: BLOCKED pending lifecycle projection
+- Device Communication Health: BLOCKED pending history ledger foundation
+- Audit and Operations: READY_FOR_IMPLEMENTATION pending projection layer
+
+Implemented BF-10 evidence:
+
+- Reporting catalogue exposes report readiness matrix.
+- Temperature Performance preview contract implemented.
+- Temperature Performance CSV export implemented.
+- Temperature Performance PDF export implementation added; build validation pending.
+- Reporting API regression coverage extended.
+
+Current validation gate:
+
+- Backend build must pass.
+- Reporting tests must pass.
+- Documentation updated without removing historical sprint/PVR records.
+
+BF-10 does not claim production acceptance or BIO EGYPT commissioning.
+
 ## PVR-07 platform acceptance — 24 August 2026
 
 PVR-01 through PVR-07 are review-complete. The release decision is **NO-GO for BF-10 and
