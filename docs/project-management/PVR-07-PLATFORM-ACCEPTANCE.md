@@ -12,8 +12,8 @@ This decision distinguishes merged implementation evidence from actual platform 
 | ---------------------------- | ------------------------------------------------- | -------------------------------------------------------- |
 | PVR-01 integration recovery  | Accepted; Site-scoped browser retest passed       | PR #86, merge `3ab9f1139e5888ff11e7fc2784c9960624c0b3ab` |
 | PVR-02 operational workspace | Accepted                                          | PR #87, merge `46e718dc90c7f4c87d34da53dd624ec99aacb0b1` |
-| PVR-03 Monitored Areas       | Accepted in code; live telemetry retest pending   | PR #88, merge `80ad8cdcd0463a389ff34eabda8624a51175d4f0` |
-| PVR-04 Alarms                | Active and populated History browser views passed | PR #89, merge `ccd7874c9a99c59dc8caece2259aa01194ab1ac5` |
+| PVR-03 Monitored Areas       | Accepted; live abnormal/normal telemetry passed  | PR #88, merge `80ad8cdcd0463a389ff34eabda8624a51175d4f0` |
+| PVR-04 Alarms                | Trigger, acknowledge, History, and Audit passed  | PR #89, merge `ccd7874c9a99c59dc8caece2259aa01194ab1ac5` |
 | PVR-05 Devices               | Lifecycle, health, edit, and Audit retest passed  | PR #90, merge `59dc878d31b7024020f35d3292f9279ab9d704d7` |
 | PVR-06 Reports               | Partially accepted                                | PR #91, merge `76556c24b0488181fe42931500d3ce9f95ccd7d0` |
 | PVR-07 acceptance            | NO-GO until blockers close                        | This document and final CI PR                            |
@@ -21,11 +21,8 @@ This decision distinguishes merged implementation evidence from actual platform 
 ## Release blockers
 
 1. Repeat the real browser smoke test with frontend and backend running from the same accepted `main`, valid environment configuration, migrations, and seeded Site scope.
-2. Exercise the permission-controlled Alarm acknowledgement action against a newly triggered active Alarm. Active/History loading and historical acknowledged/recovered evidence have passed.
-3. Repeat the Dashboard browser retest after the communication-summary correction and verify `ONLINE`, `STALE`, `OFFLINE`, `NEVER_SEEN`, and `NOT_OPERATIONAL` counts reconcile to total Devices.
-4. Repeat the Monitored Areas browser retest after the null-threshold correction and verify an unconfigured warning boundary cannot produce a false `WARNING` state.
-5. Complete Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations reports. Calibration is the only controlled report family currently available.
-6. Record customer/UAT evidence and production deployment/commissioning evidence. Automated unit/integration tests are not substitutes.
+2. Complete Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations reports. Calibration is the only controlled report family currently available.
+3. Record customer/UAT evidence and production deployment/commissioning evidence. Automated unit/integration tests are not substitutes.
 
 ## Live retest findings
 
@@ -40,7 +37,7 @@ This decision distinguishes merged implementation evidence from actual platform 
 - Dashboard Device connectivity no longer derives Online as `total - offline`. The backend now returns mutually exclusive counts for all five authoritative communication/lifecycle states, and the frontend contract rejects totals that do not reconcile.
 - The false Monitored Areas warning was traced to persisted SQLite `null` thresholds being compared numerically as zero. The domain Alarm engine now treats `null` as not configured, protecting both Dashboard status evaluation and live telemetry Alarm evaluation. A 6.1 °C regression case with null warning boundaries and alarm limits 2-8 °C resolves to `NORMAL`.
 - Workspace completion labels now describe the implemented Alarms and Devices routes and retain only the actual pending live validation/expansion work.
-- The live Alarm acknowledgement retest passed `TRIGGERED -> ACKNOWLEDGED` for Sensor 2 at 9 °C and removed the event from Active while retaining it in History. The same retest exposed two acceptance defects: room aggregation could overwrite a critical temperature with another normal Sensor of the same type, and acknowledgement emitted a Notification Event without Site Audit evidence. The corrective package selects the worst current Sensor state per room, counts active room Alarms, ranks Priority areas by operational severity, and records `ALARM.ACKNOWLEDGED` in the immutable Site Audit Log. Browser revalidation remains required after merge.
+- The live Alarm acknowledgement retest passed `TRIGGERED -> ACKNOWLEDGED` for Sensor 2 at 9 °C and removed the event from Active while retaining it in History. The same retest exposed two acceptance defects: room aggregation could overwrite a critical temperature with another normal Sensor of the same type, and acknowledgement emitted a Notification Event without Site Audit evidence. PR #99 corrected both defects. Post-merge browser revalidation passed: Priority areas displayed 9 °C in red for the critical room state; a new acknowledgement produced Site-scoped `ALARM.ACKNOWLEDGED / SUCCESS` evidence for `admin` and Alarm 4; subsequent 6 °C live telemetry restored the room to Online, `NORMAL`, and zero active Alarms.
 
 ## Automated repository evidence
 
