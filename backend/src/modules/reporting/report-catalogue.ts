@@ -21,7 +21,7 @@ export const reportCatalogue = {
       title: "Temperature Performance",
       readiness: "AVAILABLE",
       previewAvailable: true,
-      exportFormats: [],
+      exportFormats: ["CSV"],
       unavailableReason: null,
     },
 
