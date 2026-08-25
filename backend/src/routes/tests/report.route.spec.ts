@@ -88,12 +88,42 @@ vi.mock(
             },
 
             scope: {
-              sensorUuids: ["sensor-temp-001"],
+              sensorUuids: [
+                "sensor-temp-001",
+              ],
               from: "2026-08-01T00:00:00Z",
               to: "2026-08-24T00:00:00Z",
               timeZone: "Africa/Cairo",
               language: "en",
             },
+
+            provenance: {
+              generatedAt:
+                "2026-08-24T12:00:00Z",
+              source: "INFLUXDB",
+              rangeSemantics: "[from,to)",
+            },
+
+            quality: {
+              complete: true,
+              warnings: [],
+              unavailableSections: [],
+            },
+
+            sensors: [
+              {
+                sensor: "sensor-temp-001",
+                unit: "°C",
+                records: 100,
+                minimum: 2,
+                maximum: 8,
+                average: 5,
+                firstReadingAt:
+                  "2026-08-01T00:00:00Z",
+                lastReadingAt:
+                  "2026-08-24T00:00:00Z",
+              },
+            ],
 
             summary: {
               sensors: 1,
@@ -109,10 +139,28 @@ vi.mock(
 );
 
 
+vi.mock(
+  "../../modules/reporting/temperature-performance-csv.renderer",
+  () => ({
+    temperaturePerformanceCsvFilename:
+      vi.fn(() =>
+        "temp-performance-2026-08-24.csv",
+      ),
+
+    renderTemperaturePerformanceCsv:
+      vi.fn(() =>
+        "BIO-EMS Temperature Performance Report",
+      ),
+  }),
+);
+
+
 import reportRouter from "../report.route";
 
 
-function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
+function createApp(
+  role: "ADMIN" | "OPERATOR" | "VIEWER",
+) {
   const app = express();
 
   app.use(express.json());
@@ -127,7 +175,10 @@ function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
     next();
   });
 
-  app.use("/api/v1/reports", reportRouter);
+  app.use(
+    "/api/v1/reports",
+    reportRouter,
+  );
 
   app.use(errorMiddleware);
 
@@ -137,74 +188,164 @@ function createApp(role: "ADMIN" | "OPERATOR" | "VIEWER") {
 
 describe("Reporting REST API", () => {
 
-  it("previews temperature performance report", async () => {
-
-    const response = await request(createApp("ADMIN"))
-      .post("/api/v1/reports/preview")
-      .send({
-        reportType: "TEMP-PERFORMANCE",
-        contractVersion: "1.0",
-        sensorUuids: [
-          "sensor-temp-001",
-        ],
-        from: "2026-08-01T00:00:00Z",
-        to: "2026-08-24T00:00:00Z",
-        timeZone: "Africa/Cairo",
-        language: "en",
-      })
-      .expect(200);
-
-
-    expect(
-      response.body.identity.reportType,
-    ).toBe("TEMP-PERFORMANCE");
-
-
-    expect(
-      response.body.summary.average,
-    ).toBe(5);
-
-  });
+  it(
+    "previews temperature performance report",
+    async () => {
+      const response =
+        await request(createApp("ADMIN"))
+          .post(
+            "/api/v1/reports/preview",
+          )
+          .send({
+            reportType:
+              "TEMP-PERFORMANCE",
+            contractVersion: "1.0",
+            sensorUuids: [
+              "sensor-temp-001",
+            ],
+            from:
+              "2026-08-01T00:00:00Z",
+            to:
+              "2026-08-24T00:00:00Z",
+            timeZone:
+              "Africa/Cairo",
+            language:
+              "en",
+          })
+          .expect(200);
 
 
-  it("exports calibration history as PDF for ADMIN", async () => {
-
-    const response = await request(createApp("ADMIN"))
-      .post("/api/v1/reports/exports")
-      .send({
-        reportType: "CALIBRATION-HISTORY",
-        contractVersion: "1.0",
-        format: "PDF",
-        sensorUuids: [
-          "sensor-temp-001",
-        ],
-        from: "2026-01-01T00:00:00Z",
-        to: "2027-01-01T00:00:00Z",
-        timeZone: "Africa/Cairo",
-        language: "en",
-      })
-      .expect(200);
+      expect(
+        response.body.identity.reportType,
+      ).toBe(
+        "TEMP-PERFORMANCE",
+      );
 
 
-    expect(
-      response.headers["content-type"],
-    ).toContain("application/pdf");
+      expect(
+        response.body.summary.average,
+      ).toBe(5);
+    },
+  );
 
 
-    expect(
-      response.headers["content-disposition"],
-    ).toContain(".pdf");
+  it(
+    "exports calibration history as PDF for ADMIN",
+    async () => {
+      const response =
+        await request(createApp("ADMIN"))
+          .post(
+            "/api/v1/reports/exports",
+          )
+          .send({
+            reportType:
+              "CALIBRATION-HISTORY",
+            contractVersion: "1.0",
+            format:
+              "PDF",
+            sensorUuids: [
+              "sensor-temp-001",
+            ],
+            from:
+              "2026-01-01T00:00:00Z",
+            to:
+              "2027-01-01T00:00:00Z",
+            timeZone:
+              "Africa/Cairo",
+            language:
+              "en",
+          })
+          .expect(200);
 
 
-    expect(
-      response.headers["x-content-type-options"],
-    ).toBe("nosniff");
+      expect(
+        response.headers["content-type"],
+      ).toContain(
+        "application/pdf",
+      );
 
 
-    expect(
-      response.body.subarray(0, 5).toString("ascii"),
-    ).toBe("%PDF-");
+      expect(
+        response.headers["content-disposition"],
+      ).toContain(
+        ".pdf",
+      );
 
-  });
+
+      expect(
+        response.headers["x-content-type-options"],
+      ).toBe(
+        "nosniff",
+      );
+
+
+      expect(
+        response.body
+          .subarray(0, 5)
+          .toString("ascii"),
+      ).toBe(
+        "%PDF-",
+      );
+    },
+  );
+
+
+  it(
+    "exports temperature performance as CSV for ADMIN",
+    async () => {
+      const response =
+        await request(createApp("ADMIN"))
+          .post(
+            "/api/v1/reports/exports",
+          )
+          .send({
+            reportType:
+              "TEMP-PERFORMANCE",
+            contractVersion: "1.0",
+            format:
+              "CSV",
+            sensorUuids: [
+              "sensor-temp-001",
+            ],
+            from:
+              "2026-08-01T00:00:00Z",
+            to:
+              "2026-08-24T00:00:00Z",
+            timeZone:
+              "Africa/Cairo",
+            language:
+              "en",
+          })
+          .expect(200);
+
+
+      expect(
+        response.headers["content-type"],
+      ).toContain(
+        "text/csv",
+      );
+
+
+      expect(
+        response.headers["content-disposition"],
+      ).toContain(
+        ".csv",
+      );
+
+
+      expect(
+        response.headers["x-content-type-options"],
+      ).toBe(
+        "nosniff",
+      );
+
+
+      expect(
+        response.text,
+      ).toContain(
+        "BIO-EMS Temperature Performance Report",
+      );
+    },
+  );
 
 });

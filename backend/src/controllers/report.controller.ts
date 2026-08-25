@@ -7,6 +7,10 @@ import {
   calibrationPdfFilename,
   renderCalibrationPdf,
 } from "../modules/reporting/calibration-pdf.renderer";
+import {
+  renderTemperaturePerformanceCsv,
+  temperaturePerformanceCsvFilename,
+} from "../modules/reporting/temperature-performance-csv.renderer";
 import { CalibrationReportService } from "../modules/reporting/calibration-report.service";
 import { TemperaturePerformanceReportService } from "../modules/reporting/temperature-performance-report.service";
 import { reportCatalogue } from "../modules/reporting/report-catalogue";
@@ -17,6 +21,7 @@ const calibrationReportService =
 const temperaturePerformanceReportService =
   new TemperaturePerformanceReportService();
 
+
 export function getReportCatalogue(
   _req: Request,
   res: Response,
@@ -24,80 +29,115 @@ export function getReportCatalogue(
   res.json(reportCatalogue);
 }
 
-export function previewReport(
+
+export async function previewReport(
   req: Request,
   res: Response,
-): void {
+): Promise<void> {
+
   switch (req.body.reportType) {
+
     case "CALIBRATION-HISTORY":
+
       res.json(
-        calibrationReportService.preview(req.body),
+        await calibrationReportService.preview(
+          req.body,
+        ),
       );
+
       return;
+
 
     case "TEMP-PERFORMANCE":
+
       res.json(
-        temperaturePerformanceReportService.preview(req.body),
+        await temperaturePerformanceReportService.preview(
+          req.body,
+        ),
       );
+
       return;
 
+
     default:
+
       res.status(400).json({
         error: "UNSUPPORTED_REPORT_TYPE",
       });
+
   }
 }
+
+
 
 export async function exportReport(
   req: Request,
   res: Response,
 ): Promise<void> {
+
   res.setHeader(
     "X-Content-Type-Options",
     "nosniff",
   );
 
+
   switch (req.body.reportType) {
+
+
     case "CALIBRATION-HISTORY": {
+
       const result =
-        calibrationReportService.preview(req.body);
+        await calibrationReportService.preview(
+          req.body,
+        );
+
 
       if (req.body.format === "PDF") {
+
         const filename =
           calibrationPdfFilename(result);
 
-        const pdf = await renderCalibrationPdf(
-          result,
-          req.user!.username,
-        );
+
+        const pdf =
+          await renderCalibrationPdf(
+            result,
+            req.user!.username,
+          );
+
 
         res.setHeader(
           "Content-Type",
           "application/pdf",
         );
 
+
         res.setHeader(
           "Content-Disposition",
           `attachment; filename="${filename}"`,
         );
+
 
         res.send(pdf);
 
         return;
       }
 
+
       const filename =
         calibrationCsvFilename(result);
+
 
       res.setHeader(
         "Content-Type",
         "text/csv; charset=utf-8",
       );
 
+
       res.setHeader(
         "Content-Disposition",
         `attachment; filename="${filename}"`,
       );
+
 
       res.send(
         renderCalibrationCsv(
@@ -106,21 +146,70 @@ export async function exportReport(
         ),
       );
 
+
       return;
     }
 
-    case "TEMP-PERFORMANCE":
+
+
+    case "TEMP-PERFORMANCE": {
+
+      const result =
+        await temperaturePerformanceReportService.preview(
+          req.body,
+        );
+
+
+      if (req.body.format === "CSV") {
+
+        const filename =
+          temperaturePerformanceCsvFilename(
+            result,
+          );
+
+
+        res.setHeader(
+          "Content-Type",
+          "text/csv; charset=utf-8",
+        );
+
+
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`,
+        );
+
+
+        res.send(
+          renderTemperaturePerformanceCsv(
+            result,
+            req.user!.username,
+          ),
+        );
+
+
+        return;
+      }
+
+
       res.status(501).json({
-        error: "REPORT_EXPORT_NOT_IMPLEMENTED",
+        error:
+          "REPORT_EXPORT_NOT_IMPLEMENTED",
         message:
-          "Temperature performance export is not implemented yet",
+          "Temperature performance PDF export is not implemented yet",
       });
 
+
       return;
+    }
+
+
 
     default:
+
       res.status(400).json({
         error: "UNSUPPORTED_REPORT_TYPE",
       });
+
   }
 }
