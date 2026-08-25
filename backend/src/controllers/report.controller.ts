@@ -11,23 +11,34 @@ import { CalibrationReportService } from "../modules/reporting/calibration-repor
 import { TemperaturePerformanceReportService } from "../modules/reporting/temperature-performance-report.service";
 import { reportCatalogue } from "../modules/reporting/report-catalogue";
 
-const calibrationReportService = new CalibrationReportService();
+const calibrationReportService =
+  new CalibrationReportService();
 
 const temperaturePerformanceReportService =
   new TemperaturePerformanceReportService();
 
-export function getReportCatalogue(_req: Request, res: Response): void {
+export function getReportCatalogue(
+  _req: Request,
+  res: Response,
+): void {
   res.json(reportCatalogue);
 }
 
-export function previewReport(req: Request, res: Response): void {
+export function previewReport(
+  req: Request,
+  res: Response,
+): void {
   switch (req.body.reportType) {
     case "CALIBRATION-HISTORY":
-      res.json(calibrationReportService.preview(req.body));
+      res.json(
+        calibrationReportService.preview(req.body),
+      );
       return;
 
     case "TEMP-PERFORMANCE":
-      res.json(temperaturePerformanceReportService.preview(req.body));
+      res.json(
+        temperaturePerformanceReportService.preview(req.body),
+      );
       return;
 
     default:
@@ -41,39 +52,75 @@ export async function exportReport(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const result = calibrationReportService.preview(req.body);
-
-  res.setHeader("X-Content-Type-Options", "nosniff");
-
-  if (req.body.format === "PDF") {
-    const filename = calibrationPdfFilename(result);
-    const pdf = await renderCalibrationPdf(
-      result,
-      req.user!.username,
-    );
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${filename}"`,
-    );
-    res.send(pdf);
-
-    return;
-  }
-
-  const filename = calibrationCsvFilename(result);
-
-  res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader(
-    "Content-Disposition",
-    `attachment; filename="${filename}"`,
+    "X-Content-Type-Options",
+    "nosniff",
   );
 
-  res.send(
-    renderCalibrationCsv(
-      result,
-      req.user!.username,
-    ),
-  );
+  switch (req.body.reportType) {
+    case "CALIBRATION-HISTORY": {
+      const result =
+        calibrationReportService.preview(req.body);
+
+      if (req.body.format === "PDF") {
+        const filename =
+          calibrationPdfFilename(result);
+
+        const pdf = await renderCalibrationPdf(
+          result,
+          req.user!.username,
+        );
+
+        res.setHeader(
+          "Content-Type",
+          "application/pdf",
+        );
+
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`,
+        );
+
+        res.send(pdf);
+
+        return;
+      }
+
+      const filename =
+        calibrationCsvFilename(result);
+
+      res.setHeader(
+        "Content-Type",
+        "text/csv; charset=utf-8",
+      );
+
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
+
+      res.send(
+        renderCalibrationCsv(
+          result,
+          req.user!.username,
+        ),
+      );
+
+      return;
+    }
+
+    case "TEMP-PERFORMANCE":
+      res.status(501).json({
+        error: "REPORT_EXPORT_NOT_IMPLEMENTED",
+        message:
+          "Temperature performance export is not implemented yet",
+      });
+
+      return;
+
+    default:
+      res.status(400).json({
+        error: "UNSUPPORTED_REPORT_TYPE",
+      });
+  }
 }

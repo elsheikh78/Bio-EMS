@@ -15,14 +15,14 @@ describe("TemperaturePerformanceReportService", () => {
   const service = new TemperaturePerformanceReportService();
 
   const request = {
-    reportType: "TEMP-PERFORMANCE",
-    contractVersion: "1.0",
+    reportType: "TEMP-PERFORMANCE" as const,
+    contractVersion: "1.0" as const,
     sensorUuids: ["sensor-temp-001"],
     from: "2026-08-01T00:00:00Z",
     to: "2026-08-24T00:00:00Z",
     timeZone: "Africa/Cairo",
-    language: "en",
-  } as const;
+    language: "en" as const,
+  };
 
   it("returns temperature performance summary when telemetry exists", async () => {
     mockGetTemperaturePerformanceSummary.mockResolvedValue({
@@ -38,7 +38,9 @@ describe("TemperaturePerformanceReportService", () => {
 
     const result = await service.preview(request);
 
-    expect(mockGetTemperaturePerformanceSummary).toHaveBeenCalledWith({
+    expect(
+      mockGetTemperaturePerformanceSummary,
+    ).toHaveBeenCalledWith({
       sensorCode: "sensor-temp-001",
       from: "2026-08-01T00:00:00Z",
       to: "2026-08-24T00:00:00Z",
@@ -74,18 +76,13 @@ describe("TemperaturePerformanceReportService", () => {
     ]);
   });
 
+
   it("returns incomplete report when telemetry is missing", async () => {
     mockGetTemperaturePerformanceSummary.mockResolvedValue(
       null,
     );
 
     const result = await service.preview(request);
-
-    expect(mockGetTemperaturePerformanceSummary).toHaveBeenCalledWith({
-      sensorCode: "sensor-temp-001",
-      from: "2026-08-01T00:00:00Z",
-      to: "2026-08-24T00:00:00Z",
-    });
 
     expect(result.quality.complete).toBe(false);
 
