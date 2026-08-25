@@ -3,14 +3,18 @@ import { backendErrorEnvelopeSchema } from "../auth/contracts";
 
 export type ApiRequestMode = "public" | "protected";
 
-export interface ApiRequestOptions extends Omit<RequestInit, "headers"> {
+export interface ApiRequestOptions
+  extends Omit<RequestInit, "headers"> {
   headers?: HeadersInit;
   auth?: ApiRequestMode;
   responseMode?: "json" | "response";
 }
 
 export interface ApiClient {
-  request<T>(path: `/${string}`, options?: ApiRequestOptions): Promise<T>;
+  request<T>(
+    path: `/${string}`,
+    options?: ApiRequestOptions,
+  ): Promise<T>;
 }
 
 export interface ApiClientConfiguration {
@@ -28,7 +32,8 @@ export function createApiClient(
   configuration: ApiClientConfiguration = {},
 ): ApiClient {
   return {
-    request: (path, options = {}) => request(path, options, configuration),
+    request: (path, options = {}) =>
+      request(path, options, configuration),
   };
 }
 
@@ -38,6 +43,7 @@ async function request<T>(
   configuration: ApiClientConfiguration,
 ): Promise<T> {
   const headers = new Headers(options.headers);
+
   if (headers.has("Authorization")) {
     throw new ApiRequestConfigurationError(
       "Caller-supplied Authorization is not allowed",
@@ -45,41 +51,89 @@ async function request<T>(
   }
 
   const mode = options.auth ?? "public";
+
   if (mode === "protected") {
-    const token = configuration.getAccessToken?.();
+    const token =
+      configuration.getAccessToken?.();
+
     if (!token) {
       throw new ApiRequestConfigurationError(
         "A protected request requires an authenticated session",
       );
     }
-    headers.set("Authorization", `Bearer ${token}`);
+
+    headers.set(
+      "Authorization",
+      `Bearer ${token}`,
+    );
   }
 
   if (!headers.has("Accept")) {
-    headers.set("Accept", "application/json");
+    headers.set(
+      "Accept",
+      "application/json",
+    );
   }
 
-  const requestOptions: RequestInit = { ...options };
-  delete (requestOptions as { auth?: ApiRequestMode }).auth;
-  delete (requestOptions as { responseMode?: "json" | "response" })
-    .responseMode;
-  const response = await fetch(`${getEnvironment().VITE_API_BASE_URL}${path}`, {
-    ...requestOptions,
-    headers,
-  });
+  // Prevent browser cache validation from returning
+  // 304 responses without JSON body for API calls.
+  if (!headers.has("Cache-Control")) {
+    headers.set(
+      "Cache-Control",
+      "no-cache",
+    );
+  }
+
+  const requestOptions: RequestInit = {
+    ...options,
+  };
+
+  delete (
+    requestOptions as {
+      auth?: ApiRequestMode;
+    }
+  ).auth;
+
+  delete (
+    requestOptions as {
+      responseMode?: "json" | "response";
+    }
+  ).responseMode;
+
+  const response = await fetch(
+    `${getEnvironment().VITE_API_BASE_URL}${path}`,
+    {
+      ...requestOptions,
+      headers,
+    },
+  );
 
   if (!response.ok) {
-    const envelope = await readErrorEnvelope(response);
-    throw new ApiResponseError(response.status, envelope?.error.code);
+    const envelope =
+      await readErrorEnvelope(response);
+
+    throw new ApiResponseError(
+      response.status,
+      envelope?.error.code,
+    );
   }
 
-  if (options.responseMode === "response") return response as T;
+  if (
+    options.responseMode === "response"
+  ) {
+    return response as T;
+  }
+
   return (await response.json()) as T;
 }
 
-async function readErrorEnvelope(response: Response) {
+async function readErrorEnvelope(
+  response: Response,
+) {
   try {
-    return backendErrorEnvelopeSchema.safeParse(await response.json()).data;
+    return backendErrorEnvelopeSchema.safeParse(
+      await response.json(),
+    ).data;
   } catch {
     return undefined;
   }
@@ -89,7 +143,10 @@ export class ApiResponseError extends Error {
   readonly code?: string;
   readonly status: number;
 
-  constructor(status: number, code?: string) {
+  constructor(
+    status: number,
+    code?: string,
+  ) {
     super("API request failed");
     this.name = "ApiResponseError";
     this.status = status;
@@ -100,8 +157,10 @@ export class ApiResponseError extends Error {
 export class ApiRequestConfigurationError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "ApiRequestConfigurationError";
+    this.name =
+      "ApiRequestConfigurationError";
   }
 }
 
-const defaultApiClient = createApiClient();
+const defaultApiClient =
+  createApiClient();
