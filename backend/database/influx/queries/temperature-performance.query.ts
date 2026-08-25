@@ -22,6 +22,7 @@ const queryApi = influxDB.getQueryApi(org);
 export async function getTemperaturePerformanceSummary(
   query: TemperaturePerformanceQuery,
 ): Promise<TemperaturePerformanceSummary | null> {
+
   const fluxQuery = `
     data =
       from(bucket: "${bucket}")
@@ -47,14 +48,17 @@ export async function getTemperaturePerformanceSummary(
           },
           fn: (r, accumulator) => ({
             count: accumulator.count + 1,
+
             minimum:
               if accumulator.count == 0 then r._value
               else if r._value < accumulator.minimum then r._value
               else accumulator.minimum,
+
             maximum:
               if accumulator.count == 0 then r._value
               else if r._value > accumulator.maximum then r._value
               else accumulator.maximum,
+
             total: accumulator.total + r._value,
           }),
         )
@@ -62,10 +66,18 @@ export async function getTemperaturePerformanceSummary(
     firstReading =
       data
         |> first()
+        |> map(fn: (r) => ({
+          type: "first",
+          _time: r._time
+        }))
 
     lastReading =
       data
         |> last()
+        |> map(fn: (r) => ({
+          type: "last",
+          _time: r._time
+        }))
 
     union(
       tables: [
@@ -76,29 +88,46 @@ export async function getTemperaturePerformanceSummary(
     )
   `;
 
-  const rows = (await queryApi.collectRows(
-    fluxQuery,
-  )) as Array<Record<string, unknown>>;
+
+  const rows =
+    (await queryApi.collectRows(
+      fluxQuery,
+    )) as Array<Record<string, unknown>>;
+
 
   if (rows.length === 0) {
     return null;
   }
 
+
   const summaryRow =
-    rows.find((row) => row.count !== undefined) ?? {};
+    rows.find(
+      (row) => row.count !== undefined,
+    ) ?? {};
 
-  const timeRows = rows.filter((row) => row._time !== undefined);
 
-  const firstRow = timeRows[0] ?? null;
+  const firstRow =
+    rows.find(
+      (row) => row.type === "first",
+    );
+
 
   const lastRow =
-    timeRows.length > 0
-      ? timeRows[timeRows.length - 1]
-      : null;
+    rows.find(
+      (row) => row.type === "last",
+    );
 
-  const count = Number(summaryRow.count ?? 0);
+
+  const count =
+    Number(summaryRow.count ?? 0);
+
+
+  const total =
+    Number(summaryRow.total ?? 0);
+
 
   return {
+
     sensor: query.sensorCode,
 
     unit:
@@ -108,29 +137,35 @@ export async function getTemperaturePerformanceSummary(
 
     count,
 
+
     minimum:
       summaryRow.minimum !== undefined
         ? Number(summaryRow.minimum)
         : null,
+
 
     maximum:
       summaryRow.maximum !== undefined
         ? Number(summaryRow.maximum)
         : null,
 
+
     average:
       count > 0
-        ? Number(summaryRow.total) / count
+        ? total / count
         : null,
+
 
     firstReadingAt:
       typeof firstRow?._time === "string"
         ? firstRow._time
         : null,
 
+
     lastReadingAt:
       typeof lastRow?._time === "string"
         ? lastRow._time
         : null,
+
   };
 }
