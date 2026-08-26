@@ -53,13 +53,13 @@ Discussion decisions:
 - each installed Sensor must ultimately participate in the BIO-EMS calibration/verification process rather than relying only on bare-component accuracy claims;
 - Pt100/Class A and industrial RS485 temperature transmitters remain possible higher-accuracy/industrial Sensor options later; they are Sensor options and do not define Controller Standard vs Advanced.
 
-The existing approved S16-04 hardware review already proposes dedicated 1-Wire masters and one powered DS18B20 per Home Run channel. This discussion does not override that engineering baseline.
+The existing approved S16-04 hardware review proposes dedicated 1-Wire masters and one powered DS18B20 per Home Run channel. The Pilot prototype simplification in Section 14 is an experimental implementation direction only and does not silently replace the approved S16-04 product baseline.
 
 ## 4. October channel/cabling direction
 
-Earlier discussion considered grouping the 13 DS18B20 probes across several 1-Wire buses. However, the repository's approved S16-04 concept currently specifies **one Sensor per dedicated Home Run channel**, with a proposed 16-channel Controller. Therefore the Home Run architecture remains the authoritative design direction unless deliberately changed through hardware review.
+The repository's approved S16-04 concept specifies **one Sensor per dedicated Home Run channel**, with a proposed 16-channel Controller. October requires 13 channels and therefore fits nominally within a 16-channel Controller with 3 spare channels.
 
-October requires 13 channels and therefore fits nominally within a 16-channel Controller with 3 spare channels.
+For the current Pilot prototype, each Sensor remains physically dedicated to one Home Run and one logical channel. The proposed experimental implementation is one ESP32 GPIO per DS18B20 DATA line, rather than a multidrop 1-Wire bus. This must pass prototype/FAT testing before field use.
 
 Cable routes and lengths are **not yet field-verified**. Any approximate cable-length figures discussed from the scanned drawing are planning estimates only and must not be used as procurement or installation measurements.
 
@@ -86,7 +86,7 @@ Current understanding from the discussion:
 
 ### Product decision
 
-BIO-EMS commercial hardware must be designed **as if the existing EASYLOG system does not exist**. If EASYLOG integration proves practical, it can be used as a Pilot shortcut/legacy adapter, but the commercial product must not depend on this discontinued/legacy ecosystem.
+BIO-EMS commercial hardware must be designed **as if the existing EASYLOG system does not exist**. If EASYLOG integration proves practical, it can be used as a Pilot shortcut/legacy adapter, but the commercial product must not depend on this legacy ecosystem.
 
 Therefore two tracks remain open in parallel:
 
@@ -105,33 +105,26 @@ Target interface direction:
 - provision for local SMS failover;
 - local buffering/replay during communication outages as already defined by the repository integration/hardware requirements.
 
-Future optional paid Sensor/features may include, depending on the customer/industry vertical:
+Future optional paid Sensor/features may include Relative Humidity, Differential Pressure, CO2, Door Status, Power Status, and other approved environmental/process measurements.
 
-- Relative Humidity;
-- Differential Pressure;
-- CO2;
-- Door Status;
-- Power Status;
-- other environmental/process measurements supported by an approved Sensor driver/profile.
-
-The Controller tier and Sensor feature catalog must remain independent: a Standard Controller customer may purchase RH, while an Advanced Controller installation may not require it.
+The Controller tier and Sensor feature catalog remain independent: a Standard Controller customer may purchase RH, while an Advanced Controller installation may not require it.
 
 ## 7. No-custom-PCB Pilot assembly preference
 
-For the current Pilot discussion, the user preference is to avoid a custom PCB and assemble the Controller from locally available modules where practical.
+For the current Pilot discussion, the preference is to avoid a custom PCB and assemble the Controller from locally available modules where practical.
 
 Candidate functional blocks include:
 
-- ESP32-class controller module;
+- ESP32-class development/controller module;
 - protected 24 VDC panel supply architecture;
-- suitable 1-Wire master/interface modules consistent with the approved dedicated-channel architecture;
+- dedicated 1-Wire field channels for Pilot temperature probes;
 - RS485 interface for future Modbus Sensors;
 - local nonvolatile storage;
 - cellular/SMS module;
 - Ethernet/Wi-Fi networking as finally approved;
 - fusing/protection, terminal blocks, DIN rail, enclosure, glands and labeling.
 
-This modular assembly preference is a Pilot implementation constraint for further review; exact parts are **not yet approved**.
+A **perforated plastic laboratory mounting/prototyping panel** may be used as a mechanical carrier for the low-voltage prototype modules if it is mechanically rigid, flame/temperature suitable, insulated, securely fixed inside an enclosure, and does not replace proper terminals, fusing, strain relief, mains/SELV segregation or field protection. It is acceptable for the bench/prototype stage; it is **not automatically accepted as the released Pilot or commercial mounting method** without review.
 
 ## 8. Local Egyptian availability rule
 
@@ -152,13 +145,7 @@ A product merely listed on an Egyptian-facing international marketplace is not a
 
 The cellular function is intended primarily for **warning/alarm SMS failover**, not high-bandwidth cellular data. Therefore an expensive SIM7600-class modem is not currently justified solely for SMS.
 
-SIM800L-class hardware has been discussed as a low-cost Pilot candidate, subject to:
-
-- Egyptian network/SIM compatibility at deployment time;
-- adequate dedicated power design for transmit-current peaks;
-- antenna/signal survey;
-- reliability testing;
-- final security and failover requirements.
+SIM800L-class hardware has been discussed as a low-cost Pilot candidate, subject to Egyptian network/SIM compatibility at deployment time, adequate dedicated power design for transmit-current peaks, antenna/signal survey, reliability testing, and final security/failover requirements.
 
 No modem model is procurement-approved yet.
 
@@ -172,19 +159,11 @@ Sensor types are separately selectable features. The final Standard/Advanced dif
 
 The Pilot must remain cost-conscious. A previous ready-made industrial Temperature+RH option at roughly EGP 3,180 per point would make seven T/RH points exceed EGP 22k before Controller/panel/cabling costs. That was considered too expensive for the Pilot.
 
-This contributed to the decision to:
-
-- remove RH from the initial Pilot scope;
-- begin with temperature only;
-- keep RH and other measurements as optional commercial Sensor/features;
-- evaluate DS18B20 as the low-cost Pilot temperature candidate;
-- retain industrial/high-accuracy Sensor options for customers that need them.
+This contributed to the decision to remove RH from the initial Pilot scope, begin with temperature only, keep RH and other measurements as optional commercial Sensor/features, evaluate DS18B20 as the low-cost Pilot temperature candidate, and retain industrial/high-accuracy Sensor options for customers that need them.
 
 Prices and stock discussed during research are transient and must be rechecked before procurement.
 
-## 12. Next actions when discussion resumes
-
-### October field survey
+## 12. October field survey still required
 
 1. Photograph and identify the termination/central equipment of the existing EASYLOG system.
 2. Record the exact proposed Controller position in the Ante-Chamber.
@@ -193,19 +172,87 @@ Prices and stock discussed during research are transient and must be rechecked b
 5. Record racks/storage heights and major airflow/EMI sources.
 6. Confirm power, earthing, UPS, Ethernet/Wi-Fi and cellular conditions at the Controller location.
 
-### Hardware/product work in parallel
-
-1. Continue the independent BIO-EMS design as though EASYLOG is unavailable.
-2. Verify genuine DS18B20 sourcing inside Egypt and purchase only a small prototype quantity before Pilot quantity.
-3. Select locally available modular 1-Wire master/interface hardware consistent with the dedicated Home Run concept.
-4. Select RS485/Modbus expansion interface.
-5. Select economical but suitable 24 VDC PSU, DC/DC conversion, protection and enclosure components available in Egypt.
-6. Select/test an SMS modem only after confirming network and power requirements.
-7. Build a **prototype Controller**, then perform bench/FAT cable, fault, power-loss, replay and communications testing before full Pilot procurement.
-8. Produce a controlled Pilot BOM only after the relevant design/prototype gates are satisfied.
-
 ## 13. Important repository consistency note
 
 The approved S16-04 hardware review currently records a proposed **16-channel Site Controller**, two banks of dedicated 1-Wire masters, one powered DS18B20 probe per Home Run, 24 VDC nominal panel architecture, Ethernet-first connectivity, optional cellular/SMS failover, local replay buffering, and one Controller per Pilot Site as the planning baseline.
 
-This checkpoint deliberately preserves those approved concepts while recording the newer commercial/product decisions from the 2026-08-26 discussion: temperature-only Pilot, optional paid Sensor features, local-Egypt availability priority, parallel EASYLOG investigation, and preference for a no-custom-PCB modular Pilot assembly.
+The direct-GPIO architecture below is intentionally documented as **Pilot Controller v0.1 prototype direction**, requiring FAT evidence before it can supersede any approved product hardware baseline.
+
+## 14. Pilot Controller v0.1 - prototype direction (2026-08-26)
+
+### Decision
+
+For the lowest-complexity prototype, study and test a **direct dedicated GPIO Home Run architecture**:
+
+- ESP32 38-pin development board as the prototype MCU platform;
+- one dedicated ESP32 GPIO / 1-Wire DATA line per DS18B20 Sensor channel;
+- no multidrop DATA bus in this prototype;
+- October uses CH01-CH13 and reserves CH14-CH16 where GPIO capacity and peripheral allocation permit;
+- each channel retains the three identities: physical Channel, DS18B20 ROM, and BIO-EMS Sensor ID;
+- no custom PCB;
+- DS2482-800 is not required for this prototype path;
+- future product hardware may return to dedicated 1-Wire masters if cable/EMI/FAT evidence requires it.
+
+### Functional wiring concept
+
+```text
+Protected 230 VAC
+      |
+   MCB/Fuse
+      |
+24 VDC DIN/Panel PSU
+      |
+      +--> protected 24 V field/expansion provision
+      |
+      +--> DC/DC --> logic rail --> ESP32
+      |                         |--> CH01 DATA --> S01 DS18B20
+      |                         |--> CH02 DATA --> S02 DS18B20
+      |                         |--> ...
+      |                         |--> CH13 DATA --> S13 DS18B20
+      |                         |--> RS485 module --> future Modbus Sensors
+      |                         |--> local storage
+      |
+      +--> dedicated DC/DC --> cellular/SMS modem
+```
+
+Each DS18B20 Home Run uses `VDD + DATA + GND`. Parasite power is excluded. Each DATA channel requires an appropriate pull-up and field protection to be selected by test; values and exact components are not released yet.
+
+### Power segregation
+
+The cellular modem should not be powered casually from the ESP32 regulator. The prototype should provide a separate, adequately rated conversion path for the cellular modem so transmit-current peaks do not reset or destabilize the MCU.
+
+### RS485 expansion
+
+At least one RS485/Modbus interface remains in the Controller prototype even though the Pilot begins with temperature only. This preserves the intended path for optional paid RH, differential-pressure, CO2 and other industrial Sensor features.
+
+### Prototype/FAT sequence
+
+Do **not** procure the full Site quantity before validation. Test in stages:
+
+1. one DS18B20 channel at short cable length;
+2. the same channel at representative 5 m, 10 m, 20 m and up to the measured worst-case Site route as applicable;
+3. four independent channels concurrently;
+4. expanded/full-load channel test after GPIO/peripheral pin allocation is validated;
+5. fault injection: Sensor disconnect, open DATA, short/miswire where safely testable, wrong ROM/replaced Sensor, CRC/communication errors;
+6. power-cycle/brownout recovery;
+7. network outage, local buffering and replay behavior;
+8. cellular transmit test while all acquisition functions continue without reset.
+
+The next electrical design task is a **safe ESP32 pin assignment** covering Sensor channels, RS485, cellular UART, storage, networking and service functions while avoiding boot/flash/reserved-pin conflicts.
+
+## 15. Prototype mechanical assembly
+
+For the first laboratory build, a perforated plastic hole panel can replace a loose tabletop/breadboard arrangement as the **mechanical mounting base**. Modules may be fixed using insulated standoffs, screws/cable ties where appropriate, with short organized low-voltage wiring.
+
+Conditions:
+
+- the 230 VAC section and PSU primary must remain guarded/segregated and preferably use enclosed/DIN components;
+- no exposed mains conductors on the perforated panel;
+- use proper terminal blocks for field Sensor cables rather than twisting/jumper-wire connections;
+- provide strain relief and cable labeling;
+- fuse/protect power branches;
+- keep cellular antenna and RF considerations in mind;
+- the panel should ultimately sit inside a suitable enclosure for extended testing;
+- a successful laboratory mounting arrangement is not itself a production mechanical approval.
+
+This approach is preferred over a solderless breadboard for a multi-day/multi-channel prototype because it can provide better mechanical retention and repeatability while preserving the no-custom-PCB objective.
