@@ -14,190 +14,179 @@ This document records the hardware discussion checkpoint reached on 2026-08-26 s
 - Pilot Controller should be a **standalone embedded controller; no PC is required at the Site**.
 - No custom PCB is desired at this stage.
 - The first laboratory prototype will use a **solderless breadboard** for the low-voltage electronics and short prototype interconnections.
-- The breadboard is a laboratory development tool only; it is not the released field mounting method for the October or El Manial Site Controller.
-- The Controller product tier (**Standard / Advanced**) is separate from the Sensor feature set.
-- Additional measurement types such as RH, differential pressure, CO2, door status, power status, etc. are treated as **optional paid Sensor/features**, not as the definition of Standard vs Advanced Controller.
-- The Controller architecture must remain capable of supporting future Sensor types, particularly through **RS485/Modbus**, even though the initial Pilot is temperature-only.
+- The breadboard is a laboratory development tool only; it is not the released field mounting method.
+- Controller tier (**Standard / Advanced**) is separate from optional Sensor features.
+- Future Sensor types should be supported particularly through **RS485/Modbus**, although the initial Pilot is temperature-only.
 
 ## 2. October Site mapping inputs
 
-The supplied October warehouse drawing is based on an **actual Thermal Mapping study**. Sensor positions must therefore preserve the mapped locations rather than being moved merely to simplify cabling.
+The supplied October warehouse drawing is based on an **actual Thermal Mapping study**. Sensor positions must preserve the mapped locations.
 
-Known Site heights from the field discussion:
+Known Site heights:
+- Cold Rooms: approximately **2.8 m**.
+- Dry Storage: approximately **3.0 m**.
+- Ante-Chamber: approximately **3.0 m**.
 
-- Cold Rooms: approximately **2.8 m** room height.
-- Dry Storage: approximately **3.0 m** room height.
-- Ante-Chamber: approximately **3.0 m** room height.
-
-The permanent Sensor mounting height should reproduce the Thermal Mapping logger height where that information is available. Room ceiling height must not automatically be treated as Sensor mounting height.
+Permanent Sensor mounting height should reproduce the Thermal Mapping logger height where documented.
 
 ### October mapped points
+- Total: **13**.
+- Cold Rooms: **6 temperature points** across three rooms.
+- Ante-Chamber: **1 point**.
+- Dry Storage: **6 points**.
+- Current Pilot: **temperature only at all 13 points**.
 
-- Total mapped monitoring points: **13**.
-- Cold Rooms: **6 temperature points** across three Cold Rooms (two mapped points per room).
-- Ante-Chamber: **1 mapped point**.
-- Dry Storage: **6 mapped points**.
-- The current Pilot scope is intentionally **temperature only at all 13 October points**.
+## 3. Temperature Sensor direction
 
-## 3. Temperature Sensor direction for the Pilot
+The current preferred low-cost Pilot direction is **DS18B20**, subject to prototype/FAT and field-cable validation.
 
-### DS18B20
+- powered three-wire operation: `VDD`, `DATA`, `GND`;
+- no parasite power;
+- prefer genuine/traceable devices;
+- map ROM identity to physical Channel and BIO-EMS Sensor record;
+- calibration/verification remains required;
+- Pt100/Class A and industrial RS485 transmitters remain future options.
 
-The current preferred low-cost Pilot temperature direction is **DS18B20**, subject to prototype/FAT and field-cable validation.
-
-- externally powered **three-wire** operation (`VDD`, `DATA`, `GND`);
-- no parasite power as the standard Pilot field arrangement;
-- prefer genuine/traceable devices rather than unknown clones;
-- map Sensor ROM/serial identity to the physical Channel and BIO-EMS Sensor record;
-- installed Sensors must participate in the BIO-EMS calibration/verification process;
-- Pt100/Class A and industrial RS485 temperature transmitters remain possible higher-accuracy/industrial Sensor options later.
-
-The approved S16-04 hardware review proposes dedicated 1-Wire masters and one powered DS18B20 per Home Run channel. The Pilot simplification below is experimental and does not silently replace that approved product baseline.
+The approved S16-04 product baseline proposes dedicated 1-Wire masters. Prototype simplifications below are experimental and do not silently replace that baseline.
 
 ## 4. October channel/cabling direction
 
-The approved S16-04 concept specifies **one Sensor per dedicated Home Run channel**, with a proposed 16-channel Controller. October requires 13 channels and therefore fits nominally within a 16-channel Controller with 3 spare channels.
+The S16-04 concept specifies one Sensor per dedicated Home Run, with a proposed 16-channel Controller. October requires 13 channels.
 
-For the current Pilot prototype, each Sensor remains physically dedicated to one Home Run and one logical channel. The experimental implementation under study is one ESP32 GPIO per DS18B20 DATA line, rather than a multidrop 1-Wire bus. This must pass prototype/FAT testing before field use.
+Cable routes and lengths are not yet field-verified. Before design freeze measure S01-S13 routes, containment, EMI sources, logger heights, rack heights, cable specification and worst-case link performance.
 
-Cable routes and lengths are **not yet field-verified**. Planning estimates must not be used as procurement or installation measurements.
+## 5. Existing GREISINGER EASYLOG
 
-Required before design freeze: exact Controller position, measured route length to S01-S13, containment/penetrations, EMI sources, Thermal Mapping logger heights, rack/storage heights, cable specification, and worst-case 1-Wire validation.
-
-## 5. Existing GREISINGER EASYLOG system at October
-
-Existing **GREISINGER EASYLOG 40K** devices may reduce Pilot cost, but they remain a **parallel legacy-integration investigation only**. BIO-EMS commercial hardware must be designed as if EASYLOG does not exist.
-
-Two tracks remain open:
-
-1. **Pilot legacy track:** investigate re-use/integration of existing EASYLOG equipment.
-2. **BIO-EMS product track:** continue designing a complete independent temperature monitoring solution.
+Existing EASYLOG 40K equipment remains a parallel legacy-integration investigation only. BIO-EMS commercial hardware must be designed independently of it.
 
 ## 6. Multi-Sensor Controller principle
 
-The Pilot starts with temperature only, but the Controller must be extensible.
+Target interfaces include 1-Wire temperature, **RS485/Modbus RTU**, MQTT network connectivity, SMS failover and local buffering/replay. RH, differential pressure, CO2, door status, power status and other variables remain optional paid Sensor/features.
 
-Target interfaces include:
+## 7. Breadboard prototype decision
 
-- 1-Wire temperature interface for the Pilot;
-- **RS485/Modbus RTU** for future industrial Sensor types;
-- local network path for MQTT to BIO-EMS;
-- local SMS failover;
-- local buffering/replay during communication outages.
-
-Future optional paid Sensor/features may include Relative Humidity, Differential Pressure, CO2, Door Status, Power Status, and other approved measurements.
-
-## 7. No-custom-PCB and breadboard prototype decision
-
-The first laboratory build will use a **solderless breadboard** as the low-voltage prototyping platform. This replaces the previously discussed perforated plastic hole panel for the first prototype.
-
-Breadboard scope:
-
-- ESP32 development board;
-- low-voltage pull-ups and channel test circuitry;
-- RS485 development module;
-- low-voltage storage/interface modules;
-- short low-voltage jumper interconnections;
-- staged DS18B20 channel testing.
-
-Breadboard limitations:
-
-- **no 230 VAC wiring on the breadboard**;
-- the mains input and PSU primary remain enclosed/guarded and electrically segregated;
-- the breadboard is not used as the final field termination point for long Sensor cables;
-- long field-cable tests should transition through secure terminal/connector points and strain relief rather than loose Dupont jumpers;
-- GSM power-current paths should use appropriately rated wiring/connections and must not depend on weak breadboard contacts if current demand makes them unsuitable;
-- successful breadboard FAT does not authorize breadboard installation at the customer Site.
-
-The reason for selecting breadboard is **speed of modification, ease of measurement and troubleshooting, and zero custom PCB requirement during early electrical validation**.
+The first laboratory build uses a **solderless breadboard** for low-voltage prototyping. No 230 VAC is placed on the breadboard. Long field-cable tests transition through secure terminal/connector points. GSM power must use appropriately rated connections. Successful breadboard FAT does not authorize breadboard installation at the customer Site.
 
 ## 8. Local Egyptian availability rule
 
-A major procurement requirement is **local availability inside Egypt**. Priority is realistic re-purchase, technical suitability, calibration/traceability, reliability/serviceability, documented interface, then acceptable price.
+Procurement priority: realistic local re-purchase, technical suitability, calibration/traceability, reliability/serviceability, documented interface, then acceptable price.
 
 ## 9. GSM/SMS direction
 
-Cellular is intended primarily for **warning/alarm SMS failover**, not high-bandwidth data. SIM800L-class hardware remains a low-cost candidate subject to network compatibility, dedicated power design, antenna/signal survey, reliability testing, and final security/failover requirements. No modem model is procurement-approved yet.
+Cellular is primarily for warning/alarm SMS failover. SIM800L-class hardware remains a low-cost candidate subject to network compatibility, dedicated power design, signal survey and reliability testing. No modem model is procurement-approved yet.
 
-## 10. Standard vs Advanced clarification
+## 10. Standard vs Advanced
 
-**Standard and Advanced describe the Controller/platform offering, not Sensor accuracy tiers and not which physical variables the customer is allowed to monitor.** Sensor types are separately selectable paid features.
+**Standard and Advanced describe the Controller/platform offering, not Sensor accuracy tiers or allowed measurement variables.** Sensor types are separately selectable features.
 
 ## 11. Cost direction
 
-The Pilot remains cost-conscious. RH has been removed from the initial Pilot scope; temperature-only monitoring starts the Pilot, while RH and other measurements remain optional commercial Sensor/features. DS18B20 is the low-cost Pilot candidate, with industrial/high-accuracy alternatives retained for customers that require them.
+Pilot starts temperature-only. RH and other measurements remain optional commercial features. DS18B20 is the low-cost Pilot candidate, with industrial alternatives retained where required.
 
 ## 12. October field survey still required
 
-1. Identify the existing EASYLOG termination/central equipment.
-2. Record the exact Controller position in the Ante-Chamber.
-3. Measure the actual route from Controller to S01-S13.
-4. Record Thermal Mapping logger heights where available.
-5. Record racks/storage heights and major airflow/EMI sources.
-6. Confirm power, earthing, UPS, Ethernet/Wi-Fi and cellular conditions.
+1. Identify EASYLOG central/termination equipment.
+2. Record exact Controller position.
+3. Measure routes S01-S13.
+4. Record Thermal Mapping logger heights.
+5. Record racks/storage heights and airflow/EMI sources.
+6. Confirm power, earthing, UPS, network and cellular conditions.
 
 ## 13. Repository consistency note
 
-The approved S16-04 hardware review records a proposed **16-channel Site Controller**, two banks of dedicated 1-Wire masters, one powered DS18B20 probe per Home Run, 24 VDC nominal panel architecture, Ethernet-first connectivity, optional cellular/SMS failover, local replay buffering, and one Controller per Pilot Site as the planning baseline.
-
-The direct-GPIO/breadboard architecture below is intentionally documented as **Pilot Controller v0.1 laboratory prototype direction**, requiring FAT evidence before it can supersede any approved product hardware baseline.
+Approved S16-04 remains the product hardware baseline. Breadboard/direct-GPIO work is a laboratory prototype investigation requiring FAT evidence.
 
 ## 14. Pilot Controller v0.1 — breadboard laboratory prototype
 
-### Prototype architecture
+Initial staged prototype:
+1. ESP32 38-pin development board.
+2. One DS18B20 channel, then four channels.
+3. Powered three-wire Sensors.
+4. No multidrop during early channel tests.
+5. No custom PCB.
+6. RS485 and GSM tested as separate peripheral stages.
 
-- ESP32 38-pin development board as the prototype MCU platform;
-- study one dedicated ESP32 GPIO / 1-Wire DATA line per DS18B20 Sensor channel;
-- no multidrop DATA bus in this prototype;
-- October target: CH01-CH13, with CH14-CH16 as design reserve where validated GPIO/peripheral allocation permits;
-- physical Channel + DS18B20 ROM + BIO-EMS Sensor ID retained as three identity layers;
-- no custom PCB;
-- no DS2482-800 required for this prototype path;
-- future product hardware may return to dedicated 1-Wire masters if cable/EMI/FAT evidence requires it.
-
-### Functional wiring concept
+Functional concept:
 
 ```text
 230 VAC (outside breadboard)
-      |
-   MCB/Fuse
-      |
-24 VDC protected PSU
-      |
-      +--> DC/DC --> logic supply --> BREADBOARD
-      |                              |
-      |                              +--> ESP32
-      |                              |     |--> CH01 DATA --> S01 DS18B20
-      |                              |     |--> CH02 DATA --> S02 DS18B20
-      |                              |     |--> ...
-      |                              |     |--> CH13 DATA --> S13 DS18B20
-      |                              |     |--> RS485 module --> future Modbus Sensors
-      |                              |     +--> local storage/interface
-      |                              |
-      |                              +--> low-voltage pull-up/test circuitry
-      |
-      +--> dedicated DC/DC --> cellular/SMS modem
+  -> protected 24 VDC PSU
+      -> DC/DC logic -> Breadboard -> ESP32 -> DS18B20 test channels
+                                    -> RS485 stage
+                                    -> storage/network stage
+      -> dedicated DC/DC -> GSM/SMS stage
 ```
 
-Each DS18B20 Home Run uses `VDD + DATA + GND`. Parasite power is excluded. Pull-up values, protection devices, GPIO assignments and exact power components are not released yet and must be determined through testing/design review.
+Breadboard FAT progression: one Sensor at short length; 5/10/20 m and measured worst case; four concurrent channels; fault injection; power-cycle/brownout; network buffering/replay; GSM transmission without MCU reset.
 
-### Breadboard test progression
+## 15. ESP32 pin-budget audit — 2026-08-26
 
-The breadboard should evolve in controlled stages rather than wiring 13 channels immediately:
+The requested next step was a safe pin assignment. The audit identified an important constraint before issuing a misleading 16-channel drawing.
 
-1. ESP32 + one DS18B20 at short cable length;
-2. repeat with 5 m, 10 m, 20 m and the measured worst-case Site route as applicable;
-3. four independent channels concurrently;
-4. expanded/full-load channel test only after safe GPIO/peripheral allocation is validated;
-5. fault injection: disconnect, open DATA, replaced/wrong ROM, CRC/communication faults, and safe miswire tests where appropriate;
-6. power-cycle/brownout recovery;
-7. network outage, buffering and replay;
-8. GSM transmit test while acquisition continues without MCU reset.
+For the classic ESP32-WROOM-32/38-pin development-board family:
 
-### Breadboard-to-field gate
+- GPIO6-GPIO11 are tied to the module's SPI flash and must not be allocated as ordinary field channels.
+- GPIO34, GPIO35, GPIO36 and GPIO39 are input-only; a DS18B20 1-Wire DATA channel is bidirectional and therefore these pins are not suitable as direct dedicated 1-Wire channels.
+- GPIO0, GPIO2, GPIO5, GPIO12 and GPIO15 are boot/strapping-sensitive and should not be casually loaded by field pull-ups/protection/cables without a deliberate boot-state analysis.
+- UART, RS485 direction control, storage and service/debug functions consume additional usable GPIOs.
 
-The breadboard is a **development fixture only**. Before a Pilot Controller is installed at El Manial or October, the electrical design must be transferred to a mechanically secure, enclosed, serviceable assembly with proper terminals, protection, strain relief, labeling, mains/SELV segregation and field wiring practices. This field assembly can still remain **no-custom-PCB** if desired; the final mounting method will be selected after prototype evidence.
+### Safe first-stage channel set
 
-## 15. Next design task
+For the breadboard **channel-validation prototype**, start with four conservative output-capable pins:
 
-Prepare a **safe ESP32 pin assignment** covering Sensor channels, RS485, cellular UART, storage, networking and service functions while avoiding boot/flash/reserved-pin conflicts, then issue a pin-by-pin Wiring v0.1 for the breadboard prototype.
+| Channel | ESP32 GPIO | Purpose |
+|---|---:|---|
+| CH01 | GPIO16 | DS18B20 DATA |
+| CH02 | GPIO17 | DS18B20 DATA |
+| CH03 | GPIO18 | DS18B20 DATA |
+| CH04 | GPIO19 | DS18B20 DATA |
+
+Each channel uses its own pull-up/test protection network and its own Sensor Home Run. Sensor VDD and GND are distributed separately.
+
+### Important result
+
+A full **13-16 direct-GPIO Sensor implementation plus RS485 + GSM + removable storage + service functions on one classic 38-pin ESP32** leaves an unattractive pin budget and pushes the design toward strapping/debug conflicts. Therefore the earlier assumption that 16 dedicated direct-GPIO channels could simply be assigned on this board is **not design-approved**.
+
+This is a useful prototype finding, not a failure. It means:
+
+1. Direct GPIO remains valid for the **1-channel and 4-channel breadboard FAT** and cable/EMI experiments.
+2. Do not purchase or wire a 13/16-channel direct-GPIO version yet.
+3. After the 4-channel FAT, choose the full-channel architecture deliberately: dedicated 1-Wire master/multiplexer hardware, an I/O/secondary-MCU architecture, or return to the approved S16-04 dedicated-master concept.
+4. Local Egyptian module availability remains a mandatory selection criterion.
+
+### Provisional peripheral test pins
+
+Peripheral tests should initially be performed **sequentially**, not all at once with 13 Sensor GPIOs:
+
+- RS485 UART test: GPIO32/GPIO33 for UART data, with DE/RE allocation selected during the RS485 test fixture review.
+- GSM UART test: use a separately reviewed UART mapping; do not freeze GPIO1/GPIO3 while USB programming/debug behavior is still required.
+- Storage: begin with ESP32 internal flash/NVS/SPIFFS/LittleFS-style buffering for functional replay experiments if adequate for the test; removable microSD pin allocation is deferred until the full architecture is chosen.
+
+These are prototype assignments only, not field wiring release.
+
+## 16. Breadboard Wiring v0.1 — first four channels
+
+```text
+ESP32 3V3 ----------------------+----+----+----+
+                                |    |    |    |
+                              RPU1 RPU2 RPU3 RPU4
+                                |    |    |    |
+GPIO16 -------------------------+    |    |    +--> CH01 DATA
+GPIO17 ------------------------------+    |    +--> CH02 DATA
+GPIO18 -----------------------------------+    +--> CH03 DATA
+GPIO19 ----------------------------------------+--> CH04 DATA
+
+3V3/VDD ---------------------------------------> Sensor VDD distribution
+GND -------------------------------------------> Sensor GND distribution
+
+CH01 terminal: VDD / DATA(GPIO16) / GND -> S01
+CH02 terminal: VDD / DATA(GPIO17) / GND -> S02
+CH03 terminal: VDD / DATA(GPIO18) / GND -> S03
+CH04 terminal: VDD / DATA(GPIO19) / GND -> S04
+```
+
+`RPU` values and TVS/ESD protection are **TBD by cable-length/edge-quality testing**; 4.7 kOhm may be used as an initial short-bench reference but is not yet a released field value.
+
+## 17. Next decision gate
+
+Build and validate the four-channel breadboard above. In parallel, research locally available modules for the full 13/16-channel architecture. Only after that evidence should BIO-EMS freeze the final Site Controller channel interface and produce the field wiring drawing/BOM.
