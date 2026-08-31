@@ -24,9 +24,7 @@ export interface ConfigReceiptInput {
   acknowledged_at: string;
 }
 
-export function receiveConfigEnvelope(
-  input: ConfigReceiptInput
-): ConfigReceiptResult {
+export function receiveConfigEnvelope(input: ConfigReceiptInput): ConfigReceiptResult {
   let envelope;
   try {
     envelope = verifyConfigDeliveryEnvelope(input.envelope);
@@ -79,12 +77,9 @@ function rejected(
     acknowledgement: configAcknowledgementSchema.parse({
       controller_id: input.controller_id,
       site_uuid: input.site_uuid,
-      config_version:
-        envelope?.config_version ?? input.current_config?.config_version ?? 1,
+      config_version: envelope?.config_version ?? input.current_config?.config_version ?? 1,
       checksum_sha256:
-        envelope?.checksum_sha256 ??
-        input.current_config?.checksum_sha256 ??
-        "0".repeat(64),
+        envelope?.checksum_sha256 ?? input.current_config?.checksum_sha256 ?? "0".repeat(64),
       acknowledged_at: input.acknowledged_at,
       status: "REJECTED",
       rejection_code: code,
@@ -105,10 +100,7 @@ function safeEnvelopeIdentity(
   if (!Number.isInteger(configVersion) || (configVersion as number) <= 0) {
     return null;
   }
-  if (
-    typeof checksumSha256 !== "string" ||
-    !/^[a-f0-9]{64}$/.test(checksumSha256)
-  ) {
+  if (typeof checksumSha256 !== "string" || !/^[a-f0-9]{64}$/.test(checksumSha256)) {
     return null;
   }
   return {
