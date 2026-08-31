@@ -1,6 +1,6 @@
 # Project Status
 
-## Reporting software closure — 31 August 2026
+## P0 professional reporting baseline — 31 August 2026
 
 - All five controlled report families are AVAILABLE through Reports Center Preview, CSV, and PDF:
   Calibration History, Temperature Performance, Alarm History, Device Communication Health, and
@@ -8,8 +8,10 @@
 - Alarm and Audit projections reuse their existing durable lifecycle/evidence stores. Device
   Communication Health now uses an append-only communication-event ledger introduced by migration
   014; its history therefore begins when this migration is deployed.
-- BF-10 is source-complete at software version 0.16.0. Automated verification is required on the
-  integration commit before release promotion.
+- BF-10 is merged and CI verified at software version 0.16.3 through PR #106 and CI run 303.
+- Operational PDFs include controlled visual identity, selected Site time-zone rendering,
+  traceable scope, summaries, disclosure, and page numbering. Calibration and Temperature
+  Performance retain their existing professional controlled layouts.
 - Field commissioning, the deployed MQTT endurance scenario, and customer UAT/sign-off remain
   external evidence gates and are not inferred from repository completion.
 
