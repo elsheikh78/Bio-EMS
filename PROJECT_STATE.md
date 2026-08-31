@@ -4,11 +4,11 @@
 
 **Current source-software version:** `0.16.3`
 
-**Current phase:** P1 software closure with P2 Site Controller Runtime as the next controlled implementation phase, in parallel with BIO EGYPT Field-Pilot Preparation.
+**Current phase:** P2 Site Controller Runtime implementation, in parallel with BIO EGYPT Field-Pilot Preparation.
 
-**Current feature work:** P0 reporting and the P1 Notification Delivery Engine are merged and CI verified. The notification runtime now includes a durable delivery queue, worker execution, SMS-provider runtime integration, Alarm escalation orchestration, and a protected Delivery Operations view.
+**Current feature work:** P0 reporting and the P1 Notification Delivery Engine are merged and CI verified. P2-01 Site Controller Runtime Foundation is implemented on PR #115 with deterministic runtime/build identity, Site/configuration boundaries, startup state, watchdog/restart behavior, and host-side automated coverage.
 
-**Next actions:** close P1 documentation and live-provider evidence, then implement P2 Site Controller Runtime. Execute the physical MQTT/UAT, commissioning, notification-provider, and customer-acceptance evidence gates separately. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
+**Next actions:** merge P2-01 after final CI on the documentation-updated head, then implement P2-02 Configuration Receipt and Integrity against the existing BF-08 synchronization contract. Execute the physical MQTT/UAT, commissioning, notification-provider, and customer-acceptance evidence gates separately. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
@@ -33,12 +33,13 @@
 - Controlled BIO EGYPT two-Site/20-Sensor Pilot documentation package.
 - Production deployment validation, MQTT TLS/QoS, persistent SQLite, and LIVE/REPLAY recovery foundation.
 - Controlled Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations Preview/CSV/PDF workflows.
+- P2-01 host-side Site Controller runtime foundation with explicit build/hardware identity, Site/configuration boundary, deterministic startup states, connectivity transitions, and watchdog/restart semantics.
 
 ## P0-P6 Delivery Position
 
 - **P0 — Professional software/reporting baseline:** COMPLETE / MERGED / CI VERIFIED. Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** SOFTWARE COMPLETE / MERGED / CI VERIFIED. Live SMS-provider evidence and field notification UAT remain open.
-- **P2 — Site Controller Runtime:** NEXT. BF-08 defines the synchronization contract, but controller firmware/runtime, local persistence, offline Alarm execution, local failover, and reconnect application evidence are not yet claimed.
+- **P2 — Site Controller Runtime:** IN PROGRESS. P2-01 runtime foundation is implemented and CI verified on PR #115; BF-08 defines the synchronization contract. Configuration receipt/integrity, durable local persistence, sensor acquisition, offline Alarm execution, local failover, reconnect reconciliation, controller health evidence, and bench qualification remain open.
 - **P3 — Pilot Commissioning Tooling:** PARTIAL. Controlled documents exist; executable field evidence and commissioning remain open.
 - **P4 — Production Hardening:** PARTIAL. Deployment validation, persistence, recovery semantics, TLS/QoS, and backup paths exist; production operational evidence remains open.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** FOUNDATION IMPLEMENTED. Platform identity/audit boundaries exist; broader Owner operational workflows, fleet/customer/license operations, and commercial production operations remain separately scoped.
@@ -50,16 +51,26 @@ The P1 software sequence is integrated through PRs #109 through #113. The final 
 
 P1 software completion does not assert that a real SMS has been delivered through the selected production provider. Provider credentials, a controlled recipient, runtime deployment, delivery/attempt evidence, retry/failure evidence, and field UAT remain required before operational acceptance.
 
+## P2 Execution Evidence
+
+P2 starts from the completed BF-08 Site Controller synchronization contract.
+
+- P2-01 — Site Controller Runtime Foundation: implemented on PR #115. The host-side reference runtime defines runtime/build identity, `STANDARD`/`ADVANCED` hardware profile identity, controller/Site/config-contract boundaries, deterministic online/offline/not-ready startup state, watchdog timeout behavior, restart evidence, and automated tests.
+- P2-02 — Configuration Receipt and Integrity: NEXT. It will consume and verify the BF-08 delivery envelope and preserve explicit APPLIED/REJECTED semantics without replacing a known-good effective configuration with an invalid candidate.
+
+P2-01 does not claim ESP32 firmware, DS18B20 acquisition, local persistent storage, SIM800L operation, or field hardware qualification.
+
 ## Release and Repository Timeline
 
 The immutable `v0.13.0` tag targets `ee2cb45832888ff500e02afcbe1418b6144276c6`.
-Later Sprint 13, Sprint 14, Sprint 15, Sprint 16, BF-10, and P1 work is current repository development and is not retroactively part of that tagged artifact.
+Later Sprint 13, Sprint 14, Sprint 15, Sprint 16, BF-10, P1, and P2 development is current repository development and is not retroactively part of that tagged artifact.
 
 - Sprint 13: COMPLETE / MERGED / CLOSED.
 - Sprint 14: COMPLETE / MERGED / CLOSED.
 - Sprint 15: COMPLETE / MERGED / VERIFIED / CLOSED.
 - Sprint 16 reporting/BF-10 software scope: COMPLETE / MERGED / CI VERIFIED.
 - P1 Notification Delivery Engine software scope: COMPLETE / MERGED / CI VERIFIED.
+- P2 Site Controller Runtime: IN PROGRESS; P2-01 implemented on PR #115.
 
 ## Domain Boundary
 
@@ -71,4 +82,4 @@ No Asset, Monitoring Point, or separate Area backend domain has been introduced.
 
 ## Deferred / Open State
 
-Monitoring Points, broader Asset/discovery/provisioning workflows, OTA, Site Controller field runtime, broader commercial production operations, release packaging, physical commissioning, provider live evidence, and customer acceptance remain deferred or open unless later approved work implements and verifies them.
+Monitoring Points, broader Asset/discovery/provisioning workflows, OTA, production Site Controller firmware/hardware adapters, broader commercial production operations, release packaging, physical commissioning, provider live evidence, and customer acceptance remain deferred or open unless later approved work implements and verifies them.
