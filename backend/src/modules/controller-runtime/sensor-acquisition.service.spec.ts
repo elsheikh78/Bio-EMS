@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
-import { acquireConfiguredSensors, type Ds18b20Reader } from "./sensor-acquisition.service";
+import type * as Sync from "../controller-sync/offline-critical-config.contract";
+import * as Acquisition from "./sensor-acquisition.service";
 
 const SITE_UUID = "e70cb67a-0ab0-4e57-ac61-d6142990ca37";
-const bundle: OfflineCriticalConfigBundle = {
+
+const bundle: Sync.OfflineCriticalConfigBundle = {
   contract_version: 1,
   config_version: 8,
   site_uuid: SITE_UUID,
@@ -28,29 +29,36 @@ const bundle: OfflineCriticalConfigBundle = {
       critical_delay_seconds: 30,
     },
   ],
-  sms_failover: { enabled: false, primary_unavailable_after_seconds: 300 },
+  sms_failover: {
+    enabled: false,
+    primary_unavailable_after_seconds: 300,
+  },
   sms_targets: [],
   critical_escalation_steps: [],
 };
 
-function reader(values: Map<number, number | null>): Ds18b20Reader {
+function reader(
+  values: Map<number, number | null>
+): Acquisition.Ds18b20Reader {
   return {
     readCelsius: ({ channel }) => values.get(channel) ?? null,
   };
 }
 
+function acquire(
+  sensorReader: Acquisition.Ds18b20Reader,
+  sampledAt = "2026-08-31T16:21:00Z"
+) {
+  return Acquisition.acquireConfiguredSensors(bundle, sensorReader, sampledAt);
+}
+
 describe("controller sensor acquisition", () => {
-  it("keeps stable Sensor, Device, and channel identity with one cycle timestamp", () => {
-    const cycle = acquireConfiguredSensors(
-      bundle,
-      reader(
-        new Map([
-          [1, 5.25],
-          [2, 6.5],
-        ])
-      ),
-      "2026-08-31T16:21:00Z"
-    );
+  it("keeps stable sensor identity and one cycle timestamp", () => {
+    const values = new Map([
+      [1, 5.25],
+      [2, 6.5],
+    ]);
+    const cycle = acquire(reader(values));
 
     expect(cycle.samples).toEqual([
       {
@@ -72,35 +80,25 @@ describe("controller sensor acquisition", () => {
     ]);
   });
 
-  it("marks null and the DS18B20 -127 sentinel as disconnected", () => {
-    const nullCycle = acquireConfiguredSensors(
-      bundle,
-      reader(new Map([[1, null]])),
-      "2026-08-31T16:21:00Z"
-    );
+  it("marks null and -127 as disconnected", () => {
+    const nullCycle = acquire(reader(new Map([[1, null]])));
     expect(nullCycle.samples[0]).toMatchObject({
       status: "DISCONNECTED",
       value_celsius: null,
     });
 
-    const sentinelCycle = acquireConfiguredSensors(
-      bundle,
-      reader(new Map([[1, -127]])),
-      "2026-08-31T16:21:00Z"
-    );
+    const sentinelCycle = acquire(reader(new Map([[1, -127]])));
     expect(sentinelCycle.samples[0]).toMatchObject({
       status: "DISCONNECTED",
       value_celsius: null,
     });
   });
 
-  it("rejects non-finite and out-of-range DS18B20 values", () => {
-    for (const value of [Number.NaN, Number.POSITIVE_INFINITY, -56, 126]) {
-      const cycle = acquireConfiguredSensors(
-        bundle,
-        reader(new Map([[1, value]])),
-        "2026-08-31T16:21:00Z"
-      );
+  it("rejects non-finite and out-of-range values", () => {
+    const invalidValues = [Number.NaN, Number.POSITIVE_INFINITY, -56, 126];
+
+    for (const value of invalidValues) {
+      const cycle = acquire(reader(new Map([[1, value]])));
       expect(cycle.samples[0]).toMatchObject({
         status: "INVALID",
         value_celsius: null,
@@ -108,36 +106,37 @@ describe("controller sensor acquisition", () => {
     }
   });
 
-  it("isolates reader exceptions to the affected Sensor", () => {
-    const throwingReader: Ds18b20Reader = {
+  it("isolates reader exceptions to the affected sensor", () => {
+    const throwingReader: Acquisition.Ds18b20Reader = {
       readCelsius: ({ channel }) => {
-        if (channel === 1) throw new Error("bus fault");
+        if (channel === 1) {
+          throw new Error("bus fault");
+        }
         return 4.5;
       },
     };
 
-    const cycle = acquireConfiguredSensors(
-      bundle,
-      throwingReader,
-      "2026-08-31T16:21:00Z"
-    );
+    const cycle = acquire(throwingReader);
     expect(cycle.samples[0]).toMatchObject({
       status: "READ_ERROR",
       value_celsius: null,
     });
-    expect(cycle.samples[1]).toMatchObject({ status: "OK", value_celsius: 4.5 });
+    expect(cycle.samples[1]).toMatchObject({
+      status: "OK",
+      value_celsius: 4.5,
+    });
   });
 
-  it("rejects invalid sample timestamps before reading hardware", () => {
+  it("rejects invalid timestamps before reading hardware", () => {
     let reads = 0;
-    const countingReader: Ds18b20Reader = {
+    const countingReader: Acquisition.Ds18b20Reader = {
       readCelsius: () => {
         reads += 1;
         return 5;
       },
     };
 
-    expect(() => acquireConfiguredSensors(bundle, countingReader, "not-a-time")).toThrow();
+    expect(() => acquire(countingReader, "not-a-time")).toThrow();
     expect(reads).toBe(0);
   });
 });
