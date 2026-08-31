@@ -1,5 +1,6 @@
 import app from "./app";
 import { config } from "./config/config";
+import { startNotificationDeliveryRuntime } from "./modules/notification/notification-delivery.runtime";
 
 const PORT = config.port;
 
@@ -10,3 +11,5 @@ app.listen(PORT, () => {
   console.log(` Listening   : http://localhost:${PORT}`);
   console.log("==================================");
 });
+
+startNotificationDeliveryRuntime();
