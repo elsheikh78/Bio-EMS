@@ -7,12 +7,7 @@ type Sample = Acquisition.SensorAcquisitionSample;
 type SensorConfig = Bundle["sensors"][number];
 
 export type OfflineAlarmCondition =
-  | "NORMAL"
-  | "WARNING_LOW"
-  | "WARNING_HIGH"
-  | "CRITICAL_LOW"
-  | "CRITICAL_HIGH"
-  | "SENSOR_FAULT";
+  "NORMAL" | "WARNING_LOW" | "WARNING_HIGH" | "CRITICAL_LOW" | "CRITICAL_HIGH" | "SENSOR_FAULT";
 
 export type OfflineAlarmPhase = "NORMAL" | "PENDING" | "ACTIVE" | "FAULT";
 
