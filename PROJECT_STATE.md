@@ -1,19 +1,16 @@
 # BIO-EMS Project State
 
-**Published version:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
+**Latest tagged release:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
-**Current phase:** Backend commercial-foundation implementation in parallel with
-BIO EGYPT Field-Pilot Preparation
+**Current source-software version:** `0.16.0`
 
-**Current integrated `main` baseline:** `47bdf03510613380eb5ebafb13f4c093bbdc84f6`
+**Current phase:** Reporting software closure in parallel with BIO EGYPT Field-Pilot Preparation
 
-**Current feature work:** BF-01 `SYSTEM_OWNER` backend boundary is implemented and
-locally verified on `agent/bf-01-system-owner-boundary`; PR, GitHub CI, review, and
-merge remain required before it becomes part of `main`.
+**Current feature work:** BF-10 completes all five controlled report families through Preview,
+CSV, and PDF, including a durable append-only Device communication history ledger.
 
-**Next actions:** complete BF-01 integration, then proceed to BF-02. In parallel,
-close BIO EGYPT field gates `BE-002` through `BE-012`; `BE-001` is closed. The Pilot
-remains NOT COMMISSIONED / NOT ACCEPTED.
+**Next actions:** verify the BF-10 integration commit and execute the remaining deployment,
+commissioning, and customer evidence gates. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
@@ -22,8 +19,8 @@ remains NOT COMMISSIONED / NOT ACCEPTED.
 - MQTT telemetry ingestion, Alarm evaluation, Dashboard APIs, and Site/Room/Device/Sensor APIs.
 - Device onboarding lifecycle and telemetry trust-boundary enforcement.
 - JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Management.
-- BF-01 branch: isolated platform `SYSTEM_OWNER` storage, authentication, token, and
-  controlled bootstrap boundary; not yet merged into `main`.
+- Isolated platform `SYSTEM_OWNER` storage, authentication, token, and controlled bootstrap
+  boundary.
 - Authenticated Alarm acknowledgment with actor audit persistence.
 - React frontend foundation, responsive AppShell, authenticated session lifecycle,
   authorization-aware routing, operational Dashboard, and Monitored Areas.
@@ -34,6 +31,8 @@ remains NOT COMMISSIONED / NOT ACCEPTED.
 - Provider-neutral emergency SMS failover policy and gateway contract.
 - Controlled BIO EGYPT two-Site/20-Sensor Pilot documentation package.
 - Production deployment validation, MQTT TLS/QoS, persistent SQLite, and LIVE/REPLAY recovery foundation.
+- Controlled Reporting Center with Calibration History, Temperature Performance, Alarm History,
+  Device Communication Health, and Audit and Operations Preview/CSV/PDF workflows.
 
 ## Release and Repository Timeline
 

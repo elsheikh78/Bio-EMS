@@ -23,10 +23,20 @@ import {
 import { CalibrationReportService } from "../modules/reporting/calibration-report.service";
 import { TemperaturePerformanceReportService } from "../modules/reporting/temperature-performance-report.service";
 import { reportCatalogue } from "../modules/reporting/report-catalogue";
+import { OperationalReportService } from "../modules/reporting/operational-report.service";
+import {
+  operationalCsvFilename,
+  renderOperationalCsv,
+} from "../modules/reporting/operational-csv.renderer";
+import {
+  operationalPdfFilename,
+  renderOperationalPdf,
+} from "../modules/reporting/operational-pdf.renderer";
 
 const calibrationReportService = new CalibrationReportService();
 
 const temperaturePerformanceReportService = new TemperaturePerformanceReportService();
+const operationalReportService = new OperationalReportService();
 
 export function getReportCatalogue(_req: Request, res: Response): void {
   res.json(reportCatalogue);
@@ -40,6 +50,12 @@ export async function previewReport(req: Request, res: Response): Promise<void> 
 
     case "TEMP-PERFORMANCE":
       res.json(await temperaturePerformanceReportService.preview(req.body));
+      return;
+
+    case "ALARM-HISTORY":
+    case "DEVICE-HEALTH":
+    case "AUDIT-OPERATIONS":
+      res.json(operationalReportService.preview(req.body));
       return;
 
     default:
@@ -114,6 +130,31 @@ export async function exportReport(req: Request, res: Response): Promise<void> {
         return;
       }
 
+      break;
+    }
+
+    case "ALARM-HISTORY":
+    case "DEVICE-HEALTH":
+    case "AUDIT-OPERATIONS": {
+      const result = operationalReportService.preview(req.body);
+      if (req.body.format === "PDF") {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${operationalPdfFilename(result)}"`
+        );
+        res.send(await renderOperationalPdf(result, req.user!.username));
+        return;
+      }
+      if (req.body.format === "CSV") {
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${operationalCsvFilename(result)}"`
+        );
+        res.send(renderOperationalCsv(result, req.user!.username));
+        return;
+      }
       break;
     }
 

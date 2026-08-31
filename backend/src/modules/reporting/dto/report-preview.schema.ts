@@ -3,7 +3,13 @@ import { z } from "zod";
 const sensorIdentifier = z.string().trim().min(1).max(100);
 
 const baseReportSchema = z.object({
-  reportType: z.enum(["CALIBRATION-HISTORY", "TEMP-PERFORMANCE"]),
+  reportType: z.enum([
+    "CALIBRATION-HISTORY",
+    "TEMP-PERFORMANCE",
+    "ALARM-HISTORY",
+    "DEVICE-HEALTH",
+    "AUDIT-OPERATIONS",
+  ]),
 
   contractVersion: z.literal("1.0"),
 

@@ -25,6 +25,7 @@ been surveyed or accepted.
 5. [Open-items register](BIO-EGYPT-OPEN-ITEMS.md)
 6. [Controlled Site Survey Pack](BIO-EGYPT-SITE-SURVEY-PACK.md)
 7. [BE-002 Marked-up Sensor Position Evidence Pack](BE-002-MARKED-UP-SENSOR-POSITION-PACK.md)
+8. [Software UAT Guide](BIO-EGYPT-SOFTWARE-UAT-GUIDE.md)
 
 ## Deployment and readiness references
 

@@ -1,5 +1,17 @@
 # Sprint Progress
 
+## BF-10 reporting closure — 31 August 2026
+
+Status: **SOURCE COMPLETE / INTEGRATION VERIFICATION REQUIRED**
+
+- Reports Center provides Preview, CSV, and PDF for all five controlled report families.
+- Alarm History projects the persisted Alarm lifecycle.
+- Device Communication Health projects migration 014's append-only communication ledger.
+- Audit and Operations projects the existing immutable, Site-scoped Audit store.
+- Backend/frontend automated verification and production builds are the integration gate.
+- Live deployment evidence, commissioning, and customer acceptance remain outside this software
+  closure.
+
 ## Software completion update — 31 August 2026
 
 - Completed Temperature Performance integration in Reports Center for Preview, CSV, and PDF.
@@ -9,7 +21,7 @@
 - Automated quality gates pass; the local deployed 10-minute MQTT scenario remains the final live
   environment retest and does not block source-level completion.
 
-## Current Work Package Update - BF-10 Reporting Expansion - 25 August 2026
+## Historical Work Package Update - BF-10 Reporting Expansion - 25 August 2026
 
 BF-10 continues the controlled Reporting Center expansion after the PVR-06 reporting readiness audit.
 

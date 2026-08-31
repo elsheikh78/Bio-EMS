@@ -1,6 +1,6 @@
 # BIO-EMS Development Roadmap
 
-Published version: `v0.15.0`
+Latest tagged release: `v0.15.0`; current source-software version: `0.16.0`
 
 Repository status: Sprints 13 through 15 are complete, merged, verified, and closed.
 The current phase is controlled BIO EGYPT field-pilot preparation; field
@@ -46,6 +46,9 @@ JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Ma
 
 For S14-05, Monitored Area is presentation terminology for the existing Room domain. No new Asset or Monitoring Point backend domain is introduced.
 
+- BF-10: all five controlled report families are available through Reports Center Preview, CSV,
+  and PDF. Device health history begins with deployment of the append-only ledger migration.
+
 ## Post-Sprint-15 Product Readiness Priorities
 
 After Sprint 15 closure, BIO-EMS must complete controlled field evidence before the
@@ -73,8 +76,7 @@ These two tracks are complementary: the first reference installation must combin
 ## Phase 7 — Future Product Expansion
 
 Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points,
-delivery-channel implementations, additional operational screens, reports, and
-approved industry-specific capabilities.
+delivery-channel implementations, and approved industry-specific capabilities.
 
 ## Phase 8 — Production Operations
 
@@ -84,6 +86,5 @@ and OTA updates remain separately scoped.
 
 ## Release Boundary
 
-Release `v0.15.0` contains later Sprint 13 work and all completed Sprint 14 and Sprint
-15 repository scope. Field deployment, commissioning evidence, and Pilot acceptance
-remain outside the software release claim.
+The `0.16.0` source boundary adds BF-10 reporting completion after `v0.15.0`. Field deployment,
+commissioning evidence, and Pilot acceptance remain outside the software release claim.

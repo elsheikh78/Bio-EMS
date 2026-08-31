@@ -32,6 +32,11 @@ describe("DeviceRepository", () => {
         updated_at DATETIME,
         FOREIGN KEY (site_id) REFERENCES sites(id)
       );
+      CREATE TABLE device_communication_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER NOT NULL,
+        event_type TEXT NOT NULL, observed_at TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
 
       INSERT INTO sites (id) VALUES (1);
     `);
@@ -225,5 +230,14 @@ describe("DeviceRepository", () => {
       last_seen_at: "2026-08-17T09:00:02.000Z",
       last_heartbeat_at: "2026-08-17T09:00:02.000Z",
     });
+    expect(
+      database
+        .prepare("SELECT event_type, observed_at FROM device_communication_events ORDER BY id")
+        .all()
+    ).toEqual([
+      { event_type: "TELEMETRY", observed_at: "2026-08-17T09:00:01.000Z" },
+      { event_type: "HEARTBEAT", observed_at: "2026-08-17T09:00:02.000Z" },
+      { event_type: "HEARTBEAT", observed_at: "2026-08-17T08:59:00.000Z" },
+    ]);
   });
 });

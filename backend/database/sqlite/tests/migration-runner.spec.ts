@@ -14,8 +14,9 @@ import { migration010 } from "../migrations/010_create_audit_events";
 import { migration011 } from "../migrations/011_add_alarm_delay_configuration";
 import { migration012 } from "../migrations/012_create_notification_recipients";
 import { migration013 } from "../migrations/013_create_escalation_policies";
+import { migration014 } from "../migrations/014_create_device_communication_events";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -102,7 +103,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(13);
+    expect(historyCount.count).toBe(14);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -278,6 +279,27 @@ describe("SQLite migrations", () => {
     migration013.up(database);
     expect(database.prepare("PRAGMA index_list(escalation_policy_steps)").all()).toEqual(
       expect.arrayContaining([expect.objectContaining({ unique: 1 })])
+    );
+  });
+
+  it("creates an idempotent append-only Device communication ledger", () => {
+    migration014.up(database);
+    migration014.up(database);
+    database.prepare("INSERT INTO devices (id, device_id) VALUES (?, ?)").run(1, "ZC-FW-001");
+    database
+      .prepare(
+        "INSERT INTO device_communication_events (device_id, event_type, observed_at) VALUES (?, ?, ?)"
+      )
+      .run(1, "TELEMETRY", "2026-08-31T10:00:00.000Z");
+
+    expect(database.prepare("PRAGMA index_list(device_communication_events)").all()).toContainEqual(
+      expect.objectContaining({ name: "idx_device_communication_events_device_time" })
+    );
+    expect(() =>
+      database.prepare("UPDATE device_communication_events SET event_type = 'HEARTBEAT'").run()
+    ).toThrow("device communication events are append-only");
+    expect(() => database.prepare("DELETE FROM device_communication_events").run()).toThrow(
+      "device communication events are append-only"
     );
   });
 

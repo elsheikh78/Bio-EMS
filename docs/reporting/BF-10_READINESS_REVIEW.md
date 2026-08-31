@@ -1,6 +1,6 @@
 # BIO-EMS BF-10 Readiness & Safety Review
 
-**Status:** Approved for implementation planning
+**Status:** Historical readiness review — implementation completed 31 August 2026
 
 **Scope:** Pre-implementation review before BF-10 Reporting work.
 
@@ -11,6 +11,10 @@ This document records the repository-based assessment performed before implement
 The objective is to protect the existing BIO-EMS foundation and ensure that new reporting work extends existing architecture instead of duplicating or bypassing established components.
 
 ## Current Decision
+
+> Closure note: the dependencies identified below were implemented. All five controlled report
+> families are now available through Preview, CSV, and PDF. This section is retained as the
+> pre-implementation decision record.
 
 BF-10 can proceed, but Temperature Performance Report implementation must start with the missing historical range query contract foundation.
 

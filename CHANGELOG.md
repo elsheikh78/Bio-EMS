@@ -1,5 +1,17 @@
 # [Unreleased]
 
+## 0.16.0 - Reporting Center completion
+
+- Completed Alarm History, Device Communication Health, and Audit and Operations reports with
+  validated Preview, CSV, and PDF workflows in Reports Center.
+- Added an append-only Device communication event ledger and migration so health reports use
+  durable history rather than current-state timestamps.
+- Reused the existing Alarm lifecycle and immutable Audit evidence stores with Sensor-scoped,
+  half-open date-range projections.
+- Added operational report service, export, migration, repository, and UI regression coverage.
+- Closed BF-10 at the source-software boundary without claiming field commissioning or customer
+  acceptance.
+
 ## 0.15.1 - Live monitoring and temperature reporting completion
 
 - Added an authenticated SSE channel that publishes only after telemetry is accepted, Alarm

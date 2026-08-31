@@ -9,6 +9,10 @@ import {
   temperaturePerformancePreviewResultSchema,
   type TemperaturePerformanceExportRequest,
   type TemperaturePerformancePreviewRequest,
+  operationalReportPreviewRequestSchema,
+  operationalReportPreviewResultSchema,
+  type OperationalReportExportRequest,
+  type OperationalReportPreviewRequest,
 } from "./contracts";
 
 type ProtectedRequest = AuthenticationContextValue["protectedRequest"];
@@ -130,6 +134,40 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
         "application/pdf",
         "bio-ems_temperature-performance.pdf",
       );
+    },
+
+    async previewOperational(input: OperationalReportPreviewRequest) {
+      const body = operationalReportPreviewRequestSchema.parse(input);
+      return operationalReportPreviewResultSchema.parse(
+        await protectedRequest<unknown>("/reports/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+      );
+    },
+
+    async exportOperational(input: OperationalReportExportRequest) {
+      const body = {
+        ...operationalReportPreviewRequestSchema.parse(input),
+        format: input.format,
+      };
+      const response = await protectedRequest<Response>("/reports/exports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: input.format === "PDF" ? "application/pdf" : "text/csv",
+        },
+        body: JSON.stringify(body),
+        responseMode: "response",
+      });
+      const disposition = response.headers.get("Content-Disposition") ?? "";
+      return {
+        blob: await response.blob(),
+        filename:
+          disposition.match(/filename="([^"]+)"/)?.[1] ??
+          `bio-ems_${input.reportType.toLowerCase()}.${input.format.toLowerCase()}`,
+      };
     },
   };
 }
