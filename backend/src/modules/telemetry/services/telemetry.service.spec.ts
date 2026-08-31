@@ -58,6 +58,7 @@ describe("Telemetry trust-boundary policy", () => {
     writeTelemetryPoint: vi.fn(),
     logRejection: vi.fn(),
     now: () => new Date("2026-08-10T08:00:05.000Z"),
+    publishAcceptedTelemetry: vi.fn(),
   };
   const service = new TelemetryService(dependencies);
 
@@ -88,6 +89,14 @@ describe("Telemetry trust-boundary policy", () => {
     await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload);
 
     expect(dependencies.deviceRepository.findByDeviceId).toHaveBeenCalledWith("ZC-FW-001");
+    expect(dependencies.publishAcceptedTelemetry).toHaveBeenCalledWith({
+      eventId: "ZC-FW-001:2026-08-10T08:00:05.000Z",
+      type: "telemetry.accepted",
+      acceptedAt: "2026-08-10T08:00:05.000Z",
+      siteCode: "CAIRO01",
+      deviceId: "ZC-FW-001",
+      sensorCodes: ["TEMP-01"],
+    });
     expect(dependencies.siteRepository.findById).toHaveBeenCalledWith(3);
     expect(dependencies.sensorRepository.findByDeviceAndChannel).toHaveBeenCalledWith(8, 1);
     expect(dependencies.deviceRepository.recordCommunication).toHaveBeenCalledWith(

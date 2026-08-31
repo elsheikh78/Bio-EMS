@@ -14,11 +14,13 @@ import { AppHeader } from "../components/AppHeader";
 import { AppNavigation } from "../components/AppNavigation";
 import { SkipLink } from "../components/SkipLink";
 import { useLocalization } from "../localization/useLocalization";
+import { useRealtimeTelemetrySync } from "../realtime/useRealtimeTelemetrySync";
 
 const navigationWidth = 248;
 const mainContentId = "main-content";
 
 export function AppShell() {
+  useRealtimeTelemetrySync();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
   const { resources } = useLocalization();

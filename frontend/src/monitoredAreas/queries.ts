@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateCalibrationRecordInput } from "./contracts";
 import { useAuthentication } from "../auth/useAuthentication";
 import { createMonitoredAreasApi } from "./api";
+import { POLLING_INTERVALS_MS } from "../config/polling";
 
 export const monitoredAreasQueryKeys = {
   all: ["monitoredAreas"] as const,
@@ -39,6 +40,7 @@ export function useSensors() {
   return useQuery({
     queryKey: monitoredAreasQueryKeys.sensors(),
     queryFn: () => api.getSensors(),
+    refetchInterval: POLLING_INTERVALS_MS.monitoredAreaStatus,
   });
 }
 

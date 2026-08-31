@@ -4,6 +4,8 @@ import { createReportsApi } from "./api";
 import type {
   CalibrationReportExportRequest,
   CalibrationReportPreviewRequest,
+  TemperaturePerformanceExportRequest,
+  TemperaturePerformancePreviewRequest,
 } from "./contracts";
 
 export const reportQueryKeys = { catalogue: ["reports", "catalogue"] as const };
@@ -41,5 +43,32 @@ export function useCalibrationReportPdfExport() {
   return useMutation({
     mutationFn: (input: CalibrationReportExportRequest) =>
       api.exportCalibrationPdf(input),
+  });
+}
+
+export function useTemperaturePerformancePreview() {
+  const { protectedRequest } = useAuthentication();
+  const api = createReportsApi(protectedRequest);
+  return useMutation({
+    mutationFn: (input: TemperaturePerformancePreviewRequest) =>
+      api.previewTemperature(input),
+  });
+}
+
+export function useTemperaturePerformanceCsvExport() {
+  const { protectedRequest } = useAuthentication();
+  const api = createReportsApi(protectedRequest);
+  return useMutation({
+    mutationFn: (input: TemperaturePerformanceExportRequest) =>
+      api.exportTemperatureCsv(input),
+  });
+}
+
+export function useTemperaturePerformancePdfExport() {
+  const { protectedRequest } = useAuthentication();
+  const api = createReportsApi(protectedRequest);
+  return useMutation({
+    mutationFn: (input: TemperaturePerformanceExportRequest) =>
+      api.exportTemperaturePdf(input),
   });
 }

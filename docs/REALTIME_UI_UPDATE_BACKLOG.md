@@ -2,7 +2,20 @@
 
 **Recorded:** 26 August 2026  
 **Target start:** Monday, 31 August 2026  
-**Status:** BACKLOG / DEFERRED UNTIL SOFTWARE WORK RESUMES
+**Status:** IMPLEMENTED / AUTOMATED VERIFICATION COMPLETE / LIVE MQTT RETEST PENDING
+
+## Implementation closure — 31 August 2026
+
+The software path is implemented. Accepted telemetry now publishes an authenticated
+`telemetry.accepted` SSE event only after Alarm evaluation and InfluxDB persistence complete.
+The authenticated application shell consumes the stream, invalidates the Dashboard and Monitored
+Areas query namespaces, reconnects after interruption, and aborts the stream on unmount or logout.
+Existing interval-based queries remain the low-frequency resilience fallback.
+
+Automated verification covers event publication, unsubscribe cleanup, controlled SSE parsing,
+frontend regression, typechecking, linting, and production builds. The remaining evidence is the
+physical 10-minute MQTT scenario against the deployed local stack; it is not represented as
+executed by unit/integration tests.
 
 ## Context
 

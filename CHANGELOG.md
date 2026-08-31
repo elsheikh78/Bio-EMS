@@ -1,5 +1,15 @@
 # [Unreleased]
 
+## 0.15.1 - Live monitoring and temperature reporting completion
+
+- Added an authenticated SSE channel that publishes only after telemetry is accepted, Alarm
+  evaluation completes, and the telemetry point is persisted.
+- Added frontend stream lifecycle, targeted Dashboard/Monitored Areas cache invalidation,
+  reconnect behavior, unmount/logout cleanup, and interval-based resilience fallback.
+- Integrated Temperature Performance into Reports Center with controlled Preview, CSV, and PDF
+  actions and runtime response validation.
+- Added realtime event, telemetry publication, SSE parsing, Temperature PDF, and regression tests.
+
 ## PVR-07
 
 - Added the platform acceptance matrix, release blockers, and explicit NO-GO decision.

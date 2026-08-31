@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuthentication } from "../auth/useAuthentication";
 import { createDashboardApi } from "./api";
+import { POLLING_INTERVALS_MS } from "../config/polling";
 
 export const dashboardQueryKeys = {
   all: ["dashboard"] as const,
@@ -19,6 +20,7 @@ export function useDashboardSummary() {
   return useQuery({
     queryKey: dashboardQueryKeys.summary(),
     queryFn: () => api.getSummary(),
+    refetchInterval: POLLING_INTERVALS_MS.dashboardSummary,
   });
 }
 
@@ -29,6 +31,7 @@ export function useLatestTelemetry() {
   return useQuery({
     queryKey: dashboardQueryKeys.latestTelemetry(),
     queryFn: () => api.getLatestTelemetry(),
+    refetchInterval: POLLING_INTERVALS_MS.telemetry,
   });
 }
 
@@ -39,6 +42,7 @@ export function useDashboardRoomStatuses() {
   return useQuery({
     queryKey: dashboardQueryKeys.roomStatuses(),
     queryFn: () => api.getRoomStatuses(),
+    refetchInterval: POLLING_INTERVALS_MS.monitoredAreaStatus,
   });
 }
 
@@ -49,5 +53,6 @@ export function useDashboardAlarmStatistics() {
   return useQuery({
     queryKey: dashboardQueryKeys.alarmStatistics(),
     queryFn: () => api.getAlarmStatistics(),
+    refetchInterval: POLLING_INTERVALS_MS.alarms,
   });
 }

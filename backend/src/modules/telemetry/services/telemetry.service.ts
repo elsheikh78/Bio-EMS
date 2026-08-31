@@ -4,6 +4,7 @@ import { SensorRepository } from "../../../repositories/sensor.repository";
 import { SiteRepository } from "../../../repositories/site.repository";
 import { writeTelemetryPoint } from "../../../../database/influx/writer";
 import { evaluateAlarm } from "../../../services/alarm.evaluator";
+import { realtimeEventBus } from "../../realtime/realtime-event.bus";
 
 const deviceRepository = new DeviceRepository();
 
@@ -39,6 +40,7 @@ type TelemetryDependencies = {
   writeTelemetryPoint: typeof writeTelemetryPoint;
   logRejection: (reason: TelemetryRejectionReason, context: RejectionContext) => void;
   now: () => Date;
+  publishAcceptedTelemetry: typeof realtimeEventBus.publish;
 };
 
 const defaultDependencies: TelemetryDependencies = {
@@ -49,6 +51,7 @@ const defaultDependencies: TelemetryDependencies = {
   writeTelemetryPoint,
   logRejection: (reason, context) => console.warn("Telemetry rejected", { reason, ...context }),
   now: () => new Date(),
+  publishAcceptedTelemetry: realtimeEventBus.publish.bind(realtimeEventBus),
 };
 
 export class TelemetryService {
@@ -126,6 +129,8 @@ export class TelemetryService {
     console.log("Message    :", messageType);
 
     console.log("Device     :", device.device_id);
+
+    const acceptedSensorCodes: string[] = [];
 
     for (const sensorData of payload.sensors) {
       const sensor = this.dependencies.sensorRepository.findByDeviceAndChannel(
@@ -207,6 +212,20 @@ export class TelemetryService {
         signal: payload.signal,
 
         timestamp: payload.timestamp,
+      });
+
+      acceptedSensorCodes.push(sensor.code);
+    }
+
+    if (acceptedSensorCodes.length > 0) {
+      const acceptedAt = this.dependencies.now().toISOString();
+      this.dependencies.publishAcceptedTelemetry({
+        eventId: `${device.device_id}:${acceptedAt}`,
+        type: "telemetry.accepted",
+        acceptedAt,
+        siteCode: site.code,
+        deviceId: device.device_id,
+        sensorCodes: acceptedSensorCodes,
       });
     }
 
