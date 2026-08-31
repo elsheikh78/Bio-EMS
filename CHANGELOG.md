@@ -1,5 +1,14 @@
 # [Unreleased]
 
+## 0.16.3 - Professional reporting baseline
+
+- Applied the BIO-EMS controlled visual identity to Alarm History, Device Communication Health,
+  and Audit and Operations PDF exports.
+- Added Site-time-zone rendering, report identity and scope, executive summaries, data-quality
+  disclosure, controlled-copy footers, and page numbering to operational PDFs.
+- Closed BF-10 integration verification through PR #106 and successful CI run 303.
+- Kept field MQTT endurance, commissioning, and customer UAT as explicit external evidence gates.
+
 ## 0.16.2 - Operational report export fix
 
 - Fixed strict client validation rejecting Alarm, Device Health, and Audit CSV/PDF exports before

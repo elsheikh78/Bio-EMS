@@ -2,13 +2,15 @@
 
 ## BF-10 reporting closure — 31 August 2026
 
-Status: **SOURCE COMPLETE / INTEGRATION VERIFICATION REQUIRED**
+Status: **COMPLETE / MERGED / CI VERIFIED / CLOSED**
 
 - Reports Center provides Preview, CSV, and PDF for all five controlled report families.
 - Alarm History projects the persisted Alarm lifecycle.
 - Device Communication Health projects migration 014's append-only communication ledger.
 - Audit and Operations projects the existing immutable, Site-scoped Audit store.
-- Backend/frontend automated verification and production builds are the integration gate.
+- Integration: PR #106, merge commit `1d851c499a787ed0fea2fd5f87c3edc69b6638c7`.
+- GitHub CI run 303: backend and frontend quality gates passed.
+- Software baseline: 0.16.3.
 - Live deployment evidence, commissioning, and customer acceptance remain outside this software
   closure.
 
