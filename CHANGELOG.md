@@ -1,5 +1,13 @@
 # [Unreleased]
 
+## 0.16.1 - Reports Center visual completion
+
+- Replaced the calibration-focused readiness table with five prominent selectable report cards.
+- Made the selected report title, description, evidence source, availability, and preview workspace
+  update together.
+- Defaulted the workspace to Temperature Performance so the expanded reporting capability is
+  immediately visible.
+
 ## 0.16.0 - Reporting Center completion
 
 - Completed Alarm History, Device Communication Health, and Audit and Operations reports with

@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  ButtonBase,
   Checkbox,
   Chip,
   CircularProgress,
@@ -41,6 +42,49 @@ type SelectableReportType =
   | "DEVICE-HEALTH"
   | "AUDIT-OPERATIONS";
 
+const reportPresentation: Record<
+  SelectableReportType,
+  { title: string; description: string; source: string; accent: string }
+> = {
+  "TEMP-PERFORMANCE": {
+    title: "Temperature Performance",
+    description:
+      "Trends, excursions, compliance, minimum, maximum, and average temperature.",
+    source: "InfluxDB telemetry evidence",
+    accent: "#1976d2",
+  },
+  "ALARM-HISTORY": {
+    title: "Alarm History",
+    description:
+      "Triggered, acknowledged, and recovered Alarm lifecycle evidence.",
+    source: "SQLite Alarm lifecycle",
+    accent: "#d32f2f",
+  },
+  "CALIBRATION-HISTORY": {
+    title: "Calibration Status and History",
+    description:
+      "Current status, due dates, PASS/FAIL attempts, and certificate references.",
+    source: "SQLite calibration evidence",
+    accent: "#00897b",
+  },
+  "DEVICE-HEALTH": {
+    title: "Device Communication Health",
+    description:
+      "Durable telemetry and heartbeat communication history by Device.",
+    source: "SQLite communication ledger",
+    accent: "#ed6c02",
+  },
+  "AUDIT-OPERATIONS": {
+    title: "Audit and Operations",
+    description:
+      "Immutable actor, action, result, target, and operational evidence.",
+    source: "SQLite immutable Audit evidence",
+    accent: "#7b1fa2",
+  },
+};
+
+const reportOrder = Object.keys(reportPresentation) as SelectableReportType[];
+
 function dateValue(date: Date) {
   return date.toISOString().slice(0, 10);
 }
@@ -73,21 +117,25 @@ export function ReportsCenterPage() {
   });
   const [to, setTo] = useState(() => dateValue(new Date()));
   const [selected, setSelected] = useState<string[]>([]);
-  const [reportType, setReportType] = useState<SelectableReportType>(
-    "CALIBRATION-HISTORY",
-  );
+  const [reportType, setReportType] =
+    useState<SelectableReportType>("TEMP-PERFORMANCE");
   const sensors = useMemo(() => sensorsQuery.data ?? [], [sensorsQuery.data]);
   const selectedSensors =
     selected.length === 0 ? sensors.map((sensor) => sensor.uuid) : selected;
-  const calibrationFamily = catalogue.data?.reportTypes.find(
-    (item) => item.id === "CALIBRATION-HISTORY",
-  );
+  const presentation = reportPresentation[reportType];
   const selectedFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === reportType,
   );
   const csvAvailable = selectedFamily?.exportFormats.includes("CSV") ?? false;
   const pdfAvailable = selectedFamily?.exportFormats.includes("PDF") ?? false;
   const canExport = Boolean(user && hasPermission(user.role, "REPORT_EXPORT"));
+
+  function selectReport(next: SelectableReportType) {
+    setReportType(next);
+    preview.reset();
+    temperaturePreview.reset();
+    operationalPreview.reset();
+  }
 
   function reportRequest() {
     return {
@@ -204,7 +252,7 @@ export function ReportsCenterPage() {
         </Box>
         <Stack direction="row" spacing={1}>
           <Chip
-            label="SQLite calibration evidence"
+            label={presentation.source}
             color="primary"
             variant="outlined"
           />
@@ -246,55 +294,95 @@ export function ReportsCenterPage() {
       ) : null}
 
       {catalogue.data ? (
-        <Paper variant="outlined" sx={{ p: 3, borderRadius: 4 }}>
-          <Typography variant="h6">Report family readiness</Typography>
+        <Box>
+          <Typography variant="h6">Choose a report</Typography>
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            Availability is contract-driven. A family is not presented as
-            complete until its preview and controlled exports exist.
+            Five operational report families are ready for preview and
+            controlled export.
           </Typography>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Report family</TableCell>
-                  <TableCell>Readiness</TableCell>
-                  <TableCell>Preview</TableCell>
-                  <TableCell>Exports</TableCell>
-                  <TableCell>Remaining dependency</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {catalogue.data.reportTypes.map((family) => (
-                  <TableRow key={family.id}>
-                    <TableCell>{family.title}</TableCell>
-                    <TableCell>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))",
+                xl: "repeat(5, minmax(0, 1fr))",
+              },
+              gap: 2,
+            }}
+          >
+            {reportOrder.map((type) => {
+              const item = reportPresentation[type];
+              const family = catalogue.data.reportTypes.find(
+                (entry) => entry.id === type,
+              );
+              const active = reportType === type;
+              return (
+                <ButtonBase
+                  key={type}
+                  aria-pressed={active}
+                  onClick={() => selectReport(type)}
+                  sx={{
+                    textAlign: "left",
+                    borderRadius: 3,
+                    alignItems: "stretch",
+                  }}
+                >
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      width: "100%",
+                      minHeight: 154,
+                      p: 2.5,
+                      borderRadius: 3,
+                      borderWidth: active ? 2 : 1,
+                      borderColor: active ? item.accent : "divider",
+                      boxShadow: active
+                        ? `0 10px 28px ${item.accent}22`
+                        : "none",
+                      transition:
+                        "border-color 160ms, box-shadow 160ms, transform 160ms",
+                      transform: active ? "translateY(-2px)" : "none",
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ justifyContent: "space-between" }}
+                    >
                       <Chip
                         size="small"
                         color={
-                          family.readiness === "AVAILABLE"
+                          family?.readiness === "AVAILABLE"
                             ? "success"
-                            : family.readiness === "BLOCKED"
-                              ? "error"
-                              : "warning"
+                            : "default"
                         }
-                        label={family.readiness.replaceAll("_", " ")}
+                        label={
+                          family?.readiness === "AVAILABLE"
+                            ? "READY"
+                            : "UNAVAILABLE"
+                        }
                       />
-                    </TableCell>
-                    <TableCell>
-                      {family.previewAvailable ? "Available" : "Not available"}
-                    </TableCell>
-                    <TableCell>
-                      {family.exportFormats.join(" / ") || "None"}
-                    </TableCell>
-                    <TableCell>
-                      {family.unavailableReason?.replaceAll("_", " ") ?? "None"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+                      <Typography sx={{ color: item.accent, fontWeight: 800 }}>
+                        {active ? "SELECTED" : "OPEN"}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="h6" sx={{ mt: 1.5, lineHeight: 1.15 }}>
+                      {item.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {item.description}
+                    </Typography>
+                  </Paper>
+                </ButtonBase>
+              );
+            })}
+          </Box>
+        </Box>
       ) : null}
 
       {!loading && !loadError ? (
@@ -320,18 +408,15 @@ export function ReportsCenterPage() {
               }}
             >
               <Typography variant="overline" color="primary.main">
-                Available now
+                Selected report
               </Typography>
-              <Typography variant="h5">
-                {calibrationFamily?.title ?? "Calibration Status and History"}
-              </Typography>
+              <Typography variant="h5">{presentation.title}</Typography>
               <Typography color="text.secondary" sx={{ mt: 1 }}>
-                Current calibration state, due classification, immutable
-                PASS/FAIL attempts, certificates, and quality warnings.
+                {presentation.description}
               </Typography>
               <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
                 <Chip size="small" color="success" label="Preview available" />
-                <Chip size="small" label="366-day maximum" />
+                <Chip size="small" label="CSV / PDF" />
               </Stack>
             </Paper>
 
@@ -350,12 +435,9 @@ export function ReportsCenterPage() {
                   select
                   label="Report family"
                   value={reportType}
-                  onChange={(event) => {
-                    setReportType(event.target.value as SelectableReportType);
-                    preview.reset();
-                    temperaturePreview.reset();
-                    operationalPreview.reset();
-                  }}
+                  onChange={(event) =>
+                    selectReport(event.target.value as SelectableReportType)
+                  }
                 >
                   <MenuItem value="CALIBRATION-HISTORY">
                     Calibration Status and History
@@ -485,6 +567,7 @@ export function ReportsCenterPage() {
           ) : (
             <OperationalPreviewPanel
               preview={operationalPreview}
+              reportTitle={presentation.title}
               canExport={canExport}
               exporting={operationalExport.isPending}
               onExportCsv={() => void exportCsv()}
@@ -977,12 +1060,14 @@ function TemperaturePreviewPanel({
 
 function OperationalPreviewPanel({
   preview,
+  reportTitle,
   canExport,
   exporting,
   onExportCsv,
   onExportPdf,
 }: {
   preview: ReturnType<typeof useOperationalReportPreview>;
+  reportTitle: string;
   canExport: boolean;
   exporting: boolean;
   onExportCsv: () => void;
@@ -1006,7 +1091,16 @@ function OperationalPreviewPanel({
           placeItems: "center",
         }}
       >
-        <Typography variant="h5">Operational preview workspace</Typography>
+        <Box sx={{ textAlign: "center" }}>
+          <Typography variant="overline" color="primary.main">
+            {reportTitle}
+          </Typography>
+          <Typography variant="h5">Preview workspace</Typography>
+          <Typography color="text.secondary">
+            Generate the selected report to display its recorded operational
+            evidence.
+          </Typography>
+        </Box>
       </Paper>
     );
   const data = preview.data;
