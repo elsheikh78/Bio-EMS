@@ -43,10 +43,7 @@ function reader(values: Map<number, number | null>): Acquisition.Ds18b20Reader {
   };
 }
 
-function acquire(
-  sensorReader: Acquisition.Ds18b20Reader,
-  sampledAt = "2026-08-31T16:21:00Z"
-) {
+function acquire(sensorReader: Acquisition.Ds18b20Reader, sampledAt = "2026-08-31T16:21:00Z") {
   return Acquisition.acquireConfiguredSensors(bundle, sensorReader, sampledAt);
 }
 
