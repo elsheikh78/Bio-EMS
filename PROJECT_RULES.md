@@ -1,230 +1,188 @@
 # BIO-EMS Development Rules
 
-## 1.
-No direct database access.
+## Documentation and release authorities
 
-## 2.
+- `PROJECT_STATE.md` is the **single authoritative current-state document**.
+- `IMPLEMENTATION_PLAN.md` is the approved execution-plan document; it does not replace current state.
+- `README.md` is the stable project entry/map; it must not become a second project-status ledger.
+- `docs/SPRINT_PROGRESS.md` is a historical execution ledger only.
+- Dedicated Sprint/BF/PVR/audit/closure/hardware documents are evidence for their specific work; they do not override `PROJECT_STATE.md`.
+- `VERSION` is the source-software version authority.
+- `CHANGELOG.md` is the controlled source/release ledger.
+- The backend package version must match `VERSION`. The frontend private scaffold package version is not an independent BIO-EMS product version.
+- Published Git tags/releases are immutable release artifacts. A source version can be prepared before its tag is published, but documentation must distinguish those states explicitly.
+
+## Engineering rules
+
+### 1.
+No direct database access outside repositories/persistence boundaries.
+
+### 2.
 Every feature must be documented.
 
-## 3.
-Every API must have REST tests.
+### 3.
+Every API must have appropriate REST/contract tests.
 
-## 4.
-Every Sprint updates:
+### 4.
+Every completed release/sprint milestone updates, where applicable:
 
-- VERSION
-- CHANGELOG
-- project-status
+- `VERSION`
+- `CHANGELOG.md`
+- `PROJECT_STATE.md`
 
-## 5.
-All code in English.
+Do not recreate `docs/project-status.md` or any competing current-state file.
 
-## 6.
+### 5.
+All code is written in English.
+
+### 6.
 No business logic inside Controllers.
 
-## 7.
-Telemetry always goes through TelemetryService.
+### 7.
+Telemetry always goes through the approved Telemetry service/domain path.
 
-## 8.
-No hard-coded values.
-## 9.
-Every new feature must include:
+### 8.
+No hard-coded business/configuration values.
 
-- Database changes (if needed)
-- REST API
-- Tests (.http)
-- Documentation
-- Architecture update (if affected)
+### 9.
+Every new feature includes, when applicable:
 
-## 10.
-No code duplication.
+- database change + migration;
+- API/contract change;
+- tests;
+- documentation;
+- architecture update/ADR if architecture is affected.
 
-## 11.
-Every public function must have a clear responsibility.
+### 10.
+No avoidable code duplication.
 
-## 12.
+### 11.
+Every public function has one clear responsibility.
+
+### 12.
 Never mix configuration data with telemetry data.
 
-## 13.
-Every exception must be logged.
+### 13.
+Every controlled exception/error path must be logged or represented through the approved error/evidence boundary without exposing secrets.
 
-## 14.
-Folder names are singular only when representing one module, otherwise use consistent naming across the project.
+### 14.
+Folder/module naming must remain consistent across the project.
 
-## 15.
-No breaking architecture changes without ADR.
-## 16.
-Every database schema change must have a migration.
+### 15.
+No breaking architecture change without an ADR.
 
-## 17.
-Repositories contain database access only.
+### 16.
+Every database schema change requires a versioned migration.
 
-## 18.
-Services contain business logic only.
+### 17.
+Repositories contain persistence access only; business policy belongs in services/domain modules.
 
-## 19.
-Controllers only validate requests and return responses.
+### 18.
+Services/domain modules contain business logic; Controllers remain transport/request-response boundaries.
 
-## 20.
-Every feature must be backward compatible unless documented in CHANGELOG.
+### 19.
+Controllers validate/route requests and return responses; they do not own domain policy.
 
-## 21.
-Every module must have its own documentation under /docs.
+### 20.
+Every feature remains backward compatible unless the incompatibility is deliberately approved and documented in `CHANGELOG.md` and, when architectural, an ADR.
 
-## 22.
-No magic numbers.
-Use constants or configuration values.
+### 21.
+Every substantive module has supporting documentation under `/docs` where needed for operation, architecture, validation, or evidence.
 
-## 23.
-Every API response must follow the standard response format.
+### 22.
+No magic numbers. Use named constants or configuration values.
 
-## 24.
-Every new module must be added to project-status.
+### 23.
+Every API response follows the approved API contract/standard for that endpoint family. Existing public contracts are not casually reshaped for cosmetic uniformity.
 
-## 25.
-No TODOs in production code.
+### 24.
+Every new module/capability that changes the current product position must be reflected in `PROJECT_STATE.md`; detailed evidence belongs in its dedicated document.
 
-## 26.
-Every commit must keep the project in a runnable state.
+### 25.
+No unresolved TODOs in production code unless explicitly tracked as approved deferred scope outside the production path.
 
-## 27.
-No feature is considered complete until:
-- Code
-- Tests
-- Documentation
-- Version
-- Changelog
-- Project Status
-are all updated.
+### 26.
+Every commit must keep the project in a runnable/reviewable state.
 
-## 28.
-Never delete existing functionality without explicit approval.
+### 27.
+No feature is considered source-software complete until required code, tests, documentation, version/changelog impact, and current-state impact are reconciled.
 
-## 29.
-Architecture decisions must be documented before implementation when they affect multiple modules.
+### 28.
+Never remove existing product functionality without explicit approval or an approved replacement/migration path.
 
-## 30.
-Always document any deviation from the original architecture.
-## 31.
-Before implementing any feature:
+### 29.
+Architecture decisions affecting multiple modules must be documented before implementation.
 
-- Review existing architecture.
-- Review documentation.
-- Avoid duplicate implementations.
-- Reuse existing modules whenever possible.
-## 32.
-Before updating any documentation, the assistant must:
+### 30.
+Document any approved deviation from established architecture.
 
-- Tell the user which file will be updated.
-- Tell the user where the file is located.
-- Provide the complete text ready for copy/paste.
-- Wait for confirmation before continuing.
+### 31.
+Before implementing a feature:
 
-## 33.
+- review existing architecture and contracts;
+- review current-state and relevant documentation;
+- avoid duplicate implementations;
+- reuse existing modules where appropriate.
 
-Every completed Sprint must be committed and pushed to GitHub before starting the next Sprint.
+### 32.
+Documentation changes follow the same review/CI discipline as code. When the user has granted standing autonomous repository authority for the active work package, routine documentation reconciliation may proceed without repeated confirmation. High-impact scope/architecture/business-policy changes still require the approval process defined below.
 
-Required steps:
+### 33.
+Every completed controlled milestone must be committed/pushed through the approved GitHub workflow before the next dependent milestone is treated as based on it.
 
-- git status
-- git add
-- git commit
-- git push
-## 34.
-Never commit runtime files.
+### 34.
+Never commit runtime/secrets/build artifacts. Examples include:
 
-Ignored files include:
-- .env
-- *.db
-- *.db-shm
-- *.db-wal
-- node_modules
+- `.env`
+- `*.db`, `*.db-shm`, `*.db-wal`
+- `node_modules`
 - logs
-- build artifacts
+- generated build artifacts not explicitly controlled as release assets.
 
-## 35.
-No feature or architecture change shall be implemented directly.
+### 35.
+Feature/architecture proposals follow the controlled lifecycle when applicable:
 
-Every proposal must follow this lifecycle:
+Idea → Discussion → Business/Domain Review → Design Review → Documentation/ADR → Implementation → Testing → Documentation/State Update → Git Commit/Push/PR/CI.
 
-Idea
+### 36.
+Ideas and approved architecture decisions are different:
 
-↓
+- ideas belong in `docs/project-ideas.md` when a persistent idea register is needed;
+- accepted architecture decisions belong in ADRs;
+- only approved ADRs may deliberately change system architecture.
 
-Discussion
+### 37.
+Business requirements drive implementation. Each material feature should establish the business requirement, use case/domain impact, and acceptance criteria before implementation.
 
-↓
+### 38.
+Security, authorization, audit, Site isolation, credentials, and regulated evidence boundaries must be reviewed whenever a feature touches those domains.
 
-Design Review
+### 39.
+Requirements must be documented before implementation when the work changes functional/non-functional behavior, public contracts, operational evidence, or acceptance criteria.
 
-↓
+### 40.
+Product scope is controlled. New features outside the approved release/work-package scope must be documented and reviewed before implementation.
 
-Documentation (if needed)
+## Versioning policy
 
-↓
+BIO-EMS follows Semantic Versioning for source/product milestones:
 
-ADR Approval (if architecture is affected)
+- **MAJOR** — incompatible/breaking product or contract change.
+- **MINOR** — backward-compatible substantive new functionality.
+- **PATCH** — backward-compatible fixes/hardening without substantive new product functionality.
 
-↓
+A version bump is not a field-acceptance claim. Software/CI completion, physical hardware validation, live provider evidence, commissioning, UAT, and customer acceptance remain separately stated evidence states.
 
-Implementation
+## Release procedure
 
-↓
+For a controlled published release:
 
-Testing
+1. reconcile `VERSION`, backend package metadata, README source-version display, `CHANGELOG.md`, and `PROJECT_STATE.md`;
+2. run the normal backend/frontend GitHub CI gates on the exact release-preparation head;
+3. merge the release-preparation PR;
+4. create the annotated Git tag against the exact merged release commit;
+5. push/publish the GitHub Release for that tag;
+6. verify the tag target, release metadata, and source-version documentation;
+7. only then describe that version as the latest **published tagged release**.
 
-↓
-
-Documentation Update
-
-↓
-
-Git Commit
-
-↓
-
-Git Push
-
-## 36.
-Ideas and approved architecture decisions are different.
-
-- Ideas must be documented in `docs/project-ideas.md`.
-- Accepted architectural decisions must be documented as ADRs.
-- Only approved ADRs may change the system architecture.
-
-## 37.
-
-Business requirements drive implementation.
-
-Every feature must start with:
-
-- Business Requirement
-- Use Case
-- Domain Review
-
-Only after approval may implementation begin.
-
-## 38.
-
-Business requirements drive implementation.
-
-Every feature must start with:
-
-- Business Requirement
-- Use Case
-- Domain Review
-
-Only after approval may implementation begin.
-
-## 39.
-
-Requirements must be documented before implementation.
-
-Functional requirements, non-functional requirements, use cases and acceptance criteria must be defined when applicable.
-
-## 40.
-
-The product scope must be controlled.
-
-New features outside the approved release scope must be documented and reviewed before implementation.
-
+Historical release tags and their claims are immutable and must not be rewritten to include later development.
