@@ -12,7 +12,9 @@ const ACK_TIME = "2026-08-31T16:00:00Z";
 const directories: string[] = [];
 
 afterEach(() => {
-  for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true });
+  for (const directory of directories.splice(0)) {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 function store() {
@@ -81,7 +83,10 @@ describe("durable local controller configuration", () => {
       ACK_TIME
     );
     const record = JSON.parse(readFileSync(durable.filePath, "utf8")) as Record<string, unknown>;
-    writeFileSync(durable.filePath, `${JSON.stringify({ ...record, integrity_sha256: "0".repeat(64) })}\n`);
+    writeFileSync(
+      durable.filePath,
+      `${JSON.stringify({ ...record, integrity_sha256: "0".repeat(64) })}\n`
+    );
 
     const runtime = SiteControllerRuntime.boot(bootInput(), 1_000, durable.value);
     expect(runtime.snapshot().state).toBe("NOT_READY_NO_CONFIG");
@@ -111,6 +116,8 @@ describe("durable local controller configuration", () => {
     );
 
     expect(durable.value.load(CONTROLLER_ID, SITE_UUID)).toBeNull();
-    expect(durable.value.load("controller-other", "c2d4f7da-64f0-4d03-b45d-3735a8d3a2aa")).toBeNull();
+    expect(
+      durable.value.load("controller-other", "c2d4f7da-64f0-4d03-b45d-3735a8d3a2aa")
+    ).toBeNull();
   });
 });
