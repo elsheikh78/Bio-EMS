@@ -38,7 +38,8 @@ export class LocalEmergencySmsService {
     if (this.primaryUnavailableSince === null)
       return [{ status: "NOT_ELIGIBLE", reason: "PRIMARY_AVAILABLE" }];
 
-    const outageSeconds = (Date.parse(observedAt) - Date.parse(this.primaryUnavailableSince)) / 1_000;
+    const outageSeconds =
+      (Date.parse(observedAt) - Date.parse(this.primaryUnavailableSince)) / 1_000;
     if (outageSeconds < bundle.sms_failover.primary_unavailable_after_seconds)
       return [{ status: "NOT_ELIGIBLE", reason: "OUTAGE_DELAY_PENDING" }];
     if (evaluation.phase !== "ACTIVE" || !evaluation.condition.startsWith("CRITICAL"))
