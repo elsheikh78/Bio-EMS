@@ -6,9 +6,9 @@
 
 **Current phase:** P2 Site Controller Runtime implementation, in parallel with BIO EGYPT Field-Pilot Preparation.
 
-**Current feature work:** P0 reporting and the P1 Notification Delivery Engine are merged and CI verified. P2-01 Site Controller Runtime Foundation is implemented on PR #115 with deterministic runtime/build identity, Site/configuration boundaries, startup state, watchdog/restart behavior, and host-side automated coverage.
+**Current feature work:** P0 reporting and the P1 Notification Delivery Engine are merged and CI verified. P2-01 Site Controller Runtime Foundation is merged. P2-02 Configuration Receipt and Integrity is implemented on PR #116 and code-complete CI verified, with BF-08 envelope/checksum verification, Site/version conflict handling, explicit APPLIED/REJECTED acknowledgement generation, and preservation of the known-good effective configuration across rejection paths.
 
-**Next actions:** merge P2-01 after final CI on the documentation-updated head, then implement P2-02 Configuration Receipt and Integrity against the existing BF-08 synchronization contract. Execute the physical MQTT/UAT, commissioning, notification-provider, and customer-acceptance evidence gates separately. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
+**Next actions:** merge P2-02 after final CI on the documentation-updated head, then implement P2-03 Durable Local Configuration and power-loss-safe known-good recovery. Execute the physical MQTT/UAT, commissioning, notification-provider, and customer-acceptance evidence gates separately. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
@@ -34,12 +34,13 @@
 - Production deployment validation, MQTT TLS/QoS, persistent SQLite, and LIVE/REPLAY recovery foundation.
 - Controlled Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations Preview/CSV/PDF workflows.
 - P2-01 host-side Site Controller runtime foundation with explicit build/hardware identity, Site/configuration boundary, deterministic startup states, connectivity transitions, and watchdog/restart semantics.
+- P2-02 BF-08 configuration receipt/integrity runtime with checksum validation, Site/version conflict rejection, idempotent duplicate application, APPLIED/REJECTED acknowledgement generation, and known-good effective-config preservation.
 
 ## P0-P6 Delivery Position
 
 - **P0 — Professional software/reporting baseline:** COMPLETE / MERGED / CI VERIFIED. Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** SOFTWARE COMPLETE / MERGED / CI VERIFIED. Live SMS-provider evidence and field notification UAT remain open.
-- **P2 — Site Controller Runtime:** IN PROGRESS. P2-01 runtime foundation is implemented and CI verified on PR #115; BF-08 defines the synchronization contract. Configuration receipt/integrity, durable local persistence, sensor acquisition, offline Alarm execution, local failover, reconnect reconciliation, controller health evidence, and bench qualification remain open.
+- **P2 — Site Controller Runtime:** IN PROGRESS. P2-01 is merged; P2-02 is implemented and code-complete CI verified on PR #116. Durable local persistence, sensor acquisition, offline Alarm execution, local failover, reconnect reconciliation, controller health evidence, and bench qualification remain open.
 - **P3 — Pilot Commissioning Tooling:** PARTIAL. Controlled documents exist; executable field evidence and commissioning remain open.
 - **P4 — Production Hardening:** PARTIAL. Deployment validation, persistence, recovery semantics, TLS/QoS, and backup paths exist; production operational evidence remains open.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** FOUNDATION IMPLEMENTED. Platform identity/audit boundaries exist; broader Owner operational workflows, fleet/customer/license operations, and commercial production operations remain separately scoped.
@@ -55,10 +56,11 @@ P1 software completion does not assert that a real SMS has been delivered throug
 
 P2 starts from the completed BF-08 Site Controller synchronization contract.
 
-- P2-01 — Site Controller Runtime Foundation: implemented on PR #115. The host-side reference runtime defines runtime/build identity, `STANDARD`/`ADVANCED` hardware profile identity, controller/Site/config-contract boundaries, deterministic online/offline/not-ready startup state, watchdog timeout behavior, restart evidence, and automated tests.
-- P2-02 — Configuration Receipt and Integrity: NEXT. It will consume and verify the BF-08 delivery envelope and preserve explicit APPLIED/REJECTED semantics without replacing a known-good effective configuration with an invalid candidate.
+- P2-01 — Site Controller Runtime Foundation: merged through PR #115. The host-side reference runtime defines runtime/build identity, `STANDARD`/`ADVANCED` hardware profile identity, controller/Site/config-contract boundaries, deterministic online/offline/not-ready startup state, watchdog timeout behavior, restart evidence, and automated tests.
+- P2-02 — Configuration Receipt and Integrity: implemented on PR #116. The runtime verifies the BF-08 envelope/checksum before application, rejects cross-Site, stale-version, and same-version/checksum-conflict candidates, returns controlled APPLIED/REJECTED acknowledgements, and preserves the known-good effective configuration when a candidate is rejected. CI run #339 passed both quality-gate jobs on the code-complete head.
+- P2-03 — Durable Local Configuration: NEXT. It must persist the last verified effective configuration with atomic/power-loss-safe semantics and deterministic recovery without elevating an unverified candidate.
 
-P2-01 does not claim ESP32 firmware, DS18B20 acquisition, local persistent storage, SIM800L operation, or field hardware qualification.
+P2-01/P2-02 do not claim ESP32 firmware, DS18B20 acquisition, durable local nonvolatile storage, SIM800L operation, or field hardware qualification.
 
 ## Release and Repository Timeline
 
@@ -70,7 +72,7 @@ Later Sprint 13, Sprint 14, Sprint 15, Sprint 16, BF-10, P1, and P2 development 
 - Sprint 15: COMPLETE / MERGED / VERIFIED / CLOSED.
 - Sprint 16 reporting/BF-10 software scope: COMPLETE / MERGED / CI VERIFIED.
 - P1 Notification Delivery Engine software scope: COMPLETE / MERGED / CI VERIFIED.
-- P2 Site Controller Runtime: IN PROGRESS; P2-01 implemented on PR #115.
+- P2 Site Controller Runtime: IN PROGRESS; P2-01 merged and P2-02 implemented/CI verified on PR #116.
 
 ## Domain Boundary
 
