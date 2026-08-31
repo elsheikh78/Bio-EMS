@@ -6,6 +6,7 @@ export const routePolicies = {
   "/dashboard": "DASHBOARD_READ",
   "/monitored-areas": "CONFIGURATION_READ",
   "/alarms": "ALARM_READ",
+  "/notification-deliveries": "ALARM_READ",
   "/devices": "DEVICE_READ",
   "/sensors-calibration": "CONFIGURATION_READ",
   "/reports": "REPORT_READ",
