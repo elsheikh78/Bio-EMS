@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
-import { acquireConfiguredSensors, type Ds18b20Reader } from "./sensor-acquisition.service";
+import {
+  acquireConfiguredSensors,
+  type Ds18b20Reader,
+} from "./sensor-acquisition.service";
 
 const SITE_UUID = "e70cb67a-0ab0-4e57-ac61-d6142990ca37";
 const bundle: OfflineCriticalConfigBundle = {
@@ -73,21 +76,38 @@ describe("controller sensor acquisition", () => {
   });
 
   it("marks null and the DS18B20 -127 sentinel as disconnected", () => {
-    const nullCycle = acquireConfiguredSensors(bundle, reader(new Map([[1, null]])), "2026-08-31T16:21:00Z");
-    expect(nullCycle.samples[0]).toMatchObject({ status: "DISCONNECTED", value_celsius: null });
+    const nullCycle = acquireConfiguredSensors(
+      bundle,
+      reader(new Map([[1, null]])),
+      "2026-08-31T16:21:00Z"
+    );
+    expect(nullCycle.samples[0]).toMatchObject({
+      status: "DISCONNECTED",
+      value_celsius: null,
+    });
 
     const sentinelCycle = acquireConfiguredSensors(
       bundle,
       reader(new Map([[1, -127]])),
       "2026-08-31T16:21:00Z"
     );
-    expect(sentinelCycle.samples[0]).toMatchObject({ status: "DISCONNECTED", value_celsius: null });
+    expect(sentinelCycle.samples[0]).toMatchObject({
+      status: "DISCONNECTED",
+      value_celsius: null,
+    });
   });
 
   it("rejects non-finite and out-of-range DS18B20 values", () => {
     for (const value of [Number.NaN, Number.POSITIVE_INFINITY, -56, 126]) {
-      const cycle = acquireConfiguredSensors(bundle, reader(new Map([[1, value]])), "2026-08-31T16:21:00Z");
-      expect(cycle.samples[0]).toMatchObject({ status: "INVALID", value_celsius: null });
+      const cycle = acquireConfiguredSensors(
+        bundle,
+        reader(new Map([[1, value]])),
+        "2026-08-31T16:21:00Z"
+      );
+      expect(cycle.samples[0]).toMatchObject({
+        status: "INVALID",
+        value_celsius: null,
+      });
     }
   });
 
@@ -99,8 +119,15 @@ describe("controller sensor acquisition", () => {
       },
     };
 
-    const cycle = acquireConfiguredSensors(bundle, throwingReader, "2026-08-31T16:21:00Z");
-    expect(cycle.samples[0]).toMatchObject({ status: "READ_ERROR", value_celsius: null });
+    const cycle = acquireConfiguredSensors(
+      bundle,
+      throwingReader,
+      "2026-08-31T16:21:00Z"
+    );
+    expect(cycle.samples[0]).toMatchObject({
+      status: "READ_ERROR",
+      value_celsius: null,
+    });
     expect(cycle.samples[1]).toMatchObject({ status: "OK", value_celsius: 4.5 });
   });
 
