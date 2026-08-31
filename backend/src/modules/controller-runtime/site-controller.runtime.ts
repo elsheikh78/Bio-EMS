@@ -5,10 +5,7 @@ import {
   type ControllerRuntimeSnapshot,
   type ControllerRuntimeState,
 } from "./runtime.contract";
-import {
-  receiveConfigEnvelope,
-  type ConfigReceiptResult,
-} from "./config-receipt.service";
+import { receiveConfigEnvelope, type ConfigReceiptResult } from "./config-receipt.service";
 
 const DEFAULT_WATCHDOG_TIMEOUT_MS = 30_000;
 
