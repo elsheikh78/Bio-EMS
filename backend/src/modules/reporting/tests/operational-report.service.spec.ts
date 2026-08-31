@@ -51,5 +51,6 @@ describe("OperationalReportService", () => {
     expect(renderOperationalCsv(result, "operator")).toContain('"quoted ""value"""');
     const pdf = await renderOperationalPdf(result, "operator");
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
+    expect(pdf.length).toBeGreaterThan(1_000);
   });
 });
