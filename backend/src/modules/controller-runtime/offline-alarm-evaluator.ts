@@ -1,4 +1,6 @@
-import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
+import type {
+  OfflineCriticalConfigBundle,
+} from "../controller-sync/offline-critical-config.contract";
 import type { SensorAcquisitionCycle, SensorAcquisitionSample } from "./sensor-acquisition.service";
 
 export type OfflineAlarmCondition =
@@ -92,13 +94,7 @@ export class OfflineAlarmEvaluator {
         firstObservedAt,
         activatedAt: effectiveActivatedAt,
       });
-      return this.result(
-        sample,
-        condition,
-        "ACTIVE",
-        firstObservedAt,
-        effectiveActivatedAt
-      );
+      return this.result(sample, condition, "ACTIVE", firstObservedAt, effectiveActivatedAt);
     }
 
     this.states.set(sample.sensor_uuid, {
@@ -135,7 +131,11 @@ function classify(
   sensor: OfflineCriticalConfigBundle["sensors"][number]
 ): Exclude<OfflineAlarmCondition, "SENSOR_FAULT"> {
   if (sensor.alarm_low !== null && value <= sensor.alarm_low) return "CRITICAL_LOW";
-  if (sensor.warning_low !== undefined && sensor.warning_low !== null && value <= sensor.warning_low)
+  if (
+    sensor.warning_low !== undefined &&
+    sensor.warning_low !== null &&
+    value <= sensor.warning_low
+  )
     return "WARNING_LOW";
   if (sensor.alarm_high !== null && value >= sensor.alarm_high) return "CRITICAL_HIGH";
   if (
