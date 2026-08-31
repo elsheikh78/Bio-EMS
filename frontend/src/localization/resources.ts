@@ -53,6 +53,7 @@ export interface TranslationResources {
     dashboard: string;
     monitoredAreas: string;
     alarms: string;
+    notificationDeliveries: string;
     devices: string;
     sensorsCalibration: string;
     reports: string;
@@ -274,6 +275,7 @@ export const englishResources = {
     dashboard: "Dashboard",
     monitoredAreas: "Monitored Areas",
     alarms: "Alarms",
+    notificationDeliveries: "Notification Delivery",
     devices: "Devices",
     sensorsCalibration: "Sensors & Calibration",
     reports: "Reports",
