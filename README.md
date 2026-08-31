@@ -6,7 +6,7 @@
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Latest published tagged release:** `v0.15.0` until the prepared `v0.17.0` tag/release is published.  
+**Latest published tagged release:** `v0.17.0`.  
 **Current source-software version:** `0.17.0`.
 
 ## Documentation Authority — Read This First
@@ -69,10 +69,6 @@ BIO-EMS currently includes:
 - BF-08 Site Controller offline-critical configuration synchronization.
 - Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations in Preview/CSV/PDF workflows.
 - P2 Site Controller host-side runtime sequence: deterministic runtime/watchdog, configuration receipt/integrity, durable known-good configuration, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover, reconnect reconciliation, health evidence, bench qualification gate, and durable replay acceptance.
-
-## Release / Version Rule
-
-`VERSION` is the product source-version authority. The backend package metadata must match it. The frontend package remains a private scaffold (`0.0.0`) and is not an independently published product package. Published Git tags/releases are immutable release artifacts and may lag the source version while a release-preparation PR is in progress.
 
 ## Architecture Boundary
 
