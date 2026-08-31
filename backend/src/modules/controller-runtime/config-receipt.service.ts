@@ -93,6 +93,7 @@ function safeEnvelopeIdentity(
   if (!bundle || typeof bundle !== "object") return null;
   const configVersion = (bundle as Record<string, unknown>).config_version;
   if (!Number.isInteger(configVersion) || (configVersion as number) <= 0) return null;
-  if (typeof checksumSha256 !== "string" || !/^[a-f0-9]{64}$/.test(checksumSha256)) return null;
+  if (typeof checksumSha256 !== "string" || !/^[a-f0-9]{64}$/.test(checksumSha256))
+    return null;
   return { config_version: configVersion as number, checksum_sha256: checksumSha256 };
 }
