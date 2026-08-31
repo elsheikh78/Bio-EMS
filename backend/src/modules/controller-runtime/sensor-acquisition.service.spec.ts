@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
+import type {
+  OfflineCriticalConfigBundle,
+} from "../controller-sync/offline-critical-config.contract";
 import {
   acquireConfiguredSensors,
   type Ds18b20Reader,
