@@ -50,14 +50,17 @@ export class ControllerHealthEvidenceService {
     const watchdogOverdue = heartbeatAgeMs > input.snapshot.watchdog.timeout_ms;
     const reasons: string[] = [];
 
-    if (!input.snapshot.primary_transport_available) reasons.push("PRIMARY_TRANSPORT_UNAVAILABLE");
+    if (!input.snapshot.primary_transport_available) {
+      reasons.push("PRIMARY_TRANSPORT_UNAVAILABLE");
+    }
     if (watchdogOverdue) reasons.push("WATCHDOG_HEARTBEAT_OVERDUE");
     if (input.snapshot.watchdog.restart_count > 0) reasons.push("RUNTIME_RESTART_OBSERVED");
     if (input.buffered_replay_count > 0) reasons.push("BUFFERED_REPLAY_PENDING");
     if (input.pending_local_sms_count > 0) reasons.push("LOCAL_SMS_PENDING");
     if (input.sensor_fault_count > 0) reasons.push("SENSOR_FAULT_PRESENT");
 
-    const notReady = input.snapshot.state.startsWith("NOT_READY") || input.snapshot.state === "RESTART_REQUIRED";
+    const notReady =
+      input.snapshot.state.startsWith("NOT_READY") || input.snapshot.state === "RESTART_REQUIRED";
     if (notReady) reasons.unshift(`RUNTIME_${input.snapshot.state}`);
 
     return {
@@ -85,9 +88,13 @@ export class ControllerHealthEvidenceService {
 }
 
 function assertTimestamp(value: string): void {
-  if (!Number.isFinite(Date.parse(value))) throw new TypeError("observed_at must be a valid date-time");
+  if (!Number.isFinite(Date.parse(value))) {
+    throw new TypeError("observed_at must be a valid date-time");
+  }
 }
 
 function assertNonnegativeInteger(name: string, value: number): void {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a nonnegative integer`);
+  if (!Number.isInteger(value) || value < 0) {
+    throw new TypeError(`${name} must be a nonnegative integer`);
+  }
 }
