@@ -1,10 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import { createConfigDeliveryEnvelope } from "../controller-sync/offline-critical-config.contract";
+import { FileReplayAcceptanceStore } from "./replay-acceptance.store";
 import { ReconnectReconciliationService } from "./reconnect-reconciliation.service";
 
 const siteUuid = "e70cb67a-0ab0-4e57-ac61-d6142990ca37";
 const recipientUuid = "b3d90e36-faf5-4a46-96dc-376dbc1475cb";
 const sensorUuid = "8ae946c2-1424-44e8-b98d-ae2fd2f2273e";
+const directories: string[] = [];
+
+afterEach(() => {
+  for (const directory of directories.splice(0)) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 const envelope = createConfigDeliveryEnvelope({
   contract_version: 1,
@@ -39,6 +50,17 @@ function input() {
     server_envelope: envelope,
     buffered_records: [],
     reconciled_at: "2026-08-31T18:00:00Z",
+  };
+}
+
+function replayRecord() {
+  return {
+    sensor_uuid: sensorUuid,
+    device_id: "ZC-FW-001",
+    channel: 1,
+    sampled_at: "2026-08-31T17:01:00Z",
+    value_celsius: 5,
+    status: "OK" as const,
   };
 }
 
@@ -91,22 +113,8 @@ describe("reconnect reconciliation", () => {
     const result = new ReconnectReconciliationService().reconcile({
       ...input(),
       buffered_records: [
-        {
-          sensor_uuid: sensorUuid,
-          device_id: "ZC-FW-001",
-          channel: 1,
-          sampled_at: "2026-08-31T17:02:00Z",
-          value_celsius: 6,
-          status: "OK",
-        },
-        {
-          sensor_uuid: sensorUuid,
-          device_id: "ZC-FW-001",
-          channel: 1,
-          sampled_at: "2026-08-31T17:01:00Z",
-          value_celsius: 5,
-          status: "OK",
-        },
+        { ...replayRecord(), sampled_at: "2026-08-31T17:02:00Z", value_celsius: 6 },
+        replayRecord(),
       ],
     });
     expect(result.replay.map((record) => record.sampled_at)).toEqual([
@@ -116,24 +124,36 @@ describe("reconnect reconciliation", () => {
     expect(result.replay.every((record) => record.mode === "REPLAY")).toBe(true);
   });
 
+  it("suppresses duplicate records inside the same unaccepted replay batch", () => {
+    const record = replayRecord();
+    const result = new ReconnectReconciliationService().reconcile({
+      ...input(),
+      buffered_records: [record, { ...record }],
+    });
+    expect(result.replay).toHaveLength(1);
+  });
+
   it("suppresses replay records only after server acceptance is recorded", () => {
     const service = new ReconnectReconciliationService();
-    const withReplay = {
-      ...input(),
-      buffered_records: [
-        {
-          sensor_uuid: sensorUuid,
-          device_id: "ZC-FW-001",
-          channel: 1,
-          sampled_at: "2026-08-31T17:01:00Z",
-          value_celsius: 5,
-          status: "OK" as const,
-        },
-      ],
-    };
+    const withReplay = { ...input(), buffered_records: [replayRecord()] };
     const first = service.reconcile(withReplay);
     expect(first.replay).toHaveLength(1);
     service.markReplayAccepted(first.replay.map((record) => record.replay_id));
     expect(service.reconcile(withReplay).replay).toHaveLength(0);
+  });
+
+  it("persists accepted replay IDs across service restarts", () => {
+    const directory = mkdtempSync(join(tmpdir(), "bio-ems-replay-ledger-"));
+    directories.push(directory);
+    const ledger = new FileReplayAcceptanceStore(join(directory, "accepted-replay.json"));
+    const withReplay = { ...input(), buffered_records: [replayRecord()] };
+
+    const firstService = new ReconnectReconciliationService(ledger);
+    const first = firstService.reconcile(withReplay);
+    expect(first.replay).toHaveLength(1);
+    firstService.markReplayAccepted(first.replay.map((record) => record.replay_id));
+
+    const restartedService = new ReconnectReconciliationService(ledger);
+    expect(restartedService.reconcile(withReplay).replay).toHaveLength(0);
   });
 });
