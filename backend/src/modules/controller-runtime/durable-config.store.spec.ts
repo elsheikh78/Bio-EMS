@@ -48,7 +48,17 @@ function bundle(configVersion: number) {
     config_version: configVersion,
     site_uuid: SITE_UUID,
     issued_at: "2026-08-31T15:59:00Z",
-    sensors: [],
+    sensors: [
+      {
+        sensor_uuid: "8ae946c2-1424-44e8-b98d-ae2fd2f2273e",
+        device_id: "ZC-FW-001",
+        channel: 1,
+        enabled: true as const,
+        alarm_low: 2,
+        alarm_high: 8,
+        critical_delay_seconds: 30,
+      },
+    ],
     sms_failover: { enabled: false, primary_unavailable_after_seconds: 300 },
     sms_targets: [],
     critical_escalation_steps: [],
