@@ -66,7 +66,10 @@ export function receiveConfigEnvelope(input: ConfigReceiptInput): ConfigReceiptR
   };
 }
 
-function rejected(input: ConfigReceiptInput, code: ConfigReceiptRejectionCode): ConfigReceiptResult {
+function rejected(
+  input: ConfigReceiptInput,
+  code: ConfigReceiptRejectionCode
+): ConfigReceiptResult {
   const envelope = safeEnvelopeIdentity(input.envelope);
   return {
     acknowledgement: configAcknowledgementSchema.parse({
