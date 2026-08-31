@@ -2,24 +2,22 @@
 
 **State date:** 31 August 2026
 
-**Latest tagged release:** `v0.15.0` (historical tagged artifact)
+**Latest published tagged release:** `v0.15.0` until the prepared `v0.17.0` release is published.
 
-**Current source-software version:** `0.16.3`
-
-**Authoritative repository baseline:** `main` at `453ea1fe6f983528c861667dc638bcc424710eff` after PR #124.
+**Current source-software version:** `0.17.0`
 
 **Current phase:** P2 Site Controller software sequence is complete and merged. The next software planning/execution boundary is P3-P6, while physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
 
 ## Session Handoff — Start Here
 
-The 31 August repository/documentation audit and subsequent implementation closed the previously identified P0/P1/P2 software gaps. PRs #115 through #124 implemented the Site Controller runtime sequence and its qualification hardening. GitHub CI passed on the final P2-09 qualification PR and on the durable configuration/replay hardening PR.
+The 31 August repository/documentation audit and subsequent implementation closed the previously identified P0/P1/P2 software gaps. PRs #115 through #124 implemented the Site Controller runtime sequence and its qualification hardening. PR #125 then established the single documentation authority and next-session handoff structure. The 0.17.0 release reconciliation packages this source-software milestone without converting external evidence gates into release claims.
 
-At the next session:
+At the next development session:
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before development.
-2. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
-3. Reconcile remaining stale historical documentation where it still describes old implementation state; preserve historical records as historical records.
-4. Start the next controlled P3-P6 work from the implementation plan and this state document.
+2. Confirm `VERSION`, backend package metadata, README, CHANGELOG, and this file agree on the current source version.
+3. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
+4. Start the next controlled P3-P6 work from `IMPLEMENTATION_PLAN.md` and this state document.
 5. Keep physical hardware qualification, live provider evidence, 72-hour endurance, commissioning, customer UAT, and customer acceptance as evidence gates; do not convert them into software-complete claims.
 
 ## Audit Result — Updated 31 August 2026
@@ -84,8 +82,17 @@ P2 implementation sequence:
 - P2-08 — Controller Health Evidence — PR #122.
 - P2-09 — Bench Qualification Gate — PR #123; CI run #380 SUCCESS; merge baseline `4171cd0a9a5876602f5aa49e0959115065c1c09c`.
 - Post-P2 qualification hardening — full BF-08 durable known-good bundle recovery plus durable replay acceptance — PR #124; CI run #382 SUCCESS; merge commit `453ea1fe6f983528c861667dc638bcc424710eff`.
+- Documentation authority / audit handoff reconciliation — PR #125; CI run #387 SUCCESS; merge commit `d1918a1bd6526cfd8c140bd350e93e584641436d`.
 
-PR #124 closes the source-level blockers identified during P2-09: a real restart can recover the verified BF-08 configuration bundle rather than identity alone, and replay acceptance is no longer limited to process memory. This does **not** claim that a physical power-loss test, live SIM800L send, deployed MQTT endurance test, or field acceptance has occurred.
+PR #124 closes the source-level blockers identified during P2-09: a restart can recover the verified BF-08 configuration bundle rather than identity alone, and replay acceptance is no longer limited to process memory. This does **not** claim that a physical power-loss test, live SIM800L send, deployed MQTT endurance test, or field acceptance has occurred.
+
+## Release / Version Position
+
+`VERSION` is the product source-version authority. The backend package metadata follows it. The frontend package remains a private scaffold version and is not an independently published BIO-EMS product package.
+
+`0.17.0` is a MINOR release because it consolidates substantial new functionality after the last published `v0.15.0` milestone: completed reporting, the P1 Notification Delivery Engine, and the P2 Site Controller software runtime sequence. It is not a production-acceptance declaration.
+
+Until the `v0.17.0` Git tag/GitHub Release is actually created against the release merge commit, `v0.15.0` remains the latest published immutable release artifact.
 
 ## Physical / Pilot Evidence Still Open
 
@@ -116,4 +123,4 @@ Broader Asset/discovery/provisioning, OTA, final production controller firmware/
 
 ## Repository Continuation Rule
 
-For the next session, begin by reading this file, `IMPLEMENTATION_PLAN.md`, the P2 qualification/hardening documents, and the latest `docs/SPRINT_PROGRESS.md` entry. GitHub `main` is the source of truth. Preserve historical release/Sprint documents; update current-state documents rather than rewriting historical facts.
+For the next session, begin by reading this file, then `IMPLEMENTATION_PLAN.md`; use detailed P2 closure/audit and hardware documents only for their specific evidence tracks. GitHub `main` is the source of truth. Preserve historical release/Sprint documents; update this current-state document rather than creating competing status files.
