@@ -2,7 +2,7 @@
 
 **State date:** 31 August 2026
 
-**Latest published tagged release:** `v0.15.0` until the prepared `v0.17.0` release is published.
+**Latest published tagged release:** `v0.17.0`
 
 **Current source-software version:** `0.17.0`
 
@@ -10,7 +10,7 @@
 
 ## Session Handoff — Start Here
 
-The 31 August repository/documentation audit and subsequent implementation closed the previously identified P0/P1/P2 software gaps. PRs #115 through #124 implemented the Site Controller runtime sequence and its qualification hardening. PR #125 then established the single documentation authority and next-session handoff structure. The 0.17.0 release reconciliation packages this source-software milestone without converting external evidence gates into release claims.
+The 31 August repository/documentation audit and subsequent implementation closed the previously identified P0/P1/P2 software gaps. PRs #115 through #124 implemented the Site Controller runtime sequence and its qualification hardening. PR #125 then established the single documentation authority and next-session handoff structure. Release reconciliation through PR #126 aligned the product version at `0.17.0`, and `v0.17.0` is now published as the current tagged software/repository release.
 
 At the next development session:
 
@@ -83,6 +83,7 @@ P2 implementation sequence:
 - P2-09 — Bench Qualification Gate — PR #123; CI run #380 SUCCESS; merge baseline `4171cd0a9a5876602f5aa49e0959115065c1c09c`.
 - Post-P2 qualification hardening — full BF-08 durable known-good bundle recovery plus durable replay acceptance — PR #124; CI run #382 SUCCESS; merge commit `453ea1fe6f983528c861667dc638bcc424710eff`.
 - Documentation authority / audit handoff reconciliation — PR #125; CI run #387 SUCCESS; merge commit `d1918a1bd6526cfd8c140bd350e93e584641436d`.
+- Version/release reconciliation — PR #126; CI run #389 SUCCESS; merge commit `cc8a5e7594c3a8101d7e227f582dfdf66f74fd48`; release tag `v0.17.0` published 31 August 2026.
 
 PR #124 closes the source-level blockers identified during P2-09: a restart can recover the verified BF-08 configuration bundle rather than identity alone, and replay acceptance is no longer limited to process memory. This does **not** claim that a physical power-loss test, live SIM800L send, deployed MQTT endurance test, or field acceptance has occurred.
 
@@ -90,9 +91,7 @@ PR #124 closes the source-level blockers identified during P2-09: a restart can 
 
 `VERSION` is the product source-version authority. The backend package metadata follows it. The frontend package remains a private scaffold version and is not an independently published BIO-EMS product package.
 
-`0.17.0` is a MINOR release because it consolidates substantial new functionality after the last published `v0.15.0` milestone: completed reporting, the P1 Notification Delivery Engine, and the P2 Site Controller software runtime sequence. It is not a production-acceptance declaration.
-
-Until the `v0.17.0` Git tag/GitHub Release is actually created against the release merge commit, `v0.15.0` remains the latest published immutable release artifact.
+`v0.17.0` is the latest published release. It is a MINOR software/repository release because it consolidates substantial functionality after `v0.15.0`: completed reporting, the P1 Notification Delivery Engine, and the P2 Site Controller software runtime sequence. Publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
 ## Physical / Pilot Evidence Still Open
 
