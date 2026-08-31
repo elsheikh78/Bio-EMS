@@ -16,8 +16,9 @@ import { migration012 } from "../migrations/012_create_notification_recipients";
 import { migration013 } from "../migrations/013_create_escalation_policies";
 import { migration014 } from "../migrations/014_create_device_communication_events";
 import { migration015 } from "../migrations/015_create_notification_deliveries";
+import { migration016 } from "../migrations/016_add_notification_attempt_phases";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -104,7 +105,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(15);
+    expect(historyCount.count).toBe(16);
     expect(warningColumns).toHaveLength(2);
   });
 
@@ -307,6 +308,8 @@ describe("SQLite migrations", () => {
   it("creates idempotent delivery jobs and append-only attempt evidence", () => {
     migration015.up(database);
     migration015.up(database);
+    migration016.up(database);
+    migration016.up(database);
 
     expect(
       database
