@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
+import type {
+  OfflineCriticalConfigBundle,
+} from "../controller-sync/offline-critical-config.contract";
 import type { SensorAcquisitionCycle } from "./sensor-acquisition.service";
 import { OfflineAlarmEvaluator } from "./offline-alarm-evaluator";
 
@@ -50,10 +52,14 @@ function cycle(
   };
 }
 
+function evaluateAt(evaluator: OfflineAlarmEvaluator, sampledAt: string, value: number) {
+  return evaluator.evaluate(bundle, cycle(sampledAt, value))[0];
+}
+
 describe("offline alarm evaluator", () => {
   it("keeps normal readings normal without pending state", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    const [result] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:01Z", 5));
+    const result = evaluateAt(evaluator, "2026-08-31T17:00:01Z", 5);
 
     expect(result).toMatchObject({
       condition: "NORMAL",
@@ -65,9 +71,9 @@ describe("offline alarm evaluator", () => {
 
   it("applies warning activation delay from the first continuous observation", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    const [first] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:00Z", 2.5));
-    const [beforeDelay] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:09Z", 2.6));
-    const [active] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:10Z", 2.7));
+    const first = evaluateAt(evaluator, "2026-08-31T17:00:00Z", 2.5);
+    const beforeDelay = evaluateAt(evaluator, "2026-08-31T17:00:09Z", 2.6);
+    const active = evaluateAt(evaluator, "2026-08-31T17:00:10Z", 2.7);
 
     expect(first.phase).toBe("PENDING");
     expect(beforeDelay.phase).toBe("PENDING");
@@ -81,8 +87,8 @@ describe("offline alarm evaluator", () => {
 
   it("restarts delay when severity or direction changes", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    evaluator.evaluate(bundle, cycle("2026-08-31T17:00:00Z", 7.5));
-    const [critical] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:05Z", 8.5));
+    evaluateAt(evaluator, "2026-08-31T17:00:00Z", 7.5);
+    const critical = evaluateAt(evaluator, "2026-08-31T17:00:05Z", 8.5);
 
     expect(critical).toMatchObject({
       condition: "CRITICAL_HIGH",
@@ -93,10 +99,10 @@ describe("offline alarm evaluator", () => {
 
   it("clears pending or active state when the reading recovers", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    evaluator.evaluate(bundle, cycle("2026-08-31T17:00:00Z", 1.5));
-    evaluator.evaluate(bundle, cycle("2026-08-31T17:00:30Z", 1.5));
-    const [normal] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:31Z", 5));
-    const [newPending] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:32Z", 1.5));
+    evaluateAt(evaluator, "2026-08-31T17:00:00Z", 1.5);
+    evaluateAt(evaluator, "2026-08-31T17:00:30Z", 1.5);
+    const normal = evaluateAt(evaluator, "2026-08-31T17:00:31Z", 5);
+    const newPending = evaluateAt(evaluator, "2026-08-31T17:00:32Z", 1.5);
 
     expect(normal.phase).toBe("NORMAL");
     expect(newPending).toMatchObject({
@@ -108,12 +114,12 @@ describe("offline alarm evaluator", () => {
 
   it("maps acquisition failures to sensor fault and resets alarm timing", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    evaluator.evaluate(bundle, cycle("2026-08-31T17:00:00Z", 1.5));
-    const [fault] = evaluator.evaluate(
+    evaluateAt(evaluator, "2026-08-31T17:00:00Z", 1.5);
+    const fault = evaluator.evaluate(
       bundle,
       cycle("2026-08-31T17:00:10Z", null, "DISCONNECTED")
-    );
-    const [pendingAgain] = evaluator.evaluate(bundle, cycle("2026-08-31T17:00:11Z", 1.5));
+    )[0];
+    const pendingAgain = evaluateAt(evaluator, "2026-08-31T17:00:11Z", 1.5);
 
     expect(fault).toMatchObject({
       condition: "SENSOR_FAULT",
@@ -125,9 +131,9 @@ describe("offline alarm evaluator", () => {
 
   it("rejects identity mismatch and non-monotonic time", () => {
     const evaluator = new OfflineAlarmEvaluator();
-    evaluator.evaluate(bundle, cycle("2026-08-31T17:00:10Z", 1.5));
+    evaluateAt(evaluator, "2026-08-31T17:00:10Z", 1.5);
 
-    expect(() => evaluator.evaluate(bundle, cycle("2026-08-31T17:00:09Z", 1.5))).toThrow(
+    expect(() => evaluateAt(evaluator, "2026-08-31T17:00:09Z", 1.5)).toThrow(
       /Non-monotonic/
     );
 
