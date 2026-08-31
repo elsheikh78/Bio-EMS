@@ -15,12 +15,11 @@ Use these documents for current status instead:
 
 ## Current Position
 
-- Sprint 13 is complete.
-- Sprint 14 is in progress.
-- S14-01 through S14-04 are complete and merged.
-- S14-05 is in progress.
-- S14-05A and S14-05B are complete on the active feature branch.
-- S14-05C is next and has not started.
+- Sprints 13, 14, and 15 are complete and closed.
+- Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
+- Current source baseline is 0.16.3.
+- The active delivery sequence is P0 through P6, beginning with field evidence and the P1
+  Notification Delivery Engine. `PROJECT_STATE.md` remains the concise authoritative status.
 
 ## Historical Value
 
