@@ -6,10 +6,7 @@ import {
 import type { AcknowledgedConfigIdentity } from "./runtime.contract";
 
 export type ConfigReceiptRejectionCode =
-  | "INVALID_ENVELOPE"
-  | "SITE_MISMATCH"
-  | "STALE_CONFIG_VERSION"
-  | "VERSION_CHECKSUM_CONFLICT";
+  "INVALID_ENVELOPE" | "SITE_MISMATCH" | "STALE_CONFIG_VERSION" | "VERSION_CHECKSUM_CONFLICT";
 
 export interface ConfigReceiptResult {
   acknowledgement: ConfigAcknowledgement;
