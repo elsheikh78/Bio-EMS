@@ -42,6 +42,24 @@ export interface DeliveryEnvelope {
   payload: Record<string, unknown>;
 }
 
+export interface NotificationDeliveryView extends NotificationDelivery {
+  recipient_name: string;
+  recipient_role: string;
+  event_type: string;
+  source_id: string;
+  attempts: Array<{
+    id: number;
+    attempt_number: number;
+    phase: "START" | "RESULT";
+    status: string;
+    provider: string;
+    provider_message_id: string | null;
+    error_code: string | null;
+    started_at: string;
+    completed_at: string | null;
+  }>;
+}
+
 export class NotificationDeliveryRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
@@ -158,6 +176,36 @@ export class NotificationDeliveryRepository {
       ORDER BY id DESC LIMIT ?`
       )
       .all(siteId, limit) as NotificationDelivery[];
+  }
+
+  listDetailedBySite(
+    siteId: number,
+    limit = 200,
+    status?: DeliveryStatus
+  ): NotificationDeliveryView[] {
+    const rows = this.database
+      .prepare(
+        `SELECT deliveries.*, recipients.display_name AS recipient_name,
+          recipients.role AS recipient_role, events.event_type, events.source_id
+        FROM notification_deliveries deliveries
+        INNER JOIN notification_recipients recipients ON recipients.id = deliveries.recipient_id
+        INNER JOIN notification_events events ON events.id = deliveries.notification_event_id
+        WHERE deliveries.site_id = ? AND (? IS NULL OR deliveries.status = ?)
+        ORDER BY deliveries.id DESC LIMIT ?`
+      )
+      .all(siteId, status ?? null, status ?? null, limit) as Omit<
+      NotificationDeliveryView,
+      "attempts"
+    >[];
+    const attempts = this.database.prepare(
+      `SELECT id, attempt_number, phase, status, provider, provider_message_id,
+        error_code, started_at, completed_at
+      FROM notification_delivery_attempts WHERE delivery_id = ? ORDER BY id`
+    );
+    return rows.map((row) => ({
+      ...row,
+      attempts: attempts.all(row.id),
+    })) as NotificationDeliveryView[];
   }
 
   cancelOpenForSource(sourceType: "ALARM" | "DEVICE", sourceId: string, now: string): number {

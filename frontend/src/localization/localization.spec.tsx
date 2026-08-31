@@ -47,6 +47,7 @@ const alternativeResources = {
     dashboard: "Alt Dashboard",
     monitoredAreas: "Alt Monitored Areas",
     alarms: "Alt Alarms",
+    notificationDeliveries: "Alt Notification Delivery",
     devices: "Alt Devices",
     sensorsCalibration: "Alt Sensors & Calibration",
     reports: "Alt Reports",

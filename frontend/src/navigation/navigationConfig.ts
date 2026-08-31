@@ -49,6 +49,13 @@ export const navigationItems = [
   },
   {
     group: "overview",
+    id: "notification-deliveries",
+    path: "/notification-deliveries",
+    labelKey: "notificationDeliveries",
+    permission: "ALARM_READ",
+  },
+  {
+    group: "overview",
     id: "sensors-calibration",
     path: "/sensors-calibration",
     labelKey: "sensorsCalibration",
