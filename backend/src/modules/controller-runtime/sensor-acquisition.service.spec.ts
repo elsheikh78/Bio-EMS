@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type {
-  OfflineCriticalConfigBundle,
-} from "../controller-sync/offline-critical-config.contract";
+import type { OfflineCriticalConfigBundle } from "../controller-sync/offline-critical-config.contract";
 import { acquireConfiguredSensors, type Ds18b20Reader } from "./sensor-acquisition.service";
 
 const SITE_UUID = "e70cb67a-0ab0-4e57-ac61-d6142990ca37";
