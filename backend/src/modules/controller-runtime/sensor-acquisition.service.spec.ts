@@ -37,9 +37,7 @@ const bundle: Sync.OfflineCriticalConfigBundle = {
   critical_escalation_steps: [],
 };
 
-function reader(
-  values: Map<number, number | null>
-): Acquisition.Ds18b20Reader {
+function reader(values: Map<number, number | null>): Acquisition.Ds18b20Reader {
   return {
     readCelsius: ({ channel }) => values.get(channel) ?? null,
   };
