@@ -16,8 +16,8 @@
 | BE-002 | Complete marked-up floor plans and approved Sensor positions                         | Joint survey            | Signed plans for both Sites                                     | BLOCKING           |
 | BE-003 | Confirm controller location/count and released channel/electrical capacity           | BIO-EMS engineering     | Approved controller layout/design                               | BLOCKING           |
 | BE-004 | Measure cable routes/lengths and approve cable/termination design                    | Installer/engineering   | Survey and released wiring schedule                             | BLOCKING           |
-| BE-005 | Assign controller, Device, channel, Sensor serial, and platform identities           | BIO-EMS commissioning   | Completed Sensor map + signed logical mapping approval           | PENDING APPROVAL   |
-| BE-006 | Approve temperature warning/critical thresholds and delay requirements               | BIO EGYPT quality       | Signed requirements                                             | PENDING APPROVAL   |
+| BE-005 | Assign controller, Device, channel, Sensor serial, and platform identities           | BIO-EMS commissioning   | Completed Sensor map + signed logical mapping approval           | PARTIAL - LOGICAL MAPPING APPROVED |
+| BE-006 | Approve temperature warning/critical thresholds and delay requirements               | BIO EGYPT quality       | Signed requirements                                             | APPROVED WITH CHANGES - EFFECTIVE VALUES OPEN |
 | BE-007 | Verify calibration certificates/status for all 20 Sensors                            | BIO-EMS quality         | Certificate register                                            | DEFERRED           |
 | BE-008 | Confirm mains, protection, backup power, Internet, DNS/NTP/firewall, and 4G coverage | Joint survey            | Electrical/network survey                                       | BLOCKING           |
 | BE-009 | Approve primary notification channel, recipients, and escalation ownership           | BIO EGYPT quality/IT    | Notification matrix                                             | BLOCKING           |
@@ -71,7 +71,8 @@ Logical mapping prepared for customer approval:
 
 - El Manial uses 7/16 planned channels; CPC / 6th of October uses 13/16 planned channels.
 - Physical Sensor serial, DS18B20 ROM ID where applicable, calibration certificate reference, final marked-up position, and measured cable length remain TBD until procurement/commissioning.
-- The logical mapping approval form has been prepared for Dr. Mayada Samir; signed evidence has not yet been recorded.
+- Signed logical mapping evidence `BE005-EV-001` was approved on 24 August 2026. Logical mapping
+  is closed; physical Sensor/ROM/certificate/position/cable fields remain open for commissioning.
 
 ### BE-006 — Cold Room initial configuration proposal pending approval
 
@@ -84,7 +85,10 @@ Logical mapping prepared for customer approval:
 - Proposed Critical persistence: 10 minutes.
 - These values are proposed initial Pilot configuration, not hard-coded BIO-EMS product rules and not regulatory claims.
 - Dry Storage and Antechamber limits remain TBD pending BIO EGYPT Quality requirements.
-- Approval form has been prepared for Dr. Mayada Samir; signed evidence has not yet been recorded.
+- Signed evidence `BE006-EV-001` was approved with changes on 24 August 2026. The printed values
+  are not an unconditional configuration release: final effective thresholds must resolve the
+  Quality comment concerning Sensor calibration error/uncertainty. Dry Storage and Antechamber
+  limits remain TBD.
 
 ### BE-007 — Procurement dependency
 
