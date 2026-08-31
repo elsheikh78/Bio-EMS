@@ -1,6 +1,8 @@
+import type { ConfigDeliveryEnvelope } from "../controller-sync/offline-critical-config.contract";
 import {
   acknowledgedConfigIdentitySchema,
   controllerBootInputSchema,
+  type AcknowledgedConfigIdentity,
   type ControllerBootInput,
   type ControllerRuntimeSnapshot,
   type ControllerRuntimeState,
@@ -12,12 +14,15 @@ const DEFAULT_WATCHDOG_TIMEOUT_MS = 30_000;
 
 export class SiteControllerRuntime {
   private snapshotValue: ControllerRuntimeSnapshot;
+  private effectiveEnvelopeValue: ConfigDeliveryEnvelope | null;
 
   private constructor(
     snapshot: ControllerRuntimeSnapshot,
+    effectiveEnvelope: ConfigDeliveryEnvelope | null,
     private readonly durableConfigStore: DurableConfigStore | null
   ) {
     this.snapshotValue = snapshot;
+    this.effectiveEnvelopeValue = effectiveEnvelope;
   }
 
   static boot(
@@ -26,10 +31,11 @@ export class SiteControllerRuntime {
     durableConfigStore: DurableConfigStore | null = null
   ): SiteControllerRuntime {
     const parsed = controllerBootInputSchema.parse(input);
-    const recoveredConfig = durableConfigStore?.load(
+    const recoveredEnvelope = durableConfigStore?.load(
       parsed.boundary.controller_id,
       parsed.boundary.site_uuid
     );
+    const recoveredConfig = recoveredEnvelope ? identityFromEnvelope(recoveredEnvelope) : null;
     const persistedConfig = recoveredConfig ?? parsed.persisted_config;
     const bootInput: ControllerBootInput = { ...parsed, persisted_config: persistedConfig };
 
@@ -47,12 +53,17 @@ export class SiteControllerRuntime {
           restart_count: 0,
         },
       },
+      recoveredEnvelope ?? null,
       durableConfigStore
     );
   }
 
   snapshot(): ControllerRuntimeSnapshot {
     return structuredClone(this.snapshotValue);
+  }
+
+  effectiveConfigEnvelope(): ConfigDeliveryEnvelope | null {
+    return this.effectiveEnvelopeValue ? structuredClone(this.effectiveEnvelopeValue) : null;
   }
 
   heartbeat(nowMs = Date.now()): ControllerRuntimeSnapshot {
@@ -70,6 +81,7 @@ export class SiteControllerRuntime {
 
   setAcknowledgedConfig(input: unknown): ControllerRuntimeSnapshot {
     const config = acknowledgedConfigIdentitySchema.parse(input);
+    this.effectiveEnvelopeValue = null;
     if (config.site_uuid !== this.snapshotValue.boundary.site_uuid) {
       this.snapshotValue.effective_config = null;
       this.snapshotValue.state = "NOT_READY_SITE_MISMATCH";
@@ -90,13 +102,18 @@ export class SiteControllerRuntime {
       acknowledged_at: acknowledgedAt,
     });
 
-    if (result.acknowledgement.status === "APPLIED" && result.accepted_config) {
+    if (
+      result.acknowledgement.status === "APPLIED" &&
+      result.accepted_config &&
+      result.accepted_envelope
+    ) {
       this.durableConfigStore?.save(
         this.snapshotValue.boundary.controller_id,
-        result.accepted_config,
+        result.accepted_envelope,
         acknowledgedAt
       );
       this.snapshotValue.effective_config = result.accepted_config;
+      this.effectiveEnvelopeValue = structuredClone(result.accepted_envelope);
       this.snapshotValue.state = deriveReadyState(this.snapshotValue);
     }
 
@@ -123,6 +140,14 @@ export class SiteControllerRuntime {
     this.snapshotValue.state = deriveReadyState(this.snapshotValue);
     return this.snapshot();
   }
+}
+
+function identityFromEnvelope(envelope: ConfigDeliveryEnvelope): AcknowledgedConfigIdentity {
+  return {
+    site_uuid: envelope.bundle.site_uuid,
+    config_version: envelope.bundle.config_version,
+    checksum_sha256: envelope.checksum_sha256,
+  };
 }
 
 function initialState(input: ControllerBootInput): ControllerRuntimeState {
