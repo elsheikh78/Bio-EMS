@@ -26,6 +26,7 @@ been surveyed or accepted.
 6. [Controlled Site Survey Pack](BIO-EGYPT-SITE-SURVEY-PACK.md)
 7. [BE-002 Marked-up Sensor Position Evidence Pack](BE-002-MARKED-UP-SENSOR-POSITION-PACK.md)
 8. [Software UAT Guide](BIO-EGYPT-SOFTWARE-UAT-GUIDE.md)
+9. [Customer Evidence Register - 31 August 2026](BIO-EGYPT-CUSTOMER-EVIDENCE-REGISTER-2026-08-31.md)
 
 ## Deployment and readiness references
 
