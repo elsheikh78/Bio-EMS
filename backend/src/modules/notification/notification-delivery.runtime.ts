@@ -2,6 +2,7 @@ import { config } from "../../config/config";
 import { HttpSmsProvider } from "./http-sms.provider";
 import { NotificationDeliveryRepository } from "./notification-delivery.repository";
 import { NotificationDeliveryWorker } from "./notification-delivery.worker";
+import { NotificationEscalationOrchestrator } from "./notification-escalation.orchestrator";
 
 export function startNotificationDeliveryRuntime(): (() => void) | undefined {
   const settings = config.notificationDelivery;
@@ -11,8 +12,13 @@ export function startNotificationDeliveryRuntime(): (() => void) | undefined {
     [new HttpSmsProvider(settings.sms.providerName, settings.sms.endpoint, settings.sms.token)],
     settings.timeoutMs
   );
-  const timer = setInterval(() => void worker.tick(), settings.pollIntervalMs);
+  const orchestrator = new NotificationEscalationOrchestrator();
+  const run = () => {
+    orchestrator.tick();
+    void worker.tick();
+  };
+  const timer = setInterval(run, settings.pollIntervalMs);
   timer.unref();
-  void worker.tick();
+  run();
   return () => clearInterval(timer);
 }
