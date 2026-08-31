@@ -6,33 +6,49 @@ import {
   type ControllerRuntimeState,
 } from "./runtime.contract";
 import { receiveConfigEnvelope, type ConfigReceiptResult } from "./config-receipt.service";
+import type { DurableConfigStore } from "./durable-config.store";
 
 const DEFAULT_WATCHDOG_TIMEOUT_MS = 30_000;
 
 export class SiteControllerRuntime {
   private snapshotValue: ControllerRuntimeSnapshot;
 
-  private constructor(snapshot: ControllerRuntimeSnapshot) {
+  private constructor(
+    snapshot: ControllerRuntimeSnapshot,
+    private readonly durableConfigStore: DurableConfigStore | null
+  ) {
     this.snapshotValue = snapshot;
   }
 
-  static boot(input: unknown, nowMs = Date.now()): SiteControllerRuntime {
+  static boot(
+    input: unknown,
+    nowMs = Date.now(),
+    durableConfigStore: DurableConfigStore | null = null
+  ): SiteControllerRuntime {
     const parsed = controllerBootInputSchema.parse(input);
-    return new SiteControllerRuntime({
-      identity: parsed.identity,
-      boundary: parsed.boundary,
-      state: initialState(parsed),
-      primary_transport_available: parsed.primary_transport_available,
-      effective_config:
-        parsed.persisted_config?.site_uuid === parsed.boundary.site_uuid
-          ? parsed.persisted_config
-          : null,
-      watchdog: {
-        timeout_ms: DEFAULT_WATCHDOG_TIMEOUT_MS,
-        last_heartbeat_at_ms: nowMs,
-        restart_count: 0,
+    const recoveredConfig = durableConfigStore?.load(
+      parsed.boundary.controller_id,
+      parsed.boundary.site_uuid
+    );
+    const persistedConfig = recoveredConfig ?? parsed.persisted_config;
+    const bootInput: ControllerBootInput = { ...parsed, persisted_config: persistedConfig };
+
+    return new SiteControllerRuntime(
+      {
+        identity: parsed.identity,
+        boundary: parsed.boundary,
+        state: initialState(bootInput),
+        primary_transport_available: parsed.primary_transport_available,
+        effective_config:
+          persistedConfig?.site_uuid === parsed.boundary.site_uuid ? persistedConfig : null,
+        watchdog: {
+          timeout_ms: DEFAULT_WATCHDOG_TIMEOUT_MS,
+          last_heartbeat_at_ms: nowMs,
+          restart_count: 0,
+        },
       },
-    });
+      durableConfigStore
+    );
   }
 
   snapshot(): ControllerRuntimeSnapshot {
@@ -75,6 +91,11 @@ export class SiteControllerRuntime {
     });
 
     if (result.acknowledgement.status === "APPLIED" && result.accepted_config) {
+      this.durableConfigStore?.save(
+        this.snapshotValue.boundary.controller_id,
+        result.accepted_config,
+        acknowledgedAt
+      );
       this.snapshotValue.effective_config = result.accepted_config;
       this.snapshotValue.state = deriveReadyState(this.snapshotValue);
     }
