@@ -148,15 +148,16 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
     },
 
     async exportOperational(input: OperationalReportExportRequest) {
+      const { format, ...previewInput } = input;
       const body = {
-        ...operationalReportPreviewRequestSchema.parse(input),
-        format: input.format,
+        ...operationalReportPreviewRequestSchema.parse(previewInput),
+        format,
       };
       const response = await protectedRequest<Response>("/reports/exports", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: input.format === "PDF" ? "application/pdf" : "text/csv",
+          Accept: format === "PDF" ? "application/pdf" : "text/csv",
         },
         body: JSON.stringify(body),
         responseMode: "response",
@@ -166,7 +167,7 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
         blob: await response.blob(),
         filename:
           disposition.match(/filename="([^"]+)"/)?.[1] ??
-          `bio-ems_${input.reportType.toLowerCase()}.${input.format.toLowerCase()}`,
+          `bio-ems_${input.reportType.toLowerCase()}.${format.toLowerCase()}`,
       };
     },
   };
