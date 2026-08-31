@@ -11,6 +11,7 @@ import { ReportsCenterPage } from "./pages/ReportsCenterPage";
 import { AdministrationPage } from "./pages/AdministrationPage";
 import { AlarmsPage } from "./pages/AlarmsPage";
 import { DevicesPage } from "./pages/DevicesPage";
+import { NotificationDeliveriesPage } from "./pages/NotificationDeliveriesPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -72,6 +73,15 @@ export function App() {
             element={
               <PermissionBoundary path="/devices">
                 <DevicesPage />
+              </PermissionBoundary>
+            }
+          />
+
+          <Route
+            path="notification-deliveries"
+            element={
+              <PermissionBoundary path="/notification-deliveries">
+                <NotificationDeliveriesPage />
               </PermissionBoundary>
             }
           />
