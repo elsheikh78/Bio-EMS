@@ -1,6 +1,6 @@
 {
   "name": "bio-ems-backend",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "BIO-EMS Enterprise Environmental Monitoring Backend",
   "private": true,
   "type": "commonjs",
