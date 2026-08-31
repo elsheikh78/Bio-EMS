@@ -1,5 +1,18 @@
 # Project Status
 
+## Reporting software closure — 31 August 2026
+
+- All five controlled report families are AVAILABLE through Reports Center Preview, CSV, and PDF:
+  Calibration History, Temperature Performance, Alarm History, Device Communication Health, and
+  Audit and Operations.
+- Alarm and Audit projections reuse their existing durable lifecycle/evidence stores. Device
+  Communication Health now uses an append-only communication-event ledger introduced by migration
+  014; its history therefore begins when this migration is deployed.
+- BF-10 is source-complete at software version 0.16.0. Automated verification is required on the
+  integration commit before release promotion.
+- Field commissioning, the deployed MQTT endurance scenario, and customer UAT/sign-off remain
+  external evidence gates and are not inferred from repository completion.
+
 ## Software completion checkpoint — 31 August 2026
 
 - Temperature Performance is AVAILABLE through Reports Center Preview, CSV, and PDF.
@@ -11,9 +24,10 @@
 - The deployed 10-minute MQTT live scenario remains the final environment evidence gate; no field
   or customer acceptance is inferred.
 
-## Current Active Work Package: BF-10 Reporting Expansion - 25 August 2026
+## Historical Work Package: BF-10 Reporting Expansion - 25 August 2026
 
-BF-10 continues the controlled Reporting Center expansion after PVR-06 readiness audit.
+BF-10 began the controlled Reporting Center expansion after PVR-06 readiness audit. It was later
+closed by the 31 August 2026 reporting software closure recorded above.
 
 Current baseline:
 

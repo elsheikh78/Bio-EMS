@@ -167,10 +167,11 @@ export class DeviceRepository {
     receivedAt: string,
     kind: "telemetry" | "heartbeat"
   ): boolean {
-    const result = this.database
-      .prepare(
-        kind === "heartbeat"
-          ? `UPDATE devices
+    return this.database.transaction(() => {
+      const result = this.database
+        .prepare(
+          kind === "heartbeat"
+            ? `UPDATE devices
              SET last_seen_at = CASE
                    WHEN last_seen_at IS NULL OR last_seen_at < ? THEN ? ELSE last_seen_at END,
                  last_heartbeat_at = CASE
@@ -178,18 +179,27 @@ export class DeviceRepository {
                    THEN ? ELSE last_heartbeat_at END,
                  updated_at = CURRENT_TIMESTAMP
              WHERE device_id = ? AND status = 'active' AND activated = 1`
-          : `UPDATE devices
+            : `UPDATE devices
              SET last_seen_at = CASE
                    WHEN last_seen_at IS NULL OR last_seen_at < ? THEN ? ELSE last_seen_at END,
                  updated_at = CURRENT_TIMESTAMP
              WHERE device_id = ? AND status = 'active' AND activated = 1`
-      )
-      .run(
-        ...(kind === "heartbeat"
-          ? [receivedAt, receivedAt, receivedAt, receivedAt, deviceId]
-          : [receivedAt, receivedAt, deviceId])
-      );
+        )
+        .run(
+          ...(kind === "heartbeat"
+            ? [receivedAt, receivedAt, receivedAt, receivedAt, deviceId]
+            : [receivedAt, receivedAt, deviceId])
+        );
 
-    return result.changes === 1;
+      if (result.changes !== 1) return false;
+      this.database
+        .prepare(
+          `INSERT INTO device_communication_events
+      (device_id, event_type, observed_at)
+      SELECT id, ?, ? FROM devices WHERE device_id = ?`
+        )
+        .run(kind === "heartbeat" ? "HEARTBEAT" : "TELEMETRY", receivedAt, deviceId);
+      return true;
+    })();
   }
 }

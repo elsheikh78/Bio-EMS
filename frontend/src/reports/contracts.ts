@@ -197,3 +197,60 @@ export type TemperaturePerformancePreviewResult = z.infer<
 >;
 export type TemperaturePerformanceExportRequest =
   TemperaturePerformancePreviewRequest & { format: "CSV" | "PDF" };
+
+export const operationalReportTypeSchema = z.enum([
+  "ALARM-HISTORY",
+  "DEVICE-HEALTH",
+  "AUDIT-OPERATIONS",
+]);
+export const operationalReportPreviewRequestSchema =
+  calibrationReportPreviewRequestSchema.extend({
+    reportType: operationalReportTypeSchema,
+  });
+export const operationalReportPreviewResultSchema = z
+  .object({
+    identity: z
+      .object({
+        reportId: z.string(),
+        reportType: operationalReportTypeSchema,
+        contractVersion: z.literal("1.0"),
+      })
+      .strict(),
+    scope: operationalReportPreviewRequestSchema.omit({
+      reportType: true,
+      contractVersion: true,
+    }),
+    provenance: z
+      .object({
+        generatedAt: z.string(),
+        source: z.literal("SQLITE"),
+        rangeSemantics: z.literal("[from,to)"),
+      })
+      .strict(),
+    quality: z
+      .object({
+        complete: z.boolean(),
+        warnings: z.array(z.string()),
+        unavailableSections: z.array(z.string()),
+      })
+      .strict(),
+    summary: z
+      .object({
+        records: z.number(),
+        resultCounts: z.record(z.string(), z.number()),
+      })
+      .strict(),
+    records: z.array(
+      z.record(z.string(), z.union([z.string(), z.number(), z.null()])),
+    ),
+  })
+  .strict();
+export type OperationalReportPreviewRequest = z.infer<
+  typeof operationalReportPreviewRequestSchema
+>;
+export type OperationalReportPreviewResult = z.infer<
+  typeof operationalReportPreviewResultSchema
+>;
+export type OperationalReportExportRequest = OperationalReportPreviewRequest & {
+  format: "CSV" | "PDF";
+};

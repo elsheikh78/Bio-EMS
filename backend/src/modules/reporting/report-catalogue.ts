@@ -28,10 +28,10 @@ export const reportCatalogue = {
     {
       id: "ALARM-HISTORY",
       title: "Alarm History",
-      readiness: "BLOCKED",
-      previewAvailable: false,
-      exportFormats: [],
-      unavailableReason: "LIFECYCLE_PROJECTION_REQUIRED",
+      readiness: "AVAILABLE",
+      previewAvailable: true,
+      exportFormats: ["CSV", "PDF"],
+      unavailableReason: null,
     },
 
     {
@@ -46,19 +46,19 @@ export const reportCatalogue = {
     {
       id: "DEVICE-HEALTH",
       title: "Device Communication Health",
-      readiness: "BLOCKED",
-      previewAvailable: false,
-      exportFormats: [],
-      unavailableReason: "HISTORY_LEDGER_REQUIRED",
+      readiness: "AVAILABLE",
+      previewAvailable: true,
+      exportFormats: ["CSV", "PDF"],
+      unavailableReason: null,
     },
 
     {
       id: "AUDIT-OPERATIONS",
       title: "Audit and Operations",
-      readiness: "READY_FOR_IMPLEMENTATION",
-      previewAvailable: false,
-      exportFormats: [],
-      unavailableReason: "OPERATIONS_REPORT_PROJECTION_REQUIRED",
+      readiness: "AVAILABLE",
+      previewAvailable: true,
+      exportFormats: ["CSV", "PDF"],
+      unavailableReason: null,
     },
   ],
 } as const;

@@ -30,7 +30,16 @@ import {
   useTemperaturePerformanceCsvExport,
   useTemperaturePerformancePdfExport,
   useTemperaturePerformancePreview,
+  useOperationalReportExport,
+  useOperationalReportPreview,
 } from "../reports/queries";
+
+type SelectableReportType =
+  | "CALIBRATION-HISTORY"
+  | "TEMP-PERFORMANCE"
+  | "ALARM-HISTORY"
+  | "DEVICE-HEALTH"
+  | "AUDIT-OPERATIONS";
 
 function dateValue(date: Date) {
   return date.toISOString().slice(0, 10);
@@ -54,6 +63,8 @@ export function ReportsCenterPage() {
   const temperaturePreview = useTemperaturePerformancePreview();
   const temperatureCsvExport = useTemperaturePerformanceCsvExport();
   const temperaturePdfExport = useTemperaturePerformancePdfExport();
+  const operationalPreview = useOperationalReportPreview();
+  const operationalExport = useOperationalReportExport();
   const { user } = useAuthentication();
   const [from, setFrom] = useState(() => {
     const date = new Date();
@@ -62,9 +73,9 @@ export function ReportsCenterPage() {
   });
   const [to, setTo] = useState(() => dateValue(new Date()));
   const [selected, setSelected] = useState<string[]>([]);
-  const [reportType, setReportType] = useState<
-    "CALIBRATION-HISTORY" | "TEMP-PERFORMANCE"
-  >("CALIBRATION-HISTORY");
+  const [reportType, setReportType] = useState<SelectableReportType>(
+    "CALIBRATION-HISTORY",
+  );
   const sensors = useMemo(() => sensorsQuery.data ?? [], [sensorsQuery.data]);
   const selectedSensors =
     selected.length === 0 ? sensors.map((sensor) => sensor.uuid) : selected;
@@ -97,13 +108,23 @@ export function ReportsCenterPage() {
     };
   }
 
+  function operationalReportRequest() {
+    return {
+      ...reportRequest(),
+      reportType: reportType as
+        "ALARM-HISTORY" | "DEVICE-HEALTH" | "AUDIT-OPERATIONS",
+    };
+  }
+
   function submit(event: FormEvent) {
     event.preventDefault();
     if (selectedSensors.length === 0) return;
     if (reportType === "TEMP-PERFORMANCE") {
       temperaturePreview.mutate(temperatureReportRequest());
-    } else {
+    } else if (reportType === "CALIBRATION-HISTORY") {
       preview.mutate(reportRequest());
+    } else {
+      operationalPreview.mutate(operationalReportRequest());
     }
   }
 
@@ -112,6 +133,15 @@ export function ReportsCenterPage() {
       downloadReport(
         await temperatureCsvExport.mutateAsync({
           ...temperatureReportRequest(),
+          format: "CSV",
+        }),
+      );
+      return;
+    }
+    if (reportType !== "CALIBRATION-HISTORY") {
+      downloadReport(
+        await operationalExport.mutateAsync({
+          ...operationalReportRequest(),
           format: "CSV",
         }),
       );
@@ -129,6 +159,15 @@ export function ReportsCenterPage() {
       downloadReport(
         await temperaturePdfExport.mutateAsync({
           ...temperatureReportRequest(),
+          format: "PDF",
+        }),
+      );
+      return;
+    }
+    if (reportType !== "CALIBRATION-HISTORY") {
+      downloadReport(
+        await operationalExport.mutateAsync({
+          ...operationalReportRequest(),
           format: "PDF",
         }),
       );
@@ -312,12 +351,10 @@ export function ReportsCenterPage() {
                   label="Report family"
                   value={reportType}
                   onChange={(event) => {
-                    setReportType(
-                      event.target.value as
-                        "CALIBRATION-HISTORY" | "TEMP-PERFORMANCE",
-                    );
+                    setReportType(event.target.value as SelectableReportType);
                     preview.reset();
                     temperaturePreview.reset();
+                    operationalPreview.reset();
                   }}
                 >
                   <MenuItem value="CALIBRATION-HISTORY">
@@ -325,6 +362,13 @@ export function ReportsCenterPage() {
                   </MenuItem>
                   <MenuItem value="TEMP-PERFORMANCE">
                     Temperature Performance
+                  </MenuItem>
+                  <MenuItem value="ALARM-HISTORY">Alarm History</MenuItem>
+                  <MenuItem value="DEVICE-HEALTH">
+                    Device Communication Health
+                  </MenuItem>
+                  <MenuItem value="AUDIT-OPERATIONS">
+                    Audit and Operations
                   </MenuItem>
                 </TextField>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -392,7 +436,9 @@ export function ReportsCenterPage() {
                   disabled={
                     (reportType === "TEMP-PERFORMANCE"
                       ? temperaturePreview.isPending
-                      : preview.isPending) ||
+                      : reportType === "CALIBRATION-HISTORY"
+                        ? preview.isPending
+                        : operationalPreview.isPending) ||
                     selectedSensors.length === 0 ||
                     !from ||
                     !to
@@ -401,7 +447,9 @@ export function ReportsCenterPage() {
                   {(
                     reportType === "TEMP-PERFORMANCE"
                       ? temperaturePreview.isPending
-                      : preview.isPending
+                      : reportType === "CALIBRATION-HISTORY"
+                        ? preview.isPending
+                        : operationalPreview.isPending
                   )
                     ? "Generating preview…"
                     : "Generate preview"}
@@ -421,7 +469,7 @@ export function ReportsCenterPage() {
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
             />
-          ) : (
+          ) : reportType === "CALIBRATION-HISTORY" ? (
             <PreviewPanel
               preview={preview}
               canExport={canExport}
@@ -431,6 +479,14 @@ export function ReportsCenterPage() {
               pdfExporting={pdfExport.isPending}
               csvExportError={csvExport.isError}
               pdfExportError={pdfExport.isError}
+              onExportCsv={() => void exportCsv()}
+              onExportPdf={() => void exportPdf()}
+            />
+          ) : (
+            <OperationalPreviewPanel
+              preview={operationalPreview}
+              canExport={canExport}
+              exporting={operationalExport.isPending}
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
             />
@@ -911,6 +967,122 @@ function TemperaturePreviewPanel({
                   </TableCell>
                 </TableRow>
               ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Stack>
+  );
+}
+
+function OperationalPreviewPanel({
+  preview,
+  canExport,
+  exporting,
+  onExportCsv,
+  onExportPdf,
+}: {
+  preview: ReturnType<typeof useOperationalReportPreview>;
+  canExport: boolean;
+  exporting: boolean;
+  onExportCsv: () => void;
+  onExportPdf: () => void;
+}) {
+  if (preview.isError)
+    return (
+      <Alert severity="error">
+        The operational report could not be generated.
+      </Alert>
+    );
+  if (!preview.data)
+    return (
+      <Paper
+        variant="outlined"
+        sx={{
+          minHeight: 420,
+          p: 5,
+          borderRadius: 4,
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
+        <Typography variant="h5">Operational preview workspace</Typography>
+      </Paper>
+    );
+  const data = preview.data;
+  const columns = Array.from(
+    new Set(data.records.flatMap((record) => Object.keys(record))),
+  );
+  return (
+    <Stack spacing={3}>
+      <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
+        <Typography variant="overline" color="primary.main">
+          Canonical preview
+        </Typography>
+        <Typography variant="h5">
+          {data.identity.reportType.replaceAll("-", " ")}
+        </Typography>
+        <Typography color="text.secondary">
+          {data.summary.records} recorded event(s)
+        </Typography>
+        {canExport ? (
+          <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
+            <Button
+              variant="outlined"
+              disabled={exporting}
+              onClick={onExportCsv}
+            >
+              Export CSV
+            </Button>
+            <Button
+              variant="outlined"
+              disabled={exporting}
+              onClick={onExportPdf}
+            >
+              Export PDF
+            </Button>
+          </Stack>
+        ) : null}
+      </Paper>
+      {data.quality.warnings.length ? (
+        <Alert severity="info">{data.quality.warnings.join(" · ")}</Alert>
+      ) : (
+        <Alert severity="success">
+          The selected evidence projection is complete.
+        </Alert>
+      )}
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ borderRadius: 4, maxHeight: 560 }}
+      >
+        <Table size="small" stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column}>
+                  {column.replaceAll("_", " ")}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.records.length ? (
+              data.records.map((record, index) => (
+                <TableRow key={String(record.id ?? index)}>
+                  {columns.map((column) => (
+                    <TableCell key={column}>
+                      {String(record[column] ?? "—")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={Math.max(columns.length, 1)}>
+                  No records in this range.
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
