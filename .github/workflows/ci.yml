@@ -44,10 +44,7 @@ jobs:
         run: npm run lint
 
       - name: Check formatting
-        run: |
-          npm run format
-          git diff -- src/modules/controller-runtime/local-emergency-sms.service.ts
-          exit 1
+        run: npm run format:check
 
       - name: Run tests
         run: npm run test:run
