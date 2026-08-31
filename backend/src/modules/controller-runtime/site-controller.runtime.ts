@@ -5,6 +5,10 @@ import {
   type ControllerRuntimeSnapshot,
   type ControllerRuntimeState,
 } from "./runtime.contract";
+import {
+  receiveConfigEnvelope,
+  type ConfigReceiptResult,
+} from "./config-receipt.service";
 
 const DEFAULT_WATCHDOG_TIMEOUT_MS = 30_000;
 
@@ -62,6 +66,23 @@ export class SiteControllerRuntime {
     this.snapshotValue.effective_config = config;
     this.snapshotValue.state = deriveReadyState(this.snapshotValue);
     return this.snapshot();
+  }
+
+  receiveConfigEnvelope(envelope: unknown, acknowledgedAt: string): ConfigReceiptResult {
+    const result = receiveConfigEnvelope({
+      controller_id: this.snapshotValue.boundary.controller_id,
+      site_uuid: this.snapshotValue.boundary.site_uuid,
+      current_config: this.snapshotValue.effective_config,
+      envelope,
+      acknowledged_at: acknowledgedAt,
+    });
+
+    if (result.acknowledgement.status === "APPLIED" && result.accepted_config) {
+      this.snapshotValue.effective_config = result.accepted_config;
+      this.snapshotValue.state = deriveReadyState(this.snapshotValue);
+    }
+
+    return result;
   }
 
   watchdogCheck(nowMs = Date.now()): ControllerRuntimeSnapshot {
