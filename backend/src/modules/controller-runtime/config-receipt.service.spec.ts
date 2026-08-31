@@ -26,7 +26,9 @@ function bundle(configVersion: number, siteUuid = SITE_UUID) {
     ],
     sms_failover: { enabled: true, primary_unavailable_after_seconds: 300 },
     sms_targets: [{ recipient_uuid: RECIPIENT_UUID, sms_address: "+201001234567" }],
-    critical_escalation_steps: [{ position: 1, delay_seconds: 0, recipient_uuid: RECIPIENT_UUID }],
+    critical_escalation_steps: [
+      { position: 1, delay_seconds: 0, recipient_uuid: RECIPIENT_UUID },
+    ],
   };
 }
 
