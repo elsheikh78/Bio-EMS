@@ -44,10 +44,7 @@ jobs:
         run: npm run lint
 
       - name: Check formatting
-        run: |
-          npx prettier --write src/modules/controller-runtime/bench-qualification.service.ts
-          git diff -- src/modules/controller-runtime/bench-qualification.service.ts
-          exit 1
+        run: npm run format:check
 
       - name: Run tests
         run: npm run test:run
