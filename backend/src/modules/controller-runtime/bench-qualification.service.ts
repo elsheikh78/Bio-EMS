@@ -13,11 +13,7 @@ export type BenchScenarioId =
   | "RECONNECT_RECONCILIATION";
 
 export type BenchEvidenceStatus =
-  | "AUTOMATED_PASS"
-  | "PHYSICAL_PASS"
-  | "EXTERNAL_NOT_RUN"
-  | "BLOCKED"
-  | "FAIL";
+  "AUTOMATED_PASS" | "PHYSICAL_PASS" | "EXTERNAL_NOT_RUN" | "BLOCKED" | "FAIL";
 
 export interface BenchScenarioEvidence {
   scenario: BenchScenarioId;
