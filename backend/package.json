@@ -29,7 +29,7 @@
     "lint": "eslint src database",
     "lint:fix": "eslint src database --fix",
     "format": "prettier --write \"{src,database}/**/*.ts\" \"*.{json,js}\"",
-    "format:check": "prettier --write src/modules/controller-runtime/config-receipt.service.ts src/modules/controller-runtime/config-receipt.service.spec.ts && git diff -- src/modules/controller-runtime/config-receipt.service.ts src/modules/controller-runtime/config-receipt.service.spec.ts && false",
+    "format:check": "prettier --check \"{src,database}/**/*.ts\" \"*.{json,js}\"",
     "test": "vitest",
     "test:run": "vitest run",
     "test:watch": "vitest --watch"
