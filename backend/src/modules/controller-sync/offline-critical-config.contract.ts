@@ -8,8 +8,11 @@ const sensorSchema = z
     device_id: z.string().trim().min(1).max(100),
     channel: z.number().int().min(0).max(255),
     enabled: z.literal(true),
+    warning_low: z.number().finite().nullable().optional(),
     alarm_low: z.number().finite().nullable(),
+    warning_high: z.number().finite().nullable().optional(),
     alarm_high: z.number().finite().nullable(),
+    warning_delay_seconds: z.number().int().min(0).max(86_400).optional(),
     critical_delay_seconds: z.number().int().min(0).max(86_400),
   })
   .strict()
@@ -22,6 +25,22 @@ const sensorSchema = z
       sensor.alarm_high === null ||
       sensor.alarm_low < sensor.alarm_high,
     { message: "Critical low must be less than critical high" }
+  )
+  .refine(
+    (sensor) =>
+      sensor.warning_low === undefined ||
+      sensor.warning_low === null ||
+      sensor.alarm_low === null ||
+      sensor.alarm_low < sensor.warning_low,
+    { message: "Critical low must be less than warning low" }
+  )
+  .refine(
+    (sensor) =>
+      sensor.warning_high === undefined ||
+      sensor.warning_high === null ||
+      sensor.alarm_high === null ||
+      sensor.warning_high < sensor.alarm_high,
+    { message: "Warning high must be less than critical high" }
   );
 const targetSchema = z.object({ recipient_uuid: z.string().uuid(), sms_address: e164 }).strict();
 const stepSchema = z
