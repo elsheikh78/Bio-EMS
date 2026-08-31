@@ -44,10 +44,7 @@ jobs:
         run: npm run lint
 
       - name: Check formatting
-        run: |
-          npx prettier --write src/modules/controller-runtime/config-receipt.service.ts
-          git diff -- src/modules/controller-runtime/config-receipt.service.ts
-          git diff --exit-code -- src/modules/controller-runtime/config-receipt.service.ts
+        run: npm run format:check
 
       - name: Run tests
         run: npm run test:run
