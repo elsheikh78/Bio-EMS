@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
-import type {
-  OfflineCriticalConfigBundle,
-} from "../controller-sync/offline-critical-config.contract";
-import type { SensorAcquisitionCycle } from "./sensor-acquisition.service";
+import type * as Sync from "../controller-sync/offline-critical-config.contract";
+import type * as Acquisition from "./sensor-acquisition.service";
 import { OfflineAlarmEvaluator } from "./offline-alarm-evaluator";
 
-const bundle: OfflineCriticalConfigBundle = {
+type Bundle = Sync.OfflineCriticalConfigBundle;
+type Cycle = Acquisition.SensorAcquisitionCycle;
+type Status = Acquisition.SensorAcquisitionStatus;
+
+const bundle: Bundle = {
   contract_version: 1,
   config_version: 9,
   site_uuid: "e70cb67a-0ab0-4e57-ac61-d6142990ca37",
@@ -32,11 +34,7 @@ const bundle: OfflineCriticalConfigBundle = {
   critical_escalation_steps: [],
 };
 
-function cycle(
-  sampledAt: string,
-  value: number | null,
-  status: "OK" | "DISCONNECTED" | "INVALID" | "READ_ERROR" = "OK"
-): SensorAcquisitionCycle {
+function cycle(sampledAt: string, value: number | null, status: Status = "OK"): Cycle {
   return {
     sampled_at: sampledAt,
     samples: [
@@ -115,10 +113,8 @@ describe("offline alarm evaluator", () => {
   it("maps acquisition failures to sensor fault and resets alarm timing", () => {
     const evaluator = new OfflineAlarmEvaluator();
     evaluateAt(evaluator, "2026-08-31T17:00:00Z", 1.5);
-    const fault = evaluator.evaluate(
-      bundle,
-      cycle("2026-08-31T17:00:10Z", null, "DISCONNECTED")
-    )[0];
+    const disconnected = cycle("2026-08-31T17:00:10Z", null, "DISCONNECTED");
+    const fault = evaluator.evaluate(bundle, disconnected)[0];
     const pendingAgain = evaluateAt(evaluator, "2026-08-31T17:00:11Z", 1.5);
 
     expect(fault).toMatchObject({
@@ -133,9 +129,8 @@ describe("offline alarm evaluator", () => {
     const evaluator = new OfflineAlarmEvaluator();
     evaluateAt(evaluator, "2026-08-31T17:00:10Z", 1.5);
 
-    expect(() => evaluateAt(evaluator, "2026-08-31T17:00:09Z", 1.5)).toThrow(
-      /Non-monotonic/
-    );
+    const backwards = () => evaluateAt(evaluator, "2026-08-31T17:00:09Z", 1.5);
+    expect(backwards).toThrow(/Non-monotonic/);
 
     const wrongIdentity = cycle("2026-08-31T17:00:11Z", 5);
     wrongIdentity.samples[0].channel = 2;
