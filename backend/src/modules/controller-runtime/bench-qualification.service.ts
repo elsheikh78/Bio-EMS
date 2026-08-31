@@ -92,14 +92,13 @@ export function evaluateBenchQualification(
     }
   }
 
-  const allScenariosPassed =
-    passed === REQUIRED_BENCH_SCENARIOS.length &&
-    blocked.length === 0 &&
-    failed.length === 0 &&
-    externalNotRun.length === 0;
+  const complete = passed === REQUIRED_BENCH_SCENARIOS.length;
+  const clear = blocked.length === 0 && failed.length === 0;
+  const executed = externalNotRun.length === 0;
+  const status = complete && clear && executed ? "QUALIFIED" : "NOT_QUALIFIED";
 
   return {
-    status: allScenariosPassed ? "QUALIFIED" : "NOT_QUALIFIED",
+    status,
     total: REQUIRED_BENCH_SCENARIOS.length,
     passed,
     blocked,
