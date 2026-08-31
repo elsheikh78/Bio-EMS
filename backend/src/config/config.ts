@@ -3,6 +3,7 @@ import { loadJwtConfig } from "./jwt.config";
 import { loadPlatformJwtConfig } from "./platform-jwt.config";
 import { loadCorsConfig } from "./cors.config";
 import { loadMqttConfig } from "./mqtt.config";
+import { loadNotificationDeliveryConfig } from "./notification-delivery.config";
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ export const config = {
   platformJwt: loadPlatformJwtConfig(process.env),
 
   cors: loadCorsConfig(process.env),
+
+  notificationDelivery: loadNotificationDeliveryConfig(process.env),
 
   logLevel: process.env.LOG_LEVEL || "info",
 };
