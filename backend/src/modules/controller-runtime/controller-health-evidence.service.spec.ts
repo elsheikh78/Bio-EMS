@@ -32,7 +32,10 @@ function snapshot(overrides: Partial<ControllerRuntimeSnapshot> = {}): Controlle
 const service = new ControllerHealthEvidenceService();
 const observedAt = "2026-08-31T18:00:00Z";
 
-function collect(runtimeSnapshot = snapshot(), extras: Partial<Parameters<typeof service.collect>[0]> = {}) {
+function collect(
+  runtimeSnapshot = snapshot(),
+  extras: Partial<Parameters<typeof service.collect>[0]> = {}
+) {
   return service.collect({
     snapshot: runtimeSnapshot,
     observed_at: observedAt,
@@ -54,14 +57,18 @@ describe("ControllerHealthEvidenceService", () => {
   });
 
   it("reports degraded evidence while the primary transport is unavailable", () => {
-    const evidence = collect(snapshot({ state: "READY_OFFLINE", primary_transport_available: false }));
+    const evidence = collect(
+      snapshot({ state: "READY_OFFLINE", primary_transport_available: false })
+    );
     expect(evidence.status).toBe("DEGRADED");
     expect(evidence.reasons).toContain("PRIMARY_TRANSPORT_UNAVAILABLE");
   });
 
   it("reports overdue watchdog and restart evidence", () => {
     const evidence = collect(
-      snapshot({ watchdog: { timeout_ms: 30_000, last_heartbeat_at_ms: 900_000, restart_count: 2 } })
+      snapshot({
+        watchdog: { timeout_ms: 30_000, last_heartbeat_at_ms: 900_000, restart_count: 2 },
+      })
     );
     expect(evidence.status).toBe("DEGRADED");
     expect(evidence.watchdog.overdue).toBe(true);
