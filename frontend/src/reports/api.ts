@@ -5,6 +5,10 @@ import {
   reportCatalogueSchema,
   type CalibrationReportExportRequest,
   type CalibrationReportPreviewRequest,
+  temperaturePerformancePreviewRequestSchema,
+  temperaturePerformancePreviewResultSchema,
+  type TemperaturePerformanceExportRequest,
+  type TemperaturePerformancePreviewRequest,
 } from "./contracts";
 
 type ProtectedRequest = AuthenticationContextValue["protectedRequest"];
@@ -42,6 +46,30 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
     };
   }
 
+  async function exportTemperature(
+    input: TemperaturePerformanceExportRequest,
+    accept: "text/csv" | "application/pdf",
+    fallbackFilename: string,
+  ) {
+    const { format, ...previewInput } = input;
+    const body = {
+      ...temperaturePerformancePreviewRequestSchema.parse(previewInput),
+      format,
+    };
+    const response = await protectedRequest<Response>("/reports/exports", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: accept },
+      body: JSON.stringify(body),
+      responseMode: "response",
+    });
+    const disposition = response.headers.get("Content-Disposition") ?? "";
+    return {
+      blob: await response.blob(),
+      filename:
+        disposition.match(/filename="([^"]+)"/)?.[1] ?? fallbackFilename,
+    };
+  }
+
   return {
     async getCatalogue() {
       return reportCatalogueSchema.parse(
@@ -74,6 +102,33 @@ export function createReportsApi(protectedRequest: ProtectedRequest) {
         { ...input, format: "PDF" },
         "application/pdf",
         "bio-ems_calibration-history.pdf",
+      );
+    },
+
+    async previewTemperature(input: TemperaturePerformancePreviewRequest) {
+      const body = temperaturePerformancePreviewRequestSchema.parse(input);
+      return temperaturePerformancePreviewResultSchema.parse(
+        await protectedRequest<unknown>("/reports/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+      );
+    },
+
+    async exportTemperatureCsv(input: TemperaturePerformanceExportRequest) {
+      return exportTemperature(
+        { ...input, format: "CSV" },
+        "text/csv",
+        "bio-ems_temperature-performance.csv",
+      );
+    },
+
+    async exportTemperaturePdf(input: TemperaturePerformanceExportRequest) {
+      return exportTemperature(
+        { ...input, format: "PDF" },
+        "application/pdf",
+        "bio-ems_temperature-performance.pdf",
       );
     },
   };

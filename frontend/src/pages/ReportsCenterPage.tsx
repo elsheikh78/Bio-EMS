@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   FormControlLabel,
+  MenuItem,
   Paper,
   Stack,
   Table,
@@ -26,6 +27,9 @@ import {
   useCalibrationReportPdfExport,
   useCalibrationReportPreview,
   useReportCatalogue,
+  useTemperaturePerformanceCsvExport,
+  useTemperaturePerformancePdfExport,
+  useTemperaturePerformancePreview,
 } from "../reports/queries";
 
 function dateValue(date: Date) {
@@ -47,6 +51,9 @@ export function ReportsCenterPage() {
   const preview = useCalibrationReportPreview();
   const csvExport = useCalibrationReportCsvExport();
   const pdfExport = useCalibrationReportPdfExport();
+  const temperaturePreview = useTemperaturePerformancePreview();
+  const temperatureCsvExport = useTemperaturePerformanceCsvExport();
+  const temperaturePdfExport = useTemperaturePerformancePdfExport();
   const { user } = useAuthentication();
   const [from, setFrom] = useState(() => {
     const date = new Date();
@@ -55,16 +62,20 @@ export function ReportsCenterPage() {
   });
   const [to, setTo] = useState(() => dateValue(new Date()));
   const [selected, setSelected] = useState<string[]>([]);
+  const [reportType, setReportType] = useState<
+    "CALIBRATION-HISTORY" | "TEMP-PERFORMANCE"
+  >("CALIBRATION-HISTORY");
   const sensors = useMemo(() => sensorsQuery.data ?? [], [sensorsQuery.data]);
   const selectedSensors =
     selected.length === 0 ? sensors.map((sensor) => sensor.uuid) : selected;
   const calibrationFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === "CALIBRATION-HISTORY",
   );
-  const csvAvailable =
-    calibrationFamily?.exportFormats.includes("CSV") ?? false;
-  const pdfAvailable =
-    calibrationFamily?.exportFormats.includes("PDF") ?? false;
+  const selectedFamily = catalogue.data?.reportTypes.find(
+    (item) => item.id === reportType,
+  );
+  const csvAvailable = selectedFamily?.exportFormats.includes("CSV") ?? false;
+  const pdfAvailable = selectedFamily?.exportFormats.includes("PDF") ?? false;
   const canExport = Boolean(user && hasPermission(user.role, "REPORT_EXPORT"));
 
   function reportRequest() {
@@ -79,13 +90,33 @@ export function ReportsCenterPage() {
     };
   }
 
+  function temperatureReportRequest() {
+    return {
+      ...reportRequest(),
+      reportType: "TEMP-PERFORMANCE" as const,
+    };
+  }
+
   function submit(event: FormEvent) {
     event.preventDefault();
     if (selectedSensors.length === 0) return;
-    preview.mutate(reportRequest());
+    if (reportType === "TEMP-PERFORMANCE") {
+      temperaturePreview.mutate(temperatureReportRequest());
+    } else {
+      preview.mutate(reportRequest());
+    }
   }
 
   async function exportCsv() {
+    if (reportType === "TEMP-PERFORMANCE") {
+      downloadReport(
+        await temperatureCsvExport.mutateAsync({
+          ...temperatureReportRequest(),
+          format: "CSV",
+        }),
+      );
+      return;
+    }
     const file = await csvExport.mutateAsync({
       ...reportRequest(),
       format: "CSV",
@@ -94,6 +125,15 @@ export function ReportsCenterPage() {
   }
 
   async function exportPdf() {
+    if (reportType === "TEMP-PERFORMANCE") {
+      downloadReport(
+        await temperaturePdfExport.mutateAsync({
+          ...temperatureReportRequest(),
+          format: "PDF",
+        }),
+      );
+      return;
+    }
     const file = await pdfExport.mutateAsync({
       ...reportRequest(),
       format: "PDF",
@@ -267,6 +307,26 @@ export function ReportsCenterPage() {
                 Choose the recorded Sensor scope and half-open reporting range.
               </Typography>
               <Stack spacing={3}>
+                <TextField
+                  select
+                  label="Report family"
+                  value={reportType}
+                  onChange={(event) => {
+                    setReportType(
+                      event.target.value as
+                        "CALIBRATION-HISTORY" | "TEMP-PERFORMANCE",
+                    );
+                    preview.reset();
+                    temperaturePreview.reset();
+                  }}
+                >
+                  <MenuItem value="CALIBRATION-HISTORY">
+                    Calibration Status and History
+                  </MenuItem>
+                  <MenuItem value="TEMP-PERFORMANCE">
+                    Temperature Performance
+                  </MenuItem>
+                </TextField>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                     fullWidth
@@ -330,13 +390,19 @@ export function ReportsCenterPage() {
                   type="submit"
                   variant="contained"
                   disabled={
-                    preview.isPending ||
+                    (reportType === "TEMP-PERFORMANCE"
+                      ? temperaturePreview.isPending
+                      : preview.isPending) ||
                     selectedSensors.length === 0 ||
                     !from ||
                     !to
                   }
                 >
-                  {preview.isPending
+                  {(
+                    reportType === "TEMP-PERFORMANCE"
+                      ? temperaturePreview.isPending
+                      : preview.isPending
+                  )
                     ? "Generating preview…"
                     : "Generate preview"}
                 </Button>
@@ -344,18 +410,31 @@ export function ReportsCenterPage() {
             </Paper>
           </Stack>
 
-          <PreviewPanel
-            preview={preview}
-            canExport={canExport}
-            csvAvailable={csvAvailable}
-            pdfAvailable={pdfAvailable}
-            csvExporting={csvExport.isPending}
-            pdfExporting={pdfExport.isPending}
-            csvExportError={csvExport.isError}
-            pdfExportError={pdfExport.isError}
-            onExportCsv={() => void exportCsv()}
-            onExportPdf={() => void exportPdf()}
-          />
+          {reportType === "TEMP-PERFORMANCE" ? (
+            <TemperaturePreviewPanel
+              preview={temperaturePreview}
+              canExport={canExport}
+              csvAvailable={csvAvailable}
+              pdfAvailable={pdfAvailable}
+              csvExporting={temperatureCsvExport.isPending}
+              pdfExporting={temperaturePdfExport.isPending}
+              onExportCsv={() => void exportCsv()}
+              onExportPdf={() => void exportPdf()}
+            />
+          ) : (
+            <PreviewPanel
+              preview={preview}
+              canExport={canExport}
+              csvAvailable={csvAvailable}
+              pdfAvailable={pdfAvailable}
+              csvExporting={csvExport.isPending}
+              pdfExporting={pdfExport.isPending}
+              csvExportError={csvExport.isError}
+              pdfExportError={pdfExport.isError}
+              onExportCsv={() => void exportCsv()}
+              onExportPdf={() => void exportPdf()}
+            />
+          )}
         </Box>
       ) : null}
     </Stack>
@@ -659,6 +738,185 @@ function PreviewPanel({
 
 function percentage(value: number, total: number) {
   return total === 0 ? 0 : Math.round((value / total) * 100);
+}
+
+function TemperaturePreviewPanel({
+  preview,
+  canExport,
+  csvAvailable,
+  pdfAvailable,
+  csvExporting,
+  pdfExporting,
+  onExportCsv,
+  onExportPdf,
+}: {
+  preview: ReturnType<typeof useTemperaturePerformancePreview>;
+  canExport: boolean;
+  csvAvailable: boolean;
+  pdfAvailable: boolean;
+  csvExporting: boolean;
+  pdfExporting: boolean;
+  onExportCsv: () => void;
+  onExportPdf: () => void;
+}) {
+  if (preview.isError) {
+    return (
+      <Alert severity="error">
+        The temperature preview could not be generated.
+      </Alert>
+    );
+  }
+  if (!preview.data) {
+    return (
+      <Paper
+        variant="outlined"
+        sx={{
+          minHeight: 420,
+          p: 5,
+          borderRadius: 4,
+          display: "grid",
+          placeItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <Box>
+          <Typography variant="h5">Temperature preview workspace</Typography>
+          <Typography color="text.secondary">
+            Generate a report to inspect recorded temperature evidence and
+            summary statistics.
+          </Typography>
+        </Box>
+      </Paper>
+    );
+  }
+
+  const data = preview.data;
+  const display = (value: number | null) =>
+    value === null ? "—" : value.toFixed(2);
+
+  return (
+    <Stack spacing={3}>
+      <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
+        <Typography variant="overline" color="primary.main">
+          Canonical preview
+        </Typography>
+        <Typography variant="h5">Temperature performance</Typography>
+        <Typography variant="caption" color="text.secondary">
+          {data.identity.reportId}
+        </Typography>
+        {canExport ? (
+          <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
+            {csvAvailable ? (
+              <Button
+                variant="outlined"
+                disabled={csvExporting || pdfExporting}
+                onClick={onExportCsv}
+              >
+                {csvExporting ? "Preparing CSV…" : "Export CSV"}
+              </Button>
+            ) : null}
+            {pdfAvailable ? (
+              <Button
+                variant="outlined"
+                disabled={pdfExporting || csvExporting}
+                onClick={onExportPdf}
+              >
+                {pdfExporting ? "Preparing PDF…" : "Export PDF"}
+              </Button>
+            ) : null}
+          </Stack>
+        ) : null}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(5, 1fr)" },
+            gap: 2,
+            mt: 4,
+          }}
+        >
+          {[
+            ["Sensors", data.summary.sensors],
+            ["Readings", data.summary.records],
+            ["Minimum", display(data.summary.minimum)],
+            ["Average", display(data.summary.average)],
+            ["Maximum", display(data.summary.maximum)],
+          ].map(([label, value]) => (
+            <Box
+              key={label}
+              sx={{ p: 2, bgcolor: "background.default", borderRadius: 2 }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                {label}
+              </Typography>
+              <Typography variant="h5">{value}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Paper>
+      {data.quality.complete ? (
+        <Alert severity="success">
+          All selected Sensors supplied recorded telemetry.
+        </Alert>
+      ) : (
+        <Alert severity="warning">
+          {data.quality.warnings.join(" · ") ||
+            "Temperature evidence is incomplete."}
+        </Alert>
+      )}
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ borderRadius: 4 }}
+      >
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Sensor</TableCell>
+              <TableCell>Readings</TableCell>
+              <TableCell>Minimum</TableCell>
+              <TableCell>Average</TableCell>
+              <TableCell>Maximum</TableCell>
+              <TableCell>Recorded range</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.sensors.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  No temperature readings were recorded in this range.
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.sensors.map((sensor) => (
+                <TableRow key={sensor.sensor}>
+                  <TableCell>{sensor.sensor}</TableCell>
+                  <TableCell>{sensor.records}</TableCell>
+                  <TableCell>
+                    {display(sensor.minimum)} {sensor.unit}
+                  </TableCell>
+                  <TableCell>
+                    {display(sensor.average)} {sensor.unit}
+                  </TableCell>
+                  <TableCell>
+                    {display(sensor.maximum)} {sensor.unit}
+                  </TableCell>
+                  <TableCell>
+                    {sensor.firstReadingAt
+                      ? new Date(sensor.firstReadingAt).toLocaleString()
+                      : "—"}{" "}
+                    —{" "}
+                    {sensor.lastReadingAt
+                      ? new Date(sensor.lastReadingAt).toLocaleString()
+                      : "—"}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Stack>
+  );
 }
 
 function sensorContext(

@@ -26,33 +26,20 @@ import { reportCatalogue } from "../modules/reporting/report-catalogue";
 
 const calibrationReportService = new CalibrationReportService();
 
-const temperaturePerformanceReportService =
-  new TemperaturePerformanceReportService();
+const temperaturePerformanceReportService = new TemperaturePerformanceReportService();
 
-export function getReportCatalogue(
-  _req: Request,
-  res: Response,
-): void {
+export function getReportCatalogue(_req: Request, res: Response): void {
   res.json(reportCatalogue);
 }
 
-export async function previewReport(
-  req: Request,
-  res: Response,
-): Promise<void> {
+export async function previewReport(req: Request, res: Response): Promise<void> {
   switch (req.body.reportType) {
     case "CALIBRATION-HISTORY":
-      res.json(
-        await calibrationReportService.preview(req.body),
-      );
+      res.json(await calibrationReportService.preview(req.body));
       return;
 
     case "TEMP-PERFORMANCE":
-      res.json(
-        await temperaturePerformanceReportService.preview(
-          req.body,
-        ),
-      );
+      res.json(await temperaturePerformanceReportService.preview(req.body));
       return;
 
     default:
@@ -62,39 +49,21 @@ export async function previewReport(
   }
 }
 
-export async function exportReport(
-  req: Request,
-  res: Response,
-): Promise<void> {
-  res.setHeader(
-    "X-Content-Type-Options",
-    "nosniff",
-  );
+export async function exportReport(req: Request, res: Response): Promise<void> {
+  res.setHeader("X-Content-Type-Options", "nosniff");
 
   switch (req.body.reportType) {
     case "CALIBRATION-HISTORY": {
-      const result =
-        await calibrationReportService.preview(req.body);
+      const result = await calibrationReportService.preview(req.body);
 
       if (req.body.format === "PDF") {
-        const filename =
-          calibrationPdfFilename(result);
+        const filename = calibrationPdfFilename(result);
 
-        const pdf =
-          await renderCalibrationPdf(
-            result,
-            req.user!.username,
-          );
+        const pdf = await renderCalibrationPdf(result, req.user!.username);
 
-        res.setHeader(
-          "Content-Type",
-          "application/pdf",
-        );
+        res.setHeader("Content-Type", "application/pdf");
 
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`,
-        );
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
         res.send(pdf);
 
@@ -102,58 +71,31 @@ export async function exportReport(
       }
 
       if (req.body.format === "CSV") {
-        const filename =
-          calibrationCsvFilename(result);
+        const filename = calibrationCsvFilename(result);
 
-        res.setHeader(
-          "Content-Type",
-          "text/csv; charset=utf-8",
-        );
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
 
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`,
-        );
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
-        res.send(
-          renderCalibrationCsv(
-            result,
-            req.user!.username,
-          ),
-        );
+        res.send(renderCalibrationCsv(result, req.user!.username));
 
         return;
       }
 
       break;
     }
-
 
     case "TEMP-PERFORMANCE": {
-      const result =
-        await temperaturePerformanceReportService.preview(
-          req.body,
-        );
+      const result = await temperaturePerformanceReportService.preview(req.body);
 
       if (req.body.format === "PDF") {
-        const filename =
-          temperaturePerformancePdfFilename(result);
+        const filename = temperaturePerformancePdfFilename(result);
 
-        const pdf =
-          await renderTemperaturePerformancePdf(
-            result,
-            req.user!.username,
-          );
+        const pdf = await renderTemperaturePerformancePdf(result, req.user!.username);
 
-        res.setHeader(
-          "Content-Type",
-          "application/pdf",
-        );
+        res.setHeader("Content-Type", "application/pdf");
 
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`,
-        );
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
         res.send(pdf);
 
@@ -161,32 +103,19 @@ export async function exportReport(
       }
 
       if (req.body.format === "CSV") {
-        const filename =
-          temperaturePerformanceCsvFilename(result);
+        const filename = temperaturePerformanceCsvFilename(result);
 
-        res.setHeader(
-          "Content-Type",
-          "text/csv; charset=utf-8",
-        );
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
 
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`,
-        );
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
-        res.send(
-          renderTemperaturePerformanceCsv(
-            result,
-            req.user!.username,
-          ),
-        );
+        res.send(renderTemperaturePerformanceCsv(result, req.user!.username));
 
         return;
       }
 
       break;
     }
-
 
     default:
       res.status(400).json({

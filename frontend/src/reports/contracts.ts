@@ -130,3 +130,70 @@ export type CalibrationReportPreviewResult = z.infer<
 export type CalibrationReportExportRequest = CalibrationReportPreviewRequest & {
   format: "CSV" | "PDF";
 };
+
+export const temperaturePerformancePreviewRequestSchema =
+  calibrationReportPreviewRequestSchema.extend({
+    reportType: z.literal("TEMP-PERFORMANCE"),
+  });
+
+export const temperaturePerformancePreviewResultSchema = z
+  .object({
+    identity: z
+      .object({
+        reportId: z.string(),
+        reportType: z.literal("TEMP-PERFORMANCE"),
+        contractVersion: z.literal("1.0"),
+      })
+      .strict(),
+    scope: temperaturePerformancePreviewRequestSchema.omit({
+      reportType: true,
+      contractVersion: true,
+    }),
+    provenance: z
+      .object({
+        generatedAt: z.string(),
+        source: z.literal("INFLUXDB"),
+        rangeSemantics: z.literal("[from,to)"),
+      })
+      .strict(),
+    quality: z
+      .object({
+        complete: z.boolean(),
+        warnings: z.array(z.string()),
+        unavailableSections: z.array(z.string()),
+      })
+      .strict(),
+    summary: z
+      .object({
+        sensors: z.number(),
+        records: z.number(),
+        minimum: z.number().nullable(),
+        maximum: z.number().nullable(),
+        average: z.number().nullable(),
+      })
+      .strict(),
+    sensors: z.array(
+      z
+        .object({
+          sensor: z.string(),
+          unit: z.string(),
+          records: z.number(),
+          minimum: z.number().nullable(),
+          maximum: z.number().nullable(),
+          average: z.number().nullable(),
+          firstReadingAt: z.string().nullable(),
+          lastReadingAt: z.string().nullable(),
+        })
+        .strict(),
+    ),
+  })
+  .strict();
+
+export type TemperaturePerformancePreviewRequest = z.infer<
+  typeof temperaturePerformancePreviewRequestSchema
+>;
+export type TemperaturePerformancePreviewResult = z.infer<
+  typeof temperaturePerformancePreviewResultSchema
+>;
+export type TemperaturePerformanceExportRequest =
+  TemperaturePerformancePreviewRequest & { format: "CSV" | "PDF" };

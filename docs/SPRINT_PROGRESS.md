@@ -1,5 +1,14 @@
 # Sprint Progress
 
+## Software completion update — 31 August 2026
+
+- Completed Temperature Performance integration in Reports Center for Preview, CSV, and PDF.
+- Implemented authenticated SSE refresh for accepted telemetry across Dashboard and Monitored
+  Areas, including reconnect, cleanup, and polling fallback.
+- Advanced the controlled software version to 0.15.1.
+- Automated quality gates pass; the local deployed 10-minute MQTT scenario remains the final live
+  environment retest and does not block source-level completion.
+
 ## Current Work Package Update - BF-10 Reporting Expansion - 25 August 2026
 
 BF-10 continues the controlled Reporting Center expansion after the PVR-06 reporting readiness audit.
@@ -7,7 +16,7 @@ BF-10 continues the controlled Reporting Center expansion after the PVR-06 repor
 Current reporting baseline:
 
 - Calibration History: COMPLETE and available through Preview, CSV, and PDF.
-- Temperature Performance: IMPLEMENTATION IN PROGRESS (validation pending).
+- Temperature Performance: COMPLETE and available through Preview, CSV, and PDF.
 - Alarm History: BLOCKED pending lifecycle projection.
 - Device Communication Health: BLOCKED pending history ledger foundation.
 - Audit and Operations: READY_FOR_IMPLEMENTATION pending operations projection.

@@ -13,11 +13,7 @@ export const reportCatalogue = {
     recordReportMaximumDays: 366,
   },
 
-  formats: [
-    "PREVIEW",
-    "PDF",
-    "CSV",
-  ],
+  formats: ["PREVIEW", "PDF", "CSV"],
 
   reportTypes: [
     {
@@ -25,10 +21,7 @@ export const reportCatalogue = {
       title: "Temperature Performance",
       readiness: "AVAILABLE",
       previewAvailable: true,
-      exportFormats: [
-        "CSV",
-        "PDF",
-      ],
+      exportFormats: ["CSV", "PDF"],
       unavailableReason: null,
     },
 
@@ -38,8 +31,7 @@ export const reportCatalogue = {
       readiness: "BLOCKED",
       previewAvailable: false,
       exportFormats: [],
-      unavailableReason:
-        "LIFECYCLE_PROJECTION_REQUIRED",
+      unavailableReason: "LIFECYCLE_PROJECTION_REQUIRED",
     },
 
     {
@@ -47,10 +39,7 @@ export const reportCatalogue = {
       title: "Calibration Status and History",
       readiness: "AVAILABLE",
       previewAvailable: true,
-      exportFormats: [
-        "CSV",
-        "PDF",
-      ],
+      exportFormats: ["CSV", "PDF"],
       unavailableReason: null,
     },
 
@@ -60,22 +49,18 @@ export const reportCatalogue = {
       readiness: "BLOCKED",
       previewAvailable: false,
       exportFormats: [],
-      unavailableReason:
-        "HISTORY_LEDGER_REQUIRED",
+      unavailableReason: "HISTORY_LEDGER_REQUIRED",
     },
 
     {
       id: "AUDIT-OPERATIONS",
       title: "Audit and Operations",
-      readiness:
-        "READY_FOR_IMPLEMENTATION",
+      readiness: "READY_FOR_IMPLEMENTATION",
       previewAvailable: false,
       exportFormats: [],
-      unavailableReason:
-        "OPERATIONS_REPORT_PROJECTION_REQUIRED",
+      unavailableReason: "OPERATIONS_REPORT_PROJECTION_REQUIRED",
     },
   ],
 } as const;
 
-export type ReportCatalogue =
-  typeof reportCatalogue;
+export type ReportCatalogue = typeof reportCatalogue;

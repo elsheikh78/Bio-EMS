@@ -1,5 +1,16 @@
 # Project Status
 
+## Software completion checkpoint — 31 August 2026
+
+- Temperature Performance is AVAILABLE through Reports Center Preview, CSV, and PDF.
+- Dashboard and Monitored Areas receive authenticated event-driven refresh after accepted
+  telemetry, with reconnect and low-frequency polling fallback.
+- Software version advanced to 0.15.1.
+- Automated backend/frontend typecheck, lint, focused reporting/realtime tests, frontend regression,
+  and production builds pass.
+- The deployed 10-minute MQTT live scenario remains the final environment evidence gate; no field
+  or customer acceptance is inferred.
+
 ## Current Active Work Package: BF-10 Reporting Expansion - 25 August 2026
 
 BF-10 continues the controlled Reporting Center expansion after PVR-06 readiness audit.
@@ -7,7 +18,7 @@ BF-10 continues the controlled Reporting Center expansion after PVR-06 readiness
 Current baseline:
 
 - Calibration History: AVAILABLE (Preview / CSV / PDF)
-- Temperature Performance: IMPLEMENTATION IN PROGRESS (validation pending)
+- Temperature Performance: AVAILABLE (Preview / CSV / PDF; automated validation complete)
 - Alarm History: BLOCKED pending lifecycle projection
 - Device Communication Health: BLOCKED pending history ledger foundation
 - Audit and Operations: READY_FOR_IMPLEMENTATION pending projection layer

@@ -125,23 +125,15 @@ vi.mock("../../modules/reporting/temperature-performance-report.service", () => 
 }));
 
 vi.mock("../../modules/reporting/temperature-performance-csv.renderer", () => ({
-  temperaturePerformanceCsvFilename: vi.fn(
-    () => "temp-performance-2026-08-24.csv",
-  ),
+  temperaturePerformanceCsvFilename: vi.fn(() => "temp-performance-2026-08-24.csv"),
 
-  renderTemperaturePerformanceCsv: vi.fn(
-    () => "BIO-EMS Temperature Performance Report",
-  ),
+  renderTemperaturePerformanceCsv: vi.fn(() => "BIO-EMS Temperature Performance Report"),
 }));
 
 vi.mock("../../modules/reporting/temperature-performance-pdf.renderer", () => ({
-  temperaturePerformancePdfFilename: vi.fn(
-    () => "temp-performance-2026-08-24.pdf",
-  ),
+  temperaturePerformancePdfFilename: vi.fn(() => "temp-performance-2026-08-24.pdf"),
 
-  renderTemperaturePerformancePdf: vi.fn(() =>
-    Promise.resolve(Buffer.from("%PDF-TEST")),
-  ),
+  renderTemperaturePerformancePdf: vi.fn(() => Promise.resolve(Buffer.from("%PDF-TEST"))),
 }));
 
 import reportRouter from "../report.route";
@@ -183,9 +175,7 @@ describe("Reporting REST API", () => {
       })
       .expect(200);
 
-    expect(response.body.identity.reportType).toBe(
-      "TEMP-PERFORMANCE",
-    );
+    expect(response.body.identity.reportType).toBe("TEMP-PERFORMANCE");
 
     expect(response.body.summary.average).toBe(5);
   });
@@ -205,21 +195,13 @@ describe("Reporting REST API", () => {
       })
       .expect(200);
 
-    expect(response.headers["content-type"]).toContain(
-      "application/pdf",
-    );
+    expect(response.headers["content-type"]).toContain("application/pdf");
 
-    expect(response.headers["content-disposition"]).toContain(
-      ".pdf",
-    );
+    expect(response.headers["content-disposition"]).toContain(".pdf");
 
-    expect(response.headers["x-content-type-options"]).toBe(
-      "nosniff",
-    );
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
 
-    expect(
-      response.body.subarray(0, 5).toString("ascii"),
-    ).toBe("%PDF-");
+    expect(response.body.subarray(0, 5).toString("ascii")).toBe("%PDF-");
   });
 
   it("exports temperature performance as CSV for ADMIN", async () => {
@@ -237,21 +219,13 @@ describe("Reporting REST API", () => {
       })
       .expect(200);
 
-    expect(response.headers["content-type"]).toContain(
-      "text/csv",
-    );
+    expect(response.headers["content-type"]).toContain("text/csv");
 
-    expect(response.headers["content-disposition"]).toContain(
-      ".csv",
-    );
+    expect(response.headers["content-disposition"]).toContain(".csv");
 
-    expect(response.headers["x-content-type-options"]).toBe(
-      "nosniff",
-    );
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
 
-    expect(response.text).toContain(
-      "BIO-EMS Temperature Performance Report",
-    );
+    expect(response.text).toContain("BIO-EMS Temperature Performance Report");
   });
 
   it("exports temperature performance as PDF for ADMIN", async () => {
@@ -269,20 +243,12 @@ describe("Reporting REST API", () => {
       })
       .expect(200);
 
-    expect(response.headers["content-type"]).toContain(
-      "application/pdf",
-    );
+    expect(response.headers["content-type"]).toContain("application/pdf");
 
-    expect(response.headers["content-disposition"]).toContain(
-      ".pdf",
-    );
+    expect(response.headers["content-disposition"]).toContain(".pdf");
 
-    expect(response.headers["x-content-type-options"]).toBe(
-      "nosniff",
-    );
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
 
-    expect(
-      response.body.subarray(0, 5).toString("ascii"),
-    ).toBe("%PDF-");
+    expect(response.body.subarray(0, 5).toString("ascii")).toBe("%PDF-");
   });
 });
