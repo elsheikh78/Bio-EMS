@@ -36,6 +36,12 @@ export interface NotificationDelivery {
   updated_at: string | null;
 }
 
+export interface DeliveryEnvelope {
+  delivery: NotificationDelivery;
+  recipient: string;
+  payload: Record<string, unknown>;
+}
+
 export class NotificationDeliveryRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
@@ -151,5 +157,49 @@ export class NotificationDeliveryRepository {
       ORDER BY id DESC LIMIT ?`
       )
       .all(siteId, limit) as NotificationDelivery[];
+  }
+
+  envelope(delivery: NotificationDelivery): DeliveryEnvelope | undefined {
+    const row = this.database
+      .prepare(
+        `SELECT endpoints.address, events.payload_json
+      FROM notification_recipient_endpoints endpoints
+      INNER JOIN notification_events events ON events.id = ?
+      WHERE endpoints.recipient_id = ? AND endpoints.channel = ? LIMIT 1`
+      )
+      .get(delivery.notification_event_id, delivery.recipient_id, delivery.channel) as
+      { address: string; payload_json: string } | undefined;
+    return row
+      ? { delivery, recipient: row.address, payload: JSON.parse(row.payload_json) }
+      : undefined;
+  }
+
+  startAttempt(deliveryId: number, attemptNumber: number, provider: string, now: string): number {
+    return Number(
+      this.database
+        .prepare(
+          `INSERT INTO notification_delivery_attempts
+      (delivery_id, attempt_number, phase, status, provider, started_at)
+      VALUES (?, ?, 'START', 'STARTED', ?, ?)`
+        )
+        .run(deliveryId, attemptNumber, provider, now).lastInsertRowid
+    );
+  }
+
+  finishAttempt(
+    attemptId: number,
+    status: "SENT" | "DELIVERED" | "FAILED" | "TIMEOUT",
+    now: string,
+    providerMessageId?: string,
+    errorCode?: string
+  ): void {
+    this.database
+      .prepare(
+        `INSERT INTO notification_delivery_attempts
+      (delivery_id, attempt_number, phase, status, provider, provider_message_id, error_code, started_at, completed_at)
+      SELECT delivery_id, attempt_number, 'RESULT', ?, provider, ?, ?, started_at, ?
+      FROM notification_delivery_attempts WHERE id = ?`
+      )
+      .run(status, providerMessageId ?? null, errorCode ?? null, now, attemptId);
   }
 }
