@@ -55,9 +55,9 @@ export class NotificationDeliveryRepository {
       | "severity"
       | "idempotency_key"
     >
-  ): NotificationDelivery {
+  ): NotificationDelivery & { created: boolean } {
     const uuid = randomUUID();
-    this.database
+    const result = this.database
       .prepare(
         `INSERT INTO notification_deliveries
       (uuid, notification_event_id, site_id, recipient_id, channel, severity, idempotency_key)
@@ -72,9 +72,10 @@ export class NotificationDeliveryRepository {
         input.severity,
         input.idempotency_key
       );
-    return this.database
+    const value = this.database
       .prepare("SELECT * FROM notification_deliveries WHERE idempotency_key = ?")
       .get(input.idempotency_key) as NotificationDelivery;
+    return { ...value, created: result.changes === 1 };
   }
 
   claimDue(now: string, staleBefore: string): NotificationDelivery | undefined {
@@ -157,6 +158,17 @@ export class NotificationDeliveryRepository {
       ORDER BY id DESC LIMIT ?`
       )
       .all(siteId, limit) as NotificationDelivery[];
+  }
+
+  cancelOpenForSource(sourceType: "ALARM" | "DEVICE", sourceId: string, now: string): number {
+    return this.database
+      .prepare(
+        `UPDATE notification_deliveries SET status = 'CANCELLED',
+      claim_token = NULL, claimed_at = NULL, updated_at = ?
+      WHERE status IN ('PENDING','RETRY_WAIT','PROCESSING') AND notification_event_id IN
+        (SELECT id FROM notification_events WHERE source_type = ? AND source_id = ?)`
+      )
+      .run(now, sourceType, sourceId).changes;
   }
 
   envelope(delivery: NotificationDelivery): DeliveryEnvelope | undefined {
