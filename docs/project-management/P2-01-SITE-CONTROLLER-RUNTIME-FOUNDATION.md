@@ -1,6 +1,6 @@
 # P2-01 — Site Controller Runtime Foundation
 
-Status: IMPLEMENTED / PR VALIDATION PENDING
+Status: COMPLETE / PR CI VERIFIED / READY TO MERGE
 Date: 2026-08-31
 
 ## Purpose
@@ -57,6 +57,8 @@ Automated tests cover:
 5. online/offline connectivity transitions without discarding effective config;
 6. watchdog timeout boundary and deterministic restart;
 7. rejection of cross-Site acknowledged configuration identity.
+
+PR #115 CI run #322 passed both backend and frontend quality gates before this documentation-only status update. The updated PR head must pass CI again before merge.
 
 ## Boundaries / non-claims
 
