@@ -23,6 +23,7 @@ import auditEventRouter from "./routes/audit-event.route";
 import notificationRecipientRouter from "./routes/notification-recipient.route";
 import escalationPolicyRouter from "./routes/escalation-policy.route";
 import realtimeRouter from "./routes/realtime.route";
+import notificationDeliveryRouter from "./routes/notification-delivery.route";
 
 createTables();
 
@@ -55,6 +56,7 @@ app.use(`${config.apiPrefix}/audit-events`, auditEventRouter);
 app.use(`${config.apiPrefix}/notification-recipients`, notificationRecipientRouter);
 app.use(`${config.apiPrefix}/escalation-policies`, escalationPolicyRouter);
 app.use(`${config.apiPrefix}/realtime`, realtimeRouter);
+app.use(`${config.apiPrefix}/notification-deliveries`, notificationDeliveryRouter);
 
 app.use(errorMiddleware);
 
