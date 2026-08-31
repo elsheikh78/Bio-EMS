@@ -62,4 +62,62 @@ describe("reports API", () => {
     );
     expect(result.blob.type).toBe("application/pdf");
   });
+
+  it.each([
+    [
+      "CSV" as const,
+      "text/csv",
+      "bio-ems_alarm-history_2026-01-01_2026-02-01.csv",
+    ],
+    [
+      "PDF" as const,
+      "application/pdf",
+      "bio-ems_alarm-history_2026-01-01_2026-02-01.pdf",
+    ],
+  ])(
+    "requests operational %s export without passing format through strict preview validation",
+    async (format, accept, filename) => {
+      const response = new Response(
+        format === "PDF" ? "%PDF-test" : "id,status",
+        {
+          status: 200,
+          headers: {
+            "Content-Type": accept,
+            "Content-Disposition": `attachment; filename="${filename}"`,
+          },
+        },
+      );
+      let capturedOptions: Omit<ApiRequestOptions, "auth"> | undefined;
+      const protectedRequest: AuthenticationContextValue["protectedRequest"] = <
+        T,
+      >(
+        _path: `/${string}`,
+        options?: Omit<ApiRequestOptions, "auth">,
+      ) => {
+        capturedOptions = options;
+        return Promise.resolve(response as T);
+      };
+      const api = createReportsApi(protectedRequest);
+      const result = await api.exportOperational({
+        ...exportRequest,
+        reportType: "ALARM-HISTORY",
+        format,
+      });
+
+      expect(capturedOptions).toEqual(
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: accept },
+          responseMode: "response",
+        }),
+      );
+      expect(JSON.parse(capturedOptions?.body as string)).toEqual({
+        ...exportRequest,
+        reportType: "ALARM-HISTORY",
+        format,
+      });
+      expect(result.filename).toBe(filename);
+      expect(result.blob.type).toBe(accept);
+    },
+  );
 });

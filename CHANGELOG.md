@@ -1,5 +1,13 @@
 # [Unreleased]
 
+## 0.16.2 - Operational report export fix
+
+- Fixed strict client validation rejecting Alarm, Device Health, and Audit CSV/PDF exports before
+  the request reached the backend.
+- Hardened browser downloads by retaining the generated Blob URL until navigation begins.
+- Added regression coverage for both operational CSV and PDF request contracts and visible export
+  failure feedback.
+
 ## 0.16.1 - Reports Center visual completion
 
 - Replaced the calibration-focused readiness table with five prominent selectable report cards.

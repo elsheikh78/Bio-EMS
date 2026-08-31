@@ -94,8 +94,11 @@ function downloadReport(file: { blob: Blob; filename: string }) {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = file.filename;
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
 }
 
 export function ReportsCenterPage() {
@@ -570,6 +573,7 @@ export function ReportsCenterPage() {
               reportTitle={presentation.title}
               canExport={canExport}
               exporting={operationalExport.isPending}
+              exportError={operationalExport.isError}
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
             />
@@ -1063,6 +1067,7 @@ function OperationalPreviewPanel({
   reportTitle,
   canExport,
   exporting,
+  exportError,
   onExportCsv,
   onExportPdf,
 }: {
@@ -1070,6 +1075,7 @@ function OperationalPreviewPanel({
   reportTitle: string;
   canExport: boolean;
   exporting: boolean;
+  exportError: boolean;
   onExportCsv: () => void;
   onExportPdf: () => void;
 }) {
@@ -1109,6 +1115,12 @@ function OperationalPreviewPanel({
   );
   return (
     <Stack spacing={3}>
+      {exportError ? (
+        <Alert severity="error">
+          The export could not be downloaded. Check the backend connection and
+          try again.
+        </Alert>
+      ) : null}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
         <Typography variant="overline" color="primary.main">
           Canonical preview
