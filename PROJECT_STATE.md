@@ -2,15 +2,16 @@
 
 **Latest tagged release:** [`v0.15.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.15.0)
 
-**Current source-software version:** `0.16.0`
+**Current source-software version:** `0.16.3`
 
-**Current phase:** Reporting software closure in parallel with BIO EGYPT Field-Pilot Preparation
+**Current phase:** P0 clean-baseline closure in parallel with BIO EGYPT Field-Pilot Preparation
 
-**Current feature work:** BF-10 completes all five controlled report families through Preview,
-CSV, and PDF, including a durable append-only Device communication history ledger.
+**Current feature work:** BF-10 is merged and CI verified. All five controlled report families are
+available through Preview, CSV, and PDF; operational PDFs use the BIO-EMS identity and selected
+Site time zone.
 
-**Next actions:** verify the BF-10 integration commit and execute the remaining deployment,
-commissioning, and customer evidence gates. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
+**Next actions:** execute the physical MQTT/UAT evidence gates and implement the P1 Notification
+Delivery Engine. The Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
 
 ## Implemented Platform
 
