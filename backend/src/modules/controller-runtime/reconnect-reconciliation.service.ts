@@ -6,6 +6,7 @@ import {
   type ConfigDeliveryEnvelope,
   type ConfigSyncDecision,
 } from "../controller-sync/offline-critical-config.contract";
+import type { ReplayAcceptanceStore } from "./replay-acceptance.store";
 import type { AcknowledgedConfigIdentity } from "./runtime.contract";
 
 export interface BufferedReplayRecord {
@@ -38,7 +39,11 @@ export interface ReconnectReconciliationResult {
 }
 
 export class ReconnectReconciliationService {
-  private readonly replayedIds = new Set<string>();
+  private readonly replayedIds: Set<string>;
+
+  constructor(private readonly replayAcceptanceStore: ReplayAcceptanceStore | null = null) {
+    this.replayedIds = new Set(replayAcceptanceStore?.load() ?? []);
+  }
 
   reconcile(input: ReconnectReconciliationInput): ReconnectReconciliationResult {
     assertTimestamp(input.reconciled_at);
@@ -55,17 +60,27 @@ export class ReconnectReconciliationService {
 
   markReplayAccepted(replayIds: string[]): void {
     for (const replayId of replayIds) this.replayedIds.add(replayId);
+    this.replayAcceptanceStore?.save([...this.replayedIds]);
   }
 
   private buildReplay(siteUuid: string, records: BufferedReplayRecord[]): ReplayEnvelope[] {
-    return [...records]
-      .sort((left, right) => Date.parse(left.sampled_at) - Date.parse(right.sampled_at))
-      .map((record) => ({
+    const seen = new Set(this.replayedIds);
+    const replay: ReplayEnvelope[] = [];
+
+    for (const record of [...records].sort(
+      (left, right) => Date.parse(left.sampled_at) - Date.parse(right.sampled_at)
+    )) {
+      const candidate: ReplayEnvelope = {
         ...record,
-        mode: "REPLAY" as const,
+        mode: "REPLAY",
         replay_id: replayId(siteUuid, record),
-      }))
-      .filter((record) => !this.replayedIds.has(record.replay_id));
+      };
+      if (seen.has(candidate.replay_id)) continue;
+      seen.add(candidate.replay_id);
+      replay.push(candidate);
+    }
+
+    return replay;
   }
 }
 

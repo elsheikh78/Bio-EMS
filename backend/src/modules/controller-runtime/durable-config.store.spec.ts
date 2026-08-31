@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 function store() {
-  const directory = mkdtempSync(join(tmpdir(), "bio-ems-p2-03-"));
+  const directory = mkdtempSync(join(tmpdir(), "bio-ems-p2-durable-"));
   directories.push(directory);
   const filePath = join(directory, "controller-config.json");
   return { filePath, value: new FileDurableConfigStore(filePath) };
@@ -29,7 +29,7 @@ function bootInput() {
     identity: {
       runtime_name: "bio-ems-site-controller",
       runtime_version: "0.1.0",
-      build_id: "p2-03-test-build",
+      build_id: "p2-hardening-test-build",
       hardware_profile: "STANDARD",
     },
     boundary: {
@@ -66,7 +66,7 @@ function bundle(configVersion: number) {
 }
 
 describe("durable local controller configuration", () => {
-  it("persists an applied configuration and recovers it after a fresh boot", () => {
+  it("persists the complete applied BF-08 envelope and recovers it after a fresh boot", () => {
     const durable = store();
     const runtime = SiteControllerRuntime.boot(bootInput(), 1_000, durable.value);
     const envelope = createConfigDeliveryEnvelope(bundle(7));
@@ -83,15 +83,18 @@ describe("durable local controller configuration", () => {
         checksum_sha256: envelope.checksum_sha256,
       },
     });
+    expect(restarted.effectiveConfigEnvelope()).toEqual(envelope);
+    expect(restarted.effectiveConfigEnvelope()?.bundle.sensors[0]).toMatchObject({
+      device_id: "ZC-FW-001",
+      alarm_low: 2,
+      alarm_high: 8,
+      critical_delay_seconds: 30,
+    });
   });
 
   it("rejects corrupted durable data instead of booting from it", () => {
     const durable = store();
-    durable.value.save(
-      CONTROLLER_ID,
-      { site_uuid: SITE_UUID, config_version: 3, checksum_sha256: "a".repeat(64) },
-      ACK_TIME
-    );
+    durable.value.save(CONTROLLER_ID, createConfigDeliveryEnvelope(bundle(3)), ACK_TIME);
     const record = JSON.parse(readFileSync(durable.filePath, "utf8")) as Record<string, unknown>;
     writeFileSync(
       durable.filePath,
@@ -101,6 +104,21 @@ describe("durable local controller configuration", () => {
     const runtime = SiteControllerRuntime.boot(bootInput(), 1_000, durable.value);
     expect(runtime.snapshot().state).toBe("NOT_READY_NO_CONFIG");
     expect(runtime.snapshot().effective_config).toBeNull();
+    expect(runtime.effectiveConfigEnvelope()).toBeNull();
+  });
+
+  it("rejects a durable record whose embedded BF-08 envelope checksum was tampered", () => {
+    const durable = store();
+    const envelope = createConfigDeliveryEnvelope(bundle(3));
+    durable.value.save(CONTROLLER_ID, envelope, ACK_TIME);
+    const record = JSON.parse(readFileSync(durable.filePath, "utf8")) as {
+      payload: { envelope: { checksum_sha256: string } };
+      integrity_sha256: string;
+    };
+    record.payload.envelope.checksum_sha256 = "f".repeat(64);
+    writeFileSync(durable.filePath, `${JSON.stringify(record)}\n`);
+
+    expect(durable.value.load(CONTROLLER_ID, SITE_UUID)).toBeNull();
   });
 
   it("does not replace known-good durable configuration after a rejected candidate", () => {
@@ -119,11 +137,7 @@ describe("durable local controller configuration", () => {
 
   it("refuses durable configuration belonging to another controller or Site", () => {
     const durable = store();
-    durable.value.save(
-      "controller-other",
-      { site_uuid: SITE_UUID, config_version: 2, checksum_sha256: "b".repeat(64) },
-      ACK_TIME
-    );
+    durable.value.save("controller-other", createConfigDeliveryEnvelope(bundle(2)), ACK_TIME);
 
     expect(durable.value.load(CONTROLLER_ID, SITE_UUID)).toBeNull();
     expect(

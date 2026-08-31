@@ -2,6 +2,7 @@ import {
   configAcknowledgementSchema,
   verifyConfigDeliveryEnvelope,
   type ConfigAcknowledgement,
+  type ConfigDeliveryEnvelope,
 } from "../controller-sync/offline-critical-config.contract";
 import type { AcknowledgedConfigIdentity } from "./runtime.contract";
 
@@ -11,6 +12,7 @@ export type ConfigReceiptRejectionCode =
 export interface ConfigReceiptResult {
   acknowledgement: ConfigAcknowledgement;
   accepted_config: AcknowledgedConfigIdentity | null;
+  accepted_envelope: ConfigDeliveryEnvelope | null;
 }
 
 export interface ConfigReceiptInput {
@@ -22,7 +24,7 @@ export interface ConfigReceiptInput {
 }
 
 export function receiveConfigEnvelope(input: ConfigReceiptInput): ConfigReceiptResult {
-  let envelope;
+  let envelope: ConfigDeliveryEnvelope;
   try {
     envelope = verifyConfigDeliveryEnvelope(input.envelope);
   } catch {
@@ -62,6 +64,7 @@ export function receiveConfigEnvelope(input: ConfigReceiptInput): ConfigReceiptR
       status: "APPLIED",
     }),
     accepted_config: acceptedConfig,
+    accepted_envelope: structuredClone(envelope),
   };
 }
 
@@ -82,6 +85,7 @@ function rejected(
       rejection_code: code,
     }),
     accepted_config: null,
+    accepted_envelope: null,
   };
 }
 
