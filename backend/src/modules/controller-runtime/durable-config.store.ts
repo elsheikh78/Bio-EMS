@@ -3,17 +3,18 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { z } from "zod";
 import {
-  acknowledgedConfigIdentitySchema,
-  type AcknowledgedConfigIdentity,
-} from "./runtime.contract";
+  configDeliveryEnvelopeSchema,
+  verifyConfigDeliveryEnvelope,
+  type ConfigDeliveryEnvelope,
+} from "../controller-sync/offline-critical-config.contract";
 
-const DURABLE_CONFIG_RECORD_VERSION = 1 as const;
+const DURABLE_CONFIG_RECORD_VERSION = 2 as const;
 
 const durableConfigPayloadSchema = z
   .object({
     record_version: z.literal(DURABLE_CONFIG_RECORD_VERSION),
     controller_id: z.string().trim().min(1).max(100),
-    config: acknowledgedConfigIdentitySchema,
+    envelope: configDeliveryEnvelopeSchema,
     persisted_at: z.string().datetime({ offset: true }),
   })
   .strict();
@@ -29,14 +30,14 @@ type DurableConfigPayload = z.infer<typeof durableConfigPayloadSchema>;
 type DurableConfigRecord = z.infer<typeof durableConfigRecordSchema>;
 
 export interface DurableConfigStore {
-  load(controllerId: string, siteUuid: string): AcknowledgedConfigIdentity | null;
-  save(controllerId: string, config: AcknowledgedConfigIdentity, persistedAt: string): void;
+  load(controllerId: string, siteUuid: string): ConfigDeliveryEnvelope | null;
+  save(controllerId: string, envelope: ConfigDeliveryEnvelope, persistedAt: string): void;
 }
 
 export class FileDurableConfigStore implements DurableConfigStore {
   constructor(private readonly filePath: string) {}
 
-  load(controllerId: string, siteUuid: string): AcknowledgedConfigIdentity | null {
+  load(controllerId: string, siteUuid: string): ConfigDeliveryEnvelope | null {
     let raw: string;
     try {
       raw = readFileSync(this.filePath, "utf8");
@@ -54,15 +55,21 @@ export class FileDurableConfigStore implements DurableConfigStore {
 
     if (record.integrity_sha256 !== checksum(record.payload)) return null;
     if (record.payload.controller_id !== controllerId) return null;
-    if (record.payload.config.site_uuid !== siteUuid) return null;
-    return structuredClone(record.payload.config);
+    if (record.payload.envelope.bundle.site_uuid !== siteUuid) return null;
+
+    try {
+      return structuredClone(verifyConfigDeliveryEnvelope(record.payload.envelope));
+    } catch {
+      return null;
+    }
   }
 
-  save(controllerId: string, config: AcknowledgedConfigIdentity, persistedAt: string): void {
+  save(controllerId: string, envelope: ConfigDeliveryEnvelope, persistedAt: string): void {
+    const verifiedEnvelope = verifyConfigDeliveryEnvelope(envelope);
     const payload = durableConfigPayloadSchema.parse({
       record_version: DURABLE_CONFIG_RECORD_VERSION,
       controller_id: controllerId,
-      config,
+      envelope: verifiedEnvelope,
       persisted_at: persistedAt,
     });
     const record: DurableConfigRecord = {
