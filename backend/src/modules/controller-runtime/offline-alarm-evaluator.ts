@@ -1,7 +1,10 @@
-import type {
-  OfflineCriticalConfigBundle,
-} from "../controller-sync/offline-critical-config.contract";
-import type { SensorAcquisitionCycle, SensorAcquisitionSample } from "./sensor-acquisition.service";
+import type * as Sync from "../controller-sync/offline-critical-config.contract";
+import type * as Acquisition from "./sensor-acquisition.service";
+
+type Bundle = Sync.OfflineCriticalConfigBundle;
+type Cycle = Acquisition.SensorAcquisitionCycle;
+type Sample = Acquisition.SensorAcquisitionSample;
+type SensorConfig = Bundle["sensors"][number];
 
 export type OfflineAlarmCondition =
   | "NORMAL"
@@ -34,10 +37,7 @@ interface PendingAlarmState {
 export class OfflineAlarmEvaluator {
   private readonly states = new Map<string, PendingAlarmState>();
 
-  evaluate(
-    bundle: OfflineCriticalConfigBundle,
-    cycle: SensorAcquisitionCycle
-  ): OfflineAlarmEvaluation[] {
+  evaluate(bundle: Bundle, cycle: Cycle): OfflineAlarmEvaluation[] {
     const configured = new Map(bundle.sensors.map((sensor) => [sensor.sensor_uuid, sensor]));
     return cycle.samples.map((sample) => {
       const sensor = configured.get(sample.sensor_uuid);
@@ -59,10 +59,7 @@ export class OfflineAlarmEvaluator {
     this.states.clear();
   }
 
-  private evaluateSample(
-    sensor: OfflineCriticalConfigBundle["sensors"][number],
-    sample: SensorAcquisitionSample
-  ): OfflineAlarmEvaluation {
+  private evaluateSample(sensor: SensorConfig, sample: Sample): OfflineAlarmEvaluation {
     if (sample.status !== "OK" || sample.value_celsius === null) {
       this.states.delete(sample.sensor_uuid);
       return this.result(sample, "SENSOR_FAULT", "FAULT", null, null);
@@ -74,9 +71,11 @@ export class OfflineAlarmEvaluator {
       return this.result(sample, condition, "NORMAL", null, null);
     }
 
-    const delaySeconds = condition.startsWith("CRITICAL")
-      ? sensor.critical_delay_seconds
-      : (sensor.warning_delay_seconds ?? 0);
+    let delaySeconds = sensor.warning_delay_seconds ?? 0;
+    if (condition.startsWith("CRITICAL")) {
+      delaySeconds = sensor.critical_delay_seconds;
+    }
+
     const existing = this.states.get(sample.sensor_uuid);
     const firstObservedAt =
       existing?.condition === condition ? existing.firstObservedAt : sample.sampled_at;
@@ -106,7 +105,7 @@ export class OfflineAlarmEvaluator {
   }
 
   private result(
-    sample: SensorAcquisitionSample,
+    sample: Sample,
     condition: OfflineAlarmCondition,
     phase: OfflineAlarmPhase,
     firstObservedAt: string | null,
@@ -128,21 +127,19 @@ export class OfflineAlarmEvaluator {
 
 function classify(
   value: number,
-  sensor: OfflineCriticalConfigBundle["sensors"][number]
+  sensor: SensorConfig
 ): Exclude<OfflineAlarmCondition, "SENSOR_FAULT"> {
-  if (sensor.alarm_low !== null && value <= sensor.alarm_low) return "CRITICAL_LOW";
-  if (
-    sensor.warning_low !== undefined &&
-    sensor.warning_low !== null &&
-    value <= sensor.warning_low
-  )
-    return "WARNING_LOW";
-  if (sensor.alarm_high !== null && value >= sensor.alarm_high) return "CRITICAL_HIGH";
-  if (
-    sensor.warning_high !== undefined &&
-    sensor.warning_high !== null &&
-    value >= sensor.warning_high
-  )
-    return "WARNING_HIGH";
+  if (sensor.alarm_low !== null && value <= sensor.alarm_low) {
+    return "CRITICAL_LOW";
+  }
+  if (sensor.warning_low !== undefined && sensor.warning_low !== null) {
+    if (value <= sensor.warning_low) return "WARNING_LOW";
+  }
+  if (sensor.alarm_high !== null && value >= sensor.alarm_high) {
+    return "CRITICAL_HIGH";
+  }
+  if (sensor.warning_high !== undefined && sensor.warning_high !== null) {
+    if (value >= sensor.warning_high) return "WARNING_HIGH";
+  }
   return "NORMAL";
 }
