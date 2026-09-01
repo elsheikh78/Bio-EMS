@@ -6,21 +6,23 @@
 
 **Current source-software version:** `0.18.0`
 
-**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified through P6 productization. P6 closed through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain external evidence gates.
+**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified. A post-P6 product audit identified remaining end-to-end product-surface gaps, so **P7 — Final Product Completion** is now the approved active software phase. P7 is planned/documented but not yet implemented. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before further work.
-2. Do not repeat P0-P6 source implementation unless a verified regression, audit finding, or approved new scope requires it.
-3. Use the completed commissioning, production-hardening, commercial-operations, and productization tooling only with genuine controlled evidence.
-4. Execute physical hardware qualification, live provider evidence, deployed MQTT/recovery evidence, required endurance, production restore/rollback/DR evidence, BIO EGYPT commissioning/UAT, and acceptance as separate external gates.
-5. Use `IMPLEMENTATION_PLAN.md`, `docs/architecture/roadmap.md`, `docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`, and the relevant P3/P6 closure/evidence records as the controlled continuation set.
+2. Preserve P0-P6 closure evidence; P7 is new approved scope, not a reopening of completed packages.
+3. Execute P7 from `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` in controlled work packages P7-01 through P7-08.
+4. Complete the SYSTEM_OWNER product UI, customer/license/update-entitlement/fleet workflows, product UX cleanup, end-to-end workflow audit, and full regression/documentation closure before declaring the approved software product complete.
+5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 
 ## Status Vocabulary
 
 - **SOFTWARE COMPLETE / CI VERIFIED** — source behavior exists and automated gates pass.
 - **SOFTWARE CONTROLS COMPLETE** — operational controls/tooling exist in source, but real production execution evidence may remain open.
 - **SOFTWARE PRODUCTIZATION COMPLETE** — packaging/deployment/acceptance tooling exists in source; field/production/customer acceptance is not implied.
+- **PLANNED / NOT YET IMPLEMENTED** — approved scope is documented but implementation/CI closure has not occurred.
+- **SOFTWARE PRODUCT COMPLETE** — reserved for successful P7 closure across the approved end-to-end product surface.
 - **EXTERNAL EVIDENCE OPEN** — physical deployment, live provider, field endurance, commissioning, UAT, production execution, or customer sign-off has not been executed/proven.
 
 ## Implemented Platform
@@ -38,34 +40,34 @@
 - P2 host-side Site Controller runtime: deterministic boot/connectivity/watchdog, BF-08 receipt/integrity, durable full known-good configuration recovery, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover contract/runtime, reconnect reconciliation, controller health evidence, qualification gate, and durable replay acceptance recovery.
 - P3 commissioning tooling: durable sessions/checks, append-only evidence/deviations/decisions, Site-scoped protected APIs, authenticated-user provenance, configuration/sensor mapping/calibration verification, functional-test orchestration, commissioning UI, CSV/PDF records, decision snapshots, and BIO EGYPT software dry-run/UAT package.
 - P4 production-hardening controls covering deployment validation, backup/restore, supervision, secrets/configuration, persistence/recovery, observability, retention, upgrade/rollback, and DR evidence structures.
-- P5 isolated SYSTEM_OWNER/commercial-operations workflows while preserving the customer ADMIN trust boundary.
+- P5 isolated SYSTEM_OWNER commercial APIs/workflows for customer fleet identity, license/update entitlement, and maintenance/calibration/support/update oversight while preserving the customer ADMIN trust boundary.
 - P6 controlled productization/deployment/acceptance tooling and documentation.
 
-## P0-P6 Delivery Position
+## P0-P7 Delivery Position
 
 - **P0 — Professional Software / Reporting Baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
 - **P3 — Pilot Commissioning Tooling:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PRs #130-#132; closure merge `6a74122e`. Field evidence and customer acceptance remain open.
 - **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED.** PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`. Production restore/endurance/rollback/DR evidence remains external.
-- **P5 — SYSTEM_OWNER / Commercial Operations:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. Billing/payment execution and live commercial evidence remain external/later scope where applicable.
+- **P5 — SYSTEM_OWNER / Commercial Operations:** **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. P7 will complete the approved owner-facing product UI/workflows. Billing/payment and live remote-update execution remain external/later integrations unless separately implemented.
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
+- **P7 — Final Product Completion:** **APPROVED / PLANNED / NOT YET IMPLEMENTED.** Work packages P7-01 through P7-08 cover SYSTEM_OWNER console, customer/fleet UI, license/install binding UI, update entitlement UI, maintenance/calibration/support fleet operations, legacy/UX cleanup, end-to-end workflow review, and full regression/documentation closure.
 
-## P2 Closure Evidence
+## P7 Active Plan
 
-- P2-01 — Runtime Foundation — PR #115.
-- P2-02 — Configuration Receipt and Integrity — PR #116.
-- P2-03 — Durable Configuration Identity Foundation — PR #117.
-- P2-04 — DS18B20 Acquisition — PR #118.
-- P2-05 — Offline Alarm Evaluation — PR #119.
-- P2-06 — Local Emergency SMS Failover — PR #120.
-- P2-07 — Reconnect Reconciliation / LIVE-REPLAY — PR #121.
-- P2-08 — Controller Health Evidence — PR #122.
-- P2-09 — Bench Qualification Software Gate — PR #123; CI run #380 SUCCESS.
-- Post-P2 durability hardening — PR #124; CI run #382 SUCCESS; merge `453ea1fe6f983528c861667dc638bcc424710eff`.
-- Documentation authority reconciliation — PR #125; CI run #387 SUCCESS.
-- Version/release reconciliation — PR #126; CI run #389 SUCCESS; merge `cc8a5e7594c3a8101d7e227f582dfdf66f74fd48`; release tag `v0.17.0` published 31 August 2026.
-- Published-release documentation finalization — PR #127; CI run #391 SUCCESS; merge `71659783be66d20458beb380a7fa92e557f5859a`.
+Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
+
+Sequence:
+
+1. P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell.
+2. P7-02 — Customer / Site Fleet Management.
+3. P7-03 — License Lifecycle and Installation Binding UI.
+4. P7-04 — Update Entitlement and Release Eligibility UI.
+5. P7-05 — Maintenance, Calibration and Support Fleet Operations.
+6. P7-06 — Product UX and Legacy Cleanup.
+7. P7-07 — End-to-End Product Workflow Review.
+8. P7-08 — Full Regression, Documentation Reconciliation and Software Product Closure.
 
 ## P3-P6 Closure Evidence
 
@@ -79,9 +81,7 @@
 
 ## Release / Version Position
 
-`VERSION` is the product source-version authority. The backend package metadata follows it. The frontend package remains a private scaffold version and is not an independently published BIO-EMS product package.
-
-`v0.17.0` is the latest published release. Current source-software version is `0.18.0`. Source version `0.18.0` must not be described as a published release until an explicit tag/release is created and verified.
+`VERSION` is the product source-version authority. `v0.17.0` is the latest published release and current source-software version remains `0.18.0`. Planning P7 does not change either value and does not create a release.
 
 Release publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
@@ -113,8 +113,8 @@ No separate Monitoring Point or Asset backend domain is claimed by this state do
 
 ## Deferred / Open Product Scope
 
-Broader Asset/discovery/provisioning, OTA delivery, final production controller firmware/hardware adapters, billing/payment execution, additional industry-specific capabilities, physical commissioning, live-provider acceptance, and customer acceptance remain open unless later work explicitly implements and verifies them.
+Payment/invoicing integration, live remote OTA/update execution, broader Asset/discovery/provisioning, final production controller firmware/hardware adapters, additional industry-specific capabilities, physical commissioning, live-provider acceptance, and customer acceptance remain open unless later work explicitly implements and verifies them.
 
 ## Repository Continuation Rule
 
-Begin with this file, then `IMPLEMENTATION_PLAN.md`, then `docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md` and `docs/architecture/roadmap.md`. For field execution use the relevant P3/P6 closure records and the existing `docs/pilot/bio-egypt/` evidence pack. GitHub `main` remains the source of truth. Preserve valid historical release/Sprint/handoff documents; update this current-state document whenever the actual project gate changes rather than creating competing status files.
+Begin with this file, then `IMPLEMENTATION_PLAN.md`, then the P7 plan, then `docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md` and `docs/architecture/roadmap.md`. GitHub `main` remains the source of truth. Preserve valid historical release/Sprint/handoff documents; update this current-state document whenever the actual project gate changes rather than creating competing status files.
