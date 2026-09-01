@@ -18,6 +18,8 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "NOTIFICATION_RECIPIENT_MANAGE",
     "ESCALATION_POLICY_READ",
     "ESCALATION_POLICY_MANAGE",
+    "COMMISSIONING_READ",
+    "COMMISSIONING_MANAGE",
   ]),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",
@@ -28,6 +30,8 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "DASHBOARD_READ",
     "REPORT_READ",
     "REPORT_EXPORT",
+    "COMMISSIONING_READ",
+    "COMMISSIONING_MANAGE",
   ]),
   VIEWER: new Set<Permission>([
     "CONFIGURATION_READ",
@@ -35,6 +39,7 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "ALARM_READ",
     "DASHBOARD_READ",
     "REPORT_READ",
+    "COMMISSIONING_READ",
   ]),
 };
 
