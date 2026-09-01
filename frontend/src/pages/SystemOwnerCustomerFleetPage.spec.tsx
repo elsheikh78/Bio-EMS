@@ -8,7 +8,9 @@ import {
 } from "../platform-operations/queries";
 import { SystemOwnerCustomerFleetPage } from "./SystemOwnerCustomerFleetPage";
 
-vi.mock("../localization/useLocalization", () => ({ useLocalization: vi.fn() }));
+vi.mock("../localization/useLocalization", () => ({
+  useLocalization: vi.fn(),
+}));
 vi.mock("../platform-operations/queries", () => ({
   usePlatformOperationsOverview: vi.fn(),
   useCreatePlatformCustomer: vi.fn(),
@@ -71,7 +73,10 @@ function renderPage(path = "/system-owner/customers") {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="system-owner/customers" element={<SystemOwnerCustomerFleetPage />} />
+        <Route
+          path="system-owner/customers"
+          element={<SystemOwnerCustomerFleetPage />}
+        />
         <Route
           path="system-owner/customers/:customerId"
           element={<SystemOwnerCustomerFleetPage />}
@@ -103,9 +108,13 @@ describe("SYSTEM_OWNER customer fleet", () => {
     renderPage();
     expect(screen.getByText("BIO EGYPT")).toBeInTheDocument();
     expect(
-      screen.getByText(/current backend contract authorizes customer creation only/i),
+      screen.getByText(
+        /current backend contract authorizes customer creation only/i,
+      ),
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /edit/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /edit/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows linked Site identity and commercial provenance on customer detail", () => {
@@ -119,8 +128,12 @@ describe("SYSTEM_OWNER customer fleet", () => {
     createCustomer.mockResolvedValue({ success: true, id: 2 });
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Add customer" }));
-    fireEvent.change(screen.getByLabelText("Code"), { target: { value: "ACME" } });
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "ACME Pharma" } });
+    fireEvent.change(screen.getByLabelText("Code"), {
+      target: { value: "ACME" },
+    });
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: { value: "ACME Pharma" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Create customer" }));
 
     await waitFor(() =>
@@ -132,6 +145,8 @@ describe("SYSTEM_OWNER customer fleet", () => {
         }),
       ),
     );
-    expect(createCustomer.mock.calls[0]?.[0]).not.toHaveProperty("actorIdentity");
+    expect(createCustomer.mock.calls[0]?.[0]).not.toHaveProperty(
+      "actorIdentity",
+    );
   });
 });
