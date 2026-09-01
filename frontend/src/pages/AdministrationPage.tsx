@@ -240,7 +240,10 @@ function UserDialog({
           <Stack spacing={2} sx={{ pt: 1 }}>
             {mutation.isError ? (
               <Alert severity="error">
-                {mutationErrorMessage(mutation.error, "User could not be saved.")}
+                {mutationErrorMessage(
+                  mutation.error,
+                  "User could not be saved.",
+                )}
               </Alert>
             ) : null}
             <TextField
@@ -290,7 +293,9 @@ function UserDialog({
           <Button
             type="submit"
             variant="contained"
-            disabled={mutation.isPending || (!user && !passwordPolicy.isValid)}
+            disabled={
+              mutation.isPending || (!user && !passwordPolicy.isValid)
+            }
           >
             Save user
           </Button>
