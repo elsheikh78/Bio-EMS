@@ -2,7 +2,7 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 31 August 2026**
+**Current controlled delivery sequence — reconciled 1 September 2026**
 
 The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, `docs/SPRINT_PROGRESS.md`, approved ADRs, and the P0-P6 sequence below.
 
@@ -10,10 +10,12 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 - Sprints 13, 14, and 15 are complete and closed.
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
-- P0 professional software/reporting baseline is complete at source level.
-- P1 Notification Delivery Engine software is complete, merged, and CI verified through PR #113 / integration commit `b1d2611866d2e7a8455d5ed898932ae91fe6068f` / CI run 319.
-- Live SMS-provider evidence, physical commissioning, MQTT/UAT evidence, and customer acceptance remain external gates.
-- P0-P6 source-software delivery is complete and CI verified. Physical/live/field/customer evidence gates remain open.
+- P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization.
+- P3 closed through PRs #130-#132 / closure merge `6a74122e`.
+- P4 closed through PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
+- P5 closed through PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
+- P6 closed through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
+- Live SMS-provider evidence, physical controller qualification, endurance, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain external gates.
 
 ## P0-P6 Sequence
 
@@ -43,11 +45,11 @@ Open evidence: configure a real provider, controlled E.164 recipient, deploy the
 
 ### P2 — Site Controller Runtime
 
-Status: **SOFTWARE COMPLETE / EXTERNAL PHYSICAL EVIDENCE OPEN**
+Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL PHYSICAL EVIDENCE OPEN**
 
-BF-08 and the P2 runtime slices are implemented and CI verified. Physical controller, DS18B20, SIM800L, deployed MQTT and endurance evidence remain external gates.
+BF-08 and P2-01 through P2-09 are implemented and CI verified, including post-P2 durability hardening through PR #124. Physical controller, DS18B20, SIM800L, deployed MQTT, and endurance evidence remain external gates.
 
-Target slices:
+Delivered slices:
 
 - P2-01 Controller runtime package and version identity.
 - P2-02 secure configuration retrieval/receipt and checksum verification.
@@ -57,38 +59,66 @@ Target slices:
 - P2-06 offline Alarm state and local emergency SMS failover execution.
 - P2-07 reconnect reconciliation, APPLIED/REJECTED acknowledgement, stale-version handling, and replay protection.
 - P2-08 controller health/heartbeat diagnostics and server evidence.
-- P2-09 bench test package covering power loss, network loss, stale config, sensor fault, recovery, and reconnect.
+- P2-09 bench qualification software gate covering power loss, network loss, stale config, sensor fault, recovery, and reconnect.
 
-No P2 slice may claim field completion without controller/firmware and bench evidence.
+No P2 status may claim physical qualification without genuine controller/firmware/bench evidence.
 
 ### P3 — Pilot Commissioning Tooling
 
 Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
-The controlled Pilot documentation is implemented as repeatable commissioning sessions, checks, append-only evidence/deviations/decisions, Site-scoped APIs, readiness UI, and CSV/PDF records. Physical commissioning, field endurance, UAT, and customer acceptance remain external evidence gates.
+The controlled Pilot documentation is implemented as repeatable commissioning sessions, checks, append-only evidence/deviations/decisions, Site-scoped APIs, configuration/mapping/calibration verification, functional-test orchestration, readiness UI, CSV/PDF commissioning records, and BIO EGYPT software dry-run/UAT package.
+
+Closure: PRs #130-#132 / closure merge `6a74122e`.
+
+Open evidence: physical commissioning, field endurance, UAT execution, Quality/customer sign-off, and customer acceptance.
 
 ### P4 — Production Hardening
 
 Status: **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
-Complete operational deployment evidence around backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, log retention, upgrade/rollback, and disaster-recovery drills.
+Operational controls cover backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, log retention, upgrade/rollback, and disaster-recovery evidence structures.
+
+Closure: PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
+
+Open evidence: production restore/endurance/rollback/DR execution and retained operational evidence.
 
 ### P5 — SYSTEM_OWNER / Commercial Operations
 
-Status: **SOFTWARE COMPLETE / CI VERIFIED**
+Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED**
 
-Preserve the isolated SYSTEM_OWNER trust domain and append-only audit boundary while adding only approved platform-owner workflows. Candidate later scope includes customer/site fleet visibility, license lifecycle, update entitlement, maintenance/calibration oversight, and commercial operational evidence. Customer ADMIN must never administer or discover SYSTEM_OWNER.
+The isolated SYSTEM_OWNER trust domain and approved platform-owner/commercial operations are implemented while preserving the rule that customer ADMIN cannot administer or discover SYSTEM_OWNER.
+
+Closure: PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
+
+Open/later evidence: billing/payment execution and live production commercial operations where applicable.
 
 ### P6 — Productization / Deployment / Acceptance
 
-Status: **SOFTWARE PRODUCTIZATION COMPLETE / EXTERNAL ACCEPTANCE OPEN**
+Status: **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED / EXTERNAL ACCEPTANCE OPEN**
 
-Close controlled release packaging, installer/deployment procedure, version/release reconciliation, production deployment evidence, BIO EGYPT field commissioning, customer UAT, final sign-off, and release acceptance.
+Controlled release/productization packaging, deployment/acceptance procedures, and supporting source-level tooling are complete.
+
+Closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
+
+Open evidence: physical deployment, production execution, BIO EGYPT field commissioning, customer UAT, final sign-off, and production/customer acceptance.
+
+## Next Controlled Execution
+
+P0-P6 source implementation must not be repeated without a verified regression or audit finding. The next controlled work is evidence execution:
+
+1. physical hardware qualification and HV-01 through HV-15;
+2. live SMS-provider evidence;
+3. deployed MQTT/LIVE-REPLAY and recovery evidence;
+4. required endurance including the controlled 72-hour gate where applicable;
+5. production backup/restore/rollback/DR execution;
+6. BIO EGYPT installation, calibration, commissioning and Alarm testing;
+7. customer UAT, Quality/customer sign-off, and acceptance.
 
 ## Execution Rule
 
-Repository completion, CI success, bench evidence, field commissioning, provider delivery, and customer acceptance are distinct gates. Documentation must state exactly which gate has been satisfied and must not infer later gates from earlier ones.
+Repository completion, CI success, bench evidence, field commissioning, provider delivery, production deployment, UAT, and customer acceptance are distinct gates. Documentation must state exactly which gate has been satisfied and must not infer later gates from earlier ones.
 
 ## Historical Value
 
-Older phase descriptions remain useful as architectural background, but they are not authoritative for current completion status. `PROJECT_STATE.md` is the concise current source of truth; this file defines the active execution sequence.
+Older phase descriptions remain useful as architectural background, but they are not authoritative for current completion status. `PROJECT_STATE.md` is the concise current source of truth; this file defines the controlled execution sequence and post-P6 evidence path.
