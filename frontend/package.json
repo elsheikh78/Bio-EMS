@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "format:check": "prettier --write src/platform-auth/context.ts src/platform-auth/PlatformAuthenticationProvider.tsx src/routing/platformRouteDecision.ts && git diff -- src/platform-auth/context.ts src/platform-auth/PlatformAuthenticationProvider.tsx src/routing/platformRouteDecision.ts && exit 1",
+    "format:check": "prettier --check .",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
