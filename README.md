@@ -1,13 +1,13 @@
 # BIO-EMS
 
-![Source Version](https://img.shields.io/badge/source-0.17.0-blue)
+![Source Version](https://img.shields.io/badge/source-0.18.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
 **Latest published tagged release:** `v0.17.0`.  
-**Current source-software version:** `0.17.0`.
+**Current source-software version:** `0.18.0`.
 
 ## Documentation Authority — Read This First
 
@@ -29,10 +29,10 @@ BIO-EMS uses one current-state authority and separate execution/evidence tracks:
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
 - **P2:** software complete / merged / CI verified through PR #124, including full BF-08 durable recovery and durable replay acceptance. Physical controller qualification remains external.
-- **P3:** partial / next controlled software-product phase.
-- **P4:** partial production-hardening foundation; operational/endurance evidence remains open.
-- **P5:** SYSTEM_OWNER/commercial foundation implemented; broader fleet/customer/license/update operations remain open.
-- **P6:** productization/deployment/acceptance open.
+- **P3:** software complete / merged / CI verified; physical commissioning and customer acceptance remain external.
+- **P4:** software controls complete / merged / CI verified; production restore/endurance/DR evidence remains external.
+- **P5:** SYSTEM_OWNER commercial operations complete / merged / CI verified; billing/payment execution remains external.
+- **P6:** source productization complete / merged / CI verified; deployment, UAT, sign-off, and production acceptance remain external.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
@@ -69,6 +69,10 @@ BIO-EMS currently includes:
 - BF-08 Site Controller offline-critical configuration synchronization.
 - Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations in Preview/CSV/PDF workflows.
 - P2 Site Controller host-side runtime sequence: deterministic runtime/watchdog, configuration receipt/integrity, durable known-good configuration, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover, reconnect reconciliation, health evidence, bench qualification gate, and durable replay acceptance.
+- P3 Site-scoped commissioning sessions, controlled check evidence/deviations/decisions, acceptance evaluation, readiness UI, and CSV/PDF commissioning records.
+- P4 deployment-readiness controls for separated backups, retention, logging, and graceful shutdown.
+- P5 isolated SYSTEM_OWNER customer, license/update-entitlement, and maintenance oversight with append-only provenance.
+- P6 controlled `0.18.0` release manifest and machine-checkable release-package validation.
 
 ## Architecture Boundary
 
