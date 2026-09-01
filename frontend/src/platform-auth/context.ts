@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { ApiClient } from "../api/client";
 import type { PlatformLoginRequest, PlatformPrincipal } from "./contracts";
 
 export type PlatformAuthenticationStatus =
@@ -8,6 +9,7 @@ export interface PlatformAuthenticationValue {
   status: PlatformAuthenticationStatus;
   principal?: PlatformPrincipal;
   loginPending: boolean;
+  apiClient: ApiClient;
   login: (input: PlatformLoginRequest) => Promise<void>;
   logout: () => void;
 }
