@@ -105,9 +105,10 @@ describe("commissioning acceptance evaluator", () => {
   });
 
   it("never accepts while a blocking deviation exists", () => {
-    const result = evaluateCommissioningAcceptance([], [
-      { reference: "DEV-BLOCK", classification: "BLOCKING" },
-    ]);
+    const result = evaluateCommissioningAcceptance(
+      [],
+      [{ reference: "DEV-BLOCK", classification: "BLOCKING" }]
+    );
 
     expect(result.acceptable).toBe(false);
   });

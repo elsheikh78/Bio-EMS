@@ -1,15 +1,8 @@
 export type CommissioningEvidenceState =
-  | "NOT_RUN"
-  | "PASS"
-  | "FAIL"
-  | "BLOCKED"
-  | "DEFERRED_NON_BLOCKING";
+  "NOT_RUN" | "PASS" | "FAIL" | "BLOCKED" | "DEFERRED_NON_BLOCKING";
 
 export type CommissioningEvidenceKind =
-  | "SOFTWARE_AUTOMATED"
-  | "PHYSICAL"
-  | "LIVE_PROVIDER"
-  | "DOCUMENTARY";
+  "SOFTWARE_AUTOMATED" | "PHYSICAL" | "LIVE_PROVIDER" | "DOCUMENTARY";
 
 export type CommissioningCheckSnapshot = {
   checkId: number;

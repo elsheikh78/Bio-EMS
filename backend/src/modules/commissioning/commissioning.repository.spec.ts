@@ -84,7 +84,9 @@ describe("CommissioningRepository", () => {
       { reference: "DEV-001", classification: "NON_BLOCKING" },
     ]);
     expect(() =>
-      database.prepare("UPDATE commissioning_decisions SET decision = 'ACCEPTED' WHERE id = ?").run(decisionId)
+      database
+        .prepare("UPDATE commissioning_decisions SET decision = 'ACCEPTED' WHERE id = ?")
+        .run(decisionId)
     ).toThrow("commissioning decisions are append-only");
   });
 });
