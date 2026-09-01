@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useLocalization } from "../localization/useLocalization";
-import { usePlatformAuthentication } from "../platform-auth/PlatformAuthenticationProvider";
+import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 
 const copy = {
   en: {
