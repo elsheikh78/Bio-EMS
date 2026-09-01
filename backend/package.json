@@ -30,7 +30,7 @@
     "lint": "eslint src database",
     "lint:fix": "eslint src database --fix",
     "format": "prettier --write \"{src,database}/**/*.ts\" \"*.{json,js}\"",
-    "format:check": "prettier --write src/modules/platform-operations/platform-operations.repository.ts src/modules/platform-operations/platform-operations.repository.spec.ts && git diff -- src/modules/platform-operations/platform-operations.repository.ts src/modules/platform-operations/platform-operations.repository.spec.ts && exit 1",
+    "format:check": "prettier --check \"{src,database}/**/*.ts\" \"*.{json,js}\"",
     "test": "vitest",
     "test:run": "vitest run",
     "test:watch": "vitest --watch"
