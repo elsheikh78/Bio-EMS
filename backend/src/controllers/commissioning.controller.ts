@@ -12,6 +12,10 @@ function sessionId(req: Request): number {
   return Number(req.params.sessionId);
 }
 
+function assertScope(req: Request): void {
+  repository.assertSessionSite(sessionId(req), siteId(req));
+}
+
 export const createCommissioningSessionController = asyncHandler(
   async (req: Request, res: Response) => {
     const id = repository.createSession({ ...req.body, siteId: siteId(req) });
@@ -21,6 +25,7 @@ export const createCommissioningSessionController = asyncHandler(
 
 export const addCommissioningCheckController = asyncHandler(
   async (req: Request, res: Response) => {
+    assertScope(req);
     const id = repository.addCheck({ ...req.body, sessionId: sessionId(req) });
     res.status(201).json({ success: true, id });
   }
@@ -28,6 +33,7 @@ export const addCommissioningCheckController = asyncHandler(
 
 export const appendCommissioningEvidenceController = asyncHandler(
   async (req: Request, res: Response) => {
+    assertScope(req);
     const id = repository.appendEvidence({ ...req.body, sessionId: sessionId(req) });
     res.status(201).json({ success: true, id });
   }
@@ -35,6 +41,7 @@ export const appendCommissioningEvidenceController = asyncHandler(
 
 export const appendCommissioningDeviationController = asyncHandler(
   async (req: Request, res: Response) => {
+    assertScope(req);
     const id = repository.appendDeviation(sessionId(req), req.body);
     res.status(201).json({ success: true, id });
   }
@@ -42,6 +49,7 @@ export const appendCommissioningDeviationController = asyncHandler(
 
 export const appendCommissioningDecisionController = asyncHandler(
   async (req: Request, res: Response) => {
+    assertScope(req);
     const id = repository.appendDecision({ ...req.body, sessionId: sessionId(req) });
     res.status(201).json({ success: true, id });
   }
@@ -49,6 +57,7 @@ export const appendCommissioningDecisionController = asyncHandler(
 
 export const getCommissioningDeviationsController = asyncHandler(
   async (req: Request, res: Response) => {
+    assertScope(req);
     res.json(repository.listDeviations(sessionId(req)));
   }
 );
