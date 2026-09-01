@@ -1,0 +1,54 @@
+name: P3 State Reconciliation
+
+on:
+  push:
+    branches:
+      - agent/p3-02-commissioning-persistence
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: agent/p3-02-commissioning-persistence
+      - name: Reconcile P3 status documents
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('PROJECT_STATE.md')
+          s = p.read_text()
+          s = s.replace(
+              '**Current phase:** P3 Pilot Commissioning Tooling has started with P3-01 Commissioning Evidence Foundation. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.',
+              '**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 Commissioning Evidence Foundation is complete and P3-02 Commissioning Session Domain/Persistence is complete at source level pending final CI/merge. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.'
+          )
+          s = s.replace(
+              '- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 establishes the controlled commissioning evidence model and slice sequence. Existing Pilot documents remain controlled inputs; executable workflow, persistence/API/UI/export and field evidence remain open.',
+              '- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 evidence foundation and P3-02 durable session/evidence persistence are implemented. Protected API, verification orchestration, UI/export, dry-run/UAT and field evidence remain open.'
+          )
+          s = s.replace('- P3-01 — Commissioning Evidence Foundation — **IN PROGRESS**.', '- P3-01 — Commissioning Evidence Foundation — **COMPLETE**.')
+          s = s.replace('- P3-02 — Commissioning Session Domain/Persistence.', '- P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / CI-VERIFICATION PENDING**.')
+          p.write_text(s)
+
+          p = Path('IMPLEMENTATION_PLAN.md')
+          s = p.read_text()
+          s = s.replace('`PROJECT_STATE.md`, `docs/project-status.md`, `docs/SPRINT_PROGRESS.md`', '`PROJECT_STATE.md`, `docs/SPRINT_PROGRESS.md`')
+          s = s.replace('- P2 Site Controller Runtime is the next controlled implementation phase.', '- P2 Site Controller Runtime software is complete. P3 Pilot Commissioning Tooling is the active implementation phase.')
+          s = s.replace('Status: **NEXT / FOUNDATION PARTIAL**', 'Status: **SOFTWARE COMPLETE / EXTERNAL PHYSICAL EVIDENCE OPEN**')
+          s = s.replace('BF-08 already defines the versioned offline-critical configuration synchronization contract. P2 must implement and verify the field/runtime side without weakening the server authority boundary.', 'BF-08 and the P2 runtime slices are implemented and CI verified. Physical controller, DS18B20, SIM800L, deployed MQTT and endurance evidence remain external gates.')
+          s = s.replace('Status: **PARTIAL / OPEN EVIDENCE**', 'Status: **ACTIVE / PARTIAL / OPEN EVIDENCE**', 1)
+          s = s.replace('Turn the existing controlled Pilot documentation into repeatable commissioning evidence: device/controller registration, sensor mapping, calibration verification, communication tests, Alarm tests, notification tests, recovery tests, and signed commissioning records.', 'Turn the existing controlled Pilot documentation into repeatable commissioning evidence. P3-01 establishes the evidence model; P3-02 adds durable commissioning sessions, checks, append-only evidence/deviations/decisions, evidence provenance, uniqueness constraints, repository persistence, and acceptance gating. P3-03 protected Site-scoped API is next.')
+          p.write_text(s)
+          PY
+      - name: Commit reconciliation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECT_STATE.md IMPLEMENTATION_PLAN.md
+          git diff --cached --quiet || git commit -m "docs(p3): reconcile P3-02 implementation status"
+          git push origin HEAD:agent/p3-02-commissioning-persistence
