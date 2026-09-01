@@ -1,10 +1,6 @@
 import type { PlatformAuthenticationStatus } from "../platform-auth/context";
 
-export type PlatformRouteDecision =
-  | "allow"
-  | "login"
-  | "loading"
-  | "not-found";
+export type PlatformRouteDecision = "allow" | "login" | "loading" | "not-found";
 
 export function getPlatformRouteDecision(
   status: PlatformAuthenticationStatus,
