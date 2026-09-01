@@ -62,15 +62,15 @@ describe("commissioning persistence migration", () => {
         VALUES (1, 'REJECTED', '2026-09-01T06:33:00.000Z', 'engineer@example', '{}')`)
       .run();
 
-    expect(() => database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()).toThrow(
-      "commissioning evidence is append-only"
-    );
+    expect(() =>
+      database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()
+    ).toThrow("commissioning evidence is append-only");
     expect(() => database.prepare("DELETE FROM commissioning_deviations").run()).toThrow(
       "commissioning deviations are append-only"
     );
-    expect(() => database.prepare("UPDATE commissioning_decisions SET decision = 'ACCEPTED'").run()).toThrow(
-      "commissioning decisions are append-only"
-    );
+    expect(() =>
+      database.prepare("UPDATE commissioning_decisions SET decision = 'ACCEPTED'").run()
+    ).toThrow("commissioning decisions are append-only");
   });
 
   it("rejects invalid evidence states and decision snapshots", () => {
@@ -82,7 +82,9 @@ describe("commissioning persistence migration", () => {
         VALUES ('session-1', 1, '0.17.0', 'P3-01', 'engineer@example', '2026-09-01T06:30:00.000Z')`)
       .run();
     database
-      .prepare("INSERT INTO commissioning_checks (session_id, check_key, title) VALUES (1, 'A', 'A')")
+      .prepare(
+        "INSERT INTO commissioning_checks (session_id, check_key, title) VALUES (1, 'A', 'A')"
+      )
       .run();
 
     expect(() =>
