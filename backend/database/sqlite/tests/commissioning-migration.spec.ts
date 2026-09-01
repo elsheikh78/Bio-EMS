@@ -22,7 +22,9 @@ describe("commissioning persistence migration", () => {
     migration017.up(database);
 
     const tables = database
-      .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'commissioning_%'")
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'commissioning_%'"
+      )
       .all() as Array<{ name: string }>;
 
     expect(tables.map(({ name }) => name).sort()).toEqual([
