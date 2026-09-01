@@ -6,15 +6,15 @@
 
 **Current source-software version:** `0.18.0`
 
-**Current phase:** P0-P6 source-software scope is complete through P6 productization. P3-P5 are merged and CI verified; P6 release reconciliation is the current controlled change. Physical controller qualification, production deployment, BIO EGYPT commissioning/UAT, and customer acceptance remain external evidence gates.
+**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified through P6 productization. P6 closed through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Physical controller qualification, production deployment, BIO EGYPT commissioning/UAT, and customer acceptance remain external evidence gates.
 
 ## Current controlled continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before development.
 2. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
-3. Execute P3 through controlled commissioning-tooling slices while preserving existing Pilot documents and authoritative domain evidence.
+3. Preserve the completed P3 commissioning tooling and use it only with genuine controlled evidence.
 4. Keep physical hardware qualification, live provider evidence, 72-hour endurance, commissioning, customer UAT, and customer acceptance as evidence gates; do not convert them into software-complete claims.
-5. For the P3-03 Codex handoff, use `docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md`; preserve the existing local stash and review PR #130 rather than reimplementing the slice.
+5. Use the P3/P6 closure records as the handoff for future field execution; do not reimplement completed source slices without a verified defect.
 
 ## Audit Result — Reconciled 31 August 2026
 
@@ -54,10 +54,10 @@
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PRs #130-#132. Field evidence and customer acceptance remain open.
+- **P3 — Pilot Commissioning Tooling:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PRs #130-#132; closure merge `6a74122e`. Field evidence and customer acceptance remain open.
 - **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED.** PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`. Production restore/endurance/DR evidence remains external.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. Billing/payment execution and production operational evidence remain external.
-- **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / CURRENT CI-MERGE PENDING.** Version/manifest reconciliation and the controlled procedure are implemented. Deployment, field commissioning, UAT/sign-off, and production acceptance remain external gates.
+- **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production acceptance remain external gates.
 
 ## P3 Execution Sequence
 
