@@ -21,6 +21,10 @@ export const DEPLOYMENT_ISSUES = {
   SQLITE_PATH_MUST_BE_ABSOLUTE: "SQLITE_PATH_MUST_BE_ABSOLUTE",
   SQLITE_BACKUP_DIRECTORY_REQUIRED: "SQLITE_BACKUP_DIRECTORY_REQUIRED",
   SQLITE_BACKUP_DIRECTORY_MUST_BE_ABSOLUTE: "SQLITE_BACKUP_DIRECTORY_MUST_BE_ABSOLUTE",
+  SQLITE_BACKUP_DIRECTORY_MUST_BE_SEPARATE: "SQLITE_BACKUP_DIRECTORY_MUST_BE_SEPARATE",
+  LOG_LEVEL_INVALID: "LOG_LEVEL_INVALID",
+  LOG_RETENTION_DAYS_INVALID: "LOG_RETENTION_DAYS_INVALID",
+  SHUTDOWN_GRACE_SECONDS_INVALID: "SHUTDOWN_GRACE_SECONDS_INVALID",
 } as const;
 
 export type DeploymentIssue = (typeof DEPLOYMENT_ISSUES)[keyof typeof DEPLOYMENT_ISSUES];
@@ -50,6 +54,7 @@ export function validateDeploymentEnvironment(
   validateJwt(environment, issues);
   validateCors(environment, issues);
   validatePersistence(environment, issues);
+  validateOperations(environment, issues);
 
   return { ready: issues.size === 0, issues: [...issues] };
 }
@@ -125,7 +130,27 @@ function validatePersistence(environment: NodeJS.ProcessEnv, issues: Set<Deploym
     issues.add(DEPLOYMENT_ISSUES.SQLITE_BACKUP_DIRECTORY_REQUIRED);
   } else if (!path.isAbsolute(backupDirectory)) {
     issues.add(DEPLOYMENT_ISSUES.SQLITE_BACKUP_DIRECTORY_MUST_BE_ABSOLUTE);
+  } else if (sqlitePath && path.dirname(sqlitePath) === backupDirectory) {
+    issues.add(DEPLOYMENT_ISSUES.SQLITE_BACKUP_DIRECTORY_MUST_BE_SEPARATE);
   }
+}
+
+function validateOperations(environment: NodeJS.ProcessEnv, issues: Set<DeploymentIssue>): void {
+  if (!["error", "warn", "info", "http"].includes(environment.LOG_LEVEL ?? "")) {
+    issues.add(DEPLOYMENT_ISSUES.LOG_LEVEL_INVALID);
+  }
+  if (!isIntegerBetween(environment.BIOEMS_LOG_RETENTION_DAYS, 1, 3650)) {
+    issues.add(DEPLOYMENT_ISSUES.LOG_RETENTION_DAYS_INVALID);
+  }
+  if (!isIntegerBetween(environment.BIOEMS_SHUTDOWN_GRACE_SECONDS, 5, 300)) {
+    issues.add(DEPLOYMENT_ISSUES.SHUTDOWN_GRACE_SECONDS_INVALID);
+  }
+}
+
+function isIntegerBetween(value: string | undefined, minimum: number, maximum: number): boolean {
+  if (!value || !/^\d+$/.test(value)) return false;
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= minimum && number <= maximum;
 }
 
 function isPort(value: string | undefined): boolean {

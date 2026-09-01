@@ -19,6 +19,9 @@ const validEnvironment: NodeJS.ProcessEnv = {
   BIOEMS_CORS_ALLOWED_ORIGINS: "https://ems.example.com",
   BIOEMS_SQLITE_PATH: "/var/lib/bio-ems/configuration.db",
   BIOEMS_SQLITE_BACKUP_DIR: "/var/backups/bio-ems",
+  LOG_LEVEL: "info",
+  BIOEMS_LOG_RETENTION_DAYS: "90",
+  BIOEMS_SHUTDOWN_GRACE_SECONDS: "30",
 };
 
 describe("Deployment readiness gate", () => {
@@ -47,6 +50,27 @@ describe("Deployment readiness gate", () => {
         DEPLOYMENT_ISSUES.CORS_ORIGIN_REQUIRED,
         DEPLOYMENT_ISSUES.SQLITE_PATH_REQUIRED,
         DEPLOYMENT_ISSUES.SQLITE_BACKUP_DIRECTORY_REQUIRED,
+        DEPLOYMENT_ISSUES.LOG_LEVEL_INVALID,
+        DEPLOYMENT_ISSUES.LOG_RETENTION_DAYS_INVALID,
+        DEPLOYMENT_ISSUES.SHUTDOWN_GRACE_SECONDS_INVALID,
+      ])
+    );
+  });
+
+  it("requires bounded operational settings and a separate backup location", () => {
+    const result = validateDeploymentEnvironment({
+      ...validEnvironment,
+      BIOEMS_SQLITE_BACKUP_DIR: "/var/lib/bio-ems",
+      LOG_LEVEL: "debug",
+      BIOEMS_LOG_RETENTION_DAYS: "0",
+      BIOEMS_SHUTDOWN_GRACE_SECONDS: "301",
+    });
+    expect(result.issues).toEqual(
+      expect.arrayContaining([
+        DEPLOYMENT_ISSUES.SQLITE_BACKUP_DIRECTORY_MUST_BE_SEPARATE,
+        DEPLOYMENT_ISSUES.LOG_LEVEL_INVALID,
+        DEPLOYMENT_ISSUES.LOG_RETENTION_DAYS_INVALID,
+        DEPLOYMENT_ISSUES.SHUTDOWN_GRACE_SECONDS_INVALID,
       ])
     );
   });
