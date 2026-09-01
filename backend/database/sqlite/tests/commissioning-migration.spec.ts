@@ -62,9 +62,9 @@ describe("commissioning persistence migration", () => {
         VALUES (1, 'REJECTED', '2026-09-01T06:33:00.000Z', 'engineer@example', '{}')`)
       .run();
 
-    expect(() =>
-      database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()
-    ).toThrow("commissioning evidence is append-only");
+    expect(() => database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()).toThrow(
+      "commissioning evidence is append-only"
+    );
     expect(() => database.prepare("DELETE FROM commissioning_deviations").run()).toThrow(
       "commissioning deviations are append-only"
     );
