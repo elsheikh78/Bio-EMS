@@ -43,7 +43,8 @@ describe("commissioning persistence migration", () => {
     migration017.up(database);
     migration017.up(database);
 
-    const sql = "SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'commissioning_%'";
+    const sql =
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'commissioning_%'";
     const tables = database.prepare(sql).all() as Array<{ name: string }>;
     const names = tables.map(({ name }) => name).sort();
 
