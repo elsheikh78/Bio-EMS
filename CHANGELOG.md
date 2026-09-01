@@ -8,10 +8,14 @@
 - Added protected `/system-owner` login/console routes with strict SYSTEM_OWNER principal validation and fail-closed route behavior.
 - Added a bilingual SYSTEM_OWNER console shell for the remaining P7 commercial product modules without exposing owner navigation to customer roles.
 - Added frontend authorization/contract regression coverage for the owner trust boundary.
+- Added SYSTEM_OWNER customer fleet list/detail routes and customer creation over the existing P5 platform-operations contract.
+- Added existing Site/installation context derived only from recorded commercial license/service bindings, with customer creation provenance and append-only commercial-event metadata.
+- Added owner-session query isolation/cache clearing and bilingual loading/error/empty/detail/create states for the P7-02 fleet workflow.
+- Closed P7-02 through PR #142, final CI run #516 / workflow `33543271797`, and merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 
 ### Boundary
 
-P7-01 does not implement billing/payment, invoicing, live remote update execution, field commissioning, provider delivery, or customer/production acceptance.
+P7-01 and P7-02 do not implement billing/payment, invoicing, live remote update execution, physical installation, field commissioning, provider delivery, customer UAT, Quality sign-off, or production/customer acceptance. P7-02 also does not expose unsupported customer lifecycle update mutations.
 
 ## [0.18.0] - 2026-09-01
 
