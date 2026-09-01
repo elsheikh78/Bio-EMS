@@ -10,8 +10,11 @@ export interface PasswordPolicyResult {
   withinByteLimit: boolean;
 }
 
-export function evaluatePasswordPolicy(password: string): PasswordPolicyResult {
-  const hasMinimumLength = [...password].length >= MINIMUM_PASSWORD_CHARACTERS;
+export function evaluatePasswordPolicy(
+  password: string,
+): PasswordPolicyResult {
+  const hasMinimumLength =
+    [...password].length >= MINIMUM_PASSWORD_CHARACTERS;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
