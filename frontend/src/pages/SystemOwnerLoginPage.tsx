@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useState, type FormEvent } from "react";
 import { useLocalization } from "../localization/useLocalization";
-import { usePlatformAuthentication } from "../platform-auth/PlatformAuthenticationProvider";
+import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 
 const copy = {
   en: {
@@ -57,7 +57,9 @@ export function SystemOwnerLoginPage() {
     >
       <Paper
         component="form"
-        onSubmit={submit}
+        onSubmit={(event) => {
+          void submit(event);
+        }}
         sx={{ maxWidth: 440, p: 4, width: "100%" }}
       >
         <Stack spacing={2.5}>
