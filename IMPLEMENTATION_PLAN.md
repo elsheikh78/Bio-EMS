@@ -2,7 +2,7 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 1 September 2026 after post-P6 product audit**
+**Current controlled delivery sequence — reconciled 1 September 2026 after P7-01 implementation**
 
 The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, approved ADRs, and the P0-P7 sequence below.
 
@@ -12,7 +12,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
 - P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization.
 - A post-P6 product audit found remaining product-surface gaps, principally the absence of an approved SYSTEM_OWNER frontend/commercial console despite the completed P5 backend/domain capability.
-- P7 — Final Product Completion is approved and documented; implementation has not yet started.
+- P7 — Final Product Completion is active. P7-01 is implemented in PR #141 and is in final CI/merge closure; P7-02 is the next controlled work package.
 - Live SMS-provider evidence, physical controller qualification, endurance, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external gates.
 
 ## P0-P7 Sequence
@@ -59,7 +59,7 @@ The isolated SYSTEM_OWNER trust domain and approved customer fleet identity, lic
 
 Closure: PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
 
-Product-surface gap: approved owner workflows are not yet exposed as a complete SYSTEM_OWNER frontend console. That gap is explicitly assigned to P7; it does not erase the P5 backend/domain closure.
+Product-surface gap: approved owner workflows were not exposed as a complete SYSTEM_OWNER frontend console at P5 closure. P7 closes that product-surface gap without invalidating the P5 backend/domain closure.
 
 ### P6 — Productization / Deployment / Acceptance
 
@@ -71,7 +71,7 @@ Closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e
 
 ### P7 — Final Product Completion
 
-Status: **APPROVED / PLANNED / NOT YET IMPLEMENTED**
+Status: **ACTIVE — P7-01 IMPLEMENTED / FINAL CI-MERGE CLOSURE; P7-02 NEXT**
 
 Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 
@@ -79,9 +79,15 @@ P7 closes the remaining gap between source-level capability and a coherent end-t
 
 #### P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell
 
-Owner-only routes/navigation, isolation from customer roles, localization/accessibility, and authorization regression.
+Status: **IMPLEMENTED / PR #141 / FINAL CI-MERGE CLOSURE**
+
+Implemented isolated owner authentication/session state, strict SYSTEM_OWNER principal validation, protected `/system-owner` routing, fail-closed owner route behavior, bilingual owner console shell, no customer-shell owner navigation, and authorization/contract regression tests.
+
+Closure record: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
 
 #### P7-02 — Customer / Site Fleet Management
+
+Status: **NEXT CONTROLLED WORK PACKAGE**
 
 Owner-facing customer/fleet lifecycle and supported Site/installation identity workflows.
 

@@ -7,6 +7,7 @@ import { AppErrorBoundary } from "../components/AppErrorBoundary";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { englishResources } from "../localization/resources";
 import { useLocalization } from "../localization/useLocalization";
+import { PlatformAuthenticationProvider } from "../platform-auth/PlatformAuthenticationProvider";
 import { createAppTheme } from "../theme/theme";
 
 const queryClient = new QueryClient({
@@ -35,7 +36,9 @@ function LocalizedAppProviders({ children }: PropsWithChildren) {
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <AuthenticationProvider>
-          <BrowserRouter>{children}</BrowserRouter>
+          <PlatformAuthenticationProvider>
+            <BrowserRouter>{children}</BrowserRouter>
+          </PlatformAuthenticationProvider>
         </AuthenticationProvider>
       </QueryClientProvider>
     </ThemeProvider>
