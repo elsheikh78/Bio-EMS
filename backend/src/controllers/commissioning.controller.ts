@@ -29,15 +29,13 @@ export const createCommissioningSessionController = asyncHandler(
   }
 );
 
-export const addCommissioningCheckController = asyncHandler(
-  async (req: Request, res: Response) => {
-    const id = service.addCheck(siteId(req), {
-      ...req.body,
-      sessionId: sessionId(req),
-    });
-    res.status(201).json({ success: true, id });
-  }
-);
+export const addCommissioningCheckController = asyncHandler(async (req: Request, res: Response) => {
+  const id = service.addCheck(siteId(req), {
+    ...req.body,
+    sessionId: sessionId(req),
+  });
+  res.status(201).json({ success: true, id });
+});
 
 export const appendCommissioningEvidenceController = asyncHandler(
   async (req: Request, res: Response) => {
