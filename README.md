@@ -16,6 +16,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | Where is the whole project now? | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority** |
 | What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
+| How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
 | What is the latest P7 closure evidence? | [`docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`](docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md) |
 | What did the current documentation audit conclude? | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md) |
 | What is the hardware validation path? | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md) |
@@ -106,5 +107,7 @@ Payment/invoicing integration and live remote OTA/update execution are also not 
 **Backend:** TypeScript / Express  
 **Frontend:** React / TypeScript / Vite  
 **License:** Proprietary
+
+Before testing or developing the SYSTEM_OWNER surface, follow [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md); never commit real owner credentials or Platform JWT secrets.
 
 For development continuation, synchronize local `main` from GitHub first, then read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the P7 plan. **The next controlled implementation package is P7-03.** Do not use old Sprint documents as the current project status.
