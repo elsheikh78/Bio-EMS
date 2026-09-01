@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type PropsWithChildren,
-} from "react";
+import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { createApiClient } from "../api/client";
 import {
   currentPlatformPrincipalResponseSchema,
@@ -56,7 +51,9 @@ function readStoredPlatformSession(): StoredPlatformSession | undefined {
   }
 }
 
-export function PlatformAuthenticationProvider({ children }: PropsWithChildren) {
+export function PlatformAuthenticationProvider({
+  children,
+}: PropsWithChildren) {
   const [session, setSession] = useState<StoredPlatformSession | undefined>(
     readStoredPlatformSession,
   );
