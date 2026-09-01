@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from "react";
 import { createApiClient } from "../api/client";
 import {
   currentPlatformPrincipalResponseSchema,
@@ -77,7 +82,8 @@ export function PlatformAuthenticationProvider({ children }: PropsWithChildren) 
       .request<unknown>("/platform-auth/me", { auth: "protected" })
       .then((rawResponse) => {
         if (!active) return;
-        const response = currentPlatformPrincipalResponseSchema.parse(rawResponse);
+        const response =
+          currentPlatformPrincipalResponseSchema.parse(rawResponse);
         const refreshed = { ...session, principal: response.principal };
         window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(refreshed));
         setSession(refreshed);
