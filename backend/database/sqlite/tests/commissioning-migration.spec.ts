@@ -41,7 +41,14 @@ describe("commissioning persistence migration", () => {
       .prepare(`INSERT INTO commissioning_sessions
         (uuid, site_id, platform_version, commissioning_revision, engineer_identity, opened_at)
         VALUES (?, ?, ?, ?, ?, ?)`)
-      .run("session-1", 1, "0.17.0", "P3-01", "engineer@example", "2026-09-01T06:30:00.000Z");
+      .run(
+        "session-1",
+        1,
+        "0.17.0",
+        "P3-01",
+        "engineer@example",
+        "2026-09-01T06:30:00.000Z"
+      );
     database
       .prepare(`INSERT INTO commissioning_checks
         (session_id, check_key, title) VALUES (1, 'COMMUNICATION', 'Communication verification')`)
@@ -62,9 +69,9 @@ describe("commissioning persistence migration", () => {
         VALUES (1, 'REJECTED', '2026-09-01T06:33:00.000Z', 'engineer@example', '{}')`)
       .run();
 
-    expect(() => database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()).toThrow(
-      "commissioning evidence is append-only"
-    );
+    expect(() =>
+      database.prepare("UPDATE commissioning_evidence SET state = 'FAIL'").run()
+    ).toThrow("commissioning evidence is append-only");
     expect(() => database.prepare("DELETE FROM commissioning_deviations").run()).toThrow(
       "commissioning deviations are append-only"
     );
