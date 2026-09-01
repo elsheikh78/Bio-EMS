@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.17.0`
 
-**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 Commissioning Evidence Foundation is complete and P3-02 Commissioning Session Domain/Persistence is complete at source level pending final CI/merge. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
+**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 Commissioning Evidence Foundation is complete and P3-02 Commissioning Session Domain/Persistence is merged and CI verified. P3-03 Protected Site-scoped Commissioning API is implemented on PR #130, with normal CI run #434 successful on pre-handoff head `2f0cf5d9abb4d4b7f82ddd3c257e560d6bdd4b9b`; the PR remains draft for final Codex review and newest-head CI verification before merge. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
 
 ## Current controlled continuation
 
@@ -14,6 +14,7 @@
 2. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
 3. Execute P3 through controlled commissioning-tooling slices while preserving existing Pilot documents and authoritative domain evidence.
 4. Keep physical hardware qualification, live provider evidence, 72-hour endurance, commissioning, customer UAT, and customer acceptance as evidence gates; do not convert them into software-complete claims.
+5. For the P3-03 Codex handoff, use `docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md`; preserve the existing local stash and review PR #130 rather than reimplementing the slice.
 
 ## Audit Result — Reconciled 31 August 2026
 
@@ -45,13 +46,15 @@
 - Controlled Reporting Center: Calibration History, Temperature Performance, Alarm History, Device Communication Health, Audit and Operations — Preview/CSV/PDF.
 - Production deployment validation, MQTT TLS/QoS, persistent SQLite backup/recovery foundations, and LIVE/REPLAY semantics.
 - P2 host-side Site Controller runtime: deterministic boot/connectivity/watchdog, BF-08 receipt/integrity, durable full known-good configuration recovery, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover contract/runtime, reconnect reconciliation, controller health evidence, qualification gate, and durable replay acceptance recovery.
+- P3 commissioning evidence persistence with durable sessions/checks, append-only evidence/deviations/decisions, controlled provenance, uniqueness constraints, and acceptance-domain evaluation.
+- P3-03 branch adds protected Site-scoped commissioning routes, commissioning read/manage RBAC, authenticated-user provenance, server-generated decision snapshots, latest-evidence acceptance evaluation, cross-Site/session/check isolation, and service/route authorization tests.
 
 ## P0-P6 Delivery Position
 
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 evidence foundation and P3-02 durable session/evidence persistence are implemented. Protected API, verification orchestration, UI/export, dry-run/UAT and field evidence remain open.
+- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 evidence foundation and P3-02 durable session/evidence persistence are complete. P3-03 protected Site-scoped API is implemented and CI-verified on its pre-handoff head but remains unmerged/draft pending final Codex review and newest-head CI; verification orchestration, UI/export, dry-run/UAT and field evidence remain open.
 - **P4 — Production Hardening:** **PARTIAL.** Deployment validation, persistence/recovery, TLS/QoS, backup, controller durability, and replay durability foundations exist. Production operational/endurance evidence remains open.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
@@ -61,8 +64,8 @@
 P3 turns controlled Pilot documentation into repeatable commissioning tooling without manufacturing field evidence.
 
 - P3-01 — Commissioning Evidence Foundation — **COMPLETE**.
-- P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / CI-VERIFICATION PENDING**.
-- P3-03 — Protected Site-scoped Commissioning API.
+- P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / MERGED / CI VERIFIED**.
+- P3-03 — Protected Site-scoped Commissioning API — **IMPLEMENTED / PRE-HANDOFF CI VERIFIED / PR #130 DRAFT**.
 - P3-04 — Configuration, Sensor Mapping and Calibration Verification.
 - P3-05 — Functional Test Orchestration and evidence linking.
 - P3-06 — Commissioning UI.
@@ -71,6 +74,7 @@ P3 turns controlled Pilot documentation into repeatable commissioning tooling wi
 - P3-09 — P3 closure audit preserving external evidence boundaries.
 
 The controlled P3-01 definition is `docs/project-management/P3-01-COMMISSIONING-EVIDENCE-FOUNDATION-2026-09-01.md`.
+The controlled P3-03 Codex handoff is `docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md`.
 
 ## P2 Closure Evidence
 
@@ -87,6 +91,9 @@ The controlled P3-01 definition is `docs/project-management/P3-01-COMMISSIONING-
 - Documentation authority reconciliation — PR #125; CI run #387 SUCCESS.
 - Version/release reconciliation — PR #126; CI run #389 SUCCESS; merge commit `cc8a5e7594c3a8101d7e227f582dfdf66f74fd48`; release tag `v0.17.0` published 31 August 2026.
 - Published-release documentation finalization — PR #127; CI run #391 SUCCESS; merge commit `71659783be66d20458beb380a7fa92e557f5859a`.
+- P3-01 Commissioning Evidence Foundation — PR #128; merged before P3-02.
+- P3-02 Commissioning Session Domain/Persistence — PR #129; CI run #419 SUCCESS; merge commit `5b17b827cc22170112cc4e3dd8f409aa8669c7d7`.
+- P3-03 Protected Site-scoped Commissioning API — PR #130; normal CI run #434 SUCCESS on pre-handoff head `2f0cf5d9abb4d4b7f82ddd3c257e560d6bdd4b9b`; final newest-head verification and merge remain open.
 
 ## Release / Version Position
 
@@ -123,4 +130,4 @@ Broader Asset/discovery/provisioning, OTA, final production controller firmware/
 
 ## Repository Continuation Rule
 
-Begin with this file, then `IMPLEMENTATION_PLAN.md`. For P3 use the controlled P3 slice document and existing `docs/pilot/bio-egypt/` evidence pack. GitHub `main` remains the source of truth. Preserve historical release/Sprint documents; update this current-state document rather than creating competing status files.
+Begin with this file, then `IMPLEMENTATION_PLAN.md`. For P3 use the controlled P3 slice document, the P3-03 Codex handoff when continuing PR #130, and the existing `docs/pilot/bio-egypt/` evidence pack. GitHub `main` remains the source of truth. Preserve historical release/Sprint documents; update this current-state document rather than creating competing status files.

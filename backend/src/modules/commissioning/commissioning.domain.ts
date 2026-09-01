@@ -9,7 +9,7 @@ export type CommissioningCheckSnapshot = {
   mandatory: boolean;
   physicalOrLiveGate: boolean;
   state: CommissioningEvidenceState;
-  evidenceKind: CommissioningEvidenceKind;
+  evidenceKind?: CommissioningEvidenceKind;
   deviationReference?: string | null;
 };
 
@@ -49,7 +49,8 @@ export function evaluateCommissioningAcceptance(
     if (
       check.state === "PASS" &&
       check.physicalOrLiveGate &&
-      !["PHYSICAL", "LIVE_PROVIDER"].includes(check.evidenceKind)
+      check.evidenceKind !== "PHYSICAL" &&
+      check.evidenceKind !== "LIVE_PROVIDER"
     ) {
       blockingReasons.push(`check:${check.checkId}:PHYSICAL_OR_LIVE_EVIDENCE_REQUIRED`);
     }

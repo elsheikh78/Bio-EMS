@@ -1,6 +1,7 @@
 import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
 import type {
+  CommissioningCheckSnapshot,
   CommissioningDeviationSnapshot,
   CommissioningEvidenceKind,
   CommissioningEvidenceState,
@@ -43,6 +44,32 @@ export type AppendCommissioningEvidence = {
 
 export class CommissioningRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
+
+  siteExists(siteId: number): boolean {
+    return Boolean(this.database.prepare("SELECT id FROM sites WHERE id = ?").get(siteId));
+  }
+
+  sessionBelongsToSite(sessionId: number, siteId: number): boolean {
+    return Boolean(
+      this.database
+        .prepare("SELECT id FROM commissioning_sessions WHERE id = ? AND site_id = ?")
+        .get(sessionId, siteId)
+    );
+  }
+
+  checkBelongsToSession(checkId: number, sessionId: number): boolean {
+    return Boolean(
+      this.database
+        .prepare("SELECT id FROM commissioning_checks WHERE id = ? AND session_id = ?")
+        .get(checkId, sessionId)
+    );
+  }
+
+  assertSessionSite(sessionId: number, siteId: number): void {
+    if (!this.sessionBelongsToSite(sessionId, siteId)) {
+      throw new Error("COMMISSIONING_SESSION_NOT_FOUND");
+    }
+  }
 
   createSession(input: CreateCommissioningSession): number {
     const result = this.database
@@ -172,6 +199,50 @@ export class CommissioningRepository {
         JSON.stringify(input.snapshot)
       );
     return Number(result.lastInsertRowid);
+  }
+
+  listCheckSnapshots(sessionId: number): CommissioningCheckSnapshot[] {
+    return this.database
+      .prepare(
+        `
+        SELECT
+          c.id AS checkId,
+          c.mandatory AS mandatory,
+          c.physical_or_live_gate AS physicalOrLiveGate,
+          e.state AS state,
+          e.evidence_kind AS evidenceKind,
+          e.deviation_reference AS deviationReference
+        FROM commissioning_checks c
+        LEFT JOIN commissioning_evidence e ON e.id = (
+          SELECT latest.id
+          FROM commissioning_evidence latest
+          WHERE latest.check_id = c.id AND latest.session_id = c.session_id
+          ORDER BY latest.id DESC
+          LIMIT 1
+        )
+        WHERE c.session_id = ?
+        ORDER BY c.id ASC
+      `
+      )
+      .all(sessionId)
+      .map((row) => {
+        const typed = row as {
+          checkId: number;
+          mandatory: number;
+          physicalOrLiveGate: number;
+          state: CommissioningEvidenceState | null;
+          evidenceKind: CommissioningEvidenceKind | null;
+          deviationReference: string | null;
+        };
+        return {
+          checkId: typed.checkId,
+          mandatory: typed.mandatory === 1,
+          physicalOrLiveGate: typed.physicalOrLiveGate === 1,
+          state: typed.state ?? "NOT_RUN",
+          evidenceKind: typed.evidenceKind ?? undefined,
+          deviationReference: typed.deviationReference ?? undefined,
+        };
+      });
   }
 
   listDeviations(sessionId: number): CommissioningDeviationSnapshot[] {
