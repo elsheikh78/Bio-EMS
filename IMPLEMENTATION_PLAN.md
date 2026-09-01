@@ -2,22 +2,20 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 1 September 2026**
+**Current controlled delivery sequence — reconciled 1 September 2026 after post-P6 product audit**
 
-The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, `docs/SPRINT_PROGRESS.md`, approved ADRs, and the P0-P6 sequence below.
+The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, approved ADRs, and the P0-P7 sequence below.
 
 ## Current Position
 
 - Sprints 13, 14, and 15 are complete and closed.
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
 - P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization.
-- P3 closed through PRs #130-#132 / closure merge `6a74122e`.
-- P4 closed through PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
-- P5 closed through PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
-- P6 closed through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
-- Live SMS-provider evidence, physical controller qualification, endurance, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain external gates.
+- A post-P6 product audit found remaining product-surface gaps, principally the absence of an approved SYSTEM_OWNER frontend/commercial console despite the completed P5 backend/domain capability.
+- P7 — Final Product Completion is approved and documented; implementation has not yet started.
+- Live SMS-provider evidence, physical controller qualification, endurance, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external gates.
 
-## P0-P6 Sequence
+## P0-P7 Sequence
 
 ### P0 — Professional Software / Reporting Baseline
 
@@ -25,73 +23,43 @@ Status: **COMPLETE / MERGED / CI VERIFIED**
 
 Includes all five controlled report families through Preview/CSV/PDF, professional PDF identity, selected Site time-zone rendering, and authenticated event-driven refresh for Dashboard and Monitored Areas.
 
-Open evidence: deployed MQTT endurance/UAT evidence and field acceptance are not inferred from repository completion.
-
 ### P1 — Notification Delivery Engine
 
 Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED**
 
-Integrated sequence:
-
-1. durable delivery queue;
-2. worker execution/runtime;
-3. SMS-provider runtime boundary;
-4. Alarm escalation delivery orchestration;
-5. protected Site-scoped Delivery Operations view.
-
-Closure integration: PR #113, commit `b1d2611866d2e7a8455d5ed898932ae91fe6068f`, CI run 319 SUCCESS.
-
-Open evidence: configure a real provider, controlled E.164 recipient, deploy the worker/runtime, prove successful send, prove retry/failure handling, verify Delivery Operations evidence, and execute notification UAT.
+Durable delivery queue, worker/runtime, SMS-provider boundary, Alarm escalation delivery orchestration, and protected Site-scoped Delivery Operations are implemented. Live-provider/field evidence remains external.
 
 ### P2 — Site Controller Runtime
 
 Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL PHYSICAL EVIDENCE OPEN**
 
-BF-08 and P2-01 through P2-09 are implemented and CI verified, including post-P2 durability hardening through PR #124. Physical controller, DS18B20, SIM800L, deployed MQTT, and endurance evidence remain external gates.
-
-Delivered slices:
-
-- P2-01 Controller runtime package and version identity.
-- P2-02 secure configuration retrieval/receipt and checksum verification.
-- P2-03 durable local last-acknowledged configuration persistence.
-- P2-04 DS18B20 acquisition pipeline and sensor/channel mapping.
-- P2-05 local threshold and configurable persistence-delay evaluation.
-- P2-06 offline Alarm state and local emergency SMS failover execution.
-- P2-07 reconnect reconciliation, APPLIED/REJECTED acknowledgement, stale-version handling, and replay protection.
-- P2-08 controller health/heartbeat diagnostics and server evidence.
-- P2-09 bench qualification software gate covering power loss, network loss, stale config, sensor fault, recovery, and reconnect.
-
-No P2 status may claim physical qualification without genuine controller/firmware/bench evidence.
+BF-08 and P2-01 through P2-09 are implemented and CI verified, including post-P2 durability hardening. Physical controller, DS18B20, SIM800L, deployed MQTT, and endurance evidence remain external gates.
 
 ### P3 — Pilot Commissioning Tooling
 
 Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
-The controlled Pilot documentation is implemented as repeatable commissioning sessions, checks, append-only evidence/deviations/decisions, Site-scoped APIs, configuration/mapping/calibration verification, functional-test orchestration, readiness UI, CSV/PDF commissioning records, and BIO EGYPT software dry-run/UAT package.
+Controlled commissioning sessions, checks, evidence/deviations/decisions, Site-scoped APIs, verification/orchestration, readiness UI, CSV/PDF records, and BIO EGYPT software dry-run/UAT package are implemented.
 
 Closure: PRs #130-#132 / closure merge `6a74122e`.
-
-Open evidence: physical commissioning, field endurance, UAT execution, Quality/customer sign-off, and customer acceptance.
 
 ### P4 — Production Hardening
 
 Status: **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
-Operational controls cover backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, log retention, upgrade/rollback, and disaster-recovery evidence structures.
+Operational controls cover backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, retention, upgrade/rollback, and disaster-recovery evidence structures.
 
 Closure: PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
 
-Open evidence: production restore/endurance/rollback/DR execution and retained operational evidence.
-
 ### P5 — SYSTEM_OWNER / Commercial Operations
 
-Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED**
+Status: **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED**
 
-The isolated SYSTEM_OWNER trust domain and approved platform-owner/commercial operations are implemented while preserving the rule that customer ADMIN cannot administer or discover SYSTEM_OWNER.
+The isolated SYSTEM_OWNER trust domain and approved customer fleet identity, license/update-entitlement, and maintenance/calibration/support/update oversight workflows are implemented while preserving the rule that customer ADMIN cannot administer or discover SYSTEM_OWNER.
 
 Closure: PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
 
-Open/later evidence: billing/payment execution and live production commercial operations where applicable.
+Product-surface gap: approved owner workflows are not yet exposed as a complete SYSTEM_OWNER frontend console. That gap is explicitly assigned to P7; it does not erase the P5 backend/domain closure.
 
 ### P6 — Productization / Deployment / Acceptance
 
@@ -101,11 +69,55 @@ Controlled release/productization packaging, deployment/acceptance procedures, a
 
 Closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
 
-Open evidence: physical deployment, production execution, BIO EGYPT field commissioning, customer UAT, final sign-off, and production/customer acceptance.
+### P7 — Final Product Completion
 
-## Next Controlled Execution
+Status: **APPROVED / PLANNED / NOT YET IMPLEMENTED**
 
-P0-P6 source implementation must not be repeated without a verified regression or audit finding. The next controlled work is evidence execution:
+Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
+
+P7 closes the remaining gap between source-level capability and a coherent end-to-end product surface.
+
+#### P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell
+
+Owner-only routes/navigation, isolation from customer roles, localization/accessibility, and authorization regression.
+
+#### P7-02 — Customer / Site Fleet Management
+
+Owner-facing customer/fleet lifecycle and supported Site/installation identity workflows.
+
+#### P7-03 — License Lifecycle and Installation Binding UI
+
+License inventory/detail, validity/lifecycle, and supported installation/site association with authenticated provenance.
+
+#### P7-04 — Update Entitlement and Release Eligibility UI
+
+Owner-facing entitlement/eligibility workflows with explicit separation from remote update execution.
+
+#### P7-05 — Maintenance, Calibration and Support Fleet Operations
+
+Fleet-level due/overdue/actionable oversight and supported owner operations without fabricating field completion evidence.
+
+#### P7-06 — Product UX and Legacy Cleanup
+
+Remove/reconcile stale frontend artifacts and obsolete user-facing text, including the known Sprint-14 Foundation/deferred residue; review loading/error/empty states, navigation consistency, responsiveness, accessibility, and localization.
+
+#### P7-07 — End-to-End Product Workflow Review
+
+Audit every exposed operational/customer/owner workflow for live actions, permission consistency, API/error behavior, refresh behavior, and export/download operation.
+
+#### P7-08 — Full Regression, Documentation Reconciliation and Software Product Closure
+
+Complete CI gates plus P7 security/navigation/API/UI/export regressions and reconcile all current-state documents with actual PR/CI/merge evidence.
+
+## P7 Exit Gate
+
+BIO-EMS must not be described as **SOFTWARE PRODUCT COMPLETE** until P7-01 through P7-08 are implemented, merged, and CI verified.
+
+P7 software closure still does not establish physical qualification, provider delivery, field commissioning, UAT, Quality/customer sign-off, billing/payment execution, live remote-update execution, or production/customer acceptance.
+
+## Parallel External Evidence Track
+
+The following may proceed in parallel where practical but remains a distinct evidence track:
 
 1. physical hardware qualification and HV-01 through HV-15;
 2. live SMS-provider evidence;
@@ -117,8 +129,8 @@ P0-P6 source implementation must not be repeated without a verified regression o
 
 ## Execution Rule
 
-Repository completion, CI success, bench evidence, field commissioning, provider delivery, production deployment, UAT, and customer acceptance are distinct gates. Documentation must state exactly which gate has been satisfied and must not infer later gates from earlier ones.
+Repository completion, CI success, physical/bench evidence, provider delivery, field commissioning, production deployment, UAT, and customer acceptance are distinct gates. Documentation must state exactly which gate has been satisfied and must not infer later gates from earlier ones.
 
 ## Historical Value
 
-Older phase descriptions remain useful as architectural background, but they are not authoritative for current completion status. `PROJECT_STATE.md` is the concise current source of truth; this file defines the controlled execution sequence and post-P6 evidence path.
+P0-P6 closure records remain valid historical evidence. P7 is new approved scope resulting from the post-P6 product audit; historical documents must not be rewritten to imply P7 was part of their original closure.
