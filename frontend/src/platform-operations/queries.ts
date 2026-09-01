@@ -16,9 +16,12 @@ export function usePlatformOperationsOverview() {
     queryKey: platformOperationsQueryKey,
     enabled: status === "authenticated",
     queryFn: async () => {
-      const response = await apiClient.request<unknown>("/platform-operations", {
-        auth: "protected",
-      });
+      const response = await apiClient.request<unknown>(
+        "/platform-operations",
+        {
+          auth: "protected",
+        },
+      );
       return platformOperationsOverviewSchema.parse(response);
     },
   });
@@ -43,7 +46,9 @@ export function useCreatePlatformCustomer() {
       return createPlatformCustomerResponseSchema.parse(response);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: platformOperationsQueryKey });
+      await queryClient.invalidateQueries({
+        queryKey: platformOperationsQueryKey,
+      });
     },
   });
 }
