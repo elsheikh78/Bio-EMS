@@ -43,8 +43,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Check formatting
-        run: npm run format:check
+      - name: Capture commissioning test formatting
+        run: |
+          npx prettier --write database/sqlite/tests/commissioning-migration.spec.ts
+          cat database/sqlite/tests/commissioning-migration.spec.ts
+          exit 1
 
       - name: Run tests
         run: npm run test:run
