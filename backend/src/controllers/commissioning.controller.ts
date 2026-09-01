@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import { customerAuditActor } from "../modules/audit/customer-audit-context";
-import { CommissioningRepository } from "../modules/commissioning/commissioning.repository";
 import { CommissioningService } from "../modules/commissioning/commissioning.service";
 
-const repository = new CommissioningRepository();
-const service = new CommissioningService(repository);
+const service = new CommissioningService();
 
 function siteId(req: Request): number {
   return Number(req.params.siteId);
@@ -20,13 +18,9 @@ function actorIdentity(req: Request): string {
   return `${actor.username}#${actor.id}`;
 }
 
-function assertScope(req: Request): void {
-  repository.assertSessionSite(sessionId(req), siteId(req));
-}
-
 export const createCommissioningSessionController = asyncHandler(
   async (req: Request, res: Response) => {
-    const id = repository.createSession({
+    const id = service.createSession({
       ...req.body,
       siteId: siteId(req),
       engineerIdentity: actorIdentity(req),
@@ -37,16 +31,17 @@ export const createCommissioningSessionController = asyncHandler(
 
 export const addCommissioningCheckController = asyncHandler(
   async (req: Request, res: Response) => {
-    assertScope(req);
-    const id = repository.addCheck({ ...req.body, sessionId: sessionId(req) });
+    const id = service.addCheck(siteId(req), {
+      ...req.body,
+      sessionId: sessionId(req),
+    });
     res.status(201).json({ success: true, id });
   }
 );
 
 export const appendCommissioningEvidenceController = asyncHandler(
   async (req: Request, res: Response) => {
-    assertScope(req);
-    const id = repository.appendEvidence({
+    const id = service.appendEvidence(siteId(req), {
       ...req.body,
       sessionId: sessionId(req),
       actorIdentity: actorIdentity(req),
@@ -57,8 +52,7 @@ export const appendCommissioningEvidenceController = asyncHandler(
 
 export const appendCommissioningDeviationController = asyncHandler(
   async (req: Request, res: Response) => {
-    assertScope(req);
-    const id = repository.appendDeviation(sessionId(req), {
+    const id = service.appendDeviation(siteId(req), sessionId(req), {
       ...req.body,
       actorIdentity: actorIdentity(req),
     });
@@ -80,7 +74,6 @@ export const appendCommissioningDecisionController = asyncHandler(
 
 export const getCommissioningDeviationsController = asyncHandler(
   async (req: Request, res: Response) => {
-    assertScope(req);
-    res.json(repository.listDeviations(sessionId(req)));
+    res.json(service.listDeviations(siteId(req), sessionId(req)));
   }
 );
