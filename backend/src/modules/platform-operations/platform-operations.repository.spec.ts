@@ -36,7 +36,7 @@ describe("isolated platform commercial operations", () => {
         status: "ACTIVE",
         createdAt: "2026-09-01T12:00:00Z",
       },
-      "owner#1",
+      "owner#1"
     );
     repository.createLicense(
       {
@@ -49,7 +49,7 @@ describe("isolated platform commercial operations", () => {
         updateEntitlement: "FREE",
         recordedAt: "2026-09-01T12:01:00Z",
       },
-      "owner#1",
+      "owner#1"
     );
     repository.createMaintenance(
       {
@@ -60,7 +60,7 @@ describe("isolated platform commercial operations", () => {
         reference: "CAL-DUE-001",
         recordedAt: "2026-09-01T12:02:00Z",
       },
-      "owner#1",
+      "owner#1"
     );
 
     expect(repository.overview()).toMatchObject({
@@ -75,7 +75,7 @@ describe("isolated platform commercial operations", () => {
       ],
     });
     expect(
-      db.prepare("SELECT DISTINCT actor_identity FROM platform_commercial_events").all(),
+      db.prepare("SELECT DISTINCT actor_identity FROM platform_commercial_events").all()
     ).toEqual([{ actor_identity: "owner#1" }]);
   });
 
@@ -87,10 +87,10 @@ describe("isolated platform commercial operations", () => {
         status: "ACTIVE",
         createdAt: "2026-09-01T12:00:00Z",
       },
-      "owner#1",
+      "owner#1"
     );
     expect(() => db.prepare("DELETE FROM platform_commercial_events").run()).toThrow(
-      "commercial events are append-only",
+      "commercial events are append-only"
     );
   });
 });
