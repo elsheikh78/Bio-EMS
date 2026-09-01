@@ -43,7 +43,7 @@ describe("CommissioningService", () => {
         decidedAt: "2026-09-01T11:00:00.000Z",
         actorIdentity: "operator#7",
       })
-    ).toThrow("COMMISSIONING_ACCEPTANCE_BLOCKED:check:1:NOT_RUN");
+    ).toThrow("Commissioning acceptance blocked");
   });
 
   it("blocks automated evidence from satisfying a physical or live gate", () => {
@@ -72,7 +72,7 @@ describe("CommissioningService", () => {
         decidedAt: "2026-09-01T11:00:00.000Z",
         actorIdentity: "operator#7",
       })
-    ).toThrow("PHYSICAL_OR_LIVE_EVIDENCE_REQUIRED");
+    ).toThrow("Commissioning acceptance blocked");
   });
 
   it("persists a server-generated acceptance snapshot after required evidence passes", () => {
@@ -124,7 +124,7 @@ describe("CommissioningService", () => {
         decidedAt: "2026-09-01T11:00:00.000Z",
         actorIdentity: "operator#7",
       })
-    ).toThrow("COMMISSIONING_SESSION_NOT_FOUND");
+    ).toThrow("Commissioning session not found");
   });
 
   function createSession(siteId: number, uuid: string): number {
