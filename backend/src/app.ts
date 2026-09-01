@@ -25,6 +25,7 @@ import escalationPolicyRouter from "./routes/escalation-policy.route";
 import realtimeRouter from "./routes/realtime.route";
 import notificationDeliveryRouter from "./routes/notification-delivery.route";
 import commissioningRouter from "./routes/commissioning.route";
+import platformOperationsRouter from "./routes/platform-operations.route";
 
 createTables();
 
@@ -42,6 +43,7 @@ getMqttClient();
 
 app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(`${config.apiPrefix}/platform-audit-events`, platformAuditEventRouter);
+app.use(`${config.apiPrefix}/platform-operations`, platformOperationsRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(`${config.apiPrefix}/auth`, authRouter);

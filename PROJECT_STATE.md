@@ -56,7 +56,7 @@
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
 - **P3 — Pilot Commissioning Tooling:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Controlled functional checklist, Site-scoped session record, readiness UI and CSV/PDF export are implemented. Field evidence and customer acceptance remain open.
 - **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / CURRENT CI-MERGE PENDING.** Deployment validation now includes operational retention, shutdown and separated-backup controls. Production restore/endurance/DR evidence remains external.
-- **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
+- **P5 — SYSTEM_OWNER / Commercial Operations:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Isolated customer/fleet, license/update entitlement and service oversight records with append-only SYSTEM_OWNER provenance are implemented.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
 
 ## P3 Execution Sequence
