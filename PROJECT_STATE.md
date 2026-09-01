@@ -6,14 +6,14 @@
 
 **Current source-software version:** `0.18.0`
 
-**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified. A post-P6 product audit identified remaining end-to-end product-surface gaps, so **P7 — Final Product Completion** is now the approved active software phase. P7 is planned/documented but not yet implemented. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified. **P7 — Final Product Completion** is active. P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell — is implemented in PR #141 and is in final CI/merge closure; P7-02 is the next controlled software work package. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before further work.
 2. Preserve P0-P6 closure evidence; P7 is new approved scope, not a reopening of completed packages.
-3. Execute P7 from `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` in controlled work packages P7-01 through P7-08.
-4. Complete the SYSTEM_OWNER product UI, customer/license/update-entitlement/fleet workflows, product UX cleanup, end-to-end workflow audit, and full regression/documentation closure before declaring the approved software product complete.
+3. Complete PR #141/P7-01 through the normal CI/merge gate, then execute P7-02 through P7-08 from `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
+4. Complete the SYSTEM_OWNER customer/license/update-entitlement/fleet workflows, product UX cleanup, end-to-end workflow audit, and full regression/documentation closure before declaring the approved software product complete.
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 
 ## Status Vocabulary
@@ -21,7 +21,7 @@
 - **SOFTWARE COMPLETE / CI VERIFIED** — source behavior exists and automated gates pass.
 - **SOFTWARE CONTROLS COMPLETE** — operational controls/tooling exist in source, but real production execution evidence may remain open.
 - **SOFTWARE PRODUCTIZATION COMPLETE** — packaging/deployment/acceptance tooling exists in source; field/production/customer acceptance is not implied.
-- **PLANNED / NOT YET IMPLEMENTED** — approved scope is documented but implementation/CI closure has not occurred.
+- **IMPLEMENTED / FINAL CI-MERGE CLOSURE** — source and tests are implemented on the controlled PR branch; final package closure awaits successful CI and merge.
 - **SOFTWARE PRODUCT COMPLETE** — reserved for successful P7 closure across the approved end-to-end product surface.
 - **EXTERNAL EVIDENCE OPEN** — physical deployment, live provider, field endurance, commissioning, UAT, production execution, or customer sign-off has not been executed/proven.
 
@@ -42,6 +42,7 @@
 - P4 production-hardening controls covering deployment validation, backup/restore, supervision, secrets/configuration, persistence/recovery, observability, retention, upgrade/rollback, and DR evidence structures.
 - P5 isolated SYSTEM_OWNER commercial APIs/workflows for customer fleet identity, license/update entitlement, and maintenance/calibration/support/update oversight while preserving the customer ADMIN trust boundary.
 - P6 controlled productization/deployment/acceptance tooling and documentation.
+- P7-01 isolated SYSTEM_OWNER frontend authentication/session boundary, protected owner routes, bilingual console shell, fail-closed route behavior, and authorization/contract regression coverage.
 
 ## P0-P7 Delivery Position
 
@@ -50,9 +51,9 @@
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
 - **P3 — Pilot Commissioning Tooling:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PRs #130-#132; closure merge `6a74122e`. Field evidence and customer acceptance remain open.
 - **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED.** PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`. Production restore/endurance/rollback/DR evidence remains external.
-- **P5 — SYSTEM_OWNER / Commercial Operations:** **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. P7 will complete the approved owner-facing product UI/workflows. Billing/payment and live remote-update execution remain external/later integrations unless separately implemented.
+- **P5 — SYSTEM_OWNER / Commercial Operations:** **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. P7 completes the owner-facing product UI/workflows. Billing/payment and live remote-update execution remain external/later integrations unless separately implemented.
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
-- **P7 — Final Product Completion:** **APPROVED / PLANNED / NOT YET IMPLEMENTED.** Work packages P7-01 through P7-08 cover SYSTEM_OWNER console, customer/fleet UI, license/install binding UI, update entitlement UI, maintenance/calibration/support fleet operations, legacy/UX cleanup, end-to-end workflow review, and full regression/documentation closure.
+- **P7 — Final Product Completion:** **ACTIVE.** P7-01 is **IMPLEMENTED / PR #141 / FINAL CI-MERGE CLOSURE**. P7-02 through P7-08 remain open.
 
 ## P7 Active Plan
 
@@ -60,8 +61,8 @@ Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-
 
 Sequence:
 
-1. P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell.
-2. P7-02 — Customer / Site Fleet Management.
+1. P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell — implemented in PR #141; closure record `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
+2. P7-02 — Customer / Site Fleet Management — next.
 3. P7-03 — License Lifecycle and Installation Binding UI.
 4. P7-04 — Update Entitlement and Release Eligibility UI.
 5. P7-05 — Maintenance, Calibration and Support Fleet Operations.
@@ -81,7 +82,7 @@ Sequence:
 
 ## Release / Version Position
 
-`VERSION` is the product source-version authority. `v0.17.0` is the latest published release and current source-software version remains `0.18.0`. Planning P7 does not change either value and does not create a release.
+`VERSION` is the product source-version authority. `v0.17.0` is the latest published release and current source-software version remains `0.18.0`. P7-01 does not change either value and does not create a release.
 
 Release publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
