@@ -15,5 +15,4 @@ export interface PlatformAuthenticationValue {
   logout: () => void;
 }
 
-export const PlatformAuthenticationContext =
-  createContext<PlatformAuthenticationValue | null>(null);
+export const PlatformAuthenticationContext = createContext<PlatformAuthenticationValue | null>(null);
