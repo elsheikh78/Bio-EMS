@@ -45,11 +45,30 @@ export type AppendCommissioningEvidence = {
 export class CommissioningRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
+  siteExists(siteId: number): boolean {
+    return Boolean(this.database.prepare("SELECT id FROM sites WHERE id = ?").get(siteId));
+  }
+
+  sessionBelongsToSite(sessionId: number, siteId: number): boolean {
+    return Boolean(
+      this.database
+        .prepare("SELECT id FROM commissioning_sessions WHERE id = ? AND site_id = ?")
+        .get(sessionId, siteId)
+    );
+  }
+
+  checkBelongsToSession(checkId: number, sessionId: number): boolean {
+    return Boolean(
+      this.database
+        .prepare("SELECT id FROM commissioning_checks WHERE id = ? AND session_id = ?")
+        .get(checkId, sessionId)
+    );
+  }
+
   assertSessionSite(sessionId: number, siteId: number): void {
-    const row = this.database
-      .prepare("SELECT id FROM commissioning_sessions WHERE id = ? AND site_id = ?")
-      .get(sessionId, siteId);
-    if (!row) throw new Error("COMMISSIONING_SESSION_NOT_FOUND");
+    if (!this.sessionBelongsToSite(sessionId, siteId)) {
+      throw new Error("COMMISSIONING_SESSION_NOT_FOUND");
+    }
   }
 
   createSession(input: CreateCommissioningSession): number {
@@ -95,11 +114,6 @@ export class CommissioningRepository {
   }
 
   appendEvidence(input: AppendCommissioningEvidence): number {
-    const check = this.database
-      .prepare("SELECT id FROM commissioning_checks WHERE id = ? AND session_id = ?")
-      .get(input.checkId, input.sessionId);
-    if (!check) throw new Error("COMMISSIONING_CHECK_NOT_FOUND");
-
     const result = this.database
       .prepare(`
         INSERT INTO commissioning_evidence (
