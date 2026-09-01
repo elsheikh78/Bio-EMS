@@ -1,5 +1,13 @@
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
-import { FormEvent, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useState, type FormEvent } from "react";
 import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/PlatformAuthenticationProvider";
 
@@ -43,12 +51,23 @@ export function SystemOwnerLoginPage() {
   };
 
   return (
-    <Box component="main" sx={{ display: "grid", minHeight: "100vh", placeItems: "center", p: 2 }}>
-      <Paper component="form" onSubmit={submit} sx={{ maxWidth: 440, p: 4, width: "100%" }}>
+    <Box
+      component="main"
+      sx={{ display: "grid", minHeight: "100vh", placeItems: "center", p: 2 }}
+    >
+      <Paper
+        component="form"
+        onSubmit={submit}
+        sx={{ maxWidth: 440, p: 4, width: "100%" }}
+      >
         <Stack spacing={2.5}>
           <Box>
-            <Typography component="h1" variant="h4">{text.title}</Typography>
-            <Typography color="text.secondary" sx={{ mt: 1 }}>{text.description}</Typography>
+            <Typography component="h1" variant="h4">
+              {text.title}
+            </Typography>
+            <Typography color="text.secondary" sx={{ mt: 1 }}>
+              {text.description}
+            </Typography>
           </Box>
           {failed ? <Alert severity="error">{text.error}</Alert> : null}
           <TextField
