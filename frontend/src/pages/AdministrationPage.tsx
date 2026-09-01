@@ -18,7 +18,15 @@ import {
   Typography,
 } from "@mui/material";
 import { type FormEvent, useState } from "react";
-import { userRoles, type ManagedUser } from "../administration/contracts";
+import {
+  userRoles,
+  type ManagedUser,
+  type UpdateUserInput,
+} from "../administration/contracts";
+import {
+  PASSWORD_REQUIREMENTS_TEXT,
+  evaluatePasswordPolicy,
+} from "../administration/passwordPolicy";
 import {
   useAuditEvents,
   useCreateUser,
@@ -27,6 +35,7 @@ import {
   useUpdateUserPassword,
   useUpdateUserStatus,
 } from "../administration/queries";
+import { ApiResponseError } from "../api/client";
 import { useSites } from "../monitoredAreas/queries";
 
 export function AdministrationPage() {
@@ -159,6 +168,23 @@ function UsersPanel() {
   );
 }
 
+function mutationErrorMessage(error: unknown, fallback: string): string {
+  if (!(error instanceof ApiResponseError)) return fallback;
+
+  switch (error.code) {
+    case "SELF_ROLE_CHANGE_FORBIDDEN":
+      return "You cannot change your own administrator role.";
+    case "RESOURCE_ALREADY_EXISTS":
+      return "That user or email already exists.";
+    case "VALIDATION_ERROR":
+      return "The submitted values do not meet the required format.";
+    case "USER_NOT_FOUND":
+      return "The user no longer exists. Refresh the page and try again.";
+    default:
+      return fallback;
+  }
+}
+
 function UserDialog({
   user,
   onClose,
@@ -175,21 +201,32 @@ function UserDialog({
     user?.role ?? "VIEWER",
   );
   const [password, setPassword] = useState("");
+  const passwordPolicy = evaluatePasswordPolicy(password);
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     try {
-      if (user)
-        await update.mutateAsync({
-          id: user.id,
-          input: { email: email.trim() || null, role },
-        });
-      else
+      if (user) {
+        const normalizedEmail = email.trim() || null;
+        const input: UpdateUserInput = {};
+        if (normalizedEmail !== user.email) input.email = normalizedEmail;
+        if (role !== user.role) input.role = role;
+
+        if (Object.keys(input).length === 0) {
+          onClose();
+          return;
+        }
+
+        await update.mutateAsync({ id: user.id, input });
+      } else {
+        if (!passwordPolicy.isValid) return;
         await create.mutateAsync({
           username: username.trim().toLowerCase(),
           email: email.trim() || null,
           role,
           password,
         });
+      }
       onClose();
     } catch {
       /* mutation state renders error */
@@ -202,7 +239,12 @@ function UserDialog({
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             {mutation.isError ? (
-              <Alert severity="error">User could not be saved.</Alert>
+              <Alert severity="error">
+                {mutationErrorMessage(
+                  mutation.error,
+                  "User could not be saved.",
+                )}
+              </Alert>
             ) : null}
             <TextField
               required
@@ -225,6 +267,8 @@ function UserDialog({
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="new-password"
+                helperText={PASSWORD_REQUIREMENTS_TEXT}
+                error={password.length > 0 && !passwordPolicy.isValid}
               />
             ) : null}
             <FormControl>
@@ -246,7 +290,11 @@ function UserDialog({
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained">
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={mutation.isPending || (!user && !passwordPolicy.isValid)}
+          >
             Save user
           </Button>
         </DialogActions>
@@ -264,8 +312,11 @@ function PasswordDialog({
 }) {
   const mutation = useUpdateUserPassword();
   const [password, setPassword] = useState("");
+  const passwordPolicy = evaluatePasswordPolicy(password);
+
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!passwordPolicy.isValid) return;
     try {
       await mutation.mutateAsync({ id: user.id, password });
       onClose();
@@ -280,7 +331,12 @@ function PasswordDialog({
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             {mutation.isError ? (
-              <Alert severity="error">Password could not be changed.</Alert>
+              <Alert severity="error">
+                {mutationErrorMessage(
+                  mutation.error,
+                  "Password could not be changed.",
+                )}
+              </Alert>
             ) : null}
             <Alert severity="info">
               Passwords are never displayed, logged, or returned.
@@ -292,12 +348,18 @@ function PasswordDialog({
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="new-password"
+              helperText={PASSWORD_REQUIREMENTS_TEXT}
+              error={password.length > 0 && !passwordPolicy.isValid}
             />
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained">
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={mutation.isPending || !passwordPolicy.isValid}
+          >
             Change password
           </Button>
         </DialogActions>
