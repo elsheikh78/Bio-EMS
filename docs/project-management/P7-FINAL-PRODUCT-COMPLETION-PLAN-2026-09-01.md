@@ -1,7 +1,7 @@
 # P7 — Final Product Completion Plan
 
 **Date:** 1 September 2026  
-**Status:** APPROVED / PLANNED / NOT YET IMPLEMENTED  
+**Status:** ACTIVE — P7-01 AND P7-02 COMPLETE / P7-03 NEXT  
 **Baseline:** P0-P6 source-software delivery complete, merged, and CI verified  
 **Purpose:** close the remaining gap between the implemented BIO-EMS software foundations and a coherent customer-ready/commercially operable product interface before declaring the software product complete.
 
@@ -9,7 +9,7 @@
 
 P0-P6 delivered the core EMS, reporting, notifications, Site Controller runtime, commissioning tooling, production-hardening controls, isolated SYSTEM_OWNER commercial APIs, and productization/acceptance tooling. A post-P6 product audit identified that source-level capability completion is not identical to end-to-end product completion.
 
-The most material gap is that P5 commercial operations are implemented behind the isolated SYSTEM_OWNER API boundary, while the normal frontend navigation exposes operational/customer administration screens only. BIO-EMS therefore requires a final product-completion pass that exposes approved owner workflows through a controlled UI, reconciles remaining lifecycle workflows, removes stale frontend debt, and validates the complete product surface.
+The most material gap was that P5 commercial operations were implemented behind the isolated SYSTEM_OWNER API boundary, while the normal frontend navigation exposed operational/customer administration screens only. P7 closes that gap in controlled packages without weakening trust boundaries or manufacturing external evidence.
 
 P7 does not invalidate P0-P6 closure evidence. It is new approved scope created by the post-P6 audit.
 
@@ -17,13 +17,22 @@ P7 does not invalidate P0-P6 closure evidence. It is new approved scope created 
 
 P7 is complete only when all approved P7 work packages are implemented, tested, documented, merged, and CI verified. Completion must establish a coherent software product surface; it must not claim physical hardware qualification, live-provider success, field commissioning, customer UAT, billing settlement, or production acceptance without genuine external evidence.
 
+Current completed packages:
+
+- P7-01 — COMPLETE / MERGED / CI VERIFIED through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
+- P7-02 — COMPLETE / MERGED / CI VERIFIED through PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
+
+Next controlled package: **P7-03 — License Lifecycle and Installation Binding UI**.
+
 ## 3. Work Packages
 
 ### P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell
 
-Implement an isolated owner-only frontend entry and navigation surface that is not visible or discoverable to customer ADMIN/OPERATOR/VIEWER roles. Reuse the authenticated SYSTEM_OWNER trust boundary; do not weaken or merge it with customer administration.
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
-Acceptance targets:
+Implemented an isolated owner-only frontend entry and navigation surface that is not visible or discoverable to customer ADMIN/OPERATOR/VIEWER roles. Reused the authenticated SYSTEM_OWNER trust boundary without merging it with customer administration.
+
+Acceptance targets achieved:
 
 - owner-only route boundary and navigation;
 - explicit unauthorized/not-found behavior;
@@ -32,31 +41,46 @@ Acceptance targets:
 - localization/accessibility consistent with the main product shell;
 - frontend authorization tests.
 
+Closure: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
+
 ### P7-02 — Customer / Site Fleet Management
 
-Expose the implemented platform-customer/fleet identity workflows to SYSTEM_OWNER with controlled customer lifecycle views and linkage to Sites/installations where supported by the backend contract.
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
-Acceptance targets:
+Exposed the implemented platform-customer/fleet identity workflows to SYSTEM_OWNER with controlled customer lifecycle views and linkage to Sites/installations only where supported by recorded backend commercial bindings.
 
-- customer list/detail lifecycle;
-- customer/site installation identity visibility;
-- safe create/update operations only where backend contracts already authorize them;
-- immutable/provenance evidence visible where operationally useful;
-- no cross-boundary customer ADMIN privilege escalation.
+Acceptance targets achieved:
+
+- customer list/detail lifecycle view;
+- customer creation through the existing authorized backend contract;
+- customer/Site installation identity visibility where supported by existing commercial license/service records;
+- immutable/provenance evidence visible through `createdBy` and append-only commercial event metadata;
+- no cross-boundary customer ADMIN privilege escalation;
+- no unsupported customer lifecycle edit/status mutation presented in the UI.
+
+Closure: PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d` / `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
 
 ### P7-03 — License Lifecycle and Installation Binding UI
 
-Expose license state, validity, installation/site binding, and lifecycle operations available in P5.
+**Status: NEXT CONTROLLED WORK PACKAGE — START HERE.**
+
+Expose license state, validity, installation/site binding, and lifecycle operations available or required within the P5/P7 commercial domain.
 
 Acceptance targets:
 
 - license inventory and detail;
 - status/validity visibility;
 - installation/site association where implemented;
-- controlled lifecycle mutation with authenticated SYSTEM_OWNER provenance;
-- clear distinction between software entitlement records and external billing/payment state.
+- controlled lifecycle mutation with authenticated SYSTEM_OWNER provenance when the approved backend contract supports or is extended to support it;
+- append-only commercial provenance for owner mutations;
+- clear distinction between software entitlement/license records and external billing/payment state;
+- clear distinction between recorded Site binding and physical installation/commissioning evidence;
+- bilingual loading/error/empty/detail/action states;
+- backend/frontend contract, authorization, and regression tests.
 
 ### P7-04 — Update Entitlement and Release Eligibility UI
+
+**Status: OPEN AFTER P7-03.**
 
 Expose free/paid/update-entitlement records and eligibility decisions already supported by the commercial domain, without pretending that remote OTA delivery exists where it does not.
 
@@ -70,6 +94,8 @@ Acceptance targets:
 
 ### P7-05 — Maintenance, Calibration and Support Fleet Operations
 
+**Status: OPEN AFTER P7-04.**
+
 Provide SYSTEM_OWNER fleet-level oversight for maintenance/calibration/support/update obligations, using existing P5 records and existing site-level calibration evidence without conflating the two domains.
 
 Acceptance targets:
@@ -82,6 +108,8 @@ Acceptance targets:
 
 ### P7-06 — Product UX and Legacy Cleanup
 
+**Status: OPEN AFTER P7-05.**
+
 Audit and remove or reconcile stale/dead frontend artifacts and obsolete user-facing text. The known Sprint-14 `FoundationPage`/deferred-description residue is included in this package.
 
 Acceptance targets:
@@ -93,6 +121,8 @@ Acceptance targets:
 - responsive/accessibility/localization behavior preserved.
 
 ### P7-07 — End-to-End Product Workflow Review
+
+**Status: OPEN AFTER P7-06.**
 
 Execute a controlled software workflow audit across every currently exposed product area:
 
@@ -119,6 +149,8 @@ Acceptance targets:
 
 ### P7-08 — Full Regression, Documentation Reconciliation and Software Product Closure
 
+**Status: OPEN AFTER P7-07.**
+
 Run the complete backend/frontend quality gates and reconcile current-state documentation after P7 implementation.
 
 Minimum software gate:
@@ -134,7 +166,7 @@ Minimum software gate:
 - relevant report/export regression;
 - commercial API/UI contract regression.
 
-P7 closure must update `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, `README.md`, `docs/architecture/roadmap.md`, `docs/SPRINT_PROGRESS.md`, and this P7 record with actual PR/CI/merge evidence.
+P7 closure must update `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, `README.md`, `docs/architecture/roadmap.md`, `docs/SPRINT_PROGRESS.md`, this P7 record, `CHANGELOG.md`, and the documentation audit with actual PR/CI/merge evidence.
 
 ## 4. Explicit Non-Goals / External Integrations
 
@@ -163,13 +195,13 @@ The UI must label external/not-integrated states honestly rather than simulate t
 
 ## 6. Documentation Policy
 
-Current-state documents are updated to show P7 as the active approved software phase. Historical P0-P6 closure, Sprint, PR, release, and handoff records remain historical evidence and are not rewritten to pretend P7 existed earlier.
+Current-state documents are updated as each P7 package closes. Historical P0-P6 closure, Sprint, PR, release, and handoff records remain historical evidence and are not rewritten to pretend P7 existed earlier.
 
-`PROJECT_STATE.md` remains the single current-state authority.
+`PROJECT_STATE.md` remains the single current-state authority. `IMPLEMENTATION_PLAN.md` is the controlled continuation plan and must identify the exact next work package.
 
 ## 7. Release / Version Boundary
 
-Creating this plan does not change `VERSION`, does not publish a release, and does not modify the historical `v0.17.0` release. Source version remains `0.18.0` until implementation work explicitly requires and approves a version change.
+P7-01 and P7-02 did not change `VERSION` or publish a release. Latest published release remains `v0.17.0`; current source-software version remains `0.18.0` until later implementation work explicitly requires and approves a version change.
 
 ## 8. P7 Exit Statement
 
