@@ -44,16 +44,21 @@ export type AppendCommissioningEvidence = {
 export class CommissioningRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
+  assertSessionSite(sessionId: number, siteId: number): void {
+    const row = this.database
+      .prepare("SELECT id FROM commissioning_sessions WHERE id = ? AND site_id = ?")
+      .get(sessionId, siteId);
+    if (!row) throw new Error("COMMISSIONING_SESSION_NOT_FOUND");
+  }
+
   createSession(input: CreateCommissioningSession): number {
     const result = this.database
-      .prepare(
-        `
+      .prepare(`
         INSERT INTO commissioning_sessions (
           uuid, site_id, controller_identity, platform_version, commissioning_revision,
           engineer_identity, witness_identity, opened_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `
-      )
+      `)
       .run(
         input.uuid,
         input.siteId,
@@ -69,14 +74,12 @@ export class CommissioningRepository {
 
   addCheck(input: CreateCommissioningCheck): number {
     const result = this.database
-      .prepare(
-        `
+      .prepare(`
         INSERT INTO commissioning_checks (
           session_id, check_key, title, mandatory, physical_or_live_gate,
           sensor_id, device_id, map_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `
-      )
+      `)
       .run(
         input.sessionId,
         input.checkKey,
@@ -91,15 +94,18 @@ export class CommissioningRepository {
   }
 
   appendEvidence(input: AppendCommissioningEvidence): number {
+    const check = this.database
+      .prepare("SELECT id FROM commissioning_checks WHERE id = ? AND session_id = ?")
+      .get(input.checkId, input.sessionId);
+    if (!check) throw new Error("COMMISSIONING_CHECK_NOT_FOUND");
+
     const result = this.database
-      .prepare(
-        `
+      .prepare(`
         INSERT INTO commissioning_evidence (
           session_id, check_id, state, evidence_kind, executed_at, actor_identity,
           witness_identity, evidence_reference, deviation_reference, note
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `
-      )
+      `)
       .run(
         input.sessionId,
         input.checkId,
@@ -125,14 +131,12 @@ export class CommissioningRepository {
     }
   ): number {
     const result = this.database
-      .prepare(
-        `
+      .prepare(`
         INSERT INTO commissioning_deviations (
           session_id, reference, classification, description, recorded_at,
           actor_identity, evidence_reference
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `
-      )
+      `)
       .run(
         sessionId,
         deviation.reference,
@@ -155,13 +159,11 @@ export class CommissioningRepository {
     snapshot: unknown;
   }): number {
     const result = this.database
-      .prepare(
-        `
+      .prepare(`
         INSERT INTO commissioning_decisions (
           session_id, decision, decided_at, actor_identity, witness_identity, note, snapshot_json
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `
-      )
+      `)
       .run(
         input.sessionId,
         input.decision,
@@ -176,14 +178,12 @@ export class CommissioningRepository {
 
   listDeviations(sessionId: number): CommissioningDeviationSnapshot[] {
     return this.database
-      .prepare(
-        `
+      .prepare(`
         SELECT reference, classification
         FROM commissioning_deviations
         WHERE session_id = ?
         ORDER BY id ASC
-      `
-      )
+      `)
       .all(sessionId) as CommissioningDeviationSnapshot[];
   }
 }
