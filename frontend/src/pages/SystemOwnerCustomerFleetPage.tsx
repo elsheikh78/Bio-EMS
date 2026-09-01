@@ -314,7 +314,7 @@ export function SystemOwnerCustomerFleetPage() {
                 labelId="platform-customer-status-label"
                 label={text.status}
                 value={status}
-                onChange={(event) => setStatus(event.target.value as (typeof statusValues)[number])}
+                onChange={(event) => setStatus(event.target.value)}
               >
                 {statusValues.map((value) => (
                   <MenuItem key={value} value={value}>
