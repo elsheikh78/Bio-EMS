@@ -11,6 +11,10 @@ export const commissioningSessionParamsSchema = z
   })
   .strict();
 
+export const commissioningReadinessQuerySchema = z
+  .object({ asOf: z.string().datetime().optional() })
+  .strict();
+
 export const createCommissioningSessionSchema = z
   .object({
     uuid: z.string().trim().min(1),

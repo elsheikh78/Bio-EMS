@@ -42,6 +42,24 @@ export type AppendCommissioningEvidence = {
   note?: string | null;
 };
 
+export type CommissioningConfigurationItem = {
+  sensorId: number;
+  sensorUuid: string;
+  sensorCode: string;
+  roomId: number;
+  roomCode: string;
+  deviceId: number;
+  deviceIdentity: string;
+  channel: number;
+  enabled: boolean;
+  deviceActive: boolean;
+  calibrationStatus: string;
+  calibrationDueAt: string | null;
+  certificateReference: string | null;
+  ready: boolean;
+  blockers: string[];
+};
+
 export class CommissioningRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
 
@@ -63,6 +81,75 @@ export class CommissioningRepository {
         .prepare("SELECT id FROM commissioning_checks WHERE id = ? AND session_id = ?")
         .get(checkId, sessionId)
     );
+  }
+
+  deviceBelongsToSite(deviceId: number, siteId: number): boolean {
+    return Boolean(
+      this.database
+        .prepare("SELECT id FROM devices WHERE id = ? AND site_id = ?")
+        .get(deviceId, siteId)
+    );
+  }
+
+  sensorBelongsToSiteAndDevice(
+    sensorId: number,
+    siteId: number,
+    deviceId?: number | null
+  ): boolean {
+    return Boolean(
+      this.database
+        .prepare(
+          `SELECT sensors.id
+           FROM sensors
+           INNER JOIN rooms ON rooms.id = sensors.room_id
+           WHERE sensors.id = ? AND rooms.site_id = ?
+             AND (? IS NULL OR sensors.device_id = ?)`
+        )
+        .get(sensorId, siteId, deviceId ?? null, deviceId ?? null)
+    );
+  }
+
+  getConfigurationReadiness(siteId: number, asOf: string): CommissioningConfigurationItem[] {
+    const rows = this.database
+      .prepare(
+        `SELECT sensors.id AS sensorId, sensors.uuid AS sensorUuid, sensors.code AS sensorCode,
+                sensors.room_id AS roomId, rooms.code AS roomCode,
+                sensors.device_id AS deviceId, devices.device_id AS deviceIdentity,
+                sensors.channel AS channel, sensors.enabled AS enabled,
+                devices.activated AS deviceActive, sensors.calibration_status AS calibrationStatus,
+                sensors.calibration_due_at AS calibrationDueAt,
+                sensors.certificate_reference AS certificateReference
+         FROM sensors
+         INNER JOIN rooms ON rooms.id = sensors.room_id
+         INNER JOIN devices ON devices.id = sensors.device_id
+         WHERE rooms.site_id = ? AND devices.site_id = ?
+         ORDER BY rooms.code, sensors.code, sensors.id`
+      )
+      .all(siteId, siteId) as Array<
+      Omit<CommissioningConfigurationItem, "ready" | "blockers" | "enabled" | "deviceActive"> & {
+        enabled: number;
+        deviceActive: number;
+      }
+    >;
+
+    const asOfTime = Date.parse(asOf);
+    return rows.map((row) => {
+      const blockers: string[] = [];
+      if (row.enabled !== 1) blockers.push("SENSOR_DISABLED");
+      if (row.deviceActive !== 1) blockers.push("DEVICE_NOT_ACTIVATED");
+      if (row.calibrationStatus !== "VALID") blockers.push("CALIBRATION_NOT_VALID");
+      if (!row.certificateReference) blockers.push("CALIBRATION_CERTIFICATE_MISSING");
+      if (!row.calibrationDueAt || Date.parse(row.calibrationDueAt) <= asOfTime) {
+        blockers.push("CALIBRATION_EXPIRED_OR_DUE");
+      }
+      return {
+        ...row,
+        enabled: row.enabled === 1,
+        deviceActive: row.deviceActive === 1,
+        ready: blockers.length === 0,
+        blockers,
+      };
+    });
   }
 
   assertSessionSite(sessionId: number, siteId: number): void {

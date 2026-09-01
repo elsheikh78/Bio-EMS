@@ -14,8 +14,17 @@ describe("CommissioningService", () => {
     database.pragma("foreign_keys = ON");
     database.exec(`
       CREATE TABLE sites (id INTEGER PRIMARY KEY);
-      CREATE TABLE devices (id INTEGER PRIMARY KEY);
-      CREATE TABLE sensors (id INTEGER PRIMARY KEY);
+      CREATE TABLE devices (
+        id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, device_id TEXT NOT NULL,
+        activated INTEGER NOT NULL DEFAULT 0
+      );
+      CREATE TABLE rooms (id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, code TEXT NOT NULL);
+      CREATE TABLE sensors (
+        id INTEGER PRIMARY KEY, uuid TEXT NOT NULL, code TEXT NOT NULL, room_id INTEGER NOT NULL,
+        device_id INTEGER NOT NULL, channel INTEGER NOT NULL, enabled INTEGER NOT NULL DEFAULT 1,
+        calibration_status TEXT NOT NULL DEFAULT 'NOT_CALIBRATED', calibration_due_at TEXT,
+        certificate_reference TEXT
+      );
       INSERT INTO sites (id) VALUES (1), (2);
     `);
     migration017.up(database);
@@ -125,6 +134,58 @@ describe("CommissioningService", () => {
         actorIdentity: "operator#7",
       })
     ).toThrow("Commissioning session not found");
+  });
+
+  it("rejects a sensor or device outside the session Site", () => {
+    database.exec(`
+      INSERT INTO devices (id, site_id, device_id, activated) VALUES (20, 2, 'OTHER-DEVICE', 1);
+      INSERT INTO rooms (id, site_id, code) VALUES (20, 2, 'OTHER-ROOM');
+      INSERT INTO sensors (id, uuid, code, room_id, device_id, channel)
+      VALUES (20, 'other-sensor', 'OTHER-SENSOR', 20, 20, 1);
+    `);
+    const sessionId = createSession(1, "commissioning-scope-check");
+
+    expect(() =>
+      service.addCheck(1, {
+        sessionId,
+        checkKey: "MAPPING",
+        title: "Mapping verification",
+        mandatory: true,
+        physicalOrLiveGate: true,
+        sensorId: 20,
+        deviceId: 20,
+      })
+    ).toThrow("Commissioning device not found");
+  });
+
+  it("summarizes configuration and calibration blockers from authoritative records", () => {
+    database.exec(`
+      INSERT INTO devices (id, site_id, device_id, activated) VALUES (10, 1, 'BIO-CTRL-01', 1);
+      INSERT INTO rooms (id, site_id, code) VALUES (10, 1, 'CR-01');
+      INSERT INTO sensors (
+        id, uuid, code, room_id, device_id, channel, enabled, calibration_status,
+        calibration_due_at, certificate_reference
+      ) VALUES
+        (10, 'sensor-ready', 'TEMP-01', 10, 10, 1, 1, 'VALID', '2027-01-01T00:00:00.000Z', 'CAL-001'),
+        (11, 'sensor-blocked', 'TEMP-02', 10, 10, 2, 1, 'EXPIRED', '2026-01-01T00:00:00.000Z', NULL);
+    `);
+
+    expect(service.getConfigurationReadiness(1, "2026-09-01T12:00:00.000Z")).toMatchObject({
+      ready: false,
+      summary: { totalSensors: 2, readySensors: 1, blockedSensors: 1 },
+      items: [
+        { sensorCode: "TEMP-01", ready: true, blockers: [] },
+        {
+          sensorCode: "TEMP-02",
+          ready: false,
+          blockers: [
+            "CALIBRATION_NOT_VALID",
+            "CALIBRATION_CERTIFICATE_MISSING",
+            "CALIBRATION_EXPIRED_OR_DUE",
+          ],
+        },
+      ],
+    });
   });
 
   function createSession(siteId: number, uuid: string): number {

@@ -75,3 +75,10 @@ export const getCommissioningDeviationsController = asyncHandler(
     res.json(service.listDeviations(siteId(req), sessionId(req)));
   }
 );
+
+export const getCommissioningConfigurationReadinessController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const asOf = typeof req.query.asOf === "string" ? req.query.asOf : new Date().toISOString();
+    res.json(service.getConfigurationReadiness(siteId(req), asOf));
+  }
+);

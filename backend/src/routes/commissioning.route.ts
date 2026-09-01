@@ -7,20 +7,30 @@ import {
   appendCommissioningEvidenceController,
   createCommissioningSessionController,
   getCommissioningDeviationsController,
+  getCommissioningConfigurationReadinessController,
 } from "../controllers/commissioning.controller";
 import { requirePermission } from "../middleware/authorization.middleware";
-import { validateBody, validateParams } from "../middleware/validate-request";
+import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
   appendCommissioningDecisionSchema,
   appendCommissioningDeviationSchema,
   appendCommissioningEvidenceSchema,
   commissioningSessionParamsSchema,
   commissioningSiteParamsSchema,
+  commissioningReadinessQuerySchema,
   createCommissioningCheckSchema,
   createCommissioningSessionSchema,
 } from "../modules/commissioning/commissioning.schema";
 
 const router = Router();
+
+router.get(
+  "/sites/:siteId/commissioning-readiness",
+  requirePermission(PERMISSION.COMMISSIONING_READ),
+  validateParams(commissioningSiteParamsSchema),
+  validateQuery(commissioningReadinessQuerySchema),
+  getCommissioningConfigurationReadinessController
+);
 
 router.post(
   "/sites/:siteId/commissioning-sessions",

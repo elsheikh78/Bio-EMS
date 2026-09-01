@@ -25,7 +25,32 @@ export class CommissioningService {
 
   addCheck(siteId: number, input: CreateCommissioningCheck): number {
     this.assertSessionScope(siteId, input.sessionId);
+    if (input.deviceId && !this.repository.deviceBelongsToSite(input.deviceId, siteId)) {
+      throw new AppError("Commissioning device not found", 404, "COMMISSIONING_DEVICE_NOT_FOUND");
+    }
+    if (
+      input.sensorId &&
+      !this.repository.sensorBelongsToSiteAndDevice(input.sensorId, siteId, input.deviceId)
+    ) {
+      throw new AppError("Commissioning sensor not found", 404, "COMMISSIONING_SENSOR_NOT_FOUND");
+    }
     return this.repository.addCheck(input);
+  }
+
+  getConfigurationReadiness(siteId: number, asOf: string) {
+    if (!this.repository.siteExists(siteId)) throw siteNotFound();
+    const items = this.repository.getConfigurationReadiness(siteId, asOf);
+    return {
+      siteId,
+      asOf,
+      ready: items.length > 0 && items.every((item) => item.ready),
+      summary: {
+        totalSensors: items.length,
+        readySensors: items.filter((item) => item.ready).length,
+        blockedSensors: items.filter((item) => !item.ready).length,
+      },
+      items,
+    };
   }
 
   appendEvidence(siteId: number, input: AppendCommissioningEvidence): number {
