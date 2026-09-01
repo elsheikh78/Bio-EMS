@@ -17,7 +17,6 @@ export const createCommissioningSessionSchema = z
     controllerIdentity: z.string().trim().min(1).nullable().optional(),
     platformVersion: z.string().trim().min(1),
     commissioningRevision: z.string().trim().min(1),
-    engineerIdentity: z.string().trim().min(1),
     witnessIdentity: z.string().trim().min(1).nullable().optional(),
     openedAt: z.string().datetime(),
   })
@@ -41,7 +40,6 @@ export const appendCommissioningEvidenceSchema = z
     state: z.enum(["NOT_RUN", "PASS", "FAIL", "BLOCKED", "DEFERRED_NON_BLOCKING"]),
     evidenceKind: z.enum(["SOFTWARE_AUTOMATED", "PHYSICAL", "LIVE_PROVIDER", "DOCUMENTARY"]),
     executedAt: z.string().datetime(),
-    actorIdentity: z.string().trim().min(1),
     witnessIdentity: z.string().trim().min(1).nullable().optional(),
     evidenceReference: z.string().trim().min(1).nullable().optional(),
     deviationReference: z.string().trim().min(1).nullable().optional(),
@@ -55,7 +53,6 @@ export const appendCommissioningDeviationSchema = z
     classification: z.enum(["BLOCKING", "NON_BLOCKING"]),
     description: z.string().trim().min(1),
     recordedAt: z.string().datetime(),
-    actorIdentity: z.string().trim().min(1),
     evidenceReference: z.string().trim().min(1).nullable().optional(),
   })
   .strict();
@@ -64,9 +61,7 @@ export const appendCommissioningDecisionSchema = z
   .object({
     decision: z.enum(["ACCEPTED", "REJECTED"]),
     decidedAt: z.string().datetime(),
-    actorIdentity: z.string().trim().min(1),
     witnessIdentity: z.string().trim().min(1).nullable().optional(),
     note: z.string().trim().min(1).nullable().optional(),
-    snapshot: z.unknown(),
   })
   .strict();
