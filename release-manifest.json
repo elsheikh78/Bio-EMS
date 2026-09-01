@@ -1,0 +1,14 @@
+{
+  "product": "BIO-EMS",
+  "version": "0.18.0",
+  "runtime": {
+    "node": ">=22"
+  },
+  "components": ["backend", "frontend"],
+  "requiredDocuments": [
+    "docs/deployment/production-runbook.md",
+    "docs/engineering/RELEASE_PROCESS.md",
+    "docs/project-management/P6-PRODUCTIZATION-CLOSURE-2026-09-01.md"
+  ],
+  "externalAcceptanceRequired": true
+}
