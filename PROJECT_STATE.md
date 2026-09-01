@@ -6,14 +6,14 @@
 
 **Current source-software version:** `0.18.0`
 
-**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified. **P7 — Final Product Completion** is active. P7-01 is complete, merged, and CI verified. P7-02 — Customer / Site Fleet Management — is implemented in PR #142 and is in final documentation/CI/merge closure; P7-03 is the next controlled software work package. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** P0-P6 source-software scope is complete, merged, and CI verified. **P7 — Final Product Completion** is active. P7-01 and P7-02 are complete, merged, and CI verified. **P7-03 — License Lifecycle and Installation Binding UI — is the next controlled software work package and the authoritative continuation point for the next session.** Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before further work.
 2. Preserve P0-P6 closure evidence; P7 is new approved scope, not a reopening of completed packages.
-3. Complete PR #142/P7-02 through the final CI/merge gate, then execute P7-03 through P7-08 from `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
-4. Complete the remaining SYSTEM_OWNER license/update-entitlement/fleet workflows, product UX cleanup, end-to-end workflow audit, and full regression/documentation closure before declaring the approved software product complete.
+3. Start with **P7-03 — License Lifecycle and Installation Binding UI** from `IMPLEMENTATION_PLAN.md` and `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
+4. After P7-03, continue P7-04 through P7-08 in order; do not declare the approved software product complete before P7-08 closure.
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 
 ## Status Vocabulary
@@ -21,7 +21,6 @@
 - **SOFTWARE COMPLETE / CI VERIFIED** — source behavior exists and automated gates pass.
 - **SOFTWARE CONTROLS COMPLETE** — operational controls/tooling exist in source, but real production execution evidence may remain open.
 - **SOFTWARE PRODUCTIZATION COMPLETE** — packaging/deployment/acceptance tooling exists in source; field/production/customer acceptance is not implied.
-- **IMPLEMENTED / FINAL CI-MERGE CLOSURE** — source and tests are implemented on the controlled PR branch; final package closure awaits successful CI and merge.
 - **SOFTWARE PRODUCT COMPLETE** — reserved for successful P7 closure across the approved end-to-end product surface.
 - **EXTERNAL EVIDENCE OPEN** — physical deployment, live provider, field endurance, commissioning, UAT, production execution, or customer sign-off has not been executed/proven.
 
@@ -54,7 +53,7 @@
 - **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED.** PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`. Production restore/endurance/rollback/DR evidence remains external.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. Billing/payment and live remote-update execution remain external/later integrations unless separately implemented.
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
-- **P7 — Final Product Completion:** **ACTIVE.** P7-01 is **COMPLETE / MERGED / CI VERIFIED** through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`. P7-02 is **IMPLEMENTED / PR #142 / FINAL DOCUMENTATION-CI-MERGE CLOSURE**. P7-03 through P7-08 remain open.
+- **P7 — Final Product Completion:** **ACTIVE.** P7-01 is **COMPLETE / MERGED / CI VERIFIED** through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`. P7-02 is **COMPLETE / MERGED / CI VERIFIED** through PR #142 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`; final PR branch CI run #516 / workflow `33543271797` passed. P7-03 through P7-08 remain open.
 
 ## P7 Active Plan
 
@@ -63,8 +62,8 @@ Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-
 Sequence:
 
 1. P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell — complete through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`; closure record `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
-2. P7-02 — Customer / Site Fleet Management — implemented in PR #142; source gates passed CI run #512 / workflow `33542959284`; closure record `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
-3. P7-03 — License Lifecycle and Installation Binding UI — next.
+2. P7-02 — Customer / Site Fleet Management — complete through PR #142 / final CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`; closure record `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
+3. **P7-03 — License Lifecycle and Installation Binding UI — NEXT / START HERE.**
 4. P7-04 — Update Entitlement and Release Eligibility UI.
 5. P7-05 — Maintenance, Calibration and Support Fleet Operations.
 6. P7-06 — Product UX and Legacy Cleanup.
@@ -119,4 +118,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-Begin with this file, then `IMPLEMENTATION_PLAN.md`, then the P7 plan, then `docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md` and `docs/architecture/roadmap.md`. GitHub `main` remains the source of truth. Preserve valid historical release/Sprint/handoff documents; update this current-state document whenever the actual project gate changes rather than creating competing status files.
+**Next-session start point:** reconcile local `main` to GitHub `main`, read this file, then `IMPLEMENTATION_PLAN.md`, and begin P7-03. Then consult the P7 plan, `docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`, and `docs/architecture/roadmap.md` as supporting authority. Historical closure/Sprint/handoff records remain evidence of their own time and are not competing current-state documents.
