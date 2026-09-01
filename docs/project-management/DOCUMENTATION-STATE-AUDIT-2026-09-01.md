@@ -2,16 +2,17 @@
 
 ## Purpose
 
-Reconcile repository documents that can reasonably be interpreted as describing the current project state, implementation sequence, roadmap, release/source boundary, or continuation point after the post-P6 product audit and approval of P7.
+Reconcile repository documents that can reasonably be interpreted as describing the current project state, implementation sequence, roadmap, release/source boundary, or continuation point after P7-02 closure.
 
 ## Authoritative Position
 
 - `PROJECT_STATE.md` is the single current-state authority.
-- `IMPLEMENTATION_PLAN.md` defines the controlled P0-P7 implementation/evidence sequence.
-- `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` defines active P7 scope and acceptance boundaries.
+- `IMPLEMENTATION_PLAN.md` defines the controlled P0-P7 implementation/evidence sequence and the exact next-session start point.
+- `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` defines P7 scope and acceptance boundaries.
 - `docs/architecture/roadmap.md` defines the forward software and external-evidence roadmap.
-- `docs/SPRINT_PROGRESS.md` is a historical ledger, not a competing current-state authority.
-- Dated Sprint/P/BF/PVR handoff and closure records remain historical evidence of their specific execution point and are not rewritten merely because P7 was later approved.
+- `docs/SPRINT_PROGRESS.md` is a historical ledger with a current handoff pointer, not a competing status authority.
+- Dedicated P7 closure records document completed package evidence.
+- Dated Sprint/P/BF/PVR handoff and closure records remain historical evidence of their specific execution point and are not rewritten merely because later P7 work completed.
 
 ## Verified Current State
 
@@ -22,56 +23,58 @@ Reconcile repository documents that can reasonably be interpreted as describing 
 - P4 closure: PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
 - P5 backend/domain commercial operations closure: PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
 - P6 closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
-- Post-P6 audit finding: the approved software product still requires an end-to-end product-completion phase, particularly a SYSTEM_OWNER frontend/commercial console over the P5 domain plus final UX/workflow/regression closure.
-- P7 status: **APPROVED / PLANNED / NOT YET IMPLEMENTED**.
+- P7-01 closure: PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
+- P7-02 closure: PR #142 / final CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
+- P7 status: **ACTIVE — P7-01 AND P7-02 COMPLETE; P7-03 NEXT**.
+- Next controlled software work package: **P7-03 — License Lifecycle and Installation Binding UI**.
 
 ## P7 Documentation Decision
 
-P7 is new approved scope. It does not invalidate or rewrite P0-P6 historical closure evidence. The phrase “P0-P6 source-software complete” remains valid for those packages, but it must no longer be used to mean “the whole approved BIO-EMS software product is complete.”
+P7 remains new approved scope and does not invalidate P0-P6 historical closure evidence. The phrase “P0-P6 source-software complete” remains valid for those packages, but it does not mean the whole approved BIO-EMS software product is complete.
 
-The reserved whole-product status **SOFTWARE PRODUCT COMPLETE** requires successful P7-01 through P7-08 closure.
+The reserved whole-product status **SOFTWARE PRODUCT COMPLETE** still requires successful P7-01 through P7-08 closure. At this audit point only P7-01 and P7-02 are closed.
 
 ## Documents Reconciled
 
 ### `PROJECT_STATE.md`
 
-Updated to make P7 the active approved software phase, define the P0-P7 delivery position, preserve P0-P6 closure evidence, and keep external evidence gates separate.
+Updated after P7-02 merge to record exact PR/CI/merge evidence and make P7-03 the authoritative continuation point.
 
 ### `IMPLEMENTATION_PLAN.md`
 
-Extended from P0-P6 to P0-P7 and records the eight P7 work packages plus the P7 exit gate.
+Updated after P7-02 closure with an explicit next-session start procedure, P7-03 acceptance guardrails, and P7-04 through P7-08 sequencing.
 
 ### `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`
 
-Created as the controlled P7 scope/acceptance document. It defines SYSTEM_OWNER console, customer/fleet, license/install binding, update entitlement, maintenance/calibration/support fleet operations, UX cleanup, end-to-end product audit, and full regression/documentation closure.
+Remains the controlled P7 scope/acceptance document. Package-status truth is carried by `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and dedicated closure records rather than rewriting the original approved scope definition.
+
+### `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
+
+Finalized with PR #142 head, final CI run #516, merge commit, authorization/mutation boundary, verification evidence, and P7-03 handoff.
 
 ### `docs/architecture/roadmap.md`
 
-Updated to separate the active P7 software roadmap from the parallel external hardware/provider/field/production evidence roadmap.
+Advanced to show P7-01/P7-02 complete and P7-03 as the next controlled software package while preserving the parallel external evidence track.
 
 ### `docs/SPRINT_PROGRESS.md`
 
-Preserved as a historical ledger but its handoff pointer now directs future work to P7.
-
-### `README.md`
-
-Updated current-position/documentation pointers to state that P0-P6 are the delivered baseline while P7 is the active product-completion phase.
+Preserved as a historical ledger but refreshed its handoff pointer so it no longer says P7 is unimplemented; it now directs future work to P7-03.
 
 ### `CHANGELOG.md`
 
-Not changed for P7 planning. A changelog records implemented source changes/releases, not unimplemented planned scope. P7 implementation will update it when actual product behavior changes.
+Updated under `[Unreleased]` to record implemented P7-01/P7-02 product behavior and P7-02 closure evidence. No release/tag is claimed by this documentation update.
 
 ### `VERSION`
 
-Not changed. Planning P7 does not constitute a source-version increment or release.
+Not changed. Current source-software version remains `0.18.0`; P7-02 closure does not itself publish a new release.
 
 ### Historical handoff / Sprint / closure documents
 
-Preserved unchanged when they accurately describe their historical execution point. Current continuation always comes from `PROJECT_STATE.md` and the active P7 plan.
+Preserved unchanged when they accurately describe their historical execution point. Current continuation comes from `PROJECT_STATE.md` and `IMPLEMENTATION_PLAN.md`.
 
 ## External Evidence Still Open
 
-The following must not be represented as complete based on P7 planning or source/CI evidence alone:
+The following must not be represented as complete based on P7 source/CI evidence alone:
 
 - physical Standard/Advanced controller qualification;
 - industrial DS18B20 physical fault/recovery testing;
@@ -91,12 +94,13 @@ Payment/invoicing integration and live remote OTA/update execution also remain o
 1. `PROJECT_STATE.md`
 2. `IMPLEMENTATION_PLAN.md`
 3. `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`
-4. this audit
-5. `docs/architecture/roadmap.md`
-6. relevant P3/P6/hardware evidence packs for parallel external execution
+4. `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
+5. this audit
+6. `docs/architecture/roadmap.md`
+7. relevant P3/P6/hardware evidence packs for parallel external execution
 
-GitHub `main` remains authoritative after the P7 documentation change is reviewed and merged. Reconcile the local working copy with `origin/main` before implementation.
+After reconciling local `main` with GitHub `origin/main`, begin **P7-03 — License Lifecycle and Installation Binding UI**. No further interpretation step is required to choose the next software package.
 
 ## Audit Conclusion
 
-The current-state documentation set is reconciled to the post-P6 decision: P0-P6 remain closed at their documented software gates, while P7 is now the active approved final product-completion phase. Historical evidence is preserved; current documents no longer imply that P6 productization alone equals whole-product software completion.
+The current-state documentation set is reconciled through P7-02 closure. P7-01 and P7-02 are complete, merged, and CI verified; P7-03 is the exact continuation point. P7-04 through P7-08 and all external physical/provider/field/production/customer evidence remain open at their documented gates.

@@ -3,7 +3,10 @@
 **Date:** 1 September 2026  
 **Work package:** P7-02  
 **PR:** #142  
-**Status:** IMPLEMENTED; final merge subject to successful CI on the documented closure state
+**Final PR head:** `83631cbbae536c5b53c9f0ca99f6110aa76e683d`  
+**Final CI:** run #516 / workflow `33543271797` — SUCCESS  
+**Merge:** `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`  
+**Status:** COMPLETE / MERGED / CI VERIFIED
 
 ## Scope Closed
 
@@ -30,19 +33,18 @@ Authenticated platform actor identity remains server-derived; the create-custome
 
 ## Evidence and Data Boundary
 
-The owner overview now projects existing Site identity (`code`, `name`, `location`, `timezone`, `active`) and append-only commercial-event metadata needed for owner fleet context. It does not expose commercial event snapshots or customer-user credentials.
+The owner overview projects existing Site identity (`code`, `name`, `location`, `timezone`, `active`) and append-only commercial-event metadata needed for owner fleet context. It does not expose commercial event snapshots or customer-user credentials.
 
 A Site is shown as linked to a customer only when an existing commercial license or service record carries that customer/Site association. P7-02 does not invent or infer installation completion from Site existence alone.
 
 ## Verification
 
-Source implementation passed the normal backend and frontend gates before documentation closure:
+The final documented PR state passed the normal backend and frontend quality gates in CI run #516 / workflow `33543271797`:
 
-- CI run #512 / workflow run `33542959284`;
-- backend: install, typecheck, build, lint, formatting, tests — SUCCESS;
-- frontend: install, typecheck, lint, formatting, tests, build — SUCCESS.
+- backend install, typecheck, build, lint, formatting, tests — SUCCESS;
+- frontend install, typecheck, lint, formatting, tests, build — SUCCESS.
 
-A final CI run is required after this closure documentation is committed and before merge.
+PR #142 was then merged to authoritative `main` as merge commit `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 
 ## Scope Boundary
 
@@ -50,4 +52,4 @@ P7-02 does not claim billing/payment, invoicing, live OTA/update execution, phys
 
 ## Next Controlled Work
 
-P7-03 — License Lifecycle and Installation Binding UI.
+**P7-03 — License Lifecycle and Installation Binding UI.** This is the next-session software starting point after local `main` is reconciled to GitHub `main`.

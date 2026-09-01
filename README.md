@@ -14,8 +14,9 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | Need | Authoritative document |
 | --- | --- |
 | Where is the whole project now? | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority** |
-| What is the approved software/product execution plan? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
+| What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
+| What is the latest P7 closure evidence? | [`docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`](docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md) |
 | What did the current documentation audit conclude? | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md) |
 | What is the hardware validation path? | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md) |
 | Historical Sprint/BF/PVR progress | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only |
@@ -24,16 +25,18 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 ## Current Position
 
-P0-P6 are the delivered/CI-verified source baseline at their documented gates. A post-P6 product audit approved **P7 — Final Product Completion** because the complete approved product surface still needs owner-facing commercial UI/workflows and a final end-to-end product closure pass.
+P0-P6 are the delivered/CI-verified source baseline at their documented gates. **P7 — Final Product Completion — is active. P7-01 and P7-02 are complete, merged, and CI verified. P7-03 — License Lifecycle and Installation Binding UI — is the next controlled software work package.**
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
 - **P2:** software complete / merged / CI verified; physical controller qualification remains external.
 - **P3:** software complete / merged / CI verified; physical commissioning and customer acceptance remain external.
 - **P4:** software controls complete / merged / CI verified; production restore/endurance/DR evidence remains external.
-- **P5:** SYSTEM_OWNER backend/domain commercial operations complete / merged / CI verified; approved owner-facing product UI/workflows are assigned to P7.
+- **P5:** SYSTEM_OWNER backend/domain commercial operations complete / merged / CI verified.
 - **P6:** source productization complete / merged / CI verified; deployment, UAT, sign-off, and production acceptance remain external.
-- **P7:** **approved / planned / not yet implemented** — final software-product completion phase.
+- **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
+- **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
+- **P7-03:** **NEXT / START HERE**.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
@@ -41,16 +44,16 @@ BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 P7 consists of eight controlled work packages:
 
-1. SYSTEM_OWNER frontend boundary and console shell.
-2. Customer / Site fleet management.
-3. License lifecycle and installation-binding UI.
+1. SYSTEM_OWNER frontend boundary and console shell — complete.
+2. Customer / Site fleet management — complete.
+3. **License lifecycle and installation-binding UI — next.**
 4. Update-entitlement and release-eligibility UI.
 5. Maintenance, calibration and support fleet operations.
 6. Product UX and legacy cleanup.
 7. End-to-end product workflow review.
 8. Full regression, documentation reconciliation and software-product closure.
 
-BIO-EMS must not be described as **SOFTWARE PRODUCT COMPLETE** for the approved scope until P7 is implemented, merged, and CI verified.
+BIO-EMS must not be described as **SOFTWARE PRODUCT COMPLETE** for the approved scope until P7-01 through P7-08 are implemented, merged, and CI verified.
 
 ## Hardware Track
 
@@ -79,6 +82,8 @@ BIO-EMS currently includes:
 - P4 production-hardening controls.
 - P5 isolated SYSTEM_OWNER customer, license/update-entitlement, and maintenance oversight backend/domain workflows with append-only provenance.
 - P6 controlled `0.18.0` release manifest and machine-checkable release-package validation.
+- P7-01 isolated SYSTEM_OWNER login/session/route boundary and bilingual owner console shell.
+- P7-02 owner customer fleet list/detail/create workflow with recorded Site/installation context and commercial provenance.
 
 ## Architecture Boundary
 
@@ -102,4 +107,4 @@ Payment/invoicing integration and live remote OTA/update execution are also not 
 **Frontend:** React / TypeScript / Vite  
 **License:** Proprietary
 
-For development continuation, synchronize local `main` from GitHub first, then read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the P7 plan. Do not use old Sprint documents as the current project status.
+For development continuation, synchronize local `main` from GitHub first, then read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the P7 plan. **The next controlled implementation package is P7-03.** Do not use old Sprint documents as the current project status.
