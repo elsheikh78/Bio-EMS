@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "format:check": "prettier --write src/administration/passwordPolicy.ts src/pages/AdministrationPage.tsx && git diff -- src/administration/passwordPolicy.ts src/pages/AdministrationPage.tsx && exit 1",
+    "format:check": "prettier --check .",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
