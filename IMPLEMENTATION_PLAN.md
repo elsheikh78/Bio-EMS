@@ -4,7 +4,7 @@
 
 **Current controlled delivery sequence — reconciled 31 August 2026**
 
-The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, `docs/project-status.md`, `docs/SPRINT_PROGRESS.md`, approved ADRs, and the P0-P6 sequence below.
+The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, `docs/SPRINT_PROGRESS.md`, approved ADRs, and the P0-P6 sequence below.
 
 ## Current Position
 
@@ -13,7 +13,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 - P0 professional software/reporting baseline is complete at source level.
 - P1 Notification Delivery Engine software is complete, merged, and CI verified through PR #113 / integration commit `b1d2611866d2e7a8455d5ed898932ae91fe6068f` / CI run 319.
 - Live SMS-provider evidence, physical commissioning, MQTT/UAT evidence, and customer acceptance remain external gates.
-- P2 Site Controller Runtime is the next controlled implementation phase.
+- P2 Site Controller Runtime software is complete. P3 Pilot Commissioning Tooling is the active implementation phase.
 
 ## P0-P6 Sequence
 
@@ -43,9 +43,9 @@ Open evidence: configure a real provider, controlled E.164 recipient, deploy the
 
 ### P2 — Site Controller Runtime
 
-Status: **NEXT / FOUNDATION PARTIAL**
+Status: **SOFTWARE COMPLETE / EXTERNAL PHYSICAL EVIDENCE OPEN**
 
-BF-08 already defines the versioned offline-critical configuration synchronization contract. P2 must implement and verify the field/runtime side without weakening the server authority boundary.
+BF-08 and the P2 runtime slices are implemented and CI verified. Physical controller, DS18B20, SIM800L, deployed MQTT and endurance evidence remain external gates.
 
 Target slices:
 
@@ -63,9 +63,9 @@ No P2 slice may claim field completion without controller/firmware and bench evi
 
 ### P3 — Pilot Commissioning Tooling
 
-Status: **PARTIAL / OPEN EVIDENCE**
+Status: **ACTIVE / PARTIAL / OPEN EVIDENCE**
 
-Turn the existing controlled Pilot documentation into repeatable commissioning evidence: device/controller registration, sensor mapping, calibration verification, communication tests, Alarm tests, notification tests, recovery tests, and signed commissioning records.
+Turn the existing controlled Pilot documentation into repeatable commissioning evidence. P3-01 establishes the evidence model; P3-02 adds durable commissioning sessions, checks, append-only evidence/deviations/decisions, evidence provenance, uniqueness constraints, repository persistence, and acceptance gating. P3-03 protected Site-scoped API is next.
 
 ### P4 — Production Hardening
 

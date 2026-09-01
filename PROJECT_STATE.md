@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.17.0`
 
-**Current phase:** P3 Pilot Commissioning Tooling has started with P3-01 Commissioning Evidence Foundation. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
+**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 Commissioning Evidence Foundation is complete and P3-02 Commissioning Session Domain/Persistence is complete at source level pending final CI/merge. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
 
 ## Current controlled continuation
 
@@ -51,7 +51,7 @@
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 establishes the controlled commissioning evidence model and slice sequence. Existing Pilot documents remain controlled inputs; executable workflow, persistence/API/UI/export and field evidence remain open.
+- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 evidence foundation and P3-02 durable session/evidence persistence are implemented. Protected API, verification orchestration, UI/export, dry-run/UAT and field evidence remain open.
 - **P4 — Production Hardening:** **PARTIAL.** Deployment validation, persistence/recovery, TLS/QoS, backup, controller durability, and replay durability foundations exist. Production operational/endurance evidence remains open.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
@@ -60,8 +60,8 @@
 
 P3 turns controlled Pilot documentation into repeatable commissioning tooling without manufacturing field evidence.
 
-- P3-01 — Commissioning Evidence Foundation — **IN PROGRESS**.
-- P3-02 — Commissioning Session Domain/Persistence.
+- P3-01 — Commissioning Evidence Foundation — **COMPLETE**.
+- P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / CI-VERIFICATION PENDING**.
 - P3-03 — Protected Site-scoped Commissioning API.
 - P3-04 — Configuration, Sensor Mapping and Calibration Verification.
 - P3-05 — Functional Test Orchestration and evidence linking.
