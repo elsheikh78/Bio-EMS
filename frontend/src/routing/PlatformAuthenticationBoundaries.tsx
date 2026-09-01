@@ -2,25 +2,8 @@ import { Box, CircularProgress } from "@mui/material";
 import type { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { NotFoundPage } from "../pages/NotFoundPage";
-import {
-  usePlatformAuthentication,
-  type PlatformAuthenticationStatus,
-} from "../platform-auth/PlatformAuthenticationProvider";
-
-export type PlatformRouteDecision =
-  | "allow"
-  | "login"
-  | "loading"
-  | "not-found";
-
-export function getPlatformRouteDecision(
-  status: PlatformAuthenticationStatus,
-): PlatformRouteDecision {
-  if (status === "authenticated") return "allow";
-  if (status === "unauthenticated") return "login";
-  if (status === "bootstrapping") return "loading";
-  return "not-found";
-}
+import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
+import { getPlatformRouteDecision } from "./platformRouteDecision";
 
 export function PlatformAuthenticationBoundary() {
   const { status } = usePlatformAuthentication();
