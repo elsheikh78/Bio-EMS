@@ -299,14 +299,14 @@ export function SystemOwnerCustomerFleetPage() {
               label={text.code}
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              inputProps={{ maxLength: 64 }}
+              slotProps={{ htmlInput: { maxLength: 64 } }}
             />
             <TextField
               required
               label={text.name}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              inputProps={{ maxLength: 200 }}
+              slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             <FormControl required>
               <InputLabel id="platform-customer-status-label">{text.status}</InputLabel>
