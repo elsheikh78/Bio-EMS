@@ -18,7 +18,7 @@ import { migration014 } from "../migrations/014_create_device_communication_even
 import { migration015 } from "../migrations/015_create_notification_deliveries";
 import { migration016 } from "../migrations/016_add_notification_attempt_phases";
 
-const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+const ALL_MIGRATION_VERSIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
 function getUserSchema(database: Database.Database) {
   return {
@@ -105,7 +105,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(16);
+    expect(historyCount.count).toBe(17);
     expect(warningColumns).toHaveLength(2);
   });
 
