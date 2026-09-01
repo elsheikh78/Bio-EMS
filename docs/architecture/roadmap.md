@@ -10,27 +10,29 @@
 
 The repository completed, merged, and CI-verified P0-P6. This includes the core EMS platform, reporting, notification delivery, Site Controller runtime, commissioning tooling, production-hardening controls, P5 SYSTEM_OWNER commercial backend/domain workflows, and P6 productization/deployment/acceptance tooling.
 
-The post-P6 product audit did not invalidate those closures. It identified a final product-surface gap: P5 owner capabilities exist in backend/domain form but did not yet have a complete approved SYSTEM_OWNER frontend/commercial console, and a final end-to-end product UX/regression pass is still required.
+The post-P6 product audit did not invalidate those closures. It identified a final product-surface gap: P5 owner capabilities existed in backend/domain form but did not yet have a complete approved SYSTEM_OWNER frontend/commercial console, and a final end-to-end product UX/regression pass is still required.
 
 ## Active Software Roadmap — P7 Final Product Completion
 
-Status: **ACTIVE — P7-01 IMPLEMENTED / FINAL CI-MERGE CLOSURE; P7-02 NEXT**
+Status: **ACTIVE — P7-01 COMPLETE; P7-02 IMPLEMENTED / FINAL CLOSURE; P7-03 NEXT**
 
 Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 
 ### P7-01 — SYSTEM_OWNER Console Foundation
 
-Status: **IMPLEMENTED / PR #141 / FINAL CI-MERGE CLOSURE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 
-Implemented an owner-only frontend authentication/session boundary and protected console surface, invisible from customer ADMIN/OPERATOR/VIEWER navigation and constrained to the existing isolated SYSTEM_OWNER trust domain. Closure record: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
+Implemented an owner-only frontend authentication/session boundary and protected console surface, invisible from customer ADMIN/OPERATOR/VIEWER navigation and constrained to the existing isolated SYSTEM_OWNER trust domain. PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`. Closure record: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
 
 ### P7-02 — Customer / Site Fleet Management
 
-Status: **NEXT CONTROLLED WORK PACKAGE**
+Status: **IMPLEMENTED / PR #142 / FINAL DOCUMENTATION-CI-MERGE CLOSURE**
 
-Expose approved customer/fleet identity and supported installation/Site context through controlled owner workflows.
+Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/create workflows, existing Site/installation context from commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle mutation remains absent because the backend does not authorize it. Source gates passed CI run #512 / workflow `33542959284`; final CI is required after closure documentation. Closure record: `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
 
 ### P7-03 — License Lifecycle / Installation Binding
+
+Status: **NEXT CONTROLLED WORK PACKAGE**
 
 Expose license inventory, validity/lifecycle, and supported installation/site binding without conflating license state with external payment settlement.
 
@@ -87,6 +89,6 @@ No separate Monitoring Point or Asset backend domain is claimed as implemented b
 
 ## Release Boundary
 
-`v0.17.0` remains the latest published tagged release while repository source-software version remains `0.18.0`. P7-01 does not change either value. A later release must be explicitly tagged and published before it is described as the latest published release.
+`v0.17.0` remains the latest published tagged release while repository source-software version remains `0.18.0`. P7-01 and P7-02 do not change either value. A later release must be explicitly tagged and published before it is described as the latest published release.
 
 Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance remain separate gates.
