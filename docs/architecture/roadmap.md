@@ -1,10 +1,10 @@
 # BIO-EMS Development Roadmap
 
-Latest tagged release: `v0.15.0`; current source-software version: `0.16.0`
+Latest tagged release: `v0.17.0`; current source-software version: `0.18.0`
 
-Repository status: Sprints 13 through 15 are complete, merged, verified, and closed.
-The current phase is controlled BIO EGYPT field-pilot preparation; field
-commissioning and Pilot acceptance remain unexecuted.
+Repository status: P0 through P6 source-software delivery is complete, merged, and CI verified.
+The current execution track is controlled BIO EGYPT field-pilot preparation; physical
+qualification, field commissioning, UAT, and Pilot acceptance remain unexecuted.
 
 ## Phase 1 — Foundation
 
@@ -80,11 +80,14 @@ delivery-channel implementations, and approved industry-specific capabilities.
 
 ## Phase 8 — Production Operations
 
-Pilot deployment validation, backup/restore procedures, and rollback guidance are
-implemented. Field execution, broader production monitoring, commercial operations,
-and OTA updates remain separately scoped.
+Pilot deployment validation, backup/restore procedures, rollback guidance, isolated
+SYSTEM_OWNER commercial records, and controlled release validation are implemented.
+Field execution, broader production monitoring, billing/payment execution, and OTA
+delivery remain separately scoped.
 
 ## Release Boundary
 
-The `0.16.0` source boundary adds BF-10 reporting completion after `v0.15.0`. Field deployment,
-commissioning evidence, and Pilot acceptance remain outside the software release claim.
+The `0.18.0` source boundary completes P3 commissioning tooling, P4 production-hardening
+controls, P5 isolated commercial operations, and P6 productization after `v0.17.0`.
+Field deployment, physical/live evidence, commissioning, UAT, and Pilot/customer
+acceptance remain outside the software release claim.

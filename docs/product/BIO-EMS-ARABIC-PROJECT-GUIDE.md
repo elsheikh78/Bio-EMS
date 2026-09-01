@@ -345,13 +345,13 @@ Sensors / Devices
 
 ## 28. الحالة الحالية للمنتج
 
-الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management مع Audit integration وSYSTEM_OWNER boundary وAlarm Acknowledgement وAudit persistence foundation وFrontend Foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى Sensor calibration history وDevice health وNotification events وSMS failover contract وأساس جاهزية النشر والاستعادة.
+الحالة الحالية تشمل Backend API وDomain Layer وSQLite وInfluxDB وMQTT وDevice Lifecycle وAuthentication/RBAC وADMIN User Management مع Audit integration وSYSTEM_OWNER boundary وAlarm Acknowledgement وAudit persistence foundation وProfessional AppShell وOperational Dashboard وMonitored Areas، بالإضافة إلى التقارير بصيغ Preview/CSV/PDF، وSensor calibration history، وDevice health، وNotification Delivery، وSite Controller runtime، وأدوات Commissioning، وضوابط Production Hardening، وسجلات Customer/Licensing/Maintenance المعزولة، وحزمة Productization للإصدار `0.18.0`.
 
-الـPublished Release الموثق حاليًا هو `v0.15.0`، ويشمل أعمال Sprint 14 وSprint 15 المعتمدة داخل المستودع، لكنه لا يعني تنفيذ أو قبول الـPilot ميدانيًا.
+الـPublished Release الموثق حاليًا هو `v0.17.0`، بينما إصدار السورس الجاهز للنشر هو `0.18.0`. نجاح اختبارات السورس أو نشر Release لا يعني تنفيذ أو قبول الـPilot ميدانيًا.
 
 ## 29. ما المتبقي للوصول إلى Commercial Production-Ready EMS؟
 
-من أهم المسارات المتبقية: التنفيذ والتوثيق الميداني لـBIO EGYPT، استكمال الواجهات التشغيلية، Monitoring Point architecture، Channel provider implementations، Reports، ربط Audit Trail بباقي عمليات التغيير، Advanced Device Provisioning، Customer/Licensing Management، OTA، وعمليات الإنتاج التجارية الأوسع.
+المتبقي خارج إغلاق P0-P6 البرمجي يشمل: شراء واختبار الهاردوير، التأهيل الفعلي للـController والحساسات وSIM800L، التشغيل الميداني والتوثيق الحقيقي لـBIO EGYPT، اختبارات التحمل وUAT واعتماد الجودة والعميل، Production Deployment/Acceptance، تنفيذ مزودات الإرسال الحية، Billing/Payment execution، وOTA delivery. كما تظل Monitoring Point architecture وAdvanced Device Provisioning توسعات منتج لاحقة وليست متطلبات ناقصة من الإصدار الحالي.
 
 ## 30. الصورة النهائية المستهدفة
 
