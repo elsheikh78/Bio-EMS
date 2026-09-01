@@ -128,10 +128,12 @@ describe("SYSTEM_OWNER customer fleet", () => {
     createCustomer.mockResolvedValue({ success: true, id: 2 });
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Add customer" }));
-    fireEvent.change(screen.getByLabelText("Code"), {
+    const codeInput = await screen.findByRole("textbox", { name: "Code" });
+    const nameInput = await screen.findByRole("textbox", { name: "Name" });
+    fireEvent.change(codeInput, {
       target: { value: "ACME" },
     });
-    fireEvent.change(screen.getByLabelText("Name"), {
+    fireEvent.change(nameInput, {
       target: { value: "ACME Pharma" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Create customer" }));
