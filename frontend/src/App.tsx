@@ -13,15 +13,34 @@ import { AlarmsPage } from "./pages/AlarmsPage";
 import { DevicesPage } from "./pages/DevicesPage";
 import { NotificationDeliveriesPage } from "./pages/NotificationDeliveriesPage";
 import { CommissioningPage } from "./pages/CommissioningPage";
+import { SystemOwnerConsolePage } from "./pages/SystemOwnerConsolePage";
+import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
   PermissionBoundary,
 } from "./routing/AuthenticationBoundaries";
+import {
+  PlatformAuthenticationBoundary,
+  PlatformLoginBoundary,
+} from "./routing/PlatformAuthenticationBoundaries";
 
 export function App() {
   return (
     <Routes>
+      <Route
+        path="system-owner/login"
+        element={
+          <PlatformLoginBoundary>
+            <SystemOwnerLoginPage />
+          </PlatformLoginBoundary>
+        }
+      />
+      <Route element={<PlatformAuthenticationBoundary />}>
+        <Route path="system-owner" element={<SystemOwnerConsolePage />} />
+        <Route path="system-owner/*" element={<NotFoundPage />} />
+      </Route>
+
       <Route
         path="login"
         element={
