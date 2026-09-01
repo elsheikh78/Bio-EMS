@@ -110,7 +110,9 @@ export function SystemOwnerCustomerFleetPage() {
   const [createError, setCreateError] = useState<string>();
 
   const selectedId = customerId ? Number(customerId) : undefined;
-  const selected = overview.data?.customers.find((item) => item.id === selectedId);
+  const selected = overview.data?.customers.find(
+    (item) => item.id === selectedId,
+  );
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -137,7 +139,10 @@ export function SystemOwnerCustomerFleetPage() {
 
   if (overview.isPending) {
     return (
-      <Box component="main" sx={{ display: "grid", minHeight: "100vh", placeItems: "center" }}>
+      <Box
+        component="main"
+        sx={{ display: "grid", minHeight: "100vh", placeItems: "center" }}
+      >
         <Box sx={{ textAlign: "center" }}>
           <CircularProgress />
           <Typography sx={{ mt: 2 }}>{text.loading}</Typography>
@@ -151,7 +156,11 @@ export function SystemOwnerCustomerFleetPage() {
       <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
         <Alert
           severity="error"
-          action={<Button onClick={() => void overview.refetch()}>{text.retry}</Button>}
+          action={
+            <Button onClick={() => void overview.refetch()}>
+              {text.retry}
+            </Button>
+          }
         >
           {text.loadError}
         </Alert>
@@ -161,16 +170,25 @@ export function SystemOwnerCustomerFleetPage() {
 
   const data = overview.data;
   const relatedLicenseSiteIds = data.licenses
-    .filter((license) => license.customerId === selected?.id && license.siteId !== null)
+    .filter(
+      (license) =>
+        license.customerId === selected?.id && license.siteId !== null,
+    )
     .map((license) => license.siteId);
   const relatedServiceSiteIds = data.serviceEvents
-    .filter((event) => event.customerId === selected?.id && event.siteId !== null)
+    .filter(
+      (event) => event.customerId === selected?.id && event.siteId !== null,
+    )
     .map((event) => event.siteId);
-  const linkedSiteIds = new Set([...relatedLicenseSiteIds, ...relatedServiceSiteIds]);
+  const linkedSiteIds = new Set([
+    ...relatedLicenseSiteIds,
+    ...relatedServiceSiteIds,
+  ]);
   const linkedSites = data.sites.filter((site) => linkedSiteIds.has(site.id));
   const customerEvidence = selected
     ? data.commercialEvents.filter(
-        (event) => event.entityType === "CUSTOMER" && event.entityId === selected.id,
+        (event) =>
+          event.entityType === "CUSTOMER" && event.entityId === selected.id,
       )
     : [];
 
@@ -229,10 +247,20 @@ export function SystemOwnerCustomerFleetPage() {
             <Card variant="outlined">
               <CardContent>
                 <Typography component="h2" variant="h6">
-                  {text.relatedLicenses}: {data.licenses.filter((item) => item.customerId === selected.id).length}
+                  {text.relatedLicenses}:{" "}
+                  {
+                    data.licenses.filter(
+                      (item) => item.customerId === selected.id,
+                    ).length
+                  }
                 </Typography>
                 <Typography component="h2" variant="h6">
-                  {text.relatedService}: {data.serviceEvents.filter((item) => item.customerId === selected.id).length}
+                  {text.relatedService}:{" "}
+                  {
+                    data.serviceEvents.filter(
+                      (item) => item.customerId === selected.id,
+                    ).length
+                  }
                 </Typography>
               </CardContent>
             </Card>
@@ -242,11 +270,14 @@ export function SystemOwnerCustomerFleetPage() {
                   {text.evidence}
                 </Typography>
                 {customerEvidence.length === 0 ? (
-                  <Typography color="text.secondary">{text.noEvidence}</Typography>
+                  <Typography color="text.secondary">
+                    {text.noEvidence}
+                  </Typography>
                 ) : (
                   customerEvidence.map((event) => (
                     <Typography key={event.id}>
-                      {event.eventType} — {event.occurredAt} — {event.actorIdentity}
+                      {event.eventType} — {event.occurredAt} —{" "}
+                      {event.actorIdentity}
                     </Typography>
                   ))
                 )}
@@ -278,7 +309,10 @@ export function SystemOwnerCustomerFleetPage() {
                   <TableCell>{customer.status}</TableCell>
                   <TableCell>{customer.createdAt}</TableCell>
                   <TableCell>
-                    <Button component={Link} to={`/system-owner/customers/${customer.id}`}>
+                    <Button
+                      component={Link}
+                      to={`/system-owner/customers/${customer.id}`}
+                    >
                       {text.details}
                     </Button>
                   </TableCell>
@@ -289,7 +323,12 @@ export function SystemOwnerCustomerFleetPage() {
         </TableContainer>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <Box component="form" onSubmit={(event) => void submit(event)}>
           <DialogTitle>{text.createTitle}</DialogTitle>
           <DialogContent sx={{ display: "grid", gap: 2, pt: 1 }}>
@@ -309,7 +348,9 @@ export function SystemOwnerCustomerFleetPage() {
               slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             <FormControl required>
-              <InputLabel id="platform-customer-status-label">{text.status}</InputLabel>
+              <InputLabel id="platform-customer-status-label">
+                {text.status}
+              </InputLabel>
               <Select
                 labelId="platform-customer-status-label"
                 label={text.status}
@@ -326,7 +367,11 @@ export function SystemOwnerCustomerFleetPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setDialogOpen(false)}>{text.cancel}</Button>
-            <Button type="submit" variant="contained" disabled={createCustomer.isPending}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={createCustomer.isPending}
+            >
               {text.save}
             </Button>
           </DialogActions>
