@@ -2,7 +2,24 @@
 
 ## [Unreleased]
 
-No source changes are recorded after the `0.17.0` release-preparation baseline.
+No source changes are recorded after the `0.18.0` release-preparation baseline.
+
+## [0.18.0] - 2026-09-01
+
+### Release scope
+
+Source-software milestone completing the P3 commissioning tooling, P4 production-hardening controls, P5 isolated commercial operations, and P6 controlled productization package.
+
+### Added / Changed
+
+- Added Site-scoped commissioning sessions, evidence, deviations, acceptance decisions, readiness UI, and controlled CSV/PDF records.
+- Added deployment-readiness validation for separated backups, retention, logging, and graceful shutdown.
+- Added SYSTEM_OWNER-only customer, license/update-entitlement, and maintenance oversight records with append-only provenance.
+- Reconciled the product version and backend package metadata and added a machine-checkable controlled release manifest.
+
+### Acceptance boundary
+
+Automated software completion does not claim production deployment, physical qualification, live-provider delivery, field commissioning/endurance, BIO EGYPT UAT, customer sign-off, or production acceptance. Those evidence gates remain open until actually performed.
 
 ## [0.17.0] - 2026-08-31
 

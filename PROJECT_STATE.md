@@ -4,9 +4,9 @@
 
 **Latest published tagged release:** `v0.17.0`
 
-**Current source-software version:** `0.17.0`
+**Current source-software version:** `0.18.0`
 
-**Current phase:** P3 Pilot Commissioning Tooling software is implemented through P3-09 pending current PR CI/merge. P3-03 is merged through PR #130 and P3-04 through PR #131 / merge `6382e3cfd53855f9f97aaa4296e21374eea21b60`. Physical controller qualification and BIO EGYPT commissioning remain external evidence gates.
+**Current phase:** P0-P6 source-software scope is complete through P6 productization. P3-P5 are merged and CI verified; P6 release reconciliation is the current controlled change. Physical controller qualification, production deployment, BIO EGYPT commissioning/UAT, and customer acceptance remain external evidence gates.
 
 ## Current controlled continuation
 
@@ -54,10 +54,10 @@
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Controlled functional checklist, Site-scoped session record, readiness UI and CSV/PDF export are implemented. Field evidence and customer acceptance remain open.
-- **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / CURRENT CI-MERGE PENDING.** Deployment validation now includes operational retention, shutdown and separated-backup controls. Production restore/endurance/DR evidence remains external.
-- **P5 — SYSTEM_OWNER / Commercial Operations:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Isolated customer/fleet, license/update entitlement and service oversight records with append-only SYSTEM_OWNER provenance are implemented.
-- **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
+- **P3 — Pilot Commissioning Tooling:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PRs #130-#132. Field evidence and customer acceptance remain open.
+- **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED.** PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`. Production restore/endurance/DR evidence remains external.
+- **P5 — SYSTEM_OWNER / Commercial Operations:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. Billing/payment execution and production operational evidence remain external.
+- **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / CURRENT CI-MERGE PENDING.** Version/manifest reconciliation and the controlled procedure are implemented. Deployment, field commissioning, UAT/sign-off, and production acceptance remain external gates.
 
 ## P3 Execution Sequence
 
@@ -67,9 +67,9 @@ P3 turns controlled Pilot documentation into repeatable commissioning tooling wi
 - P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / MERGED / CI VERIFIED**.
 - P3-03 — Protected Site-scoped Commissioning API — **COMPLETE / MERGED / CI VERIFIED**.
 - P3-04 — Configuration, Sensor Mapping and Calibration Verification — **COMPLETE / MERGED / CI VERIFIED**.
-- P3-05 — Functional Test Orchestration and evidence linking — **IMPLEMENTED**.
-- P3-06 — Commissioning UI — **IMPLEMENTED**.
-- P3-07 — Commissioning Record PDF/CSV export and decision snapshot — **IMPLEMENTED**.
+- P3-05 — Functional Test Orchestration and evidence linking — **COMPLETE / MERGED / CI VERIFIED**.
+- P3-06 — Commissioning UI — **COMPLETE / MERGED / CI VERIFIED**.
+- P3-07 — Commissioning Record PDF/CSV export and decision snapshot — **COMPLETE / MERGED / CI VERIFIED**.
 - P3-08 — BIO EGYPT software dry-run/UAT package — **SOFTWARE PACKAGE COMPLETE / FIELD UAT OPEN**.
 - P3-09 — P3 closure audit — **SOFTWARE COMPLETE / EXTERNAL EVIDENCE OPEN**.
 
@@ -126,7 +126,7 @@ No separate Monitoring Point or Asset backend domain is claimed by this state do
 
 ## Deferred / Open Product Scope
 
-Broader Asset/discovery/provisioning, OTA, final production controller firmware/hardware adapters, fleet/customer/license/update commercial operations, packaging/release operationalization, physical commissioning, live-provider acceptance, and customer acceptance remain open unless later work explicitly implements and verifies them.
+Broader Asset/discovery/provisioning, OTA delivery, final production controller firmware/hardware adapters, billing/payment execution, physical commissioning, live-provider acceptance, and customer acceptance remain open unless later work explicitly implements and verifies them.
 
 ## Repository Continuation Rule
 

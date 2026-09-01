@@ -75,13 +75,13 @@ Complete operational deployment evidence around backup/restore, process supervis
 
 ### P5 — SYSTEM_OWNER / Commercial Operations
 
-Status: **FOUNDATION IMPLEMENTED / BROADER OPERATIONS OPEN**
+Status: **SOFTWARE COMPLETE / CI VERIFIED**
 
 Preserve the isolated SYSTEM_OWNER trust domain and append-only audit boundary while adding only approved platform-owner workflows. Candidate later scope includes customer/site fleet visibility, license lifecycle, update entitlement, maintenance/calibration oversight, and commercial operational evidence. Customer ADMIN must never administer or discover SYSTEM_OWNER.
 
 ### P6 — Productization / Deployment / Acceptance
 
-Status: **OPEN**
+Status: **SOFTWARE PRODUCTIZATION COMPLETE / EXTERNAL ACCEPTANCE OPEN**
 
 Close controlled release packaging, installer/deployment procedure, version/release reconciliation, production deployment evidence, BIO EGYPT field commissioning, customer UAT, final sign-off, and release acceptance.
 

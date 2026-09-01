@@ -1,6 +1,6 @@
 {
   "name": "bio-ems-backend",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "BIO-EMS Enterprise Environmental Monitoring Backend",
   "private": true,
   "type": "commonjs",
@@ -24,6 +24,7 @@
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
     "bootstrap:system-owner": "tsx src/scripts/bootstrap-system-owner.ts",
     "validate:deployment": "node --import tsx src/scripts/validate-deployment.ts",
+    "validate:release": "node --import tsx src/scripts/validate-release.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src database",
