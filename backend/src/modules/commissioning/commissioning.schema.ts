@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const commissioningSiteParamsSchema = z
-  .object({ siteId: z.coerce.number().int().positive() })
-  .strict();
+const positiveIntegerParam = z.string().regex(/^[1-9]\d*$/);
+
+export const commissioningSiteParamsSchema = z.object({ siteId: positiveIntegerParam }).strict();
 
 export const commissioningSessionParamsSchema = z
   .object({
-    siteId: z.coerce.number().int().positive(),
-    sessionId: z.coerce.number().int().positive(),
+    siteId: positiveIntegerParam,
+    sessionId: positiveIntegerParam,
   })
   .strict();
 
