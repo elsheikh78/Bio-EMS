@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPlatformRouteDecision } from "./PlatformAuthenticationBoundaries";
+import { getPlatformRouteDecision } from "./platformRouteDecision";
 
 describe("SYSTEM_OWNER route boundary", () => {
   it("allows only an authenticated platform session", () => {
