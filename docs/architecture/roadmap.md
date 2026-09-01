@@ -6,53 +6,53 @@
 
 `PROJECT_STATE.md` is the single authoritative current-state document. This roadmap describes the forward product path and must not be used to infer completion of physical, field, provider, UAT, or customer-acceptance gates.
 
-## Delivered Software Baseline
+## Delivered Software Baseline — P0-P6
 
-The repository has completed, merged, and CI-verified the controlled P0-P6 source-software sequence.
+The repository completed, merged, and CI-verified P0-P6. This includes the core EMS platform, reporting, notification delivery, Site Controller runtime, commissioning tooling, production-hardening controls, P5 SYSTEM_OWNER commercial backend/domain workflows, and P6 productization/deployment/acceptance tooling.
 
-### Foundation and Core Platform — COMPLETE
+The post-P6 product audit did not invalidate those closures. It identified a final product-surface gap: P5 owner capabilities exist in backend/domain form but do not yet have a complete approved SYSTEM_OWNER frontend/commercial console, and a final end-to-end product UX/regression pass is still required.
 
-- TypeScript/Express backend and React frontend.
-- SQLite configuration/versioned migrations and InfluxDB time-series storage.
-- MQTT telemetry ingestion and unified Alarm evaluation.
-- Site, Room/Monitored Area, Device, Sensor, User, reporting, notification, audit, and operational APIs.
-- JWT Authentication, active-User enforcement, centralized RBAC, ADMIN User Management, and isolated SYSTEM_OWNER trust boundary.
-- Device onboarding lifecycle and telemetry trust-boundary enforcement.
-- Dashboard and Monitored Areas with authenticated telemetry-driven refresh plus polling fallback.
+## Active Software Roadmap — P7 Final Product Completion
 
-### P0 — Professional Software / Reporting Baseline — COMPLETE
+Status: **APPROVED / PLANNED / NOT YET IMPLEMENTED**
 
-All five controlled report families support Preview/CSV/PDF: Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations.
+Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 
-### P1 — Notification Delivery Engine — SOFTWARE COMPLETE
+### P7-01 — SYSTEM_OWNER Console Foundation
 
-Durable delivery queue, worker/runtime, SMS-provider boundary, Alarm escalation orchestration, and protected Delivery Operations are implemented and CI verified. Live provider evidence remains external.
+Create an owner-only frontend boundary and navigation surface, invisible to customer ADMIN/OPERATOR/VIEWER identities and protected by the existing isolated SYSTEM_OWNER trust domain.
 
-### P2 — Site Controller Runtime — SOFTWARE COMPLETE
+### P7-02 — Customer / Site Fleet Management
 
-P2-01 through P2-09 plus durability hardening are merged and CI verified, including deterministic runtime behavior, BF-08 configuration receipt/integrity, durable known-good recovery, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover contract/runtime, reconnect reconciliation, controller-health evidence, qualification gates, and durable replay acceptance.
+Expose approved customer/fleet identity and supported installation/Site context through controlled owner workflows.
 
-Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
+### P7-03 — License Lifecycle / Installation Binding
 
-### P3 — Pilot Commissioning Tooling — SOFTWARE COMPLETE
+Expose license inventory, validity/lifecycle, and supported installation/site binding without conflating license state with external payment settlement.
 
-Commissioning sessions/checks, append-only evidence/deviations/decisions, Site-scoped APIs, configuration/mapping/calibration verification, functional-test orchestration, commissioning UI, CSV/PDF commissioning records, and BIO EGYPT software dry-run/UAT package are complete. Field commissioning and customer acceptance remain open.
+### P7-04 — Update Entitlement / Release Eligibility
 
-### P4 — Production Hardening — SOFTWARE CONTROLS COMPLETE
+Expose approved entitlement and eligibility workflows while keeping remote OTA/update execution explicitly outside the implemented boundary unless separately added.
 
-Production-hardening controls covering deployment validation, backup/restore, process supervision, configuration/secrets boundaries, TLS/QoS, persistence/recovery, observability, retention, upgrade/rollback, and disaster-recovery evidence structures are implemented. Production execution evidence remains external.
+### P7-05 — Maintenance / Calibration / Support Fleet Operations
 
-### P5 — SYSTEM_OWNER / Commercial Operations — SOFTWARE COMPLETE
+Provide owner-level fleet oversight and actionable status across the P5 commercial operations domain while preserving site-level evidence boundaries.
 
-The isolated SYSTEM_OWNER trust domain and approved commercial-operations workflows are implemented without exposing SYSTEM_OWNER administration/discovery to customer ADMIN users. Billing/payment execution and live commercial operations remain external or later scope where applicable.
+### P7-06 — UX / Legacy Cleanup
 
-### P6 — Productization / Deployment / Acceptance — SOFTWARE PRODUCTIZATION COMPLETE
+Remove or reconcile stale/dead frontend residue, including obsolete Sprint-14 Foundation/deferred text, and review navigation, loading/error/empty states, responsive behavior, accessibility, and localization.
 
-Controlled productization/deployment/acceptance tooling and documentation are complete at source level through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
+### P7-07 — End-to-End Product Workflow Audit
 
-## Current Forward Roadmap — External Evidence and Field Execution
+Exercise every exposed operational, administration, reporting, commissioning, and SYSTEM_OWNER workflow for permission consistency, primary actions, API/error behavior, state refresh, and exports.
 
-The next work is not a repeat of P0-P6 source implementation. It is controlled execution and evidence collection:
+### P7-08 — Full Regression / Documentation / Closure
+
+Run the complete software quality gate and reconcile all current-state documentation with actual P7 evidence. Only successful P7 closure permits the status **SOFTWARE PRODUCT COMPLETE** for the approved scope.
+
+## Parallel External Evidence and Field Roadmap
+
+P7 is software-product completion. The following remain separate evidence tracks and may proceed in parallel where controlled resources are available:
 
 1. Procure and assemble the initial controller test kit.
 2. Execute hardware validation HV-01 through HV-15 for Standard/Advanced controller paths as applicable.
@@ -69,9 +69,9 @@ The next work is not a repeat of P0-P6 source implementation. It is controlled e
 
 The controlled Pilot remains temperature-only using industrial DS18B20 sensors across two Sites, total 20 Sensors. Repository completion does not mean those Sensors/controllers are installed, commissioned, or accepted.
 
-## Product Expansion After Evidence Gates
+## Later / External Product Integrations
 
-Potential later scope includes broader Asset/discovery/provisioning, Monitoring Point/Asset domain expansion where formally approved, OTA delivery, production hardware/firmware adapters, additional environmental parameters and industry verticals, billing/payment execution, and broader fleet/commercial operations.
+Unless explicitly approved and implemented, later scope includes payment/invoicing integration, live remote OTA/update execution, broader Asset/discovery/provisioning, final production hardware/firmware adapters, additional environmental parameters/industry verticals, and other commercial integrations.
 
 ## Domain Boundary
 
@@ -83,6 +83,6 @@ No separate Monitoring Point or Asset backend domain is claimed as implemented b
 
 ## Release Boundary
 
-`v0.17.0` remains the latest published tagged release while the repository source-software version is `0.18.0`. A later release must be explicitly tagged and published before it is described as the latest published release.
+`v0.17.0` remains the latest published tagged release while repository source-software version remains `0.18.0`. P7 planning does not change either value. A later release must be explicitly tagged and published before it is described as the latest published release.
 
-Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance are separate gates.
+Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance remain separate gates.
