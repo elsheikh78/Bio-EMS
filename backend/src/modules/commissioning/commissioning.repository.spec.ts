@@ -12,8 +12,17 @@ describe("CommissioningRepository", () => {
     database.pragma("foreign_keys = ON");
     database.exec(`
       CREATE TABLE sites (id INTEGER PRIMARY KEY);
-      CREATE TABLE devices (id INTEGER PRIMARY KEY);
-      CREATE TABLE sensors (id INTEGER PRIMARY KEY);
+      CREATE TABLE devices (
+        id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, device_id TEXT NOT NULL,
+        activated INTEGER NOT NULL DEFAULT 0
+      );
+      CREATE TABLE rooms (id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, code TEXT NOT NULL);
+      CREATE TABLE sensors (
+        id INTEGER PRIMARY KEY, uuid TEXT NOT NULL, code TEXT NOT NULL, room_id INTEGER NOT NULL,
+        device_id INTEGER NOT NULL, channel INTEGER NOT NULL, enabled INTEGER NOT NULL DEFAULT 1,
+        calibration_status TEXT NOT NULL DEFAULT 'NOT_CALIBRATED', calibration_due_at TEXT,
+        certificate_reference TEXT
+      );
       INSERT INTO sites (id) VALUES (1);
     `);
     migration017.up(database);

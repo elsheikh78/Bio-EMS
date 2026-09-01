@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.17.0`
 
-**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 Commissioning Evidence Foundation is complete and P3-02 Commissioning Session Domain/Persistence is merged and CI verified. P3-03 Protected Site-scoped Commissioning API is implemented on PR #130, with normal CI run #434 successful on pre-handoff head `2f0cf5d9abb4d4b7f82ddd3c257e560d6bdd4b9b`; the PR remains draft for final Codex review and newest-head CI verification before merge. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
+**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 and P3-02 are complete, and P3-03 Protected Site-scoped Commissioning API is merged and CI verified through PR #130 / merge commit `4500cd49c3bad6ba4b080e0c8cfd16c0958317be`. P3-04 configuration/mapping/calibration readiness is the active slice. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
 
 ## Current controlled continuation
 
@@ -65,8 +65,8 @@ P3 turns controlled Pilot documentation into repeatable commissioning tooling wi
 
 - P3-01 — Commissioning Evidence Foundation — **COMPLETE**.
 - P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / MERGED / CI VERIFIED**.
-- P3-03 — Protected Site-scoped Commissioning API — **IMPLEMENTED / PRE-HANDOFF CI VERIFIED / PR #130 DRAFT**.
-- P3-04 — Configuration, Sensor Mapping and Calibration Verification.
+- P3-03 — Protected Site-scoped Commissioning API — **COMPLETE / MERGED / CI VERIFIED**.
+- P3-04 — Configuration, Sensor Mapping and Calibration Verification — **IMPLEMENTED / LOCAL GATES VERIFIED / PR PENDING**.
 - P3-05 — Functional Test Orchestration and evidence linking.
 - P3-06 — Commissioning UI.
 - P3-07 — Commissioning Record PDF/CSV export and decision snapshot.
@@ -93,7 +93,7 @@ The controlled P3-03 Codex handoff is `docs/project-management/P3-03-CODEX-HANDO
 - Published-release documentation finalization — PR #127; CI run #391 SUCCESS; merge commit `71659783be66d20458beb380a7fa92e557f5859a`.
 - P3-01 Commissioning Evidence Foundation — PR #128; merged before P3-02.
 - P3-02 Commissioning Session Domain/Persistence — PR #129; CI run #419 SUCCESS; merge commit `5b17b827cc22170112cc4e3dd8f409aa8669c7d7`.
-- P3-03 Protected Site-scoped Commissioning API — PR #130; normal CI run #434 SUCCESS on pre-handoff head `2f0cf5d9abb4d4b7f82ddd3c257e560d6bdd4b9b`; final newest-head verification and merge remain open.
+- P3-03 Protected Site-scoped Commissioning API — PR #130; newest-head checks passed; merge commit `4500cd49c3bad6ba4b080e0c8cfd16c0958317be`.
 
 ## Release / Version Position
 

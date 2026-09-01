@@ -12,6 +12,7 @@ vi.mock("../../controllers/commissioning.controller", () => ({
   appendCommissioningEvidenceController: controller,
   createCommissioningSessionController: controller,
   getCommissioningDeviationsController: controller,
+  getCommissioningConfigurationReadinessController: controller,
 }));
 
 import router from "../commissioning.route";
@@ -51,6 +52,20 @@ describe("Commissioning REST API authorization", () => {
       .expect(204);
 
     expect(controller).toHaveBeenCalledOnce();
+  });
+
+  it("allows VIEWER to read validated configuration readiness", async () => {
+    await request(app("VIEWER"))
+      .get("/api/v1/sites/1/commissioning-readiness?asOf=2026-09-01T11:00:00.000Z")
+      .expect(204);
+    expect(controller).toHaveBeenCalledOnce();
+  });
+
+  it("rejects invalid configuration readiness timestamps", async () => {
+    await request(app("VIEWER"))
+      .get("/api/v1/sites/1/commissioning-readiness?asOf=invalid")
+      .expect(400);
+    expect(controller).not.toHaveBeenCalled();
   });
 
   it("denies VIEWER before commissioning mutation validation", async () => {
