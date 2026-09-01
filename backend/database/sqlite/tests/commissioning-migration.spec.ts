@@ -57,6 +57,15 @@ describe("commissioning persistence migration", () => {
     ]);
   });
 
+  it("rejects duplicate session-level check identities even when nullable identities are absent", () => {
+    migration017.up(database);
+    seedSession(database);
+
+    const duplicate = () => database.prepare(CHECK_SQL).run();
+
+    expect(duplicate).toThrow();
+  });
+
   it("keeps execution evidence, deviations and decisions append-only", () => {
     migration017.up(database);
     seedSession(database);
@@ -68,10 +77,11 @@ describe("commissioning persistence migration", () => {
           session_id,
           check_id,
           state,
+          evidence_kind,
           executed_at,
           actor_identity,
           evidence_reference
-        ) VALUES (1, 1, 'PASS', '2026-09-01T06:31:00.000Z', 'engineer@example', 'EV-001')
+        ) VALUES (1, 1, 'PASS', 'PHYSICAL', '2026-09-01T06:31:00.000Z', 'engineer@example', 'EV-001')
       `
       )
       .run();
@@ -118,7 +128,7 @@ describe("commissioning persistence migration", () => {
     expect(updateDecision).toThrow("commissioning decisions are append-only");
   });
 
-  it("rejects invalid evidence states and decision snapshots", () => {
+  it("rejects invalid evidence states, provenance and decision snapshots", () => {
     migration017.up(database);
     seedSession(database);
 
@@ -130,9 +140,26 @@ describe("commissioning persistence migration", () => {
             session_id,
             check_id,
             state,
+            evidence_kind,
             executed_at,
             actor_identity
-          ) VALUES (1, 1, 'AUTOMATED_PASS', '2026-09-01T06:31:00.000Z', 'engineer@example')
+          ) VALUES (1, 1, 'AUTOMATED_PASS', 'SOFTWARE_AUTOMATED', '2026-09-01T06:31:00.000Z', 'engineer@example')
+        `
+        )
+        .run();
+    };
+    const insertInvalidKind = () => {
+      database
+        .prepare(
+          `
+          INSERT INTO commissioning_evidence (
+            session_id,
+            check_id,
+            state,
+            evidence_kind,
+            executed_at,
+            actor_identity
+          ) VALUES (1, 1, 'PASS', 'UNCONTROLLED', '2026-09-01T06:31:00.000Z', 'engineer@example')
         `
         )
         .run();
@@ -154,6 +181,7 @@ describe("commissioning persistence migration", () => {
     };
 
     expect(insertInvalidEvidence).toThrow();
+    expect(insertInvalidKind).toThrow();
     expect(insertInvalidDecision).toThrow();
   });
 });
