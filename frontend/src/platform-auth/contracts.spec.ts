@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { platformLoginResponseSchema, platformPrincipalSchema } from "./contracts";
+import {
+  platformLoginResponseSchema,
+  platformPrincipalSchema,
+} from "./contracts";
 
 const owner = {
   kind: "platform",
@@ -15,7 +18,12 @@ describe("SYSTEM_OWNER frontend contracts", () => {
 
   it("rejects customer roles from the platform trust domain", () => {
     expect(() =>
-      platformPrincipalSchema.parse({ kind: "customer", type: "ADMIN", id: 1, username: "admin" }),
+      platformPrincipalSchema.parse({
+        kind: "customer",
+        type: "ADMIN",
+        id: 1,
+        username: "admin",
+      }),
     ).toThrow();
   });
 
