@@ -47,7 +47,10 @@
 - Production deployment validation, MQTT TLS/QoS, persistent SQLite backup/recovery foundations, and LIVE/REPLAY semantics.
 - P2 host-side Site Controller runtime: deterministic boot/connectivity/watchdog, BF-08 receipt/integrity, durable full known-good configuration recovery, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover contract/runtime, reconnect reconciliation, controller health evidence, qualification gate, and durable replay acceptance recovery.
 - P3 commissioning evidence persistence with durable sessions/checks, append-only evidence/deviations/decisions, controlled provenance, uniqueness constraints, and acceptance-domain evaluation.
-- P3-03 branch adds protected Site-scoped commissioning routes, commissioning read/manage RBAC, authenticated-user provenance, server-generated decision snapshots, latest-evidence acceptance evaluation, cross-Site/session/check isolation, and service/route authorization tests.
+- P3 commissioning tooling provides protected Site-scoped routes, read/manage RBAC, authenticated-user provenance, server-generated decision snapshots, latest-evidence acceptance evaluation, cross-Site/session/check isolation, readiness UI, and controlled CSV/PDF records.
+- P4 deployment validation enforces separated backups, retention, logging, and graceful-shutdown controls.
+- P5 isolated SYSTEM_OWNER commercial operations persist customer/fleet, license/update-entitlement, and maintenance oversight records with append-only provenance.
+- P6 productization reconciles source version `0.18.0`, backend metadata, a controlled release manifest, release-package validation, and deployment/acceptance boundaries.
 
 ## P0-P6 Delivery Position
 

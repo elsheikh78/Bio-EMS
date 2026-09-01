@@ -75,15 +75,15 @@ Complete operational deployment evidence around backup/restore, process supervis
 
 ### P5 — SYSTEM_OWNER / Commercial Operations
 
-Status: **SOFTWARE COMPLETE / CI VERIFIED**
+Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED**
 
-Preserve the isolated SYSTEM_OWNER trust domain and append-only audit boundary while adding only approved platform-owner workflows. Candidate later scope includes customer/site fleet visibility, license lifecycle, update entitlement, maintenance/calibration oversight, and commercial operational evidence. Customer ADMIN must never administer or discover SYSTEM_OWNER.
+The isolated SYSTEM_OWNER trust domain now provides approved customer/fleet, license/update-entitlement, and maintenance oversight records with append-only authenticated provenance. Customer ADMIN cannot administer or discover SYSTEM_OWNER. Billing/payment execution and live commercial operations remain external scope.
 
 ### P6 — Productization / Deployment / Acceptance
 
-Status: **SOFTWARE PRODUCTIZATION COMPLETE / EXTERNAL ACCEPTANCE OPEN**
+Status: **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED / EXTERNAL ACCEPTANCE OPEN**
 
-Close controlled release packaging, installer/deployment procedure, version/release reconciliation, production deployment evidence, BIO EGYPT field commissioning, customer UAT, final sign-off, and release acceptance.
+Controlled release manifest validation, deployment procedure, and version/source reconciliation are implemented. Production deployment evidence, BIO EGYPT field commissioning, customer UAT, final sign-off, and release acceptance remain external evidence gates.
 
 ## Execution Rule
 
