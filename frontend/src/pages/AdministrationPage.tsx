@@ -293,9 +293,7 @@ function UserDialog({
           <Button
             type="submit"
             variant="contained"
-            disabled={
-              mutation.isPending || (!user && !passwordPolicy.isValid)
-            }
+            disabled={mutation.isPending || (!user && !passwordPolicy.isValid)}
           >
             Save user
           </Button>
