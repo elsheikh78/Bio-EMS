@@ -55,7 +55,7 @@
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
 - **P3 — Pilot Commissioning Tooling:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Controlled functional checklist, Site-scoped session record, readiness UI and CSV/PDF export are implemented. Field evidence and customer acceptance remain open.
-- **P4 — Production Hardening:** **PARTIAL.** Deployment validation, persistence/recovery, TLS/QoS, backup, controller durability, and replay durability foundations exist. Production operational/endurance evidence remains open.
+- **P4 — Production Hardening:** **SOFTWARE CONTROLS COMPLETE / CURRENT CI-MERGE PENDING.** Deployment validation now includes operational retention, shutdown and separated-backup controls. Production restore/endurance/DR evidence remains external.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
 
