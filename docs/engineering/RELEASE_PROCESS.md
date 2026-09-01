@@ -8,7 +8,7 @@
 | Applies To     | BIO-EMS Engineering |
 | Owner          | Engineering Team    |
 | Classification | Internal            |
-| Last Updated   | 2026-08-05          |
+| Last Updated   | 2026-09-01          |
 
 ## 1. Purpose
 
@@ -27,7 +27,8 @@ The process applies to releases of the current BIO-EMS backend and its supportin
 engineering documents, SQLite migrations, tests, API documentation, and release notes.
 
 It applies to the implemented site, device, room, sensor, alarm, MQTT telemetry,
-InfluxDB telemetry, and dashboard capabilities.
+InfluxDB telemetry, dashboard, reporting, notification, Site Controller,
+commissioning, production-hardening, commercial-operations, and productization capabilities.
 
 Release approval remains with the Engineering Owner. Tools and AI assistants MAY
 prepare evidence, but MUST NOT declare a release approved without owner approval.
@@ -167,7 +168,7 @@ This preserves release traceability.
 
 BIO-EMS currently records its published version in the root `VERSION` file and
 documents published and unreleased repository development in `CHANGELOG.md`. The
-current published release is `v0.15.0`; earlier release tags remain immutable.
+current published release is `v0.17.0`; earlier release tags remain immutable.
 
 Completed Sprint work does not itself update `VERSION`, create a tag, or publish a
 GitHub Release. Those actions require a separate release-readiness review and explicit
