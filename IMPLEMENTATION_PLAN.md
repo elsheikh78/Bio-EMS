@@ -13,7 +13,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 - P0 professional software/reporting baseline is complete at source level.
 - P1 Notification Delivery Engine software is complete, merged, and CI verified through PR #113 / integration commit `b1d2611866d2e7a8455d5ed898932ae91fe6068f` / CI run 319.
 - Live SMS-provider evidence, physical commissioning, MQTT/UAT evidence, and customer acceptance remain external gates.
-- P2 Site Controller Runtime software is complete. P3 Pilot Commissioning Tooling is the active implementation phase.
+- P0-P6 source-software delivery is complete and CI verified. Physical/live/field/customer evidence gates remain open.
 
 ## P0-P6 Sequence
 
@@ -63,13 +63,13 @@ No P2 slice may claim field completion without controller/firmware and bench evi
 
 ### P3 — Pilot Commissioning Tooling
 
-Status: **ACTIVE / PARTIAL / OPEN EVIDENCE**
+Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
-Turn the existing controlled Pilot documentation into repeatable commissioning evidence. P3-01 establishes the evidence model; P3-02 adds durable commissioning sessions, checks, append-only evidence/deviations/decisions, evidence provenance, uniqueness constraints, repository persistence, and acceptance gating. P3-03 protected Site-scoped API is next.
+The controlled Pilot documentation is implemented as repeatable commissioning sessions, checks, append-only evidence/deviations/decisions, Site-scoped APIs, readiness UI, and CSV/PDF records. Physical commissioning, field endurance, UAT, and customer acceptance remain external evidence gates.
 
 ### P4 — Production Hardening
 
-Status: **PARTIAL**
+Status: **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
 
 Complete operational deployment evidence around backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, log retention, upgrade/rollback, and disaster-recovery drills.
 
