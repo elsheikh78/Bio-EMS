@@ -168,10 +168,7 @@ function UsersPanel() {
   );
 }
 
-function mutationErrorMessage(
-  error: unknown,
-  fallback: string,
-): string {
+function mutationErrorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof ApiResponseError)) return fallback;
 
   switch (error.code) {
