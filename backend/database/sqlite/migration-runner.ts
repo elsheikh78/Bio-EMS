@@ -18,6 +18,7 @@ import { migration013 } from "./migrations/013_create_escalation_policies";
 import { migration014 } from "./migrations/014_create_device_communication_events";
 import { migration015 } from "./migrations/015_create_notification_deliveries";
 import { migration016 } from "./migrations/016_add_notification_attempt_phases";
+import { migration017 } from "./migrations/017_create_commissioning_evidence";
 
 export interface Migration {
   version: number;
@@ -44,6 +45,7 @@ const migrations: Migration[] = [
   migration014,
   migration015,
   migration016,
+  migration017,
 ];
 
 export function runMigrations(
