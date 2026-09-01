@@ -1,44 +1,32 @@
 # BIO-EMS Project State
 
-**State date:** 31 August 2026
+**State date:** 1 September 2026
 
 **Latest published tagged release:** `v0.17.0`
 
 **Current source-software version:** `0.17.0`
 
-**Current phase:** P2 Site Controller software sequence is complete and merged. The next software planning/execution boundary is P3-P6, while physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
+**Current phase:** P3 Pilot Commissioning Tooling has started with P3-01 Commissioning Evidence Foundation. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
 
-## Session Handoff — Start Here
-
-The 31 August repository/documentation audit and subsequent implementation closed the previously identified P0/P1/P2 software gaps. PRs #115 through #124 implemented the Site Controller runtime sequence and its qualification hardening. PR #125 then established the single documentation authority and next-session handoff structure. Release reconciliation through PR #126 aligned the product version at `0.17.0`, and `v0.17.0` is now published as the current tagged software/repository release.
-
-At the next development session:
+## Current controlled continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local working copy before development.
-2. Confirm `VERSION`, backend package metadata, README, CHANGELOG, and this file agree on the current source version.
-3. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
-4. Start the next controlled P3-P6 work from `IMPLEMENTATION_PLAN.md` and this state document.
-5. Keep physical hardware qualification, live provider evidence, 72-hour endurance, commissioning, customer UAT, and customer acceptance as evidence gates; do not convert them into software-complete claims.
+2. Do not repeat P0, P1, or P2 software implementation unless a regression/audit finding requires it.
+3. Execute P3 through controlled commissioning-tooling slices while preserving existing Pilot documents and authoritative domain evidence.
+4. Keep physical hardware qualification, live provider evidence, 72-hour endurance, commissioning, customer UAT, and customer acceptance as evidence gates; do not convert them into software-complete claims.
 
-## Audit Result — Updated 31 August 2026
-
-The documentation audit covered the repository documentation corpus and compared stated capability with the implemented source baseline. The main finding was that documentation lagged several software integrations and sometimes mixed three distinct states: foundation present, production workflow complete, and external/field evidence complete.
-
-### Audit conclusions now reconciled
+## Audit Result — Reconciled 31 August 2026
 
 - Reporting/BF-10 source scope is complete: all five controlled report families support Preview/CSV/PDF.
 - Dashboard and Monitored Areas have authenticated telemetry-driven refresh with reconnect/cleanup and polling fallback.
 - P1 Notification Delivery Engine software is complete and merged; live production-provider evidence remains external.
 - P2 Site Controller software sequence P2-01 through P2-09 is complete and merged.
-- The P2-09 audit identified two software durability blockers: identity-only BF-08 persistence and process-memory-only replay acceptance. PR #124 closed both blockers in source software.
+- PR #124 closed the P2 source-level durability blockers: full BF-08 known-good persistence/recovery and durable replay acceptance.
 - Physical bench qualification is not complete merely because automated software evidence passes.
 - BIO EGYPT Pilot remains NOT COMMISSIONED / NOT ACCEPTED.
-- Hardware validation HV-01 through HV-15 and the required endurance/evidence gates remain physical work, not repository claims.
-- P3-P6 contain a mixture of existing foundations and still-open executable/productization/evidence work; they must be advanced without re-implementing capabilities already present.
+- Hardware validation HV-01 through HV-15 and required endurance/evidence gates remain physical work.
 
-### Audit control rule
-
-From this state onward every status should distinguish:
+### Status vocabulary
 
 - **SOFTWARE COMPLETE / CI VERIFIED** — source behavior exists and automated gates pass.
 - **FOUNDATION/PARTIAL** — reusable capability exists but the end-to-end operational workflow is incomplete.
@@ -62,15 +50,29 @@ From this state onward every status should distinguish:
 
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
-- **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** P2-01 through P2-09 plus post-P2 durability hardening are integrated. Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **PARTIAL / NEXT CONTROLLED PHASE.** Controlled Pilot documents/foundations exist; executable field evidence, commissioning workflow completion, and acceptance evidence remain open.
+- **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
+- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 establishes the controlled commissioning evidence model and slice sequence. Existing Pilot documents remain controlled inputs; executable workflow, persistence/API/UI/export and field evidence remain open.
 - **P4 — Production Hardening:** **PARTIAL.** Deployment validation, persistence/recovery, TLS/QoS, backup, controller durability, and replay durability foundations exist. Production operational/endurance evidence remains open.
-- **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain to be scoped/executed under the controlled plan.
+- **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
 
-## P2 Closure Evidence
+## P3 Execution Sequence
 
-P2 implementation sequence:
+P3 turns controlled Pilot documentation into repeatable commissioning tooling without manufacturing field evidence.
+
+- P3-01 — Commissioning Evidence Foundation — **IN PROGRESS**.
+- P3-02 — Commissioning Session Domain/Persistence.
+- P3-03 — Protected Site-scoped Commissioning API.
+- P3-04 — Configuration, Sensor Mapping and Calibration Verification.
+- P3-05 — Functional Test Orchestration and evidence linking.
+- P3-06 — Commissioning UI.
+- P3-07 — Commissioning Record PDF/CSV export and decision snapshot.
+- P3-08 — BIO EGYPT software dry-run/UAT package.
+- P3-09 — P3 closure audit preserving external evidence boundaries.
+
+The controlled P3-01 definition is `docs/project-management/P3-01-COMMISSIONING-EVIDENCE-FOUNDATION-2026-09-01.md`.
+
+## P2 Closure Evidence
 
 - P2-01 — Runtime Foundation — PR #115.
 - P2-02 — Configuration Receipt and Integrity — PR #116.
@@ -80,18 +82,17 @@ P2 implementation sequence:
 - P2-06 — Local Emergency SMS Failover — PR #120.
 - P2-07 — Reconnect Reconciliation / LIVE-REPLAY — PR #121.
 - P2-08 — Controller Health Evidence — PR #122.
-- P2-09 — Bench Qualification Gate — PR #123; CI run #380 SUCCESS; merge baseline `4171cd0a9a5876602f5aa49e0959115065c1c09c`.
-- Post-P2 qualification hardening — full BF-08 durable known-good bundle recovery plus durable replay acceptance — PR #124; CI run #382 SUCCESS; merge commit `453ea1fe6f983528c861667dc638bcc424710eff`.
-- Documentation authority / audit handoff reconciliation — PR #125; CI run #387 SUCCESS; merge commit `d1918a1bd6526cfd8c140bd350e93e584641436d`.
+- P2-09 — Bench Qualification Gate — PR #123; CI run #380 SUCCESS.
+- Post-P2 durability hardening — PR #124; CI run #382 SUCCESS; merge commit `453ea1fe6f983528c861667dc638bcc424710eff`.
+- Documentation authority reconciliation — PR #125; CI run #387 SUCCESS.
 - Version/release reconciliation — PR #126; CI run #389 SUCCESS; merge commit `cc8a5e7594c3a8101d7e227f582dfdf66f74fd48`; release tag `v0.17.0` published 31 August 2026.
-
-PR #124 closes the source-level blockers identified during P2-09: a restart can recover the verified BF-08 configuration bundle rather than identity alone, and replay acceptance is no longer limited to process memory. This does **not** claim that a physical power-loss test, live SIM800L send, deployed MQTT endurance test, or field acceptance has occurred.
+- Published-release documentation finalization — PR #127; CI run #391 SUCCESS; merge commit `71659783be66d20458beb380a7fa92e557f5859a`.
 
 ## Release / Version Position
 
 `VERSION` is the product source-version authority. The backend package metadata follows it. The frontend package remains a private scaffold version and is not an independently published BIO-EMS product package.
 
-`v0.17.0` is the latest published release. It is a MINOR software/repository release because it consolidates substantial functionality after `v0.15.0`: completed reporting, the P1 Notification Delivery Engine, and the P2 Site Controller software runtime sequence. Publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
+`v0.17.0` is the latest published release. Publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
 ## Physical / Pilot Evidence Still Open
 
@@ -122,4 +123,4 @@ Broader Asset/discovery/provisioning, OTA, final production controller firmware/
 
 ## Repository Continuation Rule
 
-For the next session, begin by reading this file, then `IMPLEMENTATION_PLAN.md`; use detailed P2 closure/audit and hardware documents only for their specific evidence tracks. GitHub `main` is the source of truth. Preserve historical release/Sprint documents; update this current-state document rather than creating competing status files.
+Begin with this file, then `IMPLEMENTATION_PLAN.md`. For P3 use the controlled P3 slice document and existing `docs/pilot/bio-egypt/` evidence pack. GitHub `main` remains the source of truth. Preserve historical release/Sprint documents; update this current-state document rather than creating competing status files.
