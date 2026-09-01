@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-No source changes are recorded after the `0.18.0` release-preparation baseline.
+### Added / Changed
+
+- Added an isolated SYSTEM_OWNER frontend authentication/session boundary using the existing platform-auth backend contract.
+- Added protected `/system-owner` login/console routes with strict SYSTEM_OWNER principal validation and fail-closed route behavior.
+- Added a bilingual SYSTEM_OWNER console shell for the remaining P7 commercial product modules without exposing owner navigation to customer roles.
+- Added frontend authorization/contract regression coverage for the owner trust boundary.
+
+### Boundary
+
+P7-01 does not implement billing/payment, invoicing, live remote update execution, field commissioning, provider delivery, or customer/production acceptance.
 
 ## [0.18.0] - 2026-09-01
 
