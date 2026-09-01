@@ -62,7 +62,8 @@ describe("commissioning persistence migration", () => {
     seedSession(database);
 
     database
-      .prepare(`
+      .prepare(
+        `
         INSERT INTO commissioning_evidence (
           session_id,
           check_id,
@@ -71,10 +72,12 @@ describe("commissioning persistence migration", () => {
           actor_identity,
           evidence_reference
         ) VALUES (1, 1, 'PASS', '2026-09-01T06:31:00.000Z', 'engineer@example', 'EV-001')
-      `)
+      `
+      )
       .run();
     database
-      .prepare(`
+      .prepare(
+        `
         INSERT INTO commissioning_deviations (
           session_id,
           reference,
@@ -83,10 +86,12 @@ describe("commissioning persistence migration", () => {
           recorded_at,
           actor_identity
         ) VALUES (1, 'DEV-001', 'NON_BLOCKING', 'example', '2026-09-01T06:32:00.000Z', 'engineer@example')
-      `)
+      `
+      )
       .run();
     database
-      .prepare(`
+      .prepare(
+        `
         INSERT INTO commissioning_decisions (
           session_id,
           decision,
@@ -94,7 +99,8 @@ describe("commissioning persistence migration", () => {
           actor_identity,
           snapshot_json
         ) VALUES (1, 'REJECTED', '2026-09-01T06:33:00.000Z', 'engineer@example', '{}')
-      `)
+      `
+      )
       .run();
 
     const updateEvidence = () => {
@@ -118,7 +124,8 @@ describe("commissioning persistence migration", () => {
 
     const insertInvalidEvidence = () => {
       database
-        .prepare(`
+        .prepare(
+          `
           INSERT INTO commissioning_evidence (
             session_id,
             check_id,
@@ -126,12 +133,14 @@ describe("commissioning persistence migration", () => {
             executed_at,
             actor_identity
           ) VALUES (1, 1, 'AUTOMATED_PASS', '2026-09-01T06:31:00.000Z', 'engineer@example')
-        `)
+        `
+        )
         .run();
     };
     const insertInvalidDecision = () => {
       database
-        .prepare(`
+        .prepare(
+          `
           INSERT INTO commissioning_decisions (
             session_id,
             decision,
@@ -139,7 +148,8 @@ describe("commissioning persistence migration", () => {
             actor_identity,
             snapshot_json
           ) VALUES (1, 'ACCEPTED', '2026-09-01T06:32:00.000Z', 'engineer@example', 'not-json')
-        `)
+        `
+        )
         .run();
     };
 
