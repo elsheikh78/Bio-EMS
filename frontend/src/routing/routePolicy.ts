@@ -10,6 +10,7 @@ export const routePolicies = {
   "/devices": "DEVICE_READ",
   "/sensors-calibration": "CONFIGURATION_READ",
   "/reports": "REPORT_READ",
+  "/commissioning": "COMMISSIONING_READ",
   "/configuration": "CONFIGURATION_WRITE",
   "/users": "USER_MANAGE",
 } as const satisfies Readonly<Record<string, Permission>>;

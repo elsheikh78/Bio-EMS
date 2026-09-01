@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import { customerAuditActor } from "../modules/audit/customer-audit-context";
 import { CommissioningService } from "../modules/commissioning/commissioning.service";
+import {
+  renderCommissioningCsv,
+  renderCommissioningPdf,
+} from "../modules/commissioning/commissioning-export.renderer";
 
 const service = new CommissioningService();
 
@@ -80,5 +84,35 @@ export const getCommissioningConfigurationReadinessController = asyncHandler(
   async (req: Request, res: Response) => {
     const asOf = typeof req.query.asOf === "string" ? req.query.asOf : new Date().toISOString();
     res.json(service.getConfigurationReadiness(siteId(req), asOf));
+  }
+);
+
+export const initializeCommissioningChecksController = asyncHandler(
+  async (req: Request, res: Response) => {
+    res.status(201).json(service.initializeFunctionalChecks(siteId(req), sessionId(req)));
+  }
+);
+
+export const getCommissioningSessionController = asyncHandler(
+  async (req: Request, res: Response) => {
+    res.json(service.getSessionRecord(siteId(req), sessionId(req)));
+  }
+);
+
+export const exportCommissioningSessionController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const record = service.getSessionRecord(siteId(req), sessionId(req));
+    const uuid = (record.session as { uuid: string }).uuid.replace(/[^a-zA-Z0-9_-]/g, "_");
+    if (req.query.format === "pdf") {
+      res
+        .type("application/pdf")
+        .attachment(`bio-ems_commissioning_${uuid}.pdf`)
+        .send(await renderCommissioningPdf(record));
+      return;
+    }
+    res
+      .type("text/csv")
+      .attachment(`bio-ems_commissioning_${uuid}.csv`)
+      .send(renderCommissioningCsv(record));
   }
 );

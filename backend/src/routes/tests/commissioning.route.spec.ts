@@ -13,6 +13,9 @@ vi.mock("../../controllers/commissioning.controller", () => ({
   createCommissioningSessionController: controller,
   getCommissioningDeviationsController: controller,
   getCommissioningConfigurationReadinessController: controller,
+  getCommissioningSessionController: controller,
+  initializeCommissioningChecksController: controller,
+  exportCommissioningSessionController: controller,
 }));
 
 import router from "../commissioning.route";
@@ -51,6 +54,11 @@ describe("Commissioning REST API authorization", () => {
       .get("/api/v1/sites/1/commissioning-sessions/2/deviations")
       .expect(204);
 
+    expect(controller).toHaveBeenCalledOnce();
+  });
+
+  it("allows VIEWER to read a commissioning session record", async () => {
+    await request(app("VIEWER")).get("/api/v1/sites/1/commissioning-sessions/2").expect(204);
     expect(controller).toHaveBeenCalledOnce();
   });
 

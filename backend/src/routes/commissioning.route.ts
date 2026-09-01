@@ -8,6 +8,9 @@ import {
   createCommissioningSessionController,
   getCommissioningDeviationsController,
   getCommissioningConfigurationReadinessController,
+  getCommissioningSessionController,
+  initializeCommissioningChecksController,
+  exportCommissioningSessionController,
 } from "../controllers/commissioning.controller";
 import { requirePermission } from "../middleware/authorization.middleware";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
@@ -18,6 +21,7 @@ import {
   commissioningSessionParamsSchema,
   commissioningSiteParamsSchema,
   commissioningReadinessQuerySchema,
+  commissioningExportQuerySchema,
   createCommissioningCheckSchema,
   createCommissioningSessionSchema,
 } from "../modules/commissioning/commissioning.schema";
@@ -30,6 +34,28 @@ router.get(
   validateParams(commissioningSiteParamsSchema),
   validateQuery(commissioningReadinessQuerySchema),
   getCommissioningConfigurationReadinessController
+);
+
+router.get(
+  "/sites/:siteId/commissioning-sessions/:sessionId",
+  requirePermission(PERMISSION.COMMISSIONING_READ),
+  validateParams(commissioningSessionParamsSchema),
+  getCommissioningSessionController
+);
+
+router.post(
+  "/sites/:siteId/commissioning-sessions/:sessionId/initialize-checks",
+  requirePermission(PERMISSION.COMMISSIONING_MANAGE),
+  validateParams(commissioningSessionParamsSchema),
+  initializeCommissioningChecksController
+);
+
+router.get(
+  "/sites/:siteId/commissioning-sessions/:sessionId/export",
+  requirePermission(PERMISSION.COMMISSIONING_READ),
+  validateParams(commissioningSessionParamsSchema),
+  validateQuery(commissioningExportQuerySchema),
+  exportCommissioningSessionController
 );
 
 router.post(

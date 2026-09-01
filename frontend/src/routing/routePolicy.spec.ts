@@ -44,4 +44,11 @@ describe("safe post-Login return policy", () => {
       "/reports",
     );
   });
+
+  it("allows read-only commissioning access without mutation permission", () => {
+    expect(routePolicies["/commissioning"]).toBe("COMMISSIONING_READ");
+    expect(
+      resolveSafeReturnPath({ returnTo: "/commissioning" }, "VIEWER"),
+    ).toBe("/commissioning");
+  });
 });

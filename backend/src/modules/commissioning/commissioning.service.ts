@@ -1,5 +1,8 @@
 import { AppError } from "../../errors/app-error";
-import { evaluateCommissioningAcceptance } from "./commissioning.domain";
+import {
+  COMMISSIONING_CHECK_TEMPLATES,
+  evaluateCommissioningAcceptance,
+} from "./commissioning.domain";
 import {
   AppendCommissioningEvidence,
   CommissioningRepository,
@@ -50,6 +53,23 @@ export class CommissioningService {
         blockedSensors: items.filter((item) => !item.ready).length,
       },
       items,
+    };
+  }
+
+  initializeFunctionalChecks(siteId: number, sessionId: number) {
+    this.assertSessionScope(siteId, sessionId);
+    return { ids: this.repository.initializeChecks(sessionId, COMMISSIONING_CHECK_TEMPLATES) };
+  }
+
+  getSessionRecord(siteId: number, sessionId: number) {
+    this.assertSessionScope(siteId, sessionId);
+    const record = this.repository.getSessionRecord(sessionId);
+    if (!record) throw sessionNotFound();
+    const checks = this.repository.listCheckSnapshots(sessionId);
+    const deviations = this.repository.listDeviations(sessionId);
+    return {
+      ...record,
+      evaluation: evaluateCommissioningAcceptance(checks, deviations),
     };
   }
 

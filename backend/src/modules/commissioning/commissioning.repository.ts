@@ -152,6 +152,79 @@ export class CommissioningRepository {
     });
   }
 
+  initializeChecks(
+    sessionId: number,
+    templates: readonly (readonly [string, string, boolean, boolean])[]
+  ): number[] {
+    const insert = this.database.prepare(`
+      INSERT OR IGNORE INTO commissioning_checks
+        (session_id, check_key, title, mandatory, physical_or_live_gate)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    return this.database.transaction(() => {
+      for (const [key, title, mandatory, physical] of templates) {
+        insert.run(sessionId, key, title, mandatory ? 1 : 0, physical ? 1 : 0);
+      }
+      return (
+        this.database
+          .prepare("SELECT id FROM commissioning_checks WHERE session_id = ? ORDER BY id")
+          .all(sessionId) as Array<{ id: number }>
+      ).map((row) => row.id);
+    })();
+  }
+
+  getSessionRecord(sessionId: number) {
+    const session = this.database
+      .prepare(
+        `SELECT id, uuid, site_id AS siteId, controller_identity AS controllerIdentity,
+                       platform_version AS platformVersion,
+                       commissioning_revision AS commissioningRevision,
+                       engineer_identity AS engineerIdentity, witness_identity AS witnessIdentity,
+                       status, opened_at AS openedAt, closed_at AS closedAt
+                FROM commissioning_sessions WHERE id = ?`
+      )
+      .get(sessionId);
+    if (!session) return undefined;
+    const checks = this.database
+      .prepare(
+        `
+      SELECT c.id, c.check_key AS checkKey, c.title, c.mandatory,
+             c.physical_or_live_gate AS physicalOrLiveGate, c.sensor_id AS sensorId,
+             c.device_id AS deviceId, c.map_id AS mapId,
+             COALESCE(e.state, 'NOT_RUN') AS state, e.evidence_kind AS evidenceKind,
+             e.executed_at AS executedAt, e.evidence_reference AS evidenceReference,
+             e.deviation_reference AS deviationReference, e.note
+      FROM commissioning_checks c
+      LEFT JOIN commissioning_evidence e ON e.id = (
+        SELECT latest.id FROM commissioning_evidence latest
+        WHERE latest.session_id = c.session_id AND latest.check_id = c.id
+        ORDER BY latest.id DESC LIMIT 1
+      )
+      WHERE c.session_id = ? ORDER BY c.id
+    `
+      )
+      .all(sessionId);
+    const deviations = this.database
+      .prepare(
+        `
+      SELECT reference, classification, description, recorded_at AS recordedAt,
+             actor_identity AS actorIdentity, evidence_reference AS evidenceReference
+      FROM commissioning_deviations WHERE session_id = ? ORDER BY id
+    `
+      )
+      .all(sessionId);
+    const decisions = this.database
+      .prepare(
+        `
+      SELECT id, decision, decided_at AS decidedAt, actor_identity AS actorIdentity,
+             witness_identity AS witnessIdentity, note, snapshot_json AS snapshotJson
+      FROM commissioning_decisions WHERE session_id = ? ORDER BY id
+    `
+      )
+      .all(sessionId);
+    return { session, checks, deviations, decisions };
+  }
+
   assertSessionSite(sessionId: number, siteId: number): void {
     if (!this.sessionBelongsToSite(sessionId, siteId)) {
       throw new Error("COMMISSIONING_SESSION_NOT_FOUND");

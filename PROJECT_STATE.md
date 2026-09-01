@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.17.0`
 
-**Current phase:** P3 Pilot Commissioning Tooling is in active implementation. P3-01 and P3-02 are complete, and P3-03 Protected Site-scoped Commissioning API is merged and CI verified through PR #130 / merge commit `4500cd49c3bad6ba4b080e0c8cfd16c0958317be`. P3-04 configuration/mapping/calibration readiness is the active slice. P2 Site Controller software remains complete; physical controller qualification and BIO EGYPT Pilot commissioning remain external evidence gates.
+**Current phase:** P3 Pilot Commissioning Tooling software is implemented through P3-09 pending current PR CI/merge. P3-03 is merged through PR #130 and P3-04 through PR #131 / merge `6382e3cfd53855f9f97aaa4296e21374eea21b60`. Physical controller qualification and BIO EGYPT commissioning remain external evidence gates.
 
 ## Current controlled continuation
 
@@ -54,7 +54,7 @@
 - **P0 — Professional software/reporting baseline:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Field MQTT/UAT evidence remains external.
 - **P1 — Notification Delivery Engine:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Live provider evidence and field notification UAT remain external.
 - **P2 — Site Controller Runtime:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED.** Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
-- **P3 — Pilot Commissioning Tooling:** **STARTED / PARTIAL.** P3-01 evidence foundation and P3-02 durable session/evidence persistence are complete. P3-03 protected Site-scoped API is implemented and CI-verified on its pre-handoff head but remains unmerged/draft pending final Codex review and newest-head CI; verification orchestration, UI/export, dry-run/UAT and field evidence remain open.
+- **P3 — Pilot Commissioning Tooling:** **SOFTWARE IMPLEMENTED / CURRENT CI-MERGE PENDING.** Controlled functional checklist, Site-scoped session record, readiness UI and CSV/PDF export are implemented. Field evidence and customer acceptance remain open.
 - **P4 — Production Hardening:** **PARTIAL.** Deployment validation, persistence/recovery, TLS/QoS, backup, controller durability, and replay durability foundations exist. Production operational/endurance evidence remains open.
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **FOUNDATION IMPLEMENTED.** Identity/auth/audit isolation exists. Broader fleet/customer/license/update/maintenance/commercial production workflows remain open.
 - **P6 — Productization / Deployment / Acceptance:** **OPEN.** Packaging/release operationalization, final field commissioning, customer UAT/sign-off, and production acceptance remain gates.
@@ -66,12 +66,12 @@ P3 turns controlled Pilot documentation into repeatable commissioning tooling wi
 - P3-01 — Commissioning Evidence Foundation — **COMPLETE**.
 - P3-02 — Commissioning Session Domain/Persistence — **COMPLETE / MERGED / CI VERIFIED**.
 - P3-03 — Protected Site-scoped Commissioning API — **COMPLETE / MERGED / CI VERIFIED**.
-- P3-04 — Configuration, Sensor Mapping and Calibration Verification — **IMPLEMENTED / LOCAL GATES VERIFIED / PR PENDING**.
-- P3-05 — Functional Test Orchestration and evidence linking.
-- P3-06 — Commissioning UI.
-- P3-07 — Commissioning Record PDF/CSV export and decision snapshot.
-- P3-08 — BIO EGYPT software dry-run/UAT package.
-- P3-09 — P3 closure audit preserving external evidence boundaries.
+- P3-04 — Configuration, Sensor Mapping and Calibration Verification — **COMPLETE / MERGED / CI VERIFIED**.
+- P3-05 — Functional Test Orchestration and evidence linking — **IMPLEMENTED**.
+- P3-06 — Commissioning UI — **IMPLEMENTED**.
+- P3-07 — Commissioning Record PDF/CSV export and decision snapshot — **IMPLEMENTED**.
+- P3-08 — BIO EGYPT software dry-run/UAT package — **SOFTWARE PACKAGE COMPLETE / FIELD UAT OPEN**.
+- P3-09 — P3 closure audit — **SOFTWARE COMPLETE / EXTERNAL EVIDENCE OPEN**.
 
 The controlled P3-01 definition is `docs/project-management/P3-01-COMMISSIONING-EVIDENCE-FOUNDATION-2026-09-01.md`.
 The controlled P3-03 Codex handoff is `docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md`.

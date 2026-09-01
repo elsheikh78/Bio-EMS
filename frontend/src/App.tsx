@@ -12,6 +12,7 @@ import { AdministrationPage } from "./pages/AdministrationPage";
 import { AlarmsPage } from "./pages/AlarmsPage";
 import { DevicesPage } from "./pages/DevicesPage";
 import { NotificationDeliveriesPage } from "./pages/NotificationDeliveriesPage";
+import { CommissioningPage } from "./pages/CommissioningPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -100,6 +101,15 @@ export function App() {
             element={
               <PermissionBoundary path="/reports">
                 <ReportsCenterPage />
+              </PermissionBoundary>
+            }
+          />
+
+          <Route
+            path="commissioning"
+            element={
+              <PermissionBoundary path="/commissioning">
+                <CommissioningPage />
               </PermissionBoundary>
             }
           />

@@ -69,6 +69,13 @@ export const navigationItems = [
     permission: "REPORT_READ",
   },
   {
+    group: "overview",
+    id: "commissioning",
+    path: "/commissioning",
+    labelKey: "commissioning",
+    permission: "COMMISSIONING_READ",
+  },
+  {
     group: "administration",
     id: "configuration",
     path: "/configuration",
