@@ -2,10 +2,7 @@ import { createContext } from "react";
 import type { PlatformLoginRequest, PlatformPrincipal } from "./contracts";
 
 export type PlatformAuthenticationStatus =
-  | "bootstrapping"
-  | "authenticated"
-  | "unauthenticated"
-  | "restoration-error";
+  "bootstrapping" | "authenticated" | "unauthenticated" | "restoration-error";
 
 export interface PlatformAuthenticationValue {
   status: PlatformAuthenticationStatus;
@@ -15,4 +12,5 @@ export interface PlatformAuthenticationValue {
   logout: () => void;
 }
 
-export const PlatformAuthenticationContext = createContext<PlatformAuthenticationValue | null>(null);
+export const PlatformAuthenticationContext =
+  createContext<PlatformAuthenticationValue | null>(null);
