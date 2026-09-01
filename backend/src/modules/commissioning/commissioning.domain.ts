@@ -23,6 +23,17 @@ export type CommissioningAcceptanceEvaluation = {
   blockingReasons: string[];
 };
 
+export const COMMISSIONING_CHECK_TEMPLATES = [
+  ["CONFIGURATION_READINESS", "Configuration and calibration readiness", true, false],
+  ["SENSOR_MAPPING", "Physical sensor mapping verification", true, true],
+  ["COMMUNICATION", "Trusted telemetry and heartbeat verification", true, true],
+  ["ALARM_LIFECYCLE", "Warning, critical and recovery verification", true, true],
+  ["ALARM_ACKNOWLEDGEMENT", "Alarm acknowledgement verification", true, true],
+  ["NOTIFICATION_PRIMARY", "Primary notification delivery verification", true, true],
+  ["SMS_FAILOVER", "Emergency SMS failover verification", true, true],
+  ["RECOVERY_REPLAY", "Restart, reconnect and replay verification", true, true],
+] as const;
+
 export function evaluateCommissioningAcceptance(
   checks: CommissioningCheckSnapshot[],
   deviations: CommissioningDeviationSnapshot[]

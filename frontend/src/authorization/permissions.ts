@@ -16,6 +16,8 @@ export const permissions = [
   "NOTIFICATION_RECIPIENT_MANAGE",
   "ESCALATION_POLICY_READ",
   "ESCALATION_POLICY_MANAGE",
+  "COMMISSIONING_READ",
+  "COMMISSIONING_MANAGE",
 ] as const;
 
 export type Permission = (typeof permissions)[number];
@@ -31,6 +33,8 @@ export const rolePermissions = {
     "DASHBOARD_READ",
     "REPORT_READ",
     "REPORT_EXPORT",
+    "COMMISSIONING_READ",
+    "COMMISSIONING_MANAGE",
   ]),
   VIEWER: new Set<Permission>([
     "CONFIGURATION_READ",
@@ -38,6 +42,7 @@ export const rolePermissions = {
     "ALARM_READ",
     "DASHBOARD_READ",
     "REPORT_READ",
+    "COMMISSIONING_READ",
   ]),
 } satisfies Readonly<Record<UserRole, ReadonlySet<Permission>>>;
 

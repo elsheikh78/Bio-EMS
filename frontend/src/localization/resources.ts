@@ -57,6 +57,7 @@ export interface TranslationResources {
     devices: string;
     sensorsCalibration: string;
     reports: string;
+    commissioning: string;
     configuration: string;
     users: string;
   };
@@ -279,6 +280,7 @@ export const englishResources = {
     devices: "Devices",
     sensorsCalibration: "Sensors & Calibration",
     reports: "Reports",
+    commissioning: "Commissioning",
     configuration: "Configuration",
     users: "Users",
   },

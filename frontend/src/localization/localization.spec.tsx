@@ -51,6 +51,7 @@ const alternativeResources = {
     devices: "Alt Devices",
     sensorsCalibration: "Alt Sensors & Calibration",
     reports: "Alt Reports",
+    commissioning: "Alt Commissioning",
     configuration: "Alt Configuration",
     users: "Alt Users",
   },

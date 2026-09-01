@@ -20,6 +20,8 @@ describe("frontend presentation permission matrix", () => {
       "NOTIFICATION_RECIPIENT_MANAGE",
       "ESCALATION_POLICY_READ",
       "ESCALATION_POLICY_MANAGE",
+      "COMMISSIONING_READ",
+      "COMMISSIONING_MANAGE",
     ]);
     expect(permissions).not.toContain("CONFIG_READ");
   });
@@ -35,6 +37,8 @@ describe("frontend presentation permission matrix", () => {
       "DASHBOARD_READ",
       "REPORT_READ",
       "REPORT_EXPORT",
+      "COMMISSIONING_READ",
+      "COMMISSIONING_MANAGE",
     ]);
     expect([...rolePermissions.VIEWER]).toEqual([
       "CONFIGURATION_READ",
@@ -42,6 +46,7 @@ describe("frontend presentation permission matrix", () => {
       "ALARM_READ",
       "DASHBOARD_READ",
       "REPORT_READ",
+      "COMMISSIONING_READ",
     ]);
   });
 

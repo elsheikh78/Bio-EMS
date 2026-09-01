@@ -188,6 +188,22 @@ describe("CommissioningService", () => {
     });
   });
 
+  it("initializes the controlled functional checklist idempotently", () => {
+    const sessionId = createSession(1, "commissioning-functional-checks");
+    const first = service.initializeFunctionalChecks(1, sessionId);
+    const second = service.initializeFunctionalChecks(1, sessionId);
+
+    expect(first.ids).toHaveLength(8);
+    expect(second.ids).toEqual(first.ids);
+    const record = service.getSessionRecord(1, sessionId);
+    expect(record.evaluation.acceptable).toBe(false);
+    expect(record.checks).toHaveLength(8);
+    expect(record.checks.slice(0, 2)).toMatchObject([
+      { checkKey: "CONFIGURATION_READINESS", state: "NOT_RUN" },
+      { checkKey: "SENSOR_MAPPING", state: "NOT_RUN" },
+    ]);
+  });
+
   function createSession(siteId: number, uuid: string): number {
     return repository.createSession({
       uuid,
