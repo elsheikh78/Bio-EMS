@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { createApiClient } from "../api/client";
 import {
@@ -14,6 +15,7 @@ import {
 } from "./context";
 
 const STORAGE_KEY = "bioems.platform.session.v1";
+const PLATFORM_QUERY_KEY = ["platform"] as const;
 
 interface StoredPlatformSession {
   accessToken: string;
@@ -54,6 +56,7 @@ function readStoredPlatformSession(): StoredPlatformSession | undefined {
 export function PlatformAuthenticationProvider({
   children,
 }: PropsWithChildren) {
+  const queryClient = useQueryClient();
   const [session, setSession] = useState<StoredPlatformSession | undefined>(
     readStoredPlatformSession,
   );
@@ -62,7 +65,7 @@ export function PlatformAuthenticationProvider({
   );
   const [loginPending, setLoginPending] = useState(false);
 
-  const client = useMemo(
+  const apiClient = useMemo(
     () => createApiClient({ getAccessToken: () => session?.accessToken }),
     [session?.accessToken],
   );
@@ -88,19 +91,22 @@ export function PlatformAuthenticationProvider({
       })
       .catch(() => {
         if (!active) return;
+        window.sessionStorage.removeItem(STORAGE_KEY);
+        void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
+        setSession(undefined);
         setStatus("restoration-error");
       });
 
     return () => {
       active = false;
     };
-  }, [session, status]);
+  }, [queryClient, session, status]);
 
   const login = async (input: PlatformLoginRequest) => {
     setLoginPending(true);
     try {
       const credentials = platformLoginRequestSchema.parse(input);
-      const raw = await client.request<unknown>("/platform-auth/login", {
+      const raw = await apiClient.request<unknown>("/platform-auth/login", {
         method: "POST",
         auth: "public",
         headers: { "Content-Type": "application/json" },
@@ -112,6 +118,7 @@ export function PlatformAuthenticationProvider({
         expiresAt: Date.now() + response.expires_in * 1000,
         principal: response.principal,
       };
+      void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       setSession(next);
       setStatus("authenticated");
@@ -122,6 +129,7 @@ export function PlatformAuthenticationProvider({
 
   const logout = () => {
     window.sessionStorage.removeItem(STORAGE_KEY);
+    void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
     setSession(undefined);
     setStatus("unauthenticated");
   };
@@ -132,6 +140,7 @@ export function PlatformAuthenticationProvider({
         status,
         principal: session?.principal,
         loginPending,
+        apiClient,
         login,
         logout,
       }}

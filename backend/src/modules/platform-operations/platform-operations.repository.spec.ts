@@ -6,17 +6,36 @@ import { PlatformOperationsRepository } from "./platform-operations.repository";
 describe("isolated platform commercial operations", () => {
   let db: Database.Database;
   let repository: PlatformOperationsRepository;
+
   beforeEach(() => {
     db = new Database(":memory:");
     db.pragma("foreign_keys=ON");
-    db.exec("CREATE TABLE sites(id INTEGER PRIMARY KEY); INSERT INTO sites VALUES(7)");
+    db.exec(`
+      CREATE TABLE sites(
+        id INTEGER PRIMARY KEY,
+        code TEXT NOT NULL,
+        name TEXT NOT NULL,
+        location TEXT,
+        timezone TEXT,
+        active INTEGER NOT NULL DEFAULT 1
+      );
+      INSERT INTO sites(id,code,name,location,timezone,active)
+      VALUES(7,'OCT','6th October','Giza','Africa/Cairo',1);
+    `);
     migration018.up(db);
     repository = new PlatformOperationsRepository(db);
   });
+
   afterEach(() => db.close());
+
   it("records customer, license and maintenance with SYSTEM_OWNER provenance", () => {
     const customerId = repository.createCustomer(
-      { code: "BIO-EGYPT", name: "BIO EGYPT", status: "ACTIVE", createdAt: "2026-09-01T12:00:00Z" },
+      {
+        code: "BIO-EGYPT",
+        name: "BIO EGYPT",
+        status: "ACTIVE",
+        createdAt: "2026-09-01T12:00:00Z",
+      },
       "owner#1"
     );
     repository.createLicense(
@@ -43,18 +62,31 @@ describe("isolated platform commercial operations", () => {
       },
       "owner#1"
     );
+
     expect(repository.overview()).toMatchObject({
-      customers: [{ code: "BIO-EGYPT" }],
-      licenses: [{ updateEntitlement: "FREE" }],
-      serviceEvents: [{ reference: "CAL-DUE-001" }],
+      customers: [{ code: "BIO-EGYPT", createdBy: "owner#1" }],
+      sites: [{ id: 7, code: "OCT", name: "6th October" }],
+      licenses: [{ siteId: 7, updateEntitlement: "FREE" }],
+      serviceEvents: [{ siteId: 7, reference: "CAL-DUE-001" }],
+      commercialEvents: [
+        { eventType: "SERVICE_EVENT_RECORDED", actorIdentity: "owner#1" },
+        { eventType: "LICENSE_RECORDED", actorIdentity: "owner#1" },
+        { eventType: "CUSTOMER_CREATED", actorIdentity: "owner#1" },
+      ],
     });
     expect(
       db.prepare("SELECT DISTINCT actor_identity FROM platform_commercial_events").all()
     ).toEqual([{ actor_identity: "owner#1" }]);
   });
+
   it("keeps commercial event evidence append-only", () => {
     repository.createCustomer(
-      { code: "C1", name: "Customer", status: "ACTIVE", createdAt: "2026-09-01T12:00:00Z" },
+      {
+        code: "C1",
+        name: "Customer",
+        status: "ACTIVE",
+        createdAt: "2026-09-01T12:00:00Z",
+      },
       "owner#1"
     );
     expect(() => db.prepare("DELETE FROM platform_commercial_events").run()).toThrow(

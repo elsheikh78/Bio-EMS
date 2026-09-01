@@ -14,6 +14,7 @@ import { DevicesPage } from "./pages/DevicesPage";
 import { NotificationDeliveriesPage } from "./pages/NotificationDeliveriesPage";
 import { CommissioningPage } from "./pages/CommissioningPage";
 import { SystemOwnerConsolePage } from "./pages/SystemOwnerConsolePage";
+import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPage";
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import {
   AuthenticationBoundary,
@@ -38,6 +39,14 @@ export function App() {
       />
       <Route element={<PlatformAuthenticationBoundary />}>
         <Route path="system-owner" element={<SystemOwnerConsolePage />} />
+        <Route
+          path="system-owner/customers"
+          element={<SystemOwnerCustomerFleetPage />}
+        />
+        <Route
+          path="system-owner/customers/:customerId"
+          element={<SystemOwnerCustomerFleetPage />}
+        />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>
 

@@ -21,6 +21,7 @@ export class PlatformOperationsRepository {
       String(input.createdAt)
     );
   }
+
   createLicense(input: Record<string, unknown>, actor: string): number {
     return this.record(
       "LICENSE_RECORDED",
@@ -49,6 +50,7 @@ export class PlatformOperationsRepository {
       String(input.recordedAt)
     );
   }
+
   createMaintenance(input: Record<string, unknown>, actor: string): number {
     return this.record(
       "SERVICE_EVENT_RECORDED",
@@ -76,12 +78,16 @@ export class PlatformOperationsRepository {
       String(input.recordedAt)
     );
   }
+
   overview() {
     return {
       customers: this.database
         .prepare(
-          "SELECT id,code,name,status,created_at AS createdAt FROM platform_customers ORDER BY id"
+          "SELECT id,code,name,status,created_at AS createdAt,created_by AS createdBy FROM platform_customers ORDER BY id"
         )
+        .all(),
+      sites: this.database
+        .prepare("SELECT id,code,name,location,timezone,active FROM sites ORDER BY id")
         .all(),
       licenses: this.database
         .prepare(
@@ -93,8 +99,14 @@ export class PlatformOperationsRepository {
           "SELECT id,customer_id AS customerId,site_id AS siteId,event_type AS eventType,due_at AS dueAt,status,reference,note FROM platform_maintenance_events ORDER BY id"
         )
         .all(),
+      commercialEvents: this.database
+        .prepare(
+          "SELECT id,event_type AS eventType,entity_type AS entityType,entity_id AS entityId,occurred_at AS occurredAt,actor_identity AS actorIdentity FROM platform_commercial_events ORDER BY id DESC"
+        )
+        .all(),
     };
   }
+
   private record(
     eventType: string,
     entityType: string,
