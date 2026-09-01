@@ -10,11 +10,11 @@
 
 The repository completed, merged, and CI-verified P0-P6. This includes the core EMS platform, reporting, notification delivery, Site Controller runtime, commissioning tooling, production-hardening controls, P5 SYSTEM_OWNER commercial backend/domain workflows, and P6 productization/deployment/acceptance tooling.
 
-The post-P6 product audit did not invalidate those closures. It identified a final product-surface gap: P5 owner capabilities existed in backend/domain form but did not yet have a complete approved SYSTEM_OWNER frontend/commercial console, and a final end-to-end product UX/regression pass is still required.
+The post-P6 product audit did not invalidate those closures. It identified the P7 product-surface completion phase. P7-01 established the isolated SYSTEM_OWNER frontend boundary; P7-02 added the first owner-facing commercial fleet workflow.
 
 ## Active Software Roadmap — P7 Final Product Completion
 
-Status: **ACTIVE — P7-01 COMPLETE; P7-02 IMPLEMENTED / FINAL CLOSURE; P7-03 NEXT**
+Status: **ACTIVE — P7-01 AND P7-02 COMPLETE / MERGED / CI VERIFIED; P7-03 NEXT**
 
 Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 
@@ -26,33 +26,43 @@ Implemented an owner-only frontend authentication/session boundary and protected
 
 ### P7-02 — Customer / Site Fleet Management
 
-Status: **IMPLEMENTED / PR #142 / FINAL DOCUMENTATION-CI-MERGE CLOSURE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 
-Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/create workflows, existing Site/installation context from commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle mutation remains absent because the backend does not authorize it. Source gates passed CI run #512 / workflow `33542959284`; final CI is required after closure documentation. Closure record: `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
+Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/create workflows, existing Site/installation context from commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle mutation remains absent because the backend does not authorize it. Final PR CI run #516 / workflow `33543271797` passed; PR #142 merged as `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`. Closure record: `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
 
 ### P7-03 — License Lifecycle / Installation Binding
 
-Status: **NEXT CONTROLLED WORK PACKAGE**
+Status: **NEXT CONTROLLED WORK PACKAGE — START HERE**
 
-Expose license inventory, validity/lifecycle, and supported installation/site binding without conflating license state with external payment settlement.
+Expose SYSTEM_OWNER license inventory/detail, validity/lifecycle, and supported installation/Site binding while preserving server-derived provenance and the isolated platform trust boundary. Recorded Site/license association must not be represented as physical installation, field commissioning, or payment settlement. Any required new mutation contract must use validated SYSTEM_OWNER-only API/service/repository boundaries and append-only commercial evidence.
 
 ### P7-04 — Update Entitlement / Release Eligibility
+
+Status: **OPEN AFTER P7-03**
 
 Expose approved entitlement and eligibility workflows while keeping remote OTA/update execution explicitly outside the implemented boundary unless separately added.
 
 ### P7-05 — Maintenance / Calibration / Support Fleet Operations
 
+Status: **OPEN AFTER P7-04**
+
 Provide owner-level fleet oversight and actionable status across the P5 commercial operations domain while preserving site-level evidence boundaries.
 
 ### P7-06 — UX / Legacy Cleanup
+
+Status: **OPEN AFTER P7-05**
 
 Remove or reconcile stale/dead frontend residue, including obsolete Sprint-14 Foundation/deferred text, and review navigation, loading/error/empty states, responsive behavior, accessibility, and localization.
 
 ### P7-07 — End-to-End Product Workflow Audit
 
+Status: **OPEN AFTER P7-06**
+
 Exercise every exposed operational, administration, reporting, commissioning, and SYSTEM_OWNER workflow for permission consistency, primary actions, API/error behavior, state refresh, and exports.
 
 ### P7-08 — Full Regression / Documentation / Closure
+
+Status: **OPEN AFTER P7-07**
 
 Run the complete software quality gate and reconcile all current-state documentation with actual P7 evidence. Only successful P7 closure permits the status **SOFTWARE PRODUCT COMPLETE** for the approved scope.
 
