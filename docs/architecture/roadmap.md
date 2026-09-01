@@ -1,90 +1,88 @@
 # BIO-EMS Development Roadmap
 
-Latest tagged release: `v0.15.0`; current source-software version: `0.16.0`
+**Roadmap state:** 1 September 2026  
+**Latest published tagged release:** `v0.17.0`  
+**Current source-software version:** `0.18.0`
 
-Repository status: Sprints 13 through 15 are complete, merged, verified, and closed.
-The current phase is controlled BIO EGYPT field-pilot preparation; field
-commissioning and Pilot acceptance remain unexecuted.
+`PROJECT_STATE.md` is the single authoritative current-state document. This roadmap describes the forward product path and must not be used to infer completion of physical, field, provider, UAT, or customer-acceptance gates.
 
-## Phase 1 — Foundation
+## Delivered Software Baseline
 
-Completed: project structure, documentation, MQTT and InfluxDB integration, SQLite, migrations, repositories, Sites, and REST testing foundations.
+The repository has completed, merged, and CI-verified the controlled P0-P6 source-software sequence.
 
-## Phase 2 — Domain Design
+### Foundation and Core Platform — COMPLETE
 
-Implemented through Sprint 13: Domain model, architecture decisions, database design, unified Alarm evaluation, Device lifecycle/trust-boundary rules, Authentication, centralized RBAC, and Alarm acknowledgment actor auditing.
+- TypeScript/Express backend and React frontend.
+- SQLite configuration/versioned migrations and InfluxDB time-series storage.
+- MQTT telemetry ingestion and unified Alarm evaluation.
+- Site, Room/Monitored Area, Device, Sensor, User, reporting, notification, audit, and operational APIs.
+- JWT Authentication, active-User enforcement, centralized RBAC, ADMIN User Management, and isolated SYSTEM_OWNER trust boundary.
+- Device onboarding lifecycle and telemetry trust-boundary enforcement.
+- Dashboard and Monitored Areas with authenticated telemetry-driven refresh plus polling fallback.
 
-## Phase 3 — Core Modules
+### P0 — Professional Software / Reporting Baseline — COMPLETE
 
-- Devices: lifecycle onboarding scope implemented.
-- Rooms and Sensors: baseline backend domains implemented; broader management remains separately scoped.
-- Users: ADMIN management implemented with last-active-ADMIN protection.
-- Monitoring Points: proposed and not implemented.
+All five controlled report families support Preview/CSV/PDF: Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit & Operations.
 
-## Phase 4 — Monitoring
+### P1 — Notification Delivery Engine — SOFTWARE COMPLETE
 
-- Telemetry ingestion and Device/Site/Sensor trust boundary: implemented.
-- Alarm Engine and authenticated acknowledgment audit: implemented.
-- Durable Alarm and Device notification events: implemented.
-- Delivery-channel provider implementations beyond the approved SMS failover contract: planned.
+Durable delivery queue, worker/runtime, SMS-provider boundary, Alarm escalation orchestration, and protected Delivery Operations are implemented and CI verified. Live provider evidence remains external.
 
-## Phase 5 — Identity and Management
+### P2 — Site Controller Runtime — SOFTWARE COMPLETE
 
-JWT Authentication, active-User enforcement, centralized RBAC, and ADMIN User Management are implemented. Sprint 14 additionally provides the frontend Login/session lifecycle and authorization-aware routing established in S14-03.
+P2-01 through P2-09 plus durability hardening are merged and CI verified, including deterministic runtime behavior, BF-08 configuration receipt/integrity, durable known-good recovery, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover contract/runtime, reconnect reconciliation, controller-health evidence, qualification gates, and durable replay acceptance.
 
-## Phase 6 — Operational Frontend
+Physical controller/DS18B20/SIM800L/MQTT bench qualification remains external.
 
-- S14-01: frontend architecture, providers, localization contract, and quality foundation — complete.
-- S14-02: professional responsive AppShell and navigation — complete.
-- S14-03: Login, session restoration, protected-request boundary, and authorization-aware routing — complete.
-- S14-04: operational Dashboard frontend — complete.
-- S14-05: Monitored Areas frontend — complete, merged, and verified.
-  - S14-05A contracts/data access — complete.
-  - S14-05B Site → Monitored Area hierarchy — complete.
-  - S14-05C Sensor inventory and threshold metadata — complete.
-  - S14-05D refresh/retry/integration/hardening — complete.
+### P3 — Pilot Commissioning Tooling — SOFTWARE COMPLETE
 
-For S14-05, Monitored Area is presentation terminology for the existing Room domain. No new Asset or Monitoring Point backend domain is introduced.
+Commissioning sessions/checks, append-only evidence/deviations/decisions, Site-scoped APIs, configuration/mapping/calibration verification, functional-test orchestration, commissioning UI, CSV/PDF commissioning records, and BIO EGYPT software dry-run/UAT package are complete. Field commissioning and customer acceptance remain open.
 
-- BF-10: all five controlled report families are available through Reports Center Preview, CSV,
-  and PDF. Device health history begins with deployment of the append-only ledger migration.
+### P4 — Production Hardening — SOFTWARE CONTROLS COMPLETE
 
-## Post-Sprint-15 Product Readiness Priorities
+Production-hardening controls covering deployment validation, backup/restore, process supervision, configuration/secrets boundaries, TLS/QoS, persistence/recovery, observability, retention, upgrade/rollback, and disaster-recovery evidence structures are implemented. Production execution evidence remains external.
 
-After Sprint 15 closure, BIO-EMS must complete controlled field evidence before the
-first reference deployment is treated as commissioned or accepted.
+### P5 — SYSTEM_OWNER / Commercial Operations — SOFTWARE COMPLETE
 
-### Hardware / Pilot Readiness
+The isolated SYSTEM_OWNER trust domain and approved commercial-operations workflows are implemented without exposing SYSTEM_OWNER administration/discovery to customer ADMIN users. Billing/payment execution and live commercial operations remain external or later scope where applicable.
 
-- Perform a formal Hardware Design Review against the accepted hardware, Device, Zone Controller, wiring, onboarding, and communications ADRs before committing to production hardware.
-- Use the ESP32-based controller architecture as the starting point unless the review identifies a concrete technical or lifecycle reason to change it.
-- Optimize hardware for **low cost, reliability, and manufacturability** together; BOM reduction must not compromise field reliability or required industrial protection.
-- Prefer modular hardware so installations pay only for required interfaces and capabilities.
-- Prepare an MVP suitable for a real customer pilot/reference installation, including commissioning, telemetry continuity, alarm verification, calibration evidence, and acceptance evidence.
-- Use lessons from the first field deployment to drive subsequent BOM cost-down and hardware revisions.
+### P6 — Productization / Deployment / Acceptance — SOFTWARE PRODUCTIZATION COMPLETE
 
-### Commercial-Grade UI/UX
+Controlled productization/deployment/acceptance tooling and documentation are complete at source level through PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
 
-- Treat professional, visually compelling user interfaces as a product requirement, not optional cosmetic polish.
-- Preserve operational clarity, accessibility, responsive behavior, localization readiness, and performance while improving visual presentation.
-- Maintain a coherent BIO-EMS design language across Login, Application Shell, Dashboard, Monitored Areas, Alarms, Devices, Configuration, and subsequent operational screens.
-- After the functional Sprint 14 scope is complete, perform a dedicated UI/UX Professionalization Pass rather than rebuilding the frontend architecture.
-- The first customer demo/reference deployment must present a polished commercial product experience in addition to correct engineering behavior.
+## Current Forward Roadmap — External Evidence and Field Execution
 
-These two tracks are complementary: the first reference installation must combine field-reliable, cost-conscious hardware with a professional customer-facing software experience.
+The next work is not a repeat of P0-P6 source implementation. It is controlled execution and evidence collection:
 
-## Phase 7 — Future Product Expansion
+1. Procure and assemble the initial controller test kit.
+2. Execute hardware validation HV-01 through HV-15 for Standard/Advanced controller paths as applicable.
+3. Prove power interruption/restart and durable configuration recovery on physical hardware.
+4. Prove industrial DS18B20 disconnect/reconnect, fault, excursion, and recovery behavior.
+5. Prove SIM800L live emergency SMS behavior with controlled recipients.
+6. Prove deployed MQTT disconnect/recovery and LIVE/REPLAY behavior.
+7. Execute the required endurance run, including the controlled 72-hour gate where applicable.
+8. Install and commission the BIO EGYPT Phase-1 temperature-only Pilot.
+9. Capture calibration, Alarm, commissioning, UAT, Quality/customer sign-off, and acceptance evidence through the implemented tooling.
+10. Execute production deployment/restore/rollback/DR evidence before claiming production acceptance.
 
-Planned work includes broader Device discovery/provisioning, Assets, Monitoring Points,
-delivery-channel implementations, and approved industry-specific capabilities.
+## BIO EGYPT Phase-1 Boundary
 
-## Phase 8 — Production Operations
+The controlled Pilot remains temperature-only using industrial DS18B20 sensors across two Sites, total 20 Sensors. Repository completion does not mean those Sensors/controllers are installed, commissioned, or accepted.
 
-Pilot deployment validation, backup/restore procedures, and rollback guidance are
-implemented. Field execution, broader production monitoring, commercial operations,
-and OTA updates remain separately scoped.
+## Product Expansion After Evidence Gates
+
+Potential later scope includes broader Asset/discovery/provisioning, Monitoring Point/Asset domain expansion where formally approved, OTA delivery, production hardware/firmware adapters, additional environmental parameters and industry verticals, billing/payment execution, and broader fleet/commercial operations.
+
+## Domain Boundary
+
+Frontend **Monitored Area** remains presentation terminology for the existing Room domain:
+
+**Site → Monitored Area (Room) → Sensor**
+
+No separate Monitoring Point or Asset backend domain is claimed as implemented by this roadmap.
 
 ## Release Boundary
 
-The `0.16.0` source boundary adds BF-10 reporting completion after `v0.15.0`. Field deployment,
-commissioning evidence, and Pilot acceptance remain outside the software release claim.
+`v0.17.0` remains the latest published tagged release while the repository source-software version is `0.18.0`. A later release must be explicitly tagged and published before it is described as the latest published release.
+
+Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance are separate gates.
