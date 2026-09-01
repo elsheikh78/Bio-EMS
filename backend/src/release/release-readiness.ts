@@ -38,7 +38,7 @@ export function validateReleasePackage(repositoryRoot: string): ReleaseReadiness
   }
 
   const backendPackage = readJson<{ version: string; engines?: { node?: string } }>(
-    "backend/package.json",
+    "backend/package.json"
   );
   const manifest = readJson<ReleaseManifest>("release-manifest.json");
 

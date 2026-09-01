@@ -19,7 +19,7 @@ function fixture(version = "0.18.0") {
       components: ["backend", "frontend"],
       requiredDocuments: ["docs/runbook.md"],
       externalAcceptanceRequired: true,
-    }),
+    })
   );
   return root;
 }
