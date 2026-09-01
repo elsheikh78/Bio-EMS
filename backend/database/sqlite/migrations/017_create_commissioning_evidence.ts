@@ -40,12 +40,19 @@ export const migration017: Migration = {
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(session_id) REFERENCES commissioning_sessions(id) ON DELETE RESTRICT,
         FOREIGN KEY(sensor_id) REFERENCES sensors(id) ON DELETE RESTRICT,
-        FOREIGN KEY(device_id) REFERENCES devices(id) ON DELETE RESTRICT,
-        UNIQUE(session_id, check_key, sensor_id, device_id, map_id)
+        FOREIGN KEY(device_id) REFERENCES devices(id) ON DELETE RESTRICT
       );
 
       CREATE INDEX IF NOT EXISTS idx_commissioning_checks_session
         ON commissioning_checks(session_id, id);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_commissioning_checks_identity
+        ON commissioning_checks(
+          session_id,
+          check_key,
+          COALESCE(sensor_id, -1),
+          COALESCE(device_id, -1),
+          COALESCE(map_id, '')
+        );
 
       CREATE TABLE IF NOT EXISTS commissioning_evidence (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,6 +60,8 @@ export const migration017: Migration = {
         check_id INTEGER NOT NULL,
         state TEXT NOT NULL
           CHECK(state IN ('NOT_RUN','PASS','FAIL','BLOCKED','DEFERRED_NON_BLOCKING')),
+        evidence_kind TEXT NOT NULL
+          CHECK(evidence_kind IN ('SOFTWARE_AUTOMATED','PHYSICAL','LIVE_PROVIDER','DOCUMENTARY')),
         executed_at TEXT NOT NULL,
         actor_identity TEXT NOT NULL,
         witness_identity TEXT,
