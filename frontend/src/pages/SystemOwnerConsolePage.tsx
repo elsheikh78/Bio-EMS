@@ -3,11 +3,13 @@ import {
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
   Container,
   Toolbar,
   Typography,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 
@@ -19,11 +21,13 @@ const copy = {
     logout: "Sign out",
     foundation:
       "Owner console foundation is active. Commercial operation modules are added through the controlled P7 work packages.",
+    open: "Open",
+    planned: "Planned in a later P7 package",
     modules: [
-      "Customer fleet",
-      "Licenses & installations",
-      "Update entitlements",
-      "Maintenance, calibration & support",
+      { key: "customers", label: "Customer fleet" },
+      { key: "licenses", label: "Licenses & installations" },
+      { key: "updates", label: "Update entitlements" },
+      { key: "service", label: "Maintenance, calibration & support" },
     ],
   },
   ar: {
@@ -33,11 +37,13 @@ const copy = {
     logout: "تسجيل الخروج",
     foundation:
       "تم تفعيل الأساس الآمن للوحة مالك النظام. تتم إضافة وحدات العمليات التجارية من خلال حزم P7 المعتمدة.",
+    open: "فتح",
+    planned: "مخطط لها في حزمة P7 لاحقة",
     modules: [
-      "العملاء والمواقع",
-      "التراخيص والتركيبات",
-      "استحقاقات التحديث",
-      "الصيانة والمعايرة والدعم",
+      { key: "customers", label: "العملاء والمواقع" },
+      { key: "licenses", label: "التراخيص والتركيبات" },
+      { key: "updates", label: "استحقاقات التحديث" },
+      { key: "service", label: "الصيانة والمعايرة والدعم" },
     ],
   },
 } as const;
@@ -84,15 +90,30 @@ export function SystemOwnerConsolePage() {
             gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
           }}
         >
-          {text.modules.map((module) => (
-            <Card key={module} variant="outlined">
-              <CardContent>
-                <Typography component="h2" variant="h6">
-                  {module}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {text.modules.map((module) => {
+            const active = module.key === "customers";
+            return (
+              <Card key={module.key} variant="outlined">
+                <CardContent>
+                  <Typography component="h2" variant="h6">
+                    {module.label}
+                  </Typography>
+                  {!active ? (
+                    <Typography color="text.secondary" variant="body2">
+                      {text.planned}
+                    </Typography>
+                  ) : null}
+                </CardContent>
+                {active ? (
+                  <CardActions>
+                    <Button component={Link} to="/system-owner/customers">
+                      {text.open}
+                    </Button>
+                  </CardActions>
+                ) : null}
+              </Card>
+            );
+          })}
         </Box>
       </Container>
     </Box>
