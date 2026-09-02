@@ -1,4 +1,4 @@
-import { useEffect, type PropsWithChildren } from "react";
+import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { LocalizationContext } from "./context";
 import { englishResources, localizationDefaults } from "./resources";
 import type {
@@ -13,13 +13,43 @@ interface LocalizationProviderProps extends PropsWithChildren {
   resources?: TranslationResources;
 }
 
+export const LANGUAGE_STORAGE_KEY = "bioems.language";
+
+function storedLanguage(): SupportedLanguage {
+  try {
+    return localStorage.getItem(LANGUAGE_STORAGE_KEY) === "ar" ? "ar" : "en";
+  } catch {
+    return localizationDefaults.language;
+  }
+}
+
 export function LocalizationProvider({
   children,
-  language = localizationDefaults.language,
-  direction = localizationDefaults.direction,
+  language,
+  direction,
   resources = englishResources,
 }: LocalizationProviderProps) {
-  const value = { language, direction, resources };
+  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>(
+    () => language ?? storedLanguage(),
+  );
+  const selectedDirection =
+    direction ?? (selectedLanguage === "ar" ? "rtl" : "ltr");
+  const value = useMemo(
+    () => ({
+      language: selectedLanguage,
+      direction: selectedDirection,
+      resources,
+      setLanguage: (nextLanguage: SupportedLanguage) => {
+        setSelectedLanguage(nextLanguage);
+        try {
+          localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
+        } catch {
+          // Language switching remains available when browser storage is blocked.
+        }
+      },
+    }),
+    [resources, selectedDirection, selectedLanguage],
+  );
 
   useEffect(() => {
     const previousLanguage = document.documentElement.lang;
