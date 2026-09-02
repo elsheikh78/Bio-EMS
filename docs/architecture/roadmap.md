@@ -1,8 +1,8 @@
 # BIO-EMS Development Roadmap
 
-**Roadmap state:** 1 September 2026  
+**Roadmap state:** 2 September 2026
 **Latest published tagged release:** `v0.17.0`  
-**Current source-software version:** `0.18.0`
+**Current source-software version:** `0.19.0`
 
 `PROJECT_STATE.md` is the single authoritative current-state document. This roadmap describes the forward product path and must not be used to infer completion of physical, field, provider, UAT, or customer-acceptance gates.
 
@@ -81,6 +81,19 @@ P7 is software-product completion. The following remain separate evidence tracks
 9. Capture calibration, Alarm, commissioning, UAT, Quality/customer sign-off, and acceptance evidence through the implemented tooling.
 10. Execute production deployment/restore/rollback/DR evidence before claiming production acceptance.
 
+## Approved Next Software Roadmap — P8-02 through P8-08
+
+Status: **APPROVED / DOCUMENTED / IMPLEMENTATION PENDING**
+
+ADR-022 and `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`
+control the next sequence: explicit customer ownership, RBAC realignment, SYSTEM_OWNER
+installation draft/topology provisioning, Telemetry configuration and Device mapping,
+safe configuration revisions with controller receipts, separated technical
+Commissioning/customer acceptance, and the final bilingual wizard/regression closure.
+
+The current application does not yet enforce the approved new matrix. Existing
+permissions remain effective until their implementation packages are merged.
+
 ## BIO EGYPT Phase-1 Boundary
 
 The controlled Pilot remains temperature-only using industrial DS18B20 sensors across two Sites, total 20 Sensors. Repository completion does not mean those Sensors/controllers are installed, commissioned, or accepted.
@@ -99,6 +112,6 @@ No separate Monitoring Point or Asset backend domain is claimed as implemented b
 
 ## Release Boundary
 
-`v0.17.0` remains the latest published tagged release while repository source-software version remains `0.18.0`. P7-01 and P7-02 do not change either value. A later release must be explicitly tagged and published before it is described as the latest published release.
+`v0.17.0` remains the latest published tagged release while repository source-software version is `0.19.0`. A later release must be explicitly tagged and published before it is described as the latest published release.
 
 Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance remain separate gates.

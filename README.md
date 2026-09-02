@@ -15,6 +15,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | --- | --- |
 | Where is the whole project now? | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority** |
 | What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
+| What is the approved SYSTEM_OWNER installation and RBAC plan? | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
 | How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
 | What is the latest P7 closure evidence? | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md) |

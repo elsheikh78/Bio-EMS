@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **SOFTWARE PRODUCT COMPLETE** for the approved P0-P7 scope. P8-01 primary WhatsApp and Email Alarm delivery, the safe provider-configuration template, and the controlled SMTP smoke-test command are merged and CI verified through PRs #147-#148. Live Meta, SMTP inbox, and SMS evidence remains open. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **SOFTWARE PRODUCT COMPLETE** for the approved P0-P7 scope. P8-01 primary WhatsApp and Email Alarm delivery is merged and CI verified. P8-02 through P8-08 SYSTEM_OWNER installation provisioning and customer-RBAC realignment are approved/documented future scope and are not implemented. Live provider, physical controller, production deployment, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -17,6 +17,7 @@
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 6. Reconcile the Windows local copy with merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`, preserve all real provider secrets only in ignored `backend/.env`, and run the controlled SMTP smoke test.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
+8. Implement the approved P8-02 through P8-08 sequence only from `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`; effective customer permissions remain the current code behavior until each change is implemented, tested, merged, and documented.
 
 ## Status Vocabulary
 
@@ -57,6 +58,7 @@
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
 - **P7 — Final Product Completion:** **COMPLETE / MERGED / CI VERIFIED** through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 - **P8-01 — Primary WhatsApp and Email Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / LIVE PROVIDER EVIDENCE OPEN.** Provider implementation: PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Safe configuration and SMTP smoke test: PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`.
+- **P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment:** **APPROVED / DOCUMENTED / IMPLEMENTATION PENDING.** Controlled by ADR-022 and the dated P8 implementation plan. Current code permissions must not be described as already realigned.
 
 ## P7 Active Plan
 
@@ -121,4 +123,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** P7 software is closed and P8-01 source work is merged. First update Windows local `main` to `a045e93`, retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration after restart, run `npm run test:email-delivery`, and record inbox evidence. WhatsApp live setup remains blocked by the external Meta developer-registration loop.
+**Next-session start point:** Update Windows local `main` to the latest documentation merge. For provider evidence, retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and run `npm run test:email-delivery`; WhatsApp setup remains blocked by Meta registration. For new software work, start P8-02 customer ownership and authorization foundation before changing effective permissions or building the installation wizard.
