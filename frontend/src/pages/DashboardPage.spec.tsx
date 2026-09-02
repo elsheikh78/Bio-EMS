@@ -34,6 +34,7 @@ function renderDashboard() {
         language: "en",
         direction: "ltr",
         resources: englishResources,
+        setLanguage: vi.fn(),
       }}
     >
       <DashboardPage />

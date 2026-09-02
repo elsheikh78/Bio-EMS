@@ -38,6 +38,42 @@ const copy = {
     error: "Draft could not be created.",
     register: "Lifecycle register",
     status: "Status",
+    revision: "revision",
+    sites: "Sites",
+    areas: "Areas",
+    telemetries: "Telemetries",
+    devices: "Devices",
+    mappings: "Mappings",
+    modify: "Modify installation",
+    validate: "Validate",
+    queue: "Queue delivery",
+    send: "Mark sent",
+    technicalDecision: "Record technical decision",
+    reviewTitle: "Review changes",
+    configurationJson: "Configuration JSON",
+    changeReason: "Change reason",
+    review: "Review changes",
+    apply: "Apply as new revision",
+    reviewWarning:
+      "A new immutable revision will be created. The last active configuration remains in service until an exact device receipt confirms this revision.",
+    revisionError: "Configuration JSON or mapping is invalid.",
+    telemetryTypes: {
+      TEMPERATURE: "Temperature",
+      HUMIDITY: "Humidity",
+      PRESSURE: "Pressure",
+      CO2: "Carbon dioxide",
+      DOOR: "Door status",
+      OTHER: "Other",
+    },
+    statuses: {
+      DRAFT: "Draft",
+      VALIDATED: "Validated",
+      PENDING_DELIVERY: "Pending delivery",
+      SENT: "Sent",
+      CONFIG_ACTIVE: "Configuration active",
+      COMMISSIONED: "Commissioned",
+      CORRECTION_REQUIRED: "Correction required",
+    },
   },
   ar: {
     back: "العودة إلى لوحة مالك النظام",
@@ -57,6 +93,42 @@ const copy = {
     error: "تعذر إنشاء المسودة.",
     register: "سجل دورة الحياة",
     status: "الحالة",
+    revision: "المراجعة",
+    sites: "المواقع",
+    areas: "المناطق",
+    telemetries: "القياسات",
+    devices: "الأجهزة",
+    mappings: "الروابط",
+    modify: "تعديل التركيب",
+    validate: "التحقق",
+    queue: "إدراج للإرسال",
+    send: "تسجيل الإرسال",
+    technicalDecision: "تسجيل القرار الفني",
+    reviewTitle: "مراجعة التغييرات",
+    configurationJson: "تهيئة JSON",
+    changeReason: "سبب التغيير",
+    review: "مراجعة التغييرات",
+    apply: "تطبيق كمراجعة جديدة",
+    reviewWarning:
+      "ستُنشأ مراجعة ثابتة جديدة، وتظل آخر تهيئة نشطة في الخدمة حتى يؤكد إيصال مطابق من الجهاز هذه المراجعة.",
+    revisionError: "تهيئة JSON أو ربط القنوات غير صالح.",
+    telemetryTypes: {
+      TEMPERATURE: "درجة الحرارة",
+      HUMIDITY: "الرطوبة",
+      PRESSURE: "الضغط",
+      CO2: "ثاني أكسيد الكربون",
+      DOOR: "حالة الباب",
+      OTHER: "أخرى",
+    },
+    statuses: {
+      DRAFT: "مسودة",
+      VALIDATED: "تم التحقق",
+      PENDING_DELIVERY: "بانتظار الإرسال",
+      SENT: "تم الإرسال",
+      CONFIG_ACTIVE: "التهيئة نشطة",
+      COMMISSIONED: "تم التشغيل المبدئي",
+      CORRECTION_REQUIRED: "يتطلب تصحيحاً",
+    },
   },
 } as const;
 
@@ -140,6 +212,15 @@ export function SystemOwnerInstallationsPage() {
           : status === "CONFIG_ACTIVE"
             ? "technical-decision"
             : undefined;
+  const actionLabel = (actionName: string) =>
+    ({
+      validate: text.validate,
+      queue: text.queue,
+      send: text.send,
+      "technical-decision": text.technicalDecision,
+    })[actionName] ?? actionName;
+  const statusLabel = (status: string) =>
+    text.statuses[status as keyof typeof text.statuses] ?? status;
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
       <Button component={Link} to="/system-owner">
@@ -203,16 +284,18 @@ export function SystemOwnerInstallationsPage() {
               value={type}
               onChange={(e) => setType(e.target.value)}
             >
-              {[
-                "TEMPERATURE",
-                "HUMIDITY",
-                "PRESSURE",
-                "CO2",
-                "DOOR",
-                "OTHER",
-              ].map((x) => (
+              {(
+                [
+                  "TEMPERATURE",
+                  "HUMIDITY",
+                  "PRESSURE",
+                  "CO2",
+                  "DOOR",
+                  "OTHER",
+                ] as const
+              ).map((x) => (
                 <MenuItem key={x} value={x}>
-                  {x}
+                  {text.telemetryTypes[x]}
                 </MenuItem>
               ))}
             </TextField>
@@ -259,16 +342,17 @@ export function SystemOwnerInstallationsPage() {
           <Card key={item.uuid} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="h6">
-                {item.customerName} — revision {item.latestRevision}
+                {item.customerName} — {text.revision} {item.latestRevision}
               </Typography>
               <Typography color="text.secondary">{item.uuid}</Typography>
               <Typography>
-                {text.status}: {item.status}
+                {text.status}: {statusLabel(item.status)}
               </Typography>
               <Typography>
-                Sites {item.summary.sites} · Areas {item.summary.areas} ·
-                Telemetries {item.summary.telemetries} · Devices{" "}
-                {item.summary.devices} · Mappings {item.summary.mappings}
+                {text.sites} {item.summary.sites} · {text.areas}{" "}
+                {item.summary.areas} · {text.telemetries}{" "}
+                {item.summary.telemetries} · {text.devices}{" "}
+                {item.summary.devices} · {text.mappings} {item.summary.mappings}
               </Typography>
               <Button
                 sx={{ mt: 1, mr: 1 }}
@@ -282,7 +366,7 @@ export function SystemOwnerInstallationsPage() {
                   setReview(false);
                 }}
               >
-                Modify installation
+                {text.modify}
               </Button>
               {next ? (
                 <Button
@@ -303,7 +387,7 @@ export function SystemOwnerInstallationsPage() {
                     })
                   }
                 >
-                  {next}
+                  {actionLabel(next)}
                 </Button>
               ) : null}
             </CardContent>
@@ -314,10 +398,10 @@ export function SystemOwnerInstallationsPage() {
         <Card variant="outlined">
           <CardContent>
             <Typography component="h2" variant="h6">
-              Review changes
+              {text.reviewTitle}
             </Typography>
             <TextField
-              label="Configuration JSON"
+              label={text.configurationJson}
               multiline
               minRows={12}
               fullWidth
@@ -330,7 +414,7 @@ export function SystemOwnerInstallationsPage() {
             />
             <TextField
               required
-              label="Change reason"
+              label={text.changeReason}
               fullWidth
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -347,7 +431,7 @@ export function SystemOwnerInstallationsPage() {
                 }
               }}
             >
-              Review changes
+              {text.review}
             </Button>
             <Button
               sx={{ mt: 2 }}
@@ -364,18 +448,16 @@ export function SystemOwnerInstallationsPage() {
                   .catch(() => setRevisionError(true))
               }
             >
-              Apply as new revision
+              {text.apply}
             </Button>
             {review ? (
               <Alert severity="warning" sx={{ mt: 2 }}>
-                A new immutable revision will be created. The last active
-                configuration remains in service until an exact device receipt
-                confirms this revision.
+                {text.reviewWarning}
               </Alert>
             ) : null}
             {revisionError ? (
               <Alert severity="error" sx={{ mt: 2 }}>
-                Configuration JSON or mapping is invalid.
+                {text.revisionError}
               </Alert>
             ) : null}
           </CardContent>

@@ -4,6 +4,7 @@ import { useMemo, type PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthenticationProvider } from "../auth/AuthenticationProvider";
 import { AppErrorBoundary } from "../components/AppErrorBoundary";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { englishResources } from "../localization/resources";
 import { useLocalization } from "../localization/useLocalization";
@@ -34,6 +35,7 @@ function LocalizedAppProviders({ children }: PropsWithChildren) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <LanguageSwitcher />
       <QueryClientProvider client={queryClient}>
         <AuthenticationProvider>
           <PlatformAuthenticationProvider>

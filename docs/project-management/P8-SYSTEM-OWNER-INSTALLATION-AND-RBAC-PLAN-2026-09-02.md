@@ -130,6 +130,12 @@ through P8-08 and does not reopen P0-P7 closure.
 
 ## P8-08 — SYSTEM_OWNER wizard, full regression and closure
 
+**Localization correction:** PR #152 delivered the installation lifecycle but did
+not satisfy the complete bilingual acceptance criterion: no global language control
+was exposed, the choice was not persisted, and visible P8 strings remained
+English-only. P8-08 bilingual closure therefore requires the follow-up localization
+completion and verification recorded in the source-closure document.
+
 ### Scope
 
 - Deliver the end-to-end bilingual installation wizard and review summary.
