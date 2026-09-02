@@ -25,6 +25,12 @@ const selfDisable = () =>
   new AppError("Administrators cannot disable themselves", 409, "SELF_DISABLE_FORBIDDEN");
 const lastAdmin = () =>
   new AppError("Last active administrator must be preserved", 409, "LAST_ACTIVE_ADMIN_REQUIRED");
+const adminManagedBySystemOwner = () =>
+  new AppError(
+    "Administrator accounts are managed by SYSTEM_OWNER",
+    403,
+    "ADMIN_MANAGED_BY_SYSTEM_OWNER"
+  );
 
 export interface UserServiceDependencies {
   repository: UserRepository;
@@ -44,8 +50,8 @@ export class UserService {
       dependencies.runInTransaction ?? ((operation) => sqlite.transaction(operation)());
   }
 
-  listUsers(): User[] {
-    return this.repository.getAll();
+  listUsers(actorId?: number): User[] {
+    return this.repository.getAll().filter((user) => user.role !== "ADMIN" || user.id === actorId);
   }
 
   async createUser(
@@ -53,6 +59,7 @@ export class UserService {
     input: CreateUserInput,
     requestContext: AuditRequestContext
   ): Promise<User> {
+    if (input.role === "ADMIN") throw adminManagedBySystemOwner();
     let passwordHash: string;
     try {
       passwordHash = await hashPassword(input.password);
@@ -95,9 +102,10 @@ export class UserService {
       userId,
       requestContext,
       () => {
-        if (Number(actor.id) === userId && input.role !== undefined) throw selfRoleChange();
         const previous = this.repository.findById(userId);
         if (!previous) throw notFound();
+        if (previous.role === "ADMIN" || input.role === "ADMIN") throw adminManagedBySystemOwner();
+        if (Number(actor.id) === userId && input.role !== undefined) throw selfRoleChange();
         const updated = this.repository.updateProfileAndRole(userId, input);
         if (!updated) throw notFound();
         this.recordSuccess({
@@ -129,6 +137,7 @@ export class UserService {
         if (Number(actor.id) === userId && input.status === "disabled") throw selfDisable();
         const previous = this.repository.findById(userId);
         if (!previous) throw notFound();
+        if (previous.role === "ADMIN") throw adminManagedBySystemOwner();
         const updated = this.repository.updateStatus(userId, input.status);
         if (!updated) throw notFound();
         this.recordSuccess({
@@ -167,6 +176,9 @@ export class UserService {
       userId,
       requestContext,
       () => {
+        const previous = this.repository.findById(userId);
+        if (!previous) throw notFound();
+        if (previous.role === "ADMIN") throw adminManagedBySystemOwner();
         const updated = this.repository.updatePasswordHash(userId, passwordHash);
         if (!updated) throw notFound();
         this.recordSuccess({

@@ -7,6 +7,7 @@ describe("frontend presentation permission matrix", () => {
     expect(permissions).toEqual([
       "CONFIGURATION_READ",
       "CONFIGURATION_WRITE",
+      "TOPOLOGY_MANAGE",
       "DEVICE_READ",
       "DEVICE_MANAGE",
       "ALARM_READ",
@@ -27,18 +28,18 @@ describe("frontend presentation permission matrix", () => {
   });
 
   it("mirrors the current Backend role matrix exactly", () => {
-    expect([...rolePermissions.ADMIN]).toEqual(permissions);
+    expect([...rolePermissions.ADMIN]).toEqual(
+      permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE")
+    );
     expect([...rolePermissions.OPERATOR]).toEqual([
       "CONFIGURATION_READ",
       "DEVICE_READ",
-      "DEVICE_MANAGE",
       "ALARM_READ",
       "ALARM_ACKNOWLEDGE",
       "DASHBOARD_READ",
       "REPORT_READ",
       "REPORT_EXPORT",
       "COMMISSIONING_READ",
-      "COMMISSIONING_MANAGE",
     ]);
     expect([...rolePermissions.VIEWER]).toEqual([
       "CONFIGURATION_READ",

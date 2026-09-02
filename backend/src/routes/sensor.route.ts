@@ -81,7 +81,7 @@ router.get(
 
 router.post(
   "/",
-  requirePermission(PERMISSION.CONFIGURATION_WRITE),
+  requirePermission(PERMISSION.TOPOLOGY_MANAGE),
   validateBody(createSensorSchema),
   sensorController.createSensor
 );

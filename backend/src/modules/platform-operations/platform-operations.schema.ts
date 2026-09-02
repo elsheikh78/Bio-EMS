@@ -38,6 +38,33 @@ export const createPlatformMaintenanceSchema = z
 
 export const platformRecordParamsSchema = z.object({ id: z.string().regex(/^\d+$/) }).strict();
 
+export const platformCustomerParamsSchema = z
+  .object({ customerId: z.string().regex(/^[1-9]\d*$/) })
+  .strict();
+
+export const platformCustomerAdminParamsSchema = z
+  .object({
+    customerId: z.string().regex(/^[1-9]\d*$/),
+    userId: z.string().regex(/^[1-9]\d*$/),
+  })
+  .strict();
+
+export const createPlatformCustomerAdminSchema = z
+  .object({
+    username: z.string().trim().min(3).max(64),
+    email: z.string().trim().email().nullable().optional(),
+    password: z.string().min(12).max(72),
+  })
+  .strict();
+
+export const updatePlatformCustomerAdminStatusSchema = z
+  .object({ status: z.enum(["active", "disabled"]) })
+  .strict();
+
+export const updatePlatformCustomerAdminPasswordSchema = z
+  .object({ password: z.string().min(12).max(72) })
+  .strict();
+
 export const updatePlatformLicenseSchema = z
   .object({
     siteId: z.number().int().positive().nullable(),

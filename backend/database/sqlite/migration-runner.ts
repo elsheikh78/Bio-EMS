@@ -20,6 +20,8 @@ import { migration015 } from "./migrations/015_create_notification_deliveries";
 import { migration016 } from "./migrations/016_add_notification_attempt_phases";
 import { migration017 } from "./migrations/017_create_commissioning_evidence";
 import { migration018 } from "./migrations/018_create_commercial_operations";
+import { migration019 } from "./migrations/019_create_customer_ownership";
+import { migration020 } from "./migrations/020_create_installation_lifecycle";
 
 export interface Migration {
   version: number;
@@ -48,6 +50,8 @@ const migrations: Migration[] = [
   migration016,
   migration017,
   migration018,
+  migration019,
+  migration020,
 ];
 
 export function runMigrations(

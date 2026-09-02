@@ -3,6 +3,7 @@ import type { UserRole } from "../auth/contracts";
 export const permissions = [
   "CONFIGURATION_READ",
   "CONFIGURATION_WRITE",
+  "TOPOLOGY_MANAGE",
   "DEVICE_READ",
   "DEVICE_MANAGE",
   "ALARM_READ",
@@ -23,18 +24,16 @@ export const permissions = [
 export type Permission = (typeof permissions)[number];
 
 export const rolePermissions = {
-  ADMIN: new Set<Permission>(permissions),
+  ADMIN: new Set<Permission>(permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE")),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",
     "DEVICE_READ",
-    "DEVICE_MANAGE",
     "ALARM_READ",
     "ALARM_ACKNOWLEDGE",
     "DASHBOARD_READ",
     "REPORT_READ",
     "REPORT_EXPORT",
     "COMMISSIONING_READ",
-    "COMMISSIONING_MANAGE",
   ]),
   VIEWER: new Set<Permission>([
     "CONFIGURATION_READ",

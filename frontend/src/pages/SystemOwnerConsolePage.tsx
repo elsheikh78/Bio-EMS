@@ -24,6 +24,7 @@ const copy = {
     open: "Open",
     modules: [
       { key: "customers", label: "Customer fleet" },
+      { key: "installations", label: "Installation configuration" },
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
       { key: "service", label: "Maintenance, calibration & support" },
@@ -38,6 +39,7 @@ const copy = {
     open: "فتح",
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
+      { key: "installations", label: "تهيئة التركيبات" },
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },
       { key: "service", label: "الصيانة والمعايرة والدعم" },

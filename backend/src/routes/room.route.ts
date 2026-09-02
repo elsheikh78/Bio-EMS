@@ -5,7 +5,7 @@ import { requirePermission } from "../middleware/authorization.middleware";
 
 const router = Router();
 
-router.post("/", requirePermission(PERMISSION.CONFIGURATION_WRITE), roomController.createRoom);
+router.post("/", requirePermission(PERMISSION.TOPOLOGY_MANAGE), roomController.createRoom);
 
 router.get("/", requirePermission(PERMISSION.CONFIGURATION_READ), roomController.getRooms);
 

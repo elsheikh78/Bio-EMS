@@ -14,6 +14,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -40,9 +41,13 @@ type Readiness = {
 };
 
 export function CommissioningPage() {
-  const { protectedRequest } = useAuthentication();
+  const { protectedRequest, user } = useAuthentication();
   const sites = useSites();
   const [selectedSiteId, setSelectedSiteId] = useState<number>();
+  const [installationId, setInstallationId] = useState("");
+  const [acceptanceResult, setAcceptanceResult] = useState<
+    "accepted" | "rejected" | "error"
+  >();
   const siteId = selectedSiteId ?? sites.data?.[0]?.id;
   const readiness = useQuery({
     queryKey: ["commissioning", "readiness", siteId],
@@ -65,6 +70,47 @@ export function CommissioningPage() {
           controlled field execution.
         </Typography>
       </Box>
+      {user?.role === "ADMIN" ? (
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography component="h2" variant="h6">
+            Customer installation acceptance
+          </Typography>
+          <Typography color="text.secondary">
+            This independent customer decision is enabled after SYSTEM_OWNER technical commissioning.
+          </Typography>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 2 }}>
+            <TextField
+              label="Installation UUID"
+              value={installationId}
+              onChange={(event) => setInstallationId(event.target.value)}
+              fullWidth
+            />
+            {(["ACCEPT", "REJECT"] as const).map((decision) => (
+              <Button
+                key={decision}
+                variant={decision === "ACCEPT" ? "contained" : "outlined"}
+                disabled={!installationId}
+                onClick={() =>
+                  void protectedRequest(`/installations/${installationId}/acceptance`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ decision, note: "Customer ADMIN decision" }),
+                  })
+                    .then(() => setAcceptanceResult(decision === "ACCEPT" ? "accepted" : "rejected"))
+                    .catch(() => setAcceptanceResult("error"))
+                }
+              >
+                {decision}
+              </Button>
+            ))}
+          </Stack>
+          {acceptanceResult ? (
+            <Alert severity={acceptanceResult === "error" ? "error" : "success"} sx={{ mt: 2 }}>
+              Installation {acceptanceResult}.
+            </Alert>
+          ) : null}
+        </Paper>
+      ) : null}
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <FormControl sx={{ minWidth: 240 }}>
           <InputLabel id="commissioning-site-label">Site</InputLabel>

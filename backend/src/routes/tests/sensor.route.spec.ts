@@ -31,6 +31,13 @@ vi.mock("../../services/audit-event.service", () => ({
   auditEventService: { record: vi.fn() },
 }));
 
+// Authorization behavior is covered by route.authorization.spec.ts. This suite
+// exercises the Sensor transport/validation contract in isolation.
+vi.mock("../../middleware/authorization.middleware", () => ({
+  requirePermission: () => (_req: express.Request, _res: express.Response, next: express.NextFunction) =>
+    next(),
+}));
+
 const app = express();
 app.use(express.json());
 app.use((req, _res, next) => {
