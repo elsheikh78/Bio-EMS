@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Approved and documented ADR-022 and the P8-02 through P8-08 plan for SYSTEM_OWNER installation provisioning, customer-RBAC realignment, safe configuration revisions/controller receipts, and separated technical Commissioning/customer acceptance; implementation remains pending.
+- Completed P8-02 through P8-08 source implementation through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`: explicit customer ownership, customer-RBAC realignment, SYSTEM_OWNER ADMIN lifecycle, controlled installation revisions, exact controller receipts, separated technical/customer acceptance, and bilingual workflows.
 - Kept P8-01 live Email/WhatsApp and end-to-end Alarm acceptance as an explicit open evidence track while allowing the independently approved P8-02 through P8-08 source implementation to proceed.
 
 - Added a secret-safe SMTP configuration template and controlled email-delivery smoke-test command for local/live provider validation.

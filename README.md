@@ -19,6 +19,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
 | How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
 | What is the latest P7 closure evidence? | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md) |
+| What is the P8-02 through P8-08 closure evidence? | [`docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`](docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md) |
 | What did the current documentation audit conclude? | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md) |
 | What is the hardware validation path? | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md) |
 | Historical Sprint/BF/PVR progress | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only |
@@ -39,10 +40,20 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 - **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
 - **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 - **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
+- **P8-01:** provider source complete / merged / CI verified; live SMTP and WhatsApp evidence remains open.
+- **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
-## P7 Final Product Completion
+## P8 Installation Provisioning and RBAC
+
+The application now provides explicit customer ownership, the approved customer-role
+matrix, SYSTEM_OWNER-managed customer ADMIN accounts, controlled configuration
+revisions and checksums, device receipt evidence, safe configuration activation,
+technical Commissioning and independent customer ADMIN acceptance. See the P8 plan
+and closure record above for the exact software/evidence boundary.
+
+## P7 Final Product Completion (Historical)
 
 P7 consists of eight controlled work packages:
 

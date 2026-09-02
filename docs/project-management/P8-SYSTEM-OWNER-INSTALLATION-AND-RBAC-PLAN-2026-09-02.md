@@ -1,7 +1,8 @@
 # P8 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment Plan
 
 **Date:** 2 September 2026  
-**Status:** APPROVED PLAN / IMPLEMENTATION NOT STARTED  
+**Status:** SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED
+**Closure evidence:** PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`
 **Architecture authority:** `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`
 
 ## Goal
