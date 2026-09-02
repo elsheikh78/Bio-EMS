@@ -26,6 +26,7 @@ import realtimeRouter from "./routes/realtime.route";
 import notificationDeliveryRouter from "./routes/notification-delivery.route";
 import commissioningRouter from "./routes/commissioning.route";
 import platformOperationsRouter from "./routes/platform-operations.route";
+import installationAcceptanceRouter from "./routes/installation-acceptance.route";
 
 createTables();
 
@@ -60,6 +61,7 @@ app.use(`${config.apiPrefix}/notification-recipients`, notificationRecipientRout
 app.use(`${config.apiPrefix}/escalation-policies`, escalationPolicyRouter);
 app.use(`${config.apiPrefix}/realtime`, realtimeRouter);
 app.use(`${config.apiPrefix}/notification-deliveries`, notificationDeliveryRouter);
+app.use(`${config.apiPrefix}/installations`, installationAcceptanceRouter);
 app.use(config.apiPrefix, commissioningRouter);
 
 app.use(errorMiddleware);

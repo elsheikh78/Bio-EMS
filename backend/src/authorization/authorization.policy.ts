@@ -24,14 +24,12 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",
     "DEVICE_READ",
-    "DEVICE_MANAGE",
     "ALARM_READ",
     "ALARM_ACKNOWLEDGE",
     "DASHBOARD_READ",
     "REPORT_READ",
     "REPORT_EXPORT",
     "COMMISSIONING_READ",
-    "COMMISSIONING_MANAGE",
   ]),
   VIEWER: new Set<Permission>([
     "CONFIGURATION_READ",

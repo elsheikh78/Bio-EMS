@@ -31,6 +31,7 @@ import {
   useCreatePlatformCustomer,
   usePlatformOperationsOverview,
 } from "../platform-operations/queries";
+import { CustomerAdminsPanel } from "../platform-operations/CustomerAdminsPanel";
 
 const copy = {
   en: {
@@ -227,6 +228,7 @@ export function SystemOwnerCustomerFleetPage() {
                 <Typography>{`${text.createdBy}: ${selected.createdBy}`}</Typography>
               </CardContent>
             </Card>
+            <CustomerAdminsPanel customerId={selected.id} />
             <Card variant="outlined">
               <CardContent>
                 <Typography component="h2" variant="h6" sx={{ mb: 1 }}>

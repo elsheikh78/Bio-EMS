@@ -17,6 +17,7 @@ import { SystemOwnerConsolePage } from "./pages/SystemOwnerConsolePage";
 import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPage";
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
+import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -59,6 +60,10 @@ export function App() {
         <Route
           path="system-owner/customers/:customerId"
           element={<SystemOwnerCustomerFleetPage />}
+        />
+        <Route
+          path="system-owner/installations"
+          element={<SystemOwnerInstallationsPage />}
         />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>

@@ -4,18 +4,16 @@ import { hasPermission } from "../authorization.policy";
 import { Permission, PERMISSIONS } from "../permissions";
 
 const EXPECTED_PERMISSIONS: Readonly<Record<UserRole, readonly Permission[]>> = {
-  ADMIN: PERMISSIONS,
+  ADMIN: PERMISSIONS.filter((permission) => permission !== "TOPOLOGY_MANAGE"),
   OPERATOR: [
     "CONFIGURATION_READ",
     "DEVICE_READ",
-    "DEVICE_MANAGE",
     "ALARM_READ",
     "ALARM_ACKNOWLEDGE",
     "DASHBOARD_READ",
     "REPORT_READ",
     "REPORT_EXPORT",
     "COMMISSIONING_READ",
-    "COMMISSIONING_MANAGE",
   ],
   VIEWER: [
     "CONFIGURATION_READ",

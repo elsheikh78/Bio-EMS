@@ -141,13 +141,13 @@ describe("Admin User Management application boundary", () => {
     });
   });
 
-  it("prevents self role changes and self disablement", async () => {
+  it("keeps every ADMIN account under SYSTEM_OWNER management", async () => {
     const roleResponse = await request(app)
       .patch("/api/v1/users/1")
       .set(auth(1))
       .send({ role: "VIEWER" })
-      .expect(409);
-    expect(roleResponse.body.error.code).toBe("SELF_ROLE_CHANGE_FORBIDDEN");
+      .expect(403);
+    expect(roleResponse.body.error.code).toBe("ADMIN_MANAGED_BY_SYSTEM_OWNER");
 
     const statusResponse = await request(app)
       .patch("/api/v1/users/1/status")
@@ -234,17 +234,16 @@ describe("Admin User Management application boundary", () => {
     });
   });
 
-  it("permits changing another ADMIN when the authenticated ADMIN remains active", async () => {
+  it("prevents ADMIN from changing another ADMIN", async () => {
     insert(4, "backup-admin", "ADMIN");
     await request(app)
       .patch("/api/v1/users/4/status")
       .set(auth(1))
       .send({ status: "disabled" })
-      .expect(200);
+      .expect(403);
     expect(latestAudit("USER.STATUS_UPDATED", "4")).toMatchObject({
-      result: "SUCCESS",
-      previous_values_json: JSON.stringify({ status: "active" }),
-      new_values_json: JSON.stringify({ status: "disabled" }),
+      result: "FAILED",
+      reason: "ADMIN_MANAGED_BY_SYSTEM_OWNER",
     });
   });
 

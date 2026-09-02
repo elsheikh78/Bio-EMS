@@ -35,8 +35,8 @@ function app(role: "ADMIN" | "OPERATOR" | "VIEWER") {
 describe("Commissioning REST API authorization", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it.each(["ADMIN", "OPERATOR"] as const)("allows %s to manage commissioning", async (role) => {
-    await request(app(role))
+  it("allows ADMIN to manage commissioning", async () => {
+    await request(app("ADMIN"))
       .post("/api/v1/sites/1/commissioning-sessions")
       .send({
         uuid: "commissioning-1",
@@ -47,6 +47,14 @@ describe("Commissioning REST API authorization", () => {
       .expect(204);
 
     expect(controller).toHaveBeenCalledOnce();
+  });
+
+  it("denies OPERATOR commissioning mutation", async () => {
+    await request(app("OPERATOR"))
+      .post("/api/v1/sites/1/commissioning-sessions")
+      .send({})
+      .expect(403);
+    expect(controller).not.toHaveBeenCalled();
   });
 
   it("allows VIEWER to read commissioning deviations", async () => {

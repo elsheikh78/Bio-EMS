@@ -15,6 +15,9 @@ vi.mock("../platform-operations/queries", () => ({
   usePlatformOperationsOverview: vi.fn(),
   useCreatePlatformCustomer: vi.fn(),
 }));
+vi.mock("../platform-operations/CustomerAdminsPanel", () => ({
+  CustomerAdminsPanel: () => <div>Customer administrators</div>,
+}));
 
 const overviewHook = vi.mocked(usePlatformOperationsOverview);
 const createHook = vi.mocked(useCreatePlatformCustomer);

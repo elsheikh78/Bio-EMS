@@ -8,8 +8,8 @@ import {
 
 const userId = (req: Request) => Number(req.params.user_id);
 
-export const listUsers = asyncHandler(async (_req: Request, res: Response) => {
-  res.json(userService.listUsers());
+export const listUsers = asyncHandler(async (req: Request, res: Response) => {
+  res.json(userService.listUsers(req.user!.id));
 });
 
 export const createUser = asyncHandler(async (req: Request, res: Response) => {

@@ -7,7 +7,7 @@ import { requirePermission } from "../authorization.middleware";
 describe("authorization middleware", () => {
   it("invokes downstream exactly once when the current role has permission", async () => {
     const downstream = vi.fn((_req, res) => res.json({ success: true }));
-    const app = createApp("OPERATOR", "DEVICE_MANAGE", downstream);
+    const app = createApp("OPERATOR", "DEVICE_READ", downstream);
 
     await request(app).get("/").expect(200, { success: true });
 

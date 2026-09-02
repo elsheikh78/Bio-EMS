@@ -381,11 +381,18 @@ function configurationRoute(
   routerPath: string,
   body?: Record<string, unknown>
 ): RouteCase {
+  const topologyMutation =
+    method === "post" && ["Sites", "Rooms", "Sensors"].includes(area) && routerPath === "/";
   return {
     area,
     method,
     path,
-    permission: method === "get" ? PERMISSION.CONFIGURATION_READ : PERMISSION.CONFIGURATION_WRITE,
+    permission:
+      method === "get"
+        ? PERMISSION.CONFIGURATION_READ
+        : topologyMutation
+          ? PERMISSION.TOPOLOGY_MANAGE
+          : PERMISSION.CONFIGURATION_WRITE,
     router,
     routerPath,
     body,
