@@ -156,7 +156,8 @@ through P8-08 and does not reopen P0-P7 closure.
 
 ## Execution order
 
-P8-02 is the mandatory foundation. P8-03 through P8-07 proceed in order unless a
+P8-01 live Email/WhatsApp acceptance remains a separately tracked open setup/evidence
+activity and does not block this source implementation. P8-02 is the mandatory
+software foundation. P8-03 through P8-07 proceed in order unless a
 documented dependency review permits safe parallel work. P8-08 closes only after
 all preceding packages are merged and CI verified.
-

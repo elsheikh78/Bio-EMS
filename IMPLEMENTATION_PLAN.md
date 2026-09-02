@@ -30,6 +30,21 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 6. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
 7. Begin new software implementation with P8-02 explicit customer ownership and authorization; do not start the wizard by bypassing tenant isolation or reusing customer ADMIN identity.
 
+## Parallel P8-01 Live-Acceptance Track
+
+P8-01 source implementation is complete. Its controlled live-provider closure remains a parallel external/setup track and requires:
+
+1. reconcile the Windows local copy with GitHub `main`;
+2. configure Gmail SMTP only in ignored `backend/.env` and pass `npm run test:email-delivery`;
+3. confirm actual inbox arrival without exposing the App Password;
+4. complete Meta developer registration, obtain the Phone Number ID and controlled permanent token, and obtain approval for the BIO-EMS Alarm template;
+5. pass a controlled live WhatsApp send and confirm receipt;
+6. execute one end-to-end Alarm scenario through the durable delivery engine with `WHATSAPP + EMAIL` as the primary step;
+7. verify delivery-attempt evidence and preserve SMS as the later fallback step;
+8. record exact live/UAT evidence and update P8-01 status.
+
+Meta registration is an external blocker, not a reason to claim P8-01 closure without evidence and not a blocker to P8-02 through P8-08 source implementation. Live Email/WhatsApp setup resumes in the next controlled local session.
+
 ## P0-P7 Sequence
 
 ### P0 — Professional Software / Reporting Baseline

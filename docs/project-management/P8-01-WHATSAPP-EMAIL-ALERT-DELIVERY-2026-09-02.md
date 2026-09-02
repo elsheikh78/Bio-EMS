@@ -69,3 +69,15 @@ Inbox arrival remains live-provider evidence and must be confirmed by the recipi
 - The Windows local copy still requires reconciliation to merge `a045e93` before running the smoke test.
 - SYSTEM_OWNER login previously returned `PLATFORM_AUTH_UNAVAILABLE`; local `BIOEMS_PLATFORM_JWT_SECRET` configuration and backend restart require confirmation before claiming successful owner login.
 - Meta for Developers registration loops from `Complete Registration` back to email verification on both desktop and mobile. Therefore no Phone Number ID, permanent access token, approved template, live WhatsApp send, or delivery evidence is claimed.
+
+## Live closure criteria
+
+P8-01 live acceptance closes only after:
+
+- Gmail SMTP smoke-test receipt and confirmed inbox arrival;
+- Meta Phone Number ID, controlled permanent token and approved Alarm template;
+- confirmed live WhatsApp receipt;
+- one end-to-end Alarm delivered through the durable engine to primary `WHATSAPP + EMAIL` steps;
+- Delivery Operations evidence review and documented result.
+
+These live checks remain open and resume on the Windows local system. They do not block the separately approved P8-02 through P8-08 source implementation.

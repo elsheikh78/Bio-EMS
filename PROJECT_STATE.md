@@ -17,7 +17,7 @@
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 6. Reconcile the Windows local copy with merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`, preserve all real provider secrets only in ignored `backend/.env`, and run the controlled SMTP smoke test.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
-8. Implement the approved P8-02 through P8-08 sequence only from `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`; effective customer permissions remain the current code behavior until each change is implemented, tested, merged, and documented.
+8. Implement P8-02 through P8-08 from `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md` while P8-01 live Email/WhatsApp acceptance remains an explicit parallel open track; effective customer permissions remain the current code behavior until each change is implemented, tested, merged, and documented.
 
 ## Status Vocabulary
 
@@ -123,4 +123,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** Update Windows local `main` to the latest documentation merge. For provider evidence, retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and run `npm run test:email-delivery`; WhatsApp setup remains blocked by Meta registration. For new software work, start P8-02 customer ownership and authorization foundation before changing effective permissions or building the installation wizard.
+**Next-session start point:** Continue P8-02 through P8-08 source implementation now. In the next Windows local session, update `main`, retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and resume P8-01 live Email/WhatsApp plus end-to-end Alarm evidence.
