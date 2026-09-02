@@ -9,7 +9,6 @@ import {
   type AuthenticationContextValue,
 } from "../auth/AuthenticationContext";
 import { AppNavigation } from "../components/AppNavigation";
-import { FoundationPage } from "../pages/FoundationPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ShellLandingPage } from "../pages/ShellLandingPage";
 import { createAppTheme } from "../theme/theme";
@@ -23,12 +22,6 @@ import { englishResources } from "./resources";
 
 const alternativeResources = {
   ...englishResources,
-
-  foundation: {
-    title: "Alternative foundation title",
-    description: "Alternative foundation description",
-    deferredDescription: "Alternative deferred description",
-  },
 
   notFound: {
     title: "Alternative missing-page title",
@@ -267,39 +260,13 @@ describe("localization contracts", () => {
     expect(futureLanguage).toBe("ar");
     expect(futureDirection).toBe("rtl");
 
-    expect(alternativeResources.foundation.title).toBe(
-      "Alternative foundation title",
+    expect(alternativeResources.notFound.title).toBe(
+      "Alternative missing-page title",
     );
   });
 
   it("creates an RTL-aware Material UI theme", () => {
     expect(createAppTheme("rtl").direction).toBe("rtl");
-  });
-
-  it("renders foundation content through localization resources", () => {
-    render(
-      <LocalizationProvider
-        language={futureLanguage}
-        direction={futureDirection}
-        resources={alternativeResources}
-      >
-        <FoundationPage />
-      </LocalizationProvider>,
-    );
-
-    expect(
-      screen.getByRole("heading", {
-        name: "Alternative foundation title",
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Alternative foundation description"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Alternative deferred description"),
-    ).toBeInTheDocument();
   });
 
   it("renders not-found content through localization resources", () => {

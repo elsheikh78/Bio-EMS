@@ -79,6 +79,32 @@ export class PlatformOperationsRepository {
     );
   }
 
+  updateLicense(id: number, input: Record<string, unknown>, actor: string): void {
+    this.updateRecord("LICENSE_UPDATED", "LICENSE", id, input, actor, () =>
+      this.database
+        .prepare(
+          `UPDATE platform_licenses SET site_id = ?, status = ?, expires_at = ?, update_entitlement = ? WHERE id = ?`
+        )
+        .run(
+          input.siteId ?? null,
+          input.status,
+          input.expiresAt ?? null,
+          input.updateEntitlement,
+          id
+        )
+    );
+  }
+
+  updateMaintenance(id: number, input: Record<string, unknown>, actor: string): void {
+    this.updateRecord("SERVICE_EVENT_UPDATED", "SERVICE_EVENT", id, input, actor, () =>
+      this.database
+        .prepare(
+          `UPDATE platform_maintenance_events SET due_at = ?, status = ?, note = ? WHERE id = ?`
+        )
+        .run(input.dueAt ?? null, input.status, input.note ?? null, id)
+    );
+  }
+
   overview() {
     return {
       customers: this.database
@@ -123,6 +149,32 @@ export class PlatformOperationsRepository {
         )
         .run(eventType, entityType, id, occurredAt, actor, JSON.stringify(snapshot));
       return id;
+    })();
+  }
+
+  private updateRecord(
+    eventType: string,
+    entityType: string,
+    entityId: number,
+    snapshot: unknown,
+    actor: string,
+    update: () => Database.RunResult
+  ): void {
+    this.database.transaction(() => {
+      const result = update();
+      if (result.changes !== 1) throw new Error(`${entityType} not found`);
+      this.database
+        .prepare(
+          `INSERT INTO platform_commercial_events (event_type,entity_type,entity_id,occurred_at,actor_identity,snapshot_json) VALUES (?,?,?,?,?,?)`
+        )
+        .run(
+          eventType,
+          entityType,
+          entityId,
+          new Date().toISOString(),
+          actor,
+          JSON.stringify(snapshot)
+        );
     })();
   }
 }

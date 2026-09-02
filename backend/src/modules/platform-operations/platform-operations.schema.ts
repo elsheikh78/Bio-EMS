@@ -35,3 +35,22 @@ export const createPlatformMaintenanceSchema = z
     recordedAt: z.string().datetime(),
   })
   .strict();
+
+export const platformRecordParamsSchema = z.object({ id: z.string().regex(/^\d+$/) }).strict();
+
+export const updatePlatformLicenseSchema = z
+  .object({
+    siteId: z.number().int().positive().nullable(),
+    status: z.enum(["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"]),
+    expiresAt: z.string().datetime().nullable(),
+    updateEntitlement: z.enum(["NONE", "FREE", "PAID"]),
+  })
+  .strict();
+
+export const updatePlatformMaintenanceSchema = z
+  .object({
+    dueAt: z.string().datetime().nullable(),
+    status: z.enum(["OPEN", "SCHEDULED", "COMPLETE", "CANCELLED"]),
+    note: z.string().trim().max(1000).nullable(),
+  })
+  .strict();

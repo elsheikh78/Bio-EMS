@@ -20,9 +20,8 @@ const copy = {
     signedIn: "Signed in as",
     logout: "Sign out",
     foundation:
-      "Owner console foundation is active. Commercial operation modules are added through the controlled P7 work packages.",
+      "Manage the platform customer fleet, licenses, update eligibility and service obligations.",
     open: "Open",
-    planned: "Planned in a later P7 package",
     modules: [
       { key: "customers", label: "Customer fleet" },
       { key: "licenses", label: "Licenses & installations" },
@@ -35,10 +34,8 @@ const copy = {
     subtitle: "عمليات إدارة المنصة",
     signedIn: "تم تسجيل الدخول باسم",
     logout: "تسجيل الخروج",
-    foundation:
-      "تم تفعيل الأساس الآمن للوحة مالك النظام. تتم إضافة وحدات العمليات التجارية من خلال حزم P7 المعتمدة.",
+    foundation: "إدارة عملاء المنصة والتراخيص وأهلية التحديث والتزامات الخدمة.",
     open: "فتح",
-    planned: "مخطط لها في حزمة P7 لاحقة",
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
       { key: "licenses", label: "التراخيص والتركيبات" },
@@ -91,22 +88,17 @@ export function SystemOwnerConsolePage() {
           }}
         >
           {text.modules.map((module) => {
-            const active = module.key === "customers";
+            const active = true;
             return (
               <Card key={module.key} variant="outlined">
                 <CardContent>
                   <Typography component="h2" variant="h6">
                     {module.label}
                   </Typography>
-                  {!active ? (
-                    <Typography color="text.secondary" variant="body2">
-                      {text.planned}
-                    </Typography>
-                  ) : null}
                 </CardContent>
                 {active ? (
                   <CardActions>
-                    <Button component={Link} to="/system-owner/customers">
+                    <Button component={Link} to={`/system-owner/${module.key}`}>
                       {text.open}
                     </Button>
                   </CardActions>

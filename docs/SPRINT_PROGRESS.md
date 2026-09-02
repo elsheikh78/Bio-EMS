@@ -8,7 +8,7 @@
 
 ## Current handoff pointer — 1 September 2026
 
-P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization. P7 — Final Product Completion — is active. P7-01 and P7-02 are now complete, merged, and CI verified. **P7-03 — License Lifecycle and Installation Binding UI — is the next controlled software work package.**
+P0-P6 and P7-01/P7-02 are complete, merged, and CI verified. P7-03 through P7-08 are implemented and locally verified on the controlled completion branch; PR/CI/merge evidence is pending.
 
 P7-01 established the isolated SYSTEM_OWNER frontend boundary. P7-02 added SYSTEM_OWNER customer fleet list/detail/create workflows, Site/installation context derived from recorded commercial bindings, authenticated provenance, and owner-session query isolation. P7-02 closed through PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 
@@ -43,8 +43,8 @@ Historical detail remains available in Git history and the dedicated BF/Sprint c
 
 - P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell: **COMPLETE / MERGED / CI VERIFIED** through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
 - P7-02 — Customer / Site Fleet Management: **COMPLETE / MERGED / CI VERIFIED** through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- P7-03 — License Lifecycle and Installation Binding UI: **NEXT / START HERE**.
-- P7-04 through P7-08: open in the approved sequence.
+- P7-03 through P7-06: **IMPLEMENTED / LOCAL GATES VERIFIED**.
+- P7-07/P7-08 workflow review, full regression and documentation: **LOCAL GATES VERIFIED / PR-CI-MERGE PENDING**.
 
 P7 was created after the P0-P6 closure audit identified that source/domain capability completion was not yet equivalent to complete end-to-end product presentation. It is new scope and does not retroactively change historical P0-P6 closure evidence.
 

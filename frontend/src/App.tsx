@@ -16,6 +16,7 @@ import { CommissioningPage } from "./pages/CommissioningPage";
 import { SystemOwnerConsolePage } from "./pages/SystemOwnerConsolePage";
 import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPage";
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
+import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -39,6 +40,18 @@ export function App() {
       />
       <Route element={<PlatformAuthenticationBoundary />}>
         <Route path="system-owner" element={<SystemOwnerConsolePage />} />
+        <Route
+          path="system-owner/licenses"
+          element={<SystemOwnerCommercialOperationsPage />}
+        />
+        <Route
+          path="system-owner/updates"
+          element={<SystemOwnerCommercialOperationsPage />}
+        />
+        <Route
+          path="system-owner/service"
+          element={<SystemOwnerCommercialOperationsPage />}
+        />
         <Route
           path="system-owner/customers"
           element={<SystemOwnerCustomerFleetPage />}

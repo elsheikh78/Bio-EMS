@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Reconcile repository documents that can reasonably be interpreted as describing the current project state, implementation sequence, roadmap, release/source boundary, or continuation point after P7-02 closure.
+Reconcile repository documents that can reasonably be interpreted as describing the current project state, implementation sequence, roadmap, release/source boundary, or continuation point. Updated 2 September 2026 for the local P7-03 through P7-08 completion state.
 
 ## Authoritative Position
 
@@ -25,14 +25,14 @@ Reconcile repository documents that can reasonably be interpreted as describing 
 - P6 closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
 - P7-01 closure: PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
 - P7-02 closure: PR #142 / final CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- P7 status: **ACTIVE — P7-01 AND P7-02 COMPLETE; P7-03 NEXT**.
-- Next controlled software work package: **P7-03 — License Lifecycle and Installation Binding UI**.
+- P7 status: **P7-01/P7-02 MERGED AND CI VERIFIED; P7-03 THROUGH P7-08 IMPLEMENTED AND LOCALLY VERIFIED; FINAL PR/CI/MERGE PENDING**.
+- Next controlled software action: verify and merge `agent/p7-03-08-product-completion` through normal GitHub gates, then record exact evidence.
 
 ## P7 Documentation Decision
 
 P7 remains new approved scope and does not invalidate P0-P6 historical closure evidence. The phrase “P0-P6 source-software complete” remains valid for those packages, but it does not mean the whole approved BIO-EMS software product is complete.
 
-The reserved whole-product status **SOFTWARE PRODUCT COMPLETE** still requires successful P7-01 through P7-08 closure. At this audit point only P7-01 and P7-02 are closed.
+The reserved whole-product status **SOFTWARE PRODUCT COMPLETE** still requires successful P7-01 through P7-08 merge and CI closure. P7-03 through P7-08 local implementation does not bypass that final gate.
 
 ## Documents Reconciled
 
