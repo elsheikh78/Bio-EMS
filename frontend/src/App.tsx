@@ -61,7 +61,10 @@ export function App() {
           path="system-owner/customers/:customerId"
           element={<SystemOwnerCustomerFleetPage />}
         />
-        <Route path="system-owner/installations" element={<SystemOwnerInstallationsPage />} />
+        <Route
+          path="system-owner/installations"
+          element={<SystemOwnerInstallationsPage />}
+        />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>
 

@@ -29,7 +29,7 @@ describe("frontend presentation permission matrix", () => {
 
   it("mirrors the current Backend role matrix exactly", () => {
     expect([...rolePermissions.ADMIN]).toEqual(
-      permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE")
+      permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE"),
     );
     expect([...rolePermissions.OPERATOR]).toEqual([
       "CONFIGURATION_READ",

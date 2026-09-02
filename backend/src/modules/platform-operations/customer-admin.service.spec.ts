@@ -29,8 +29,12 @@ describe("SYSTEM_OWNER customer administrator lifecycle", () => {
     const insertCustomer = database.prepare(
       "INSERT INTO platform_customers(code,name,status,created_at,created_by) VALUES(?,?,'ACTIVE',?,'seed')"
     );
-    firstCustomer = Number(insertCustomer.run("C1", "Customer one", new Date().toISOString()).lastInsertRowid);
-    secondCustomer = Number(insertCustomer.run("C2", "Customer two", new Date().toISOString()).lastInsertRowid);
+    firstCustomer = Number(
+      insertCustomer.run("C1", "Customer one", new Date().toISOString()).lastInsertRowid
+    );
+    secondCustomer = Number(
+      insertCustomer.run("C2", "Customer two", new Date().toISOString()).lastInsertRowid
+    );
     service = new CustomerAdminService(database);
   });
 

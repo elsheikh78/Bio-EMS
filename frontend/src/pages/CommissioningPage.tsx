@@ -76,9 +76,14 @@ export function CommissioningPage() {
             Customer installation acceptance
           </Typography>
           <Typography color="text.secondary">
-            This independent customer decision is enabled after SYSTEM_OWNER technical commissioning.
+            This independent customer decision is enabled after SYSTEM_OWNER
+            technical commissioning.
           </Typography>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 2 }}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            sx={{ mt: 2 }}
+          >
             <TextField
               label="Installation UUID"
               value={installationId}
@@ -91,12 +96,22 @@ export function CommissioningPage() {
                 variant={decision === "ACCEPT" ? "contained" : "outlined"}
                 disabled={!installationId}
                 onClick={() =>
-                  void protectedRequest(`/installations/${installationId}/acceptance`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ decision, note: "Customer ADMIN decision" }),
-                  })
-                    .then(() => setAcceptanceResult(decision === "ACCEPT" ? "accepted" : "rejected"))
+                  void protectedRequest(
+                    `/installations/${installationId}/acceptance`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        decision,
+                        note: "Customer ADMIN decision",
+                      }),
+                    },
+                  )
+                    .then(() =>
+                      setAcceptanceResult(
+                        decision === "ACCEPT" ? "accepted" : "rejected",
+                      ),
+                    )
                     .catch(() => setAcceptanceResult("error"))
                 }
               >
@@ -105,7 +120,10 @@ export function CommissioningPage() {
             ))}
           </Stack>
           {acceptanceResult ? (
-            <Alert severity={acceptanceResult === "error" ? "error" : "success"} sx={{ mt: 2 }}>
+            <Alert
+              severity={acceptanceResult === "error" ? "error" : "success"}
+              sx={{ mt: 2 }}
+            >
               Installation {acceptanceResult}.
             </Alert>
           ) : null}

@@ -26,22 +26,75 @@ import {
   updatePlatformCustomerAdminStatusSchema,
   updatePlatformCustomerAdminPasswordSchema,
 } from "../modules/platform-operations/platform-operations.schema";
-import { createInstallation, getPlatformInstallation, listInstallations, queueInstallation, receiveInstallation, reviseInstallation, sendInstallation, technicalInstallationDecision, validateInstallation } from "../controllers/installation.controller";
-import { createInstallationSchema, installationDecisionSchema, installationListQuerySchema, installationParamsSchema, installationReceiptSchema, reviseInstallationSchema } from "../modules/installation/installation.schema";
+import {
+  createInstallation,
+  getPlatformInstallation,
+  listInstallations,
+  queueInstallation,
+  receiveInstallation,
+  reviseInstallation,
+  sendInstallation,
+  technicalInstallationDecision,
+  validateInstallation,
+} from "../controllers/installation.controller";
+import {
+  createInstallationSchema,
+  installationDecisionSchema,
+  installationListQuerySchema,
+  installationParamsSchema,
+  installationReceiptSchema,
+  reviseInstallationSchema,
+} from "../modules/installation/installation.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
-router.get("/installations/:installationId", validateParams(installationParamsSchema), getPlatformInstallation);
-router.post("/customers/:customerId/installations", validateParams(platformCustomerParamsSchema), validateBody(createInstallationSchema), createInstallation);
-router.put("/installations/:installationId/draft", validateParams(installationParamsSchema), validateBody(reviseInstallationSchema), reviseInstallation);
-router.post("/installations/:installationId/validate", validateParams(installationParamsSchema), validateInstallation);
-router.post("/installations/:installationId/queue", validateParams(installationParamsSchema), queueInstallation);
-router.post("/installations/:installationId/send", validateParams(installationParamsSchema), sendInstallation);
-router.post("/installations/:installationId/device-receipt", validateParams(installationParamsSchema), validateBody(installationReceiptSchema), receiveInstallation);
-router.post("/installations/:installationId/technical-decision", validateParams(installationParamsSchema), validateBody(installationDecisionSchema), technicalInstallationDecision);
+router.get(
+  "/installations/:installationId",
+  validateParams(installationParamsSchema),
+  getPlatformInstallation
+);
+router.post(
+  "/customers/:customerId/installations",
+  validateParams(platformCustomerParamsSchema),
+  validateBody(createInstallationSchema),
+  createInstallation
+);
+router.put(
+  "/installations/:installationId/draft",
+  validateParams(installationParamsSchema),
+  validateBody(reviseInstallationSchema),
+  reviseInstallation
+);
+router.post(
+  "/installations/:installationId/validate",
+  validateParams(installationParamsSchema),
+  validateInstallation
+);
+router.post(
+  "/installations/:installationId/queue",
+  validateParams(installationParamsSchema),
+  queueInstallation
+);
+router.post(
+  "/installations/:installationId/send",
+  validateParams(installationParamsSchema),
+  sendInstallation
+);
+router.post(
+  "/installations/:installationId/device-receipt",
+  validateParams(installationParamsSchema),
+  validateBody(installationReceiptSchema),
+  receiveInstallation
+);
+router.post(
+  "/installations/:installationId/technical-decision",
+  validateParams(installationParamsSchema),
+  validateBody(installationDecisionSchema),
+  technicalInstallationDecision
+);
 router.get(
   "/customers/:customerId/admins",
   validateParams(platformCustomerParamsSchema),

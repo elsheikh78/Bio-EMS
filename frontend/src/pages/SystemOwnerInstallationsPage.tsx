@@ -1,23 +1,386 @@
-import { Alert,Box,Button,Card,CardContent,Container,MenuItem,TextField,Typography } from "@mui/material";
-import { useState,type FormEvent } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useCreateInstallation,useInstallationAction,useInstallations,useReviseInstallation } from "../installations/queries";
+import {
+  useCreateInstallation,
+  useInstallationAction,
+  useInstallations,
+  useReviseInstallation,
+} from "../installations/queries";
 import { useLocalization } from "../localization/useLocalization";
 
-const copy={en:{back:"Back to owner console",title:"Installation configuration",info:"Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",draft:"New installation draft",customer:"Customer ID",company:"Company name",site:"Site code/name",area:"Monitored area",telemetry:"Telemetry code/name",type:"Telemetry type",unit:"Unit",device:"Device identity",channel:"Channel",create:"Create controlled draft",error:"Draft could not be created.",register:"Lifecycle register",status:"Status"},ar:{back:"العودة إلى لوحة مالك النظام",title:"تهيئة التركيب",info:"عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",draft:"مسودة تركيب جديدة",customer:"رقم العميل",company:"اسم الشركة",site:"كود واسم الموقع",area:"المنطقة المراقبة",telemetry:"كود واسم القياس",type:"نوع القياس",unit:"الوحدة",device:"هوية الجهاز",channel:"القناة",create:"إنشاء مسودة محكومة",error:"تعذر إنشاء المسودة.",register:"سجل دورة الحياة",status:"الحالة"}} as const;
+const copy = {
+  en: {
+    back: "Back to owner console",
+    title: "Installation configuration",
+    info: "Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",
+    draft: "New installation draft",
+    customer: "Customer ID",
+    company: "Company name",
+    site: "Site code/name",
+    area: "Monitored area",
+    telemetry: "Telemetry code/name",
+    type: "Telemetry type",
+    unit: "Unit",
+    device: "Device identity",
+    channel: "Channel",
+    create: "Create controlled draft",
+    error: "Draft could not be created.",
+    register: "Lifecycle register",
+    status: "Status",
+  },
+  ar: {
+    back: "العودة إلى لوحة مالك النظام",
+    title: "تهيئة التركيب",
+    info: "عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",
+    draft: "مسودة تركيب جديدة",
+    customer: "رقم العميل",
+    company: "اسم الشركة",
+    site: "كود واسم الموقع",
+    area: "المنطقة المراقبة",
+    telemetry: "كود واسم القياس",
+    type: "نوع القياس",
+    unit: "الوحدة",
+    device: "هوية الجهاز",
+    channel: "القناة",
+    create: "إنشاء مسودة محكومة",
+    error: "تعذر إنشاء المسودة.",
+    register: "سجل دورة الحياة",
+    status: "الحالة",
+  },
+} as const;
 
-export function SystemOwnerInstallationsPage(){
-  const {language}=useLocalization(); const text=copy[language];
-  const installations=useInstallations(); const create=useCreateInstallation(); const revise=useReviseInstallation(); const action=useInstallationAction();
-  const [customerId,setCustomerId]=useState(""); const [company,setCompany]=useState(""); const [site,setSite]=useState(""); const [area,setArea]=useState(""); const [telemetry,setTelemetry]=useState(""); const [type,setType]=useState("TEMPERATURE"); const [unit,setUnit]=useState("°C"); const [device,setDevice]=useState(""); const [channel,setChannel]=useState("0");
-  const [editing,setEditing]=useState<{uuid:string;json:string}|null>(null); const [reason,setReason]=useState(""); const [review,setReview]=useState(false); const [revisionError,setRevisionError]=useState(false);
-  const submit=async(e:FormEvent)=>{e.preventDefault(); await create.mutateAsync({customerId:Number(customerId),snapshot:{companyName:company,sites:[{code:site,name:site,timezone:"Africa/Cairo",areas:[{code:area,name:area,telemetries:[{code:telemetry,name:telemetry,type,unit,warningDelaySeconds:0,criticalDelaySeconds:0,calibrationOffset:0}]}]}],devices:[{deviceId:device,siteCode:site,type:"zone-controller",protocol:"mqtt",mappings:[{areaCode:area,telemetryCode:telemetry,channel:Number(channel)}]}]}}); };
-  const nextAction=(status:string)=>status==="DRAFT"?"validate":status==="VALIDATED"?"queue":status==="PENDING_DELIVERY"?"send":status==="CONFIG_ACTIVE"?"technical-decision":undefined;
-  return <Container component="main" maxWidth="lg" sx={{py:4}}><Button component={Link} to="/system-owner">{text.back}</Button><Typography component="h1" variant="h4" sx={{my:2}}>{text.title}</Typography><Alert severity="info" sx={{mb:2}}>{text.info}</Alert>
-    <Card variant="outlined" sx={{mb:3}}><CardContent><Typography component="h2" variant="h6">{text.draft}</Typography><Box component="form" onSubmit={e=>void submit(e)} sx={{display:"grid",gap:2,mt:2,gridTemplateColumns:{xs:"1fr",md:"repeat(3,1fr)"}}}>
-      <TextField required label={text.customer} type="number" value={customerId} onChange={e=>setCustomerId(e.target.value)}/><TextField required label={text.company} value={company} onChange={e=>setCompany(e.target.value)}/><TextField required label={text.site} value={site} onChange={e=>setSite(e.target.value)}/><TextField required label={text.area} value={area} onChange={e=>setArea(e.target.value)}/><TextField required label={text.telemetry} value={telemetry} onChange={e=>setTelemetry(e.target.value)}/><TextField select label={text.type} value={type} onChange={e=>setType(e.target.value)}>{["TEMPERATURE","HUMIDITY","PRESSURE","CO2","DOOR","OTHER"].map(x=><MenuItem key={x} value={x}>{x}</MenuItem>)}</TextField><TextField required label={text.unit} value={unit} onChange={e=>setUnit(e.target.value)}/><TextField required label={text.device} value={device} onChange={e=>setDevice(e.target.value)}/><TextField required label={text.channel} type="number" value={channel} onChange={e=>setChannel(e.target.value)}/><Button type="submit" variant="contained" disabled={create.isPending}>{text.create}</Button>
-    </Box>{create.isError?<Alert severity="error" sx={{mt:2}}>{text.error}</Alert>:null}</CardContent></Card>
-    <Typography component="h2" variant="h5" sx={{mb:2}}>{text.register}</Typography>{installations.data?.map(item=>{const next=nextAction(item.status);return <Card key={item.uuid} variant="outlined" sx={{mb:2}}><CardContent><Typography variant="h6">{item.customerName} — revision {item.latestRevision}</Typography><Typography color="text.secondary">{item.uuid}</Typography><Typography>{text.status}: {item.status}</Typography><Typography>Sites {item.summary.sites} · Areas {item.summary.areas} · Telemetries {item.summary.telemetries} · Devices {item.summary.devices} · Mappings {item.summary.mappings}</Typography><Button sx={{mt:1,mr:1}} variant="outlined" onClick={()=>{setEditing({uuid:item.uuid,json:JSON.stringify(item.latestSnapshot,null,2)});setReason("");setReview(false);}}>Modify installation</Button>{next?<Button sx={{mt:1}} variant="outlined" disabled={action.isPending} onClick={()=>void action.mutateAsync({uuid:item.uuid,action:next,body:next==="technical-decision"?{decision:"ACCEPT",note:"Technical commissioning passed"}:undefined})}>{next}</Button>:null}</CardContent></Card>})}
-    {editing?<Card variant="outlined"><CardContent><Typography component="h2" variant="h6">Review changes</Typography><TextField label="Configuration JSON" multiline minRows={12} fullWidth value={editing.json} onChange={e=>{setEditing({...editing,json:e.target.value});setReview(false);}} sx={{my:2}}/><TextField required label="Change reason" fullWidth value={reason} onChange={e=>setReason(e.target.value)}/><Button sx={{mt:2,mr:1}} onClick={()=>{try{JSON.parse(editing.json);setReview(true);setRevisionError(false);}catch{setRevisionError(true);}}}>Review changes</Button><Button sx={{mt:2}} variant="contained" disabled={!review||!reason||revise.isPending} onClick={()=>void revise.mutateAsync({uuid:editing.uuid,snapshot:JSON.parse(editing.json),reason}).then(()=>setEditing(null)).catch(()=>setRevisionError(true))}>Apply as new revision</Button>{review?<Alert severity="warning" sx={{mt:2}}>A new immutable revision will be created. The last active configuration remains in service until an exact device receipt confirms this revision.</Alert>:null}{revisionError?<Alert severity="error" sx={{mt:2}}>Configuration JSON or mapping is invalid.</Alert>:null}</CardContent></Card>:null}
-  </Container>;
+export function SystemOwnerInstallationsPage() {
+  const { language } = useLocalization();
+  const text = copy[language];
+  const installations = useInstallations();
+  const create = useCreateInstallation();
+  const revise = useReviseInstallation();
+  const action = useInstallationAction();
+  const [customerId, setCustomerId] = useState("");
+  const [company, setCompany] = useState("");
+  const [site, setSite] = useState("");
+  const [area, setArea] = useState("");
+  const [telemetry, setTelemetry] = useState("");
+  const [type, setType] = useState("TEMPERATURE");
+  const [unit, setUnit] = useState("°C");
+  const [device, setDevice] = useState("");
+  const [channel, setChannel] = useState("0");
+  const [editing, setEditing] = useState<{ uuid: string; json: string } | null>(
+    null,
+  );
+  const [reason, setReason] = useState("");
+  const [review, setReview] = useState(false);
+  const [revisionError, setRevisionError] = useState(false);
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    await create.mutateAsync({
+      customerId: Number(customerId),
+      snapshot: {
+        companyName: company,
+        sites: [
+          {
+            code: site,
+            name: site,
+            timezone: "Africa/Cairo",
+            areas: [
+              {
+                code: area,
+                name: area,
+                telemetries: [
+                  {
+                    code: telemetry,
+                    name: telemetry,
+                    type,
+                    unit,
+                    warningDelaySeconds: 0,
+                    criticalDelaySeconds: 0,
+                    calibrationOffset: 0,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        devices: [
+          {
+            deviceId: device,
+            siteCode: site,
+            type: "zone-controller",
+            protocol: "mqtt",
+            mappings: [
+              {
+                areaCode: area,
+                telemetryCode: telemetry,
+                channel: Number(channel),
+              },
+            ],
+          },
+        ],
+      },
+    });
+  };
+  const nextAction = (status: string) =>
+    status === "DRAFT"
+      ? "validate"
+      : status === "VALIDATED"
+        ? "queue"
+        : status === "PENDING_DELIVERY"
+          ? "send"
+          : status === "CONFIG_ACTIVE"
+            ? "technical-decision"
+            : undefined;
+  return (
+    <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
+      <Button component={Link} to="/system-owner">
+        {text.back}
+      </Button>
+      <Typography component="h1" variant="h4" sx={{ my: 2 }}>
+        {text.title}
+      </Typography>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        {text.info}
+      </Alert>
+      <Card variant="outlined" sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography component="h2" variant="h6">
+            {text.draft}
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={(e) => void submit(e)}
+            sx={{
+              display: "grid",
+              gap: 2,
+              mt: 2,
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3,1fr)" },
+            }}
+          >
+            <TextField
+              required
+              label={text.customer}
+              type="number"
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.company}
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.site}
+              value={site}
+              onChange={(e) => setSite(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.area}
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.telemetry}
+              value={telemetry}
+              onChange={(e) => setTelemetry(e.target.value)}
+            />
+            <TextField
+              select
+              label={text.type}
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              {[
+                "TEMPERATURE",
+                "HUMIDITY",
+                "PRESSURE",
+                "CO2",
+                "DOOR",
+                "OTHER",
+              ].map((x) => (
+                <MenuItem key={x} value={x}>
+                  {x}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              required
+              label={text.unit}
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.device}
+              value={device}
+              onChange={(e) => setDevice(e.target.value)}
+            />
+            <TextField
+              required
+              label={text.channel}
+              type="number"
+              value={channel}
+              onChange={(e) => setChannel(e.target.value)}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={create.isPending}
+            >
+              {text.create}
+            </Button>
+          </Box>
+          {create.isError ? (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {text.error}
+            </Alert>
+          ) : null}
+        </CardContent>
+      </Card>
+      <Typography component="h2" variant="h5" sx={{ mb: 2 }}>
+        {text.register}
+      </Typography>
+      {installations.data?.map((item) => {
+        const next = nextAction(item.status);
+        return (
+          <Card key={item.uuid} variant="outlined" sx={{ mb: 2 }}>
+            <CardContent>
+              <Typography variant="h6">
+                {item.customerName} — revision {item.latestRevision}
+              </Typography>
+              <Typography color="text.secondary">{item.uuid}</Typography>
+              <Typography>
+                {text.status}: {item.status}
+              </Typography>
+              <Typography>
+                Sites {item.summary.sites} · Areas {item.summary.areas} ·
+                Telemetries {item.summary.telemetries} · Devices{" "}
+                {item.summary.devices} · Mappings {item.summary.mappings}
+              </Typography>
+              <Button
+                sx={{ mt: 1, mr: 1 }}
+                variant="outlined"
+                onClick={() => {
+                  setEditing({
+                    uuid: item.uuid,
+                    json: JSON.stringify(item.latestSnapshot, null, 2),
+                  });
+                  setReason("");
+                  setReview(false);
+                }}
+              >
+                Modify installation
+              </Button>
+              {next ? (
+                <Button
+                  sx={{ mt: 1 }}
+                  variant="outlined"
+                  disabled={action.isPending}
+                  onClick={() =>
+                    void action.mutateAsync({
+                      uuid: item.uuid,
+                      action: next,
+                      body:
+                        next === "technical-decision"
+                          ? {
+                              decision: "ACCEPT",
+                              note: "Technical commissioning passed",
+                            }
+                          : undefined,
+                    })
+                  }
+                >
+                  {next}
+                </Button>
+              ) : null}
+            </CardContent>
+          </Card>
+        );
+      })}
+      {editing ? (
+        <Card variant="outlined">
+          <CardContent>
+            <Typography component="h2" variant="h6">
+              Review changes
+            </Typography>
+            <TextField
+              label="Configuration JSON"
+              multiline
+              minRows={12}
+              fullWidth
+              value={editing.json}
+              onChange={(e) => {
+                setEditing({ ...editing, json: e.target.value });
+                setReview(false);
+              }}
+              sx={{ my: 2 }}
+            />
+            <TextField
+              required
+              label="Change reason"
+              fullWidth
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+            <Button
+              sx={{ mt: 2, mr: 1 }}
+              onClick={() => {
+                try {
+                  JSON.parse(editing.json);
+                  setReview(true);
+                  setRevisionError(false);
+                } catch {
+                  setRevisionError(true);
+                }
+              }}
+            >
+              Review changes
+            </Button>
+            <Button
+              sx={{ mt: 2 }}
+              variant="contained"
+              disabled={!review || !reason || revise.isPending}
+              onClick={() =>
+                void revise
+                  .mutateAsync({
+                    uuid: editing.uuid,
+                    snapshot: JSON.parse(editing.json),
+                    reason,
+                  })
+                  .then(() => setEditing(null))
+                  .catch(() => setRevisionError(true))
+              }
+            >
+              Apply as new revision
+            </Button>
+            {review ? (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                A new immutable revision will be created. The last active
+                configuration remains in service until an exact device receipt
+                confirms this revision.
+              </Alert>
+            ) : null}
+            {revisionError ? (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                Configuration JSON or mapping is invalid.
+              </Alert>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+    </Container>
+  );
 }

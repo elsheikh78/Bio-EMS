@@ -24,7 +24,9 @@ export const permissions = [
 export type Permission = (typeof permissions)[number];
 
 export const rolePermissions = {
-  ADMIN: new Set<Permission>(permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE")),
+  ADMIN: new Set<Permission>(
+    permissions.filter((permission) => permission !== "TOPOLOGY_MANAGE"),
+  ),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",
     "DEVICE_READ",
