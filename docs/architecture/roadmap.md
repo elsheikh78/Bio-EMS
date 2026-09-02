@@ -14,7 +14,7 @@ The post-P6 product audit did not invalidate those closures. It identified the P
 
 ## Active Software Roadmap — P7 Final Product Completion
 
-Status: **ACTIVE — P7-01 AND P7-02 COMPLETE / MERGED / CI VERIFIED; P7-03 NEXT**
+Status: **P7-03 THROUGH P7-08 IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING**
 
 Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 
@@ -32,37 +32,37 @@ Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/c
 
 ### P7-03 — License Lifecycle / Installation Binding
 
-Status: **NEXT CONTROLLED WORK PACKAGE — START HERE**
+Status: **IMPLEMENTED / LOCAL GATES VERIFIED**
 
 Expose SYSTEM_OWNER license inventory/detail, validity/lifecycle, and supported installation/Site binding while preserving server-derived provenance and the isolated platform trust boundary. Recorded Site/license association must not be represented as physical installation, field commissioning, or payment settlement. Any required new mutation contract must use validated SYSTEM_OWNER-only API/service/repository boundaries and append-only commercial evidence.
 
 ### P7-04 — Update Entitlement / Release Eligibility
 
-Status: **OPEN AFTER P7-03**
+Status: **IMPLEMENTED / LOCAL GATES VERIFIED**
 
 Expose approved entitlement and eligibility workflows while keeping remote OTA/update execution explicitly outside the implemented boundary unless separately added.
 
 ### P7-05 — Maintenance / Calibration / Support Fleet Operations
 
-Status: **OPEN AFTER P7-04**
+Status: **IMPLEMENTED / LOCAL GATES VERIFIED**
 
 Provide owner-level fleet oversight and actionable status across the P5 commercial operations domain while preserving site-level evidence boundaries.
 
 ### P7-06 — UX / Legacy Cleanup
 
-Status: **OPEN AFTER P7-05**
+Status: **IMPLEMENTED / LOCAL GATES VERIFIED**
 
 Remove or reconcile stale/dead frontend residue, including obsolete Sprint-14 Foundation/deferred text, and review navigation, loading/error/empty states, responsive behavior, accessibility, and localization.
 
 ### P7-07 — End-to-End Product Workflow Audit
 
-Status: **OPEN AFTER P7-06**
+Status: **REVIEW COMPLETE LOCALLY**
 
 Exercise every exposed operational, administration, reporting, commissioning, and SYSTEM_OWNER workflow for permission consistency, primary actions, API/error behavior, state refresh, and exports.
 
 ### P7-08 — Full Regression / Documentation / Closure
 
-Status: **OPEN AFTER P7-07**
+Status: **LOCAL GATES COMPLETE / PR-CI-MERGE PENDING**
 
 Run the complete software quality gate and reconcile all current-state documentation with actual P7 evidence. Only successful P7 closure permits the status **SOFTWARE PRODUCT COMPLETE** for the approved scope.
 

@@ -25,12 +25,6 @@ export interface TranslationResources {
     };
   };
 
-  foundation: {
-    title: string;
-    description: string;
-    deferredDescription: string;
-  };
-
   notFound: {
     title: string;
     action: string;
@@ -242,16 +236,6 @@ export const englishResources = {
 
       storage: "The session could not be stored securely in this browser tab.",
     },
-  },
-
-  foundation: {
-    title: "BIO-EMS frontend foundation",
-
-    description:
-      "Architecture and quality foundations are ready for feature development.",
-
-    deferredDescription:
-      "Operational screens, authentication, and the application shell are intentionally deferred to later Sprint 14 stories.",
   },
 
   notFound: {

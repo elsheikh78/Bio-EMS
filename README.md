@@ -17,7 +17,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
 | How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
-| What is the latest P7 closure evidence? | [`docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`](docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md) |
+| What is the latest P7 closure evidence? | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md) |
 | What did the current documentation audit conclude? | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md) |
 | What is the hardware validation path? | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md) |
 | Historical Sprint/BF/PVR progress | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only |
@@ -26,7 +26,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 ## Current Position
 
-P0-P6 are the delivered/CI-verified source baseline at their documented gates. **P7 — Final Product Completion — is active. P7-01 and P7-02 are complete, merged, and CI verified. P7-03 — License Lifecycle and Installation Binding UI — is the next controlled software work package.**
+P0-P6 and P7-01/P7-02 are delivered and CI verified. **P7-03 through P7-08 are implemented and locally verified; normal PR CI and merge are the remaining software-product closure gate.**
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
@@ -37,7 +37,7 @@ P0-P6 are the delivered/CI-verified source baseline at their documented gates. *
 - **P6:** source productization complete / merged / CI verified; deployment, UAT, sign-off, and production acceptance remain external.
 - **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
 - **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- **P7-03:** **NEXT / START HERE**.
+- **P7-03 through P7-08:** implemented / local quality gates verified / PR-CI-merge pending.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
@@ -110,4 +110,4 @@ Payment/invoicing integration and live remote OTA/update execution are also not 
 
 Before testing or developing the SYSTEM_OWNER surface, follow [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md); never commit real owner credentials or Platform JWT secrets.
 
-For development continuation, synchronize local `main` from GitHub first, then read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the P7 plan. **The next controlled implementation package is P7-03.** Do not use old Sprint documents as the current project status.
+For development continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the latest P7 closure record. **The next controlled action is final PR/CI verification and merge of the P7 completion branch.** Do not use old Sprint documents as the current project status.

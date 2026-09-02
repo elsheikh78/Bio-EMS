@@ -93,4 +93,51 @@ describe("isolated platform commercial operations", () => {
       "commercial events are append-only"
     );
   });
+
+  it("updates license entitlement/binding and service state with append-only provenance", () => {
+    const customerId = repository.createCustomer(
+      { code: "C1", name: "Customer", status: "ACTIVE", createdAt: "2026-09-01T12:00:00Z" },
+      "owner#1"
+    );
+    const licenseId = repository.createLicense(
+      {
+        customerId,
+        licenseKeyReference: "L1",
+        edition: "STANDARD",
+        status: "ACTIVE",
+        startsAt: "2026-09-01T12:00:00Z",
+        updateEntitlement: "NONE",
+        recordedAt: "2026-09-01T12:01:00Z",
+      },
+      "owner#1"
+    );
+    const serviceId = repository.createMaintenance(
+      {
+        customerId,
+        eventType: "SUPPORT",
+        status: "OPEN",
+        reference: "S1",
+        recordedAt: "2026-09-01T12:02:00Z",
+      },
+      "owner#1"
+    );
+    repository.updateLicense(
+      licenseId,
+      { siteId: 7, status: "ACTIVE", expiresAt: null, updateEntitlement: "FREE" },
+      "owner#2"
+    );
+    repository.updateMaintenance(
+      serviceId,
+      { dueAt: null, status: "COMPLETE", note: "Closed" },
+      "owner#2"
+    );
+    expect(repository.overview()).toMatchObject({
+      licenses: [{ siteId: 7, updateEntitlement: "FREE" }],
+      serviceEvents: [{ status: "COMPLETE", note: "Closed" }],
+    });
+    expect(repository.overview().commercialEvents.slice(0, 2)).toMatchObject([
+      { eventType: "SERVICE_EVENT_UPDATED", actorIdentity: "owner#2" },
+      { eventType: "LICENSE_UPDATED", actorIdentity: "owner#2" },
+    ]);
+  });
 });

@@ -17,3 +17,11 @@ export const createPlatformLicense = asyncHandler(async (req: Request, res: Resp
 export const createPlatformMaintenance = asyncHandler(async (req: Request, res: Response) =>
   res.status(201).json({ success: true, id: repository.createMaintenance(req.body, actor(req)) })
 );
+export const updatePlatformLicense = asyncHandler(async (req: Request, res: Response) => {
+  repository.updateLicense(Number(req.params.id), req.body, actor(req));
+  res.json({ success: true });
+});
+export const updatePlatformMaintenance = asyncHandler(async (req: Request, res: Response) => {
+  repository.updateMaintenance(Number(req.params.id), req.body, actor(req));
+  res.json({ success: true });
+});
