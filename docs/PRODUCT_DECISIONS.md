@@ -156,3 +156,22 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
   `CONFIGURATION_READ`.
 - BF-09-01 establishes runtime-validated API adapters only. Their presence is not
   evidence that configuration management screens or workflows are complete.
+
+## SYSTEM_OWNER Installation Provisioning and Customer RBAC
+
+- ADR-022 approves SYSTEM_OWNER-controlled customer installation provisioning.
+- SYSTEM_OWNER creates customer ADMIN accounts and the Site/Monitored Area/Telemetry
+  topology; customer ADMIN cannot create or structurally mutate that topology.
+- SYSTEM_OWNER owns initial Device inventory/mapping and initial Telemetry setup;
+  customer ADMIN retains approved post-handover Device lifecycle, thresholds, Alarm
+  delay, calibration, recipient and escalation management.
+- OPERATOR retains Alarm acknowledgement and report export but loses Device and
+  Commissioning mutation permissions. VIEWER remains read-only without export or
+  acknowledgement.
+- Structural changes to an active installation use validated revisions and exact
+  controller receipts. Delivery is not application evidence.
+- SYSTEM_OWNER records technical Commissioning; customer ADMIN independently accepts
+  or rejects handover. Configuration-active never implies Commissioned.
+- Delegated BIO-EMS roles such as INSTALLATION_ENGINEER are deferred.
+- These are approved requirements, not implemented behavior, until their P8 packages
+  pass code review, tests, PR/CI and merge.

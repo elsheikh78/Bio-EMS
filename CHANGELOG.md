@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Approved and documented ADR-022 and the P8-02 through P8-08 plan for SYSTEM_OWNER installation provisioning, customer-RBAC realignment, safe configuration revisions/controller receipts, and separated technical Commissioning/customer acceptance; implementation remains pending.
+
 - Added a secret-safe SMTP configuration template and controlled email-delivery smoke-test command for local/live provider validation.
 - Closed P8-01 source integration through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d` and its safe setup follow-up through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`; live SMTP/WhatsApp evidence remains open.
 
