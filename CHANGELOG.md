@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Added a secret-safe SMTP configuration template and controlled email-delivery smoke-test command for local/live provider validation.
+
 - Added Meta WhatsApp Cloud API and authenticated SMTP Email providers as primary Alarm delivery channels using the existing durable queue, retry, recipient, escalation, and evidence boundaries.
 - Preserved SMS as the emergency/fallback channel and documented the recommended `WHATSAPP + EMAIL` first escalation step followed by SMS.
 - Prepared source version `0.19.0`; no tag or GitHub Release is claimed yet, and live provider/template/inbox evidence remains open.
