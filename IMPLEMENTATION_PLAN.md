@@ -8,7 +8,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 ## Current Position
 
-- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented locally on `agent/p8-01-whatsapp-email-alerts`; PR/CI/merge and live-provider evidence remain pending.
+- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Live-provider evidence remains open.
 
 - Sprints 13, 14, and 15 are complete and closed.
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
@@ -23,9 +23,10 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 1. Reconcile local `main` with GitHub `origin/main` and confirm a clean working tree.
 2. Read `PROJECT_STATE.md` first, then this file, then `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
-3. Verify the existing completion branch through normal PR/CI gates and merge only when green.
-4. Record exact PR head, CI workflow/run, and merge evidence in the closure record and current-state documents.
-5. Keep payment settlement, invoicing, live remote OTA/update execution and external evidence outside the software closure claim.
+3. Place real Gmail SMTP values only in ignored `backend/.env`; never copy the App Password into tracked files, screenshots, chat, or GitHub.
+4. Set `BIOEMS_EMAIL_TEST_RECIPIENT` temporarily and run `npm run test:email-delivery`; record provider receipt and independently confirm inbox arrival.
+5. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
+6. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
 
 ## P0-P7 Sequence
 

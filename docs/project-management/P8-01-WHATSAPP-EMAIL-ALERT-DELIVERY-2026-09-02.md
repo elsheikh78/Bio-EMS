@@ -3,6 +3,12 @@
 **Date:** 2 September 2026
 **Status:** IMPLEMENTED / MERGED / CI VERIFIED / LIVE PROVIDER EVIDENCE OPEN
 
+## Integration evidence
+
+- Provider implementation: PR #147 / CI run #526 / workflow `33597088923` / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`.
+- Safe provider template and SMTP smoke test: PR #148 / CI run #528 / workflow `33647109572` / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`.
+- Backend local gate: typecheck, build, lint, format check, and 101 test files / 742 tests passed.
+
 ## Approved delivery order
 
 WhatsApp and Email are the primary Alarm channels. SMS remains the emergency/fallback channel. Configure escalation step 1 with `WHATSAPP` and `EMAIL`; configure a later step with `SMS` when fallback is required.
@@ -56,3 +62,10 @@ finally {
 
 The command reports `SENT` only after the SMTP provider returns a message receipt.
 Inbox arrival remains live-provider evidence and must be confirmed by the recipient.
+
+## Live setup handoff
+
+- A Gmail App Password has been created by the operator. Its value is not stored in Git and must remain only in ignored local `backend/.env`.
+- The Windows local copy still requires reconciliation to merge `a045e93` before running the smoke test.
+- SYSTEM_OWNER login previously returned `PLATFORM_AUTH_UNAVAILABLE`; local `BIOEMS_PLATFORM_JWT_SECRET` configuration and backend restart require confirmation before claiming successful owner login.
+- Meta for Developers registration loops from `Complete Registration` back to email verification on both desktop and mobile. Therefore no Phone Number ID, permanent access token, approved template, live WhatsApp send, or delivery evidence is claimed.
