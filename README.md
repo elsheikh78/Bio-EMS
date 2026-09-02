@@ -26,7 +26,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 ## Current Position
 
-P0-P6 and P7-01/P7-02 are delivered and CI verified. **P7-03 through P7-08 are implemented and locally verified; normal PR CI and merge are the remaining software-product closure gate.**
+**The approved P0-P7 software scope is SOFTWARE PRODUCT COMPLETE.** P7-03 through P7-08 closed through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
@@ -37,7 +37,7 @@ P0-P6 and P7-01/P7-02 are delivered and CI verified. **P7-03 through P7-08 are i
 - **P6:** source productization complete / merged / CI verified; deployment, UAT, sign-off, and production acceptance remain external.
 - **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
 - **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- **P7-03 through P7-08:** implemented / local quality gates verified / PR-CI-merge pending.
+- **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
@@ -110,4 +110,4 @@ Payment/invoicing integration and live remote OTA/update execution are also not 
 
 Before testing or developing the SYSTEM_OWNER surface, follow [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md); never commit real owner credentials or Platform JWT secrets.
 
-For development continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the latest P7 closure record. **The next controlled action is final PR/CI verification and merge of the P7 completion branch.** Do not use old Sprint documents as the current project status.
+For continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the latest P7 closure record. P7 software is closed; remaining work is in the separately controlled external evidence/acceptance tracks or later explicitly approved software scope.

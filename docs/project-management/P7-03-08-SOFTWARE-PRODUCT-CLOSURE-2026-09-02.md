@@ -2,7 +2,11 @@
 
 **Date:** 2 September 2026  
 **Branch:** `agent/p7-03-08-product-completion`  
-**Status:** IMPLEMENTED / LOCAL QUALITY GATES VERIFIED / PR-CI-MERGE EVIDENCE PENDING
+**PR:** #145
+**Final head:** `662a3e40b4b614e4987d24881b0a28cae0d2f4e6`
+**CI:** run #522 / workflow `33595381207` — SUCCESS
+**Merge:** `3798277bea14820632c8e1edd0b83df91f8f7084`
+**Status:** COMPLETE / MERGED / CI VERIFIED
 
 ## Delivered scope
 
@@ -27,4 +31,4 @@ Recorded Site association is not physical installation or commissioning evidence
 
 ## Final controlled gate
 
-The reserved status **SOFTWARE PRODUCT COMPLETE** is not claimed by this pre-merge record. It becomes valid only after the exact PR head passes normal GitHub CI and the PR is merged. Physical qualification, live provider delivery, production execution, BIO EGYPT commissioning/UAT, Quality/customer sign-off and production/customer acceptance remain external.
+PR #145 passed normal CI run #522 on the exact final head and merged to authoritative `main`. P7-01 through P7-08 are therefore **SOFTWARE PRODUCT COMPLETE** for the approved software scope. Physical qualification, live provider delivery, production execution, BIO EGYPT commissioning/UAT, Quality/customer sign-off and production/customer acceptance remain external.
