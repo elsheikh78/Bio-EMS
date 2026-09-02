@@ -1,7 +1,7 @@
 # P7 — Final Product Completion Plan
 
 **Date:** 1 September 2026  
-**Status:** P7-03 THROUGH P7-08 IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING
+**Status:** COMPLETE / MERGED / CI VERIFIED through PR #145 / CI run #522
 **Baseline:** P0-P6 source-software delivery complete, merged, and CI verified  
 **Purpose:** close the remaining gap between the implemented BIO-EMS software foundations and a coherent customer-ready/commercially operable product interface before declaring the software product complete.
 
@@ -22,7 +22,7 @@ Current completed packages:
 - P7-01 — COMPLETE / MERGED / CI VERIFIED through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
 - P7-02 — COMPLETE / MERGED / CI VERIFIED through PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 
-Next controlled action: verify and merge the P7-03 through P7-08 completion branch through normal GitHub gates.
+P7-03 through P7-08 closure: PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 
 ## 3. Work Packages
 
@@ -62,7 +62,7 @@ Closure: PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e
 
 ### P7-03 — License Lifecycle and Installation Binding UI
 
-**Status: IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Expose license state, validity, installation/site binding, and lifecycle operations available or required within the P5/P7 commercial domain.
 
@@ -80,7 +80,7 @@ Acceptance targets:
 
 ### P7-04 — Update Entitlement and Release Eligibility UI
 
-**Status: IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Expose free/paid/update-entitlement records and eligibility decisions already supported by the commercial domain, without pretending that remote OTA delivery exists where it does not.
 
@@ -94,7 +94,7 @@ Acceptance targets:
 
 ### P7-05 — Maintenance, Calibration and Support Fleet Operations
 
-**Status: IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Provide SYSTEM_OWNER fleet-level oversight for maintenance/calibration/support/update obligations, using existing P5 records and existing site-level calibration evidence without conflating the two domains.
 
@@ -108,7 +108,7 @@ Acceptance targets:
 
 ### P7-06 — Product UX and Legacy Cleanup
 
-**Status: IMPLEMENTED / LOCAL GATES VERIFIED / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Audit and remove or reconcile stale/dead frontend artifacts and obsolete user-facing text. The known Sprint-14 `FoundationPage`/deferred-description residue is included in this package.
 
@@ -122,7 +122,7 @@ Acceptance targets:
 
 ### P7-07 — End-to-End Product Workflow Review
 
-**Status: REVIEW COMPLETE LOCALLY / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Execute a controlled software workflow audit across every currently exposed product area:
 
@@ -149,7 +149,7 @@ Acceptance targets:
 
 ### P7-08 — Full Regression, Documentation Reconciliation and Software Product Closure
 
-**Status: LOCAL REGRESSION AND DOCUMENTATION COMPLETE / PR-CI-MERGE PENDING.**
+**Status: COMPLETE / MERGED / CI VERIFIED.**
 
 Run the complete backend/frontend quality gates and reconcile current-state documentation after P7 implementation.
 

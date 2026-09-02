@@ -5,7 +5,7 @@
 - Implemented P7-03 through P7-05 owner-facing license/binding, update-entitlement, and maintenance/calibration/support operations with bilingual states and authenticated append-only mutation provenance.
 - Added controlled license and service-record update contracts while preserving the isolated SYSTEM_OWNER backend boundary and explicit physical-installation, payment, OTA-execution, and field-evidence distinctions.
 - Completed P7-06 cleanup by removing the unused Sprint-14 Foundation placeholder and obsolete deferred-product text.
-- Completed the local P7-07/P7-08 workflow and regression review; final PR/CI/merge evidence remains required before the reserved SOFTWARE PRODUCT COMPLETE status is asserted.
+- Closed P7-03 through P7-08 through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`; the approved software scope is SOFTWARE PRODUCT COMPLETE while external evidence gates remain separate.
 
 ### Added / Changed
 
