@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Added a secret-safe SMTP configuration template and controlled email-delivery smoke-test command for local/live provider validation.
+- Closed P8-01 source integration through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d` and its safe setup follow-up through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`; live SMTP/WhatsApp evidence remains open.
 
 - Added Meta WhatsApp Cloud API and authenticated SMTP Email providers as primary Alarm delivery channels using the existing durable queue, retry, recipient, escalation, and evidence boundaries.
 - Preserved SMS as the emergency/fallback channel and documented the recommended `WHATSAPP + EMAIL` first escalation step followed by SMS.
