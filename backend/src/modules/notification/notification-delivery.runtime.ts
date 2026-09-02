@@ -1,15 +1,36 @@
 import { config } from "../../config/config";
 import { HttpSmsProvider } from "./http-sms.provider";
+import { MetaWhatsappProvider } from "./meta-whatsapp.provider";
+import { SmtpEmailProvider } from "./smtp-email.provider";
 import { NotificationDeliveryRepository } from "./notification-delivery.repository";
-import { NotificationDeliveryWorker } from "./notification-delivery.worker";
+import { NotificationDeliveryWorker, type DeliveryProvider } from "./notification-delivery.worker";
 import { NotificationEscalationOrchestrator } from "./notification-escalation.orchestrator";
 
 export function startNotificationDeliveryRuntime(): (() => void) | undefined {
   const settings = config.notificationDelivery;
-  if (!settings.enabled || !settings.sms) return undefined;
+  if (!settings.enabled) return undefined;
+  const providers: DeliveryProvider[] = [];
+  if (settings.whatsapp)
+    providers.push(
+      new MetaWhatsappProvider(
+        settings.whatsapp.providerName,
+        settings.whatsapp.endpoint,
+        settings.whatsapp.token,
+        settings.whatsapp.templateName,
+        settings.whatsapp.languageCode
+      )
+    );
+  if (settings.email)
+    providers.push(
+      new SmtpEmailProvider(settings.email.providerName, settings.email.from, settings.email)
+    );
+  if (settings.sms)
+    providers.push(
+      new HttpSmsProvider(settings.sms.providerName, settings.sms.endpoint, settings.sms.token)
+    );
   const worker = new NotificationDeliveryWorker(
     new NotificationDeliveryRepository(),
-    [new HttpSmsProvider(settings.sms.providerName, settings.sms.endpoint, settings.sms.token)],
+    providers,
     settings.timeoutMs
   );
   const orchestrator = new NotificationEscalationOrchestrator();

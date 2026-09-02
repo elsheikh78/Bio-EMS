@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Added Meta WhatsApp Cloud API and authenticated SMTP Email providers as primary Alarm delivery channels using the existing durable queue, retry, recipient, escalation, and evidence boundaries.
+- Preserved SMS as the emergency/fallback channel and documented the recommended `WHATSAPP + EMAIL` first escalation step followed by SMS.
+- Prepared source version `0.19.0`; no tag or GitHub Release is claimed yet, and live provider/template/inbox evidence remains open.
+
 - Implemented P7-03 through P7-05 owner-facing license/binding, update-entitlement, and maintenance/calibration/support operations with bilingual states and authenticated append-only mutation provenance.
 - Added controlled license and service-record update contracts while preserving the isolated SYSTEM_OWNER backend boundary and explicit physical-installation, payment, OTA-execution, and field-evidence distinctions.
 - Completed P7-06 cleanup by removing the unused Sprint-14 Foundation placeholder and obsolete deferred-product text.
