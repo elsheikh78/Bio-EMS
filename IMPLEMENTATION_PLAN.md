@@ -8,6 +8,8 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 ## Current Position
 
+- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented locally on `agent/p8-01-whatsapp-email-alerts`; PR/CI/merge and live-provider evidence remain pending.
+
 - Sprints 13, 14, and 15 are complete and closed.
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
 - P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization.

@@ -1,13 +1,13 @@
 # BIO-EMS
 
-![Source Version](https://img.shields.io/badge/source-0.18.0-blue)
+![Source Version](https://img.shields.io/badge/source-0.19.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
 **Latest published tagged release:** `v0.17.0`.  
-**Current source-software version:** `0.18.0`.
+**Current source-software version:** `0.19.0`.
 
 ## Documentation Authority — Read This First
 

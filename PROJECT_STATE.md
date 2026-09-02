@@ -1,12 +1,12 @@
 # BIO-EMS Project State
 
-**State date:** 1 September 2026
+**State date:** 2 September 2026
 
 **Latest published tagged release:** `v0.17.0`
 
-**Current source-software version:** `0.18.0`
+**Current source-software version:** `0.19.0`
 
-**Current phase:** **SOFTWARE PRODUCT COMPLETE** for the approved P0-P7 software scope. P7-03 through P7-08 closed through PR #145 / CI run #522 / workflow `33595381207` / merge `3798277bea14820632c8e1edd0b83df91f8f7084`. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **SOFTWARE PRODUCT COMPLETE** for the approved P0-P7 scope. P8-01 extends Alarm delivery with primary WhatsApp and Email providers while preserving SMS fallback; source implementation is locally verified with PR/CI/merge and live-provider evidence pending. Physical controller qualification, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -15,6 +15,7 @@
 3. Preserve P7-03 through P7-08 closure evidence from PR #145 and CI run #522.
 4. Continue only with the separate external evidence/field acceptance tracks or explicitly approved later software scope.
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
+6. Complete P8-01 PR/CI/merge, then execute controlled live Meta-template, WhatsApp, SMTP inbox, and SMS fallback evidence.
 
 ## Status Vocabulary
 
@@ -82,7 +83,7 @@ Sequence:
 
 ## Release / Version Position
 
-`VERSION` is the product source-version authority. `v0.17.0` is the latest published release and current source-software version remains `0.18.0`. P7-01 and P7-02 do not change either value and do not create a release.
+`VERSION` is the product source-version authority. `v0.17.0` remains the latest published release; current source-software version is prepared as `0.19.0` for P8-01. No `v0.19.0` tag or GitHub Release is claimed until the controlled release procedure is completed.
 
 Release publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
