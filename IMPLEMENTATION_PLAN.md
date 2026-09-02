@@ -9,7 +9,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 ## Current Position
 
 - P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Live-provider evidence remains open.
-- P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are approved and documented but not implemented. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Plan: `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`.
+- P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are source complete, merged and CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Closure: `docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`.
 
 - Sprints 13, 14, and 15 are complete and closed.
 - Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
@@ -28,7 +28,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 4. Set `BIOEMS_EMAIL_TEST_RECIPIENT` temporarily and run `npm run test:email-delivery`; record provider receipt and independently confirm inbox arrival.
 5. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
 6. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
-7. Begin new software implementation with P8-02 explicit customer ownership and authorization; do not start the wizard by bypassing tenant isolation or reusing customer ADMIN identity.
+7. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
 
 ## Parallel P8-01 Live-Acceptance Track
 

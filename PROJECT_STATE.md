@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **SOFTWARE PRODUCT COMPLETE** for the approved P0-P7 scope. P8-01 primary WhatsApp and Email Alarm delivery is merged and CI verified. P8-02 through P8-08 SYSTEM_OWNER installation provisioning and customer-RBAC realignment are approved/documented future scope and are not implemented. Live provider, physical controller, production deployment, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **P8-02 THROUGH P8-08 SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED** through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. P8-01 provider code is complete, but live Email/WhatsApp evidence remains open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -17,7 +17,7 @@
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
 6. Reconcile the Windows local copy with merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`, preserve all real provider secrets only in ignored `backend/.env`, and run the controlled SMTP smoke test.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
-8. Implement P8-02 through P8-08 from `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md` while P8-01 live Email/WhatsApp acceptance remains an explicit parallel open track; effective customer permissions remain the current code behavior until each change is implemented, tested, merged, and documented.
+8. Preserve P8-02 through P8-08 closure evidence from PR #152 and exercise the implemented installation workflow locally only with controlled test data until field/UAT evidence is available.
 
 ## Status Vocabulary
 
@@ -46,6 +46,7 @@
 - P6 controlled productization/deployment/acceptance tooling and documentation.
 - P7-01 isolated SYSTEM_OWNER frontend authentication/session boundary, protected owner routes, bilingual console shell, fail-closed route behavior, and authorization/contract regression coverage.
 - P7-02 SYSTEM_OWNER customer fleet list/detail, customer creation, existing Site/installation identity context, commercial provenance visibility, and platform-query isolation across owner sessions.
+- P8 explicit Customer-to-Site/User ownership, SYSTEM_OWNER-only topology and ADMIN lifecycle, realigned ADMIN/OPERATOR/VIEWER permissions, controlled installation drafts/revisions, exact checksum receipts, separated technical/customer decisions, safe configuration activation, and bilingual owner/customer workflows.
 
 ## P0-P7 Delivery Position
 
@@ -58,7 +59,7 @@
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
 - **P7 — Final Product Completion:** **COMPLETE / MERGED / CI VERIFIED** through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 - **P8-01 — Primary WhatsApp and Email Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / LIVE PROVIDER EVIDENCE OPEN.** Provider implementation: PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Safe configuration and SMTP smoke test: PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`.
-- **P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment:** **APPROVED / DOCUMENTED / IMPLEMENTATION PENDING.** Controlled by ADR-022 and the dated P8 implementation plan. Current code permissions must not be described as already realigned.
+- **P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment:** **SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Physical receipt, field Commissioning, customer acceptance and production execution remain open evidence gates.
 
 ## P7 Active Plan
 
@@ -123,4 +124,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** Continue P8-02 through P8-08 source implementation now. In the next Windows local session, update `main`, retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and resume P8-01 live Email/WhatsApp plus end-to-end Alarm evidence.
+**Next-session start point:** Update Windows local `main` to merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and resume P8-01 live Email/WhatsApp plus end-to-end Alarm evidence. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.

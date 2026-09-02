@@ -16,6 +16,8 @@ External hardware/provider/field/production/customer evidence remains separate f
 
 P8-01 primary WhatsApp and Email delivery source work closed through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Secret-safe provider configuration and the controlled SMTP smoke-test command closed through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Gmail App Password creation is an external preparation step only; SMTP inbox delivery has not yet been executed. Meta developer registration is looping after email verification on both desktop and mobile, so live WhatsApp credentials and template approval remain open.
 
+P8-02 through P8-08 source implementation closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. It added explicit customer ownership, the approved role matrix, SYSTEM_OWNER customer ADMIN lifecycle, controlled installation revisions and exact receipts, separated technical/customer decisions, configuration activation, and bilingual UI. Physical receipt, field Commissioning, customer acceptance and production execution are not claimed.
+
 For the authoritative continuation read, in order:
 
 1. `/PROJECT_STATE.md` — current-state authority and P7-03 start pointer.

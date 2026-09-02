@@ -83,7 +83,7 @@ P7 is software-product completion. The following remain separate evidence tracks
 
 ## Approved Next Software Roadmap — P8-02 through P8-08
 
-Status: **APPROVED / DOCUMENTED / IMPLEMENTATION PENDING**
+Status: **SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED** through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`.
 
 ADR-022 and `docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`
 control the next sequence: explicit customer ownership, RBAC realignment, SYSTEM_OWNER
@@ -91,8 +91,9 @@ installation draft/topology provisioning, Telemetry configuration and Device map
 safe configuration revisions with controller receipts, separated technical
 Commissioning/customer acceptance, and the final bilingual wizard/regression closure.
 
-The current application does not yet enforce the approved new matrix. Existing
-permissions remain effective until their implementation packages are merged.
+The application now enforces the approved matrix and controlled installation
+lifecycle. Physical controller receipt, field Commissioning and customer acceptance
+remain external evidence gates and are not inferred from automated tests.
 
 ## BIO EGYPT Phase-1 Boundary
 
