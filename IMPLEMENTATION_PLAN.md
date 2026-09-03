@@ -16,7 +16,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
   `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
 
 - P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Email SMTP `SENT` and confirmed inbox arrival passed on 3 September 2026. WhatsApp and end-to-end dual-channel evidence remain open behind Meta registration.
-- P8-01A — Telegram Interim Alarm Delivery — is approved and source-implemented as an independent primary channel. Its live Bot Token/Chat ID smoke test and end-to-end `TELEGRAM + EMAIL` evidence remain open; SMS remains emergency fallback and WhatsApp remains available for later activation.
+- P8-01A — Telegram Interim Alarm Delivery — is implemented, merged, and CI verified through PR #158 / CI run #549 / merge `c90cdde2e260730f70d38d6f22fa091a415961a4` as an independent primary channel. Its live Bot Token/Chat ID smoke test and end-to-end `TELEGRAM + EMAIL` evidence remain open; SMS remains emergency fallback and WhatsApp remains available for later activation.
 - P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are source complete, merged and CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Closure: `docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`.
 
 - Sprints 13, 14, and 15 are complete and closed.
@@ -34,7 +34,7 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 2. Read `PROJECT_STATE.md` first, then this file, then `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
 3. Preserve real Gmail SMTP values only in ignored `backend/.env`; Email smoke-test and inbox evidence already passed on 3 September 2026 and need not be repeated unless configuration changes.
 4. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
-5. Integrate P8-01A, then create the controlled Telegram bot and complete its live smoke test before the interim end-to-end Alarm test.
+5. Create the controlled Telegram bot and complete its live smoke test before the interim end-to-end Alarm test.
 5. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
 6. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
 7. After the supported platform/runtime set is frozen, execute DEP-01 from

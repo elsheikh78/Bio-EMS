@@ -1,7 +1,13 @@
 # P8-01A — Telegram Interim Alarm Delivery
 
 **Date:** 3 September 2026  
-**Status:** SOURCE IMPLEMENTED / LOCAL AUTOMATED GATES PASSED / LIVE BOT EVIDENCE OPEN
+**Status:** IMPLEMENTED / MERGED / CI VERIFIED / LIVE BOT EVIDENCE OPEN
+
+## Integration evidence
+
+- PR #158 / CI run #549 / merge `c90cdde2e260730f70d38d6f22fa091a415961a4`.
+- Backend: format, lint, typecheck, build and 106 test files / 755 tests passed.
+- Frontend: format, lint, typecheck, build and 44 test files / 276 tests passed.
 
 ## Decision
 
