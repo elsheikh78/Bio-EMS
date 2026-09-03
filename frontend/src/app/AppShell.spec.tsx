@@ -52,7 +52,11 @@ function useViewport(width: number) {
   );
 }
 
-function renderShell(path = "/", state?: unknown) {
+function renderShell(
+  path = "/",
+  state?: unknown,
+  language: "en" | "ar" = "en",
+) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -63,8 +67,10 @@ function renderShell(path = "/", state?: unknown) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <LocalizationProvider>
-        <ThemeProvider theme={createAppTheme("ltr")}>
+      <LocalizationProvider language={language}>
+        <ThemeProvider
+          theme={createAppTheme(language === "ar" ? "rtl" : "ltr")}
+        >
           <CssBaseline />
 
           <AuthenticationContext.Provider value={authenticatedAdmin}>
@@ -135,6 +141,21 @@ describe("responsive application shell", () => {
     expect(getAppHeaderLayering(createAppTheme("rtl"))).toEqual(headerLayering);
 
     expect(header).toHaveClass("MuiAppBar-root");
+  });
+
+  it("moves the permanent navigation drawer to the right in Arabic", () => {
+    useViewport(1200);
+    renderShell("/dashboard", undefined, "ar");
+
+    const navigation = screen.getByRole("navigation", {
+      name: "التنقل الرئيسي",
+    });
+    const drawer = navigation.closest(".MuiDrawer-paper");
+
+    expect(getComputedStyle(drawer as HTMLElement).right).toBe("0px");
+    expect(screen.getByTestId("app-shell")).toHaveStyle({
+      flexDirection: "row-reverse",
+    });
   });
 
   it("keeps the temporary mobile drawer above the header and dismisses it with Escape", async () => {

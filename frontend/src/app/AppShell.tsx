@@ -23,7 +23,7 @@ export function AppShell() {
   useRealtimeTelemetrySync();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
-  const { resources } = useLocalization();
+  const { direction, resources } = useLocalization();
   const { logout, user } = useAuthentication();
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,6 +54,7 @@ export function AppShell() {
       data-testid="app-shell"
       sx={{
         display: "flex",
+        flexDirection: direction === "rtl" ? "row-reverse" : "row",
         bgcolor: "background.default",
         maxWidth: "100vw",
         minHeight: "100vh",
@@ -88,6 +89,7 @@ export function AppShell() {
 
       {desktop ? (
         <Drawer
+          anchor={direction === "rtl" ? "right" : "left"}
           open
           slotProps={{
             paper: { component: "aside" },
@@ -110,6 +112,7 @@ export function AppShell() {
         </Drawer>
       ) : (
         <Drawer
+          anchor={direction === "rtl" ? "right" : "left"}
           ModalProps={{ keepMounted: true }}
           onClose={closeMobileNavigation}
           open={mobileNavigationOpen}
