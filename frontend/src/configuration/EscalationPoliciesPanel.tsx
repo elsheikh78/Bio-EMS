@@ -535,7 +535,7 @@ function blankStep(delay: string): StepDraft {
   return {
     delay,
     role: "PRIMARY_CONTACT",
-    channels: { EMAIL: true, SMS: false, WHATSAPP: false },
+    channels: { EMAIL: true, SMS: false, WHATSAPP: false, TELEGRAM: false },
   };
 }
 function parseSteps(

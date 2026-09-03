@@ -18,7 +18,7 @@ export interface NotificationDelivery {
   notification_event_id: number;
   site_id: number;
   recipient_id: number;
-  channel: "EMAIL" | "SMS" | "WHATSAPP";
+  channel: "EMAIL" | "SMS" | "WHATSAPP" | "TELEGRAM";
   severity: "WARNING" | "CRITICAL";
   status: DeliveryStatus;
   idempotency_key: string;

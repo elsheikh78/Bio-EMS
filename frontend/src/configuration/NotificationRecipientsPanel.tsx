@@ -454,7 +454,7 @@ function RecipientDialog({
             ))}
             <Button
               variant="outlined"
-              disabled={endpoints.length >= 3}
+              disabled={endpoints.length >= 4}
               onClick={() =>
                 setEndpoints((current) => [
                   ...current,
@@ -520,15 +520,21 @@ function parseRecipient(
     const valid =
       endpoint.channel === "EMAIL"
         ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)
-        : /^\+[1-9]\d{7,14}$/.test(address);
+        : endpoint.channel === "TELEGRAM"
+          ? /^-?\d{1,20}$/.test(address)
+          : /^\+[1-9]\d{7,14}$/.test(address);
     if (!valid)
       return endpoint.channel === "EMAIL"
         ? ar
           ? "عنوان البريد الإلكتروني غير صحيح."
           : "Email address is invalid."
-        : ar
-          ? `يجب أن يستخدم عنوان ${endpoint.channel} صيغة E.164.`
-          : `${endpoint.channel} address must use E.164 format.`;
+        : endpoint.channel === "TELEGRAM"
+          ? ar
+            ? "يجب أن يكون عنوان Telegram هو Chat ID رقميًا."
+            : "Telegram address must be a numeric Chat ID."
+          : ar
+            ? `يجب أن يستخدم عنوان ${endpoint.channel} صيغة E.164.`
+            : `${endpoint.channel} address must use E.164 format.`;
     const eligible_severities = notificationSeverities.filter((severity) =>
       severity === "WARNING" ? endpoint.warning : endpoint.critical,
     );

@@ -24,6 +24,7 @@
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
     "bootstrap:system-owner": "tsx src/scripts/bootstrap-system-owner.ts",
     "test:email-delivery": "tsx src/scripts/test-email-delivery.ts",
+    "test:telegram-delivery": "tsx src/scripts/test-telegram-delivery.ts",
     "validate:deployment": "node --import tsx src/scripts/validate-deployment.ts",
     "validate:release": "node --import tsx src/scripts/validate-release.ts",
     "clean": "rimraf dist",

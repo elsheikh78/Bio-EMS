@@ -2,6 +2,7 @@ import { config } from "../../config/config";
 import { HttpSmsProvider } from "./http-sms.provider";
 import { MetaWhatsappProvider } from "./meta-whatsapp.provider";
 import { SmtpEmailProvider } from "./smtp-email.provider";
+import { TelegramProvider } from "./telegram.provider";
 import { NotificationDeliveryRepository } from "./notification-delivery.repository";
 import { NotificationDeliveryWorker, type DeliveryProvider } from "./notification-delivery.worker";
 import { NotificationEscalationOrchestrator } from "./notification-escalation.orchestrator";
@@ -23,6 +24,10 @@ export function startNotificationDeliveryRuntime(): (() => void) | undefined {
   if (settings.email)
     providers.push(
       new SmtpEmailProvider(settings.email.providerName, settings.email.from, settings.email)
+    );
+  if (settings.telegram)
+    providers.push(
+      new TelegramProvider(settings.telegram.providerName, settings.telegram.endpoint)
     );
   if (settings.sms)
     providers.push(

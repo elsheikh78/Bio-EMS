@@ -9,7 +9,12 @@ export const recipientRoles = [
   "MANAGEMENT",
   "OTHER",
 ] as const;
-export const notificationChannels = ["EMAIL", "SMS", "WHATSAPP"] as const;
+export const notificationChannels = [
+  "EMAIL",
+  "SMS",
+  "WHATSAPP",
+  "TELEGRAM",
+] as const;
 export const notificationSeverities = ["WARNING", "CRITICAL"] as const;
 
 const endpointSchema = z
@@ -30,7 +35,7 @@ export const notificationRecipientSchema = z
     status: z.enum(["active", "inactive"]),
     created_at: z.string(),
     updated_at: z.string().nullable(),
-    endpoints: z.array(endpointSchema).min(1).max(3),
+    endpoints: z.array(endpointSchema).min(1).max(4),
   })
   .strict();
 export const notificationRecipientsSchema = z.array(
@@ -43,7 +48,7 @@ const escalationStepSchema = z
     position: z.number().int().positive(),
     delay_seconds: z.number().int().min(0).max(604_800),
     recipient_role: z.enum(recipientRoles),
-    channels: z.array(z.enum(notificationChannels)).min(1).max(3),
+    channels: z.array(z.enum(notificationChannels)).min(1).max(4),
   })
   .strict();
 export const escalationPolicySchema = z

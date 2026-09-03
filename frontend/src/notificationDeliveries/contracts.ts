@@ -28,7 +28,7 @@ export const notificationDeliverySchema = z
     id: z.number().int().positive(),
     uuid: z.string().uuid(),
     site_id: z.number().int().positive(),
-    channel: z.enum(["EMAIL", "SMS", "WHATSAPP"]),
+    channel: z.enum(["EMAIL", "SMS", "WHATSAPP", "TELEGRAM"]),
     severity: z.enum(["WARNING", "CRITICAL"]),
     status: z.enum(deliveryStatuses),
     attempt_count: z.number().int().nonnegative(),

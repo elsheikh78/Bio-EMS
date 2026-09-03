@@ -44,4 +44,21 @@ describe("notification delivery configuration", () => {
     });
     expect(value.sms?.providerName).toBe("pilot");
   });
+  it("loads Telegram independently while WhatsApp is unavailable", () => {
+    const value = loadNotificationDeliveryConfig({
+      BIOEMS_NOTIFICATION_DELIVERY_ENABLED: "true",
+      BIOEMS_TELEGRAM_BOT_TOKEN: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef",
+    });
+    expect(value.telegram).toMatchObject({ providerName: "TELEGRAM_BOT" });
+    expect(value.telegram?.endpoint).toContain("/sendMessage");
+    expect(value.whatsapp).toBeUndefined();
+  });
+  it("rejects a malformed Telegram token without including it in the error", () => {
+    expect(() =>
+      loadNotificationDeliveryConfig({
+        BIOEMS_NOTIFICATION_DELIVERY_ENABLED: "true",
+        BIOEMS_TELEGRAM_BOT_TOKEN: "invalid-secret",
+      })
+    ).toThrow("Invalid Telegram provider configuration");
+  });
 });
