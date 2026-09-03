@@ -1,7 +1,7 @@
 # Global Localization and P8-01 Email Handoff
 
 **Date:** 3 September 2026  
-**Source status:** implemented and locally verified; integration PR/CI evidence pending  
+**Source status:** implemented / merged / CI verified  
 **External status:** Email passed; Meta WhatsApp blocked; P8-01 not fully closed
 
 ## Corrected finding
@@ -23,7 +23,13 @@ The earlier language work made the switch persistent and covered the P8/SYSTEM_O
 - Frontend tests: 44 files / 276 tests passed.
 - Added regression evidence for built-in Arabic navigation/resources and the Arabic customer calibration workflow with RTL.
 
-Integration PR, CI, merge and final release identifiers must be appended after GitHub completes them.
+## Integration evidence
+
+- PR: #155.
+- CI: run #543 / workflow run `33725884705` — passed.
+- Source commit: `086218924494ae700807b3e414c2ea542f576f5d`.
+- Merge: `e0f305c2286ff577f20df076b64118e327a5ba0c`.
+- Release package readiness: `PASS (0.19.0)`; tag/GitHub Release publication remains a separate repository operation and is not claimed by this document.
 
 ## P8-01 live evidence
 

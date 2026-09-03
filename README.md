@@ -55,6 +55,8 @@ and closure record above for the exact software/evidence boundary.
 
 The global language control persists Arabic/English selection and applies RTL/LTR across both SYSTEM_OWNER and customer operations. Customer navigation, monitoring, Alarm, Device, delivery, calibration, reporting, configuration, User/Audit and Workspace surfaces use Arabic copy when Arabic is selected; controlled report requests also use the selected language.
 
+Global localization integration evidence: PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`.
+
 ## P7 Final Product Completion (Historical)
 
 P7 consists of eight controlled work packages:

@@ -18,7 +18,7 @@ P8-01 primary WhatsApp and Email delivery source work closed through PR #147 / C
 
 P8-02 through P8-08 source implementation closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. It added explicit customer ownership, the approved role matrix, SYSTEM_OWNER customer ADMIN lifecycle, controlled installation revisions and exact receipts, separated technical/customer decisions, configuration activation, and bilingual UI. Physical receipt, field Commissioning, customer acceptance and production execution are not claimed.
 
-The 3 September localization correction replaced the partial P8/SYSTEM_OWNER-only result with global Arabic/English resources for the customer shell and operational workflows, persisted RTL/LTR selection, and selected-language reporting requests. Frontend local gates passed 44 test files / 276 tests before integration.
+The 3 September localization correction replaced the partial P8/SYSTEM_OWNER-only result with global Arabic/English resources for the customer shell and operational workflows, persisted RTL/LTR selection, and selected-language reporting requests. Frontend gates passed 44 test files / 276 tests; integration closed through PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`.
 
 For the authoritative continuation read, in order:
 

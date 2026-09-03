@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8-02 THROUGH P8-08 SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED** through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Global customer and SYSTEM_OWNER Arabic/English localization is implemented and locally verified. P8-01 Email live evidence passed on 3 September 2026; WhatsApp and end-to-end dual-channel evidence remain open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **P8 SOURCE SOFTWARE AND GLOBAL LOCALIZATION COMPLETE / MERGED / CI VERIFIED.** P8-02 through P8-08 closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; global customer and SYSTEM_OWNER Arabic/English localization closed through PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`. P8-01 Email live evidence passed on 3 September 2026; WhatsApp and end-to-end dual-channel evidence remain open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -124,4 +124,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** Reconcile Windows local `main` with the final localization/release merge. Retain the Gmail App Password only in ignored `backend/.env`. Resume P8-01 at the Meta developer-registration blocker; after registration succeeds, obtain the controlled Phone Number ID/token, approve the Alarm template, prove a live WhatsApp receipt, then execute one end-to-end Alarm through primary `WHATSAPP + EMAIL` and review Delivery Operations evidence. Email SMTP and inbox evidence already passed and must not be repeated unless configuration changes. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.
+**Next-session start point:** Reconcile Windows local `main` with merge `e0f305c2286ff577f20df076b64118e327a5ba0c`. Retain the Gmail App Password only in ignored `backend/.env`. Resume P8-01 at the Meta developer-registration blocker; after registration succeeds, obtain the controlled Phone Number ID/token, approve the Alarm template, prove a live WhatsApp receipt, then execute one end-to-end Alarm through primary `WHATSAPP + EMAIL` and review Delivery Operations evidence. Email SMTP and inbox evidence already passed and must not be repeated unless configuration changes. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.
