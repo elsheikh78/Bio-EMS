@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 import { useAuthentication } from "../auth/useAuthentication";
 import { hasPermission } from "../authorization/permissions";
+import { useLocalization } from "../localization/useLocalization";
 import type { Device } from "../devices/contracts";
 import {
   useDeviceHealth,
@@ -24,6 +25,9 @@ import {
 } from "../devices/queries";
 
 export function DevicesPage() {
+  const { language } = useLocalization();
+  const t = (english: string, arabic: string) =>
+    language === "ar" ? arabic : english;
   const devices = useDevices();
   const mutation = useDeviceMutation();
   const { user } = useAuthentication();
@@ -51,40 +55,53 @@ export function DevicesPage() {
     <Stack spacing={3}>
       <Box>
         <Typography variant="overline" color="primary.main">
-          Device registry & health
+          {t("Device registry & health", "سجل الأجهزة وحالتها")}
         </Typography>
         <Typography component="h1" variant="h4">
-          Devices
+          {t("Devices", "الأجهزة")}
         </Typography>
         <Typography color="text.secondary">
-          Review registered controllers, communication health, and controlled
-          lifecycle state.
+          {t(
+            "Review registered controllers, communication health, and controlled lifecycle state.",
+            "راجع وحدات التحكم المسجلة وحالة الاتصال ودورة الحياة المنضبطة.",
+          )}
         </Typography>
       </Box>
       <Button
         sx={{ alignSelf: "flex-start" }}
         onClick={() => void devices.refetch()}
       >
-        Refresh
+        {t("Refresh", "تحديث")}
       </Button>
       {devices.isPending ? (
-        <CircularProgress aria-label="Loading Devices" />
+        <CircularProgress
+          aria-label={t("Loading Devices", "جارٍ تحميل الأجهزة")}
+        />
       ) : null}
       {devices.isError ? (
         <Alert
           severity="error"
-          action={<Button onClick={() => void devices.refetch()}>Retry</Button>}
+          action={
+            <Button onClick={() => void devices.refetch()}>
+              {t("Retry", "إعادة المحاولة")}
+            </Button>
+          }
         >
-          Unable to load Devices.
+          {t("Unable to load Devices.", "تعذر تحميل الأجهزة.")}
         </Alert>
       ) : null}
       {mutation.isError ? (
         <Alert severity="error">
-          Device update failed or its lifecycle state changed.
+          {t(
+            "Device update failed or its lifecycle state changed.",
+            "فشل تحديث الجهاز أو تغيرت حالة دورة حياته.",
+          )}
         </Alert>
       ) : null}
       {!devices.isPending && !devices.isError && devices.data?.length === 0 ? (
-        <Alert severity="info">No Devices are registered.</Alert>
+        <Alert severity="info">
+          {t("No Devices are registered.", "لا توجد أجهزة مسجلة.")}
+        </Alert>
       ) : null}
       {(devices.data ?? []).map((device) => (
         <Paper key={device.device_id} variant="outlined" sx={{ p: 3 }}>
@@ -99,13 +116,15 @@ export function DevicesPage() {
                 {device.device_type} · {device.protocol}
               </Typography>
               <Typography color="text.secondary">
-                Site #{device.site_id} ·{" "}
+                {t("Site", "الموقع")} #{device.site_id} ·{" "}
                 {[device.manufacturer, device.model, device.firmware_version]
                   .filter(Boolean)
-                  .join(" · ") || "Metadata unavailable"}
+                  .join(" · ") ||
+                  t("Metadata unavailable", "بيانات التعريف غير متاحة")}
               </Typography>
               <Typography variant="body2">
-                Last seen: {device.last_seen_at ?? "Never"}
+                {t("Last seen", "آخر اتصال")}:{" "}
+                {device.last_seen_at ?? t("Never", "لم يتصل")}
               </Typography>
             </Box>
             <Stack
@@ -114,7 +133,7 @@ export function DevicesPage() {
               sx={{ alignItems: "center", flexWrap: "wrap" }}
             >
               <Chip
-                label={device.status}
+                label={localizeDeviceValue(device.status, language)}
                 color={
                   device.status === "active"
                     ? "success"
@@ -123,10 +142,14 @@ export function DevicesPage() {
                       : "warning"
                 }
               />
-              <Button onClick={() => setSelected(device)}>Health</Button>
+              <Button onClick={() => setSelected(device)}>
+                {t("Health", "الحالة")}
+              </Button>
               {canManage ? (
                 <>
-                  <Button onClick={() => setEditing(device)}>Edit</Button>
+                  <Button onClick={() => setEditing(device)}>
+                    {t("Edit", "تعديل")}
+                  </Button>
                   {device.status === "active" ? (
                     <Button
                       color="warning"
@@ -138,7 +161,7 @@ export function DevicesPage() {
                         })
                       }
                     >
-                      Disable
+                      {t("Disable", "تعطيل")}
                     </Button>
                   ) : (
                     <Button
@@ -150,7 +173,7 @@ export function DevicesPage() {
                         })
                       }
                     >
-                      Activate
+                      {t("Activate", "تفعيل")}
                     </Button>
                   )}
                 </>
@@ -164,17 +187,27 @@ export function DevicesPage() {
         onClose={() => setSelected(null)}
         fullWidth
       >
-        <DialogTitle>Communication health · {selected?.device_id}</DialogTitle>
+        <DialogTitle>
+          {t("Communication health", "حالة الاتصال")} · {selected?.device_id}
+        </DialogTitle>
         <DialogContent>
           {health.isPending ? <CircularProgress /> : null}
           {health.isError ? (
-            <Alert severity="error">Unable to load Device health.</Alert>
+            <Alert severity="error">
+              {t(
+                "Unable to load Device health.",
+                "تعذر تحميل حالة اتصال الجهاز.",
+              )}
+            </Alert>
           ) : null}
           {health.data ? (
             <Stack spacing={1} sx={{ mt: 1 }}>
               <Chip
                 sx={{ alignSelf: "flex-start" }}
-                label={health.data.communication_status}
+                label={localizeDeviceValue(
+                  health.data.communication_status,
+                  language,
+                )}
                 color={
                   health.data.communication_status === "ONLINE"
                     ? "success"
@@ -184,21 +217,26 @@ export function DevicesPage() {
                 }
               />
               <Typography>
-                Last heartbeat: {health.data.last_heartbeat_at ?? "Never"}
+                {t("Last heartbeat", "آخر نبضة اتصال")}:{" "}
+                {health.data.last_heartbeat_at ?? t("Never", "لا توجد")}
               </Typography>
               <Typography>
-                Seconds since seen:{" "}
-                {health.data.seconds_since_seen ?? "Unavailable"}
+                {t("Seconds since seen", "الثواني منذ آخر اتصال")}:{" "}
+                {health.data.seconds_since_seen ?? t("Unavailable", "غير متاح")}
               </Typography>
               <Typography variant="body2">
-                Stale after {health.data.stale_after_seconds}s · offline after{" "}
+                {t("Stale after", "يُعد متأخرًا بعد")}{" "}
+                {health.data.stale_after_seconds}
+                {t("s", " ث")} · {t("offline after", "وغير متصل بعد")}{" "}
                 {health.data.offline_after_seconds}s
               </Typography>
             </Stack>
           ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSelected(null)}>Close</Button>
+          <Button onClick={() => setSelected(null)}>
+            {t("Close", "إغلاق")}
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog
@@ -206,7 +244,9 @@ export function DevicesPage() {
         onClose={() => setEditing(null)}
         fullWidth
       >
-        <DialogTitle>Edit Device metadata</DialogTitle>
+        <DialogTitle>
+          {t("Edit Device metadata", "تعديل بيانات الجهاز")}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             {(
@@ -221,7 +261,7 @@ export function DevicesPage() {
               <TextField
                 key={field}
                 required={field === "device_type" || field === "protocol"}
-                label={field.replaceAll("_", " ")}
+                label={localizeDeviceField(field, language)}
                 value={editing?.[field] ?? ""}
                 onChange={(event) =>
                   setEditing((current) =>
@@ -235,7 +275,9 @@ export function DevicesPage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditing(null)}>Cancel</Button>
+          <Button onClick={() => setEditing(null)}>
+            {t("Cancel", "إلغاء")}
+          </Button>
           <Button
             disabled={
               !editing?.device_type.trim() ||
@@ -244,10 +286,42 @@ export function DevicesPage() {
             }
             onClick={save}
           >
-            Save
+            {t("Save", "حفظ")}
           </Button>
         </DialogActions>
       </Dialog>
     </Stack>
+  );
+}
+
+function localizeDeviceValue(value: string, language: "en" | "ar") {
+  if (language === "en") return value;
+  return (
+    (
+      {
+        active: "نشط",
+        disabled: "معطّل",
+        pending: "قيد الانتظار",
+        ONLINE: "متصل",
+        OFFLINE: "غير متصل",
+        STALE: "بيانات متأخرة",
+        NEVER_SEEN: "لم يتصل سابقًا",
+      } as Record<string, string>
+    )[value] ?? value
+  );
+}
+
+function localizeDeviceField(field: string, language: "en" | "ar") {
+  if (language === "en") return field.replaceAll("_", " ");
+  return (
+    (
+      {
+        device_type: "نوع الجهاز",
+        protocol: "البروتوكول",
+        manufacturer: "الشركة المصنعة",
+        model: "الموديل",
+        firmware_version: "إصدار البرنامج الثابت",
+      } as Record<string, string>
+    )[field] ?? field
   );
 }

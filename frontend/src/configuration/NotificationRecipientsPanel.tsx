@@ -34,8 +34,11 @@ import {
   type NotificationRecipient,
   type NotificationEndpointInput,
 } from "./contracts";
+import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 
 export function NotificationRecipientsPanel() {
+  const { language } = useLocalization();
+  const ar = language === "ar";
   const sitesQuery = useSites();
   const [siteId, setSiteId] = useState<number>();
   const [editing, setEditing] = useState<NotificationRecipient | "new">();
@@ -56,11 +59,12 @@ export function NotificationRecipientsPanel() {
         >
           <Box>
             <Typography component="h2" variant="h5">
-              Notification recipients
+              {ar ? "مستلمو الإشعارات" : "Notification recipients"}
             </Typography>
             <Typography color="text.secondary">
-              Site-scoped contacts and severity eligibility. Contact values are
-              never placed in URLs.
+              {ar
+                ? "جهات اتصال خاصة بالموقع وأهلية درجات الشدة. لا تُوضع بيانات الاتصال في عناوين URL مطلقًا."
+                : "Site-scoped contacts and severity eligibility. Contact values are never placed in URLs."}
             </Typography>
           </Box>
           <Button
@@ -68,27 +72,33 @@ export function NotificationRecipientsPanel() {
             disabled={!effectiveSiteId}
             onClick={() => setEditing("new")}
           >
-            Add recipient
+            {ar ? "إضافة مستلم" : "Add recipient"}
           </Button>
         </Box>
 
         {sitesQuery.isPending ? (
-          <CircularProgress aria-label="Loading sites" />
+          <CircularProgress
+            aria-label={ar ? "جارٍ تحميل المواقع" : "Loading sites"}
+          />
         ) : null}
         {sitesQuery.isError ? (
-          <Alert severity="error">Unable to load Sites.</Alert>
+          <Alert severity="error">
+            {ar ? "تعذر تحميل المواقع." : "Unable to load Sites."}
+          </Alert>
         ) : null}
         {(sitesQuery.data?.length ?? 0) > 0 ? (
           <FormControl fullWidth>
-            <InputLabel id="recipient-site-label">Site</InputLabel>
+            <InputLabel id="recipient-site-label">
+              {ar ? "الموقع" : "Site"}
+            </InputLabel>
             <Select
               labelId="recipient-site-label"
-              label="Site"
+              label={ar ? "الموقع" : "Site"}
               value={effectiveSiteId ?? ""}
               onChange={(event) => setSiteId(Number(event.target.value))}
             >
               <MenuItem value="" disabled>
-                Select a Site
+                {ar ? "اختر موقعًا" : "Select a Site"}
               </MenuItem>
               {sitesQuery.data
                 ?.filter((site) => site.id)
@@ -104,7 +114,9 @@ export function NotificationRecipientsPanel() {
         !sitesQuery.isError &&
         sitesQuery.data?.length === 0 ? (
           <Alert severity="info">
-            Create a Site before configuring recipients.
+            {ar
+              ? "أنشئ موقعًا قبل إعداد المستلمين."
+              : "Create a Site before configuring recipients."}
           </Alert>
         ) : null}
         {!sitesQuery.isPending &&
@@ -112,12 +124,16 @@ export function NotificationRecipientsPanel() {
         !effectiveSiteId &&
         (sitesQuery.data?.length ?? 0) > 0 ? (
           <Alert severity="info">
-            Select a Site before loading or changing notification recipients.
+            {ar
+              ? "اختر موقعًا قبل تحميل مستلمي الإشعارات أو تغييرهم."
+              : "Select a Site before loading or changing notification recipients."}
           </Alert>
         ) : null}
 
         {recipientsQuery.isPending && effectiveSiteId ? (
-          <CircularProgress aria-label="Loading recipients" />
+          <CircularProgress
+            aria-label={ar ? "جارٍ تحميل المستلمين" : "Loading recipients"}
+          />
         ) : null}
         {recipientsQuery.isError ? (
           <Alert
@@ -127,11 +143,11 @@ export function NotificationRecipientsPanel() {
                 color="inherit"
                 onClick={() => void recipientsQuery.refetch()}
               >
-                Retry
+                {ar ? "إعادة المحاولة" : "Retry"}
               </Button>
             }
           >
-            Unable to load recipients.
+            {ar ? "تعذر تحميل المستلمين." : "Unable to load recipients."}
           </Alert>
         ) : null}
         {!recipientsQuery.isPending &&
@@ -139,11 +155,17 @@ export function NotificationRecipientsPanel() {
         effectiveSiteId &&
         recipientsQuery.data?.length === 0 ? (
           <Alert severity="info">
-            No notification recipients are configured for this Site.
+            {ar
+              ? "لا يوجد مستلمو إشعارات مُعدون لهذا الموقع."
+              : "No notification recipients are configured for this Site."}
           </Alert>
         ) : null}
         {statusMutation.isError ? (
-          <Alert severity="error">Recipient status could not be changed.</Alert>
+          <Alert severity="error">
+            {ar
+              ? "تعذر تغيير حالة المستلم."
+              : "Recipient status could not be changed."}
+          </Alert>
         ) : null}
         {recipientsQuery.data?.map((recipient) => (
           <Box
@@ -167,13 +189,19 @@ export function NotificationRecipientsPanel() {
                 </Typography>
                 <Chip
                   size="small"
-                  label={recipient.status}
+                  label={
+                    ar
+                      ? recipient.status === "active"
+                        ? "نشط"
+                        : "غير نشط"
+                      : recipient.status
+                  }
                   color={recipient.status === "active" ? "success" : "default"}
                 />
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={formatEnum(recipient.role)}
+                  label={formatEnum(recipient.role, language)}
                 />
               </Stack>
               <Typography variant="body2" color="text.secondary">
@@ -188,9 +216,9 @@ export function NotificationRecipientsPanel() {
             <Stack direction="row" spacing={1}>
               <Button
                 onClick={() => setEditing(recipient)}
-                aria-label={`Edit ${recipient.display_name}`}
+                aria-label={`${ar ? "تعديل" : "Edit"} ${recipient.display_name}`}
               >
-                Edit
+                {ar ? "تعديل" : "Edit"}
               </Button>
               <Button
                 disabled={statusMutation.isPending}
@@ -203,7 +231,13 @@ export function NotificationRecipientsPanel() {
                   })
                 }
               >
-                {recipient.status === "active" ? "Deactivate" : "Activate"}
+                {recipient.status === "active"
+                  ? ar
+                    ? "إلغاء التفعيل"
+                    : "Deactivate"
+                  : ar
+                    ? "تفعيل"
+                    : "Activate"}
               </Button>
             </Stack>
           </Box>
@@ -213,6 +247,7 @@ export function NotificationRecipientsPanel() {
         <RecipientDialog
           siteId={effectiveSiteId}
           recipient={editing === "new" ? undefined : editing}
+          language={language}
           onClose={() => setEditing(undefined)}
         />
       ) : null}
@@ -223,6 +258,7 @@ export function NotificationRecipientsPanel() {
 interface RecipientDialogProps {
   siteId: number;
   recipient?: NotificationRecipient;
+  language: "en" | "ar";
   onClose: () => void;
 }
 type EndpointDraft = {
@@ -232,7 +268,13 @@ type EndpointDraft = {
   critical: boolean;
 };
 
-function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
+function RecipientDialog({
+  siteId,
+  recipient,
+  language,
+  onClose,
+}: RecipientDialogProps) {
+  const ar = language === "ar";
   const createMutation = useCreateNotificationRecipient(siteId);
   const updateMutation = useUpdateNotificationRecipient(siteId);
   const [name, setName] = useState(recipient?.display_name ?? "");
@@ -260,7 +302,7 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
   }
   async function submit(event: FormEvent) {
     event.preventDefault();
-    const parsed = parseRecipient(name, endpoints);
+    const parsed = parseRecipient(name, endpoints, language);
     if (typeof parsed === "string") {
       setValidation(parsed);
       return;
@@ -296,35 +338,41 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
       <Box component="form" onSubmit={(event) => void submit(event)}>
         <DialogTitle>
           {recipient
-            ? `Edit ${recipient.display_name}`
-            : "Add notification recipient"}
+            ? `${ar ? "تعديل" : "Edit"} ${recipient.display_name}`
+            : ar
+              ? "إضافة مستلم إشعارات"
+              : "Add notification recipient"}
         </DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ pt: 1 }}>
             {validation ? <Alert severity="error">{validation}</Alert> : null}
             {mutation.isError ? (
               <Alert severity="error">
-                Recipient could not be saved. Contact values were not logged.
+                {ar
+                  ? "تعذر حفظ المستلم. لم يتم تسجيل بيانات الاتصال."
+                  : "Recipient could not be saved. Contact values were not logged."}
               </Alert>
             ) : null}
             <TextField
               required
-              label="Display name"
+              label={ar ? "اسم العرض" : "Display name"}
               value={name}
               onChange={(event) => setName(event.target.value)}
               slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             <FormControl>
-              <InputLabel id="recipient-role-label">Role</InputLabel>
+              <InputLabel id="recipient-role-label">
+                {ar ? "الدور" : "Role"}
+              </InputLabel>
               <Select
                 labelId="recipient-role-label"
-                label="Role"
+                label={ar ? "الدور" : "Role"}
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
               >
                 {recipientRoles.map((value) => (
                   <MenuItem key={value} value={value}>
-                    {formatEnum(value)}
+                    {formatEnum(value, language)}
                   </MenuItem>
                 ))}
               </Select>
@@ -335,11 +383,11 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                     <FormControl sx={{ minWidth: 160 }}>
                       <InputLabel id={`channel-${index}-label`}>
-                        Channel
+                        {ar ? "القناة" : "Channel"}
                       </InputLabel>
                       <Select
                         labelId={`channel-${index}-label`}
-                        label="Channel"
+                        label={ar ? "القناة" : "Channel"}
                         value={endpoint.channel}
                         onChange={(event) =>
                           patchEndpoint(index, {
@@ -357,7 +405,7 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
                     <TextField
                       fullWidth
                       required
-                      label={`${endpoint.channel} address`}
+                      label={`${endpoint.channel} ${ar ? "العنوان" : "address"}`}
                       value={endpoint.address}
                       onChange={(event) =>
                         patchEndpoint(index, { address: event.target.value })
@@ -372,7 +420,7 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
                           )
                         }
                       >
-                        Remove
+                        {ar ? "إزالة" : "Remove"}
                       </Button>
                     ) : null}
                   </Stack>
@@ -397,7 +445,7 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
                             }
                           />
                         }
-                        label={formatEnum(severity)}
+                        label={formatEnum(severity, language)}
                       />
                     ))}
                   </Stack>
@@ -425,20 +473,26 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
                 ])
               }
             >
-              Add channel
+              {ar ? "إضافة قناة" : "Add channel"}
             </Button>
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={mutation.isPending}>
-            Cancel
+            {ar ? "إلغاء" : "Cancel"}
           </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Saving…" : "Save recipient"}
+            {mutation.isPending
+              ? ar
+                ? "جارٍ الحفظ…"
+                : "Saving…"
+              : ar
+                ? "حفظ المستلم"
+                : "Save recipient"}
           </Button>
         </DialogActions>
       </Box>
@@ -449,12 +503,17 @@ function RecipientDialog({ siteId, recipient, onClose }: RecipientDialogProps) {
 function parseRecipient(
   name: string,
   endpoints: EndpointDraft[],
+  language: "en" | "ar" = "en",
 ): NotificationEndpointInput[] | string {
-  if (!name.trim()) return "Display name is required.";
+  const ar = language === "ar";
+  if (!name.trim())
+    return ar ? "اسم العرض مطلوب." : "Display name is required.";
   if (
     new Set(endpoints.map(({ channel }) => channel)).size !== endpoints.length
   )
-    return "Each channel may be configured only once.";
+    return ar
+      ? "يمكن إعداد كل قناة مرة واحدة فقط."
+      : "Each channel may be configured only once.";
   const parsed: NotificationEndpointInput[] = [];
   for (const endpoint of endpoints) {
     const address = endpoint.address.trim();
@@ -464,19 +523,37 @@ function parseRecipient(
         : /^\+[1-9]\d{7,14}$/.test(address);
     if (!valid)
       return endpoint.channel === "EMAIL"
-        ? "Email address is invalid."
-        : `${endpoint.channel} address must use E.164 format.`;
+        ? ar
+          ? "عنوان البريد الإلكتروني غير صحيح."
+          : "Email address is invalid."
+        : ar
+          ? `يجب أن يستخدم عنوان ${endpoint.channel} صيغة E.164.`
+          : `${endpoint.channel} address must use E.164 format.`;
     const eligible_severities = notificationSeverities.filter((severity) =>
       severity === "WARNING" ? endpoint.warning : endpoint.critical,
     );
     if (eligible_severities.length === 0)
-      return "Each channel requires at least one eligible severity.";
+      return ar
+        ? "تتطلب كل قناة درجة شدة مؤهلة واحدة على الأقل."
+        : "Each channel requires at least one eligible severity.";
     parsed.push({ channel: endpoint.channel, address, eligible_severities });
   }
   return parsed;
 }
 
-function formatEnum(value: string) {
+function formatEnum(value: string, language: "en" | "ar" = "en") {
+  if (language === "ar")
+    return (
+      (
+        {
+          PRIMARY_CONTACT: "جهة الاتصال الرئيسية",
+          SECONDARY_CONTACT: "جهة اتصال ثانوية",
+          ESCALATION_CONTACT: "جهة اتصال للتصعيد",
+          WARNING: "تحذير",
+          CRITICAL: "حرج",
+        } as Record<string, string>
+      )[value] ?? value
+    );
   return value
     .toLowerCase()
     .split("_")

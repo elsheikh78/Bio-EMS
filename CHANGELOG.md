@@ -2,15 +2,33 @@
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-09-03
+
+### Release scope
+
+Product-surface milestone completing P7 and P8 source delivery, global Arabic/English customer and SYSTEM_OWNER localization, and the first controlled live Email acceptance evidence for P8-01.
+
+### Added / Changed
+
+- Completed the global language switch with persisted selection and full RTL/LTR theme and document direction.
+- Replaced the partial P8-only Arabic coverage with built-in Arabic resources and translated customer navigation, headers, monitoring, Alarm, Device, delivery, calibration, reporting, configuration, User/Audit and Workspace surfaces.
+- Made report Preview/CSV/PDF requests follow the selected interface language instead of always requesting English.
+- Confirmed the controlled Gmail SMTP smoke test returned `SENT` and the recipient independently confirmed inbox arrival on 3 September 2026; no credential or recipient address is stored in Git.
+- Kept P8-01 WhatsApp and end-to-end dual-channel acceptance open because Meta developer registration still loops after Email verification.
+
+### Verification boundary
+
+Automated frontend checks cover built-in Arabic resource selection, Arabic customer calibration rendering, RTL direction, language persistence, and the existing application regressions. Email evidence does not imply WhatsApp delivery, field commissioning, customer UAT, or production acceptance.
+
 - Completed P8-02 through P8-08 source implementation through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`: explicit customer ownership, customer-RBAC realignment, SYSTEM_OWNER ADMIN lifecycle, controlled installation revisions, exact controller receipts, separated technical/customer acceptance, and bilingual workflows.
 - Kept P8-01 live Email/WhatsApp and end-to-end Alarm acceptance as an explicit open evidence track while allowing the independently approved P8-02 through P8-08 source implementation to proceed.
 
 - Added a secret-safe SMTP configuration template and controlled email-delivery smoke-test command for local/live provider validation.
-- Closed P8-01 source integration through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d` and its safe setup follow-up through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`; live SMTP/WhatsApp evidence remains open.
+- Closed P8-01 source integration through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d` and its safe setup follow-up through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`; live WhatsApp and end-to-end evidence remain open.
 
 - Added Meta WhatsApp Cloud API and authenticated SMTP Email providers as primary Alarm delivery channels using the existing durable queue, retry, recipient, escalation, and evidence boundaries.
 - Preserved SMS as the emergency/fallback channel and documented the recommended `WHATSAPP + EMAIL` first escalation step followed by SMS.
-- Prepared source version `0.19.0`; no tag or GitHub Release is claimed yet, and live provider/template/inbox evidence remains open.
+- Prepared source version `0.19.0` for controlled tag and GitHub Release publication; live WhatsApp provider/template and end-to-end evidence remain open.
 
 - Implemented P7-03 through P7-05 owner-facing license/binding, update-entitlement, and maintenance/calibration/support operations with bilingual states and authenticated append-only mutation provenance.
 - Added controlled license and service-record update contracts while preserving the isolated SYSTEM_OWNER backend boundary and explicit physical-installation, payment, OTA-execution, and field-evidence distinctions.

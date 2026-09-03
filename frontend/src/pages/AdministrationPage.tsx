@@ -37,20 +37,24 @@ import {
 } from "../administration/queries";
 import { ApiResponseError } from "../api/client";
 import { useSites } from "../monitoredAreas/queries";
+import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 
 export function AdministrationPage() {
+  const { language } = useLocalization();
+  const ar = language === "ar";
   return (
     <Stack spacing={4}>
       <Box>
         <Typography variant="overline" color="primary.main">
-          Administration &amp; accountability
+          {ar ? "الإدارة والمساءلة" : "Administration & accountability"}
         </Typography>
         <Typography component="h1" variant="h4">
-          Users &amp; Audit Log
+          {ar ? "المستخدمون وسجل التدقيق" : "Users & Audit Log"}
         </Typography>
         <Typography color="text.secondary">
-          ADMIN-only identity lifecycle and immutable Site-scoped activity
-          evidence.
+          {ar
+            ? "إدارة دورة حياة هويات المستخدمين وأدلة النشاط غير القابلة للتعديل والخاصة بالموقع، للمدير فقط."
+            : "ADMIN-only identity lifecycle and immutable Site-scoped activity evidence."}
         </Typography>
       </Box>
       <UsersPanel />
@@ -60,6 +64,8 @@ export function AdministrationPage() {
 }
 
 function UsersPanel() {
+  const { language } = useLocalization();
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const users = useManagedUsers();
   const status = useUpdateUserStatus();
   const [editing, setEditing] = useState<ManagedUser | "new">();
@@ -69,32 +75,41 @@ function UsersPanel() {
       <Stack spacing={3}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography component="h2" variant="h5">
-            User management
+            {t("User management", "إدارة المستخدمين")}
           </Typography>
           <Button variant="contained" onClick={() => setEditing("new")}>
-            Add user
+            {t("Add user", "إضافة مستخدم")}
           </Button>
         </Box>
         {users.isPending ? (
-          <CircularProgress aria-label="Loading users" />
+          <CircularProgress
+            aria-label={t("Loading users", "جارٍ تحميل المستخدمين")}
+          />
         ) : null}
         {users.isError ? (
           <Alert
             severity="error"
             action={
               <Button color="inherit" onClick={() => void users.refetch()}>
-                Retry
+                {t("Retry", "إعادة المحاولة")}
               </Button>
             }
           >
-            Unable to load users.
+            {t("Unable to load users.", "تعذر تحميل المستخدمين.")}
           </Alert>
         ) : null}
         {!users.isPending && !users.isError && users.data?.length === 0 ? (
-          <Alert severity="info">No users are available.</Alert>
+          <Alert severity="info">
+            {t("No users are available.", "لا يوجد مستخدمون متاحون.")}
+          </Alert>
         ) : null}
         {status.isError ? (
-          <Alert severity="error">User status could not be changed.</Alert>
+          <Alert severity="error">
+            {t(
+              "User status could not be changed.",
+              "تعذر تغيير حالة المستخدم.",
+            )}
+          </Alert>
         ) : null}
         {users.data?.map((user) => (
           <Box
@@ -114,31 +129,37 @@ function UsersPanel() {
                 <Chip size="small" label={user.role} />
                 <Chip
                   size="small"
-                  label={user.status}
+                  label={
+                    language === "ar"
+                      ? user.status === "active"
+                        ? "نشط"
+                        : "معطّل"
+                      : user.status
+                  }
                   color={user.status === "active" ? "success" : "default"}
                 />
               </Stack>
               <Typography color="text.secondary">
-                {user.email ?? "No email"}
+                {user.email ?? t("No email", "لا يوجد بريد إلكتروني")}
               </Typography>
             </Box>
             <Stack direction="row" spacing={1}>
               <Button
-                aria-label={`Edit ${user.username}`}
+                aria-label={`${t("Edit", "تعديل")} ${user.username}`}
                 onClick={() => setEditing(user)}
               >
-                Edit
+                {t("Edit", "تعديل")}
               </Button>
               <Button
-                aria-label={`Password ${user.username}`}
+                aria-label={`${t("Password", "كلمة المرور")} ${user.username}`}
                 onClick={() => setPasswordUser(user)}
               >
-                Password
+                {t("Password", "كلمة المرور")}
               </Button>
               <Button
                 disabled={status.isPending}
                 color={user.status === "active" ? "warning" : "success"}
-                aria-label={`${user.status === "active" ? "Disable" : "Activate"} ${user.username}`}
+                aria-label={`${user.status === "active" ? t("Disable", "تعطيل") : t("Activate", "تفعيل")} ${user.username}`}
                 onClick={() =>
                   void status.mutateAsync({
                     id: user.id,
@@ -146,7 +167,9 @@ function UsersPanel() {
                   })
                 }
               >
-                {user.status === "active" ? "Disable" : "Activate"}
+                {user.status === "active"
+                  ? t("Disable", "تعطيل")
+                  : t("Activate", "تفعيل")}
               </Button>
             </Stack>
           </Box>
@@ -155,12 +178,14 @@ function UsersPanel() {
       {editing ? (
         <UserDialog
           user={editing === "new" ? undefined : editing}
+          language={language}
           onClose={() => setEditing(undefined)}
         />
       ) : null}
       {passwordUser ? (
         <PasswordDialog
           user={passwordUser}
+          language={language}
           onClose={() => setPasswordUser(undefined)}
         />
       ) : null}
@@ -168,18 +193,31 @@ function UsersPanel() {
   );
 }
 
-function mutationErrorMessage(error: unknown, fallback: string): string {
+function mutationErrorMessage(
+  error: unknown,
+  fallback: string,
+  language: "en" | "ar" = "en",
+): string {
   if (!(error instanceof ApiResponseError)) return fallback;
+  const ar = language === "ar";
 
   switch (error.code) {
     case "SELF_ROLE_CHANGE_FORBIDDEN":
-      return "You cannot change your own administrator role.";
+      return ar
+        ? "لا يمكنك تغيير دورك الإداري بنفسك."
+        : "You cannot change your own administrator role.";
     case "RESOURCE_ALREADY_EXISTS":
-      return "That user or email already exists.";
+      return ar
+        ? "اسم المستخدم أو البريد الإلكتروني موجود بالفعل."
+        : "That user or email already exists.";
     case "VALIDATION_ERROR":
-      return "The submitted values do not meet the required format.";
+      return ar
+        ? "القيم المدخلة لا تطابق الصيغة المطلوبة."
+        : "The submitted values do not meet the required format.";
     case "USER_NOT_FOUND":
-      return "The user no longer exists. Refresh the page and try again.";
+      return ar
+        ? "لم يعد المستخدم موجودًا. حدّث الصفحة وحاول مرة أخرى."
+        : "The user no longer exists. Refresh the page and try again.";
     default:
       return fallback;
   }
@@ -187,11 +225,14 @@ function mutationErrorMessage(error: unknown, fallback: string): string {
 
 function UserDialog({
   user,
+  language,
   onClose,
 }: {
   user?: ManagedUser;
+  language: "en" | "ar";
   onClose: () => void;
 }) {
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const create = useCreateUser();
   const update = useUpdateUser();
   const mutation = user ? update : create;
@@ -235,27 +276,32 @@ function UserDialog({
   return (
     <Dialog open fullWidth onClose={mutation.isPending ? undefined : onClose}>
       <Box component="form" onSubmit={(event) => void submit(event)}>
-        <DialogTitle>{user ? `Edit ${user.username}` : "Add user"}</DialogTitle>
+        <DialogTitle>
+          {user
+            ? `${t("Edit", "تعديل")} ${user.username}`
+            : t("Add user", "إضافة مستخدم")}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             {mutation.isError ? (
               <Alert severity="error">
                 {mutationErrorMessage(
                   mutation.error,
-                  "User could not be saved.",
+                  t("User could not be saved.", "تعذر حفظ المستخدم."),
+                  language,
                 )}
               </Alert>
             ) : null}
             <TextField
               required
               disabled={Boolean(user)}
-              label="Username"
+              label={t("Username", "اسم المستخدم")}
               value={username}
               onChange={(event) => setUsername(event.target.value)}
             />
             <TextField
               type="email"
-              label="Email"
+              label={t("Email", "البريد الإلكتروني")}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -263,19 +309,25 @@ function UserDialog({
               <TextField
                 required
                 type="password"
-                label="Initial password"
+                label={t("Initial password", "كلمة المرور الأولية")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="new-password"
-                helperText={PASSWORD_REQUIREMENTS_TEXT}
+                helperText={
+                  language === "ar"
+                    ? "12 حرفًا على الأقل وتحتوي على أحرف كبيرة وصغيرة ورقم ورمز."
+                    : PASSWORD_REQUIREMENTS_TEXT
+                }
                 error={password.length > 0 && !passwordPolicy.isValid}
               />
             ) : null}
             <FormControl>
-              <InputLabel id="managed-role-label">Role</InputLabel>
+              <InputLabel id="managed-role-label">
+                {t("Role", "الدور")}
+              </InputLabel>
               <Select
                 labelId="managed-role-label"
-                label="Role"
+                label={t("Role", "الدور")}
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
               >
@@ -289,13 +341,13 @@ function UserDialog({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t("Cancel", "إلغاء")}</Button>
           <Button
             type="submit"
             variant="contained"
             disabled={mutation.isPending || (!user && !passwordPolicy.isValid)}
           >
-            Save user
+            {t("Save user", "حفظ المستخدم")}
           </Button>
         </DialogActions>
       </Box>
@@ -305,11 +357,14 @@ function UserDialog({
 
 function PasswordDialog({
   user,
+  language,
   onClose,
 }: {
   user: ManagedUser;
+  language: "en" | "ar";
   onClose: () => void;
 }) {
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const mutation = useUpdateUserPassword();
   const [password, setPassword] = useState("");
   const passwordPolicy = evaluatePasswordPolicy(password);
@@ -327,40 +382,54 @@ function PasswordDialog({
   return (
     <Dialog open fullWidth onClose={mutation.isPending ? undefined : onClose}>
       <Box component="form" onSubmit={(event) => void submit(event)}>
-        <DialogTitle>Change password for {user.username}</DialogTitle>
+        <DialogTitle>
+          {t("Change password for", "تغيير كلمة المرور للمستخدم")}{" "}
+          {user.username}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             {mutation.isError ? (
               <Alert severity="error">
                 {mutationErrorMessage(
                   mutation.error,
-                  "Password could not be changed.",
+                  t(
+                    "Password could not be changed.",
+                    "تعذر تغيير كلمة المرور.",
+                  ),
+                  language,
                 )}
               </Alert>
             ) : null}
             <Alert severity="info">
-              Passwords are never displayed, logged, or returned.
+              {t(
+                "Passwords are never displayed, logged, or returned.",
+                "لا تُعرض كلمات المرور أو تُسجل أو تُعاد مطلقًا.",
+              )}
             </Alert>
             <TextField
               required
               type="password"
-              label="New password"
+              label={t("New password", "كلمة المرور الجديدة")}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="new-password"
-              helperText={PASSWORD_REQUIREMENTS_TEXT}
+              helperText={
+                language === "ar"
+                  ? "12 حرفًا على الأقل وتحتوي على أحرف كبيرة وصغيرة ورقم ورمز."
+                  : PASSWORD_REQUIREMENTS_TEXT
+              }
               error={password.length > 0 && !passwordPolicy.isValid}
             />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t("Cancel", "إلغاء")}</Button>
           <Button
             type="submit"
             variant="contained"
             disabled={mutation.isPending || !passwordPolicy.isValid}
           >
-            Change password
+            {t("Change password", "تغيير كلمة المرور")}
           </Button>
         </DialogActions>
       </Box>
@@ -369,6 +438,8 @@ function PasswordDialog({
 }
 
 function AuditPanel() {
+  const { language } = useLocalization();
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const sites = useSites();
   const [selected, setSelected] = useState<number>();
   const siteId = selected;
@@ -378,30 +449,41 @@ function AuditPanel() {
       <Stack spacing={3}>
         <Box>
           <Typography component="h2" variant="h5">
-            Audit Log
+            {t("Audit Log", "سجل التدقيق")}
           </Typography>
           <Typography color="text.secondary">
-            Newest immutable Site events. Structured prior/new values are
-            deliberately omitted from this summary.
+            {t(
+              "Newest immutable Site events. Structured prior/new values are deliberately omitted from this summary.",
+              "أحدث أحداث الموقع غير القابلة للتعديل. حُذفت القيم السابقة والجديدة المنظمة عمدًا من هذا الملخص.",
+            )}
           </Typography>
         </Box>
         {sites.isPending ? (
-          <CircularProgress aria-label="Loading audit Sites" />
+          <CircularProgress
+            aria-label={t("Loading audit Sites", "جارٍ تحميل مواقع التدقيق")}
+          />
         ) : null}
         {sites.isError ? (
-          <Alert severity="error">Unable to load Sites for Audit Log.</Alert>
+          <Alert severity="error">
+            {t(
+              "Unable to load Sites for Audit Log.",
+              "تعذر تحميل المواقع لسجل التدقيق.",
+            )}
+          </Alert>
         ) : null}
         {(sites.data?.length ?? 0) > 0 ? (
           <FormControl>
-            <InputLabel id="audit-site-label">Audit Site</InputLabel>
+            <InputLabel id="audit-site-label">
+              {t("Audit Site", "موقع التدقيق")}
+            </InputLabel>
             <Select
               labelId="audit-site-label"
-              label="Audit Site"
+              label={t("Audit Site", "موقع التدقيق")}
               value={siteId ?? ""}
               onChange={(event) => setSelected(Number(event.target.value))}
             >
               <MenuItem value="" disabled>
-                Select a Site
+                {t("Select a Site", "اختر موقعًا")}
               </MenuItem>
               {sites.data
                 ?.filter((site) => site.id)
@@ -415,29 +497,39 @@ function AuditPanel() {
         ) : null}
         {!sites.isPending && !sites.isError && !siteId ? (
           <Alert severity="info">
-            Select a Site to load its customer-bound Audit Log.
+            {t(
+              "Select a Site to load its customer-bound Audit Log.",
+              "اختر موقعًا لتحميل سجل التدقيق المرتبط بالعميل.",
+            )}
           </Alert>
         ) : null}
         {events.isPending && siteId ? (
-          <CircularProgress aria-label="Loading audit events" />
+          <CircularProgress
+            aria-label={t("Loading audit events", "جارٍ تحميل أحداث التدقيق")}
+          />
         ) : null}
         {events.isError ? (
           <Alert
             severity="error"
             action={
               <Button color="inherit" onClick={() => void events.refetch()}>
-                Retry
+                {t("Retry", "إعادة المحاولة")}
               </Button>
             }
           >
-            Unable to load Audit Log.
+            {t("Unable to load Audit Log.", "تعذر تحميل سجل التدقيق.")}
           </Alert>
         ) : null}
         {!events.isPending &&
         !events.isError &&
         siteId &&
         events.data?.length === 0 ? (
-          <Alert severity="info">No audit events exist for this Site.</Alert>
+          <Alert severity="info">
+            {t(
+              "No audit events exist for this Site.",
+              "لا توجد أحداث تدقيق لهذا الموقع.",
+            )}
+          </Alert>
         ) : null}
         {events.data?.map((event) => (
           <Box key={event.id}>
@@ -451,7 +543,17 @@ function AuditPanel() {
               </Typography>
               <Chip
                 size="small"
-                label={event.result}
+                label={
+                  language === "ar"
+                    ? ((
+                        {
+                          SUCCESS: "ناجح",
+                          DENIED: "مرفوض",
+                          FAILURE: "فشل",
+                        } as Record<string, string>
+                      )[event.result] ?? event.result)
+                    : event.result
+                }
                 color={
                   event.result === "SUCCESS"
                     ? "success"
@@ -465,7 +567,7 @@ function AuditPanel() {
               {event.actor.username} ({event.actor.role}) ·{" "}
               {event.target
                 ? `${event.target.type}:${event.target.id}`
-                : "No target"}{" "}
+                : t("No target", "لا يوجد هدف")}{" "}
               · {new Date(event.occurredAt ?? event.createdAt).toLocaleString()}
             </Typography>
           </Box>

@@ -22,6 +22,7 @@ import {
 import { useMemo, useState, type FormEvent } from "react";
 import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
+import { useLocalization } from "../localization/useLocalization";
 import { useSensors } from "../monitoredAreas/queries";
 import {
   useCalibrationReportCsvExport,
@@ -83,6 +84,43 @@ const reportPresentation: Record<
   },
 };
 
+const arabicReportPresentation: typeof reportPresentation = {
+  "TEMP-PERFORMANCE": {
+    title: "أداء درجات الحرارة",
+    description:
+      "الاتجاهات والتجاوزات والامتثال والحد الأدنى والأقصى ومتوسط درجة الحرارة.",
+    source: "أدلة القراءات من InfluxDB",
+    accent: "#1976d2",
+  },
+  "ALARM-HISTORY": {
+    title: "سجل الإنذارات",
+    description:
+      "أدلة دورة حياة الإنذار من التفعيل والإقرار والعودة للوضع الطبيعي.",
+    source: "دورة حياة الإنذار في SQLite",
+    accent: "#d32f2f",
+  },
+  "CALIBRATION-HISTORY": {
+    title: "حالة المعايرة وسجلها",
+    description:
+      "الحالة الحالية ومواعيد الاستحقاق ومحاولات النجاح والفشل ومراجع الشهادات.",
+    source: "أدلة المعايرة في SQLite",
+    accent: "#00897b",
+  },
+  "DEVICE-HEALTH": {
+    title: "حالة اتصال الأجهزة",
+    description: "السجل الدائم للقراءات ونبضات الاتصال لكل جهاز.",
+    source: "سجل الاتصال في SQLite",
+    accent: "#ed6c02",
+  },
+  "AUDIT-OPERATIONS": {
+    title: "التدقيق والعمليات",
+    description:
+      "أدلة غير قابلة للتعديل للمنفذ والإجراء والنتيجة والهدف والعمليات.",
+    source: "أدلة التدقيق الثابتة في SQLite",
+    accent: "#7b1fa2",
+  },
+};
+
 const reportOrder = Object.keys(reportPresentation) as SelectableReportType[];
 
 function dateValue(date: Date) {
@@ -102,6 +140,9 @@ function downloadReport(file: { blob: Blob; filename: string }) {
 }
 
 export function ReportsCenterPage() {
+  const { language } = useLocalization();
+  const ar = language === "ar";
+  const t = (english: string, arabic: string) => (ar ? arabic : english);
   const catalogue = useReportCatalogue();
   const sensorsQuery = useSensors();
   const preview = useCalibrationReportPreview();
@@ -125,7 +166,8 @@ export function ReportsCenterPage() {
   const sensors = useMemo(() => sensorsQuery.data ?? [], [sensorsQuery.data]);
   const selectedSensors =
     selected.length === 0 ? sensors.map((sensor) => sensor.uuid) : selected;
-  const presentation = reportPresentation[reportType];
+  const presentations = ar ? arabicReportPresentation : reportPresentation;
+  const presentation = presentations[reportType];
   const selectedFamily = catalogue.data?.reportTypes.find(
     (item) => item.id === reportType,
   );
@@ -148,7 +190,7 @@ export function ReportsCenterPage() {
       from: new Date(`${from}T00:00:00`).toISOString(),
       to: new Date(`${to}T00:00:00`).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: "en" as const,
+      language,
     };
   }
 
@@ -243,14 +285,19 @@ export function ReportsCenterPage() {
       >
         <Box>
           <Typography variant="overline" color="primary.main">
-            Controlled reporting / Version 1.0
+            {t(
+              "Controlled reporting / Version 1.0",
+              "تقارير منضبطة / الإصدار 1.0",
+            )}
           </Typography>
           <Typography component="h1" variant="h4">
-            Reports Center
+            {t("Reports Center", "مركز التقارير")}
           </Typography>
           <Typography color="text.secondary">
-            Build reproducible operational reports from approved recorded
-            evidence.
+            {t(
+              "Build reproducible operational reports from approved recorded evidence.",
+              "أنشئ تقارير تشغيلية قابلة لإعادة الإنتاج من الأدلة المسجلة والمعتمدة.",
+            )}
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
@@ -260,12 +307,20 @@ export function ReportsCenterPage() {
             variant="outlined"
           />
           <Chip
-            label={csvAvailable ? "CSV available" : "CSV unavailable"}
+            label={
+              csvAvailable
+                ? t("CSV available", "CSV متاح")
+                : t("CSV unavailable", "CSV غير متاح")
+            }
             color={csvAvailable ? "success" : "default"}
             variant="outlined"
           />
           <Chip
-            label={pdfAvailable ? "PDF available" : "PDF unavailable"}
+            label={
+              pdfAvailable
+                ? t("PDF available", "PDF متاح")
+                : t("PDF unavailable", "PDF غير متاح")
+            }
             color={pdfAvailable ? "success" : "default"}
             variant="outlined"
           />
@@ -275,7 +330,9 @@ export function ReportsCenterPage() {
       {loading ? (
         <Stack direction="row" spacing={2}>
           <CircularProgress size={22} />
-          <Typography>Loading reporting scope…</Typography>
+          <Typography>
+            {t("Loading reporting scope…", "جارٍ تحميل نطاق التقارير…")}
+          </Typography>
         </Stack>
       ) : null}
       {loadError ? (
@@ -288,20 +345,27 @@ export function ReportsCenterPage() {
                 void sensorsQuery.refetch();
               }}
             >
-              Retry
+              {t("Retry", "إعادة المحاولة")}
             </Button>
           }
         >
-          The reporting catalogue or Sensor scope could not be loaded.
+          {t(
+            "The reporting catalogue or Sensor scope could not be loaded.",
+            "تعذر تحميل دليل التقارير أو نطاق الحساسات.",
+          )}
         </Alert>
       ) : null}
 
       {catalogue.data ? (
         <Box>
-          <Typography variant="h6">Choose a report</Typography>
+          <Typography variant="h6">
+            {t("Choose a report", "اختر تقريرًا")}
+          </Typography>
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            Five operational report families are ready for preview and
-            controlled export.
+            {t(
+              "Five operational report families are ready for preview and controlled export.",
+              "خمس مجموعات من التقارير التشغيلية جاهزة للمعاينة والتصدير المنضبط.",
+            )}
           </Typography>
           <Box
             sx={{
@@ -315,7 +379,7 @@ export function ReportsCenterPage() {
             }}
           >
             {reportOrder.map((type) => {
-              const item = reportPresentation[type];
+              const item = presentations[type];
               const family = catalogue.data.reportTypes.find(
                 (entry) => entry.id === type,
               );
@@ -362,12 +426,12 @@ export function ReportsCenterPage() {
                         }
                         label={
                           family?.readiness === "AVAILABLE"
-                            ? "READY"
-                            : "UNAVAILABLE"
+                            ? t("READY", "جاهز")
+                            : t("UNAVAILABLE", "غير متاح")
                         }
                       />
                       <Typography sx={{ color: item.accent, fontWeight: 800 }}>
-                        {active ? "SELECTED" : "OPEN"}
+                        {active ? t("SELECTED", "محدد") : t("OPEN", "فتح")}
                       </Typography>
                     </Stack>
                     <Typography variant="h6" sx={{ mt: 1.5, lineHeight: 1.15 }}>
@@ -411,14 +475,18 @@ export function ReportsCenterPage() {
               }}
             >
               <Typography variant="overline" color="primary.main">
-                Selected report
+                {t("Selected report", "التقرير المحدد")}
               </Typography>
               <Typography variant="h5">{presentation.title}</Typography>
               <Typography color="text.secondary" sx={{ mt: 1 }}>
                 {presentation.description}
               </Typography>
               <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
-                <Chip size="small" color="success" label="Preview available" />
+                <Chip
+                  size="small"
+                  color="success"
+                  label={t("Preview available", "المعاينة متاحة")}
+                />
                 <Chip size="small" label="CSV / PDF" />
               </Stack>
             </Paper>
@@ -429,31 +497,38 @@ export function ReportsCenterPage() {
               variant="outlined"
               sx={{ p: 4, borderRadius: 4 }}
             >
-              <Typography variant="h6">Report builder</Typography>
+              <Typography variant="h6">
+                {t("Report builder", "منشئ التقارير")}
+              </Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>
-                Choose the recorded Sensor scope and half-open reporting range.
+                {t(
+                  "Choose the recorded Sensor scope and half-open reporting range.",
+                  "اختر نطاق الحساسات المسجل والفترة الزمنية للتقرير.",
+                )}
               </Typography>
               <Stack spacing={3}>
                 <TextField
                   select
-                  label="Report family"
+                  label={t("Report family", "مجموعة التقرير")}
                   value={reportType}
                   onChange={(event) =>
                     selectReport(event.target.value as SelectableReportType)
                   }
                 >
                   <MenuItem value="CALIBRATION-HISTORY">
-                    Calibration Status and History
+                    {presentations["CALIBRATION-HISTORY"].title}
                   </MenuItem>
                   <MenuItem value="TEMP-PERFORMANCE">
-                    Temperature Performance
+                    {presentations["TEMP-PERFORMANCE"].title}
                   </MenuItem>
-                  <MenuItem value="ALARM-HISTORY">Alarm History</MenuItem>
+                  <MenuItem value="ALARM-HISTORY">
+                    {presentations["ALARM-HISTORY"].title}
+                  </MenuItem>
                   <MenuItem value="DEVICE-HEALTH">
-                    Device Communication Health
+                    {presentations["DEVICE-HEALTH"].title}
                   </MenuItem>
                   <MenuItem value="AUDIT-OPERATIONS">
-                    Audit and Operations
+                    {presentations["AUDIT-OPERATIONS"].title}
                   </MenuItem>
                 </TextField>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -461,7 +536,7 @@ export function ReportsCenterPage() {
                     fullWidth
                     required
                     type="date"
-                    label="From"
+                    label={t("From", "من")}
                     value={from}
                     onChange={(event) => setFrom(event.target.value)}
                     slotProps={{ inputLabel: { shrink: true } }}
@@ -470,16 +545,20 @@ export function ReportsCenterPage() {
                     fullWidth
                     required
                     type="date"
-                    label="To (exclusive)"
+                    label={t("To (exclusive)", "إلى (غير شامل)")}
                     value={to}
                     onChange={(event) => setTo(event.target.value)}
                     slotProps={{ inputLabel: { shrink: true } }}
                   />
                 </Stack>
                 <Box>
-                  <Typography variant="subtitle2">Sensors</Typography>
+                  <Typography variant="subtitle2">
+                    {t("Sensors", "الحساسات")}
+                  </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    No manual selection means all {sensors.length} Sensors.
+                    {ar
+                      ? `عدم الاختيار يدويًا يعني كل الحساسات وعددها ${sensors.length}.`
+                      : `No manual selection means all ${sensors.length} Sensors.`}
                   </Typography>
                   <Box
                     sx={{
@@ -511,8 +590,9 @@ export function ReportsCenterPage() {
                   </Box>
                 </Box>
                 <Alert severity="info" icon={false}>
-                  <strong>Selection summary:</strong> {selectedSensors.length}{" "}
-                  Sensors · {from} to {to} ·{" "}
+                  <strong>{t("Selection summary:", "ملخص الاختيار:")}</strong>{" "}
+                  {selectedSensors.length} {t("Sensors", "حساسات")} · {from}{" "}
+                  {t("to", "إلى")} {to} ·{" "}
                   {Intl.DateTimeFormat().resolvedOptions().timeZone}
                 </Alert>
                 <Button
@@ -536,8 +616,8 @@ export function ReportsCenterPage() {
                         ? preview.isPending
                         : operationalPreview.isPending
                   )
-                    ? "Generating preview…"
-                    : "Generate preview"}
+                    ? t("Generating preview…", "جارٍ إنشاء المعاينة…")
+                    : t("Generate preview", "إنشاء المعاينة")}
                 </Button>
               </Stack>
             </Paper>
@@ -553,6 +633,7 @@ export function ReportsCenterPage() {
               pdfExporting={temperaturePdfExport.isPending}
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
+              language={language}
             />
           ) : reportType === "CALIBRATION-HISTORY" ? (
             <PreviewPanel
@@ -566,6 +647,7 @@ export function ReportsCenterPage() {
               pdfExportError={pdfExport.isError}
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
+              language={language}
             />
           ) : (
             <OperationalPreviewPanel
@@ -576,6 +658,7 @@ export function ReportsCenterPage() {
               exportError={operationalExport.isError}
               onExportCsv={() => void exportCsv()}
               onExportPdf={() => void exportPdf()}
+              language={language}
             />
           )}
         </Box>
@@ -595,6 +678,7 @@ function PreviewPanel({
   pdfExportError,
   onExportCsv,
   onExportPdf,
+  language,
 }: {
   preview: ReturnType<typeof useCalibrationReportPreview>;
   canExport: boolean;
@@ -606,12 +690,17 @@ function PreviewPanel({
   pdfExportError: boolean;
   onExportCsv: () => void;
   onExportPdf: () => void;
+  language: "en" | "ar";
 }) {
+  const ar = language === "ar";
+  const t = (english: string, arabic: string) => (ar ? arabic : english);
   if (preview.isError)
     return (
       <Alert severity="error">
-        The preview could not be generated. Check the Sensor scope and date
-        range, then try again.
+        {t(
+          "The preview could not be generated. Check the Sensor scope and date range, then try again.",
+          "تعذر إنشاء المعاينة. راجع نطاق الحساسات والفترة الزمنية ثم حاول مرة أخرى.",
+        )}
       </Alert>
     );
   if (!preview.data)
@@ -628,10 +717,14 @@ function PreviewPanel({
         }}
       >
         <Box>
-          <Typography variant="h5">Preview workspace</Typography>
+          <Typography variant="h5">
+            {t("Preview workspace", "مساحة المعاينة")}
+          </Typography>
           <Typography color="text.secondary">
-            Generate a report to display its controlled metadata, evidence
-            summary, warnings, and underlying records.
+            {t(
+              "Generate a report to display its controlled metadata, evidence summary, warnings, and underlying records.",
+              "أنشئ تقريرًا لعرض بياناته المنضبطة وملخص الأدلة والتحذيرات والسجلات الأساسية.",
+            )}
           </Typography>
         </Box>
       </Paper>
@@ -641,12 +734,18 @@ function PreviewPanel({
     <Stack spacing={3}>
       {csvExportError ? (
         <Alert severity="error">
-          The CSV export could not be generated. The preview remains available.
+          {t(
+            "The CSV export could not be generated. The preview remains available.",
+            "تعذر إنشاء ملف CSV، وتظل المعاينة متاحة.",
+          )}
         </Alert>
       ) : null}
       {pdfExportError ? (
         <Alert severity="error">
-          The PDF export could not be generated. The preview remains available.
+          {t(
+            "The PDF export could not be generated. The preview remains available.",
+            "تعذر إنشاء ملف PDF، وتظل المعاينة متاحة.",
+          )}
         </Alert>
       ) : null}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
@@ -656,13 +755,15 @@ function PreviewPanel({
         >
           <Box>
             <Typography variant="overline" color="primary.main">
-              Canonical preview
+              {t("Canonical preview", "المعاينة المعتمدة")}
             </Typography>
-            <Typography variant="h5">Calibration evidence</Typography>
+            <Typography variant="h5">
+              {t("Calibration evidence", "أدلة المعايرة")}
+            </Typography>
           </Box>
           <Box sx={{ textAlign: { sm: "right" } }}>
             <Typography variant="caption" color="text.secondary">
-              Report ID
+              {t("Report ID", "معرّف التقرير")}
             </Typography>
             <Typography
               sx={{
@@ -685,7 +786,9 @@ function PreviewPanel({
                 disabled={csvExporting || pdfExporting}
                 onClick={onExportCsv}
               >
-                {csvExporting ? "Preparing CSV…" : "Export CSV"}
+                {csvExporting
+                  ? t("Preparing CSV…", "جارٍ إعداد CSV…")
+                  : t("Export CSV", "تصدير CSV")}
               </Button>
             ) : null}
             {pdfAvailable ? (
@@ -694,13 +797,18 @@ function PreviewPanel({
                 disabled={pdfExporting || csvExporting}
                 onClick={onExportPdf}
               >
-                {pdfExporting ? "Preparing PDF…" : "Export PDF"}
+                {pdfExporting
+                  ? t("Preparing PDF…", "جارٍ إعداد PDF…")
+                  : t("Export PDF", "تصدير PDF")}
               </Button>
             ) : null}
           </Stack>
         ) : (
           <Typography sx={{ mt: 3 }} variant="caption" color="text.secondary">
-            Your role permits preview but not export.
+            {t(
+              "Your role permits preview but not export.",
+              "دورك يسمح بالمعاينة ولا يسمح بالتصدير.",
+            )}
           </Typography>
         )}
         <Box
@@ -712,12 +820,12 @@ function PreviewPanel({
           }}
         >
           {[
-            ["Sensors", data.summary.sensors],
-            ["Attempts", data.summary.records],
-            ["Overdue", data.summary.overdue],
-            ["PASS", data.summary.pass],
-            ["FAIL", data.summary.fail],
-            ["Not calibrated", data.summary.notCalibrated],
+            [t("Sensors", "الحساسات"), data.summary.sensors],
+            [t("Attempts", "المحاولات"), data.summary.records],
+            [t("Overdue", "متأخرة"), data.summary.overdue],
+            [t("PASS", "ناجح"), data.summary.pass],
+            [t("FAIL", "راسب"), data.summary.fail],
+            [t("Not calibrated", "غير معاير"), data.summary.notCalibrated],
           ].map(([label, value]) => (
             <Box
               key={label}
@@ -734,10 +842,14 @@ function PreviewPanel({
       {data.quality.warnings.length ? (
         <Alert severity="warning">
           <Typography variant="subtitle2">
-            {data.quality.warnings.length} evidence-quality warning(s)
+            {data.quality.warnings.length}{" "}
+            {t("evidence-quality warning(s)", "تحذيرات لجودة الأدلة")}
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
-            Missing values were not fabricated.
+            {t(
+              "Missing values were not fabricated.",
+              "لم يتم اختلاق القيم المفقودة.",
+            )}
           </Typography>
           <Stack
             direction="row"
@@ -751,9 +863,9 @@ function PreviewPanel({
               );
               const label =
                 warning.code === "MISSING_HARDWARE_MODEL"
-                  ? "Hardware model missing"
+                  ? t("Hardware model missing", "موديل المكونات مفقود")
                   : warning.code === "MISSING_CERTIFICATE_REFERENCE"
-                    ? "Certificate reference missing"
+                    ? t("Certificate reference missing", "مرجع الشهادة مفقود")
                     : warning.code;
               return (
                 <Chip
@@ -767,13 +879,21 @@ function PreviewPanel({
         </Alert>
       ) : (
         <Alert severity="success">
-          The selected report evidence passed current completeness checks.
+          {t(
+            "The selected report evidence passed current completeness checks.",
+            "اجتازت أدلة التقرير المحدد اختبارات الاكتمال الحالية.",
+          )}
         </Alert>
       )}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
-        <Typography variant="h6">Calibration attempt distribution</Typography>
+        <Typography variant="h6">
+          {t("Calibration attempt distribution", "توزيع محاولات المعايرة")}
+        </Typography>
         <Typography color="text.secondary" variant="body2">
-          PASS and FAIL attempts recorded inside the selected range.
+          {t(
+            "PASS and FAIL attempts recorded inside the selected range.",
+            "محاولات النجاح والفشل المسجلة داخل النطاق المحدد.",
+          )}
         </Typography>
         <Box
           role="img"
@@ -823,16 +943,19 @@ function PreviewPanel({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Sensor</TableCell>
-              <TableCell>Result</TableCell>
-              <TableCell>Performed</TableCell>
+              <TableCell>{t("Sensor", "الحساس")}</TableCell>
+              <TableCell>{t("Result", "النتيجة")}</TableCell>
+              <TableCell>{t("Performed", "وقت الإجراء")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3}>
-                  No calibration attempts were recorded in this range.
+                  {t(
+                    "No calibration attempts were recorded in this range.",
+                    "لم تُسجل محاولات معايرة في هذا النطاق.",
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -892,6 +1015,7 @@ function TemperaturePreviewPanel({
   pdfExporting,
   onExportCsv,
   onExportPdf,
+  language,
 }: {
   preview: ReturnType<typeof useTemperaturePerformancePreview>;
   canExport: boolean;
@@ -901,11 +1025,17 @@ function TemperaturePreviewPanel({
   pdfExporting: boolean;
   onExportCsv: () => void;
   onExportPdf: () => void;
+  language: "en" | "ar";
 }) {
+  const ar = language === "ar";
+  const t = (english: string, arabic: string) => (ar ? arabic : english);
   if (preview.isError) {
     return (
       <Alert severity="error">
-        The temperature preview could not be generated.
+        {t(
+          "The temperature preview could not be generated.",
+          "تعذر إنشاء معاينة درجات الحرارة.",
+        )}
       </Alert>
     );
   }
@@ -923,10 +1053,14 @@ function TemperaturePreviewPanel({
         }}
       >
         <Box>
-          <Typography variant="h5">Temperature preview workspace</Typography>
+          <Typography variant="h5">
+            {t("Temperature preview workspace", "مساحة معاينة درجات الحرارة")}
+          </Typography>
           <Typography color="text.secondary">
-            Generate a report to inspect recorded temperature evidence and
-            summary statistics.
+            {t(
+              "Generate a report to inspect recorded temperature evidence and summary statistics.",
+              "أنشئ تقريرًا لفحص أدلة درجات الحرارة المسجلة والإحصاءات الملخصة.",
+            )}
           </Typography>
         </Box>
       </Paper>
@@ -941,9 +1075,11 @@ function TemperaturePreviewPanel({
     <Stack spacing={3}>
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
         <Typography variant="overline" color="primary.main">
-          Canonical preview
+          {t("Canonical preview", "المعاينة المعتمدة")}
         </Typography>
-        <Typography variant="h5">Temperature performance</Typography>
+        <Typography variant="h5">
+          {t("Temperature performance", "أداء درجات الحرارة")}
+        </Typography>
         <Typography variant="caption" color="text.secondary">
           {data.identity.reportId}
         </Typography>
@@ -955,7 +1091,9 @@ function TemperaturePreviewPanel({
                 disabled={csvExporting || pdfExporting}
                 onClick={onExportCsv}
               >
-                {csvExporting ? "Preparing CSV…" : "Export CSV"}
+                {csvExporting
+                  ? t("Preparing CSV…", "جارٍ إعداد CSV…")
+                  : t("Export CSV", "تصدير CSV")}
               </Button>
             ) : null}
             {pdfAvailable ? (
@@ -964,7 +1102,9 @@ function TemperaturePreviewPanel({
                 disabled={pdfExporting || csvExporting}
                 onClick={onExportPdf}
               >
-                {pdfExporting ? "Preparing PDF…" : "Export PDF"}
+                {pdfExporting
+                  ? t("Preparing PDF…", "جارٍ إعداد PDF…")
+                  : t("Export PDF", "تصدير PDF")}
               </Button>
             ) : null}
           </Stack>
@@ -978,11 +1118,11 @@ function TemperaturePreviewPanel({
           }}
         >
           {[
-            ["Sensors", data.summary.sensors],
-            ["Readings", data.summary.records],
-            ["Minimum", display(data.summary.minimum)],
-            ["Average", display(data.summary.average)],
-            ["Maximum", display(data.summary.maximum)],
+            [t("Sensors", "الحساسات"), data.summary.sensors],
+            [t("Readings", "القراءات"), data.summary.records],
+            [t("Minimum", "الحد الأدنى"), display(data.summary.minimum)],
+            [t("Average", "المتوسط"), display(data.summary.average)],
+            [t("Maximum", "الحد الأقصى"), display(data.summary.maximum)],
           ].map(([label, value]) => (
             <Box
               key={label}
@@ -998,12 +1138,18 @@ function TemperaturePreviewPanel({
       </Paper>
       {data.quality.complete ? (
         <Alert severity="success">
-          All selected Sensors supplied recorded telemetry.
+          {t(
+            "All selected Sensors supplied recorded telemetry.",
+            "قدمت جميع الحساسات المحددة قراءات مسجلة.",
+          )}
         </Alert>
       ) : (
         <Alert severity="warning">
           {data.quality.warnings.join(" · ") ||
-            "Temperature evidence is incomplete."}
+            t(
+              "Temperature evidence is incomplete.",
+              "أدلة درجات الحرارة غير مكتملة.",
+            )}
         </Alert>
       )}
       <TableContainer
@@ -1014,19 +1160,22 @@ function TemperaturePreviewPanel({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Sensor</TableCell>
-              <TableCell>Readings</TableCell>
-              <TableCell>Minimum</TableCell>
-              <TableCell>Average</TableCell>
-              <TableCell>Maximum</TableCell>
-              <TableCell>Recorded range</TableCell>
+              <TableCell>{t("Sensor", "الحساس")}</TableCell>
+              <TableCell>{t("Readings", "القراءات")}</TableCell>
+              <TableCell>{t("Minimum", "الحد الأدنى")}</TableCell>
+              <TableCell>{t("Average", "المتوسط")}</TableCell>
+              <TableCell>{t("Maximum", "الحد الأقصى")}</TableCell>
+              <TableCell>{t("Recorded range", "النطاق المسجل")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.sensors.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6}>
-                  No temperature readings were recorded in this range.
+                  {t(
+                    "No temperature readings were recorded in this range.",
+                    "لم تُسجل قراءات حرارة في هذا النطاق.",
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -1070,6 +1219,7 @@ function OperationalPreviewPanel({
   exportError,
   onExportCsv,
   onExportPdf,
+  language,
 }: {
   preview: ReturnType<typeof useOperationalReportPreview>;
   reportTitle: string;
@@ -1078,11 +1228,17 @@ function OperationalPreviewPanel({
   exportError: boolean;
   onExportCsv: () => void;
   onExportPdf: () => void;
+  language: "en" | "ar";
 }) {
+  const ar = language === "ar";
+  const t = (english: string, arabic: string) => (ar ? arabic : english);
   if (preview.isError)
     return (
       <Alert severity="error">
-        The operational report could not be generated.
+        {t(
+          "The operational report could not be generated.",
+          "تعذر إنشاء التقرير التشغيلي.",
+        )}
       </Alert>
     );
   if (!preview.data)
@@ -1101,10 +1257,14 @@ function OperationalPreviewPanel({
           <Typography variant="overline" color="primary.main">
             {reportTitle}
           </Typography>
-          <Typography variant="h5">Preview workspace</Typography>
+          <Typography variant="h5">
+            {t("Preview workspace", "مساحة المعاينة")}
+          </Typography>
           <Typography color="text.secondary">
-            Generate the selected report to display its recorded operational
-            evidence.
+            {t(
+              "Generate the selected report to display its recorded operational evidence.",
+              "أنشئ التقرير المحدد لعرض أدلته التشغيلية المسجلة.",
+            )}
           </Typography>
         </Box>
       </Paper>
@@ -1117,19 +1277,21 @@ function OperationalPreviewPanel({
     <Stack spacing={3}>
       {exportError ? (
         <Alert severity="error">
-          The export could not be downloaded. Check the backend connection and
-          try again.
+          {t(
+            "The export could not be downloaded. Check the backend connection and try again.",
+            "تعذر تنزيل التصدير. تحقق من اتصال الخادم وحاول مرة أخرى.",
+          )}
         </Alert>
       ) : null}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 4 }}>
         <Typography variant="overline" color="primary.main">
-          Canonical preview
+          {t("Canonical preview", "المعاينة المعتمدة")}
         </Typography>
         <Typography variant="h5">
           {data.identity.reportType.replaceAll("-", " ")}
         </Typography>
         <Typography color="text.secondary">
-          {data.summary.records} recorded event(s)
+          {data.summary.records} {t("recorded event(s)", "أحداث مسجلة")}
         </Typography>
         {canExport ? (
           <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
@@ -1138,14 +1300,14 @@ function OperationalPreviewPanel({
               disabled={exporting}
               onClick={onExportCsv}
             >
-              Export CSV
+              {t("Export CSV", "تصدير CSV")}
             </Button>
             <Button
               variant="outlined"
               disabled={exporting}
               onClick={onExportPdf}
             >
-              Export PDF
+              {t("Export PDF", "تصدير PDF")}
             </Button>
           </Stack>
         ) : null}
@@ -1154,7 +1316,10 @@ function OperationalPreviewPanel({
         <Alert severity="info">{data.quality.warnings.join(" · ")}</Alert>
       ) : (
         <Alert severity="success">
-          The selected evidence projection is complete.
+          {t(
+            "The selected evidence projection is complete.",
+            "عرض الأدلة المحدد مكتمل.",
+          )}
         </Alert>
       )}
       <TableContainer
@@ -1186,7 +1351,10 @@ function OperationalPreviewPanel({
             ) : (
               <TableRow>
                 <TableCell colSpan={Math.max(columns.length, 1)}>
-                  No records in this range.
+                  {t(
+                    "No records in this range.",
+                    "لا توجد سجلات في هذا النطاق.",
+                  )}
                 </TableCell>
               </TableRow>
             )}

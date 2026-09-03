@@ -366,11 +366,15 @@ function RoomSection({
 }
 
 function OperationalRoomStatus({ status }: { status?: DashboardRoomStatus }) {
+  const { language, resources } = useLocalization();
+  const roomCopy = resources.dashboard.rooms;
   if (!status) {
     return (
       <Paper variant="outlined" sx={{ p: 2, bgcolor: "background.default" }}>
         <Typography color="text.secondary">
-          No current telemetry snapshot is available for this area.
+          {language === "ar"
+            ? "لا توجد لقطة قراءات حالية متاحة لهذه المنطقة."
+            : "No current telemetry snapshot is available for this area."}
         </Typography>
       </Paper>
     );
@@ -391,17 +395,17 @@ function OperationalRoomStatus({ status }: { status?: DashboardRoomStatus }) {
           <Chip
             size="small"
             color={status.online ? "success" : "error"}
-            label={status.online ? "Online" : "Offline"}
+            label={status.online ? roomCopy.online : roomCopy.offline}
           />
           <Chip
             size="small"
             color={severity}
-            label={`Temperature: ${status.temperatureStatus}`}
+            label={`${roomCopy.temperature}: ${roomCopy.status[status.temperatureStatus]}`}
           />
           <Chip
             size="small"
             color={status.activeAlarms > 0 ? "error" : "default"}
-            label={`${status.activeAlarms} active alarms`}
+            label={`${status.activeAlarms} ${roomCopy.activeAlarms}`}
           />
         </Box>
         <Box
@@ -412,24 +416,24 @@ function OperationalRoomStatus({ status }: { status?: DashboardRoomStatus }) {
           }}
         >
           <MetadataItem
-            label="Temperature"
+            label={resources.dashboard.rooms.temperature}
             value={
               status.temperature === null
-                ? "Unavailable"
+                ? roomCopy.unavailable
                 : `${status.temperature} °C`
             }
           />
           <MetadataItem
-            label="Humidity"
+            label={resources.dashboard.rooms.humidity}
             value={
               status.humidity === null
-                ? "Unavailable"
+                ? roomCopy.unavailable
                 : `${status.humidity} %RH`
             }
           />
           <MetadataItem
-            label="Last update"
-            value={status.lastUpdate ?? "Unavailable"}
+            label={resources.dashboard.rooms.lastUpdate}
+            value={status.lastUpdate ?? roomCopy.unavailable}
           />
         </Box>
       </Stack>

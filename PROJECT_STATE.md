@@ -1,12 +1,12 @@
 # BIO-EMS Project State
 
-**State date:** 2 September 2026
+**State date:** 3 September 2026
 
-**Latest published tagged release:** `v0.17.0`
+**Release prepared for publication:** `v0.19.0`
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8-02 THROUGH P8-08 SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED** through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. P8-01 provider code is complete, but live Email/WhatsApp evidence remains open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **P8-02 THROUGH P8-08 SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED** through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Global customer and SYSTEM_OWNER Arabic/English localization is implemented and locally verified. P8-01 Email live evidence passed on 3 September 2026; WhatsApp and end-to-end dual-channel evidence remain open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -15,7 +15,7 @@
 3. Preserve P7-03 through P7-08 closure evidence from PR #145 and CI run #522.
 4. Continue only with the separate external evidence/field acceptance tracks or explicitly approved later software scope.
 5. Continue hardware qualification, live-provider evidence, production execution, BIO EGYPT commissioning/UAT, and acceptance as separate evidence tracks; do not manufacture those claims from source completion.
-6. Reconcile the Windows local copy with merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`, preserve all real provider secrets only in ignored `backend/.env`, and run the controlled SMTP smoke test.
+6. Preserve the passed 3 September SMTP `SENT` receipt and confirmed inbox arrival as Email evidence; keep all real provider secrets only in ignored `backend/.env`.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
 8. Preserve P8-02 through P8-08 closure evidence from PR #152 and exercise the implemented installation workflow locally only with controlled test data until field/UAT evidence is available.
 
@@ -58,7 +58,7 @@
 - **P5 — SYSTEM_OWNER / Commercial Operations:** **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`. Billing/payment and live remote-update execution remain external/later integrations unless separately implemented.
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
 - **P7 — Final Product Completion:** **COMPLETE / MERGED / CI VERIFIED** through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
-- **P8-01 — Primary WhatsApp and Email Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / LIVE PROVIDER EVIDENCE OPEN.** Provider implementation: PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Safe configuration and SMTP smoke test: PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`.
+- **P8-01 — Primary WhatsApp and Email Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EMAIL LIVE EVIDENCE PASSED / WHATSAPP AND END-TO-END EVIDENCE OPEN.** Provider implementation: PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Safe configuration and SMTP smoke test: PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Controlled SMTP returned `SENT` and inbox arrival was confirmed on 3 September 2026.
 - **P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment:** **SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Physical receipt, field Commissioning, customer acceptance and production execution remain open evidence gates.
 
 ## P7 Active Plan
@@ -88,7 +88,7 @@ Sequence:
 
 ## Release / Version Position
 
-`VERSION` is the product source-version authority. `v0.17.0` remains the latest published release; current source-software version is prepared as `0.19.0` for P8-01. No `v0.19.0` tag or GitHub Release is claimed until the controlled release procedure is completed.
+`VERSION` is the product source-version authority. Source version `0.19.0` is prepared for controlled tag and GitHub Release publication after integration gates pass. Publication evidence must be added only after the tag and Release exist.
 
 Release publication does not constitute physical qualification, field commissioning, customer acceptance, or production acceptance.
 
@@ -124,4 +124,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** Update Windows local `main` to merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Retain the Gmail App Password only in ignored `backend/.env`, verify SYSTEM_OWNER Platform JWT configuration, and resume P8-01 live Email/WhatsApp plus end-to-end Alarm evidence. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.
+**Next-session start point:** Reconcile Windows local `main` with the final localization/release merge. Retain the Gmail App Password only in ignored `backend/.env`. Resume P8-01 at the Meta developer-registration blocker; after registration succeeds, obtain the controlled Phone Number ID/token, approve the Alarm template, prove a live WhatsApp receipt, then execute one end-to-end Alarm through primary `WHATSAPP + EMAIL` and review Delivery Operations evidence. Email SMTP and inbox evidence already passed and must not be repeated unless configuration changes. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.

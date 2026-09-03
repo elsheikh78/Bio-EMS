@@ -1,7 +1,7 @@
 # P8-01 — WhatsApp and Email Alarm Delivery
 
 **Date:** 2 September 2026
-**Status:** IMPLEMENTED / MERGED / CI VERIFIED / LIVE PROVIDER EVIDENCE OPEN
+**Status:** IMPLEMENTED / MERGED / CI VERIFIED / EMAIL LIVE EVIDENCE PASSED / WHATSAPP AND END-TO-END EVIDENCE OPEN
 
 ## Integration evidence
 
@@ -65,8 +65,9 @@ Inbox arrival remains live-provider evidence and must be confirmed by the recipi
 
 ## Live setup handoff
 
-- A Gmail App Password has been created by the operator. Its value is not stored in Git and must remain only in ignored local `backend/.env`.
-- The Windows local copy still requires reconciliation to merge `a045e93` before running the smoke test.
+- A Gmail App Password was created by the operator. Its value is not stored in Git and remains only in ignored local `backend/.env`.
+- The Windows local copy was reconciled with GitHub `main` at `fe6b4c3d0209c917b56d1d868e4fd8144c522a91` before the controlled test.
+- On 3 September 2026 `npm run test:email-delivery` returned `SENT`, and the operator independently confirmed arrival in the recipient inbox. No password, SMTP secret, or recipient address is recorded in the repository.
 - SYSTEM_OWNER login previously returned `PLATFORM_AUTH_UNAVAILABLE`; local `BIOEMS_PLATFORM_JWT_SECRET` configuration and backend restart require confirmation before claiming successful owner login.
 - Meta for Developers registration loops from `Complete Registration` back to email verification on both desktop and mobile. Therefore no Phone Number ID, permanent access token, approved template, live WhatsApp send, or delivery evidence is claimed.
 
@@ -74,7 +75,7 @@ Inbox arrival remains live-provider evidence and must be confirmed by the recipi
 
 P8-01 live acceptance closes only after:
 
-- Gmail SMTP smoke-test receipt and confirmed inbox arrival;
+- Gmail SMTP smoke-test receipt and confirmed inbox arrival — **PASSED 3 September 2026**;
 - Meta Phone Number ID, controlled permanent token and approved Alarm template;
 - confirmed live WhatsApp receipt;
 - one end-to-end Alarm delivered through the durable engine to primary `WHATSAPP + EMAIL` steps;

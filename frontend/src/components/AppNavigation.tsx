@@ -20,7 +20,7 @@ interface AppNavigationProps {
 }
 
 export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
-  const { resources } = useLocalization();
+  const { language, resources } = useLocalization();
   const { user } = useAuthentication();
   const permittedItems = navigationItems.filter(
     (item) => user && hasPermission(user.role, item.permission),
@@ -50,12 +50,12 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
           </Typography>
         </Box>
         <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1.2 }}>
-          ENVIRONMENTAL MONITORING
+          {language === "ar" ? "المراقبة البيئية" : "ENVIRONMENTAL MONITORING"}
         </Typography>
       </Box>
       <Box sx={{ mx: 4, mb: 5, p: 4, borderRadius: 3, bgcolor: "#0B4A5D" }}>
         <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1 }}>
-          CUSTOMER / SCOPE
+          {language === "ar" ? "العميل / النطاق" : "CUSTOMER / SCOPE"}
         </Typography>
         <Typography
           sx={{ color: "white", fontSize: 13, fontWeight: 700, mt: 1 }}
@@ -82,7 +82,13 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
                     pb: 2,
                   }}
                 >
-                  {item.group === "overview" ? "OVERVIEW" : "ADMINISTRATION"}
+                  {item.group === "overview"
+                    ? language === "ar"
+                      ? "نظرة عامة"
+                      : "OVERVIEW"
+                    : language === "ar"
+                      ? "الإدارة"
+                      : "ADMINISTRATION"}
                 </Typography>
               ) : null}
               <ListItem disablePadding key={item.id}>

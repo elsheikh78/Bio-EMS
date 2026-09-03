@@ -1,6 +1,7 @@
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import type { RefObject } from "react";
 import { getAppHeaderStyles } from "./appHeaderStyles";
+import { useLocalization } from "../localization/useLocalization";
 
 interface AppHeaderProps {
   logoutLabel: string;
@@ -21,6 +22,7 @@ export function AppHeader({
   role,
   username,
 }: AppHeaderProps) {
+  const { language } = useLocalization();
   return (
     <AppBar
       color="inherit"
@@ -53,10 +55,12 @@ export function AppHeader({
             variant="caption"
             sx={{ color: "text.secondary", letterSpacing: 1 }}
           >
-            OPERATIONS
+            {language === "ar" ? "العمليات" : "OPERATIONS"}
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 700 }}>
-            Dashboard / Executive overview
+            {language === "ar"
+              ? "لوحة المتابعة / النظرة التنفيذية"
+              : "Dashboard / Executive overview"}
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />

@@ -26,6 +26,7 @@ import {
 import { type FormEvent, useMemo, useState } from "react";
 import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
+import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 import type {
   CreateCalibrationRecordInput,
   Sensor,
@@ -45,6 +46,8 @@ const calibrationOrder: CalibrationStatus[] = [
 ];
 
 export function SensorsCalibrationPage() {
+  const { language } = useLocalization();
+  const text = sensorCopy[language];
   const query = useSensors();
   const { user } = useAuthentication();
   const [search, setSearch] = useState("");
@@ -96,23 +99,21 @@ export function SensorsCalibrationPage() {
       >
         <Box>
           <Typography variant="overline" color="primary.main">
-            Asset quality / Calibration control
+            {text.eyebrow}
           </Typography>
           <Typography component="h1" variant="h4">
-            Sensors &amp; Calibration
+            {text.title}
           </Typography>
-          <Typography color="text.secondary">
-            Traceable sensor identity, calibration status, and audit evidence.
-          </Typography>
+          <Typography color="text.secondary">{text.description}</Typography>
         </Box>
         <Button variant="outlined" onClick={() => void query.refetch()}>
-          Refresh register
+          {text.refresh}
         </Button>
       </Stack>
 
       <Box
         component="section"
-        aria-label="Calibration summary"
+        aria-label={text.summaryLabel}
         sx={{
           display: "grid",
           gridTemplateColumns: {
@@ -123,11 +124,23 @@ export function SensorsCalibrationPage() {
           gap: 3,
         }}
       >
-        <Metric label="Valid" value={counts.VALID} tone="success.main" />
-        <Metric label="Due" value={counts.DUE} tone="warning.main" />
-        <Metric label="Expired" value={counts.EXPIRED} tone="error.main" />
         <Metric
-          label="Not calibrated"
+          label={text.status.VALID}
+          value={counts.VALID}
+          tone="success.main"
+        />
+        <Metric
+          label={text.status.DUE}
+          value={counts.DUE}
+          tone="warning.main"
+        />
+        <Metric
+          label={text.status.EXPIRED}
+          value={counts.EXPIRED}
+          tone="error.main"
+        />
+        <Metric
+          label={text.status.NOT_CALIBRATED}
           value={counts.NOT_CALIBRATED}
           tone="text.secondary"
         />
@@ -145,45 +158,49 @@ export function SensorsCalibrationPage() {
           >
             <Box>
               <Typography component="h2" variant="h6">
-                Calibration register
+                {text.register}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {sensors.length} of {allSensors.length} sensors shown
+                {text.shown(sensors.length, allSensors.length)}
               </Typography>
             </Box>
             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
               <TextField
                 size="small"
-                label="Search sensors"
+                label={text.search}
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 sx={{ minWidth: 230 }}
               />
               <FormControl size="small" sx={{ minWidth: 165 }}>
-                <InputLabel id="status-filter-label">Status</InputLabel>
+                <InputLabel id="status-filter-label">
+                  {text.statusLabel}
+                </InputLabel>
                 <Select
                   labelId="status-filter-label"
-                  label="Status"
+                  label={text.statusLabel}
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
                 >
-                  <MenuItem value="ALL">All statuses</MenuItem>
+                  <MenuItem value="ALL">{text.allStatuses}</MenuItem>
                   {calibrationOrder.map((status) => (
                     <MenuItem key={status} value={status}>
-                      {formatStatus(status)}
+                      {formatStatus(status, language)}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 155 }}>
-                <InputLabel id="type-filter-label">Sensor type</InputLabel>
+                <InputLabel id="type-filter-label">
+                  {text.sensorType}
+                </InputLabel>
                 <Select
                   labelId="type-filter-label"
-                  label="Sensor type"
+                  label={text.sensorType}
                   value={typeFilter}
                   onChange={(event) => setTypeFilter(event.target.value)}
                 >
-                  <MenuItem value="ALL">All types</MenuItem>
+                  <MenuItem value="ALL">{text.allTypes}</MenuItem>
                   {types.map((type) => (
                     <MenuItem key={type} value={type}>
                       {type}
@@ -202,36 +219,36 @@ export function SensorsCalibrationPage() {
               sx={{ alignItems: "center", py: 6 }}
             >
               <CircularProgress size={24} />
-              <Typography>Loading sensors and calibration status</Typography>
+              <Typography>{text.loading}</Typography>
             </Stack>
           ) : query.isError ? (
             <Alert
               severity="error"
               action={
                 <Button color="inherit" onClick={() => void query.refetch()}>
-                  Retry
+                  {text.retry}
                 </Button>
               }
             >
-              Sensors and calibration status could not be loaded.
+              {text.loadError}
             </Alert>
           ) : sensors.length === 0 ? (
-            <Alert severity="info">No sensors match the current filters.</Alert>
+            <Alert severity="info">{text.empty}</Alert>
           ) : (
             <TableContainer>
               <Table
-                aria-label="Sensor calibration register"
+                aria-label={text.tableLabel}
                 sx={{ "& .MuiTableCell-root": { fontSize: "0.84rem" } }}
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell>Sensor</TableCell>
-                    <TableCell>Type / hardware</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Last calibrated</TableCell>
-                    <TableCell>Due date</TableCell>
-                    <TableCell>Certificate</TableCell>
-                    <TableCell align="right">Actions</TableCell>
+                    <TableCell>{text.sensor}</TableCell>
+                    <TableCell>{text.typeHardware}</TableCell>
+                    <TableCell>{text.statusLabel}</TableCell>
+                    <TableCell>{text.lastCalibrated}</TableCell>
+                    <TableCell>{text.dueDate}</TableCell>
+                    <TableCell>{text.certificate}</TableCell>
+                    <TableCell align="right">{text.actions}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -250,19 +267,20 @@ export function SensorsCalibrationPage() {
                           {sensor.sensor_type} · {sensor.unit}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {sensor.hardware_model ?? "Hardware not recorded"}
+                          {sensor.hardware_model ?? text.noHardware}
                         </Typography>
                       </TableCell>
                       <TableCell>
                         <StatusChip
                           status={sensor.calibration_status ?? "NOT_CALIBRATED"}
+                          language={language}
                         />
                       </TableCell>
                       <TableCell>
-                        {formatDate(sensor.last_calibrated_at)}
+                        {formatDate(sensor.last_calibrated_at, language)}
                       </TableCell>
                       <TableCell>
-                        {formatDate(sensor.calibration_due_at)}
+                        {formatDate(sensor.calibration_due_at, language)}
                       </TableCell>
                       <TableCell>
                         {sensor.certificate_reference ?? "—"}
@@ -280,7 +298,7 @@ export function SensorsCalibrationPage() {
                               setRecording(false);
                             }}
                           >
-                            History
+                            {text.history}
                           </Button>
                           {canWrite && (
                             <Button
@@ -291,7 +309,7 @@ export function SensorsCalibrationPage() {
                                 setRecording(true);
                               }}
                             >
-                              Record
+                              {text.record}
                             </Button>
                           )}
                         </Stack>
@@ -309,6 +327,7 @@ export function SensorsCalibrationPage() {
         sensor={selectedSensor}
         recording={recording}
         canWrite={canWrite}
+        language={language}
         onClose={() => setSelectedSensor(undefined)}
         onRecord={() => setRecording(true)}
       />
@@ -320,15 +339,18 @@ function CalibrationDialog({
   sensor,
   recording,
   canWrite,
+  language,
   onClose,
   onRecord,
 }: {
   sensor?: Sensor;
   recording: boolean;
   canWrite: boolean;
+  language: "en" | "ar";
   onClose: () => void;
   onRecord: () => void;
 }) {
+  const text = sensorCopy[language];
   const history = useCalibrationHistory(sensor?.uuid);
   const mutation = useCreateCalibrationRecord(sensor?.uuid);
   const [result, setResult] = useState<"PASS" | "FAIL">("PASS");
@@ -353,9 +375,7 @@ function CalibrationDialog({
       payload.due_at = new Date(field("due_at")).toISOString();
       payload.offset = Number(field("offset"));
       if (Date.parse(payload.due_at) <= Date.parse(payload.performed_at)) {
-        setValidationError(
-          "Next calibration due must be later than the performed date and time.",
-        );
+        setValidationError(text.dueValidation);
         return;
       }
     }
@@ -367,7 +387,7 @@ function CalibrationDialog({
   return (
     <Dialog open={Boolean(sensor)} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
-        {recording ? "Record calibration" : "Calibration history"}
+        {recording ? text.recordCalibration : text.calibrationHistory}
       </DialogTitle>
       <DialogContent>
         {sensor && (
@@ -386,33 +406,29 @@ function CalibrationDialog({
               >
                 <Stack spacing={3}>
                   {mutation.isError && (
-                    <Alert severity="error">
-                      Calibration record could not be saved.
-                    </Alert>
+                    <Alert severity="error">{text.saveError}</Alert>
                   )}
                   {validationError && (
                     <Alert severity="warning">{validationError}</Alert>
                   )}
                   {mutation.isSuccess && (
-                    <Alert severity="success">
-                      Calibration record saved and register refreshed.
-                    </Alert>
+                    <Alert severity="success">{text.saveSuccess}</Alert>
                   )}
                   <FormControl fullWidth>
-                    <InputLabel id="result-label">Result</InputLabel>
+                    <InputLabel id="result-label">{text.result}</InputLabel>
                     <Select
                       labelId="result-label"
-                      label="Result"
+                      label={text.result}
                       value={result}
                       onChange={(event) => setResult(event.target.value)}
                     >
-                      <MenuItem value="PASS">Pass</MenuItem>
-                      <MenuItem value="FAIL">Fail</MenuItem>
+                      <MenuItem value="PASS">{text.pass}</MenuItem>
+                      <MenuItem value="FAIL">{text.fail}</MenuItem>
                     </Select>
                   </FormControl>
                   <TextField
                     name="performed_at"
-                    label="Performed at"
+                    label={text.performedAt}
                     type="datetime-local"
                     required
                     slotProps={{ inputLabel: { shrink: true } }}
@@ -421,14 +437,14 @@ function CalibrationDialog({
                     <>
                       <TextField
                         name="due_at"
-                        label="Next calibration due"
+                        label={text.nextDue}
                         type="datetime-local"
                         required
                         slotProps={{ inputLabel: { shrink: true } }}
                       />
                       <TextField
                         name="offset"
-                        label={`Measured offset (${sensor.unit})`}
+                        label={`${text.offset} (${sensor.unit})`}
                         type="number"
                         required
                         slotProps={{ htmlInput: { step: "any" } }}
@@ -437,12 +453,12 @@ function CalibrationDialog({
                   )}
                   <TextField
                     name="certificate_reference"
-                    label="Certificate reference"
+                    label={text.certificateReference}
                     slotProps={{ htmlInput: { maxLength: 200 } }}
                   />
                   <TextField
                     name="notes"
-                    label="Notes"
+                    label={text.notes}
                     multiline
                     minRows={3}
                     slotProps={{ htmlInput: { maxLength: 2000 } }}
@@ -452,18 +468,16 @@ function CalibrationDialog({
             ) : history.isPending ? (
               <CircularProgress size={24} />
             ) : history.isError ? (
-              <Alert severity="error">
-                Calibration history could not be loaded.
-              </Alert>
+              <Alert severity="error">{text.historyError}</Alert>
             ) : history.data?.length ? (
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Result</TableCell>
-                    <TableCell>Performed</TableCell>
-                    <TableCell>Due</TableCell>
-                    <TableCell>Certificate</TableCell>
-                    <TableCell>Performed by</TableCell>
+                    <TableCell>{text.result}</TableCell>
+                    <TableCell>{text.performed}</TableCell>
+                    <TableCell>{text.due}</TableCell>
+                    <TableCell>{text.certificate}</TableCell>
+                    <TableCell>{text.performedBy}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -476,8 +490,12 @@ function CalibrationDialog({
                           color={record.result === "PASS" ? "success" : "error"}
                         />
                       </TableCell>
-                      <TableCell>{formatDate(record.performed_at)}</TableCell>
-                      <TableCell>{formatDate(record.due_at)}</TableCell>
+                      <TableCell>
+                        {formatDate(record.performed_at, language)}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(record.due_at, language)}
+                      </TableCell>
                       <TableCell>
                         {record.certificate_reference ?? "—"}
                       </TableCell>
@@ -487,18 +505,16 @@ function CalibrationDialog({
                 </TableBody>
               </Table>
             ) : (
-              <Alert severity="info">
-                No calibration history has been recorded.
-              </Alert>
+              <Alert severity="info">{text.noHistory}</Alert>
             )}
           </Stack>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{text.close}</Button>
         {!recording && canWrite && (
           <Button variant="contained" onClick={onRecord}>
-            Record calibration
+            {text.recordCalibration}
           </Button>
         )}
         {recording && (
@@ -508,7 +524,7 @@ function CalibrationDialog({
             variant="contained"
             disabled={mutation.isPending}
           >
-            Save calibration
+            {text.saveCalibration}
           </Button>
         )}
       </DialogActions>
@@ -547,7 +563,13 @@ function Metric({
   );
 }
 
-function StatusChip({ status }: { status: CalibrationStatus }) {
+function StatusChip({
+  status,
+  language,
+}: {
+  status: CalibrationStatus;
+  language: "en" | "ar";
+}) {
   const color =
     status === "VALID"
       ? "success"
@@ -558,7 +580,7 @@ function StatusChip({ status }: { status: CalibrationStatus }) {
           : "default";
   return (
     <Chip
-      label={formatStatus(status)}
+      label={formatStatus(status, language)}
       color={color}
       size="small"
       variant={status === "VALID" ? "filled" : "outlined"}
@@ -576,16 +598,132 @@ function countStatuses(sensors: Sensor[]) {
   );
 }
 
-function formatStatus(status: string) {
-  return status.replaceAll("_", " ");
+function formatStatus(status: string, language: "en" | "ar") {
+  const translated = sensorCopy[language].status[status as CalibrationStatus];
+  return translated ?? status.replaceAll("_", " ");
 }
-function formatDate(value?: string | null) {
+function formatDate(value: string | null | undefined, language: "en" | "ar") {
   if (!value) return "—";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? value
-    : new Intl.DateTimeFormat("en-GB", {
+    : new Intl.DateTimeFormat(language === "ar" ? "ar-EG" : "en-GB", {
         dateStyle: "medium",
         timeStyle: "short",
       }).format(date);
 }
+
+const sensorCopy = {
+  en: {
+    eyebrow: "Asset quality / Calibration control",
+    title: "Sensors & Calibration",
+    description:
+      "Traceable sensor identity, calibration status, and audit evidence.",
+    refresh: "Refresh register",
+    summaryLabel: "Calibration summary",
+    register: "Calibration register",
+    shown: (shown: number, total: number) =>
+      `${shown} of ${total} sensors shown`,
+    search: "Search sensors",
+    statusLabel: "Status",
+    allStatuses: "All statuses",
+    sensorType: "Sensor type",
+    allTypes: "All types",
+    loading: "Loading sensors and calibration status",
+    retry: "Retry",
+    loadError: "Sensors and calibration status could not be loaded.",
+    empty: "No sensors match the current filters.",
+    tableLabel: "Sensor calibration register",
+    sensor: "Sensor",
+    typeHardware: "Type / hardware",
+    lastCalibrated: "Last calibrated",
+    dueDate: "Due date",
+    certificate: "Certificate",
+    actions: "Actions",
+    noHardware: "Hardware not recorded",
+    history: "History",
+    record: "Record",
+    dueValidation:
+      "Next calibration due must be later than the performed date and time.",
+    recordCalibration: "Record calibration",
+    calibrationHistory: "Calibration history",
+    saveError: "Calibration record could not be saved.",
+    saveSuccess: "Calibration record saved and register refreshed.",
+    result: "Result",
+    pass: "Pass",
+    fail: "Fail",
+    performedAt: "Performed at",
+    nextDue: "Next calibration due",
+    offset: "Measured offset",
+    certificateReference: "Certificate reference",
+    notes: "Notes",
+    historyError: "Calibration history could not be loaded.",
+    performed: "Performed",
+    due: "Due",
+    performedBy: "Performed by",
+    noHistory: "No calibration history has been recorded.",
+    close: "Close",
+    saveCalibration: "Save calibration",
+    status: {
+      VALID: "Valid",
+      DUE: "Due",
+      EXPIRED: "Expired",
+      NOT_CALIBRATED: "Not calibrated",
+    },
+  },
+  ar: {
+    eyebrow: "جودة الأصول / ضبط المعايرة",
+    title: "الحساسات والمعايرة",
+    description: "هوية حساسات قابلة للتتبع، وحالة المعايرة، وأدلة التدقيق.",
+    refresh: "تحديث السجل",
+    summaryLabel: "ملخص المعايرة",
+    register: "سجل المعايرة",
+    shown: (shown: number, total: number) => `معروض ${shown} من ${total} حساس`,
+    search: "البحث في الحساسات",
+    statusLabel: "الحالة",
+    allStatuses: "كل الحالات",
+    sensorType: "نوع الحساس",
+    allTypes: "كل الأنواع",
+    loading: "جارٍ تحميل الحساسات وحالة المعايرة",
+    retry: "إعادة المحاولة",
+    loadError: "تعذر تحميل الحساسات وحالة المعايرة.",
+    empty: "لا توجد حساسات تطابق عوامل التصفية الحالية.",
+    tableLabel: "سجل معايرة الحساسات",
+    sensor: "الحساس",
+    typeHardware: "النوع / المكونات",
+    lastCalibrated: "آخر معايرة",
+    dueDate: "تاريخ الاستحقاق",
+    certificate: "الشهادة",
+    actions: "الإجراءات",
+    noHardware: "المكونات غير مسجلة",
+    history: "السجل",
+    record: "تسجيل",
+    dueValidation:
+      "يجب أن يكون موعد المعايرة التالية بعد تاريخ ووقت إجراء المعايرة.",
+    recordCalibration: "تسجيل معايرة",
+    calibrationHistory: "سجل المعايرة",
+    saveError: "تعذر حفظ سجل المعايرة.",
+    saveSuccess: "تم حفظ سجل المعايرة وتحديث القائمة.",
+    result: "النتيجة",
+    pass: "ناجح",
+    fail: "راسب",
+    performedAt: "وقت الإجراء",
+    nextDue: "موعد المعايرة التالية",
+    offset: "الانحراف المقاس",
+    certificateReference: "مرجع الشهادة",
+    notes: "ملاحظات",
+    historyError: "تعذر تحميل سجل المعايرة.",
+    performed: "أُجريت في",
+    due: "الاستحقاق",
+    performedBy: "أجراها",
+    noHistory: "لم يتم تسجيل أي معايرات.",
+    close: "إغلاق",
+    saveCalibration: "حفظ المعايرة",
+    status: {
+      VALID: "سارية",
+      DUE: "مستحقة",
+      EXPIRED: "منتهية",
+      NOT_CALIBRATED: "غير معاير",
+    },
+  },
+} as const;
