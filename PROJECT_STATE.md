@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE AND GLOBAL LOCALIZATION COMPLETE / MERGED / CI VERIFIED; P8-01A TELEGRAM EXTENSION IMPLEMENTED LOCALLY.** P8-02 through P8-08 closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; global customer and SYSTEM_OWNER Arabic/English localization closed through PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`. P8-01 Email live evidence passed on 3 September 2026; WhatsApp remains blocked by Meta. Telegram is approved as an independent interim primary channel, with live bot and end-to-end `TELEGRAM + EMAIL` evidence still open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, AND P8-01A TELEGRAM EXTENSION COMPLETE / MERGED / CI VERIFIED.** P8-02 through P8-08 closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; global customer and SYSTEM_OWNER Arabic/English localization closed through PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`; P8-01A Telegram closed through PR #158 / CI run #549 / merge `c90cdde2e260730f70d38d6f22fa091a415961a4`. P8-01 Email live evidence passed on 3 September 2026; WhatsApp remains blocked by Meta. Telegram live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open. Physical controller receipt, production deployment, field Commissioning/UAT, and customer/production acceptance remain separate external evidence gates.
 
 ## Current Controlled Continuation
 
@@ -18,8 +18,8 @@
 6. Preserve the passed 3 September SMTP `SENT` receipt and confirmed inbox arrival as Email evidence; keep all real provider secrets only in ignored `backend/.env`.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
 8. Create and validate the controlled BIO-EMS Telegram bot, obtain the recipient Chat ID after Start, and capture live smoke-test plus end-to-end `TELEGRAM + EMAIL` evidence without committing secrets.
-8. Preserve P8-02 through P8-08 closure evidence from PR #152 and exercise the implemented installation workflow locally only with controlled test data until field/UAT evidence is available.
-9. Preserve DEP-01 as approved later software scope: a single Full Offline Windows
+9. Preserve P8-02 through P8-08 closure evidence from PR #152 and exercise the implemented installation workflow locally only with controlled test data until field/UAT evidence is available.
+10. Preserve DEP-01 as approved later software scope: a single Full Offline Windows
    Production Setup plus a separate technician Commissioning Package. Implementation
    and clean-machine qualification are not yet claimed; see
    `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
@@ -64,7 +64,7 @@
 - **P6 — Productization / Deployment / Acceptance:** **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED.** PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`. Deployment, field commissioning, UAT/sign-off, and production/customer acceptance remain external gates.
 - **P7 — Final Product Completion:** **COMPLETE / MERGED / CI VERIFIED** through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 - **P8-01 — Primary WhatsApp and Email Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EMAIL LIVE EVIDENCE PASSED / WHATSAPP AND END-TO-END EVIDENCE OPEN.** Provider implementation: PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Safe configuration and SMTP smoke test: PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Controlled SMTP returned `SENT` and inbox arrival was confirmed on 3 September 2026.
-- **P8-01A — Telegram Interim Alarm Delivery:** **SOURCE IMPLEMENTED / LOCAL AUTOMATED GATES PASSED / LIVE BOT AND END-TO-END EVIDENCE OPEN.** Telegram is a distinct primary channel, not a renamed WhatsApp path. Interim escalation is `TELEGRAM + EMAIL`, with SMS retained as emergency fallback and WhatsApp retained for later activation.
+- **P8-01A — Telegram Interim Alarm Delivery:** **SOFTWARE COMPLETE / MERGED / CI VERIFIED / LIVE BOT AND END-TO-END EVIDENCE OPEN.** PR #158 / CI run #549 / merge `c90cdde2e260730f70d38d6f22fa091a415961a4`. Telegram is a distinct primary channel, not a renamed WhatsApp path. Interim escalation is `TELEGRAM + EMAIL`, with SMS retained as emergency fallback and WhatsApp retained for later activation.
 - **P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment:** **SOURCE SOFTWARE COMPLETE / MERGED / CI VERIFIED.** PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. Physical receipt, field Commissioning, customer acceptance and production execution remain open evidence gates.
 
 ## P7 Active Plan
@@ -136,4 +136,4 @@ Payment/invoicing integration, live remote OTA/update execution, broader Asset/d
 
 ## Repository Continuation Rule
 
-**Next-session start point:** Integrate P8-01A, then reconcile the Windows local copy. Retain all provider secrets only in ignored `backend/.env`. Create the controlled Telegram bot, press Start from the recipient account, obtain its numeric Chat ID, run `npm run test:telegram-delivery`, confirm receipt, then execute one end-to-end Alarm through `TELEGRAM + EMAIL` and review Delivery Operations evidence. Meta WhatsApp remains a parallel external blocker and can resume later without removing Telegram. Email SMTP evidence already passed and must not be repeated unless configuration changes. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.
+**Next-session start point:** Reconcile the Windows local copy with merge `c90cdde2e260730f70d38d6f22fa091a415961a4`. Retain all provider secrets only in ignored `backend/.env`. Create the controlled Telegram bot, press Start from the recipient account, obtain its numeric Chat ID, run `npm run test:telegram-delivery`, confirm receipt, then execute one end-to-end Alarm through `TELEGRAM + EMAIL` and review Delivery Operations evidence. Meta WhatsApp remains a parallel external blocker and can resume later without removing Telegram. Email SMTP evidence already passed and must not be repeated unless configuration changes. Do not claim physical receipt, Commissioning or customer acceptance without real field evidence.
