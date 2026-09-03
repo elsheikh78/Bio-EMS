@@ -18,6 +18,10 @@
 6. Preserve the passed 3 September SMTP `SENT` receipt and confirmed inbox arrival as Email evidence; keep all real provider secrets only in ignored `backend/.env`.
 7. Resolve the Meta for Developers registration loop before obtaining a Phone Number ID, permanent access token, or approved WhatsApp template; no Meta credential or template approval is currently claimed.
 8. Preserve P8-02 through P8-08 closure evidence from PR #152 and exercise the implemented installation workflow locally only with controlled test data until field/UAT evidence is available.
+9. Preserve DEP-01 as approved later software scope: a single Full Offline Windows
+   Production Setup plus a separate technician Commissioning Package. Implementation
+   and clean-machine qualification are not yet claimed; see
+   `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
 
 ## Status Vocabulary
 
@@ -119,6 +123,12 @@ Frontend **Monitored Area** remains presentation terminology for the existing Ro
 No separate Monitoring Point or Asset backend domain is claimed by this state document.
 
 ## Deferred / Open Product Scope
+
+DEP-01 Full Offline Windows Installer and Commissioning Package is approved but not
+implemented or qualified. It covers automatic installation of the application and
+required runtimes/services, first-run configuration, data-safe repair/upgrade/
+uninstall behavior, and qualification on a clean supported Windows machine. Its
+controlled plan is `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
 
 Payment/invoicing integration, live remote OTA/update execution, broader Asset/discovery/provisioning, final production controller firmware/hardware adapters, additional industry-specific capabilities, physical commissioning, live-provider acceptance, and customer acceptance remain open unless later work explicitly implements and verifies them.
 

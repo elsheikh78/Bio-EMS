@@ -8,6 +8,13 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 ## Current Position
 
+- DEP-01 — Full Offline Windows Installer and Commissioning Package — is an approved
+  post-platform work package. It requires one customer-facing offline Windows Setup
+  package that installs BIO-EMS and its required runtimes/services automatically,
+  plus a separate technician Commissioning Package. Implementation and clean-machine
+  qualification have not started. Controlled plan:
+  `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
+
 - P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Email SMTP `SENT` and confirmed inbox arrival passed on 3 September 2026. WhatsApp and end-to-end dual-channel evidence remain open behind Meta registration.
 - P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are source complete, merged and CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Closure: `docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`.
 
@@ -28,6 +35,9 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 4. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
 5. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
 6. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
+7. After the supported platform/runtime set is frozen, execute DEP-01 from
+   `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`; do not describe existing
+   P6 packaging as the qualified customer single-click installer.
 
 ## Parallel P8-01 Live-Acceptance Track
 
