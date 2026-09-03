@@ -16,6 +16,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | Where is the whole project now? | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority** |
 | What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
 | What is the approved SYSTEM_OWNER installation and RBAC plan? | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
+| What is the approved customer Windows installer plan? | [`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md) |
 | What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
 | How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
 | What is the latest P7 closure evidence? | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md) |
@@ -44,6 +45,18 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
+## Approved Full Offline Windows Installer
+
+DEP-01 is approved later software scope. It will deliver one offline customer
+Production Setup that installs BIO-EMS and required runtimes/services automatically,
+plus a separate technician Commissioning Package. It includes first-run
+configuration, Windows service startup, post-install health verification, and
+data-safe Repair/Upgrade/Uninstall requirements. Implementation and clean-machine
+qualification have not started and are not implied by P6 productization.
+
+Controlled plan:
+[`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md).
 
 ## P8 Installation Provisioning and RBAC
 
