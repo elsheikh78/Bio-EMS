@@ -1,7 +1,7 @@
 # BIO-EMS Development Roadmap
 
-**Roadmap state:** 2 September 2026
-**Latest published tagged release:** `v0.17.0`  
+**Roadmap state:** 3 September 2026
+**Release prepared for publication:** `v0.19.0`
 **Current source-software version:** `0.19.0`
 
 `PROJECT_STATE.md` is the single authoritative current-state document. This roadmap describes the forward product path and must not be used to infer completion of physical, field, provider, UAT, or customer-acceptance gates.
@@ -10,7 +10,7 @@
 
 The repository completed, merged, and CI-verified P0-P6. This includes the core EMS platform, reporting, notification delivery, Site Controller runtime, commissioning tooling, production-hardening controls, P5 SYSTEM_OWNER commercial backend/domain workflows, and P6 productization/deployment/acceptance tooling.
 
-The post-P6 product audit did not invalidate those closures. It identified the P7 product-surface completion phase. P7-01 established the isolated SYSTEM_OWNER frontend boundary; P7-02 added the first owner-facing commercial fleet workflow.
+The post-P6 product audit did not invalidate those closures. It identified the P7 product-surface completion phase, which is now complete. P8 source delivery and the global Arabic/English correction are also implemented; external evidence remains separately controlled.
 
 ## Active Software Roadmap — P7 Final Product Completion
 
@@ -113,6 +113,6 @@ No separate Monitoring Point or Asset backend domain is claimed as implemented b
 
 ## Release Boundary
 
-`v0.17.0` remains the latest published tagged release while repository source-software version is `0.19.0`. A later release must be explicitly tagged and published before it is described as the latest published release.
+Source version `0.19.0` is prepared for controlled tag and GitHub Release publication after integration gates pass. The documentation may describe it as published only after those objects exist.
 
 Software completion, CI verification, physical qualification, provider evidence, field commissioning, UAT, and customer/production acceptance remain separate gates.

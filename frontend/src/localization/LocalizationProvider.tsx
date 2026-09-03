@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { LocalizationContext } from "./context";
-import { englishResources, localizationDefaults } from "./resources";
+import {
+  arabicResources,
+  englishResources,
+  localizationDefaults,
+} from "./resources";
 import type {
   SupportedLanguage,
   TextDirection,
@@ -27,18 +31,21 @@ export function LocalizationProvider({
   children,
   language,
   direction,
-  resources = englishResources,
+  resources,
 }: LocalizationProviderProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>(
     () => language ?? storedLanguage(),
   );
   const selectedDirection =
     direction ?? (selectedLanguage === "ar" ? "rtl" : "ltr");
+  const selectedResources =
+    resources ??
+    (selectedLanguage === "ar" ? arabicResources : englishResources);
   const value = useMemo(
     () => ({
       language: selectedLanguage,
       direction: selectedDirection,
-      resources,
+      resources: selectedResources,
       setLanguage: (nextLanguage: SupportedLanguage) => {
         setSelectedLanguage(nextLanguage);
         try {
@@ -48,7 +55,7 @@ export function LocalizationProvider({
         }
       },
     }),
-    [resources, selectedDirection, selectedLanguage],
+    [selectedDirection, selectedLanguage, selectedResources],
   );
 
   useEffect(() => {

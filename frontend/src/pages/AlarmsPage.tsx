@@ -12,8 +12,12 @@ import { useState } from "react";
 import { useAlarms, useAcknowledgeAlarm } from "../alarms/queries";
 import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
+import { useLocalization } from "../localization/useLocalization";
 
 export function AlarmsPage() {
+  const { language } = useLocalization();
+  const t = (english: string, arabic: string) =>
+    language === "ar" ? arabic : english;
   const alarms = useAlarms();
   const acknowledge = useAcknowledgeAlarm();
   const { user } = useAuthentication();
@@ -29,14 +33,16 @@ export function AlarmsPage() {
     <Stack spacing={4}>
       <Box>
         <Typography variant="overline" color="primary.main">
-          Operational Alarm lifecycle
+          {t("Operational Alarm lifecycle", "دورة حياة الإنذارات التشغيلية")}
         </Typography>
         <Typography component="h1" variant="h4">
-          Alarms
+          {t("Alarms", "الإنذارات")}
         </Typography>
         <Typography color="text.secondary">
-          Review current and historical Alarm evidence and acknowledge eligible
-          active events.
+          {t(
+            "Review current and historical Alarm evidence and acknowledge eligible active events.",
+            "راجع أدلة الإنذارات الحالية والتاريخية وأقرّ بالأحداث النشطة المسموح بها.",
+          )}
         </Typography>
       </Box>
       <Stack direction="row" spacing={1}>
@@ -44,34 +50,47 @@ export function AlarmsPage() {
           variant={activeOnly ? "contained" : "outlined"}
           onClick={() => setActiveOnly(true)}
         >
-          Active
+          {t("Active", "النشطة")}
         </Button>
         <Button
           variant={!activeOnly ? "contained" : "outlined"}
           onClick={() => setActiveOnly(false)}
         >
-          History
+          {t("History", "السجل")}
         </Button>
-        <Button onClick={() => void alarms.refetch()}>Refresh</Button>
+        <Button onClick={() => void alarms.refetch()}>
+          {t("Refresh", "تحديث")}
+        </Button>
       </Stack>
       {alarms.isPending ? (
-        <CircularProgress aria-label="Loading Alarms" />
+        <CircularProgress
+          aria-label={t("Loading Alarms", "جارٍ تحميل الإنذارات")}
+        />
       ) : null}
       {alarms.isError ? (
         <Alert
           severity="error"
-          action={<Button onClick={() => void alarms.refetch()}>Retry</Button>}
+          action={
+            <Button onClick={() => void alarms.refetch()}>
+              {t("Retry", "إعادة المحاولة")}
+            </Button>
+          }
         >
-          Unable to load Alarms.
+          {t("Unable to load Alarms.", "تعذر تحميل الإنذارات.")}
         </Alert>
       ) : null}
       {acknowledge.isError ? (
         <Alert severity="error">
-          Alarm acknowledgement failed or the Alarm state changed.
+          {t(
+            "Alarm acknowledgement failed or the Alarm state changed.",
+            "فشل الإقرار بالإنذار أو تغيرت حالته.",
+          )}
         </Alert>
       ) : null}
       {!alarms.isPending && !alarms.isError && visible.length === 0 ? (
-        <Alert severity="info">No Alarms match this view.</Alert>
+        <Alert severity="info">
+          {t("No Alarms match this view.", "لا توجد إنذارات تطابق هذا العرض.")}
+        </Alert>
       ) : null}
       <Stack spacing={2}>
         {visible.map((alarm) => (
@@ -99,12 +118,14 @@ export function AlarmsPage() {
                   {alarm.type}
                 </Typography>
                 <Typography color="text.secondary">
-                  Sensor #{alarm.sensor_id} · Trigger value{" "}
-                  {alarm.trigger_value}
+                  {t("Sensor", "الحساس")} #{alarm.sensor_id} ·{" "}
+                  {t("Trigger value", "قيمة التفعيل")} {alarm.trigger_value}
                 </Typography>
                 <Typography variant="body2">
-                  Triggered:{" "}
-                  {alarm.trigger_time ?? alarm.created_at ?? "Unavailable"}
+                  {t("Triggered", "وقت التفعيل")}:{" "}
+                  {alarm.trigger_time ??
+                    alarm.created_at ??
+                    t("Unavailable", "غير متاح")}
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -116,15 +137,18 @@ export function AlarmsPage() {
                         ? "warning"
                         : "info"
                   }
-                  label={alarm.severity}
+                  label={localizeAlarmValue(alarm.severity, language)}
                 />
-                <Chip variant="outlined" label={alarm.status} />
+                <Chip
+                  variant="outlined"
+                  label={localizeAlarmValue(alarm.status, language)}
+                />
                 {alarm.status === "TRIGGERED" && canAcknowledge ? (
                   <Button
                     disabled={acknowledge.isPending}
                     onClick={() => acknowledge.mutate(alarm.id)}
                   >
-                    Acknowledge
+                    {t("Acknowledge", "إقرار")}
                   </Button>
                 ) : null}
               </Stack>
@@ -133,5 +157,21 @@ export function AlarmsPage() {
         ))}
       </Stack>
     </Stack>
+  );
+}
+
+function localizeAlarmValue(value: string, language: "en" | "ar") {
+  if (language === "en") return value;
+  return (
+    (
+      {
+        CRITICAL: "حرج",
+        WARNING: "تحذير",
+        INFO: "معلومات",
+        TRIGGERED: "نشط",
+        ACKNOWLEDGED: "تم الإقرار",
+        RECOVERED: "عاد طبيعيًا",
+      } as Record<string, string>
+    )[value] ?? value
   );
 }

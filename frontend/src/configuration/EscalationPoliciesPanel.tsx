@@ -34,8 +34,11 @@ import {
   useUpdateEscalationPolicy,
   useUpdateEscalationPolicyStatus,
 } from "./queries";
+import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 
 export function EscalationPoliciesPanel() {
+  const { language } = useLocalization();
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const sites = useSites();
   const [selectedSite, setSelectedSite] = useState<number>();
   const siteId = selectedSite;
@@ -55,11 +58,13 @@ export function EscalationPoliciesPanel() {
         >
           <Box>
             <Typography component="h2" variant="h5">
-              Escalation policies
+              {t("Escalation policies", "سياسات التصعيد")}
             </Typography>
             <Typography color="text.secondary">
-              Ordered, Site-scoped notification steps with strictly increasing
-              elapsed delays.
+              {t(
+                "Ordered, Site-scoped notification steps with strictly increasing elapsed delays.",
+                "خطوات إشعار مرتبة خاصة بالموقع مع تأخيرات زمنية متزايدة إلزاميًا.",
+              )}
             </Typography>
           </Box>
           <Button
@@ -67,28 +72,35 @@ export function EscalationPoliciesPanel() {
             disabled={!siteId}
             onClick={() => setEditing("new")}
           >
-            Add policy
+            {t("Add policy", "إضافة سياسة")}
           </Button>
         </Box>
         {sites.isPending ? (
-          <CircularProgress aria-label="Loading policy Sites" />
+          <CircularProgress
+            aria-label={t("Loading policy Sites", "جارٍ تحميل مواقع السياسات")}
+          />
         ) : null}
         {sites.isError ? (
           <Alert severity="error">
-            Unable to load Sites for escalation policies.
+            {t(
+              "Unable to load Sites for escalation policies.",
+              "تعذر تحميل المواقع لسياسات التصعيد.",
+            )}
           </Alert>
         ) : null}
         {(sites.data?.length ?? 0) > 0 ? (
           <FormControl fullWidth>
-            <InputLabel id="policy-site-label">Policy Site</InputLabel>
+            <InputLabel id="policy-site-label">
+              {t("Policy Site", "موقع السياسة")}
+            </InputLabel>
             <Select
               labelId="policy-site-label"
-              label="Policy Site"
+              label={t("Policy Site", "موقع السياسة")}
               value={siteId ?? ""}
               onChange={(event) => setSelectedSite(Number(event.target.value))}
             >
               <MenuItem value="" disabled>
-                Select a Site
+                {t("Select a Site", "اختر موقعًا")}
               </MenuItem>
               {sites.data
                 ?.filter((site) => site.id)
@@ -102,7 +114,10 @@ export function EscalationPoliciesPanel() {
         ) : null}
         {!sites.isPending && !sites.isError && sites.data?.length === 0 ? (
           <Alert severity="info">
-            Create a Site before configuring escalation policies.
+            {t(
+              "Create a Site before configuring escalation policies.",
+              "أنشئ موقعًا قبل إعداد سياسات التصعيد.",
+            )}
           </Alert>
         ) : null}
         {!sites.isPending &&
@@ -110,22 +125,33 @@ export function EscalationPoliciesPanel() {
         !siteId &&
         (sites.data?.length ?? 0) > 0 ? (
           <Alert severity="info">
-            Select a Site before loading or changing escalation policies.
+            {t(
+              "Select a Site before loading or changing escalation policies.",
+              "اختر موقعًا قبل تحميل سياسات التصعيد أو تغييرها.",
+            )}
           </Alert>
         ) : null}
         {policies.isPending && siteId ? (
-          <CircularProgress aria-label="Loading escalation policies" />
+          <CircularProgress
+            aria-label={t(
+              "Loading escalation policies",
+              "جارٍ تحميل سياسات التصعيد",
+            )}
+          />
         ) : null}
         {policies.isError ? (
           <Alert
             severity="error"
             action={
               <Button color="inherit" onClick={() => void policies.refetch()}>
-                Retry
+                {t("Retry", "إعادة المحاولة")}
               </Button>
             }
           >
-            Unable to load escalation policies.
+            {t(
+              "Unable to load escalation policies.",
+              "تعذر تحميل سياسات التصعيد.",
+            )}
           </Alert>
         ) : null}
         {!policies.isPending &&
@@ -133,11 +159,19 @@ export function EscalationPoliciesPanel() {
         siteId &&
         policies.data?.length === 0 ? (
           <Alert severity="info">
-            No escalation policies are configured for this Site.
+            {t(
+              "No escalation policies are configured for this Site.",
+              "لا توجد سياسات تصعيد مُعدة لهذا الموقع.",
+            )}
           </Alert>
         ) : null}
         {status.isError ? (
-          <Alert severity="error">Policy status could not be changed.</Alert>
+          <Alert severity="error">
+            {t(
+              "Policy status could not be changed.",
+              "تعذر تغيير حالة السياسة.",
+            )}
+          </Alert>
         ) : null}
         {policies.data?.map((policy) => (
           <Box
@@ -161,18 +195,28 @@ export function EscalationPoliciesPanel() {
                 </Typography>
                 <Chip
                   size="small"
-                  label={policy.status}
+                  label={
+                    language === "ar"
+                      ? policy.status === "active"
+                        ? "نشطة"
+                        : "غير نشطة"
+                      : policy.status
+                  }
                   color={policy.status === "active" ? "success" : "default"}
                 />
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={`${policy.steps.length} steps`}
+                  label={`${policy.steps.length} ${t("steps", "خطوات")}`}
                 />
               </Stack>
               <Typography variant="body2" color="text.secondary">
-                Owner: {formatEnum(policy.owner_role)} ·{" "}
-                {policy.eligible_severities.join("/")} · Delays:{" "}
+                {t("Owner", "المسؤول")}:{" "}
+                {formatEnum(policy.owner_role, language)} ·{" "}
+                {policy.eligible_severities
+                  .map((value) => formatEnum(value, language))
+                  .join("/")}{" "}
+                · {t("Delays", "التأخيرات")}:{" "}
                 {policy.steps
                   .map((step) => `${step.delay_seconds}s`)
                   .join(" → ")}
@@ -180,10 +224,10 @@ export function EscalationPoliciesPanel() {
             </Box>
             <Stack direction="row" spacing={1}>
               <Button
-                aria-label={`Edit ${policy.name}`}
+                aria-label={`${t("Edit", "تعديل")} ${policy.name}`}
                 onClick={() => setEditing(policy)}
               >
-                Edit
+                {t("Edit", "تعديل")}
               </Button>
               <Button
                 disabled={status.isPending}
@@ -195,7 +239,9 @@ export function EscalationPoliciesPanel() {
                   })
                 }
               >
-                {policy.status === "active" ? "Deactivate" : "Activate"}
+                {policy.status === "active"
+                  ? t("Deactivate", "إلغاء التفعيل")
+                  : t("Activate", "تفعيل")}
               </Button>
             </Stack>
           </Box>
@@ -205,6 +251,7 @@ export function EscalationPoliciesPanel() {
         <PolicyDialog
           siteId={siteId}
           policy={editing === "new" ? undefined : editing}
+          language={language}
           onClose={() => setEditing(undefined)}
         />
       ) : null}
@@ -220,12 +267,15 @@ type StepDraft = {
 function PolicyDialog({
   siteId,
   policy,
+  language,
   onClose,
 }: {
   siteId: number;
   policy?: EscalationPolicy;
+  language: "en" | "ar";
   onClose: () => void;
 }) {
+  const t = (en: string, ar: string) => (language === "ar" ? ar : en);
   const create = useCreateEscalationPolicy(siteId);
   const update = useUpdateEscalationPolicy(siteId);
   const mutation = policy ? update : create;
@@ -275,7 +325,7 @@ function PolicyDialog({
   }
   async function submit(event: FormEvent) {
     event.preventDefault();
-    const parsed = parseSteps(name, warning, critical, steps);
+    const parsed = parseSteps(name, warning, critical, steps, language);
     if (typeof parsed === "string") {
       setValidation(parsed);
       return;
@@ -318,32 +368,38 @@ function PolicyDialog({
     >
       <Box component="form" onSubmit={(event) => void submit(event)}>
         <DialogTitle>
-          {policy ? `Edit ${policy.name}` : "Add escalation policy"}
+          {policy
+            ? `${t("Edit", "تعديل")} ${policy.name}`
+            : t("Add escalation policy", "إضافة سياسة تصعيد")}
         </DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ pt: 1 }}>
             {validation ? <Alert severity="error">{validation}</Alert> : null}
             {mutation.isError ? (
-              <Alert severity="error">Policy could not be saved.</Alert>
+              <Alert severity="error">
+                {t("Policy could not be saved.", "تعذر حفظ السياسة.")}
+              </Alert>
             ) : null}
             <TextField
               required
-              label="Policy name"
+              label={t("Policy name", "اسم السياسة")}
               value={name}
               onChange={(event) => setName(event.target.value)}
               slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             <FormControl>
-              <InputLabel id="owner-role-label">Owner role</InputLabel>
+              <InputLabel id="owner-role-label">
+                {t("Owner role", "دور المسؤول")}
+              </InputLabel>
               <Select
                 labelId="owner-role-label"
-                label="Owner role"
+                label={t("Owner role", "دور المسؤول")}
                 value={owner}
                 onChange={(event) => setOwner(event.target.value)}
               >
                 {recipientRoles.map((role) => (
                   <MenuItem key={role} value={role}>
-                    {formatEnum(role)}
+                    {formatEnum(role, language)}
                   </MenuItem>
                 ))}
               </Select>
@@ -356,7 +412,7 @@ function PolicyDialog({
                     onChange={(event) => setWarning(event.target.checked)}
                   />
                 }
-                label="Warning eligible"
+                label={t("Warning eligible", "مؤهل للتحذير")}
               />
               <FormControlLabel
                 control={
@@ -365,18 +421,20 @@ function PolicyDialog({
                     onChange={(event) => setCritical(event.target.checked)}
                   />
                 }
-                label="Critical eligible"
+                label={t("Critical eligible", "مؤهل للحرج")}
               />
             </Stack>
             {steps.map((step, index) => (
               <Paper key={index} variant="outlined" sx={{ p: 2 }}>
                 <Stack spacing={2}>
-                  <Typography variant="subtitle1">Step {index + 1}</Typography>
+                  <Typography variant="subtitle1">
+                    {t("Step", "الخطوة")} {index + 1}
+                  </Typography>
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                     <TextField
                       required
                       type="number"
-                      label={`Step ${index + 1} delay (seconds)`}
+                      label={`${t("Step", "الخطوة")} ${index + 1} ${t("delay (seconds)", "التأخير (ثانية)")}`}
                       value={step.delay}
                       onChange={(event) =>
                         patchStep(index, { delay: event.target.value })
@@ -387,11 +445,11 @@ function PolicyDialog({
                     />
                     <FormControl sx={{ minWidth: 190 }}>
                       <InputLabel id={`step-${index}-role-label`}>
-                        Recipient role
+                        {t("Recipient role", "دور المستلم")}
                       </InputLabel>
                       <Select
                         labelId={`step-${index}-role-label`}
-                        label="Recipient role"
+                        label={t("Recipient role", "دور المستلم")}
                         value={step.role}
                         onChange={(event) =>
                           patchStep(index, { role: event.target.value })
@@ -399,7 +457,7 @@ function PolicyDialog({
                       >
                         {recipientRoles.map((role) => (
                           <MenuItem key={role} value={role}>
-                            {formatEnum(role)}
+                            {formatEnum(role, language)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -413,7 +471,7 @@ function PolicyDialog({
                           )
                         }
                       >
-                        Remove step
+                        {t("Remove step", "إزالة الخطوة")}
                       </Button>
                     ) : null}
                   </Stack>
@@ -450,20 +508,22 @@ function PolicyDialog({
                 ])
               }
             >
-              Add step
+              {t("Add step", "إضافة خطوة")}
             </Button>
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={mutation.isPending}>
-            Cancel
+            {t("Cancel", "إلغاء")}
           </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Saving…" : "Save policy"}
+            {mutation.isPending
+              ? t("Saving…", "جارٍ الحفظ…")
+              : t("Save policy", "حفظ السياسة")}
           </Button>
         </DialogActions>
       </Box>
@@ -483,9 +543,15 @@ function parseSteps(
   warning: boolean,
   critical: boolean,
   drafts: StepDraft[],
+  language: "en" | "ar" = "en",
 ): EscalationStepInput[] | string {
-  if (!name.trim()) return "Policy name is required.";
-  if (!warning && !critical) return "Select at least one eligible severity.";
+  const ar = language === "ar";
+  if (!name.trim())
+    return ar ? "اسم السياسة مطلوب." : "Policy name is required.";
+  if (!warning && !critical)
+    return ar
+      ? "اختر درجة شدة مؤهلة واحدة على الأقل."
+      : "Select at least one eligible severity.";
   const parsed: EscalationStepInput[] = [];
   for (const [index, draft] of drafts.entries()) {
     const delay_seconds = Number(draft.delay);
@@ -494,14 +560,20 @@ function parseSteps(
       delay_seconds < 0 ||
       delay_seconds > 604800
     )
-      return "Step delays must be whole seconds from 0 to 604800.";
+      return ar
+        ? "يجب أن تكون تأخيرات الخطوات ثواني صحيحة من 0 إلى 604800."
+        : "Step delays must be whole seconds from 0 to 604800.";
     if (index > 0 && delay_seconds <= parsed[index - 1].delay_seconds)
-      return "Step delays must increase strictly.";
+      return ar
+        ? "يجب أن تتزايد تأخيرات الخطوات بصورة إلزامية."
+        : "Step delays must increase strictly.";
     const channels = notificationChannels.filter(
       (channel) => draft.channels[channel],
     );
     if (channels.length === 0)
-      return `Step ${index + 1} requires at least one channel.`;
+      return ar
+        ? `تتطلب الخطوة ${index + 1} قناة واحدة على الأقل.`
+        : `Step ${index + 1} requires at least one channel.`;
     parsed.push({
       position: index + 1,
       delay_seconds,
@@ -511,7 +583,19 @@ function parseSteps(
   }
   return parsed;
 }
-function formatEnum(value: string) {
+function formatEnum(value: string, language: "en" | "ar" = "en") {
+  if (language === "ar")
+    return (
+      (
+        {
+          PRIMARY_CONTACT: "جهة الاتصال الرئيسية",
+          SECONDARY_CONTACT: "جهة اتصال ثانوية",
+          ESCALATION_CONTACT: "جهة اتصال للتصعيد",
+          WARNING: "تحذير",
+          CRITICAL: "حرج",
+        } as Record<string, string>
+      )[value] ?? value
+    );
   return value
     .toLowerCase()
     .split("_")

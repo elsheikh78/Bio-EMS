@@ -24,8 +24,12 @@ import {
   type DeliveryStatus,
 } from "../notificationDeliveries/contracts";
 import { useNotificationDeliveries } from "../notificationDeliveries/queries";
+import { useLocalization } from "../localization/useLocalization";
 
 export function NotificationDeliveriesPage() {
+  const { language } = useLocalization();
+  const t = (english: string, arabic: string) =>
+    language === "ar" ? arabic : english;
   const sites = useSites();
   const [selectedSiteId, setSelectedSiteId] = useState<number>();
   const [status, setStatus] = useState<DeliveryStatus | "ALL">("ALL");
@@ -39,22 +43,26 @@ export function NotificationDeliveriesPage() {
     <Stack spacing={3}>
       <Box>
         <Typography variant="overline" color="primary.main">
-          Notification operations
+          {t("Notification operations", "عمليات الإشعارات")}
         </Typography>
         <Typography component="h1" variant="h4">
-          Notification Delivery
+          {t("Notification Delivery", "إرسال الإشعارات")}
         </Typography>
         <Typography color="text.secondary">
-          Live evidence for queued, sent, retried, failed, and cancelled Alarm
-          notifications.
+          {t(
+            "Live evidence for queued, sent, retried, failed, and cancelled Alarm notifications.",
+            "أدلة حية لإشعارات الإنذارات المنتظرة والمرسلة والمعاد إرسالها والفاشلة والملغاة.",
+          )}
         </Typography>
       </Box>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <FormControl sx={{ minWidth: 240 }}>
-          <InputLabel id="delivery-site-label">Site</InputLabel>
+          <InputLabel id="delivery-site-label">
+            {t("Site", "الموقع")}
+          </InputLabel>
           <Select
             labelId="delivery-site-label"
-            label="Site"
+            label={t("Site", "الموقع")}
             value={siteId ?? ""}
             onChange={(event) => setSelectedSiteId(Number(event.target.value))}
           >
@@ -66,52 +74,65 @@ export function NotificationDeliveriesPage() {
           </Select>
         </FormControl>
         <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="delivery-status-label">Status</InputLabel>
+          <InputLabel id="delivery-status-label">
+            {t("Status", "الحالة")}
+          </InputLabel>
           <Select
             labelId="delivery-status-label"
-            label="Status"
+            label={t("Status", "الحالة")}
             value={status}
             onChange={(event) => setStatus(event.target.value)}
           >
-            <MenuItem value="ALL">All statuses</MenuItem>
+            <MenuItem value="ALL">{t("All statuses", "كل الحالات")}</MenuItem>
             {deliveryStatuses.map((value) => (
               <MenuItem key={value} value={value}>
-                {value}
+                {localizeDeliveryValue(value, language)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <Button onClick={() => void deliveries.refetch()} disabled={!siteId}>
-          Refresh
+          {t("Refresh", "تحديث")}
         </Button>
       </Stack>
       {sites.isError || deliveries.isError ? (
         <Alert severity="error">
-          Unable to load notification delivery evidence.
+          {t(
+            "Unable to load notification delivery evidence.",
+            "تعذر تحميل أدلة إرسال الإشعارات.",
+          )}
         </Alert>
       ) : null}
       {!siteId ? (
         <Alert severity="info">
-          Select a Site to view notification delivery evidence.
+          {t(
+            "Select a Site to view notification delivery evidence.",
+            "اختر موقعًا لعرض أدلة إرسال الإشعارات.",
+          )}
         </Alert>
       ) : null}
       {siteId &&
       !deliveries.isPending &&
       (deliveries.data?.length ?? 0) === 0 ? (
-        <Alert severity="info">No delivery jobs match this view.</Alert>
+        <Alert severity="info">
+          {t(
+            "No delivery jobs match this view.",
+            "لا توجد مهام إرسال تطابق هذا العرض.",
+          )}
+        </Alert>
       ) : null}
       {(deliveries.data?.length ?? 0) > 0 ? (
         <TableContainer component={Paper} variant="outlined">
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Created</TableCell>
-                <TableCell>Alarm</TableCell>
-                <TableCell>Recipient</TableCell>
-                <TableCell>Channel</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Attempts</TableCell>
-                <TableCell>Last result</TableCell>
+                <TableCell>{t("Created", "تاريخ الإنشاء")}</TableCell>
+                <TableCell>{t("Alarm", "الإنذار")}</TableCell>
+                <TableCell>{t("Recipient", "المستلم")}</TableCell>
+                <TableCell>{t("Channel", "القناة")}</TableCell>
+                <TableCell>{t("Status", "الحالة")}</TableCell>
+                <TableCell>{t("Attempts", "المحاولات")}</TableCell>
+                <TableCell>{t("Last result", "آخر نتيجة")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -135,7 +156,7 @@ export function NotificationDeliveriesPage() {
                     <TableCell>
                       <Chip
                         size="small"
-                        label={delivery.status}
+                        label={localizeDeliveryValue(delivery.status, language)}
                         color={
                           delivery.status === "DEAD_LETTER" ||
                           delivery.status === "FAILED"
@@ -164,5 +185,23 @@ export function NotificationDeliveriesPage() {
         </TableContainer>
       ) : null}
     </Stack>
+  );
+}
+
+function localizeDeliveryValue(value: string, language: "en" | "ar") {
+  if (language === "en") return value;
+  return (
+    (
+      {
+        QUEUED: "في الانتظار",
+        SENDING: "جارٍ الإرسال",
+        SENT: "أُرسلت",
+        DELIVERED: "تم التسليم",
+        RETRY: "إعادة محاولة",
+        FAILED: "فشلت",
+        DEAD_LETTER: "فشل نهائي",
+        CANCELLED: "ملغاة",
+      } as Record<string, string>
+    )[value] ?? value
   );
 }

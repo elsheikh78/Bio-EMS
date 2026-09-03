@@ -2,13 +2,13 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 2 September 2026 after P7 closure**
+**Current controlled delivery sequence — reconciled 3 September 2026 after global localization correction and Email evidence**
 
 The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, approved ADRs, and the P0-P7 sequence below.
 
 ## Current Position
 
-- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Live-provider evidence remains open.
+- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Email SMTP `SENT` and confirmed inbox arrival passed on 3 September 2026. WhatsApp and end-to-end dual-channel evidence remain open behind Meta registration.
 - P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are source complete, merged and CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Closure: `docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`.
 
 - Sprints 13, 14, and 15 are complete and closed.
@@ -24,19 +24,18 @@ The original Architecture Freeze v1.0 phase model is historical. Current impleme
 
 1. Reconcile local `main` with GitHub `origin/main` and confirm a clean working tree.
 2. Read `PROJECT_STATE.md` first, then this file, then `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
-3. Place real Gmail SMTP values only in ignored `backend/.env`; never copy the App Password into tracked files, screenshots, chat, or GitHub.
-4. Set `BIOEMS_EMAIL_TEST_RECIPIENT` temporarily and run `npm run test:email-delivery`; record provider receipt and independently confirm inbox arrival.
-5. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
-6. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
-7. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
+3. Preserve real Gmail SMTP values only in ignored `backend/.env`; Email smoke-test and inbox evidence already passed on 3 September 2026 and need not be repeated unless configuration changes.
+4. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
+5. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
+6. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
 
 ## Parallel P8-01 Live-Acceptance Track
 
 P8-01 source implementation is complete. Its controlled live-provider closure remains a parallel external/setup track and requires:
 
 1. reconcile the Windows local copy with GitHub `main`;
-2. configure Gmail SMTP only in ignored `backend/.env` and pass `npm run test:email-delivery`;
-3. confirm actual inbox arrival without exposing the App Password;
+2. preserve the passed Gmail SMTP `SENT` and confirmed inbox-arrival evidence from 3 September 2026 without exposing the App Password;
+3. do not repeat Email acceptance unless provider configuration changes;
 4. complete Meta developer registration, obtain the Phone Number ID and controlled permanent token, and obtain approval for the BIO-EMS Alarm template;
 5. pass a controlled live WhatsApp send and confirm receipt;
 6. execute one end-to-end Alarm scenario through the durable delivery engine with `WHATSAPP + EMAIL` as the primary step;

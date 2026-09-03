@@ -6,7 +6,7 @@
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Latest published tagged release:** `v0.17.0`.  
+**Release prepared for publication:** `v0.19.0`.
 **Current source-software version:** `0.19.0`.
 
 ## Documentation Authority — Read This First
@@ -40,7 +40,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 - **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
 - **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 - **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
-- **P8-01:** provider source complete / merged / CI verified; live SMTP and WhatsApp evidence remains open.
+- **P8-01:** provider source complete / merged / CI verified; live SMTP send and inbox arrival passed on 3 September 2026; WhatsApp and end-to-end dual-channel evidence remain open because Meta developer registration is still blocked.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
@@ -53,20 +53,22 @@ revisions and checksums, device receipt evidence, safe configuration activation,
 technical Commissioning and independent customer ADMIN acceptance. See the P8 plan
 and closure record above for the exact software/evidence boundary.
 
+The global language control persists Arabic/English selection and applies RTL/LTR across both SYSTEM_OWNER and customer operations. Customer navigation, monitoring, Alarm, Device, delivery, calibration, reporting, configuration, User/Audit and Workspace surfaces use Arabic copy when Arabic is selected; controlled report requests also use the selected language.
+
 ## P7 Final Product Completion (Historical)
 
 P7 consists of eight controlled work packages:
 
 1. SYSTEM_OWNER frontend boundary and console shell — complete.
 2. Customer / Site fleet management — complete.
-3. **License lifecycle and installation-binding UI — next.**
-4. Update-entitlement and release-eligibility UI.
-5. Maintenance, calibration and support fleet operations.
-6. Product UX and legacy cleanup.
-7. End-to-end product workflow review.
-8. Full regression, documentation reconciliation and software-product closure.
+3. License lifecycle and installation-binding UI — complete.
+4. Update-entitlement and release-eligibility UI — complete.
+5. Maintenance, calibration and support fleet operations — complete.
+6. Product UX and legacy cleanup — complete.
+7. End-to-end product workflow review — complete.
+8. Full regression, documentation reconciliation and software-product closure — complete.
 
-BIO-EMS must not be described as **SOFTWARE PRODUCT COMPLETE** for the approved scope until P7-01 through P7-08 are implemented, merged, and CI verified.
+P7-01 through P7-08 are complete, merged and CI verified; external provider, physical, field, UAT and production evidence remain separately controlled.
 
 ## Hardware Track
 

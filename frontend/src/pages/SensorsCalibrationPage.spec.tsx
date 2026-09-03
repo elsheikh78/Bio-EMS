@@ -8,6 +8,7 @@ import {
   useSensors,
 } from "../monitoredAreas/queries";
 import { SensorsCalibrationPage } from "./SensorsCalibrationPage";
+import { LocalizationProvider } from "../localization/LocalizationProvider";
 
 vi.mock("../auth/useAuthentication", () => ({ useAuthentication: vi.fn() }));
 vi.mock("../monitoredAreas/queries", () => ({
@@ -91,6 +92,29 @@ describe("SensorsCalibrationPage", () => {
     expect(screen.getByText("CERT-2026-01")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Record" })).toHaveLength(2);
     expect(screen.getAllByText("1")).toHaveLength(2);
+  });
+
+  it("renders the customer calibration workflow in Arabic", () => {
+    mockedUseSensors.mockReturnValue({
+      data: [{ ...baseSensor, calibration_status: "VALID" }],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useSensors>);
+
+    render(
+      <LocalizationProvider language="ar">
+        <SensorsCalibrationPage />
+      </LocalizationProvider>,
+    );
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "الحساسات والمعايرة",
+    );
+    expect(
+      screen.getByRole("button", { name: "تحديث السجل" }),
+    ).toBeInTheDocument();
+    expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
 
   it("shows loading, error retry, and empty states", () => {

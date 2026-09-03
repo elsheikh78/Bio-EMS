@@ -431,4 +431,25 @@ describe("localization contracts", () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it("selects the built-in Arabic resources for the customer navigation", () => {
+    render(
+      <LocalizationProvider language="ar">
+        <AuthenticationContext.Provider value={authenticatedAdmin}>
+          <MemoryRouter>
+            <AppNavigation label="التنقل الرئيسي" />
+          </MemoryRouter>
+        </AuthenticationContext.Provider>
+      </LocalizationProvider>,
+    );
+
+    expect(
+      screen.getByRole("link", { name: "لوحة المتابعة" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "الحساسات والمعايرة" }),
+    ).toBeInTheDocument();
+    expect(document.documentElement).toHaveAttribute("lang", "ar");
+    expect(document.documentElement).toHaveAttribute("dir", "rtl");
+  });
 });

@@ -6,7 +6,7 @@
 >
 > Use this ledger only to trace historical Sprint/BF/PVR/P-phase work and integration evidence. When any historical statement here conflicts with the current state, `PROJECT_STATE.md` controls.
 
-## Current handoff pointer — 2 September 2026
+## Current handoff pointer — 3 September 2026
 
 P0-P7 is **SOFTWARE PRODUCT COMPLETE** for the approved software scope. P7-03 through P7-08 closed through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 
@@ -14,9 +14,11 @@ P7-01 established the isolated SYSTEM_OWNER frontend boundary. P7-02 added SYSTE
 
 External hardware/provider/field/production/customer evidence remains separate from P7 software work.
 
-P8-01 primary WhatsApp and Email delivery source work closed through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Secret-safe provider configuration and the controlled SMTP smoke-test command closed through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Gmail App Password creation is an external preparation step only; SMTP inbox delivery has not yet been executed. Meta developer registration is looping after email verification on both desktop and mobile, so live WhatsApp credentials and template approval remain open.
+P8-01 primary WhatsApp and Email delivery source work closed through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. Secret-safe provider configuration and the controlled SMTP smoke-test command closed through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. On 3 September 2026 the controlled SMTP test returned `SENT` and the recipient confirmed inbox arrival; no secret or recipient address is tracked. Meta developer registration still loops after Email verification, so live WhatsApp credentials, template approval, delivery and end-to-end dual-channel evidence remain open.
 
 P8-02 through P8-08 source implementation closed through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. It added explicit customer ownership, the approved role matrix, SYSTEM_OWNER customer ADMIN lifecycle, controlled installation revisions and exact receipts, separated technical/customer decisions, configuration activation, and bilingual UI. Physical receipt, field Commissioning, customer acceptance and production execution are not claimed.
+
+The 3 September localization correction replaced the partial P8/SYSTEM_OWNER-only result with global Arabic/English resources for the customer shell and operational workflows, persisted RTL/LTR selection, and selected-language reporting requests. Frontend local gates passed 44 test files / 276 tests before integration.
 
 For the authoritative continuation read, in order:
 
