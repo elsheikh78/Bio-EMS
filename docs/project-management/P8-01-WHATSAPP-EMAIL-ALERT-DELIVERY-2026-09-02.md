@@ -82,3 +82,10 @@ P8-01 live acceptance closes only after:
 - Delivery Operations evidence review and documented result.
 
 These live checks remain open and resume on the Windows local system. They do not block the separately approved P8-02 through P8-08 source implementation.
+
+## Approved interim extension
+
+Because Meta registration remains blocked, P8-01A adds Telegram as a distinct
+interim primary channel. This does not close or remove WhatsApp. See
+[`P8-01A-TELEGRAM-INTERIM-ALARM-DELIVERY-2026-09-03.md`](P8-01A-TELEGRAM-INTERIM-ALARM-DELIVERY-2026-09-03.md)
+for the exact implementation, configuration, test, and evidence boundary.

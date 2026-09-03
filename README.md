@@ -41,7 +41,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 - **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
 - **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
 - **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
-- **P8-01:** provider source complete / merged / CI verified; live SMTP send and inbox arrival passed on 3 September 2026; WhatsApp and end-to-end dual-channel evidence remain open because Meta developer registration is still blocked.
+- **P8-01:** WhatsApp/Email provider source complete / merged / CI verified; live SMTP send and inbox arrival passed on 3 September 2026; WhatsApp remains blocked by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
@@ -104,7 +104,7 @@ BIO-EMS currently includes:
 - Operational Dashboard and Monitored Areas with authenticated telemetry-driven refresh.
 - JWT authentication, active-User enforcement, centralized RBAC, ADMIN User Management, and isolated SYSTEM_OWNER boundary.
 - Append-only Audit, Alarm acknowledgment evidence, calibration history, and Device communication-health evidence.
-- Notification recipients, escalation configuration, durable notification events/delivery operations, and SMS failover contracts/runtime.
+- Notification recipients, Email/WhatsApp/Telegram escalation configuration, durable notification events/delivery operations, and SMS failover contracts/runtime.
 - BF-08 Site Controller offline-critical configuration synchronization.
 - Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations in Preview/CSV/PDF workflows.
 - P2 Site Controller host-side runtime and recovery/qualification software gates.

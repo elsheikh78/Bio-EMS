@@ -51,7 +51,7 @@ export class NotificationEscalationOrchestrator {
                 notification_event_id: event.id,
                 site_id: context.siteId,
                 recipient_id: recipient.id,
-                channel: channel as "EMAIL" | "SMS" | "WHATSAPP",
+                channel: channel as "EMAIL" | "SMS" | "WHATSAPP" | "TELEGRAM",
                 severity: context.severity,
                 idempotency_key: `delivery:${event.id}:${policy.id}:${step.position}:${recipient.id}:${channel}`,
               });

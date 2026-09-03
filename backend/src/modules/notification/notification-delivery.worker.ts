@@ -5,7 +5,7 @@ import type {
 
 export interface DeliveryProvider {
   readonly name: string;
-  readonly channel: "EMAIL" | "SMS" | "WHATSAPP";
+  readonly channel: "EMAIL" | "SMS" | "WHATSAPP" | "TELEGRAM";
   send(envelope: DeliveryEnvelope, signal: AbortSignal): Promise<{ messageId: string }>;
 }
 

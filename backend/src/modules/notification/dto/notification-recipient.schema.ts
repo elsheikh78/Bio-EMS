@@ -8,7 +8,7 @@ export const NOTIFICATION_RECIPIENT_ROLES = [
   "MANAGEMENT",
   "OTHER",
 ] as const;
-export const NOTIFICATION_CHANNELS = ["EMAIL", "SMS", "WHATSAPP"] as const;
+export const NOTIFICATION_CHANNELS = ["EMAIL", "SMS", "WHATSAPP", "TELEGRAM"] as const;
 export const NOTIFICATION_SEVERITIES = ["WARNING", "CRITICAL"] as const;
 
 const e164 = z.string().regex(/^\+[1-9]\d{7,14}$/, "address must use E.164 format");
@@ -30,7 +30,12 @@ const endpointSchema = z
     const valid =
       endpoint.channel === "EMAIL"
         ? z.email().safeParse(endpoint.address)
-        : e164.safeParse(endpoint.address);
+        : endpoint.channel === "TELEGRAM"
+          ? z
+              .string()
+              .regex(/^-?\d{1,20}$/, "address must be a Telegram Chat ID")
+              .safeParse(endpoint.address)
+          : e164.safeParse(endpoint.address);
     if (!valid.success) {
       context.addIssue({
         code: "custom",
@@ -43,7 +48,7 @@ const endpointSchema = z
 const endpointsSchema = z
   .array(endpointSchema)
   .min(1)
-  .max(3)
+  .max(4)
   .superRefine((endpoints, context) => {
     const channels = endpoints.map(({ channel }) => channel);
     if (new Set(channels).size !== channels.length) {

@@ -10,6 +10,7 @@ export interface NotificationDeliveryConfig {
     templateName: string;
     languageCode: string;
   };
+  telegram?: { endpoint: string; token: string; providerName: string };
   email?: {
     host: string;
     port: number;
@@ -28,8 +29,9 @@ export function loadNotificationDeliveryConfig(env: NodeJS.ProcessEnv): Notifica
   if (!enabled) return { enabled, pollIntervalMs, timeoutMs };
   const sms = optionalSms(env);
   const whatsapp = optionalWhatsapp(env);
+  const telegram = optionalTelegram(env);
   const email = optionalEmail(env);
-  if (!sms && !whatsapp && !email) {
+  if (!sms && !whatsapp && !telegram && !email) {
     throw new Error("Notification delivery requires at least one complete provider configuration");
   }
   return {
@@ -38,7 +40,21 @@ export function loadNotificationDeliveryConfig(env: NodeJS.ProcessEnv): Notifica
     timeoutMs,
     ...(sms ? { sms } : {}),
     ...(whatsapp ? { whatsapp } : {}),
+    ...(telegram ? { telegram } : {}),
     ...(email ? { email } : {}),
+  };
+}
+
+function optionalTelegram(env: NodeJS.ProcessEnv): NotificationDeliveryConfig["telegram"] {
+  const token = env.BIOEMS_TELEGRAM_BOT_TOKEN;
+  if (!token) return undefined;
+  if (!/^\d+:[A-Za-z0-9_-]{20,}$/.test(token)) {
+    throw new Error("Invalid Telegram provider configuration");
+  }
+  return {
+    endpoint: `https://api.telegram.org/bot${token}/sendMessage`,
+    token,
+    providerName: "TELEGRAM_BOT",
   };
 }
 

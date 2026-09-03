@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added / Changed
+
+- Added Telegram Bot API as an independent Alarm-delivery channel while Meta WhatsApp onboarding remains blocked.
+- Extended recipient endpoints, escalation policies, durable delivery records, Delivery Operations contracts, and configuration UI with explicit `TELEGRAM` identity.
+- Added migration 021, secret-safe Bot Token configuration, provider tests, and `npm run test:telegram-delivery` for controlled live evidence.
+- Preserved WhatsApp for later activation and retained SMS as the emergency/fallback channel; no live Telegram or end-to-end acceptance is claimed yet.
+
 ## [0.19.0] - 2026-09-03
 
 ### Release scope

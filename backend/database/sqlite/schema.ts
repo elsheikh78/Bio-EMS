@@ -343,7 +343,7 @@ export function createTables(database: Database.Database = sqlite): void {
     CREATE TABLE IF NOT EXISTS notification_recipient_endpoints (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       recipient_id INTEGER NOT NULL,
-      channel TEXT NOT NULL CHECK(channel IN ('EMAIL', 'SMS', 'WHATSAPP')),
+      channel TEXT NOT NULL CHECK(channel IN ('EMAIL', 'SMS', 'WHATSAPP', 'TELEGRAM')),
       address TEXT NOT NULL,
       eligible_severities_json TEXT NOT NULL CHECK(
         eligible_severities_json IN ('["WARNING"]', '["CRITICAL"]', '["WARNING","CRITICAL"]')
