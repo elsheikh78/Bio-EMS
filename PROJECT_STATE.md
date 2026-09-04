@@ -14,13 +14,14 @@
 2. Preserve all P0-P8 closure and evidence boundaries. UI/UX refresh is new approved scope and must not rewrite historical closure claims.
 3. Preserve the global Arabic/English localization closure and the RTL navigation correction. The latest observed `main` baseline before the new UI/UX documentation package is `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` (`Merge RTL navigation drawer correction`).
 4. Execute the approved UI/UX product refresh from `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md` beginning with a complete frontend inventory/design-system audit.
-5. The approved UI direction includes the selected BIO-EMS logo concept (option 5, transparent/background-independent production assets), a professional opening experience, coherent theme/background system, compact one-screen-oriented Dashboard redesign, and a new Dashboard-accessible Monitoring Areas Live Board with one live measurement card/tile per Monitored Area.
-6. Reconcile all customer and SYSTEM_OWNER screens to the same professional design system while preserving trust boundaries, permissions, operational clarity, accessibility, responsiveness, Arabic/English and RTL/LTR behavior.
-7. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
-8. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
-9. Keep live-provider, hardware qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
-10. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
-11. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
+5. Treat `docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md` as the detailed visual decision authority for the 4 September Work discussion, including Logo Option 5, required logo variants, default Light theme, optional Dark monitoring theme, restrained sensor/pulse background treatment, stable status colors, Dashboard visual intent and Monitoring Areas Live Board details.
+6. The approved UI direction includes the selected BIO-EMS logo concept (option 5, transparent/background-independent production assets), a professional opening experience, coherent theme/background system, compact one-screen-oriented Dashboard redesign, and a new Dashboard-accessible Monitoring Areas Live Board with one live measurement card/tile per Monitored Area.
+7. Reconcile all customer and SYSTEM_OWNER screens to the same professional design system while preserving trust boundaries, permissions, operational clarity, accessibility, responsiveness, Arabic/English and RTL/LTR behavior.
+8. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
+9. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
+10. Keep live-provider, hardware qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
+11. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
+12. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
 
 ## Implemented Software Position
 
@@ -38,9 +39,17 @@ The controlled work package is:
 
 `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`
 
+The detailed visual decision freeze is:
+
+`docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md`
+
 Approved scope:
 
 - selected BIO-EMS logo direction and reusable transparent/background-independent brand assets;
+- Logo Option 5 retained as the approved identity basis, with horizontal, icon-only, light-surface, dark-surface, report/app/setup scale variants;
+- default Light theme and optional Dark monitoring-room theme;
+- restrained shared sensor/pulse/network background treatment rather than heavy per-screen backgrounds;
+- stable status visual family: green Normal, yellow/amber Warning, red Alarm/critical, gray Unavailable/offline/no-current-data where applicable, always with non-color cues;
 - professional opening/entry experience;
 - reusable global theme/design tokens and coherent backgrounds/surfaces;
 - compact, high-information operational Dashboard redesign;
@@ -66,7 +75,7 @@ Physical controller/hardware qualification, live SMS evidence, WhatsApp provider
 ## Next-Session Start Point
 
 1. Reconcile local Windows `main` with GitHub `main` and confirm a clean working tree.
-2. Read this file, then `IMPLEMENTATION_PLAN.md`, then `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
+2. Read this file, then `IMPLEMENTATION_PLAN.md`, then `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`, then `docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md`.
 3. Confirm baseline commit `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` behavior remains intact: Arabic drawer/right, English drawer/left.
 4. Audit all frontend routes/components/styles before implementation.
 5. Establish the shared brand/design system before redesigning individual screens.
