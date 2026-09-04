@@ -2,207 +2,107 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 3 September 2026 after global localization correction and Email evidence**
+**Current controlled delivery sequence — reconciled 4 September 2026.**
 
-The original Architecture Freeze v1.0 phase model is historical. Current implementation is governed by repository evidence, `PROJECT_STATE.md`, approved ADRs, and the P0-P7 sequence below.
+Historical P0-P8 software closure/evidence remains authoritative for completed scope. The newly approved UI/UX Product Refresh is later software scope and is **APPROVED / DOCUMENTED / NOT YET IMPLEMENTED**.
 
 ## Current Position
 
-- DEP-01 — Full Offline Windows Installer and Commissioning Package — is an approved
-  post-platform work package. It requires one customer-facing offline Windows Setup
-  package that installs BIO-EMS and its required runtimes/services automatically,
-  plus a separate technician Commissioning Package. Implementation and clean-machine
-  qualification have not started. Controlled plan:
-  `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`.
+- P0-P7: completed/merged/CI verified according to existing closure records.
+- P8-01 WhatsApp/Email source delivery: software complete; Email live evidence passed; WhatsApp live evidence remains externally blocked by Meta.
+- P8-01A Telegram: source complete/merged/CI verified; live bot and end-to-end evidence remain open.
+- P8-02 through P8-08: source complete/merged/CI verified.
+- Global Arabic/English localization: complete/merged/CI verified.
+- RTL navigation correction: merged on `main`; latest observed baseline before this work package is `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
+- DEP-01 Full Offline Windows Installer: approved later scope; implementation/clean-machine qualification not yet claimed.
+- UI/UX Product Refresh: approved on 4 September 2026; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
 
-- P8-01 — Primary WhatsApp and Email Alarm Delivery — is implemented, merged, and CI verified through PR #147 / CI run #526 / merge `17bbfc1d5623ad7bdf47d99e6d5954fc33a9666d`. The safe `.env.example` provider template and controlled SMTP smoke test are merged through PR #148 / CI run #528 / merge `a045e933dcd6583f1e7e32e73562f0ab2b45dd4c`. Email SMTP `SENT` and confirmed inbox arrival passed on 3 September 2026. WhatsApp and end-to-end dual-channel evidence remain open behind Meta registration.
-- P8-01A — Telegram Interim Alarm Delivery — is implemented, merged, and CI verified through PR #158 / CI run #549 / merge `c90cdde2e260730f70d38d6f22fa091a415961a4` as an independent primary channel. Its live Bot Token/Chat ID smoke test and end-to-end `TELEGRAM + EMAIL` evidence remain open; SMS remains emergency fallback and WhatsApp remains available for later activation.
-- P8-02 through P8-08 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment — are source complete, merged and CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`. ADR: `docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md`. Closure: `docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`.
+## UI/UX Product Refresh — Approved Execution Plan
 
-- Sprints 13, 14, and 15 are complete and closed.
-- Sprint 16 reporting implementation and BF-10 are complete, merged, and CI verified.
-- P0-P6 source-software delivery is complete, merged, and CI verified through P6 productization.
-- P7 — Final Product Completion is complete, merged, and CI verified.
-- P7-01 is complete, merged, and CI verified through PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`.
-- P7-02 is complete, merged, and CI verified through PR #142 / final CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- P7-03 through P7-08 closed through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
-- Live SMS-provider evidence, physical controller qualification, endurance, production deployment evidence, BIO EGYPT commissioning/UAT, and customer/production acceptance remain separate external gates.
+### UX-01 — Frontend Inventory and Non-Regression Baseline
+
+Status: **APPROVED / NOT STARTED**
+
+- enumerate all customer, SYSTEM_OWNER and P8 routes/components/styles;
+- identify duplicate/stale styling and legacy artifacts;
+- capture current route/auth/RBAC/localization/live-refresh behavior before visual changes;
+- verify Arabic drawer/right and English drawer/left baseline;
+- preserve the existing `Site -> Monitored Area (Room) -> Sensor` domain.
+
+### UX-02 — Brand and Shared Design System
+
+Status: **APPROVED / NOT STARTED**
+
+- implement the selected BIO-EMS logo direction (design option 5) as reusable background-independent assets;
+- establish typography, spacing, surface, card, navigation, control, status/severity, chart and responsive tokens/primitives;
+- use reusable theme/surface treatment rather than unrelated heavy per-screen backgrounds;
+- maintain operational contrast and non-color severity cues.
+
+### UX-03 — Opening / Entry Experience
+
+Status: **APPROVED / NOT STARTED**
+
+- professional BIO-EMS opening/entry experience;
+- clean transition into customer or SYSTEM_OWNER authentication/product surfaces;
+- no trust-boundary or pre-auth information leakage.
+
+### UX-04 — Compact Operational Dashboard Redesign
+
+Status: **APPROVED / NOT STARTED**
+
+- redesign Dashboard for a compact, high-information normal desktop viewport;
+- prioritize overall state, Alarm/actionable exceptions, monitored-area status, live environmental readings and relevant device health;
+- preserve authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback;
+- provide a clear entry to the new Monitoring Areas Live Board.
+
+### UX-05 — Monitoring Areas Live Board
+
+Status: **APPROVED / NOT STARTED**
+
+- add a dedicated Dashboard-accessible route/screen;
+- one prominent live card/tile per Monitored Area;
+- show current measurement(s), unit, area identity, state/severity and freshness/communication indication where supported;
+- distinguish Normal/Warning/Alarm/Unavailable without color-only encoding;
+- responsive grouping/filtering for larger fleets;
+- first-class Arabic/English and RTL/LTR;
+- use existing trusted APIs/domain contracts and consistent live update/reconnect/fallback behavior.
+
+### UX-06 — High-Frequency Customer Operations Refresh
+
+Status: **APPROVED / NOT STARTED**
+
+Reconcile Monitored Areas, Alarms/acknowledgement, Devices/health, Configuration, Calibration, notifications/escalation/delivery operations and Reporting Center with the shared design system without changing their domain semantics.
+
+### UX-07 — Remaining Customer Surface Refresh
+
+Status: **APPROVED / NOT STARTED**
+
+Reconcile remaining user-facing commissioning/productization/operational surfaces, including loading/empty/error/action states, responsive behavior and accessibility.
+
+### UX-08 — SYSTEM_OWNER and P8 Workflow Refresh
+
+Status: **APPROVED / NOT STARTED**
+
+Reconcile SYSTEM_OWNER customer/site/license/update/maintenance/support and P8 installation provisioning/revision/receipt/commissioning/acceptance surfaces while preserving isolated platform authentication and tenant/RBAC boundaries.
+
+### UX-09 — Full Regression and Closure
+
+Status: **APPROVED / NOT STARTED**
+
+Required gates include typecheck, build, lint, formatting, automated frontend tests, auth/RBAC/route regression, Arabic/English + RTL/LTR regression, Dashboard/Monitored Areas/Live Board live-refresh regression, responsive checks, accessibility sanity checks and affected export/report navigation regression.
+
+Only after real implementation, PR, CI and merge evidence may this package be marked complete and reflected in release/version documentation.
 
 ## Next-Session Start Procedure
 
-1. Reconcile local `main` with GitHub `origin/main` and confirm a clean working tree.
-2. Read `PROJECT_STATE.md` first, then this file, then `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
-3. Preserve real Gmail SMTP values only in ignored `backend/.env`; Email smoke-test and inbox evidence already passed on 3 September 2026 and need not be repeated unless configuration changes.
-4. Treat Meta WhatsApp setup as externally blocked until developer registration succeeds and Phone Number ID, permanent token, and template approval are actually obtained.
-5. Create the controlled Telegram bot and complete its live smoke test before the interim end-to-end Alarm test.
-5. Keep payment settlement, invoicing, live remote OTA/update execution and other external evidence outside the software closure claim.
-6. Use the merged P8 installation workflow without bypassing tenant isolation or reusing customer ADMIN identity; preserve field acceptance as external evidence.
-7. After the supported platform/runtime set is frozen, execute DEP-01 from
-   `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`; do not describe existing
-   P6 packaging as the qualified customer single-click installer.
-
-## Parallel P8-01 Live-Acceptance Track
-
-P8-01 source implementation is complete. Its controlled live-provider closure remains a parallel external/setup track and requires:
-
-1. reconcile the Windows local copy with GitHub `main`;
-2. preserve the passed Gmail SMTP `SENT` and confirmed inbox-arrival evidence from 3 September 2026 without exposing the App Password;
-3. do not repeat Email acceptance unless provider configuration changes;
-4. complete Meta developer registration, obtain the Phone Number ID and controlled permanent token, and obtain approval for the BIO-EMS Alarm template;
-5. pass a controlled live WhatsApp send and confirm receipt;
-6. execute one end-to-end Alarm scenario through the durable delivery engine with `WHATSAPP + EMAIL` as the primary step;
-7. verify delivery-attempt evidence and preserve SMS as the later fallback step;
-8. record exact live/UAT evidence and update P8-01 status.
-
-Meta registration is an external blocker, not a reason to claim P8-01 closure without evidence and not a blocker to P8-02 through P8-08 source implementation. Live Email/WhatsApp setup resumes in the next controlled local session.
-
-## P0-P7 Sequence
-
-### P0 — Professional Software / Reporting Baseline
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Includes all five controlled report families through Preview/CSV/PDF, professional PDF identity, selected Site time-zone rendering, and authenticated event-driven refresh for Dashboard and Monitored Areas.
-
-### P1 — Notification Delivery Engine
-
-Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED**
-
-Durable delivery queue, worker/runtime, SMS-provider boundary, Alarm escalation delivery orchestration, and protected Site-scoped Delivery Operations are implemented. Live-provider/field evidence remains external.
-
-### P2 — Site Controller Runtime
-
-Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL PHYSICAL EVIDENCE OPEN**
-
-BF-08 and P2-01 through P2-09 are implemented and CI verified, including post-P2 durability hardening. Physical controller, DS18B20, SIM800L, deployed MQTT, and endurance evidence remain external gates.
-
-### P3 — Pilot Commissioning Tooling
-
-Status: **SOFTWARE COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
-
-Controlled commissioning sessions, checks, evidence/deviations/decisions, Site-scoped APIs, verification/orchestration, readiness UI, CSV/PDF records, and BIO EGYPT software dry-run/UAT package are implemented.
-
-Closure: PRs #130-#132 / closure merge `6a74122e`.
-
-### P4 — Production Hardening
-
-Status: **SOFTWARE CONTROLS COMPLETE / MERGED / CI VERIFIED / EXTERNAL EVIDENCE OPEN**
-
-Operational controls cover backup/restore, process supervision, secrets/configuration, TLS/QoS, persistent storage, recovery, observability, retention, upgrade/rollback, and disaster-recovery evidence structures.
-
-Closure: PR #133 / merge `3b90dda94811440cc18739bb857c036a48ce72ad`.
-
-### P5 — SYSTEM_OWNER / Commercial Operations
-
-Status: **BACKEND/DOMAIN SOFTWARE COMPLETE / MERGED / CI VERIFIED**
-
-The isolated SYSTEM_OWNER trust domain and approved customer fleet identity, license/update-entitlement, and maintenance/calibration/support/update oversight workflows are implemented while preserving the rule that customer ADMIN cannot administer or discover SYSTEM_OWNER.
-
-Closure: PR #134 / CI run #445 / merge `7c1ae9cfad3a26ab8414a931ad6fbfd28cf016fb`.
-
-### P6 — Productization / Deployment / Acceptance
-
-Status: **SOFTWARE PRODUCTIZATION COMPLETE / MERGED / CI VERIFIED / EXTERNAL ACCEPTANCE OPEN**
-
-Controlled release/productization packaging, deployment/acceptance procedures, and supporting source-level tooling are complete.
-
-Closure: PR #135 / CI run #448 / merge `214a228cc490df12b895b264fc031efaecf8931e`.
-
-### P7 — Final Product Completion
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`.
-
-P7 closes the remaining gap between source-level capability and a coherent end-to-end product surface.
-
-#### P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Implemented isolated owner authentication/session state, strict SYSTEM_OWNER principal validation, protected `/system-owner` routing, fail-closed owner route behavior, bilingual owner console shell, no customer-shell owner navigation, and authorization/contract regression tests.
-
-Closure: PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec` / `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
-
-#### P7-02 — Customer / Site Fleet Management
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Implemented SYSTEM_OWNER customer fleet list/detail, safe customer creation through the existing P5 contract, Site/installation identity visibility from existing commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle update actions remain intentionally absent because no backend update contract exists.
-
-Closure: PR #142 / final CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d` / `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
-
-#### P7-03 — License Lifecycle and Installation Binding UI
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Required scope for continuation:
-
-- expose SYSTEM_OWNER license inventory and license detail using the existing isolated platform trust boundary;
-- expose validity/lifecycle fields already supported by the platform-operations domain;
-- expose supported Site/installation association and clearly distinguish recorded binding from physical installation/commissioning evidence;
-- preserve authenticated server-derived actor provenance;
-- add only backend mutations that are required by the approved P7-03 acceptance target and are protected by SYSTEM_OWNER middleware, validation, service/repository boundaries, and append-only commercial evidence;
-- do not introduce customer-role access to platform commercial routes;
-- do not model payment/invoice settlement as license state;
-- do not claim remote update execution from entitlement/license records;
-- provide bilingual loading/error/empty/detail/action states and regression coverage;
-- pass backend/frontend typecheck, build, lint, formatting, tests, and normal PR/CI/merge gates.
-
-P7-03 closure must update `PROJECT_STATE.md`, this plan, roadmap/changelog as applicable, and create a dedicated closure record before advancing to P7-04.
-
-#### P7-04 — Update Entitlement and Release Eligibility UI
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Owner-facing entitlement/eligibility workflows with explicit separation from remote update execution.
-
-#### P7-05 — Maintenance, Calibration and Support Fleet Operations
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Fleet-level due/overdue/actionable oversight and supported owner operations without fabricating field completion evidence.
-
-#### P7-06 — Product UX and Legacy Cleanup
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Remove/reconcile stale frontend artifacts and obsolete user-facing text, including the known Sprint-14 Foundation/deferred residue; review loading/error/empty states, navigation consistency, responsiveness, accessibility, and localization.
-
-#### P7-07 — End-to-End Product Workflow Review
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Audit every exposed operational/customer/owner workflow for live actions, permission consistency, API/error behavior, refresh behavior, and export/download operation.
-
-#### P7-08 — Full Regression, Documentation Reconciliation and Software Product Closure
-
-Status: **COMPLETE / MERGED / CI VERIFIED**
-
-Complete CI gates plus P7 security/navigation/API/UI/export regressions and reconcile all current-state documents with actual PR/CI/merge evidence.
-
-## P7 Exit Gate
-
-BIO-EMS must not be described as **SOFTWARE PRODUCT COMPLETE** until P7-01 through P7-08 are implemented, merged, and CI verified.
-
-P7 software closure still does not establish physical qualification, provider delivery, field commissioning, UAT, Quality/customer sign-off, billing/payment execution, live remote-update execution, or production/customer acceptance.
-
-## Parallel External Evidence Track
-
-The following may proceed in parallel where practical but remains a distinct evidence track:
-
-1. physical hardware qualification and HV-01 through HV-15;
-2. live SMS-provider evidence;
-3. deployed MQTT/LIVE-REPLAY and recovery evidence;
-4. required endurance including the controlled 72-hour gate where applicable;
-5. production backup/restore/rollback/DR execution;
-6. BIO EGYPT installation, calibration, commissioning and Alarm testing;
-7. customer UAT, Quality/customer sign-off, and acceptance.
+1. Reconcile local Windows `main` with GitHub `origin/main`; confirm clean working tree.
+2. Read `PROJECT_STATE.md`, this file, then `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
+3. Confirm baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` RTL navigation behavior.
+4. Execute UX-01 first; do not start by styling isolated pages.
+5. Establish UX-02 shared brand/design primitives before Dashboard/screen redesign.
+6. Proceed UX-03 -> UX-04 -> UX-05 -> UX-06 -> UX-07 -> UX-08 -> UX-09.
+7. Keep Meta/Telegram/provider evidence, hardware, field commissioning/UAT/customer acceptance and DEP-01 as separate tracks unless explicitly being worked.
 
 ## Execution Rule
 
-Repository completion, CI success, physical/bench evidence, provider delivery, field commissioning, production deployment, UAT, and customer acceptance are distinct gates. Documentation must state exactly which gate has been satisfied and must not infer later gates from earlier ones.
-
-## Historical Value
-
-P0-P6 closure records remain valid historical evidence. P7 is new approved scope resulting from the post-P6 product audit; historical documents must not be rewritten to imply P7 was part of their original closure.
+Repository completion, CI success, provider delivery, physical/bench evidence, field commissioning, production deployment, UAT and customer acceptance are distinct gates. UI polish must never be used to imply completion of an external evidence gate.
