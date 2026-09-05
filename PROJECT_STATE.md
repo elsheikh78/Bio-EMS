@@ -1,27 +1,28 @@
 # BIO-EMS Project State
 
-**State date:** 4 September 2026
+**State date:** 5 September 2026
 
 **Release prepared for publication:** `v0.19.0`
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX PRODUCT REFRESH IS APPROVED LATER SOFTWARE SCOPE AND NOT YET IMPLEMENTED.**
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX PRODUCT REFRESH AND SITE-BOUND LICENSING ARE APPROVED LATER SOFTWARE SCOPE AND NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
 1. Treat GitHub `main` as authoritative and reconcile the local Windows working copy before further implementation.
-2. Preserve all P0-P8 closure and evidence boundaries. UI/UX refresh is new approved scope and must not rewrite historical closure claims.
-3. Preserve the global Arabic/English localization closure and the RTL navigation correction. The latest observed `main` baseline before the new UI/UX documentation package is `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` (`Merge RTL navigation drawer correction`).
-4. Execute the approved UI/UX product refresh from `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md` beginning with a complete frontend inventory/design-system audit.
-5. Treat `docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md` as the detailed visual decision authority for the 4 September Work discussion, including Logo Option 5, required logo variants, default Light theme, optional Dark monitoring theme, restrained sensor/pulse background treatment, stable status colors, Dashboard visual intent and Monitoring Areas Live Board details.
-6. The approved UI direction includes the selected BIO-EMS logo concept (option 5, transparent/background-independent production assets), a professional opening experience, coherent theme/background system, compact one-screen-oriented Dashboard redesign, and a new Dashboard-accessible Monitoring Areas Live Board with one live measurement card/tile per Monitored Area.
-7. Reconcile all customer and SYSTEM_OWNER screens to the same professional design system while preserving trust boundaries, permissions, operational clarity, accessibility, responsiveness, Arabic/English and RTL/LTR behavior.
-8. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
-9. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
-10. Keep live-provider, hardware qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
-11. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
-12. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
+2. Preserve all P0-P8 closure and evidence boundaries. UI/UX refresh and licensing are new approved scope and must not rewrite historical closure claims.
+3. Preserve global Arabic/English localization and RTL navigation correction; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` remains relevant for UI regression.
+4. Execute the approved UI/UX product refresh from `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md` using the visual freeze as its decision authority.
+5. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
+6. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
+7. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
+8. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
+9. Site-Bound Licensing / Anti-Cloning is now an approved mandatory production gate. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
+10. LIC-01 through LIC-13 must be implemented and evidenced before DEP-01 can be declared the final Production Installer and before any commercial/customer production deployment is declared production-ready.
+11. Development, laboratory, UI/UAT and explicitly non-production pilot work may continue before the licensing gate where appropriate.
+12. Licensing design must preserve monitoring continuity: loss of Internet alone must not unexpectedly stop permitted local telemetry/alarm operation.
+13. Keep live-provider, hardware qualification, licensing qualification, installer qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
 
 ## Implemented Software Position
 
@@ -32,53 +33,62 @@
 - Global customer and SYSTEM_OWNER Arabic/English localization is complete/merged/CI verified.
 - RTL navigation drawer correction is merged on `main` at `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
 - React Dashboard and Monitored Areas already have authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback; these are non-regression requirements for the refresh.
+- Site-Bound Licensing LIC-01 through LIC-13: **NOT YET IMPLEMENTED**.
+- DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
 ## Approved UI/UX Refresh Scope — Not Yet Implemented
 
-The controlled work package is:
-
+Controlled work package:
 `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`
 
-The detailed visual decision freeze is:
-
+Detailed visual decision freeze:
 `docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md`
 
-Approved scope:
+Approved scope includes selected BIO-EMS logo option 5 and production variants, Light/default and optional Dark monitoring theme, coherent shared surfaces/backgrounds, professional opening experience, compact operational Dashboard, Monitoring Areas Live Board, full customer/SYSTEM_OWNER/P8 visual reconciliation, Arabic/English RTL/LTR regression, responsive/accessibility review and preservation of API/RBAC/tenant/alarm/audit/reporting/commissioning semantics.
 
-- selected BIO-EMS logo direction and reusable transparent/background-independent brand assets;
-- Logo Option 5 retained as the approved identity basis, with horizontal, icon-only, light-surface, dark-surface, report/app/setup scale variants;
-- default Light theme and optional Dark monitoring-room theme;
-- restrained shared sensor/pulse/network background treatment rather than heavy per-screen backgrounds;
-- stable status visual family: green Normal, yellow/amber Warning, red Alarm/critical, gray Unavailable/offline/no-current-data where applicable, always with non-color cues;
-- professional opening/entry experience;
-- reusable global theme/design tokens and coherent backgrounds/surfaces;
-- compact, high-information operational Dashboard redesign;
-- new Monitoring Areas Live Board linked from Dashboard;
-- live cards/tiles per Monitored Area showing current measurement, unit, state and freshness/communication indication where supported;
-- full customer frontend visual review;
-- full SYSTEM_OWNER frontend visual review;
-- full P8 installation workflow visual reconciliation;
-- Arabic/English and RTL/LTR regression across all affected routes;
-- responsive/accessibility review;
-- preservation of API, RBAC, tenant isolation, Alarm, audit, reporting and commissioning semantics.
+This scope must not be marked complete until code is implemented, repository gates pass, PR/CI evidence exists and merge evidence is recorded.
 
-This scope must not be marked complete until code is implemented, normal repository gates pass, PR/CI evidence exists and the merge SHA is recorded.
+## Mandatory Site-Bound Licensing Production Gate — Not Yet Implemented
+
+**Architecture:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
+
+Approved protection objective: prevent a licensed BIO-EMS installation from being copied/reused on another computer, another customer site, or another site belonging to the same customer without separately authorized licensing.
+
+Approved trust chain:
+
+`Customer -> Licensed Site -> Installation -> Host Identity -> Authorized Gateways/Devices -> Signed License`
+
+Required work packages:
+
+- LIC-01 Licensing domain/data model
+- LIC-02 Installation identity/protected key storage
+- LIC-03 Hardware fingerprint/tolerance
+- LIC-04 Signed license certificate/signing/verification
+- LIC-05 Activation API/Platform Owner workflow
+- LIC-06 Local runtime validator
+- LIC-07 Site/gateway/device binding
+- LIC-08 Offline activation/grace/monitoring continuity
+- LIC-09 Transfer/reactivation/revocation
+- LIC-10 Platform licensing dashboard/audit
+- LIC-11 Installer integration
+- LIC-12 Anti-tamper/negative/security qualification
+- LIC-13 Signing-key operations/backup/recovery
+
+**Gate:** no final Production Installer and no commercial/customer production-ready declaration until LIC-01 -> LIC-13 have real implementation and test evidence.
 
 ## Release / Version Position
 
-`VERSION` remains the source-version authority at `0.19.0` until the project's version/release policy is intentionally advanced by real merged implementation. Documentation of the new work package alone does not create a new software release.
+`VERSION` remains the source-version authority at `0.19.0` until the project's version/release policy is intentionally advanced by real merged implementation. Documentation of approved future work does not create a new software release.
 
 ## External Evidence Still Open
 
-Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, Telegram live/end-to-end acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
+Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, Telegram live/end-to-end acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, licensing qualification, final installer qualification, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
 
 ## Next-Session Start Point
 
 1. Reconcile local Windows `main` with GitHub `main` and confirm a clean working tree.
-2. Read this file, then `IMPLEMENTATION_PLAN.md`, then `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`, then `docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md`.
-3. Confirm baseline commit `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` behavior remains intact: Arabic drawer/right, English drawer/left.
-4. Audit all frontend routes/components/styles before implementation.
-5. Establish the shared brand/design system before redesigning individual screens.
-6. Then implement opening experience -> Dashboard -> Monitoring Areas Live Board -> Monitored Areas/high-frequency operations -> remaining customer screens -> SYSTEM_OWNER/P8 screens -> full regression/documentation closure.
-
-Do not claim UI/UX implementation, physical receipt, Commissioning, provider acceptance or customer acceptance without actual evidence.
+2. Read this file, `IMPLEMENTATION_PLAN.md`, the UI/UX work package, the UI/UX visual freeze, and `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
+3. Continue the approved UI/UX sequence unless licensing is explicitly started earlier.
+4. After stabilization of the current UI/P8/localization/notification scope, execute LIC-01 -> LIC-06, then LIC-07 -> LIC-10, then LIC-11 -> LIC-13 with DEP-01 integration.
+5. Do not qualify the final Production Installer before the licensing gate passes.
+6. Do not claim UI/UX implementation, licensing implementation, installer qualification, physical receipt, Commissioning, provider acceptance or customer acceptance without actual evidence.
