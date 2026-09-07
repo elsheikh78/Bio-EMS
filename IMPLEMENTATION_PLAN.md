@@ -45,11 +45,13 @@ Implementation record: `docs/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM
 
 ### UX-03 — Opening / Entry Experience
 
-Status: **APPROVED / NOT STARTED**
+Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
 
 - professional BIO-EMS opening/entry experience;
 - clean transition into customer or SYSTEM_OWNER authentication/product surfaces;
 - no trust-boundary or pre-auth information leakage.
+
+Implementation record: `docs/project-management/UX-03-OPENING-ENTRY-EXPERIENCE-CLOSURE-2026-09-07.md`. The responsive opening experience uses the approved production identity and dark technical composition, localized startup copy, reduced startup delay, per-tab completion persistence and a hard child-mount boundary so authentication/product flows are not mounted behind the opening screen. Frontend typecheck, 283 automated tests, lint, formatting and production build pass on `agent/ux-03-opening-entry`.
 
 ### UX-04 — Compact Operational Dashboard Redesign
 

@@ -35,6 +35,12 @@ export interface TranslationResources {
     description: string;
   };
 
+  opening: {
+    title: string;
+    subtitle: string;
+    loading: string;
+  };
+
   shell: {
     productName: string;
     openNavigation: string;
@@ -248,6 +254,12 @@ export const englishResources = {
   notAuthorized: {
     title: "Not authorized",
     description: "Your current role does not permit access to this page.",
+  },
+
+  opening: {
+    title: "BIO-EMS secure opening experience",
+    subtitle: "Environmental Monitoring System",
+    loading: "Preparing your secure monitoring environment…",
   },
 
   shell: {
@@ -489,6 +501,11 @@ export const arabicResources = {
   notAuthorized: {
     title: "غير مصرح بالدخول",
     description: "صلاحيات دورك الحالي لا تسمح بالوصول إلى هذه الصفحة.",
+  },
+  opening: {
+    title: "شاشة بدء BIO-EMS الآمنة",
+    subtitle: "نظام المراقبة البيئية",
+    loading: "جارٍ تجهيز بيئة المراقبة الآمنة…",
   },
   shell: {
     productName: "BIO-EMS",

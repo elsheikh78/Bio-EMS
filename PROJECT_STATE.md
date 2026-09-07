@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 AND UX-02 ARE COMPLETE / MERGED / CI VERIFIED; UX-03 OPENING / ENTRY EXPERIENCE IS NEXT. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 AND UX-02 ARE COMPLETE / MERGED / CI VERIFIED; UX-03 OPENING / ENTRY EXPERIENCE IS IMPLEMENTED AND VERIFIED ON ITS BRANCH, AWAITING PR MERGE. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
@@ -16,14 +16,15 @@
 4. UX-01 inventory/baseline and recovery of the approved visual-reference masters are complete through PR #162, CI #567 and merge `7a50338c153bf1388d8d28a7f3b2b3658bfd69ac`. UX-02 has now been implemented and verified on its controlled branch using the visual freeze as decision authority.
 5. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
 6. UX-02 is complete through PR #164, CI #571 and merge `81ea4a9d91c862f31ad7d278914dcb34fa99d5c6`: approved transparent identity variants, shared design tokens/primitives, persisted Light/Dark mode, bilingual theme control and shell adoption. Start UX-03 only from reconciled `main`.
-7. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
-8. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
-9. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
-10. Site-Bound Licensing / Anti-Cloning is now an approved mandatory production gate. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
-11. LIC-01 through LIC-13 must be implemented and evidenced before DEP-01 can be declared the final Production Installer and before any commercial/customer production deployment is declared production-ready.
-12. Development, laboratory, UI/UAT and explicitly non-production pilot work may continue before the licensing gate where appropriate.
-13. Licensing design must preserve monitoring continuity: loss of Internet alone must not unexpectedly stop permitted local telemetry/alarm operation.
-14. Keep live-provider, hardware qualification, licensing qualification, installer qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
+7. UX-03 is implemented and verified on `agent/ux-03-opening-entry`: responsive approved-brand opening composition, bilingual copy, per-tab completion and a no-pre-auth-child-mount boundary. Do not start UX-04 until the UX-03 PR is merged and `main` is reconciled.
+8. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
+9. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
+10. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
+11. Site-Bound Licensing / Anti-Cloning is now an approved mandatory production gate. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
+12. LIC-01 through LIC-13 must be implemented and evidenced before DEP-01 can be declared the final Production Installer and before any commercial/customer production deployment is declared production-ready.
+13. Development, laboratory, UI/UAT and explicitly non-production pilot work may continue before the licensing gate where appropriate.
+14. Licensing design must preserve monitoring continuity: loss of Internet alone must not unexpectedly stop permitted local telemetry/alarm operation.
+15. Keep live-provider, hardware qualification, licensing qualification, installer qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
 
 ## Implemented Software Position
 
@@ -37,7 +38,7 @@
 - Site-Bound Licensing LIC-01 through LIC-13: **NOT YET IMPLEMENTED**.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
-## Approved UI/UX Refresh Scope — UX-01 and UX-02 Complete / UX-03+ Not Yet Implemented
+## Approved UI/UX Refresh Scope — UX-01 and UX-02 Complete / UX-03 Branch Complete / UX-04+ Not Yet Implemented
 
 Controlled work package:
 `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`
