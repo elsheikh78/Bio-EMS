@@ -2,7 +2,13 @@
 
 ## Outcome
 
-UX-01 inventory and baseline capture are complete on branch `agent/ux-01-visual-baseline` from authoritative `main@aa76cf988013114d4efa471d7b4e97267724ea0f`.
+UX-01 inventory and baseline capture are complete from authoritative `main@aa76cf988013114d4efa471d7b4e97267724ea0f` through:
+
+- branch `agent/ux-01-visual-baseline`;
+- implementation commit `ae625405a0fc1d54d266356fddbd605201301007`;
+- PR #162;
+- CI workflow run #567 — PASS;
+- merge to `main` at `7a50338c153bf1388d8d28a7f3b2b3658bfd69ac`.
 
 This package records the current frontend before visual implementation. It makes no claim that UX-02 through UX-09 are implemented and changes no runtime behavior, API contract, permission, tenant boundary, Alarm rule, reporting evidence or installation workflow.
 

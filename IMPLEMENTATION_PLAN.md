@@ -21,17 +21,17 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 ## UI/UX Product Refresh — Approved Execution Plan
 
 ### UX-01 — Frontend Inventory and Non-Regression Baseline
-Status: **IMPLEMENTED LOCALLY / PR AND CI EVIDENCE PENDING**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 - enumerate all customer, SYSTEM_OWNER and P8 routes/components/styles;
 - identify duplicate/stale styling and legacy artifacts;
 - capture current route/auth/RBAC/localization/live-refresh behavior before visual changes;
 - verify Arabic drawer/right and English drawer/left baseline;
 - preserve the existing `Site -> Monitored Area (Room) -> Sensor` domain.
 
-Local implementation record: `docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md`. The three approved visual-reference masters are now present under `docs/assets/ui-ux/`. Do not mark UX-01 merged/CI-verified until repository evidence exists.
+Closure record: `docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md`. PR #162 passed CI #567 and merged to `main` at `7a50338c153bf1388d8d28a7f3b2b3658bfd69ac`. The three approved visual-reference masters are present under `docs/assets/ui-ux/`.
 
 ### UX-02 — Brand and Shared Design System
-Status: **APPROVED / NOT STARTED**
+Status: **APPROVED / NEXT**
 - implement the selected BIO-EMS logo direction (design option 5) as reusable background-independent assets;
 - establish typography, spacing, surface, card, navigation, control, status/severity, chart and responsive tokens/primitives;
 - use reusable theme/surface treatment rather than unrelated heavy per-screen backgrounds;
