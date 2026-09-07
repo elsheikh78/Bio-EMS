@@ -34,14 +34,14 @@ Closure record: `docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-
 
 ### UX-02 — Brand and Shared Design System
 
-Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 
 - implement the selected BIO-EMS logo direction (design option 5) as reusable background-independent assets;
 - establish typography, spacing, surface, card, navigation, control, status/severity, chart and responsive tokens/primitives;
 - use reusable theme/surface treatment rather than unrelated heavy per-screen backgrounds;
 - maintain operational contrast and non-color severity cues.
 
-Implementation record: `docs/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM-CLOSURE-2026-09-07.md`. Runtime code now contains background-independent horizontal and compact approved identity assets, shared light/dark palette and component primitives, persisted optional dark monitoring mode, localized theme controls and shell/navigation adoption. Frontend typecheck, 281 automated tests, lint, formatting and production build pass on `agent/ux-02-brand-theme`.
+Implementation record: `docs/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM-CLOSURE-2026-09-07.md`. Runtime code now contains background-independent horizontal and compact approved identity assets, shared light/dark palette and component primitives, persisted optional dark monitoring mode, localized theme controls and shell/navigation adoption. Frontend typecheck, 281 automated tests, lint, formatting and production build passed on `agent/ux-02-brand-theme`; PR #164 passed CI #571 and merged to `main` at `81ea4a9d91c862f31ad7d278914dcb34fa99d5c6`.
 
 ### UX-03 — Opening / Entry Experience
 

@@ -2,11 +2,15 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-02-brand-theme`
 
-This record closes the implementation and local verification of UX-02 only. It does not claim UX-03 opening experience, UX-04 Dashboard redesign, UX-05 Monitoring Areas Live Board, later full-surface reconciliation, merge, CI, release, licensing, installer qualification or customer acceptance.
+- PR: #164
+- CI: #571 — PASS
+- Merge: `81ea4a9d91c862f31ad7d278914dcb34fa99d5c6`
+
+This record closes the implementation, CI verification and merge of UX-02 only. It does not claim UX-03 opening experience, UX-04 Dashboard redesign, UX-05 Monitoring Areas Live Board, later full-surface reconciliation, release, licensing, installer qualification or customer acceptance.
 
 ## Implemented Scope
 
@@ -48,7 +52,4 @@ UX-02 changes presentation infrastructure only. No API contract, backend capabil
 
 ## Controlled Next Step
 
-1. Commit and publish `agent/ux-02-brand-theme`.
-2. Open the UX-02 pull request against `main` and require CI success.
-3. Merge and record the PR/CI/merge SHA in this closure record and project state.
-4. Reconcile local `main`, then start UX-03 Opening / Entry Experience from the merged baseline.
+Reconcile local `main`, then start UX-03 Opening / Entry Experience from the merged baseline.
