@@ -1,6 +1,6 @@
 # LIC-01 — Licensing Domain and Data Model
 
-**Status:** Implemented and locally verified; PR/CI/merge evidence pending  
+**Status:** Complete / merged / CI verified
 **Started:** 2026-09-07  
 **Authority:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
 
@@ -34,6 +34,10 @@ The model deliberately does not store `licensed=true`, signing private keys or p
 - Backend typecheck, build, lint and formatting: passed;
 - full Backend regression: 108 test files / 760 tests passed.
 
-## Remaining closure gate
+## Integration evidence
 
-PR, CI and merge evidence must be recorded before LIC-01 is declared complete and LIC-02 becomes the controlled next package.
+- PR: #173
+- CI: #597 — passed
+- Merge: `90fe361e71f8a4fb79295e0c95344913b66cba35`
+
+LIC-01 is complete. LIC-02 — installation identity and protected key storage — is the controlled next package.
