@@ -2,11 +2,11 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-05-live-board`
 
-This record closes UX-05 implementation and local verification only. It does not claim UX-06 customer-operation reconciliation, merge, CI, release, licensing, installer qualification, field commissioning or customer acceptance.
+This record closes UX-05 implementation, verification, CI and merge. It does not claim UX-06 customer-operation reconciliation, release, licensing, installer qualification, field commissioning or customer acceptance.
 
 ## Implemented Scope
 
@@ -38,6 +38,10 @@ Executed from `frontend/`:
 - `npm run format:check` — PASS.
 - `npm run build` — PASS.
 
+- PR #167 — MERGED.
+- CI #580 — PASS.
+- Merge — `e989a516e6ab0f6566eb265aa623b4295ebc8404`.
+
 Automated coverage verifies status priority, all four summary states, one card per area, trusted values/last update, local search filtering, loading/error states, navigation registry and safe Viewer return-path authorization.
 
 ## Non-Regression Boundaries
@@ -46,6 +50,4 @@ UX-05 does not alter ingestion, Alarm lifecycle, tenant isolation, API validatio
 
 ## Controlled Next Step
 
-1. Publish `agent/ux-05-live-board` and open its pull request against `main`.
-2. Require CI success, merge and record the PR/CI/merge SHA.
-3. Reconcile `main`, then start UX-06 High-Frequency Customer Operations Refresh.
+Reconcile `main`, then start UX-06 High-Frequency Customer Operations Refresh.

@@ -66,7 +66,7 @@ Implementation record: `docs/project-management/UX-04-COMPACT-OPERATIONAL-DASHBO
 
 ### UX-05 — Monitoring Areas Live Board
 
-Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 
 - add a dedicated Dashboard-accessible route/screen;
 - one prominent live card/tile per Monitored Area;
@@ -76,7 +76,7 @@ Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
 - first-class Arabic/English and RTL/LTR;
 - use existing trusted APIs/domain contracts and consistent live update/reconnect/fallback behavior.
 
-Implementation record: `docs/project-management/UX-05-MONITORING-AREAS-LIVE-BOARD-CLOSURE-2026-09-07.md`. A protected `/live-board` route now uses the authoritative Dashboard room-status contract, existing polling and AppShell SSE invalidation to render summary counts and one responsive card per Monitored Area. Search, Site/status filtering and grid density are local presentation controls; unsupported ranges/min-max/trends are intentionally omitted. Frontend typecheck, 288 automated tests, lint, formatting and production build pass on `agent/ux-05-live-board`.
+Implementation record: `docs/project-management/UX-05-MONITORING-AREAS-LIVE-BOARD-CLOSURE-2026-09-07.md`. A protected `/live-board` route now uses the authoritative Dashboard room-status contract, existing polling and AppShell SSE invalidation to render summary counts and one responsive card per Monitored Area. Search, Site/status filtering and grid density are local presentation controls; unsupported ranges/min-max/trends are intentionally omitted. Frontend typecheck, 288 automated tests, lint, formatting and production build passed on `agent/ux-05-live-board`; PR #167 passed CI #580 and merged to `main` at `e989a516e6ab0f6566eb265aa623b4295ebc8404`.
 
 ### UX-06 — High-Frequency Customer Operations Refresh
 
