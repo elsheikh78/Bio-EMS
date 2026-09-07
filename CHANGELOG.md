@@ -8,6 +8,7 @@
 - Added migrations 022/023, immutable certificate storage, append-only licensing evidence, module/device/sensor entitlements and explicit monitoring-continuity decisions for invalid licenses.
 - Implemented LIC-07 through LIC-10: same-Site device authorization, offline validation/grace evidence, audited revoke/transfer lifecycle, and a bilingual SYSTEM_OWNER licensing-governance summary with recent audit history.
 - Implemented LIC-11 through LIC-13 source protection: create-only installer identity provisioning, anti-copy/tamper negative qualification, and controlled signing-key generation/rotation/backup/recovery operations. DEP-01 clean-machine installer qualification remains separate.
+- Started DEP-01 with a Windows 11 x64/Inno Setup package contract and a fail-closed staged-payload validator covering the exact application/runtime inventory, SHA-256 integrity, redistribution evidence and forbidden secret/identity payloads.
 
 ## [0.20.0] - 2026-09-07
 

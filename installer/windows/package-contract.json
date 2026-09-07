@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "workPackage": "DEP-01",
+  "phase": "PACKAGE_INPUT_FOUNDATION",
+  "target": {
+    "operatingSystem": "Windows 11 Pro",
+    "architecture": "x64",
+    "administratorRequired": true
+  },
+  "installerTechnology": "Inno Setup 6",
+  "output": "single-offline-setup-exe",
+  "requiredArtifactIds": [
+    "backend",
+    "frontend",
+    "node",
+    "mosquitto",
+    "influxdb",
+    "winsw"
+  ],
+  "persistentRoot": "C:\\ProgramData\\BIO-EMS",
+  "applicationRoot": "C:\\Program Files\\BIO-EMS",
+  "services": ["BIOEMS-Backend", "BIOEMS-MQTT", "BIOEMS-InfluxDB"],
+  "publicPorts": [443],
+  "internalPorts": [3001, 8086, 8883],
+  "forbiddenPayloadPatterns": [
+    ".env",
+    "identity.json",
+    "license.json",
+    "activation-receipt.json",
+    "*.private.pem"
+  ],
+  "qualificationRequired": true
+}
+

@@ -138,3 +138,10 @@ single-click installer.
 LIC-11 now supplies the implementation hook and machine-readable integration contract.
 That source capability does not change this boundary: clean-machine execution and the
 remaining DEP-01 lifecycle qualification are still required.
+
+DEP-01 foundation work now records Windows 11 Pro x64 and Inno Setup 6 as the initial
+controlled target, defines the six required application/runtime inputs, and adds a
+fail-closed staging validator. Exact vendor versions, redistribution evidence, the
+Setup source/build, protected configuration, lifecycle operations and clean-machine
+qualification remain open as recorded in
+`docs/deployment/DEP-01-WINDOWS-INSTALLER-FOUNDATION.md`.
