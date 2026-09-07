@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-06-operations-refresh`
 
@@ -26,6 +26,9 @@ Branch: `agent/ux-06-operations-refresh`
 - Frontend lint — PASS with zero warnings.
 - Frontend formatting — PASS.
 - Frontend production build — PASS with only the existing non-blocking chunk-size advisory.
+- PR #168 — MERGED.
+- CI #583 — PASS.
+- Merge — `b05181e0e89f8b3c97d24daac3a643d5f4be0c55`.
 
 ## Non-Regression Boundaries
 
@@ -33,4 +36,4 @@ UX-06 does not change API contracts, Alarm lifecycle states, acknowledgement per
 
 ## Controlled Next Step
 
-Publish the branch PR, require CI success, merge and record PR/CI/merge evidence before starting UX-07.
+Reconcile `main`, then start UX-07 Remaining Customer Surface Refresh.
