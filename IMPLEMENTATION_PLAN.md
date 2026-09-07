@@ -4,7 +4,7 @@
 
 **Current controlled delivery sequence — reconciled 5 September 2026.**
 
-Historical P0-P8 software closure/evidence remains authoritative for completed scope. The approved UI/UX Product Refresh and Site-Bound Licensing architecture are later software scope and are **APPROVED / DOCUMENTED / NOT YET IMPLEMENTED**.
+Historical P0-P8 software closure/evidence remains authoritative for completed scope. The UI/UX Product Refresh is complete/merged/CI verified. Site-Bound Licensing LIC-01 through LIC-10 is complete/merged/CI verified and LIC-11 through LIC-13 is implemented locally pending PR/CI evidence.
 
 ## Current Position
 
@@ -15,8 +15,8 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 - Global Arabic/English localization: complete/merged/CI verified.
 - RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
 - DEP-01 Full Offline Windows Installer: approved later scope; implementation/clean-machine qualification not yet claimed.
-- UI/UX Product Refresh: approved on 4 September 2026; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
-- Site-Bound Licensing / Anti-Cloning: approved on 5 September 2026; architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
+- UI/UX Product Refresh: complete/merged/CI verified; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
+- Site-Bound Licensing / Anti-Cloning: LIC-01 through LIC-10 complete/merged/CI verified; LIC-11 through LIC-13 implemented locally pending PR/CI. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
 
 ## UI/UX Product Refresh — Approved Execution Plan
 
@@ -114,7 +114,7 @@ Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-0
 
 **Architecture authority:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
 
-**Status:** **APPROVED / LIC-01 THROUGH LIC-10 COMPLETE, MERGED AND CI VERIFIED / LIC-11 NEXT**
+**Status:** **APPROVED / LIC-01 THROUGH LIC-10 COMPLETE, MERGED AND CI VERIFIED / LIC-11 THROUGH LIC-13 IMPLEMENTED LOCALLY, PR/CI PENDING**
 
 ### Controlled sequence
 
@@ -150,7 +150,7 @@ Commercial enforcement must not be designed to unexpectedly stop critical local 
 1. Complete/stabilize the current UI/UX/P8/localization/notification work and its regression evidence.
 2. Execute the Licensing Core: LIC-01 -> LIC-06.
 3. Execute site/device governance and lifecycle: LIC-07 -> LIC-10.
-4. Integrate licensing with DEP-01 and finish production protection: LIC-11 -> LIC-13.
+4. Merge and CI-verify LIC-11 through LIC-13, then use its contract in DEP-01.
 5. Qualify the final Production Installer on clean machines only after the licensing production gate is satisfied.
 6. Proceed to commercial/customer production deployment only after installer, licensing, deployment and applicable field/UAT gates are evidenced.
 

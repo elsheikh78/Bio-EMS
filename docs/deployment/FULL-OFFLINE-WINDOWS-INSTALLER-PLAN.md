@@ -49,6 +49,10 @@ The Production Setup shall:
 - prevent Uninstall from silently deleting customer data or evidence; and
 - produce installation and diagnostic logs suitable for support without writing
   passwords, tokens, App Passwords, or other secrets.
+- execute the LIC-11 first-install identity hook under the final Windows service
+  identity, preserve that identity during Repair/Upgrade, and reject reusable,
+  preactivated or installer-image identities according to
+  `docs/deployment/LICENSING-INSTALLER-INTEGRATION.md`;
 
 The package should operate without Internet access for the software and prerequisite
 installation itself. External provider activation, license/entitlement operations
@@ -130,3 +134,7 @@ Offline Windows Installer currently exists. Until DEP-01 is implemented and its
 qualification evidence is recorded, the repository's existing deployment and
 productization tooling remains source-level capability rather than a customer-ready
 single-click installer.
+
+LIC-11 now supplies the implementation hook and machine-readable integration contract.
+That source capability does not change this boundary: clean-machine execution and the
+remaining DEP-01 lifecycle qualification are still required.

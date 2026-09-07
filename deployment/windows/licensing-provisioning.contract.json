@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "workPackage": "LIC-11",
+  "phase": "first-install-before-activation",
+  "command": "npm run licensing:provision-installation",
+  "requiredEnvironment": [
+    "BIOEMS_INSTALLATION_IDENTITY_PATH",
+    "BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH"
+  ],
+  "windowsProtection": "WINDOWS-DPAPI/CURRENT-USER",
+  "requirements": {
+    "runAsFinalServiceIdentity": true,
+    "freshIdentityTarget": true,
+    "freshReceiptTarget": true,
+    "preactivatedIdentityForbidden": true,
+    "installerImageIdentityForbidden": true,
+    "failureBlocksInstallation": true
+  },
+  "successState": "NEW_UNACTIVATED_IDENTITY"
+}
+
