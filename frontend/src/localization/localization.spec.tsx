@@ -61,6 +61,7 @@ const alternativeResources = {
     description: "Alt operational dashboard description",
     refresh: "Alt refresh dashboard",
     refreshing: "Alt refreshing dashboard",
+    compact: englishResources.dashboard.compact,
 
     summary: {
       totalSites: "Alt Sites",

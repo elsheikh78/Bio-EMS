@@ -74,6 +74,21 @@ export interface TranslationResources {
     description: string;
     refresh: string;
     refreshing: string;
+    compact: {
+      scope: string;
+      customerName: string;
+      liveEvidence: string;
+      healthy: string;
+      attention: string;
+      openAreas: string;
+      currentProfile: string;
+      currentProfileDescription: string;
+      currentProfileAria: string;
+      readingsDisplayed: string;
+      priorityAreas: string;
+      priorityDescription: string;
+      detailedEvidence: string;
+    };
 
     summary: {
       totalSites: string;
@@ -300,6 +315,22 @@ export const englishResources = {
 
     refresh: "Refresh dashboard",
     refreshing: "Refreshing dashboard",
+    compact: {
+      scope: "Customer / operational scope",
+      customerName: "BIO EGYPT",
+      liveEvidence: "Live authorized evidence",
+      healthy: "No current priority exceptions",
+      attention: "Operational attention required",
+      openAreas: "Open monitored areas",
+      currentProfile: "Current temperature profile",
+      currentProfileDescription:
+        "Latest verified reading per Sensor — current snapshot, not a historical trend.",
+      currentProfileAria: "Current Sensor reading profile",
+      readingsDisplayed: "current Sensor readings displayed",
+      priorityAreas: "Priority areas",
+      priorityDescription: "Ordered by current operational exceptions",
+      detailedEvidence: "Detailed operational evidence",
+    },
 
     summary: {
       totalSites: "Sites",
@@ -538,6 +569,22 @@ export const arabicResources = {
     description: "التغطية الحالية للمراقبة والحالة التشغيلية عبر BIO-EMS.",
     refresh: "تحديث لوحة المتابعة",
     refreshing: "جارٍ تحديث لوحة المتابعة",
+    compact: {
+      scope: "العميل / النطاق التشغيلي",
+      customerName: "BIO EGYPT",
+      liveEvidence: "أدلة تشغيلية حية ومصرح بها",
+      healthy: "لا توجد استثناءات ذات أولوية حاليًا",
+      attention: "توجد حالات تشغيلية تتطلب الانتباه",
+      openAreas: "فتح المناطق المراقبة",
+      currentProfile: "ملف درجات الحرارة الحالي",
+      currentProfileDescription:
+        "أحدث قراءة معتمدة لكل حساس — لقطة حالية وليست اتجاهًا تاريخيًا.",
+      currentProfileAria: "ملف قراءات الحساسات الحالية",
+      readingsDisplayed: "قراءات حساسات حالية معروضة",
+      priorityAreas: "المناطق ذات الأولوية",
+      priorityDescription: "مرتبة حسب الاستثناءات التشغيلية الحالية",
+      detailedEvidence: "الأدلة التشغيلية التفصيلية",
+    },
     summary: {
       totalSites: "المواقع",
       totalRooms: "المناطق المراقبة",
