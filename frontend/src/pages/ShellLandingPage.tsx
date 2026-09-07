@@ -28,6 +28,24 @@ const englishActions: readonly WorkspaceAction[] = [
     permission: "DASHBOARD_READ",
   },
   {
+    label: "Open live monitoring wall",
+    description: "Scan current status across every authorized Monitored Area.",
+    path: "/live-board",
+    permission: "DASHBOARD_READ",
+  },
+  {
+    label: "Review Alarms",
+    description: "Review active exceptions and acknowledge eligible events.",
+    path: "/alarms",
+    permission: "ALARM_READ",
+  },
+  {
+    label: "Review Devices",
+    description: "Inspect controller lifecycle and communication health.",
+    path: "/devices",
+    permission: "DEVICE_READ",
+  },
+  {
     label: "Review monitored areas",
     description: "Inspect the configured Site, area, and Sensor hierarchy.",
     path: "/monitored-areas",
@@ -38,6 +56,12 @@ const englishActions: readonly WorkspaceAction[] = [
     description: "Inspect Sensor calibration state and recorded history.",
     path: "/sensors-calibration",
     permission: "CONFIGURATION_READ",
+  },
+  {
+    label: "Review commissioning",
+    description: "Inspect controlled Site readiness and field blockers.",
+    path: "/commissioning",
+    permission: "COMMISSIONING_READ",
   },
   {
     label: "Build calibration report",
@@ -69,6 +93,24 @@ const arabicActions: readonly WorkspaceAction[] = [
     permission: "DASHBOARD_READ",
   },
   {
+    label: "فتح جدار المراقبة الحية",
+    description: "راجع الحالة الحالية لكل منطقة مراقبة مصرح بها.",
+    path: "/live-board",
+    permission: "DASHBOARD_READ",
+  },
+  {
+    label: "مراجعة الإنذارات",
+    description: "راجع الاستثناءات النشطة وأقرّ بالأحداث المسموح بها.",
+    path: "/alarms",
+    permission: "ALARM_READ",
+  },
+  {
+    label: "مراجعة الأجهزة",
+    description: "افحص دورة حياة وحدات التحكم وحالة الاتصال.",
+    path: "/devices",
+    permission: "DEVICE_READ",
+  },
+  {
     label: "مراجعة المناطق المراقبة",
     description: "افحص هيكل المواقع والمناطق والحساسات المُعد.",
     path: "/monitored-areas",
@@ -79,6 +121,12 @@ const arabicActions: readonly WorkspaceAction[] = [
     description: "افحص حالة معايرة الحساسات والسجل المسجل.",
     path: "/sensors-calibration",
     permission: "CONFIGURATION_READ",
+  },
+  {
+    label: "مراجعة التشغيل المبدئي",
+    description: "افحص جاهزية الموقع المنضبطة والعوائق الميدانية.",
+    path: "/commissioning",
+    permission: "COMMISSIONING_READ",
   },
   {
     label: "إنشاء تقرير معايرة",
@@ -101,19 +149,19 @@ const arabicActions: readonly WorkspaceAction[] = [
 ];
 
 const readiness = [
-  ["Dashboard", "Available"],
-  ["Monitored Areas", "Available / live telemetry validation pending"],
-  ["Alarms", "Available / acknowledgement retest pending"],
-  ["Devices", "Available"],
-  ["Reports", "Calibration available / expansion scheduled"],
+  ["Dashboard & Live Board", "Available"],
+  ["Monitored Areas & Devices", "Available"],
+  ["Alarms & notifications", "Available"],
+  ["Calibration & Reports", "Available"],
+  ["Commissioning", "Controlled evidence only"],
 ] as const;
 
 const arabicReadiness = [
-  ["لوحة المتابعة", "متاحة"],
-  ["المناطق المراقبة", "متاحة / التحقق الحي للقراءات معلق"],
-  ["الإنذارات", "متاحة / إعادة اختبار الإقرار معلقة"],
-  ["الأجهزة", "متاحة"],
-  ["التقارير", "المعايرة متاحة / التوسعة مجدولة"],
+  ["لوحة المتابعة والجدار الحي", "متاحة"],
+  ["المناطق المراقبة والأجهزة", "متاحة"],
+  ["الإنذارات والإشعارات", "متاحة"],
+  ["المعايرة والتقارير", "متاحة"],
+  ["التشغيل المبدئي", "أدلة منضبطة فقط"],
 ] as const;
 
 export function ShellLandingPage() {

@@ -30,10 +30,8 @@ describe("Operational workspace", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Operational workspace",
     );
-    expect(screen.getAllByRole("link", { name: /Continue/ })).toHaveLength(6);
-    expect(
-      screen.getByText("Available / acknowledgement retest pending"),
-    ).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /Continue/ })).toHaveLength(10);
+    expect(screen.getByText("Alarms & notifications")).toBeInTheDocument();
     expect(
       screen.queryByText(/Scheduled in PVR-0[45]/),
     ).not.toBeInTheDocument();
@@ -41,7 +39,7 @@ describe("Operational workspace", () => {
 
   it("does not expose ADMIN actions to VIEWER", () => {
     renderPage("VIEWER");
-    expect(screen.getAllByRole("link", { name: /Continue/ })).toHaveLength(4);
+    expect(screen.getAllByRole("link", { name: /Continue/ })).toHaveLength(8);
     expect(screen.queryByText("Manage configuration")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Manage users and Audit"),

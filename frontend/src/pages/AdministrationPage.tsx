@@ -73,7 +73,15 @@ function UsersPanel() {
   return (
     <Paper component="section" variant="outlined" sx={{ p: 3 }}>
       <Stack spacing={3}>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            alignItems: { xs: "stretch", sm: "center" },
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            justifyContent: "space-between",
+          }}
+        >
           <Typography component="h2" variant="h5">
             {t("User management", "إدارة المستخدمين")}
           </Typography>
@@ -122,7 +130,7 @@ function UsersPanel() {
             }}
           >
             <Box>
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                 <Typography component="h3" variant="h6">
                   {user.username}
                 </Typography>
@@ -143,7 +151,7 @@ function UsersPanel() {
                 {user.email ?? t("No email", "لا يوجد بريد إلكتروني")}
               </Typography>
             </Box>
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
               <Button
                 aria-label={`${t("Edit", "تعديل")} ${user.username}`}
                 onClick={() => setEditing(user)}
