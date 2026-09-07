@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 import {
   useDashboardAlarmStatistics,
   useDashboardRoomStatuses,
@@ -29,16 +30,18 @@ const mockedUseDashboardAlarmStatistics = vi.mocked(
 
 function renderDashboard() {
   return render(
-    <LocalizationContext.Provider
-      value={{
-        language: "en",
-        direction: "ltr",
-        resources: englishResources,
-        setLanguage: vi.fn(),
-      }}
-    >
-      <DashboardPage />
-    </LocalizationContext.Provider>,
+    <MemoryRouter>
+      <LocalizationContext.Provider
+        value={{
+          language: "en",
+          direction: "ltr",
+          resources: englishResources,
+          setLanguage: vi.fn(),
+        }}
+      >
+        <DashboardPage />
+      </LocalizationContext.Provider>
+    </MemoryRouter>,
   );
 }
 
@@ -228,6 +231,19 @@ describe("DashboardPage", () => {
     for (const value of ["2", "6", "4", "18", "3", "1"]) {
       expect(within(summary).getByText(value)).toBeInTheDocument();
     }
+  });
+
+  it("puts current exceptions and monitored-area navigation in the compact command bar", () => {
+    renderDashboard();
+
+    expect(
+      screen.getByText(englishResources.dashboard.compact.attention),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", {
+        name: englishResources.dashboard.compact.openAreas,
+      }),
+    ).toHaveAttribute("href", "/monitored-areas");
   });
 
   it("renders a safe summary error state and retries on request", () => {

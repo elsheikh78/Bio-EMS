@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -40,6 +41,12 @@ export function DashboardPage() {
   const alarmStatisticsQuery = useDashboardAlarmStatistics();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const requiresAttention = Boolean(
+    summaryQuery.data &&
+    (summaryQuery.data.activeAlarms > 0 ||
+      summaryQuery.data.offlineDevices > 0 ||
+      summaryQuery.data.staleDevices > 0),
+  );
 
   async function refreshDashboard() {
     if (isRefreshing) {
@@ -61,7 +68,7 @@ export function DashboardPage() {
   }
 
   return (
-    <Stack spacing={6}>
+    <Stack spacing={{ xs: 3, md: 4 }}>
       <Box
         sx={{
           display: "flex",
@@ -86,7 +93,7 @@ export function DashboardPage() {
             {resources.dashboard.title}
           </Typography>
 
-          <Typography color="text.secondary">
+          <Typography color="text.secondary" variant="body2">
             {resources.dashboard.description}
           </Typography>
         </Box>
@@ -112,39 +119,54 @@ export function DashboardPage() {
       <Paper
         variant="outlined"
         sx={{
-          px: { xs: 4, md: 5 },
-          py: 3,
-          bgcolor: "#EAF1F3",
-          borderRadius: 3.5,
+          px: { xs: 3, md: 4 },
+          py: 2,
+          bgcolor: "action.hover",
+          borderRadius: 3,
           display: "flex",
           alignItems: { xs: "flex-start", sm: "center" },
           justifyContent: "space-between",
           flexDirection: { xs: "column", sm: "row" },
-          gap: 3,
+          gap: 2,
         }}
       >
         <Box>
           <Typography
             variant="caption"
-            sx={{ color: "text.secondary", letterSpacing: 1 }}
+            sx={{ color: "text.secondary", letterSpacing: 0.8 }}
           >
-            CUSTOMER / OPERATIONAL SCOPE
+            {resources.dashboard.compact.scope}
           </Typography>
-          <Typography sx={{ fontWeight: 700, mt: 0.5 }}>BIO EGYPT</Typography>
+          <Typography sx={{ fontWeight: 700 }}>
+            {resources.dashboard.compact.customerName}
+          </Typography>
         </Box>
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-          <Box
-            aria-hidden
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              bgcolor: "success.main",
-            }}
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          sx={{ alignItems: { xs: "stretch", sm: "center" } }}
+        >
+          <Chip
+            color={requiresAttention ? "warning" : "success"}
+            label={
+              requiresAttention
+                ? resources.dashboard.compact.attention
+                : resources.dashboard.compact.healthy
+            }
+            size="small"
+            variant="outlined"
           />
-          <Typography variant="body2" color="text.secondary">
-            Current authorized evidence
+          <Typography variant="caption" color="text.secondary">
+            ● {resources.dashboard.compact.liveEvidence}
           </Typography>
+          <Button
+            component={RouterLink}
+            size="small"
+            to="/monitored-areas"
+            variant="outlined"
+          >
+            {resources.dashboard.compact.openAreas}
+          </Button>
         </Stack>
       </Paper>
 
@@ -161,7 +183,7 @@ export function DashboardPage() {
               xs: "1fr",
               lg: "minmax(0, 2fr) minmax(300px, 1fr)",
             },
-            gap: 4,
+            gap: 3,
           }}
         >
           <CurrentTelemetryProfile
@@ -183,20 +205,26 @@ export function DashboardPage() {
         />
       ) : null}
 
-      <RoomStatusSection
-        query={roomStatusesQuery}
-        resources={resources.dashboard}
-      />
+      <Box
+        component="section"
+        aria-label={resources.dashboard.compact.detailedEvidence}
+        sx={{ display: "grid", gap: 4 }}
+      >
+        <RoomStatusSection
+          query={roomStatusesQuery}
+          resources={resources.dashboard}
+        />
 
-      <LatestTelemetrySection
-        query={latestTelemetryQuery}
-        resources={resources.dashboard}
-      />
+        <LatestTelemetrySection
+          query={latestTelemetryQuery}
+          resources={resources.dashboard}
+        />
 
-      <AlarmStatisticsSection
-        query={alarmStatisticsQuery}
-        resources={resources.dashboard}
-      />
+        <AlarmStatisticsSection
+          query={alarmStatisticsQuery}
+          resources={resources.dashboard}
+        />
+      </Box>
     </Stack>
   );
 }
@@ -237,29 +265,27 @@ function CurrentTelemetryProfile({
       aria-label={resources.latestTelemetry.title}
       variant="outlined"
       sx={{
-        p: { xs: 4, md: 6 },
-        borderRadius: 3.5,
-        boxShadow: "0 12px 32px rgba(7, 59, 76, 0.08)",
+        p: { xs: 3, md: 4 },
+        borderRadius: 3,
       }}
     >
-      <Stack spacing={5}>
+      <Stack spacing={3}>
         <Box>
           <Typography component="p" variant="h5">
-            Current temperature profile
+            {resources.compact.currentProfile}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Latest verified reading per Sensor — this is a current snapshot, not
-            a historical trend.
+            {resources.compact.currentProfileDescription}
           </Typography>
         </Box>
-        <Box sx={{ minHeight: 240 }}>
+        <Box sx={{ minHeight: 164 }}>
           <Box
             component="svg"
             viewBox="0 0 100 100"
             role="img"
-            aria-label="Current Sensor reading profile"
+            aria-label={resources.compact.currentProfileAria}
             preserveAspectRatio="none"
-            sx={{ width: "100%", height: 220, overflow: "visible" }}
+            sx={{ width: "100%", height: 145, overflow: "visible" }}
           >
             {[22, 50, 78].map((y) => (
               <line
@@ -324,7 +350,7 @@ function CurrentTelemetryProfile({
           </Box>
         </Box>
         <Typography variant="caption" color="text.secondary">
-          {visibleRecords.length} current Sensor readings displayed
+          {visibleRecords.length} {resources.compact.readingsDisplayed}
         </Typography>
       </Stack>
     </Paper>
@@ -348,14 +374,14 @@ function PriorityAreasPanel({
     .slice(0, 3);
 
   return (
-    <Paper variant="outlined" sx={{ p: { xs: 4, md: 6 }, borderRadius: 3.5 }}>
-      <Stack spacing={4}>
+    <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 }, borderRadius: 3 }}>
+      <Stack spacing={3}>
         <Box>
           <Typography component="p" variant="h5">
-            Priority areas
+            {resources.compact.priorityAreas}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Ordered by current operational exceptions
+            {resources.compact.priorityDescription}
           </Typography>
         </Box>
         {prioritized.length === 0 ? (
@@ -369,7 +395,7 @@ function PriorityAreasPanel({
               <Box
                 key={room.roomId}
                 sx={{
-                  p: 4,
+                  p: 2.5,
                   borderRadius: 2.5,
                   border: 1,
                   borderColor: "divider",
@@ -1044,9 +1070,9 @@ function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
       variant="outlined"
       sx={{
         position: "relative",
-        minHeight: 116,
-        p: 5,
-        borderRadius: 3.5,
+        minHeight: 88,
+        p: 3,
+        borderRadius: 3,
         overflow: "hidden",
         borderColor: "divider",
         boxShadow: "0 10px 30px rgba(7, 59, 76, 0.07)",
@@ -1072,7 +1098,7 @@ function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
         component="p"
         variant="h4"
         sx={{
-          mt: 2,
+          mt: 1,
           color: tone === "neutral" ? "text.primary" : accent,
           fontVariantNumeric: "tabular-nums",
         }}
