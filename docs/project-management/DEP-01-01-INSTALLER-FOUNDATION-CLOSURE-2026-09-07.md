@@ -1,6 +1,6 @@
 # DEP-01-01 — Windows Installer Foundation Evidence
 
-**Status:** Implemented and locally verified; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified
 
 ## Delivered
 
@@ -32,3 +32,8 @@ registration, health checks and lifecycle behavior remain open. DEP-01-02 is the
 controlled next package: freeze exact inputs and implement deterministic staging/build
 source. Windows clean-machine qualification remains later external evidence.
 
+## Integration evidence
+
+- PR: #177
+- CI: #609 — passed
+- Merge: `d1c5e4dfaee675573d3b7f76c7d279cc8b744f90`
