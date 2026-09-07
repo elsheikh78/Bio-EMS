@@ -101,10 +101,12 @@ Implementation record: `docs/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-R
 
 ### UX-09 — Full Regression and Closure
 
-Status: **APPROVED / NOT STARTED**
+Status: **REGRESSION PASSED / BRANCH VERIFIED / AWAITING PR MERGE**
 Required gates include typecheck, build, lint, formatting, automated frontend tests, auth/RBAC/route regression, Arabic/English + RTL/LTR regression, Dashboard/Monitored Areas/Live Board live-refresh regression, responsive checks, accessibility sanity checks and affected export/report navigation regression.
 
 Only after real implementation, PR, CI and merge evidence may this package be marked complete and reflected in release/version documentation.
+
+Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md`. Backend typecheck/build/lint/format and 106 test files/755 tests pass. Frontend typecheck/lint/format, 51 test files/292 tests and production build pass. The automated total is 157 files/1,047 tests. Auth/RBAC/routes, localization/RTL, live refresh, responsive/accessibility behavior and reporting contracts are represented by the controlled suites. Release/version metadata remains unchanged until PR/CI/merge evidence exists.
 
 ## Site-Bound Licensing / Anti-Cloning — Mandatory Production Gate
 
