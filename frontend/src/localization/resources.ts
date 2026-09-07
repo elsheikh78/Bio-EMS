@@ -40,6 +40,8 @@ export interface TranslationResources {
     openNavigation: string;
     primaryNavigation: string;
     skipToContent: string;
+    switchToDark: string;
+    switchToLight: string;
   };
 
   navigation: {
@@ -253,6 +255,8 @@ export const englishResources = {
     openNavigation: "Open primary navigation",
     primaryNavigation: "Primary navigation",
     skipToContent: "Skip to main content",
+    switchToDark: "Switch to dark monitoring theme",
+    switchToLight: "Switch to light theme",
   },
 
   navigation: {
@@ -491,6 +495,8 @@ export const arabicResources = {
     openNavigation: "فتح قائمة التنقل الرئيسية",
     primaryNavigation: "التنقل الرئيسي",
     skipToContent: "الانتقال إلى المحتوى الرئيسي",
+    switchToDark: "التبديل إلى سمة المراقبة الداكنة",
+    switchToLight: "التبديل إلى السمة الفاتحة",
   },
   navigation: {
     workspace: "مساحة العمل",

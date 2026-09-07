@@ -10,6 +10,8 @@ import { englishResources } from "../localization/resources";
 import { useLocalization } from "../localization/useLocalization";
 import { PlatformAuthenticationProvider } from "../platform-auth/PlatformAuthenticationProvider";
 import { createAppTheme } from "../theme/theme";
+import { ColorModeProvider } from "../theme/ColorModeProvider";
+import { useColorMode } from "../theme/colorMode";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +24,9 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <AppErrorBoundary fallbackCopy={englishResources.errorBoundary}>
       <LocalizationProvider>
-        <LocalizedAppProviders>{children}</LocalizedAppProviders>
+        <ColorModeProvider>
+          <LocalizedAppProviders>{children}</LocalizedAppProviders>
+        </ColorModeProvider>
       </LocalizationProvider>
     </AppErrorBoundary>
   );
@@ -30,7 +34,11 @@ export function AppProviders({ children }: PropsWithChildren) {
 
 function LocalizedAppProviders({ children }: PropsWithChildren) {
   const { direction } = useLocalization();
-  const theme = useMemo(() => createAppTheme(direction), [direction]);
+  const { mode } = useColorMode();
+  const theme = useMemo(
+    () => createAppTheme(direction, mode),
+    [direction, mode],
+  );
 
   return (
     <ThemeProvider theme={theme}>

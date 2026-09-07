@@ -120,7 +120,7 @@ describe("responsive application shell", () => {
       }),
     ).toHaveAttribute("aria-current", "page");
 
-    expect(screen.getByText("BIO-EMS")).toBeVisible();
+    expect(screen.getByAltText("BIO-EMS")).toBeVisible();
     expect(screen.getByText("admin")).toBeVisible();
     expect(screen.getByText("ADMIN")).toBeVisible();
 

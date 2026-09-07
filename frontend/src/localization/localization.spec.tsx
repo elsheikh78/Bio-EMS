@@ -33,6 +33,8 @@ const alternativeResources = {
     openNavigation: "Open alt navigation",
     primaryNavigation: "Alt primary navigation",
     skipToContent: "Skip to alt main content",
+    switchToDark: "Switch to alt dark theme",
+    switchToLight: "Switch to alt light theme",
   },
 
   navigation: {
