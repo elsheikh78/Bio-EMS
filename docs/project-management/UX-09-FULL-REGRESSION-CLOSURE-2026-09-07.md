@@ -47,7 +47,7 @@ Automated total: **157 files / 1,047 tests**.
 
 This regression proves repository software behavior only. It does not claim live WhatsApp acceptance, Telegram end-to-end acceptance, hardware qualification, Site-Bound Licensing implementation, final Windows Installer qualification, production deployment, field commissioning, BIO EGYPT UAT, Quality sign-off or customer acceptance.
 
-Post-merge source release candidate `v0.20.0` is prepared. No tag or GitHub Release is claimed by this record.
+Post-merge source release candidate `v0.20.0` was prepared through PR #172, CI #594 and merge `195abca7f01bd92850e255093df85c94ee721cd5`. No tag or GitHub Release is claimed by this record.
 
 ## Controlled Next Step
 
