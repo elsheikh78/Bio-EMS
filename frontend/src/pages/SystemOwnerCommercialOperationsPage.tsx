@@ -56,6 +56,11 @@ const copy = {
     note: "Note",
     save: "Save",
     update: "Update",
+    siteBoundTitle: "Site-bound licensing governance",
+    installationsCount: "Installations",
+    certificatesCount: "Licenses",
+    devicesCount: "Authorized devices",
+    auditTitle: "Recent licensing audit",
     licenseBoundary:
       "A recorded Site binding is not evidence of physical installation or commissioning. License state does not represent billing or payment settlement.",
     updateBoundary:
@@ -88,6 +93,11 @@ const copy = {
     note: "ملاحظة",
     save: "حفظ",
     update: "تحديث",
+    siteBoundTitle: "حوكمة التراخيص المرتبطة بالموقع",
+    installationsCount: "التركيبات",
+    certificatesCount: "التراخيص",
+    devicesCount: "الأجهزة المعتمدة",
+    auditTitle: "أحدث سجل تدقيق للتراخيص",
     licenseBoundary:
       "ربط الموقع المسجل ليس دليلاً على التركيب الفعلي أو التكليف. حالة الترخيص لا تمثل الفوترة أو سداد المدفوعات.",
     updateBoundary:
@@ -195,6 +205,50 @@ export function SystemOwnerCommercialOperationsPage() {
       <Alert severity="info" sx={{ my: 2 }}>
         {boundary}
       </Alert>
+      {section === "licenses" && (
+        <Card variant="outlined" sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography component="h2" variant="h6" gutterBottom>
+              {text.siteBoundTitle}
+            </Typography>
+            <Box
+              sx={{
+                display: "grid",
+                gap: 2,
+                gridTemplateColumns: { xs: "1fr", sm: "repeat(3,1fr)" },
+              }}
+            >
+              <Typography>
+                {text.installationsCount}:{" "}
+                <strong>{data.siteBoundLicensing.installations.length}</strong>
+              </Typography>
+              <Typography>
+                {text.certificatesCount}:{" "}
+                <strong>{data.siteBoundLicensing.licenses.length}</strong>
+              </Typography>
+              <Typography>
+                {text.devicesCount}:{" "}
+                <strong>
+                  {
+                    data.siteBoundLicensing.devices.filter(
+                      (item) => item.status === "AUTHORIZED",
+                    ).length
+                  }
+                </strong>
+              </Typography>
+            </Box>
+            <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
+              {text.auditTitle}
+            </Typography>
+            {data.siteBoundLicensing.events.slice(0, 5).map((event) => (
+              <Typography key={event.id} variant="body2">
+                {event.eventType} · {event.actorIdentity} ·{" "}
+                {new Date(event.occurredAt).toLocaleString(language)}
+              </Typography>
+            ))}
+          </CardContent>
+        </Card>
+      )}
       {section === "licenses" || section === "updates" ? (
         <>
           {section === "licenses" && (

@@ -12,6 +12,10 @@ import {
   updatePlatformCustomerAdminPassword,
   createLicenseActivationRequest,
   approveLicenseActivationRequest,
+  bindLicensedDevice,
+  recordLicenseValidation,
+  transitionSiteBoundLicense,
+  transferSiteBoundLicense,
 } from "../controllers/platform-operations.controller";
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
@@ -51,6 +55,11 @@ import {
   activationDecisionSchema,
   activationParamsSchema,
   activationRequestSchema,
+  bindLicenseDeviceSchema,
+  licenseDatabaseParamsSchema,
+  licenseTransitionSchema,
+  licenseTransferSchema,
+  licenseValidationSchema,
 } from "../modules/licensing/licensing.schema";
 
 const router = Router();
@@ -68,6 +77,30 @@ router.post(
   validateParams(platformCustomerParamsSchema),
   validateBody(createInstallationSchema),
   createInstallation
+);
+router.post(
+  "/licensing/licenses/:licenseId/devices",
+  validateParams(licenseDatabaseParamsSchema),
+  validateBody(bindLicenseDeviceSchema),
+  bindLicensedDevice
+);
+router.post(
+  "/licensing/licenses/:licenseId/validations",
+  validateParams(licenseDatabaseParamsSchema),
+  validateBody(licenseValidationSchema),
+  recordLicenseValidation
+);
+router.patch(
+  "/licensing/licenses/:licenseId/status",
+  validateParams(licenseDatabaseParamsSchema),
+  validateBody(licenseTransitionSchema),
+  transitionSiteBoundLicense
+);
+router.post(
+  "/licensing/licenses/:licenseId/transfer",
+  validateParams(licenseDatabaseParamsSchema),
+  validateBody(licenseTransferSchema),
+  transferSiteBoundLicense
 );
 router.put(
   "/installations/:installationId/draft",

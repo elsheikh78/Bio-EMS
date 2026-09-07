@@ -6,6 +6,7 @@
 
 - Completed the LIC-01 domain foundation and implemented the LIC-02 through LIC-06 licensing core: protected installation identity, tolerant composite hardware binding, Ed25519 certificates, SYSTEM_OWNER activation workflow and offline local runtime validation.
 - Added migrations 022/023, immutable certificate storage, append-only licensing evidence, module/device/sensor entitlements and explicit monitoring-continuity decisions for invalid licenses.
+- Implemented LIC-07 through LIC-10: same-Site device authorization, offline validation/grace evidence, audited revoke/transfer lifecycle, and a bilingual SYSTEM_OWNER licensing-governance summary with recent audit history.
 
 ## [0.20.0] - 2026-09-07
 
