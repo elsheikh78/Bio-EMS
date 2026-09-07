@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
+import { BrandLogo } from "../components/BrandLogo";
 
 const copy = {
   en: {
@@ -55,7 +56,8 @@ export function SystemOwnerConsolePage() {
   return (
     <Box component="main" sx={{ minHeight: "100vh" }}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar sx={{ gap: 2, py: 1 }}>
+          <BrandLogo compact sx={{ flexShrink: 0, width: 42 }} />
           <Box sx={{ flexGrow: 1 }}>
             <Typography component="h1" variant="h6">
               {text.title}
@@ -65,9 +67,9 @@ export function SystemOwnerConsolePage() {
           <Box
             sx={{
               alignItems: "flex-end",
-              display: "flex",
               flexDirection: "column",
-              mr: 2,
+              display: { xs: "none", sm: "flex" },
+              marginInlineEnd: 2,
             }}
           >
             <Typography variant="caption">{text.signedIn}</Typography>
@@ -90,21 +92,27 @@ export function SystemOwnerConsolePage() {
           }}
         >
           {text.modules.map((module) => {
-            const active = true;
             return (
-              <Card key={module.key} variant="outlined">
+              <Card
+                key={module.key}
+                variant="outlined"
+                sx={{
+                  borderInlineStart: 4,
+                  borderInlineStartColor: "primary.main",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <CardContent>
                   <Typography component="h2" variant="h6">
                     {module.label}
                   </Typography>
                 </CardContent>
-                {active ? (
-                  <CardActions>
-                    <Button component={Link} to={`/system-owner/${module.key}`}>
-                      {text.open}
-                    </Button>
-                  </CardActions>
-                ) : null}
+                <CardActions sx={{ mt: "auto" }}>
+                  <Button component={Link} to={`/system-owner/${module.key}`}>
+                    {text.open}
+                  </Button>
+                </CardActions>
               </Card>
             );
           })}

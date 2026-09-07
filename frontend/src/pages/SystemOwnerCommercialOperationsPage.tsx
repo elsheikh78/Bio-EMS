@@ -13,6 +13,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -293,49 +294,51 @@ export function SystemOwnerCommercialOperationsPage() {
           {data.licenses.length === 0 ? (
             <Typography>{text.empty}</Typography>
           ) : (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{text.reference}</TableCell>
-                  <TableCell>{text.customer}</TableCell>
-                  <TableCell>{text.site}</TableCell>
-                  <TableCell>{text.status}</TableCell>
-                  <TableCell>{text.entitlement}</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.licenses.map((x) => (
-                  <TableRow key={x.id}>
-                    <TableCell>{x.licenseKeyReference}</TableCell>
-                    <TableCell>{customerName(x.customerId)}</TableCell>
-                    <TableCell>{siteName(x.siteId)}</TableCell>
-                    <TableCell>{x.status}</TableCell>
-                    <TableCell>{x.updateEntitlement}</TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() =>
-                          void updateLicense.mutateAsync({
-                            id: x.id,
-                            siteId: x.siteId,
-                            status: x.status,
-                            expiresAt: x.expiresAt,
-                            updateEntitlement:
-                              section === "updates"
-                                ? x.updateEntitlement === "NONE"
-                                  ? "FREE"
-                                  : "NONE"
-                                : x.updateEntitlement,
-                          })
-                        }
-                      >
-                        {text.update}
-                      </Button>
-                    </TableCell>
+            <TableContainer component={Card} variant="outlined">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{text.reference}</TableCell>
+                    <TableCell>{text.customer}</TableCell>
+                    <TableCell>{text.site}</TableCell>
+                    <TableCell>{text.status}</TableCell>
+                    <TableCell>{text.entitlement}</TableCell>
+                    <TableCell />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {data.licenses.map((x) => (
+                    <TableRow key={x.id}>
+                      <TableCell>{x.licenseKeyReference}</TableCell>
+                      <TableCell>{customerName(x.customerId)}</TableCell>
+                      <TableCell>{siteName(x.siteId)}</TableCell>
+                      <TableCell>{x.status}</TableCell>
+                      <TableCell>{x.updateEntitlement}</TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() =>
+                            void updateLicense.mutateAsync({
+                              id: x.id,
+                              siteId: x.siteId,
+                              status: x.status,
+                              expiresAt: x.expiresAt,
+                              updateEntitlement:
+                                section === "updates"
+                                  ? x.updateEntitlement === "NONE"
+                                    ? "FREE"
+                                    : "NONE"
+                                  : x.updateEntitlement,
+                            })
+                          }
+                        >
+                          {text.update}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </>
       ) : (
@@ -412,44 +415,46 @@ export function SystemOwnerCommercialOperationsPage() {
           {data.serviceEvents.length === 0 ? (
             <Typography>{text.empty}</Typography>
           ) : (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{text.reference}</TableCell>
-                  <TableCell>{text.customer}</TableCell>
-                  <TableCell>{text.type}</TableCell>
-                  <TableCell>{text.due}</TableCell>
-                  <TableCell>{text.status}</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.serviceEvents.map((x) => (
-                  <TableRow key={x.id}>
-                    <TableCell>{x.reference}</TableCell>
-                    <TableCell>{customerName(x.customerId)}</TableCell>
-                    <TableCell>{x.eventType}</TableCell>
-                    <TableCell>{x.dueAt ?? "—"}</TableCell>
-                    <TableCell>{x.status}</TableCell>
-                    <TableCell>
-                      <Button
-                        disabled={x.status === "COMPLETE"}
-                        onClick={() =>
-                          void updateService.mutateAsync({
-                            id: x.id,
-                            dueAt: x.dueAt,
-                            status: "COMPLETE",
-                            note: x.note,
-                          })
-                        }
-                      >
-                        {text.update}
-                      </Button>
-                    </TableCell>
+            <TableContainer component={Card} variant="outlined">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{text.reference}</TableCell>
+                    <TableCell>{text.customer}</TableCell>
+                    <TableCell>{text.type}</TableCell>
+                    <TableCell>{text.due}</TableCell>
+                    <TableCell>{text.status}</TableCell>
+                    <TableCell />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {data.serviceEvents.map((x) => (
+                    <TableRow key={x.id}>
+                      <TableCell>{x.reference}</TableCell>
+                      <TableCell>{customerName(x.customerId)}</TableCell>
+                      <TableCell>{x.eventType}</TableCell>
+                      <TableCell>{x.dueAt ?? "—"}</TableCell>
+                      <TableCell>{x.status}</TableCell>
+                      <TableCell>
+                        <Button
+                          disabled={x.status === "COMPLETE"}
+                          onClick={() =>
+                            void updateService.mutateAsync({
+                              id: x.id,
+                              dueAt: x.dueAt,
+                              status: "COMPLETE",
+                              note: x.note,
+                            })
+                          }
+                        >
+                          {text.update}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </>
       )}
