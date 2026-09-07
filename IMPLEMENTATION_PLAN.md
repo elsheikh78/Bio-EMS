@@ -106,7 +106,7 @@ Required gates include typecheck, build, lint, formatting, automated frontend te
 
 Only after real implementation, PR, CI and merge evidence may this package be marked complete and reflected in release/version documentation.
 
-Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md`. Backend typecheck/build/lint/format and 106 test files/755 tests passed. Frontend typecheck/lint/format, 51 test files/292 tests and production build passed. The automated total is 157 files/1,047 tests. Auth/RBAC/routes, localization/RTL, live refresh, responsive/accessibility behavior and reporting contracts are represented by the controlled suites. PR #171 passed CI #592 and merged to `main` at `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`. Version `0.20.0` was prepared through PR #172, CI #594 and merge `195abca7f01bd92850e255093df85c94ee721cd5`; tag/publication still require the separate owner release decision.
+Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md`. Backend typecheck/build/lint/format and 106 test files/755 tests passed. Frontend typecheck/lint/format, 51 test files/292 tests and production build passed. The automated total is 157 files/1,047 tests. Auth/RBAC/routes, localization/RTL, live refresh, responsive/accessibility behavior and reporting contracts are represented by the controlled suites. PR #171 passed CI #592 and merged to `main` at `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`. Version `0.20.0` was prepared through PR #172 / CI #594 and published as tag/Release `v0.20.0` from `e50593ddfda7acd3996d11d1de53c86821cb6c83` after explicit Owner approval.
 
 ## Site-Bound Licensing / Anti-Cloning — Mandatory Production Gate
 
@@ -114,7 +114,7 @@ Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-0
 
 **Architecture authority:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
 
-**Status:** **APPROVED / DOCUMENTED / NOT YET IMPLEMENTED**
+**Status:** **APPROVED / LIC-01 IMPLEMENTED AND LOCALLY VERIFIED, PENDING PR-CI-MERGE / LIC-02 THROUGH LIC-13 NOT YET IMPLEMENTED**
 
 ### Controlled sequence
 

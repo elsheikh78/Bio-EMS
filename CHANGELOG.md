@@ -4,7 +4,7 @@
 
 ### Added / Changed
 
-No changes recorded after the `v0.20.0` release candidate.
+- Started LIC-01 with the site-bound licensing domain/data model, controlled lifecycle types, migration 022, entitlement limits and append-only license events.
 
 ## [0.20.0] - 2026-09-07
 
@@ -26,7 +26,7 @@ Backward-compatible product experience milestone completing the approved BIO-EMS
 
 ### Verification boundary
 
-This source release candidate does not claim live WhatsApp acceptance, Telegram end-to-end acceptance, hardware qualification, Site-Bound Licensing implementation, final Windows Installer qualification, production deployment, field commissioning, BIO EGYPT UAT, Quality sign-off or customer acceptance.
+This published source release does not claim live WhatsApp acceptance, Telegram end-to-end acceptance, hardware qualification, Site-Bound Licensing implementation, final Windows Installer qualification, production deployment, field commissioning, BIO EGYPT UAT, Quality sign-off or customer acceptance.
 
 ## [0.19.0] - 2026-09-03
 

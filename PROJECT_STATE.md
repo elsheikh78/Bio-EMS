@@ -2,11 +2,11 @@
 
 **State date:** 5 September 2026
 
-**Release prepared for publication:** `v0.20.0`
+**Latest published source release:** `v0.20.0` (tag target `e50593ddfda7acd3996d11d1de53c86821cb6c83`)
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, RTL NAVIGATION CORRECTION, AND UI/UX UX-01 THROUGH UX-09 ARE COMPLETE / MERGED / CI VERIFIED. SOURCE RELEASE CANDIDATE v0.20.0 IS PREPARED; TAG/PUBLICATION REMAIN AN OWNER DECISION. SITE-BOUND LICENSING LIC-01 THROUGH LIC-13 REMAINS APPROVED / NOT YET IMPLEMENTED.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. SITE-BOUND LICENSING IS ACTIVE IMPLEMENTATION SCOPE: LIC-01 IS IMPLEMENTED AND LOCALLY VERIFIED / PENDING PR-CI-MERGE; LIC-02 THROUGH LIC-13 REMAIN APPROVED / NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
@@ -22,7 +22,7 @@
 10. UX-06 is complete through PR #168, CI #583 and merge `b05181e0e89f8b3c97d24daac3a643d5f4be0c55`: high-frequency Alarm, Monitored Area, Device and Notification Delivery surfaces now use compact responsive summaries and RTL-safe operational cues; Configuration, Calibration, recipient/escalation and Reporting Center surfaces were reviewed and retained where already aligned. UX-07 is next.
 11. UX-07 is complete through PR #169, CI #586 and merge `92449009e726d36b630179178cbd80d32db258ea`: the permission-filtered workspace, Commissioning readiness/acceptance, customer user administration and access/error surfaces are reconciled with responsive, bilingual and accessible shared-theme behavior. UX-08 is next.
 12. UX-08 is complete through PR #170, CI #589 and merge `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`: isolated SYSTEM_OWNER login/console, customer fleet, commercial tables and P8 installation lifecycle surfaces are visually reconciled with explicit operational states and responsive behavior. Platform authentication, tenant/RBAC and installation/receipt/technical/customer acceptance boundaries remain unchanged. UX-09 is next.
-13. UX-09 is complete through PR #171, CI #592 and merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`: Backend 106 files/755 tests and Frontend 51 files/292 tests pass with typecheck/build/lint/format gates. Source release candidate `v0.20.0` was prepared through PR #172, CI #594 and merge `195abca7f01bd92850e255093df85c94ee721cd5`; tag/publication remains a separate owner decision.
+13. UX-09 is complete through PR #171, CI #592 and merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`: Backend 106 files/755 tests and Frontend 51 files/292 tests pass with typecheck/build/lint/format gates. Source release `v0.20.0` was prepared through PR #172 / CI #594 and published from tag target `e50593ddfda7acd3996d11d1de53c86821cb6c83` after explicit Owner approval.
 14. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
 15. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
 16. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
@@ -41,7 +41,7 @@
 - Global customer and SYSTEM_OWNER Arabic/English localization is complete/merged/CI verified.
 - RTL navigation drawer correction is merged on `main` at `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
 - React Dashboard and Monitored Areas already have authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback; these are non-regression requirements for the refresh.
-- Site-Bound Licensing LIC-01 through LIC-13: **NOT YET IMPLEMENTED**.
+- Site-Bound Licensing LIC-01: **IMPLEMENTED / LOCALLY VERIFIED / PENDING PR-CI-MERGE** (Backend 108 files / 760 tests). LIC-02 through LIC-13: **NOT YET IMPLEMENTED**.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-05 Complete / UX-06+ Not Yet Implemented
@@ -86,7 +86,7 @@ Required work packages:
 
 ## Release / Version Position
 
-`VERSION` remains the source-version authority at `0.19.0` until the project's version/release policy is intentionally advanced by real merged implementation. Documentation of approved future work does not create a new software release.
+`VERSION` is the source-version authority at `0.20.0`; published tag `v0.20.0` points to `e50593ddfda7acd3996d11d1de53c86821cb6c83`. Later licensing work remains unreleased until a future controlled version decision.
 
 ## External Evidence Still Open
 
