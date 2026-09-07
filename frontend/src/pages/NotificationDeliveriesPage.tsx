@@ -24,6 +24,7 @@ import {
   type DeliveryStatus,
 } from "../notificationDeliveries/contracts";
 import { useNotificationDeliveries } from "../notificationDeliveries/queries";
+import { summarizeDeliveries } from "../notificationDeliveries/presentation";
 import { useLocalization } from "../localization/useLocalization";
 
 export function NotificationDeliveriesPage() {
@@ -38,6 +39,8 @@ export function NotificationDeliveriesPage() {
     siteId,
     status === "ALL" ? undefined : status,
   );
+  const records = deliveries.data ?? [];
+  const summary = summarizeDeliveries(records);
 
   return (
     <Stack spacing={3}>
@@ -55,46 +58,95 @@ export function NotificationDeliveriesPage() {
           )}
         </Typography>
       </Box>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-        <FormControl sx={{ minWidth: 240 }}>
-          <InputLabel id="delivery-site-label">
-            {t("Site", "الموقع")}
-          </InputLabel>
-          <Select
-            labelId="delivery-site-label"
-            label={t("Site", "الموقع")}
-            value={siteId ?? ""}
-            onChange={(event) => setSelectedSiteId(Number(event.target.value))}
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: {
+            xs: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
+          },
+        }}
+      >
+        {[
+          [
+            t("Queued / retrying", "في الانتظار / إعادة المحاولة"),
+            summary.queued,
+            "warning.main",
+          ],
+          [t("Successful", "ناجحة"), summary.successful, "success.main"],
+          [t("Failed", "فاشلة"), summary.failed, "error.main"],
+          [t("Cancelled", "ملغاة"), summary.cancelled, "text.secondary"],
+        ].map(([label, value, color]) => (
+          <Paper
+            key={String(label)}
+            variant="outlined"
+            sx={{ borderInlineStart: 5, borderInlineStartColor: color, p: 2 }}
           >
-            {(sites.data ?? []).map((site) => (
-              <MenuItem key={site.id} value={site.id}>
-                {site.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="delivery-status-label">
-            {t("Status", "الحالة")}
-          </InputLabel>
-          <Select
-            labelId="delivery-status-label"
-            label={t("Status", "الحالة")}
-            value={status}
-            onChange={(event) => setStatus(event.target.value)}
+            <Typography color="text.secondary" variant="body2">
+              {label}
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                color,
+                fontWeight: 800,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {value}
+            </Typography>
+          </Paper>
+        ))}
+      </Box>
+      <Paper variant="outlined" sx={{ bgcolor: "action.hover", p: 2 }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <FormControl sx={{ minWidth: 240 }}>
+            <InputLabel id="delivery-site-label">
+              {t("Site", "الموقع")}
+            </InputLabel>
+            <Select
+              labelId="delivery-site-label"
+              label={t("Site", "الموقع")}
+              value={siteId ?? ""}
+              onChange={(event) =>
+                setSelectedSiteId(Number(event.target.value))
+              }
+            >
+              {(sites.data ?? []).map((site) => (
+                <MenuItem key={site.id} value={site.id}>
+                  {site.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel id="delivery-status-label">
+              {t("Status", "الحالة")}
+            </InputLabel>
+            <Select
+              labelId="delivery-status-label"
+              label={t("Status", "الحالة")}
+              value={status}
+              onChange={(event) => setStatus(event.target.value)}
+            >
+              <MenuItem value="ALL">{t("All statuses", "كل الحالات")}</MenuItem>
+              {deliveryStatuses.map((value) => (
+                <MenuItem key={value} value={value}>
+                  {localizeDeliveryValue(value, language)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="outlined"
+            onClick={() => void deliveries.refetch()}
+            disabled={!siteId || deliveries.isFetching}
           >
-            <MenuItem value="ALL">{t("All statuses", "كل الحالات")}</MenuItem>
-            {deliveryStatuses.map((value) => (
-              <MenuItem key={value} value={value}>
-                {localizeDeliveryValue(value, language)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button onClick={() => void deliveries.refetch()} disabled={!siteId}>
-          {t("Refresh", "تحديث")}
-        </Button>
-      </Stack>
+            {t("Refresh", "تحديث")}
+          </Button>
+        </Stack>
+      </Paper>
       {sites.isError || deliveries.isError ? (
         <Alert severity="error">
           {t(
@@ -121,7 +173,7 @@ export function NotificationDeliveriesPage() {
           )}
         </Alert>
       ) : null}
-      {(deliveries.data?.length ?? 0) > 0 ? (
+      {records.length > 0 ? (
         <TableContainer component={Paper} variant="outlined">
           <Table>
             <TableHead>
@@ -136,7 +188,7 @@ export function NotificationDeliveriesPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {deliveries.data?.map((delivery) => {
+              {records.map((delivery) => {
                 const result = [...delivery.attempts]
                   .reverse()
                   .find((attempt) => attempt.phase === "RESULT");
