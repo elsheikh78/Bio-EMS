@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 AND UX-02 ARE COMPLETE / MERGED / CI VERIFIED; UX-03 OPENING / ENTRY EXPERIENCE IS IMPLEMENTED AND VERIFIED ON ITS BRANCH, AWAITING PR MERGE. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 THROUGH UX-03 ARE COMPLETE / MERGED / CI VERIFIED; UX-04 COMPACT OPERATIONAL DASHBOARD REDESIGN IS NEXT. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
@@ -16,7 +16,7 @@
 4. UX-01 inventory/baseline and recovery of the approved visual-reference masters are complete through PR #162, CI #567 and merge `7a50338c153bf1388d8d28a7f3b2b3658bfd69ac`. UX-02 has now been implemented and verified on its controlled branch using the visual freeze as decision authority.
 5. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
 6. UX-02 is complete through PR #164, CI #571 and merge `81ea4a9d91c862f31ad7d278914dcb34fa99d5c6`: approved transparent identity variants, shared design tokens/primitives, persisted Light/Dark mode, bilingual theme control and shell adoption. Start UX-03 only from reconciled `main`.
-7. UX-03 is implemented and verified on `agent/ux-03-opening-entry`: responsive approved-brand opening composition, bilingual copy, per-tab completion and a no-pre-auth-child-mount boundary. Do not start UX-04 until the UX-03 PR is merged and `main` is reconciled.
+7. UX-03 is complete through PR #165, CI #574 and merge `6a46ad24e49ae219d4ebb8c6e4289856febe6f36`: responsive approved-brand opening composition, bilingual copy, per-tab completion and a no-pre-auth-child-mount boundary. Start UX-04 only from reconciled `main`.
 8. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
 9. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
 10. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
@@ -38,7 +38,7 @@
 - Site-Bound Licensing LIC-01 through LIC-13: **NOT YET IMPLEMENTED**.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
-## Approved UI/UX Refresh Scope — UX-01 and UX-02 Complete / UX-03 Branch Complete / UX-04+ Not Yet Implemented
+## Approved UI/UX Refresh Scope — UX-01 through UX-03 Complete / UX-04+ Not Yet Implemented
 
 Controlled work package:
 `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`

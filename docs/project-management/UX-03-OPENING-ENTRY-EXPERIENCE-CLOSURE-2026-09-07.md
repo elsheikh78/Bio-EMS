@@ -2,11 +2,15 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-03-opening-entry`
 
-This record closes UX-03 implementation and local verification only. It does not claim UX-04 Dashboard redesign, UX-05 Monitoring Areas Live Board, later surface reconciliation, merge, CI, release, licensing, installer qualification or customer acceptance.
+- PR: #165
+- CI: #574 — PASS
+- Merge: `6a46ad24e49ae219d4ebb8c6e4289856febe6f36`
+
+This record closes UX-03 implementation, CI verification and merge only. It does not claim UX-04 Dashboard redesign, UX-05 Monitoring Areas Live Board, later surface reconciliation, release, licensing, installer qualification or customer acceptance.
 
 ## Implemented Scope
 
@@ -39,6 +43,4 @@ UX-03 changes application entry presentation only. It does not change route deci
 
 ## Controlled Next Step
 
-1. Publish `agent/ux-03-opening-entry` and open its pull request against `main`.
-2. Require CI success, merge and record the PR/CI/merge SHA.
-3. Reconcile `main`, then start UX-04 Compact Operational Dashboard Redesign.
+Reconcile `main`, then start UX-04 Compact Operational Dashboard Redesign.
