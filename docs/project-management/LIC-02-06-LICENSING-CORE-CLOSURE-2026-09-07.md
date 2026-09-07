@@ -1,6 +1,6 @@
 # LIC-02 through LIC-06 — Licensing Core Evidence
 
-**Status:** Implemented and locally verified; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified
 
 ## Delivered scope
 
@@ -60,4 +60,10 @@ No production-readiness, installer qualification, field commissioning or custome
 - Backend full regression: 110 files / 765 tests passed
 - Backend build: passed
 
-PR, CI and merge evidence remain required before LIC-02 through LIC-06 are declared complete.
+## Integration evidence
+
+- PR: #174
+- CI: #600 — passed
+- Merge: `43ffcd54c191c59f3aa0f4b34e19c54cd4678bf7`
+
+LIC-02 through LIC-06 are complete. LIC-07 — Site and gateway/device binding — is the controlled next package.

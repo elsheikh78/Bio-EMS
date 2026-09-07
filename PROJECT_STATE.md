@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 IS COMPLETE / MERGED / CI VERIFIED. LIC-02 THROUGH LIC-06 ARE IMPLEMENTED / LOCALLY VERIFIED / PENDING PR-CI-MERGE.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-06 ARE COMPLETE / MERGED / CI VERIFIED. LIC-07 SITE AND GATEWAY/DEVICE BINDING IS NEXT.**
 
 ## Current Controlled Continuation
 
@@ -41,8 +41,8 @@
 - Global customer and SYSTEM_OWNER Arabic/English localization is complete/merged/CI verified.
 - RTL navigation drawer correction is merged on `main` at `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
 - React Dashboard and Monitored Areas already have authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback; these are non-regression requirements for the refresh.
-- Site-Bound Licensing LIC-01: **COMPLETE / MERGED / CI VERIFIED** through PR #173, CI #597 and merge `90fe361e71f8a4fb79295e0c95344913b66cba35` (Backend 108 files / 760 tests). LIC-02 through LIC-13: **NOT YET IMPLEMENTED**.
-- Site-Bound Licensing LIC-02 through LIC-06: **IMPLEMENTED / LOCALLY VERIFIED / PENDING PR-CI-MERGE** (Backend 110 files / 765 tests). LIC-07 through LIC-13 remain not implemented.
+- Site-Bound Licensing LIC-01: **COMPLETE / MERGED / CI VERIFIED** through PR #173, CI #597 and merge `90fe361e71f8a4fb79295e0c95344913b66cba35`.
+- Site-Bound Licensing LIC-02 through LIC-06: **COMPLETE / MERGED / CI VERIFIED** through PR #174, CI #600 and merge `43ffcd54c191c59f3aa0f4b34e19c54cd4678bf7` (Backend 110 files / 765 tests). LIC-07 through LIC-13 remain not implemented.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-05 Complete / UX-06+ Not Yet Implemented
