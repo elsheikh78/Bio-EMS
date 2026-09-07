@@ -13,7 +13,7 @@
 1. Treat GitHub `main` as authoritative and reconcile the local Windows working copy before further implementation.
 2. Preserve all P0-P8 closure and evidence boundaries. UI/UX refresh and licensing are new approved scope and must not rewrite historical closure claims.
 3. Preserve global Arabic/English localization and RTL navigation correction; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035` remains relevant for UI regression.
-4. Execute the approved UI/UX product refresh from `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md` using the visual freeze as its decision authority.
+4. UX-01 inventory/baseline and recovery of the approved visual-reference masters are implemented locally on `agent/ux-01-visual-baseline`; PR/CI/merge evidence is pending. After closure, continue UX-02 from `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md` using the visual freeze as its decision authority.
 5. Preserve telemetry-driven refresh/reconnect/fallback behavior for Dashboard and Monitored Areas and apply consistent live behavior to the new Live Board.
 6. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
 7. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.

@@ -20,7 +20,19 @@ Three visual references supplied and explicitly confirmed by the product owner o
 2. **Final approved opening/splash screen** — supplied PNG, 1536×864, SHA-256 `152e567cf02e6f417ce6c113811fabeed3ca5de079a7bb69f6c982557bc0d4f7`.
 3. **Approved Live Monitoring Wall visual reference** — supplied PNG, 1536×864, SHA-256 `3ca13d50dd2ad5c77b90d4df0643b161a925065ae2978945fb44721441f630cc`.
 
-The binary reference images were supplied in the Work/chat discussion. Their hashes and dimensions are recorded here to prevent later substitution or reinterpretation. When implementation begins, production assets should be derived from these approved references and checked against these hashes/reference visuals. If the repository later stores the binary masters, their repository paths must be added to this document.
+## Repository Master Assets
+
+The approved Work visual references were recovered from their persisted generated-image masters on 7 September 2026 and added to the repository. The persisted masters retain the approved compositions at a higher stored resolution than the originally recorded display renditions; the original display dimensions and hashes above remain provenance evidence rather than byte-equality claims for these repository files.
+
+| Approved reference | Repository master | Stored dimensions | Repository SHA-256 |
+| --- | --- | ---: | --- |
+| Final BIO-EMS logo | [`docs/assets/ui-ux/bio-ems-final-logo.png`](../assets/ui-ux/bio-ems-final-logo.png) | 1919×820 | `6f1aeec88a691da9eb2321feb995ca3255e893decab9f554c6f51b94056aec0c` |
+| Opening / splash screen | [`docs/assets/ui-ux/bio-ems-approved-opening-screen.png`](../assets/ui-ux/bio-ems-approved-opening-screen.png) | 1672×941 | `6580597c264c743841aaa8eaa37ba144db269a28bfb19339592b9321caa395a7` |
+| Live Monitoring Wall | [`docs/assets/ui-ux/bio-ems-approved-live-monitoring-wall.png`](../assets/ui-ux/bio-ems-approved-live-monitoring-wall.png) | 1672×941 | `fa91c172bcb85c31717cbe02aea807a44a2ca4ededae8929eda6b8f771ebaba3` |
+
+These files are design authorities and documentation evidence. Runtime implementation must derive responsive application assets and components from them; it must not paste the complete splash or monitoring-wall mockup into the operational UI.
+
+The original display-render hashes and dimensions are retained to prevent later substitution or reinterpretation. Production assets must be derived from the repository masters and checked visually against the approved references; the repository-master hashes in the table above are the byte-integrity checks for files stored in Git.
 
 ## 1. Final Approved BIO-EMS Logo
 
