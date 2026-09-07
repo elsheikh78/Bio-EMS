@@ -10,6 +10,8 @@ import {
 import { useState, type FormEvent } from "react";
 import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
+import { BrandLogo } from "../components/BrandLogo";
+import { useInitialFocus } from "../accessibility/useInitialFocus";
 
 const copy = {
   en: {
@@ -39,6 +41,7 @@ export function SystemOwnerLoginPage() {
   const [password, setPassword] = useState("");
   const [failed, setFailed] = useState(false);
   const text = copy[language];
+  const headingRef = useInitialFocus<HTMLHeadingElement>();
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -63,8 +66,14 @@ export function SystemOwnerLoginPage() {
         sx={{ maxWidth: 440, p: 4, width: "100%" }}
       >
         <Stack spacing={2.5}>
+          <BrandLogo sx={{ maxWidth: 220 }} />
           <Box>
-            <Typography component="h1" variant="h4">
+            <Typography
+              component="h1"
+              ref={headingRef}
+              tabIndex={-1}
+              variant="h4"
+            >
               {text.title}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>

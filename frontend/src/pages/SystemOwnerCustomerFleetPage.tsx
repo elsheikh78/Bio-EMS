@@ -198,7 +198,15 @@ export function SystemOwnerCustomerFleetPage() {
       <Button component={Link} to="/system-owner" sx={{ mb: 2 }}>
         {text.back}
       </Button>
-      <Box sx={{ alignItems: "center", display: "flex", gap: 2, mb: 3 }}>
+      <Box
+        sx={{
+          alignItems: { xs: "stretch", sm: "center" },
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+          mb: 3,
+        }}
+      >
         <Box sx={{ flexGrow: 1 }}>
           <Typography component="h1" variant="h4">
             {text.title}

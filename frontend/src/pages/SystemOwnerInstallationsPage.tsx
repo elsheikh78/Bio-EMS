@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Container,
   MenuItem,
   TextField,
@@ -57,6 +58,13 @@ const copy = {
     reviewWarning:
       "A new immutable revision will be created. The last active configuration remains in service until an exact device receipt confirms this revision.",
     revisionError: "Configuration JSON or mapping is invalid.",
+    loading: "Loading installation lifecycle…",
+    loadError: "Installation lifecycle could not be loaded.",
+    retry: "Retry",
+    empty: "No installation drafts have been recorded yet.",
+    total: "Total installations",
+    active: "Active configuration",
+    commissioned: "Commissioned",
     telemetryTypes: {
       TEMPERATURE: "Temperature",
       HUMIDITY: "Humidity",
@@ -112,6 +120,13 @@ const copy = {
     reviewWarning:
       "ستُنشأ مراجعة ثابتة جديدة، وتظل آخر تهيئة نشطة في الخدمة حتى يؤكد إيصال مطابق من الجهاز هذه المراجعة.",
     revisionError: "تهيئة JSON أو ربط القنوات غير صالح.",
+    loading: "جارٍ تحميل دورة حياة التركيبات…",
+    loadError: "تعذر تحميل دورة حياة التركيبات.",
+    retry: "إعادة المحاولة",
+    empty: "لم يتم تسجيل مسودات تركيب حتى الآن.",
+    total: "إجمالي التركيبات",
+    active: "تهيئة نشطة",
+    commissioned: "تم تشغيلها مبدئيًا",
     telemetryTypes: {
       TEMPERATURE: "درجة الحرارة",
       HUMIDITY: "الرطوبة",
@@ -221,6 +236,13 @@ export function SystemOwnerInstallationsPage() {
     })[actionName] ?? actionName;
   const statusLabel = (status: string) =>
     text.statuses[status as keyof typeof text.statuses] ?? status;
+  const records = installations.data ?? [];
+  const activeCount = records.filter(
+    (item) => item.status === "CONFIG_ACTIVE",
+  ).length;
+  const commissionedCount = records.filter(
+    (item) => item.status === "COMMISSIONED",
+  ).length;
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
       <Button component={Link} to="/system-owner">
@@ -232,6 +254,28 @@ export function SystemOwnerInstallationsPage() {
       <Alert severity="info" sx={{ mb: 2 }}>
         {text.info}
       </Alert>
+      {installations.isPending ? (
+        <Box
+          role="status"
+          sx={{ alignItems: "center", display: "flex", gap: 2, mb: 3 }}
+        >
+          <CircularProgress size={24} />
+          <Typography>{text.loading}</Typography>
+        </Box>
+      ) : null}
+      {installations.isError ? (
+        <Alert
+          severity="error"
+          action={
+            <Button onClick={() => void installations.refetch()}>
+              {text.retry}
+            </Button>
+          }
+          sx={{ mb: 3 }}
+        >
+          {text.loadError}
+        </Alert>
+      ) : null}
       <Card variant="outlined" sx={{ mb: 3 }}>
         <CardContent>
           <Typography component="h2" variant="h6">
@@ -336,10 +380,61 @@ export function SystemOwnerInstallationsPage() {
       <Typography component="h2" variant="h5" sx={{ mb: 2 }}>
         {text.register}
       </Typography>
-      {installations.data?.map((item) => {
+      {!installations.isPending &&
+      !installations.isError &&
+      records.length === 0 ? (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {text.empty}
+        </Alert>
+      ) : null}
+      {records.length > 0 ? (
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, minmax(0, 1fr))" },
+            mb: 3,
+          }}
+        >
+          {[
+            [text.total, records.length, "primary.main"],
+            [text.active, activeCount, "success.main"],
+            [text.commissioned, commissionedCount, "info.main"],
+          ].map(([label, value, color]) => (
+            <Card
+              key={String(label)}
+              variant="outlined"
+              sx={{ borderInlineStart: 5, borderInlineStartColor: color }}
+            >
+              <CardContent>
+                <Typography color="text.secondary" variant="body2">
+                  {label}
+                </Typography>
+                <Typography variant="h4" sx={{ color, fontWeight: 800 }}>
+                  {value}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      ) : null}
+      {records.map((item) => {
         const next = nextAction(item.status);
         return (
-          <Card key={item.uuid} variant="outlined" sx={{ mb: 2 }}>
+          <Card
+            key={item.uuid}
+            variant="outlined"
+            sx={{
+              borderInlineStart: 5,
+              borderInlineStartColor:
+                item.status === "COMMISSIONED"
+                  ? "success.main"
+                  : item.status === "CORRECTION_REQUIRED"
+                    ? "error.main"
+                    : "warning.main",
+              mb: 2,
+            }}
+          >
             <CardContent>
               <Typography variant="h6">
                 {item.customerName} — {text.revision} {item.latestRevision}
