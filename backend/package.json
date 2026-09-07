@@ -29,6 +29,7 @@
     "test:telegram-delivery": "tsx src/scripts/test-telegram-delivery.ts",
     "validate:deployment": "node --import tsx src/scripts/validate-deployment.ts",
     "validate:release": "node --import tsx src/scripts/validate-release.ts",
+    "validate:windows-installer": "node --import tsx src/scripts/validate-windows-installer.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src database",
