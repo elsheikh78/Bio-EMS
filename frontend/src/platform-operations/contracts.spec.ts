@@ -49,6 +49,12 @@ const overview = {
       actorIdentity: "owner#1",
     },
   ],
+  siteBoundLicensing: {
+    installations: [],
+    licenses: [],
+    devices: [],
+    events: [],
+  },
 };
 
 describe("platform fleet contracts", () => {

@@ -4,6 +4,8 @@ import { PlatformOperationsRepository } from "../modules/platform-operations/pla
 import { customerAdminService } from "../modules/platform-operations/customer-admin.service";
 import { ActivationService } from "../modules/licensing/activation.service";
 import { LicensingRepository } from "../modules/licensing/licensing.repository";
+import { LicenseGovernanceService } from "../modules/licensing/license-governance.service";
+import { sqlite } from "../../database/sqlite/client";
 
 const repository = new PlatformOperationsRepository();
 const actor = (req: Request) => `${req.platformPrincipal!.username}#${req.platformPrincipal!.id}`;
@@ -15,6 +17,7 @@ const activationService = () => {
   }
   return new ActivationService(new LicensingRepository(), { keyId, privateKeyPem });
 };
+const licenseGovernance = new LicenseGovernanceService(sqlite);
 
 export const platformOperationsOverview = asyncHandler(async (_req: Request, res: Response) =>
   res.json(repository.overview())
@@ -77,3 +80,30 @@ export const approveLicenseActivationRequest = asyncHandler(async (req: Request,
     certificate: activationService().approve(String(req.params.requestId), req.body, actor(req)),
   })
 );
+export const bindLicensedDevice = asyncHandler(async (req: Request, res: Response) => {
+  licenseGovernance.bindDevice(Number(req.params.licenseId), req.body.deviceId, actor(req));
+  res.json({ success: true });
+});
+export const recordLicenseValidation = asyncHandler(async (req: Request, res: Response) => {
+  licenseGovernance.recordValidation(
+    Number(req.params.licenseId),
+    req.body.result,
+    actor(req),
+    req.body.validatedAt,
+    req.body.nextValidationAt
+  );
+  res.json({ success: true });
+});
+export const transitionSiteBoundLicense = asyncHandler(async (req: Request, res: Response) => {
+  licenseGovernance.transition(Number(req.params.licenseId), req.body.status, actor(req));
+  res.json({ success: true });
+});
+export const transferSiteBoundLicense = asyncHandler(async (req: Request, res: Response) => {
+  licenseGovernance.transfer(
+    Number(req.params.licenseId),
+    req.body.targetInstallationId,
+    req.body.reason,
+    actor(req)
+  );
+  res.json({ success: true });
+});

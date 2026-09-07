@@ -37,5 +37,25 @@ export const activationDecisionSchema = z
   .strict();
 
 export const activationParamsSchema = z.object({ requestId: z.string().uuid() }).strict();
+export const licenseDatabaseParamsSchema = z
+  .object({ licenseId: z.string().regex(/^[1-9]\d*$/) })
+  .strict();
+export const bindLicenseDeviceSchema = z.object({ deviceId: z.number().int().positive() }).strict();
+export const licenseTransitionSchema = z
+  .object({ status: z.enum(["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"]) })
+  .strict();
+export const licenseValidationSchema = z
+  .object({
+    result: z.enum(["VALID", "OFFLINE_GRACE", "RESTRICTED"]),
+    validatedAt: z.string().datetime(),
+    nextValidationAt: z.string().datetime().nullable(),
+  })
+  .strict();
+export const licenseTransferSchema = z
+  .object({
+    targetInstallationId: z.number().int().positive(),
+    reason: z.string().trim().min(1).max(1000),
+  })
+  .strict();
 export type ActivationRequest = z.infer<typeof activationRequestSchema>;
 export type ActivationDecision = z.infer<typeof activationDecisionSchema>;

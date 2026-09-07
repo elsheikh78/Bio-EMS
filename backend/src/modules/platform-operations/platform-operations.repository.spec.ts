@@ -1,6 +1,9 @@
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
+import { migration020 } from "../../../database/sqlite/migrations/020_create_installation_lifecycle";
+import { migration022 } from "../../../database/sqlite/migrations/022_create_site_bound_licensing_domain";
+import { migration024 } from "../../../database/sqlite/migrations/024_create_licensing_governance";
 import { PlatformOperationsRepository } from "./platform-operations.repository";
 
 describe("isolated platform commercial operations", () => {
@@ -21,8 +24,12 @@ describe("isolated platform commercial operations", () => {
       );
       INSERT INTO sites(id,code,name,location,timezone,active)
       VALUES(7,'OCT','6th October','Giza','Africa/Cairo',1);
+      CREATE TABLE devices(id INTEGER PRIMARY KEY,device_id TEXT NOT NULL,site_id INTEGER NOT NULL);
     `);
     migration018.up(db);
+    migration020.up(db);
+    migration022.up(db);
+    migration024.up(db);
     repository = new PlatformOperationsRepository(db);
   });
 

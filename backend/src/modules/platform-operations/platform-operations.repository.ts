@@ -1,5 +1,6 @@
 import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
+import { LicenseGovernanceService } from "../licensing/license-governance.service";
 
 export class PlatformOperationsRepository {
   constructor(private readonly database: Database.Database = sqlite) {}
@@ -130,6 +131,7 @@ export class PlatformOperationsRepository {
           "SELECT id,event_type AS eventType,entity_type AS entityType,entity_id AS entityId,occurred_at AS occurredAt,actor_identity AS actorIdentity FROM platform_commercial_events ORDER BY id DESC"
         )
         .all(),
+      siteBoundLicensing: new LicenseGovernanceService(this.database).overview(),
     };
   }
 

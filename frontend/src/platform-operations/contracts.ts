@@ -69,6 +69,60 @@ export const platformOperationsOverviewSchema = z
     licenses: z.array(platformLicenseSummarySchema),
     serviceEvents: z.array(platformServiceEventSummarySchema),
     commercialEvents: z.array(platformCommercialEventSchema),
+    siteBoundLicensing: z
+      .object({
+        installations: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              installationId: z.string(),
+              customerId: databaseIdSchema,
+              siteId: databaseIdSchema,
+              status: z.string(),
+              updatedAt: z.string(),
+            })
+            .strict(),
+        ),
+        licenses: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              licenseId: z.string(),
+              installationDatabaseId: databaseIdSchema,
+              licenseType: z.string(),
+              status: z.string(),
+              startsAt: z.string(),
+              expiresAt: z.string().nullable(),
+              updateEntitlement: z.string(),
+            })
+            .strict(),
+        ),
+        devices: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              licenseDatabaseId: databaseIdSchema,
+              deviceDatabaseId: databaseIdSchema,
+              deviceIdentity: z.string(),
+              status: z.string(),
+              boundAt: z.string(),
+            })
+            .strict(),
+        ),
+        events: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              licenseDatabaseId: databaseIdSchema.nullable(),
+              eventType: z.string(),
+              actorIdentity: z.string(),
+              occurredAt: z.string(),
+            })
+            .strict(),
+        ),
+      })
+      .strict()
+      .default({ installations: [], licenses: [], devices: [], events: [] }),
   })
   .strict();
 
