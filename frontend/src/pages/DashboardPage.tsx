@@ -162,7 +162,7 @@ export function DashboardPage() {
           <Button
             component={RouterLink}
             size="small"
-            to="/monitored-areas"
+            to="/live-board"
             variant="outlined"
           >
             {resources.dashboard.compact.openAreas}

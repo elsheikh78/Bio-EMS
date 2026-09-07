@@ -243,7 +243,7 @@ describe("DashboardPage", () => {
       screen.getByRole("link", {
         name: englishResources.dashboard.compact.openAreas,
       }),
-    ).toHaveAttribute("href", "/monitored-areas");
+    ).toHaveAttribute("href", "/live-board");
   });
 
   it("renders a safe summary error state and retries on request", () => {

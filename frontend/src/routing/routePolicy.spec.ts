@@ -9,6 +9,9 @@ describe("safe post-Login return policy", () => {
     expect(resolveSafeReturnPath({ returnTo: "/alarms" }, "VIEWER")).toBe(
       "/alarms",
     );
+    expect(resolveSafeReturnPath({ returnTo: "/live-board" }, "VIEWER")).toBe(
+      "/live-board",
+    );
     expect(resolveSafeReturnPath({ returnTo: "/foundation" }, "VIEWER")).toBe(
       "/",
     );

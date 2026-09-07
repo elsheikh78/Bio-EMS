@@ -8,6 +8,7 @@ describe("permission-aware navigation registry", () => {
     ).toEqual([
       ["/", "DASHBOARD_READ"],
       ["/dashboard", "DASHBOARD_READ"],
+      ["/live-board", "DASHBOARD_READ"],
       ["/monitored-areas", "CONFIGURATION_READ"],
       ["/alarms", "ALARM_READ"],
       ["/devices", "DEVICE_READ"],

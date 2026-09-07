@@ -53,6 +53,7 @@ export interface TranslationResources {
   navigation: {
     workspace: string;
     dashboard: string;
+    liveBoard: string;
     monitoredAreas: string;
     alarms: string;
     notificationDeliveries: string;
@@ -181,6 +182,39 @@ export interface TranslationResources {
     retry: string;
   };
 
+  liveBoard: {
+    title: string;
+    description: string;
+    live: string;
+    autoRefresh: string;
+    lastUpdate: string;
+    refresh: string;
+    refreshing: string;
+    retry: string;
+    loading: string;
+    error: string;
+    empty: string;
+    noMatches: string;
+    allSites: string;
+    allStatuses: string;
+    search: string;
+    siteFilter: string;
+    statusFilter: string;
+    density: string;
+    comfortable: string;
+    compact: string;
+    normal: string;
+    warning: string;
+    alarm: string;
+    offline: string;
+    temperature: string;
+    humidity: string;
+    activeAlarms: string;
+    unavailable: string;
+    communication: string;
+    openDetails: string;
+  };
+
   monitoredAreas: {
     title: string;
     description: string;
@@ -289,6 +323,7 @@ export const englishResources = {
   navigation: {
     workspace: "Workspace",
     dashboard: "Dashboard",
+    liveBoard: "Live Monitoring Wall",
     monitoredAreas: "Monitored Areas",
     alarms: "Alarms",
     notificationDeliveries: "Notification Delivery",
@@ -321,7 +356,7 @@ export const englishResources = {
       liveEvidence: "Live authorized evidence",
       healthy: "No current priority exceptions",
       attention: "Operational attention required",
-      openAreas: "Open monitored areas",
+      openAreas: "Open live monitoring wall",
       currentProfile: "Current temperature profile",
       currentProfileDescription:
         "Latest verified reading per Sensor — current snapshot, not a historical trend.",
@@ -446,6 +481,39 @@ export const englishResources = {
     retry: "Retry",
   },
 
+  liveBoard: {
+    title: "Live Monitoring Wall",
+    description: "Current operational state across monitored areas.",
+    live: "LIVE",
+    autoRefresh: "Automatic updates active",
+    lastUpdate: "Latest board update",
+    refresh: "Refresh board",
+    refreshing: "Refreshing board",
+    retry: "Retry",
+    loading: "Loading live monitored-area status",
+    error: "Live monitored-area status could not be loaded.",
+    empty: "No live monitored-area status is currently available.",
+    noMatches: "No monitored areas match the selected filters.",
+    allSites: "All Sites",
+    allStatuses: "All statuses",
+    search: "Search monitored areas",
+    siteFilter: "Filter by Site",
+    statusFilter: "Filter by status",
+    density: "Grid density",
+    comfortable: "Comfortable",
+    compact: "Compact",
+    normal: "Normal",
+    warning: "Warning",
+    alarm: "Alarm",
+    offline: "Offline",
+    temperature: "Temperature",
+    humidity: "Relative humidity",
+    activeAlarms: "Active alarms",
+    unavailable: "Unavailable",
+    communication: "Communication",
+    openDetails: "Open detailed monitored areas",
+  },
+
   monitoredAreas: {
     title: "Monitored Areas",
 
@@ -549,6 +617,7 @@ export const arabicResources = {
   navigation: {
     workspace: "مساحة العمل",
     dashboard: "لوحة المتابعة",
+    liveBoard: "جدار المراقبة الحية",
     monitoredAreas: "المناطق المراقبة",
     alarms: "الإنذارات",
     notificationDeliveries: "إرسال الإشعارات",
@@ -575,7 +644,7 @@ export const arabicResources = {
       liveEvidence: "أدلة تشغيلية حية ومصرح بها",
       healthy: "لا توجد استثناءات ذات أولوية حاليًا",
       attention: "توجد حالات تشغيلية تتطلب الانتباه",
-      openAreas: "فتح المناطق المراقبة",
+      openAreas: "فتح جدار المراقبة الحية",
       currentProfile: "ملف درجات الحرارة الحالي",
       currentProfileDescription:
         "أحدث قراءة معتمدة لكل حساس — لقطة حالية وليست اتجاهًا تاريخيًا.",
@@ -670,6 +739,38 @@ export const arabicResources = {
     loading: "جارٍ تحميل ملخص لوحة المتابعة",
     error: "تعذر تحميل ملخص لوحة المتابعة.",
     retry: "إعادة المحاولة",
+  },
+  liveBoard: {
+    title: "جدار المراقبة الحية",
+    description: "الحالة التشغيلية الحالية عبر المناطق المراقبة.",
+    live: "مباشر",
+    autoRefresh: "التحديث التلقائي نشط",
+    lastUpdate: "آخر تحديث للوحة",
+    refresh: "تحديث اللوحة",
+    refreshing: "جارٍ تحديث اللوحة",
+    retry: "إعادة المحاولة",
+    loading: "جارٍ تحميل الحالة الحية للمناطق المراقبة",
+    error: "تعذر تحميل الحالة الحية للمناطق المراقبة.",
+    empty: "لا توجد حالة حية متاحة حاليًا للمناطق المراقبة.",
+    noMatches: "لا توجد مناطق مراقبة تطابق عوامل التصفية.",
+    allSites: "كل المواقع",
+    allStatuses: "كل الحالات",
+    search: "البحث في المناطق المراقبة",
+    siteFilter: "التصفية حسب الموقع",
+    statusFilter: "التصفية حسب الحالة",
+    density: "كثافة الشبكة",
+    comfortable: "مريحة",
+    compact: "مضغوطة",
+    normal: "طبيعي",
+    warning: "تحذير",
+    alarm: "إنذار",
+    offline: "غير متصل",
+    temperature: "درجة الحرارة",
+    humidity: "الرطوبة النسبية",
+    activeAlarms: "الإنذارات النشطة",
+    unavailable: "غير متاح",
+    communication: "الاتصال",
+    openDetails: "فتح تفاصيل المناطق المراقبة",
   },
   monitoredAreas: {
     title: "المناطق المراقبة",

@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
 import { DashboardPage } from "./pages/DashboardPage";
+import { LiveBoardPage } from "./pages/LiveBoardPage";
 import { ConfigurationPage } from "./pages/ConfigurationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MonitoredAreasPage } from "./pages/MonitoredAreasPage";
@@ -93,6 +94,15 @@ export function App() {
             element={
               <PermissionBoundary path="/dashboard">
                 <DashboardPage />
+              </PermissionBoundary>
+            }
+          />
+
+          <Route
+            path="live-board"
+            element={
+              <PermissionBoundary path="/live-board">
+                <LiveBoardPage />
               </PermissionBoundary>
             }
           />

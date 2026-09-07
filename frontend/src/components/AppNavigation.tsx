@@ -131,6 +131,7 @@ function NavigationIcon({ id }: { id: string }) {
   const paths: Record<string, string> = {
     workspace: "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",
     dashboard: "M4 18V10M10 18V5M16 18v-7M22 18V8",
+    "live-board": "M3 5h18v12H3zM8 21h8M12 17v4M6 9h3m2 0h7M6 13h7",
     "monitored-areas": "M4 7h16v12H4zM8 7V4h8v3M8 12h8M8 16h5",
     alarms: "M12 3 3 20h18L12 3zm0 6v5m0 3v.5",
     devices: "M7 3h10v18H7zM9 6h6M9 17h6M12 20v1",
