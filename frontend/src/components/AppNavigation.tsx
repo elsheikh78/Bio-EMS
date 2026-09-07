@@ -12,7 +12,8 @@ import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
 import { navigationItems } from "../navigation/navigationConfig";
 import { useLocalization } from "../localization/useLocalization";
-import bioEmsLogo from "../assets/bio-ems-logo.png";
+import { BrandLogo } from "./BrandLogo";
+import { designTokens } from "../theme/tokens";
 
 interface AppNavigationProps {
   label: string;
@@ -39,17 +40,11 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
             bgcolor: "rgba(255,255,255,0.96)",
           }}
         >
-          <Box
-            component="img"
-            src={bioEmsLogo}
-            alt=""
-            sx={{ width: 58, height: 46, objectFit: "contain", flexShrink: 0 }}
-          />
-          <Typography sx={{ color: "#073B4C", fontSize: 18, fontWeight: 800 }}>
-            BIO-EMS
-          </Typography>
+          <BrandLogo sx={{ width: 154, height: 50, flexShrink: 0 }} />
         </Box>
-        <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1.2 }}>
+        <Typography
+          sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1.2, mt: 1 }}
+        >
           {language === "ar" ? "المراقبة البيئية" : "ENVIRONMENTAL MONITORING"}
         </Typography>
       </Box>
@@ -100,15 +95,15 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
                     minHeight: 44,
                     mb: 1,
                     borderRadius: 2.25,
-                    color: "#D8E7E9",
+                    color: designTokens.colors.navigationText,
                     borderInlineStart: "4px solid transparent",
                     "&.active": {
-                      bgcolor: "#0B6B78",
+                      bgcolor: designTokens.colors.navigationActive,
                       borderInlineStartColor: "#6EE7DF",
                       color: "white",
                       fontWeight: 700,
                     },
-                    "&:hover": { bgcolor: "#0B4A5D" },
+                    "&:hover": { bgcolor: designTokens.colors.navigationHover },
                     "&:focus-visible": {
                       outline: "3px solid",
                       outlineColor: "primary.main",

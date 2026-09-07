@@ -1,7 +1,15 @@
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import type { RefObject } from "react";
 import { getAppHeaderStyles } from "./appHeaderStyles";
 import { useLocalization } from "../localization/useLocalization";
+import { useColorMode } from "../theme/colorMode";
 
 interface AppHeaderProps {
   logoutLabel: string;
@@ -22,7 +30,8 @@ export function AppHeader({
   role,
   username,
 }: AppHeaderProps) {
-  const { language } = useLocalization();
+  const { language, resources } = useLocalization();
+  const { mode, toggleMode } = useColorMode();
   return (
     <AppBar
       color="inherit"
@@ -37,7 +46,7 @@ export function AppHeader({
           borderBottom: 1,
           borderColor: "divider",
           gap: 3,
-          bgcolor: "white",
+          bgcolor: "background.paper",
         }}
       >
         <Button
@@ -64,6 +73,24 @@ export function AppHeader({
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
+        <IconButton
+          aria-label={
+            mode === "light"
+              ? resources.shell.switchToDark
+              : resources.shell.switchToLight
+          }
+          color="primary"
+          onClick={toggleMode}
+          sx={{ border: 1, borderColor: "divider" }}
+        >
+          <Box
+            aria-hidden
+            component="span"
+            sx={{ fontSize: "1.1rem", lineHeight: 1 }}
+          >
+            {mode === "light" ? "◐" : "☀"}
+          </Box>
+        </IconButton>
         <Box sx={{ minWidth: 0, textAlign: "end" }}>
           <Typography noWrap sx={{ fontWeight: 600 }} variant="body2">
             {username}

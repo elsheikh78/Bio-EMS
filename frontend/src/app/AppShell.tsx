@@ -15,6 +15,7 @@ import { AppNavigation } from "../components/AppNavigation";
 import { SkipLink } from "../components/SkipLink";
 import { useLocalization } from "../localization/useLocalization";
 import { useRealtimeTelemetrySync } from "../realtime/useRealtimeTelemetrySync";
+import { designTokens } from "../theme/tokens";
 
 const navigationWidth = 248;
 const mainContentId = "main-content";
@@ -56,6 +57,10 @@ export function AppShell() {
         display: "flex",
         flexDirection: direction === "rtl" ? "row-reverse" : "row",
         bgcolor: "background.default",
+        backgroundImage:
+          theme.palette.mode === "dark"
+            ? "radial-gradient(circle at 85% 8%, rgba(24, 166, 166, 0.10), transparent 28%)"
+            : "radial-gradient(circle at 85% 8%, rgba(24, 166, 166, 0.08), transparent 28%)",
         maxWidth: "100vw",
         minHeight: "100vh",
         overflowX: "hidden",
@@ -100,8 +105,8 @@ export function AppShell() {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: navigationWidth,
-              bgcolor: "#073B4C",
-              color: "#D8E7E9",
+              bgcolor: designTokens.colors.navigation,
+              color: designTokens.colors.navigationText,
               border: 0,
             },
           }}
@@ -121,8 +126,8 @@ export function AppShell() {
               sx: {
                 maxWidth: "calc(100vw - 32px)",
                 width: navigationWidth,
-                bgcolor: "#073B4C",
-                color: "#D8E7E9",
+                bgcolor: designTokens.colors.navigation,
+                color: designTokens.colors.navigationText,
               },
             },
           }}

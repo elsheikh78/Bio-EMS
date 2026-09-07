@@ -1,26 +1,33 @@
 import { createTheme } from "@mui/material/styles";
-import type { Direction } from "@mui/material/styles";
+import type { Direction, PaletteMode } from "@mui/material/styles";
 import { designTokens } from "./tokens";
 
-export function createAppTheme(direction: Direction) {
+export function createAppTheme(
+  direction: Direction,
+  mode: PaletteMode = "light",
+) {
+  const dark = mode === "dark";
+  const colors = dark ? designTokens.darkColors : designTokens.colors;
+
   return createTheme({
     direction,
     palette: {
-      mode: "light",
-      primary: { main: designTokens.colors.primary },
-      secondary: { main: designTokens.colors.secondary },
+      mode,
+      primary: { main: colors.primary },
+      secondary: { main: colors.secondary },
       background: {
-        default: designTokens.colors.background,
-        paper: designTokens.colors.surface,
+        default: colors.background,
+        paper: colors.surface,
       },
       text: {
-        primary: designTokens.colors.textPrimary,
-        secondary: designTokens.colors.textSecondary,
+        primary: colors.textPrimary,
+        secondary: colors.textSecondary,
       },
-      divider: designTokens.colors.border,
-      error: { main: designTokens.colors.error },
-      warning: { main: designTokens.colors.warning },
-      success: { main: designTokens.colors.success },
+      divider: colors.border,
+      error: { main: colors.error },
+      warning: { main: colors.warning },
+      success: { main: colors.success },
+      info: { main: colors.info },
     },
     typography: {
       ...designTokens.typography,
@@ -34,13 +41,41 @@ export function createAppTheme(direction: Direction) {
     },
     spacing: designTokens.spacing,
     breakpoints: { values: designTokens.breakpoints },
-    shape: { borderRadius: 12 },
+    shape: { borderRadius: designTokens.surfaces.cardRadius },
     components: {
       MuiButton: {
-        styleOverrides: { root: { minHeight: 44, borderRadius: 9 } },
+        styleOverrides: {
+          root: {
+            minHeight: 44,
+            borderRadius: designTokens.surfaces.controlRadius,
+          },
+        },
       },
       MuiPaper: {
         styleOverrides: { root: { backgroundImage: "none" } },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            border: `1px solid ${colors.border}`,
+            boxShadow: dark
+              ? designTokens.surfaces.darkCardShadow
+              : designTokens.surfaces.cardShadow,
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: { borderRadius: designTokens.surfaces.controlRadius },
+        },
+      },
+      MuiCssBaseline: {
+        styleOverrides: {
+          ":focus-visible": {
+            outline: `3px solid ${designTokens.colors.focus}`,
+            outlineOffset: 2,
+          },
+        },
       },
     },
   });
