@@ -28,6 +28,13 @@ export const navigationItems = [
   },
   {
     group: "overview",
+    id: "live-board",
+    path: "/live-board",
+    labelKey: "liveBoard",
+    permission: "DASHBOARD_READ",
+  },
+  {
+    group: "overview",
     id: "monitored-areas",
     path: "/monitored-areas",
     labelKey: "monitoredAreas",

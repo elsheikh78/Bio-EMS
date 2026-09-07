@@ -4,6 +4,7 @@ import { hasPermission, type Permission } from "../authorization/permissions";
 export const routePolicies = {
   "/": "DASHBOARD_READ",
   "/dashboard": "DASHBOARD_READ",
+  "/live-board": "DASHBOARD_READ",
   "/monitored-areas": "CONFIGURATION_READ",
   "/alarms": "ALARM_READ",
   "/notification-deliveries": "ALARM_READ",

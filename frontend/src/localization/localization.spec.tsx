@@ -40,6 +40,7 @@ const alternativeResources = {
   navigation: {
     workspace: "Alt Workspace",
     dashboard: "Alt Dashboard",
+    liveBoard: "Alt Live Monitoring Wall",
     monitoredAreas: "Alt Monitored Areas",
     alarms: "Alt Alarms",
     notificationDeliveries: "Alt Notification Delivery",
