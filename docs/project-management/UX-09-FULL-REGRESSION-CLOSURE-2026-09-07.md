@@ -2,7 +2,7 @@
 
 ## Status
 
-**REGRESSION PASSED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-09-full-regression`
 
@@ -26,6 +26,10 @@ Branch: `agent/ux-09-full-regression`
 
 Automated total: **157 files / 1,047 tests**.
 
+- PR #171 — MERGED.
+- CI #592 — PASS.
+- Merge — `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`.
+
 ## Regression Matrix
 
 | Gate                               | Evidence represented by suites                                                                             | Result |
@@ -43,8 +47,8 @@ Automated total: **157 files / 1,047 tests**.
 
 This regression proves repository software behavior only. It does not claim live WhatsApp acceptance, Telegram end-to-end acceptance, hardware qualification, Site-Bound Licensing implementation, final Windows Installer qualification, production deployment, field commissioning, BIO EGYPT UAT, Quality sign-off or customer acceptance.
 
-Release/version metadata must not be advanced until this record passes PR CI and is merged.
+Post-merge source release candidate `v0.20.0` is prepared. No tag or GitHub Release is claimed by this record.
 
 ## Controlled Next Step
 
-Publish the PR, require CI success, merge, record the evidence and only then reconcile release/version documentation for the completed UI/UX scope.
+Obtain the separate owner release decision before creating tag `v0.20.0` or publishing a GitHub Release. Continue licensing from LIC-01 only from reconciled `main` unless another explicitly approved track is selected.

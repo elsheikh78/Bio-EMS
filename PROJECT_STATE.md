@@ -2,11 +2,11 @@
 
 **State date:** 5 September 2026
 
-**Release prepared for publication:** `v0.19.0`
+**Release prepared for publication:** `v0.20.0`
 
-**Current source-software version:** `0.19.0`
+**Current source-software version:** `0.20.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 THROUGH UX-08 ARE COMPLETE / MERGED / CI VERIFIED; UX-09 FULL REGRESSION PASSED ON ITS CONTROLLED BRANCH, AWAITING PR MERGE. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, RTL NAVIGATION CORRECTION, AND UI/UX UX-01 THROUGH UX-09 ARE COMPLETE / MERGED / CI VERIFIED. SOURCE RELEASE CANDIDATE v0.20.0 IS PREPARED; TAG/PUBLICATION REMAIN AN OWNER DECISION. SITE-BOUND LICENSING LIC-01 THROUGH LIC-13 REMAINS APPROVED / NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
@@ -22,7 +22,7 @@
 10. UX-06 is complete through PR #168, CI #583 and merge `b05181e0e89f8b3c97d24daac3a643d5f4be0c55`: high-frequency Alarm, Monitored Area, Device and Notification Delivery surfaces now use compact responsive summaries and RTL-safe operational cues; Configuration, Calibration, recipient/escalation and Reporting Center surfaces were reviewed and retained where already aligned. UX-07 is next.
 11. UX-07 is complete through PR #169, CI #586 and merge `92449009e726d36b630179178cbd80d32db258ea`: the permission-filtered workspace, Commissioning readiness/acceptance, customer user administration and access/error surfaces are reconciled with responsive, bilingual and accessible shared-theme behavior. UX-08 is next.
 12. UX-08 is complete through PR #170, CI #589 and merge `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`: isolated SYSTEM_OWNER login/console, customer fleet, commercial tables and P8 installation lifecycle surfaces are visually reconciled with explicit operational states and responsive behavior. Platform authentication, tenant/RBAC and installation/receipt/technical/customer acceptance boundaries remain unchanged. UX-09 is next.
-13. UX-09 regression passed on `agent/ux-09-full-regression`: Backend 106 files/755 tests and Frontend 51 files/292 tests pass with typecheck/build/lint/format gates. PR/CI/merge and post-merge release/version reconciliation remain open.
+13. UX-09 is complete through PR #171, CI #592 and merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`: Backend 106 files/755 tests and Frontend 51 files/292 tests pass with typecheck/build/lint/format gates. Source release candidate `v0.20.0` is prepared; tag/publication remains a separate owner decision.
 14. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
 15. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
 16. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.

@@ -1,29 +1,29 @@
 # BIO-EMS
 
-![Source Version](https://img.shields.io/badge/source-0.19.0-blue)
+![Source Version](https://img.shields.io/badge/source-0.20.0-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Release prepared for publication:** `v0.19.0`.
-**Current source-software version:** `0.19.0`.
+**Release prepared for publication:** `v0.20.0`.
+**Current source-software version:** `0.20.0`.
 
 ## Documentation Authority — Read This First
 
-| Need | Authoritative document |
-| --- | --- |
-| Where is the whole project now? | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority** |
-| What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) |
-| What is the approved SYSTEM_OWNER installation and RBAC plan? | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
-| What is the approved customer Windows installer plan? | [`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md) |
-| What exactly is active P7 scope? | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md) |
-| How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely? | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md) |
-| What is the latest P7 closure evidence? | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md) |
-| What is the P8-02 through P8-08 closure evidence? | [`docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`](docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md) |
-| What did the current documentation audit conclude? | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md) |
-| What is the hardware validation path? | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md) |
-| Historical Sprint/BF/PVR progress | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only |
+| Need                                                                         | Authoritative document                                                                                                                                                 |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Where is the whole project now?                                              | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority**                                                                                            |
+| What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)                                                                                                                     |
+| What is the approved SYSTEM_OWNER installation and RBAC plan?                | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
+| What is the approved customer Windows installer plan?                        | [`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md)                                                     |
+| What exactly is active P7 scope?                                             | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md)                     |
+| How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely?         | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md)                                             |
+| What is the latest P7 closure evidence?                                      | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md)                   |
+| What is the P8-02 through P8-08 closure evidence?                            | [`docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`](docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md)                                       |
+| What did the current documentation audit conclude?                           | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md)                                   |
+| What is the hardware validation path?                                        | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md)                               |
+| Historical Sprint/BF/PVR progress                                            | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only                                                                                          |
 
 **Rule:** if a historical document conflicts with current status, `PROJECT_STATE.md` controls.
 
@@ -43,6 +43,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 - **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
 - **P8-01:** WhatsApp/Email provider source complete / merged / CI verified; live SMTP send and inbox arrival passed on 3 September 2026; WhatsApp remains blocked by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
+- **UI/UX UX-01 through UX-09:** product refresh implementation and full repository regression complete / merged / CI verified through PR #171 / CI #592 / merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`; the verified matrix covers 157 test files and 1,047 tests.
 
 BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
