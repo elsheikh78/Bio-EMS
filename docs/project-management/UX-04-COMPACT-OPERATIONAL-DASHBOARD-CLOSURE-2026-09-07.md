@@ -2,11 +2,15 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-04-compact-dashboard`
 
-This record closes UX-04 implementation and local verification only. It does not claim UX-05 Monitoring Areas Live Board, later screen reconciliation, merge, CI, release, licensing, installer qualification or customer acceptance.
+- PR: #166
+- CI: #577 — PASS
+- Merge: `8f82c4e3a72064bc719c58feec4cf382393efd08`
+
+This record closes UX-04 implementation, CI verification and merge only. It does not claim UX-05 Monitoring Areas Live Board, later screen reconciliation, release, licensing, installer qualification or customer acceptance.
 
 ## Implemented Scope
 
@@ -43,6 +47,4 @@ UX-04 changes Dashboard presentation and information hierarchy only. It does not
 
 ## Controlled Next Step
 
-1. Publish `agent/ux-04-compact-dashboard` and open its pull request against `main`.
-2. Require CI success, merge and record the PR/CI/merge SHA.
-3. Reconcile `main`, then start UX-05 Monitoring Areas Live Board.
+Reconcile `main`, then start UX-05 Monitoring Areas Live Board.

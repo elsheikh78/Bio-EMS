@@ -55,14 +55,14 @@ Implementation record: `docs/project-management/UX-03-OPENING-ENTRY-EXPERIENCE-C
 
 ### UX-04 — Compact Operational Dashboard Redesign
 
-Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 
 - redesign Dashboard for a compact, high-information normal desktop viewport;
 - prioritize overall state, Alarm/actionable exceptions, monitored-area status, live environmental readings and relevant device health;
 - preserve authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback;
 - provide a clear entry to the new Monitoring Areas Live Board.
 
-Implementation record: `docs/project-management/UX-04-COMPACT-OPERATIONAL-DASHBOARD-CLOSURE-2026-09-07.md`. The Dashboard now provides a compact exception-first command surface, six condensed KPI cards, smaller current-reading and priority-area panels, shared-theme surfaces, bilingual copy and preserved detailed evidence sections. The current action safely opens Monitored Areas; UX-05 will retarget it to the dedicated Live Board only when that route exists. Frontend typecheck, 284 automated tests, lint, formatting and production build pass on `agent/ux-04-compact-dashboard`.
+Implementation record: `docs/project-management/UX-04-COMPACT-OPERATIONAL-DASHBOARD-CLOSURE-2026-09-07.md`. The Dashboard now provides a compact exception-first command surface, six condensed KPI cards, smaller current-reading and priority-area panels, shared-theme surfaces, bilingual copy and preserved detailed evidence sections. The current action safely opens Monitored Areas; UX-05 will retarget it to the dedicated Live Board only when that route exists. Frontend typecheck, 284 automated tests, lint, formatting and production build passed on `agent/ux-04-compact-dashboard`; PR #166 passed CI #577 and merged to `main` at `8f82c4e3a72064bc719c58feec4cf382393efd08`.
 
 ### UX-05 — Monitoring Areas Live Board
 
