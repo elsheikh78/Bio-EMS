@@ -4,10 +4,29 @@
 
 ### Added / Changed
 
+No changes recorded after the `v0.20.0` release candidate.
+
+## [0.20.0] - 2026-09-07
+
+### Release scope
+
+Backward-compatible product experience milestone completing the approved BIO-EMS UI/UX refresh and Telegram source extension after the `v0.19.0` source milestone.
+
+### Added / Changed
+
+- Added the approved BIO-EMS identity assets, shared Light/Dark design system and responsive bilingual opening experience.
+- Reworked Dashboard into a compact exception-first operational surface and added the protected Live Monitoring Wall with one trusted status card per Monitored Area.
+- Reconciled Monitored Areas, Alarms, Devices, Configuration, Calibration, Notification Delivery, Reporting Center, Users/Audit and Commissioning with responsive RTL/LTR behavior.
+- Reconciled isolated SYSTEM_OWNER customer, license/update/service and P8 installation lifecycle workflows without changing platform/customer authentication boundaries.
 - Added Telegram Bot API as an independent Alarm-delivery channel while Meta WhatsApp onboarding remains blocked.
 - Extended recipient endpoints, escalation policies, durable delivery records, Delivery Operations contracts, and configuration UI with explicit `TELEGRAM` identity.
 - Added migration 021, secret-safe Bot Token configuration, provider tests, and `npm run test:telegram-delivery` for controlled live evidence.
 - Preserved WhatsApp for later activation and retained SMS as the emergency/fallback channel; no live Telegram or end-to-end acceptance is claimed yet.
+- Completed full Backend and Frontend regression: 157 test files and 1,047 tests, with typecheck, builds, lint and formatting passing.
+
+### Verification boundary
+
+This source release candidate does not claim live WhatsApp acceptance, Telegram end-to-end acceptance, hardware qualification, Site-Bound Licensing implementation, final Windows Installer qualification, production deployment, field commissioning, BIO EGYPT UAT, Quality sign-off or customer acceptance.
 
 ## [0.19.0] - 2026-09-03
 
