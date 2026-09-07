@@ -94,10 +94,10 @@ Implementation record: `docs/project-management/UX-07-REMAINING-CUSTOMER-SURFACE
 
 ### UX-08 — SYSTEM_OWNER and P8 Workflow Refresh
 
-Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+Status: **COMPLETE / MERGED / CI VERIFIED**
 Reconcile SYSTEM_OWNER customer/site/license/update/maintenance/support and P8 installation provisioning/revision/receipt/commissioning/acceptance surfaces while preserving isolated platform authentication and tenant/RBAC boundaries.
 
-Implementation record: `docs/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-REFRESH-CLOSURE-2026-09-07.md`. SYSTEM_OWNER login and console now use approved identity/accessibility and responsive shell treatment. Customer fleet, commercial operations and installation lifecycle screens gain responsive controls/tables, explicit lifecycle loading/error/empty states, and authoritative installation summaries while preserving isolated platform authentication and P8 domain gates. Frontend typecheck, 51 test files/292 tests, lint, formatting and production build pass on `agent/ux-08-system-owner-p8`.
+Implementation record: `docs/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-REFRESH-CLOSURE-2026-09-07.md`. SYSTEM_OWNER login and console now use approved identity/accessibility and responsive shell treatment. Customer fleet, commercial operations and installation lifecycle screens gain responsive controls/tables, explicit lifecycle loading/error/empty states, and authoritative installation summaries while preserving isolated platform authentication and P8 domain gates. Frontend typecheck, 51 test files/292 tests, lint, formatting and production build passed on `agent/ux-08-system-owner-p8`; PR #170 passed CI #589 and merged to `main` at `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`.
 
 ### UX-09 — Full Regression and Closure
 

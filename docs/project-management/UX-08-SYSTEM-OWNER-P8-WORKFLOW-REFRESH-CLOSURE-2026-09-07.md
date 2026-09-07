@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-08-system-owner-p8`
 
@@ -25,6 +25,9 @@ Branch: `agent/ux-08-system-owner-p8`
 - Frontend lint — PASS with zero warnings.
 - Frontend formatting — PASS.
 - Frontend production build — PASS with only the existing non-blocking chunk-size advisory.
+- PR #170 — MERGED.
+- CI #589 — PASS.
+- Merge — `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`.
 
 ## Non-Regression Boundaries
 
@@ -32,4 +35,4 @@ UX-08 does not merge customer and platform authentication, expose SYSTEM_OWNER f
 
 ## Controlled Next Step
 
-Publish the branch PR, require CI success, merge and record PR/CI/merge evidence before starting UX-09 full regression and closure.
+Reconcile `main`, then start UX-09 full regression and closure.
