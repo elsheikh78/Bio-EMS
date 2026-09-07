@@ -2,9 +2,19 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import { PlatformOperationsRepository } from "../modules/platform-operations/platform-operations.repository";
 import { customerAdminService } from "../modules/platform-operations/customer-admin.service";
+import { ActivationService } from "../modules/licensing/activation.service";
+import { LicensingRepository } from "../modules/licensing/licensing.repository";
 
 const repository = new PlatformOperationsRepository();
 const actor = (req: Request) => `${req.platformPrincipal!.username}#${req.platformPrincipal!.id}`;
+const activationService = () => {
+  const keyId = process.env.BIOEMS_LICENSE_SIGNING_KEY_ID;
+  const privateKeyPem = process.env.BIOEMS_LICENSE_SIGNING_PRIVATE_KEY_PEM;
+  if (!keyId || !privateKeyPem) {
+    throw new Error("Central license signing configuration is unavailable");
+  }
+  return new ActivationService(new LicensingRepository(), { keyId, privateKeyPem });
+};
 
 export const platformOperationsOverview = asyncHandler(async (_req: Request, res: Response) =>
   res.json(repository.overview())
@@ -55,4 +65,15 @@ export const updatePlatformCustomerAdminPassword = asyncHandler(
         actor(req)
       )
     )
+);
+
+export const createLicenseActivationRequest = asyncHandler(async (req: Request, res: Response) =>
+  res.status(201).json(activationService().request(req.body))
+);
+
+export const approveLicenseActivationRequest = asyncHandler(async (req: Request, res: Response) =>
+  res.json({
+    success: true,
+    certificate: activationService().approve(String(req.params.requestId), req.body, actor(req)),
+  })
 );
