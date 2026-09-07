@@ -1,6 +1,6 @@
 # LIC-11 through LIC-13 — Production Protection Evidence
 
-**Status:** Implemented and locally verified; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified
 
 ## Delivered scope
 
@@ -37,8 +37,17 @@ must remain in an isolated signing authority or approved HSM/secret manager.
 ## Boundary
 
 This package closes the licensing source implementation and automated repository
-qualification only after PR/CI/merge evidence is added. It does not create or qualify
-the final DEP-01 offline Windows installer. Clean-machine install, reboot, Repair,
+qualification. It does not create or qualify the final DEP-01 offline Windows
+installer. Clean-machine install, reboot, Repair,
 Upgrade, rollback, Uninstall, ACL/service-identity and package-signing checks remain
 DEP-01 evidence gates. Production deployment, physical hardware, provider delivery,
 field Commissioning, UAT and customer acceptance also remain separate.
+
+## Integration evidence
+
+- PR: #176
+- CI: #606 — passed
+- Merge: `ca6f40eba9b22a03318fa8e141d14d8bbc5da09d`
+
+LIC-01 through LIC-13 are now complete, merged and CI verified. DEP-01 implementation
+and clean-machine Windows qualification are the controlled next workstream.

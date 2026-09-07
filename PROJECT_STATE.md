@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-10 ARE COMPLETE / MERGED / CI VERIFIED. LIC-11 THROUGH LIC-13 ARE IMPLEMENTED LOCALLY / PR AND CI PENDING.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01 IMPLEMENTATION AND CLEAN-MACHINE QUALIFICATION ARE NEXT.**
 
 ## Current Controlled Continuation
 
@@ -44,7 +44,7 @@
 - Site-Bound Licensing LIC-01: **COMPLETE / MERGED / CI VERIFIED** through PR #173, CI #597 and merge `90fe361e71f8a4fb79295e0c95344913b66cba35`.
 - Site-Bound Licensing LIC-02 through LIC-06: **COMPLETE / MERGED / CI VERIFIED** through PR #174, CI #600 and merge `43ffcd54c191c59f3aa0f4b34e19c54cd4678bf7` (Backend 110 files / 765 tests).
 - Site-Bound Licensing LIC-07 through LIC-10: **COMPLETE / MERGED / CI VERIFIED** through PR #175, CI #603 and merge `39bb230bbef7217a81073d9d8d39933ea46c3ada`. Backend 111 files / 769 tests and Frontend 51 files / 292 tests pass; total 162 files / 1,061 tests.
-- Site-Bound Licensing LIC-11 through LIC-13: **IMPLEMENTED LOCALLY / PR AND CI PENDING** with create-only installer provisioning, anti-tamper/negative qualification and controlled signing-key operations. Backend 112 files / 781 tests and Frontend 51 files / 292 tests pass; total 163 files / 1,073 tests. DEP-01 clean-machine installer qualification remains separate.
+- Site-Bound Licensing LIC-11 through LIC-13: **COMPLETE / MERGED / CI VERIFIED** through PR #176, CI #606 and merge `ca6f40eba9b22a03318fa8e141d14d8bbc5da09d`. Backend 112 files / 781 tests and Frontend 51 files / 292 tests pass; total 163 files / 1,073 tests. DEP-01 clean-machine installer qualification remains separate.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
@@ -59,7 +59,7 @@ Approved scope includes selected BIO-EMS logo option 5 and production variants, 
 
 This scope must not be marked complete until code is implemented, repository gates pass, PR/CI evidence exists and merge evidence is recorded.
 
-## Mandatory Site-Bound Licensing Production Gate — Final Package Pending PR/CI
+## Mandatory Site-Bound Licensing Production Gate — Source Gate Complete
 
 **Architecture:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
 
