@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-10 ARE COMPLETE / MERGED / CI VERIFIED. LIC-11 INSTALLER INTEGRATION IS NEXT.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-10 ARE COMPLETE / MERGED / CI VERIFIED. LIC-11 THROUGH LIC-13 ARE IMPLEMENTED LOCALLY / PR AND CI PENDING.**
 
 ## Current Controlled Continuation
 
@@ -43,10 +43,11 @@
 - React Dashboard and Monitored Areas already have authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback; these are non-regression requirements for the refresh.
 - Site-Bound Licensing LIC-01: **COMPLETE / MERGED / CI VERIFIED** through PR #173, CI #597 and merge `90fe361e71f8a4fb79295e0c95344913b66cba35`.
 - Site-Bound Licensing LIC-02 through LIC-06: **COMPLETE / MERGED / CI VERIFIED** through PR #174, CI #600 and merge `43ffcd54c191c59f3aa0f4b34e19c54cd4678bf7` (Backend 110 files / 765 tests).
-- Site-Bound Licensing LIC-07 through LIC-10: **COMPLETE / MERGED / CI VERIFIED** through PR #175, CI #603 and merge `39bb230bbef7217a81073d9d8d39933ea46c3ada`. Backend 111 files / 769 tests and Frontend 51 files / 292 tests pass; total 162 files / 1,061 tests. LIC-11 through LIC-13 remain not implemented.
+- Site-Bound Licensing LIC-07 through LIC-10: **COMPLETE / MERGED / CI VERIFIED** through PR #175, CI #603 and merge `39bb230bbef7217a81073d9d8d39933ea46c3ada`. Backend 111 files / 769 tests and Frontend 51 files / 292 tests pass; total 162 files / 1,061 tests.
+- Site-Bound Licensing LIC-11 through LIC-13: **IMPLEMENTED LOCALLY / PR AND CI PENDING** with create-only installer provisioning, anti-tamper/negative qualification and controlled signing-key operations. Backend 112 files / 781 tests and Frontend 51 files / 292 tests pass; total 163 files / 1,073 tests. DEP-01 clean-machine installer qualification remains separate.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
-## Approved UI/UX Refresh Scope — UX-01 through UX-05 Complete / UX-06+ Not Yet Implemented
+## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
 
 Controlled work package:
 `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`
@@ -58,7 +59,7 @@ Approved scope includes selected BIO-EMS logo option 5 and production variants, 
 
 This scope must not be marked complete until code is implemented, repository gates pass, PR/CI evidence exists and merge evidence is recorded.
 
-## Mandatory Site-Bound Licensing Production Gate — Not Yet Implemented
+## Mandatory Site-Bound Licensing Production Gate — Final Package Pending PR/CI
 
 **Architecture:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
 
@@ -92,13 +93,13 @@ Required work packages:
 
 ## External Evidence Still Open
 
-Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, Telegram live/end-to-end acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, licensing qualification, final installer qualification, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
+Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, Telegram live/end-to-end acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, Windows installer licensing integration/clean-machine qualification, final installer qualification, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
 
 ## Next-Session Start Point
 
 1. Reconcile local Windows `main` with GitHub `main` and confirm a clean working tree.
 2. Read this file, `IMPLEMENTATION_PLAN.md`, the UI/UX work package, the UI/UX visual freeze, and `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
-3. Continue the approved UI/UX sequence unless licensing is explicitly started earlier.
-4. After stabilization of the current UI/P8/localization/notification scope, execute LIC-01 -> LIC-06, then LIC-07 -> LIC-10, then LIC-11 -> LIC-13 with DEP-01 integration.
+3. Confirm LIC-11 through LIC-13 PR/CI/merge evidence and reconcile the local branch.
+4. Start DEP-01 implementation from the approved installer plan and LIC-11 machine-readable contract.
 5. Do not qualify the final Production Installer before the licensing gate passes.
 6. Do not claim UI/UX implementation, licensing implementation, installer qualification, physical receipt, Commissioning, provider acceptance or customer acceptance without actual evidence.

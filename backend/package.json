@@ -23,6 +23,8 @@
     "start": "node dist/server.js",
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
     "bootstrap:system-owner": "tsx src/scripts/bootstrap-system-owner.ts",
+    "licensing:provision-installation": "tsx src/scripts/provision-installation-identity.ts",
+    "licensing:generate-signing-key": "tsx src/scripts/generate-license-signing-key.ts",
     "test:email-delivery": "tsx src/scripts/test-email-delivery.ts",
     "test:telegram-delivery": "tsx src/scripts/test-telegram-delivery.ts",
     "validate:deployment": "node --import tsx src/scripts/validate-deployment.ts",
