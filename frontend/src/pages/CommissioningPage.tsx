@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -14,6 +15,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TableContainer,
   TextField,
   Typography,
 } from "@mui/material";
@@ -53,6 +55,11 @@ const copy = {
     blockers: "Blockers",
     readyStatus: "READY",
     blockedStatus: "BLOCKED",
+    loading: "Loading commissioning readiness",
+    noSites: "No Sites are available for commissioning review.",
+    totalSensors: "Total Sensors",
+    readySensors: "Ready",
+    blockedSensors: "Blocked",
   },
   ar: {
     eyebrow: "أدلة المشروع التجريبي",
@@ -82,6 +89,11 @@ const copy = {
     blockers: "العوائق",
     readyStatus: "جاهز",
     blockedStatus: "محجوب",
+    loading: "جارٍ تحميل جاهزية التشغيل المبدئي",
+    noSites: "لا توجد مواقع متاحة لمراجعة التشغيل المبدئي.",
+    totalSensors: "إجمالي الحساسات",
+    readySensors: "الجاهزة",
+    blockedSensors: "المحجوبة",
   },
 } as const;
 
@@ -194,37 +206,109 @@ export function CommissioningPage() {
           ) : null}
         </Paper>
       ) : null}
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-        <FormControl sx={{ minWidth: 240 }}>
-          <InputLabel id="commissioning-site-label">{text.site}</InputLabel>
-          <Select
-            labelId="commissioning-site-label"
-            label={text.site}
-            value={siteId ?? ""}
-            onChange={(event) => setSelectedSiteId(Number(event.target.value))}
+      <Paper variant="outlined" sx={{ bgcolor: "action.hover", p: 2 }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <FormControl sx={{ minWidth: 240 }}>
+            <InputLabel id="commissioning-site-label">{text.site}</InputLabel>
+            <Select
+              labelId="commissioning-site-label"
+              label={text.site}
+              value={siteId ?? ""}
+              onChange={(event) =>
+                setSelectedSiteId(Number(event.target.value))
+              }
+            >
+              {(sites.data ?? []).map((site) => (
+                <MenuItem key={site.id} value={site.id}>
+                  {site.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="outlined"
+            onClick={() => void readiness.refetch()}
+            disabled={!siteId || readiness.isFetching}
           >
-            {(sites.data ?? []).map((site) => (
-              <MenuItem key={site.id} value={site.id}>
-                {site.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button onClick={() => void readiness.refetch()} disabled={!siteId}>
-          {text.refresh}
-        </Button>
-      </Stack>
+            {text.refresh}
+          </Button>
+        </Stack>
+      </Paper>
+      {sites.isPending || readiness.isPending ? (
+        <Box
+          role="status"
+          sx={{ alignItems: "center", display: "flex", gap: 2 }}
+        >
+          <CircularProgress size={24} />
+          <Typography>{text.loading}</Typography>
+        </Box>
+      ) : null}
+      {!sites.isPending && !sites.isError && (sites.data?.length ?? 0) === 0 ? (
+        <Alert severity="info">{text.noSites}</Alert>
+      ) : null}
       {readiness.isError ? (
         <Alert severity="error">{text.loadError}</Alert>
       ) : null}
       {readiness.data ? (
         <>
+          <Box
+            sx={{
+              display: "grid",
+              gap: 2,
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(3, minmax(0, 1fr))",
+              },
+            }}
+          >
+            {[
+              [
+                text.totalSensors,
+                readiness.data.summary.totalSensors,
+                "primary.main",
+              ],
+              [
+                text.readySensors,
+                readiness.data.summary.readySensors,
+                "success.main",
+              ],
+              [
+                text.blockedSensors,
+                readiness.data.summary.blockedSensors,
+                "warning.main",
+              ],
+            ].map(([label, value, color]) => (
+              <Paper
+                key={String(label)}
+                variant="outlined"
+                sx={{
+                  borderInlineStart: 5,
+                  borderInlineStartColor: color,
+                  p: 2,
+                }}
+              >
+                <Typography color="text.secondary" variant="body2">
+                  {label}
+                </Typography>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    color,
+                    fontWeight: 800,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {value}
+                </Typography>
+              </Paper>
+            ))}
+          </Box>
           <Alert severity={readiness.data.ready ? "success" : "warning"}>
             {readiness.data.ready
               ? text.ready
               : text.blocked(readiness.data.summary.blockedSensors)}
           </Alert>
-          <Paper variant="outlined">
+          <TableContainer component={Paper} variant="outlined">
             <Table size="small" aria-label={text.tableLabel}>
               <TableHead>
                 <TableRow>
@@ -257,7 +341,7 @@ export function CommissioningPage() {
                 ))}
               </TableBody>
             </Table>
-          </Paper>
+          </TableContainer>
         </>
       ) : null}
     </Stack>

@@ -87,8 +87,10 @@ Implementation record: `docs/project-management/UX-06-HIGH-FREQUENCY-OPERATIONS-
 
 ### UX-07 — Remaining Customer Surface Refresh
 
-Status: **APPROVED / NOT STARTED**
+Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
 Reconcile remaining user-facing commissioning/productization/operational surfaces, including loading/empty/error/action states, responsive behavior and accessibility.
+
+Implementation record: `docs/project-management/UX-07-REMAINING-CUSTOMER-SURFACES-CLOSURE-2026-09-07.md`. The operational workspace now exposes the complete permission-filtered customer workflow set without stale readiness claims. Commissioning adds explicit loading/empty states, responsive readiness summaries and an overflow-safe evidence table. User administration controls and access/error surfaces are responsive and keyboard-focus aware. Frontend typecheck, 51 test files/292 tests, lint, formatting and production build pass on `agent/ux-07-customer-surfaces`.
 
 ### UX-08 — SYSTEM_OWNER and P8 Workflow Refresh
 
