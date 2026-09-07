@@ -1,6 +1,6 @@
 # LIC-07 through LIC-10 — Licensing Governance Evidence
 
-**Status:** Implemented and locally verified; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified
 
 ## Delivered scope
 
@@ -31,3 +31,11 @@ Authenticated SYSTEM_OWNER endpoints:
 ## Boundary
 
 LIC-11 installer integration, LIC-12 negative/security qualification and LIC-13 operational signing-key management remain open. The Production Installer and commercial production readiness remain prohibited until those gates pass.
+
+## Integration evidence
+
+- PR: #175
+- CI: #603 — passed
+- Merge: `39bb230bbef7217a81073d9d8d39933ea46c3ada`
+
+LIC-07 through LIC-10 are complete. LIC-11 — installer integration — is the controlled next package.

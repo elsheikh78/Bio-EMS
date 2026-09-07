@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-06 ARE COMPLETE / MERGED / CI VERIFIED. LIC-07 THROUGH LIC-10 ARE IMPLEMENTED / LOCALLY VERIFIED / PENDING PR-CI-MERGE.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-10 ARE COMPLETE / MERGED / CI VERIFIED. LIC-11 INSTALLER INTEGRATION IS NEXT.**
 
 ## Current Controlled Continuation
 
@@ -43,7 +43,7 @@
 - React Dashboard and Monitored Areas already have authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback; these are non-regression requirements for the refresh.
 - Site-Bound Licensing LIC-01: **COMPLETE / MERGED / CI VERIFIED** through PR #173, CI #597 and merge `90fe361e71f8a4fb79295e0c95344913b66cba35`.
 - Site-Bound Licensing LIC-02 through LIC-06: **COMPLETE / MERGED / CI VERIFIED** through PR #174, CI #600 and merge `43ffcd54c191c59f3aa0f4b34e19c54cd4678bf7` (Backend 110 files / 765 tests).
-- Site-Bound Licensing LIC-07 through LIC-10: **IMPLEMENTED / LOCALLY VERIFIED / PENDING PR-CI-MERGE**. Backend 111 files / 769 tests and Frontend 51 files / 292 tests pass; total 162 files / 1,061 tests. LIC-11 through LIC-13 remain not implemented.
+- Site-Bound Licensing LIC-07 through LIC-10: **COMPLETE / MERGED / CI VERIFIED** through PR #175, CI #603 and merge `39bb230bbef7217a81073d9d8d39933ea46c3ada`. Backend 111 files / 769 tests and Frontend 51 files / 292 tests pass; total 162 files / 1,061 tests. LIC-11 through LIC-13 remain not implemented.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-05 Complete / UX-06+ Not Yet Implemented
