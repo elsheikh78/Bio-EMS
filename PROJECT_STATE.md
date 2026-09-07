@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.19.0`
 
-**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 THROUGH UX-06 ARE COMPLETE / MERGED / CI VERIFIED; UX-07 REMAINING CUSTOMER SURFACE REFRESH IS IMPLEMENTED AND VERIFIED ON ITS BRANCH, AWAITING PR MERGE. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
+**Current phase:** **P8 SOURCE SOFTWARE, GLOBAL LOCALIZATION, P8-01A TELEGRAM EXTENSION, AND RTL NAVIGATION CORRECTION COMPLETE / MERGED. UI/UX UX-01 THROUGH UX-07 ARE COMPLETE / MERGED / CI VERIFIED; UX-08 SYSTEM_OWNER AND P8 WORKFLOW REFRESH IS NEXT. SITE-BOUND LICENSING REMAINS APPROVED / NOT YET IMPLEMENTED.**
 
 ## Current Controlled Continuation
 
@@ -20,7 +20,7 @@
 8. UX-04 is complete through PR #166, CI #577 and merge `8f82c4e3a72064bc719c58feec4cf382393efd08`: compact exception-first command surface, condensed KPI/current-reading/priority panels and preserved detailed evidence/live refresh behavior. UX-05 is next and remains responsible for the dedicated Monitoring Areas Live Board route and final Dashboard retargeting.
 9. UX-05 is complete through PR #167, CI #580 and merge `e989a516e6ab0f6566eb265aa623b4295ebc8404`: protected bilingual route, trusted room-status cards, Normal/Warning/Alarm/Offline summaries, local filters/density, Dashboard/navigation entry and preserved polling/SSE behavior. Unsupported ranges, min/max and trends remain omitted rather than fabricated. Start UX-06 only from reconciled `main`.
 10. UX-06 is complete through PR #168, CI #583 and merge `b05181e0e89f8b3c97d24daac3a643d5f4be0c55`: high-frequency Alarm, Monitored Area, Device and Notification Delivery surfaces now use compact responsive summaries and RTL-safe operational cues; Configuration, Calibration, recipient/escalation and Reporting Center surfaces were reviewed and retained where already aligned. UX-07 is next.
-11. UX-07 is implemented on `agent/ux-07-customer-surfaces`: the permission-filtered workspace, Commissioning readiness/acceptance, customer user administration and access/error surfaces are reconciled with responsive, bilingual and accessible shared-theme behavior. PR/CI/merge evidence remains open.
+11. UX-07 is complete through PR #169, CI #586 and merge `92449009e726d36b630179178cbd80d32db258ea`: the permission-filtered workspace, Commissioning readiness/acceptance, customer user administration and access/error surfaces are reconciled with responsive, bilingual and accessible shared-theme behavior. UX-08 is next.
 12. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
 13. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
 14. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.

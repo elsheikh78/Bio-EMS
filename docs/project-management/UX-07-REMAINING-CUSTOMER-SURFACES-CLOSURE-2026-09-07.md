@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
+**COMPLETE / MERGED / CI VERIFIED**
 
 Branch: `agent/ux-07-customer-surfaces`
 
@@ -26,6 +26,9 @@ Branch: `agent/ux-07-customer-surfaces`
 - Frontend lint — PASS with zero warnings.
 - Frontend formatting — PASS.
 - Frontend production build — PASS with only the existing non-blocking chunk-size advisory.
+- PR #169 — MERGED.
+- CI #586 — PASS.
+- Merge — `92449009e726d36b630179178cbd80d32db258ea`.
 
 ## Non-Regression Boundaries
 
@@ -33,4 +36,4 @@ UX-07 does not change backend contracts, permissions, tenant isolation, customer
 
 ## Controlled Next Step
 
-Publish the branch PR, require CI success, merge and record PR/CI/merge evidence before starting UX-08 SYSTEM_OWNER and P8 Workflow Refresh.
+Reconcile `main`, then start UX-08 SYSTEM_OWNER and P8 Workflow Refresh.
