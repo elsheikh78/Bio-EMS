@@ -21,12 +21,14 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 ## UI/UX Product Refresh — Approved Execution Plan
 
 ### UX-01 — Frontend Inventory and Non-Regression Baseline
-Status: **APPROVED / NOT STARTED**
+Status: **IMPLEMENTED LOCALLY / PR AND CI EVIDENCE PENDING**
 - enumerate all customer, SYSTEM_OWNER and P8 routes/components/styles;
 - identify duplicate/stale styling and legacy artifacts;
 - capture current route/auth/RBAC/localization/live-refresh behavior before visual changes;
 - verify Arabic drawer/right and English drawer/left baseline;
 - preserve the existing `Site -> Monitored Area (Room) -> Sensor` domain.
+
+Local implementation record: `docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md`. The three approved visual-reference masters are now present under `docs/assets/ui-ux/`. Do not mark UX-01 merged/CI-verified until repository evidence exists.
 
 ### UX-02 — Brand and Shared Design System
 Status: **APPROVED / NOT STARTED**
