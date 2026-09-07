@@ -6,7 +6,7 @@
 
 Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
 
-**Release prepared for publication:** `v0.20.0`.
+**Latest published source release:** [`v0.20.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.20.0).
 **Current source-software version:** `0.20.0`.
 
 ## Documentation Authority ‚Äî Read This First
@@ -33,15 +33,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
-- **P2:** software complete / merged / CI verified; physical controller qualification remains external.
-- **P3:** software complete / merged / CI verified; physical commissioning and customer acceptance remain external.
-- **P4:** software controls complete / merged / CI verified; production restore/endurance/DR evidence remains external.
-- **P5:** SYSTEM_OWNER backend/domain commercial operations complete / merged / CI verified.
-- **P6:** source productization complete / merged / CI verified; deployment, UAT, sign-off, and production acceptance remain external.
-- **P7-01:** SYSTEM_OWNER frontend boundary and console shell complete / merged / CI verified through PR #141.
-- **P7-02:** Customer / Site Fleet Management complete / merged / CI verified through PR #142 / CI run #516 / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`.
-- **P7-03 through P7-08:** complete / merged / CI verified through PR #145.
-- **P8-01:** WhatsApp/Email provider source complete / merged / CI verified; live SMTP send and inbox arrival passed on 3 September 2026; WhatsApp remains blocked by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
+- **P2:** software complete / merged / CI verified; physical controller }˜Ê⁄$z{-ÆÈ‹j◊ùd by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 - **UI/UX UX-01 through UX-09:** product refresh implementation and full repository regression complete / merged / CI verified through PR #171 / CI #592 / merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`; the verified matrix covers 157 test files and 1,047 tests.
 
