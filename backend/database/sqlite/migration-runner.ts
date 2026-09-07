@@ -24,6 +24,7 @@ import { migration019 } from "./migrations/019_create_customer_ownership";
 import { migration020 } from "./migrations/020_create_installation_lifecycle";
 import { migration021 } from "./migrations/021_add_telegram_notification_channel";
 import { migration022 } from "./migrations/022_create_site_bound_licensing_domain";
+import { migration023 } from "./migrations/023_create_licensing_activation_workflow";
 
 export interface Migration {
   version: number;
@@ -56,6 +57,7 @@ const migrations: Migration[] = [
   migration020,
   migration021,
   migration022,
+  migration023,
 ];
 
 export function runMigrations(

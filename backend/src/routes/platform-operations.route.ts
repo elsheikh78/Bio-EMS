@@ -10,6 +10,8 @@ import {
   createPlatformCustomerAdmin,
   updatePlatformCustomerAdminStatus,
   updatePlatformCustomerAdminPassword,
+  createLicenseActivationRequest,
+  approveLicenseActivationRequest,
 } from "../controllers/platform-operations.controller";
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
@@ -45,6 +47,11 @@ import {
   installationReceiptSchema,
   reviseInstallationSchema,
 } from "../modules/installation/installation.schema";
+import {
+  activationDecisionSchema,
+  activationParamsSchema,
+  activationRequestSchema,
+} from "../modules/licensing/licensing.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
@@ -117,6 +124,17 @@ router.patch(
   validateParams(platformCustomerAdminParamsSchema),
   validateBody(updatePlatformCustomerAdminPasswordSchema),
   updatePlatformCustomerAdminPassword
+);
+router.post(
+  "/licensing/activation-requests",
+  validateBody(activationRequestSchema),
+  createLicenseActivationRequest
+);
+router.post(
+  "/licensing/activation-requests/:requestId/approve",
+  validateParams(activationParamsSchema),
+  validateBody(activationDecisionSchema),
+  approveLicenseActivationRequest
 );
 router.post("/licenses", validateBody(createPlatformLicenseSchema), createPlatformLicense);
 router.patch(
