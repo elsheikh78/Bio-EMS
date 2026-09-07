@@ -10,6 +10,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useAlarms, useAcknowledgeAlarm } from "../alarms/queries";
+import {
+  filterAlarms,
+  summarizeAlarms,
+  type AlarmView,
+} from "../alarms/presentation";
 import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
@@ -21,10 +26,10 @@ export function AlarmsPage() {
   const alarms = useAlarms();
   const acknowledge = useAcknowledgeAlarm();
   const { user } = useAuthentication();
-  const [activeOnly, setActiveOnly] = useState(true);
-  const visible = (alarms.data ?? []).filter(
-    (alarm) => !activeOnly || alarm.status === "TRIGGERED",
-  );
+  const [view, setView] = useState<AlarmView>("ACTIVE");
+  const records = alarms.data ?? [];
+  const visible = filterAlarms(records, view);
+  const summary = summarizeAlarms(records);
   const canAcknowledge = Boolean(
     user && hasPermission(user.role, "ALARM_ACKNOWLEDGE"),
   );
@@ -45,23 +50,81 @@ export function AlarmsPage() {
           )}
         </Typography>
       </Box>
-      <Stack direction="row" spacing={1}>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: {
+            xs: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
+          },
+        }}
+      >
+        {[
+          [t("Active", "النشطة"), summary.active, "error.main"],
+          [t("Critical", "الحرجة"), summary.critical, "error.dark"],
+          [
+            t("Acknowledged", "تم الإقرار"),
+            summary.acknowledged,
+            "warning.main",
+          ],
+          [t("Recovered", "عادت طبيعية"), summary.recovered, "success.main"],
+        ].map(([label, value, color]) => (
+          <Paper
+            key={String(label)}
+            variant="outlined"
+            sx={{ borderInlineStart: 5, borderInlineStartColor: color, p: 2 }}
+          >
+            <Typography color="text.secondary" variant="body2">
+              {label}
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                color,
+                fontWeight: 800,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {value}
+            </Typography>
+          </Paper>
+        ))}
+      </Box>
+      <Paper
+        variant="outlined"
+        sx={{
+          alignItems: { xs: "stretch", sm: "center" },
+          bgcolor: "action.hover",
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 1,
+          justifyContent: "space-between",
+          p: 2,
+        }}
+      >
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant={view === "ACTIVE" ? "contained" : "outlined"}
+            onClick={() => setView("ACTIVE")}
+          >
+            {t("Active", "النشطة")}
+          </Button>
+          <Button
+            variant={view === "HISTORY" ? "contained" : "outlined"}
+            onClick={() => setView("HISTORY")}
+          >
+            {t("History", "السجل")}
+          </Button>
+        </Stack>
         <Button
-          variant={activeOnly ? "contained" : "outlined"}
-          onClick={() => setActiveOnly(true)}
+          variant="outlined"
+          disabled={alarms.isFetching}
+          onClick={() => void alarms.refetch()}
         >
-          {t("Active", "النشطة")}
-        </Button>
-        <Button
-          variant={!activeOnly ? "contained" : "outlined"}
-          onClick={() => setActiveOnly(false)}
-        >
-          {t("History", "السجل")}
-        </Button>
-        <Button onClick={() => void alarms.refetch()}>
           {t("Refresh", "تحديث")}
         </Button>
-      </Stack>
+      </Paper>
       {alarms.isPending ? (
         <CircularProgress
           aria-label={t("Loading Alarms", "جارٍ تحميل الإنذارات")}
@@ -99,8 +162,8 @@ export function AlarmsPage() {
             variant="outlined"
             sx={{
               p: 3,
-              borderLeft: 5,
-              borderLeftColor:
+              borderInlineStart: 5,
+              borderInlineStartColor:
                 alarm.severity === "CRITICAL"
                   ? "error.main"
                   : alarm.severity === "WARNING"

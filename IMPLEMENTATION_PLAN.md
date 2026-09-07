@@ -80,8 +80,10 @@ Implementation record: `docs/project-management/UX-05-MONITORING-AREAS-LIVE-BOAR
 
 ### UX-06 — High-Frequency Customer Operations Refresh
 
-Status: **APPROVED / NOT STARTED**
+Status: **IMPLEMENTED / BRANCH VERIFIED / AWAITING PR MERGE**
 Reconcile Monitored Areas, Alarms/acknowledgement, Devices/health, Configuration, Calibration, notifications/escalation/delivery operations and Reporting Center with the shared design system without changing their domain semantics.
+
+Implementation record: `docs/project-management/UX-06-HIGH-FREQUENCY-OPERATIONS-REFRESH-CLOSURE-2026-09-07.md`. The high-frequency operational review adds compact lifecycle summaries, responsive control surfaces, logical RTL-safe severity borders and preserved action/error behavior to Alarms, Monitored Areas, Devices and Notification Delivery. Configuration, Calibration, recipient/escalation operations and Reporting Center were reviewed against the shared theme and retained where already reconciled. No API, RBAC, tenant, Alarm lifecycle, calibration or reporting semantics changed.
 
 ### UX-07 — Remaining Customer Surface Refresh
 
