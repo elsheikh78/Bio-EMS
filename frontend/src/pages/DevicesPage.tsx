@@ -18,6 +18,7 @@ import { useAuthentication } from "../auth/useAuthentication";
 import { hasPermission } from "../authorization/permissions";
 import { useLocalization } from "../localization/useLocalization";
 import type { Device } from "../devices/contracts";
+import { summarizeDevices } from "../devices/presentation";
 import {
   useDeviceHealth,
   useDeviceMutation,
@@ -35,6 +36,8 @@ export function DevicesPage() {
   const [selected, setSelected] = useState<Device | null>(null);
   const [editing, setEditing] = useState<Device | null>(null);
   const health = useDeviceHealth(selected?.device_id ?? null);
+  const records = devices.data ?? [];
+  const summary = summarizeDevices(records);
   const save = () => {
     if (!editing) return;
     mutation.mutate(
@@ -67,8 +70,47 @@ export function DevicesPage() {
           )}
         </Typography>
       </Box>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: {
+            xs: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
+          },
+        }}
+      >
+        {[
+          [t("Total", "الإجمالي"), summary.total, "primary.main"],
+          [t("Active", "النشطة"), summary.active, "success.main"],
+          [t("Pending", "قيد الانتظار"), summary.pending, "warning.main"],
+          [t("Disabled", "المعطلة"), summary.disabled, "text.secondary"],
+        ].map(([label, value, color]) => (
+          <Paper
+            key={String(label)}
+            variant="outlined"
+            sx={{ borderInlineStart: 5, borderInlineStartColor: color, p: 2 }}
+          >
+            <Typography color="text.secondary" variant="body2">
+              {label}
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                color,
+                fontWeight: 800,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {value}
+            </Typography>
+          </Paper>
+        ))}
+      </Box>
       <Button
-        sx={{ alignSelf: "flex-start" }}
+        variant="outlined"
+        disabled={devices.isFetching}
+        sx={{ alignSelf: { xs: "stretch", sm: "flex-start" } }}
         onClick={() => void devices.refetch()}
       >
         {t("Refresh", "تحديث")}
@@ -103,8 +145,21 @@ export function DevicesPage() {
           {t("No Devices are registered.", "لا توجد أجهزة مسجلة.")}
         </Alert>
       ) : null}
-      {(devices.data ?? []).map((device) => (
-        <Paper key={device.device_id} variant="outlined" sx={{ p: 3 }}>
+      {records.map((device) => (
+        <Paper
+          key={device.device_id}
+          variant="outlined"
+          sx={{
+            borderInlineStart: 5,
+            borderInlineStartColor:
+              device.status === "active"
+                ? "success.main"
+                : device.status === "pending"
+                  ? "warning.main"
+                  : "text.disabled",
+            p: 3,
+          }}
+        >
           <Stack
             direction={{ xs: "column", md: "row" }}
             spacing={2}

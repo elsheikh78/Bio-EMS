@@ -20,7 +20,7 @@ type MonitoredAreasResources = ReturnType<
 >["resources"]["monitoredAreas"];
 
 export function MonitoredAreasPage() {
-  const { resources } = useLocalization();
+  const { language, resources } = useLocalization();
   const copy = resources.monitoredAreas;
 
   const sitesQuery = useSites();
@@ -106,10 +106,64 @@ export function MonitoredAreasPage() {
         onRefresh={() => void refreshMonitoredAreas()}
       />
 
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: {
+            xs: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
+          },
+        }}
+      >
+        {[
+          [
+            language === "ar" ? "المواقع" : "Sites",
+            sites.length,
+            "primary.main",
+          ],
+          [language === "ar" ? "المناطق" : "Areas", rooms.length, "info.main"],
+          [
+            language === "ar" ? "الحساسات" : "Sensors",
+            sensors.length,
+            "success.main",
+          ],
+          [
+            language === "ar" ? "الإنذارات النشطة" : "Active alarms",
+            (operationalStatusQuery.data ?? []).reduce(
+              (sum, room) => sum + room.activeAlarms,
+              0,
+            ),
+            "error.main",
+          ],
+        ].map(([label, value, color]) => (
+          <Paper
+            key={String(label)}
+            variant="outlined"
+            sx={{ borderInlineStart: 5, borderInlineStartColor: color, p: 2 }}
+          >
+            <Typography color="text.secondary" variant="body2">
+              {label}
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                color,
+                fontWeight: 800,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {value}
+            </Typography>
+          </Paper>
+        ))}
+      </Box>
+
       {operationalStatusQuery.isError ? (
         <Alert severity="warning">
-          Configuration is available, but current telemetry status could not be
-          loaded.
+          {language === "ar"
+            ? "بيانات الإعداد متاحة، لكن تعذر تحميل حالة القياسات الحالية."
+            : "Configuration is available, but current telemetry status could not be loaded."}
         </Alert>
       ) : null}
 

@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import type { Room, Sensor, Site } from "../monitoredAreas/contracts";
@@ -372,7 +378,9 @@ describe("MonitoredAreasPage", () => {
     expect(screen.getByText("Sensor Type")).toBeInTheDocument();
     expect(screen.getByText("Unit")).toBeInTheDocument();
     expect(screen.getByText("Channel")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(
+      within(screen.getByText("Channel").parentElement!).getByText("0"),
+    ).toBeInTheDocument();
   });
 
   it("renders complete configured threshold metadata with the Sensor unit", () => {
