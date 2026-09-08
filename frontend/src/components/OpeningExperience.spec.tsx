@@ -22,6 +22,10 @@ describe("OpeningExperience", () => {
       screen.getByRole("status", { name: "شاشة بدء BIO-EMS الآمنة" }),
     ).toBeVisible();
     expect(screen.getByText("نظام المراقبة البيئية")).toBeVisible();
+    expect(screen.getByTestId("opening-data-wave")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
     expect(
       screen.queryByText("Protected customer content"),
     ).not.toBeInTheDocument();
