@@ -18,10 +18,13 @@ const rooms = [
     siteId: 10,
     siteName: "Cairo Site",
     temperature: 4,
+    temperatureUnit: "°C",
+    temperatureRange: { min: 2, max: 8 },
     humidity: 50,
     temperatureStatus: "NORMAL",
     humidityStatus: "NORMAL",
     activeAlarms: 0,
+    sensorCount: 3,
     online: true,
     lastUpdate: "2026-09-07T10:00:00.000Z",
   },
@@ -111,6 +114,8 @@ describe("LiveBoardPage", () => {
     }
     expect(screen.getAllByRole("article")).toHaveLength(4);
     expect(screen.getByText("11 °C")).toBeVisible();
+    expect(screen.getByText("2–8 °C")).toBeVisible();
+    expect(screen.getByText("Sensors: 3")).toBeVisible();
     expect(
       screen.queryByText((_, element) =>
         Boolean(element?.textContent?.includes("2026-09-07T10:02:00.000Z")),

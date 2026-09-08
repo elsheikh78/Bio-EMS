@@ -47,10 +47,20 @@ export const dashboardRoomStatusSchema = z
     siteId: nonNegativeInteger,
     siteName: z.string(),
     temperature: finiteNumber.nullable(),
+    temperatureUnit: z.string().nullable().optional(),
+    temperatureRange: z
+      .object({
+        min: finiteNumber.nullable(),
+        max: finiteNumber.nullable(),
+      })
+      .strict()
+      .nullable()
+      .optional(),
     humidity: finiteNumber.nullable(),
     temperatureStatus: dashboardSensorStatusSchema,
     humidityStatus: dashboardSensorStatusSchema,
     activeAlarms: nonNegativeInteger,
+    sensorCount: nonNegativeInteger.optional(),
     online: z.boolean(),
     lastUpdate: z.string().nullable(),
   })

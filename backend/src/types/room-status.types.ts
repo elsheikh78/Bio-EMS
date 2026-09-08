@@ -9,6 +9,13 @@ export interface RoomStatus {
 
   temperature: number | null;
 
+  temperatureUnit: string | null;
+
+  temperatureRange: {
+    min: number | null;
+    max: number | null;
+  } | null;
+
   humidity: number | null;
 
   temperatureStatus: "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";
@@ -16,6 +23,8 @@ export interface RoomStatus {
   humidityStatus: "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";
 
   activeAlarms: number;
+
+  sensorCount: number;
 
   online: boolean;
 

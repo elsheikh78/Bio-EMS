@@ -219,6 +219,8 @@ export interface TranslationResources {
     fullScreen: string;
     exitFullScreen: string;
     currentReading: string;
+    allowedRange: string;
+    sensors: string;
   };
 
   monitoredAreas: {
@@ -524,6 +526,8 @@ export const englishResources = {
     fullScreen: "Full screen",
     exitFullScreen: "Exit full screen",
     currentReading: "Current reading",
+    allowedRange: "Configured range",
+    sensors: "Sensors",
   },
 
   monitoredAreas: {
@@ -789,6 +793,8 @@ export const arabicResources = {
     fullScreen: "ملء الشاشة",
     exitFullScreen: "الخروج من ملء الشاشة",
     currentReading: "القراءة الحالية",
+    allowedRange: "النطاق المُعد",
+    sensors: "الحساسات",
   },
   monitoredAreas: {
     title: "المناطق المراقبة",

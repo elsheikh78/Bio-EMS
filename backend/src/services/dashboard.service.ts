@@ -153,6 +153,13 @@ export class DashboardService {
         .map((sensor) => [sensor.id!, sensor])
     );
 
+    const activeSensorCounts = new Map<number, number>();
+
+    for (const sensor of sensorsById.values()) {
+      if (sensor.enabled === 0) continue;
+      activeSensorCounts.set(sensor.room_id, (activeSensorCounts.get(sensor.room_id) ?? 0) + 1);
+    }
+
     for (const alarm of this.alarmRepository.getActive()) {
       const sensor = sensorsById.get(alarm.sensor_id);
       const aggregate = sensor ? aggregates.get(sensor.room_id) : undefined;
@@ -178,6 +185,15 @@ export class DashboardService {
 
         temperature: temperature?.value ?? null,
 
+        temperatureUnit: temperature?.sensor.unit ?? null,
+
+        temperatureRange: temperature
+          ? {
+              min: temperature.sensor.min_value ?? null,
+              max: temperature.sensor.max_value ?? null,
+            }
+          : null,
+
         humidity: humidity?.value ?? null,
 
         temperatureStatus: this.evaluateSensorStatus(temperature),
@@ -185,6 +201,8 @@ export class DashboardService {
         humidityStatus: this.evaluateSensorStatus(humidity),
 
         activeAlarms: room.activeAlarms,
+
+        sensorCount: activeSensorCounts.get(room.roomId) ?? 0,
 
         online: room.online,
 
