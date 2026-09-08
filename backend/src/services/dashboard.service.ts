@@ -139,7 +139,7 @@ export class DashboardService {
           this.evaluateSensorStatus(current),
           this.evaluateSensorStatus(candidate),
           current.time,
-          candidate.time
+          candidate.time,
         )
       ) {
         aggregate.sensors.set(sensorType, candidate);
@@ -150,7 +150,7 @@ export class DashboardService {
       this.sensorRepository
         .getAll()
         .filter((sensor) => sensor.id !== undefined)
-        .map((sensor) => [sensor.id!, sensor])
+        .map((sensor) => [sensor.id!, sensor]),
     );
 
     const activeSensorCounts = new Map<number, number>();
@@ -159,7 +159,7 @@ export class DashboardService {
       if (sensor.enabled === 0) continue;
       activeSensorCounts.set(
         sensor.room_id,
-        (activeSensorCounts.get(sensor.room_id) ?? 0) + 1
+        (activeSensorCounts.get(sensor.room_id) ?? 0) + 1,
       );
     }
 
@@ -215,7 +215,7 @@ export class DashboardService {
   }
 
   private evaluateSensorStatus(
-    snapshot: SensorSnapshot | undefined
+    snapshot: SensorSnapshot | undefined,
   ): RoomStatus["temperatureStatus"] {
     if (!snapshot) {
       return this.mapAlarmStatus(AlarmStatus.UNKNOWN);
@@ -231,7 +231,7 @@ export class DashboardService {
         alarmLow: snapshot.sensor.alarm_low,
         warningHigh: snapshot.sensor.warning_high,
         alarmHigh: snapshot.sensor.alarm_high,
-      }
+      },
     );
 
     return this.mapAlarmStatus(result.status);
