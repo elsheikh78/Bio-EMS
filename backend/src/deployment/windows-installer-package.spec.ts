@@ -218,3 +218,29 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
     expect(health).not.toMatch(/TOKEN|PASSWORD|PASSPHRASE/);
   });
 });
+
+describe("DEP-01-05 lifecycle recovery source", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const windowsRoot = join(repositoryRoot, "installer/windows");
+  const lifecycle = readFileSync(join(windowsRoot, "Invoke-DEP0105Lifecycle.ps1"), "utf8");
+  const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+
+  it("creates SHA-256 inventory evidence before updating application or data", () => {
+    expect(lifecycle).toContain("Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256");
+    expect(lifecycle).toContain("VERIFIED_BACKUP_READY");
+    expect(setup).toContain("PrepareToInstall");
+    expect(setup).toContain("-Mode PreUpdate");
+  });
+
+  it("restores application, configuration, data and licensing after failed health", () => {
+    expect(lifecycle).toContain('Invoke-Robocopy (Join-Path $backup "application") $application');
+    expect(lifecycle).toContain('@("config", "data", "licensing")');
+    expect(lifecycle).toContain("previous application/data snapshot was restored");
+  });
+
+  it("preserves persistent customer and licensing state during uninstall", () => {
+    expect(lifecycle).toContain("APPLICATION_REMOVED_DATA_RETAINED");
+    expect(lifecycle).toContain("uninstall-retention.json");
+    expect(lifecycle).not.toMatch(/Remove-Item[^\n]+\$persistent[^\n]+Recurse/);
+  });
+});

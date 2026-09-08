@@ -46,10 +46,16 @@ Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wr
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; Flags: dontcopy
 
 [Run]
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"""; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"""; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
+
+[UninstallRun]
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode Uninstall -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; Flags: runhidden waituntilterminated
 
 [Icons]
 Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
@@ -57,3 +63,37 @@ Name: "{commondesktop}\BIO-EMS"; Filename: "https://localhost/"; Tasks: desktopi
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a BIO-EMS desktop shortcut"
+
+[Code]
+var
+  ExistingInstallAtStart: Boolean;
+
+function InitializeSetup(): Boolean;
+begin
+  ExistingInstallAtStart := RegKeyExists(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{7F182A31-C831-4CCF-965B-BF40A54D14C3}_is1');
+  Result := True;
+end;
+
+function IsFreshInstall(): Boolean;
+begin
+  Result := not ExistingInstallAtStart;
+end;
+
+function WasExistingInstall(): Boolean;
+begin
+  Result := ExistingInstallAtStart;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+  ScriptPath: String;
+begin
+  Result := '';
+  if ExistingInstallAtStart then begin
+    ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
+    ScriptPath := ExpandConstant('{tmp}\Invoke-DEP0105Lifecycle.ps1');
+    if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode PreUpdate -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
+      Result := 'BIO-EMS verified pre-update backup failed.';
+  end;
+end;

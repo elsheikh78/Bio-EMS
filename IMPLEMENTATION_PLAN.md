@@ -14,7 +14,7 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 - P8-02 through P8-08: source complete/merged/CI verified.
 - Global Arabic/English localization: complete/merged/CI verified.
 - RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
-- DEP-01 Full Offline Windows Installer: DEP-01-01 is complete/merged/CI verified through PR #177 and CI #609. DEP-01-02 is complete/merged/CI verified through PR #178 and CI #612. DEP-01-03 is complete/merged/CI verified through PR #179 and CI #615. DEP-01-04 HTTPS/front-door, firewall and post-install health is complete/merged/CI verified through PR #180 and CI #618. DEP-01-05 Repair/Upgrade/rollback/retained-data Uninstall is next. Executed Setup and clean-machine qualification are not yet claimed.
+- DEP-01 Full Offline Windows Installer: DEP-01-01 through DEP-01-04 are complete/merged/CI verified through PR #180 and CI #618. DEP-01-05 Repair/Upgrade/rollback/retained-data Uninstall is implemented locally with PR/CI pending. DEP-01-06 release-candidate build/signing and clean-machine qualification is next.
 - UI/UX Product Refresh: complete/merged/CI verified; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
 - Site-Bound Licensing / Anti-Cloning: LIC-01 through LIC-13 complete/merged/CI verified. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
 
