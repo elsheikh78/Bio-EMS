@@ -494,6 +494,14 @@ function AreaCard({
   language: LiveBoardLanguage;
 }) {
   const status = deriveLiveBoardStatus(room);
+  const configuredRange = room.temperatureRange;
+  const temperatureUnit = room.temperatureUnit ?? "°C";
+  const rangeDisplay =
+    configuredRange &&
+    configuredRange.min !== null &&
+    configuredRange.max !== null
+      ? `${configuredRange.min}–${configuredRange.max} ${temperatureUnit}`
+      : copy.unavailable;
   const chipColor =
     status === "NORMAL"
       ? "success"
@@ -564,7 +572,7 @@ function AreaCard({
           >
             {room.temperature === null
               ? copy.unavailable
-              : `${room.temperature} °C`}
+              : `${room.temperature} ${temperatureUnit}`}
           </Typography>
         </Box>
 
@@ -572,7 +580,7 @@ function AreaCard({
           sx={{
             display: "grid",
             gap: 2,
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
           }}
         >
           <Reading
@@ -585,6 +593,7 @@ function AreaCard({
             label={copy.activeAlarms}
             value={String(room.activeAlarms)}
           />
+          <Reading label={copy.allowedRange} value={rangeDisplay} />
         </Box>
 
         <Box
@@ -603,6 +612,9 @@ function AreaCard({
             variant="caption"
           >
             ● {copy.communication}: {room.online ? copy.live : copy.offline}
+          </Typography>
+          <Typography color="text.secondary" variant="caption">
+            {copy.sensors}: {room.sensorCount ?? copy.unavailable}
           </Typography>
           <Typography color="text.secondary" variant="caption">
             {copy.lastUpdate}:{" "}
