@@ -20,6 +20,11 @@ const rooms = [
     temperature: 4,
     temperatureUnit: "°C",
     temperatureRange: { min: 2, max: 8 },
+    temperatureLast24Hours: {
+      min: 3.2,
+      max: 4.8,
+      trend: [3.2, 3.6, 4, 3.8, 4.8],
+    },
     humidity: 50,
     temperatureStatus: "NORMAL",
     humidityStatus: "NORMAL",
@@ -116,6 +121,13 @@ describe("LiveBoardPage", () => {
     expect(screen.getByText("11 °C")).toBeVisible();
     expect(screen.getByText("2–8 °C")).toBeVisible();
     expect(screen.getByText("Sensors: 3")).toBeVisible();
+    expect(
+      screen.getByRole("img", {
+        name: englishResources.liveBoard.last24HourTrend,
+      }),
+    ).toBeVisible();
+    expect(screen.getByText("3.2 °C")).toBeVisible();
+    expect(screen.getByText("4.8 °C")).toBeVisible();
     expect(
       screen.queryByText((_, element) =>
         Boolean(element?.textContent?.includes("2026-09-07T10:02:00.000Z")),
