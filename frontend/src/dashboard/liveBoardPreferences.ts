@@ -57,8 +57,8 @@ export function readLiveBoardViewPreferences(): LiveBoardViewPreferences {
           : defaultLiveBoardViewPreferences.site,
       status:
         typeof parsed.status === "string" &&
-        validStatuses.has(parsed.status as LiveBoardStatus | "ALL")
-          ? (parsed.status as LiveBoardStatus | "ALL")
+        validStatuses.has(parsed.status)
+          ? parsed.status
           : defaultLiveBoardViewPreferences.status,
     };
   } catch {
