@@ -4,6 +4,9 @@
 
 ### Added / Changed
 
+- Corrected the offline Windows Setup to compile the four archive payloads into one executable and added a fail-closed preflight that protects an unrelated pre-existing Mosquitto service. An unsigned internal Windows 10 x64 build passed deterministic staging, source validation and Inno Setup compilation; clean-machine qualification and signing remain open.
+- Strengthened the post-v0.20.0 monitoring experience with corrected Arabic RTL content/timestamps, default dark monitoring theme, a five-second opening boundary, richer trusted Live Board controls/evidence, rolling 24-hour temperature min/max/trends and persisted local view preferences. Visual screenshot acceptance remains open.
+
 - Completed the LIC-01 domain foundation and implemented the LIC-02 through LIC-06 licensing core: protected installation identity, tolerant composite hardware binding, Ed25519 certificates, SYSTEM_OWNER activation workflow and offline local runtime validation.
 - Added migrations 022/023, immutable certificate storage, append-only licensing evidence, module/device/sensor entitlements and explicit monitoring-continuity decisions for invalid licenses.
 - Implemented LIC-07 through LIC-10: same-Site device authorization, offline validation/grace evidence, audited revoke/transfer lifecycle, and a bilingual SYSTEM_OWNER licensing-governance summary with recent audit history.
