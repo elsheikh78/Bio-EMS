@@ -213,6 +213,12 @@ export interface TranslationResources {
     unavailable: string;
     communication: string;
     openDetails: string;
+    systemHealth: string;
+    healthy: string;
+    alarmFocus: string;
+    fullScreen: string;
+    exitFullScreen: string;
+    currentReading: string;
   };
 
   monitoredAreas: {
@@ -512,6 +518,12 @@ export const englishResources = {
     unavailable: "Unavailable",
     communication: "Communication",
     openDetails: "Open detailed monitored areas",
+    systemHealth: "Overall system health",
+    healthy: "Healthy",
+    alarmFocus: "Focus alarms",
+    fullScreen: "Full screen",
+    exitFullScreen: "Exit full screen",
+    currentReading: "Current reading",
   },
 
   monitoredAreas: {
@@ -771,6 +783,12 @@ export const arabicResources = {
     unavailable: "غير متاح",
     communication: "الاتصال",
     openDetails: "فتح تفاصيل المناطق المراقبة",
+    systemHealth: "الصحة العامة للنظام",
+    healthy: "سليم",
+    alarmFocus: "التركيز على الإنذارات",
+    fullScreen: "ملء الشاشة",
+    exitFullScreen: "الخروج من ملء الشاشة",
+    currentReading: "القراءة الحالية",
   },
   monitoredAreas: {
     title: "المناطق المراقبة",

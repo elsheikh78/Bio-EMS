@@ -130,6 +130,23 @@ describe("LiveBoardPage", () => {
     ).toBe(false);
   });
 
+  it("shows trusted health percentages and filters operational exceptions", async () => {
+    const user = userEvent.setup();
+    renderBoard();
+
+    expect(screen.getAllByText("25%")).toHaveLength(5);
+
+    await user.click(
+      screen.getByRole("switch", {
+        name: englishResources.liveBoard.alarmFocus,
+      }),
+    );
+
+    expect(screen.getAllByRole("article")).toHaveLength(2);
+    expect(screen.queryByText("Cold Room Normal")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cold Room Offline")).not.toBeInTheDocument();
+  });
+
   it("filters the board locally by search without changing the API contract", async () => {
     const user = userEvent.setup();
     renderBoard();
