@@ -1,4 +1,3 @@
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
