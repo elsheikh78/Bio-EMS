@@ -315,7 +315,7 @@ export function LiveBoardPage() {
             <Box sx={{ alignItems: "center", display: "flex", px: 1 }}>
               <Switch
                 checked={alarmFocus}
-                inputProps={{ "aria-label": copy.alarmFocus }}
+                slotProps={{ input: { "aria-label": copy.alarmFocus } }}
                 onChange={(event) => setAlarmFocus(event.target.checked)}
               />
               <Typography variant="body2">{copy.alarmFocus}</Typography>
