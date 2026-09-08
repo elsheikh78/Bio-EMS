@@ -33,6 +33,9 @@ foreach ($serviceId in $serviceIds) {
         throw "Fresh service installation refuses existing BIO-EMS services"
     }
 }
+if (Get-Service -Name "mosquitto" -ErrorAction SilentlyContinue) {
+    throw "Fresh service installation refuses an existing Mosquitto service"
+}
 
 function Find-One([string]$root, [string]$name) {
     $matches = @(Get-ChildItem -LiteralPath $root -Filter $name -File -Recurse)
