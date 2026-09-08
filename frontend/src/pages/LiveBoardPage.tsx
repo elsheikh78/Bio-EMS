@@ -23,6 +23,10 @@ import {
   deriveLiveBoardStatus,
   type LiveBoardStatus,
 } from "../dashboard/liveBoardStatus";
+import {
+  readLiveBoardViewPreferences,
+  writeLiveBoardViewPreferences,
+} from "../dashboard/liveBoardPreferences";
 import { useDashboardRoomStatuses } from "../dashboard/queries";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -31,12 +35,25 @@ export function LiveBoardPage() {
   const copy = resources.liveBoard;
   const query = useDashboardRoomStatuses();
   const wallRef = useRef<HTMLDivElement>(null);
-  const [search, setSearch] = useState("");
-  const [site, setSite] = useState("ALL");
-  const [status, setStatus] = useState<LiveBoardStatus | "ALL">("ALL");
-  const [density, setDensity] = useState<"comfortable" | "compact">("compact");
-  const [alarmFocus, setAlarmFocus] = useState(false);
+  const [initialView] = useState(readLiveBoardViewPreferences);
+  const [search, setSearch] = useState(initialView.search);
+  const [site, setSite] = useState(initialView.site);
+  const [status, setStatus] = useState<LiveBoardStatus | "ALL">(
+    initialView.status,
+  );
+  const [density, setDensity] = useState(initialView.density);
+  const [alarmFocus, setAlarmFocus] = useState(initialView.alarmFocus);
   const [fullScreen, setFullScreen] = useState(false);
+
+  useEffect(() => {
+    writeLiveBoardViewPreferences({
+      alarmFocus,
+      density,
+      search,
+      site,
+      status,
+    });
+  }, [alarmFocus, density, search, site, status]);
 
   useEffect(() => {
     const onFullScreenChange = () =>
