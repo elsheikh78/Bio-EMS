@@ -37,10 +37,10 @@ Name: "{commonappdata}\BIO-EMS\licensing"
 
 [Files]
 Source: "{#StageRoot}\package-manifest.json"; DestDir: "{app}\manifest"; Flags: ignoreversion notimestamp
-Source: "{#StageRoot}\payload\backend.zip"; DestDir: "{app}\backend"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
-Source: "{#StageRoot}\payload\frontend.zip"; DestDir: "{app}\frontend"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
-Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; DestDir: "{app}\runtime\node"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
-Source: "{#StageRoot}\payload\influxdb2-2.9.1-windows_amd64.zip"; DestDir: "{app}\runtime\influxdb"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
+Source: "{#StageRoot}\payload\backend.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\frontend.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\influxdb2-2.9.1-windows_amd64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
@@ -50,12 +50,16 @@ Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; DestDir: "{app}\installer";
 Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; Flags: dontcopy
 
 [Run]
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\backend.zip' -DestinationPath '{app}\\backend' -Force"""; StatusMsg: "Extracting BIO-EMS backend..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\frontend.zip' -DestinationPath '{app}\\frontend' -Force"""; StatusMsg: "Extracting BIO-EMS frontend..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\\runtime\\node' -Force"""; StatusMsg: "Extracting Node.js runtime..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"""; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
 
 [UninstallRun]
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode Uninstall -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode Uninstall -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; Flags: runhidden waituntilterminated; RunOnceId: "BIOEMSRetainData"
 
 [Icons]
 Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
@@ -72,6 +76,16 @@ function InitializeSetup(): Boolean;
 begin
   ExistingInstallAtStart := RegKeyExists(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{7F182A31-C831-4CCF-965B-BF40A54D14C3}_is1');
   Result := True;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then begin
+    ExtractTemporaryFile('backend.zip');
+    ExtractTemporaryFile('frontend.zip');
+    ExtractTemporaryFile('node-v22.22.0-win-x64.zip');
+    ExtractTemporaryFile('influxdb2-2.9.1-windows_amd64.zip');
+  end;
 end;
 
 function IsFreshInstall(): Boolean;
