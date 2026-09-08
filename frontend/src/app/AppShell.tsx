@@ -54,8 +54,7 @@ export function AppShell() {
     <Box
       data-testid="app-shell"
       sx={{
-        display: "flex",
-        flexDirection: direction === "rtl" ? "row-reverse" : "row",
+        display: "block",
         bgcolor: "background.default",
         backgroundImage:
           theme.palette.mode === "dark"
@@ -144,7 +143,14 @@ export function AppShell() {
         component="main"
         id={mainContentId}
         ref={mainContentRef}
-        sx={{ flexGrow: 1, minWidth: 0, px: { xs: 4, sm: 6, lg: 8 }, py: 6 }}
+        sx={{
+          boxSizing: "border-box",
+          marginInlineStart: desktop ? `${navigationWidth}px` : 0,
+          minWidth: 0,
+          px: { xs: 4, sm: 6, lg: 8 },
+          py: 6,
+          width: desktop ? `calc(100% - ${navigationWidth}px)` : "100%",
+        }}
         tabIndex={-1}
       >
         <Toolbar />

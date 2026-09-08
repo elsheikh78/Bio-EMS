@@ -26,7 +26,7 @@ import { useDashboardRoomStatuses } from "../dashboard/queries";
 import { useLocalization } from "../localization/useLocalization";
 
 export function LiveBoardPage() {
-  const { resources } = useLocalization();
+  const { language, resources } = useLocalization();
   const copy = resources.liveBoard;
   const query = useDashboardRoomStatuses();
   const [search, setSearch] = useState("");
@@ -129,7 +129,12 @@ export function LiveBoardPage() {
             variant="outlined"
           />
           <Typography color="text.secondary" variant="caption">
-            {copy.lastUpdate}: {latestUpdate ?? copy.unavailable}
+            {copy.lastUpdate}:{" "}
+            <Timestamp
+              language={language}
+              unavailable={copy.unavailable}
+              value={latestUpdate}
+            />
           </Typography>
           <Button
             disabled={query.isFetching}
@@ -254,6 +259,7 @@ export function LiveBoardPage() {
               room={room}
               compact={density === "compact"}
               copy={copy}
+              language={language}
             />
           ))}
         </Box>
@@ -271,9 +277,9 @@ export function LiveBoardPage() {
   );
 }
 
-type LiveBoardCopy = ReturnType<
-  typeof useLocalization
->["resources"]["liveBoard"];
+type Localization = ReturnType<typeof useLocalization>;
+type LiveBoardCopy = Localization["resources"]["liveBoard"];
+type LiveBoardLanguage = Localization["language"];
 
 function PageHeading({
   title,
@@ -351,10 +357,12 @@ function AreaCard({
   room,
   compact,
   copy,
+  language,
 }: {
   room: DashboardRoomStatus;
   compact: boolean;
   copy: LiveBoardCopy;
+  language: LiveBoardLanguage;
 }) {
   const status = deriveLiveBoardStatus(room);
   const chipColor =
@@ -437,7 +445,12 @@ function AreaCard({
           </Typography>
         </Box>
         <Typography color="text.secondary" variant="caption">
-          {copy.lastUpdate}: {room.lastUpdate ?? copy.unavailable}
+          {copy.lastUpdate}:{" "}
+          <Timestamp
+            language={language}
+            unavailable={copy.unavailable}
+            value={room.lastUpdate ?? undefined}
+          />
         </Typography>
       </Stack>
     </Paper>
@@ -456,6 +469,33 @@ function Reading({ label, value }: { label: string; value: string }) {
       >
         {value}
       </Typography>
+    </Box>
+  );
+}
+
+function Timestamp({
+  language,
+  unavailable,
+  value,
+}: {
+  language: LiveBoardLanguage;
+  unavailable: string;
+  value?: string;
+}) {
+  let display = unavailable;
+  if (value) {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) {
+      display = new Intl.DateTimeFormat(language === "ar" ? "ar-EG" : "en-GB", {
+        dateStyle: "medium",
+        timeStyle: "medium",
+      }).format(date);
+    }
+  }
+
+  return (
+    <Box component="bdi" dir="ltr" sx={{ unicodeBidi: "isolate" }}>
+      {display}
     </Box>
   );
 }
