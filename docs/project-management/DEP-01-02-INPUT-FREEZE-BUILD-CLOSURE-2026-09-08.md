@@ -2,7 +2,7 @@
 
 **Date:** 8 September 2026  
 **Branch:** `agent/dep-01-02-deterministic-staging`  
-**Status:** IMPLEMENTED LOCALLY / PR AND CI PENDING
+**Status:** COMPLETE / MERGED / CI VERIFIED
 
 ## Delivered
 
@@ -20,7 +20,9 @@
 - Frontend typecheck/lint/format, 51 test files / 292 tests and production build: PASS.
 - Automated total: 164 files / 1,081 tests.
 - Repository diff validation: PASS.
-- GitHub PR, CI and merge: pending.
+- GitHub PR #178: merged.
+- GitHub Actions CI #612: PASS.
+- Merge commit: `cb45456fe2a53c286cd101f79d428312eaf13847`.
 
 ## Scope boundary and handoff
 

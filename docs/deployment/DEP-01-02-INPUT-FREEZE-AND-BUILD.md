@@ -1,6 +1,6 @@
 # DEP-01-02 Exact Input Freeze and Deterministic Build Source
 
-**Status:** Source implemented; PR/CI/merge evidence pending  
+**Status:** Complete / merged / CI verified through PR #178 and CI #612
 **Target:** Windows 11 Pro x64  
 **Installer compiler:** Inno Setup 6.7.3
 
