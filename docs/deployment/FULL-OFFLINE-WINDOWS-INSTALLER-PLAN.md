@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / IMPLEMENTATION NOT STARTED  
+**Status:** APPROVED REQUIREMENT / DEP-01-01 COMPLETE / DEP-01-02 IMPLEMENTED LOCALLY
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
@@ -139,9 +139,10 @@ LIC-11 now supplies the implementation hook and machine-readable integration con
 That source capability does not change this boundary: clean-machine execution and the
 remaining DEP-01 lifecycle qualification are still required.
 
-DEP-01 foundation work now records Windows 11 Pro x64 and Inno Setup 6 as the initial
+DEP-01 foundation work records Windows 11 Pro x64 and Inno Setup 6 as the initial
 controlled target, defines the six required application/runtime inputs, and adds a
-fail-closed staging validator. Exact vendor versions, redistribution evidence, the
-Setup source/build, protected configuration, lifecycle operations and clean-machine
-qualification remain open as recorded in
-`docs/deployment/DEP-01-WINDOWS-INSTALLER-FOUNDATION.md`.
+fail-closed staging validator. DEP-01-02 now freezes exact vendor versions and hashes
+and implements deterministic staging and initial Setup build source. Protected
+configuration, service/lifecycle operations, executed/signed Setup evidence and
+clean-machine qualification remain open as recorded in
+`docs/deployment/DEP-01-02-INPUT-FREEZE-AND-BUILD.md`.

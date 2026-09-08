@@ -12,6 +12,11 @@ logs/
 dist/
 build/
 
+# Windows installer generated inputs/outputs
+installer/windows/vendor-cache/
+installer/windows/staging/
+installer/windows/output/
+
 # IDE
 .vscode/
 .idea/

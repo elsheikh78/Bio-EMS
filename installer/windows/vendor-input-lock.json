@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-09-07T00:00:00.000Z",
+  "target": "windows-x64",
+  "buildTool": {
+    "name": "Inno Setup",
+    "version": "6.7.3",
+    "commercialLicenseEvidenceRequired": true,
+    "sourceUrl": "https://jrsoftware.org/isinfo.php"
+  },
+  "inputs": [
+    {
+      "id": "node",
+      "version": "22.22.0",
+      "fileName": "node-v22.22.0-win-x64.zip",
+      "sourceUrl": "https://nodejs.org/dist/v22.22.0/node-v22.22.0-win-x64.zip",
+      "sha256": "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a",
+      "checksumEvidenceUrl": "https://nodejs.org/dist/v22.22.0/SHASUMS256.txt",
+      "licenseEvidenceUrl": "https://github.com/nodejs/node/blob/v22.22.0/LICENSE"
+    },
+    {
+      "id": "mosquitto",
+      "version": "2.1.2",
+      "fileName": "mosquitto-2.1.2-install-windows-x64.exe",
+      "sourceUrl": "https://mosquitto.org/files/binary/win64/mosquitto-2.1.2-install-windows-x64.exe",
+      "sha256": "58008ad7a22ada0b4073afa415801746e027c5f583e4fa52d0f4e9193b98d6aa",
+      "checksumEvidenceUrl": "CONTROLLED-CAPTURE-2026-09-07",
+      "licenseEvidenceUrl": "https://mosquitto.org/about/"
+    },
+    {
+      "id": "influxdb",
+      "version": "2.9.1",
+      "fileName": "influxdb2-2.9.1-windows_amd64.zip",
+      "sourceUrl": "https://download.influxdata.com/influxdb/releases/influxdb2-2.9.1-windows_amd64.zip",
+      "sha256": "d8b93916a5e21fe348dfdb8de7ea04fb7425b38939486e874cd8096463b91043",
+      "checksumEvidenceUrl": "https://download.influxdata.com/influxdb/releases/influxdb2-2.9.1-windows_amd64.zip.sha256",
+      "licenseEvidenceUrl": "https://github.com/influxdata/influxdb/blob/v2.9.1/LICENSE"
+    },
+    {
+      "id": "winsw",
+      "version": "2.12.0",
+      "fileName": "WinSW-x64.exe",
+      "sourceUrl": "https://github.com/winsw/winsw/releases/download/v2.12.0/WinSW-x64.exe",
+      "sha256": "05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da",
+      "checksumEvidenceUrl": "CONTROLLED-CAPTURE-2026-09-07",
+      "licenseEvidenceUrl": "https://github.com/winsw/winsw/blob/v2.12.0/LICENSE.txt"
+    }
+  ]
+}
+

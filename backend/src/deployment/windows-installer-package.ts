@@ -32,6 +32,58 @@ export const windowsInstallerManifestSchema = z
 
 export type WindowsInstallerManifest = z.infer<typeof windowsInstallerManifestSchema>;
 
+export const vendorInputLockSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    frozenAt: z.string().datetime(),
+    target: z.literal("windows-x64"),
+    buildTool: z
+      .object({
+        name: z.literal("Inno Setup"),
+        version: z.literal("6.7.3"),
+        commercialLicenseEvidenceRequired: z.literal(true),
+        sourceUrl: z.string().url(),
+      })
+      .strict(),
+    inputs: z
+      .array(
+        z
+          .object({
+            id: z.enum(["node", "mosquitto", "influxdb", "winsw"]),
+            version: z.string().regex(/^\d+\.\d+\.\d+$/),
+            fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
+            sourceUrl: z
+              .string()
+              .url()
+              .refine((value) => value.startsWith("https://")),
+            sha256: sha256Schema,
+            checksumEvidenceUrl: z.union([
+              z
+                .string()
+                .url()
+                .refine((value) => value.startsWith("https://")),
+              z.string().regex(/^CONTROLLED-CAPTURE-\d{4}-\d{2}-\d{2}$/),
+            ]),
+            licenseEvidenceUrl: z
+              .string()
+              .url()
+              .refine((value) => value.startsWith("https://")),
+          })
+          .strict()
+      )
+      .length(4),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    const expected = new Set(["node", "mosquitto", "influxdb", "winsw"]);
+    const ids = value.inputs.map((input) => input.id);
+    if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
+      context.addIssue({ code: "custom", message: "Vendor input set must be exact" });
+    }
+  });
+
+export type VendorInputLock = z.infer<typeof vendorInputLockSchema>;
+
 export const WINDOWS_INSTALLER_ISSUES = {
   MANIFEST_INVALID: "MANIFEST_INVALID",
   ARTIFACT_SET_INVALID: "ARTIFACT_SET_INVALID",

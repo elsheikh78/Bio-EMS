@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-02 EXACT-INPUT FREEZE AND DETERMINISTIC STAGING/BUILD SOURCE IS NEXT.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-02 EXACT-INPUT FREEZE AND DETERMINISTIC STAGING/BUILD SOURCE IS IMPLEMENTED LOCALLY; PR/CI/MERGE ARE PENDING.**
 
 ## Current Controlled Continuation
 
@@ -47,6 +47,7 @@
 - Site-Bound Licensing LIC-11 through LIC-13: **COMPLETE / MERGED / CI VERIFIED** through PR #176, CI #606 and merge `ca6f40eba9b22a03318fa8e141d14d8bbc5da09d`. Backend 112 files / 781 tests and Frontend 51 files / 292 tests pass; total 163 files / 1,073 tests. DEP-01 clean-machine installer qualification remains separate.
 - DEP-01 final Production Installer: **NOT YET IMPLEMENTED / NOT YET QUALIFIED**.
 - DEP-01-01 installer foundation: **COMPLETE / MERGED / CI VERIFIED** through PR #177, CI #609 and merge `d1c5e4dfaee675573d3b7f76c7d279cc8b744f90`. Windows 11 Pro x64/Inno Setup 6 baseline, exact six-input inventory and fail-closed staging integrity/secret checks pass. Backend 113 files / 785 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,077 tests.
+- DEP-01-02 input freeze/build source: **IMPLEMENTED LOCALLY / PR AND CI PENDING**. Exact vendor versions and SHA-256 values, deterministic staging, pinned Inno Setup 6.7.3 compilation and build-evidence generation are implemented. Backend 113 files / 789 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,081 tests. Service lifecycle, Setup execution and clean-machine qualification remain open.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
 
