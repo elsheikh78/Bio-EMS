@@ -69,8 +69,9 @@ from(bucket: "${bucket}")
 }
 
 export function buildRoomTelemetryWindowQuery(bucketName: string): string {
+  const safeBucket = JSON.stringify(bucketName);
   return `
-base = from(bucket: "${bucketName}")
+base = from(bucket: ${safeBucket})
     |> range(start: -24h)
     |> filter(fn: (r) => r._field == "value")
     |> group(columns: ["_measurement", "sensor"])
