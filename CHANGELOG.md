@@ -11,6 +11,7 @@
 - Started DEP-01 with a Windows 11 x64/Inno Setup package contract and a fail-closed staged-payload validator covering the exact application/runtime inventory, SHA-256 integrity, redistribution evidence and forbidden secret/identity payloads.
 - Implemented DEP-01-02 source: exact Node.js/Mosquitto/InfluxDB/WinSW input locks, checksum-enforcing acquisition, deterministic application staging, pinned commercial Inno Setup build gate, initial Setup source and hash-based build evidence. Setup execution and clean-machine qualification remain open.
 - Implemented DEP-01-03 source for isolated Windows virtual service identities, runtime-generated protected configuration, authenticated local MQTT, local InfluxDB onboarding and LIC-11 first-start provisioning under the final Backend DPAPI identity. Windows execution and installer qualification remain open.
+- Implemented DEP-01-04 source for a certificate-backed HTTPS front-door on port 443, LocalSubnet-scoped Domain/Private Firewall access, integrated frontend delivery and secret-free post-install component health evidence.
 
 ## [0.20.0] - 2026-09-07
 

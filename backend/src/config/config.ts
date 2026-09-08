@@ -14,6 +14,13 @@ export const config = {
 
   apiPrefix: process.env.API_PREFIX || "/api/v1",
 
+  frontendRoot: process.env.BIOEMS_FRONTEND_ROOT || "",
+
+  tls: {
+    pfxPath: process.env.BIOEMS_TLS_PFX_PATH || "",
+    passphrase: process.env.BIOEMS_TLS_PFX_PASSPHRASE || "",
+  },
+
   mqtt: loadMqttConfig(process.env),
 
   influx: {

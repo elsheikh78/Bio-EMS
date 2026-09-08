@@ -27,6 +27,7 @@ import notificationDeliveryRouter from "./routes/notification-delivery.route";
 import commissioningRouter from "./routes/commissioning.route";
 import platformOperationsRouter from "./routes/platform-operations.route";
 import installationAcceptanceRouter from "./routes/installation-acceptance.route";
+import { resolve } from "node:path";
 
 createTables();
 
@@ -45,8 +46,8 @@ getMqttClient();
 app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(`${config.apiPrefix}/platform-audit-events`, platformAuditEventRouter);
 app.use(`${config.apiPrefix}/platform-operations`, platformOperationsRouter);
-app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/health`, healthRouter);
+app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/auth`, authRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);
 app.use(`${config.apiPrefix}/devices`, deviceRouter);
@@ -63,6 +64,15 @@ app.use(`${config.apiPrefix}/realtime`, realtimeRouter);
 app.use(`${config.apiPrefix}/notification-deliveries`, notificationDeliveryRouter);
 app.use(`${config.apiPrefix}/installations`, installationAcceptanceRouter);
 app.use(config.apiPrefix, commissioningRouter);
+
+if (config.frontendRoot) {
+  const frontendRoot = resolve(config.frontendRoot);
+  app.use(express.static(frontendRoot, { index: false, fallthrough: true }));
+  app.use((request, response, next) => {
+    if (request.method !== "GET" || request.path.startsWith(config.apiPrefix)) return next();
+    return response.sendFile("index.html", { root: frontendRoot });
+  });
+}
 
 app.use(errorMiddleware);
 

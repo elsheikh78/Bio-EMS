@@ -181,3 +181,40 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 });
+
+describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const windowsRoot = join(repositoryRoot, "installer/windows");
+  const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
+  const health = readFileSync(join(windowsRoot, "Test-PostInstallHealth.ps1"), "utf8");
+
+  it("creates a trusted local certificate and keeps its PFX secret out of source", () => {
+    expect(lifecycle).toContain("New-SelfSignedCertificate");
+    expect(lifecycle).toContain("Cert:\\LocalMachine\\Root");
+    expect(lifecycle).toContain("BIOEMS_TLS_PFX_PASSPHRASE=$tlsPassword");
+    expect(lifecycle).not.toMatch(/BEGIN CERTIFICATE|BIOEMS_TLS_PFX_PASSPHRASE=[A-Za-z0-9+/]{20}/);
+  });
+
+  it("opens only HTTPS to private local subnets", () => {
+    expect(lifecycle).toContain(
+      "-LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet"
+    );
+    expect(lifecycle).not.toMatch(/New-NetFirewallRule[^\n]+LocalPort (?:1883|3001|8086|8883)/);
+  });
+
+  it("records secret-free health evidence for every installed component", () => {
+    for (const check of [
+      "backend:https",
+      "influxdb:health",
+      "mqtt:loopback",
+      "frontend:index",
+      "licensing:identity",
+      "licensing:receipt",
+      "firewall:https-only",
+    ]) {
+      expect(health).toContain(check);
+    }
+    expect(health).toContain("post-install-health.json");
+    expect(health).not.toMatch(/TOKEN|PASSWORD|PASSPHRASE/);
+  });
+});
