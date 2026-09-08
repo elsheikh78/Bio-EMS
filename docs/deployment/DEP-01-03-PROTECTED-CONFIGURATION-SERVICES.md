@@ -1,6 +1,6 @@
 # DEP-01-03 Protected Configuration and Windows Services
 
-**Status:** Source implemented; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified through PR #179 and CI #615
 **Target:** Windows 11 Pro x64, fresh installation path
 
 ## Delivered source behavior

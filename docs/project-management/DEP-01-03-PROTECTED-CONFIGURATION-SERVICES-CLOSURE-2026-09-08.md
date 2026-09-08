@@ -2,7 +2,7 @@
 
 **Date:** 8 September 2026
 **Branch:** `agent/dep-01-03-service-lifecycle`
-**Status:** IMPLEMENTED LOCALLY / PR AND CI PENDING
+**Status:** COMPLETE / MERGED / CI VERIFIED
 
 ## Implementation record
 
@@ -20,7 +20,9 @@
 - Backend typecheck/build/lint/format and 113 test files / 793 tests: PASS.
 - Frontend typecheck/lint/format, 51 test files / 292 tests and production build: PASS.
 - Automated total: 164 files / 1,085 tests.
-- GitHub PR/CI/merge: pending.
+- GitHub PR #179: merged.
+- GitHub Actions CI #615: PASS.
+- Merge commit: `0d5a4527ab69fa4972f9c2b0a7dc09464e422804`.
 
 ## Handoff
 

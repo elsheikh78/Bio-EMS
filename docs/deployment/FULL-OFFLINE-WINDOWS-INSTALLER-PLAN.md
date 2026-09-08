@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-02 COMPLETE / DEP-01-03 IMPLEMENTED LOCALLY
+**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-03 COMPLETE
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
