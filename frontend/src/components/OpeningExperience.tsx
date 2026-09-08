@@ -20,7 +20,7 @@ function wasSeen() {
 
 export function OpeningExperience({
   children,
-  duration = 900,
+  duration = 5_000,
   enabled = true,
 }: OpeningExperienceProps) {
   const [visible, setVisible] = useState(() => enabled && !wasSeen());
