@@ -66,10 +66,10 @@ const rooms = [
   },
 ] as const;
 
-function renderBoard() {
+function renderBoard(language: "en" | "ar" = "en") {
   return render(
     <MemoryRouter>
-      <LocalizationProvider language="en">
+      <LocalizationProvider language={language}>
         <LiveBoardPage />
       </LocalizationProvider>
     </MemoryRouter>,
@@ -112,10 +112,20 @@ describe("LiveBoardPage", () => {
     expect(screen.getAllByRole("article")).toHaveLength(4);
     expect(screen.getByText("11 °C")).toBeVisible();
     expect(
-      screen.getAllByText((_, element) =>
+      screen.queryByText((_, element) =>
         Boolean(element?.textContent?.includes("2026-09-07T10:02:00.000Z")),
-      ).length,
-    ).toBeGreaterThan(0);
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("isolates localized timestamps from Arabic bidi reordering", () => {
+    renderBoard("ar");
+
+    const timestamps = document.querySelectorAll('bdi[dir="ltr"]');
+    expect(timestamps.length).toBeGreaterThan(0);
+    expect(
+      [...timestamps].some((timestamp) => timestamp.textContent?.includes("T10:")),
+    ).toBe(false);
   });
 
   it("filters the board locally by search without changing the API contract", async () => {
