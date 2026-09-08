@@ -29,6 +29,13 @@
   "licensingIdentityOwner": "NT SERVICE\\BIOEMS-Backend",
   "publicPorts": [443],
   "internalPorts": [3001, 8086, 8883],
+  "frontDoor": {
+    "protocol": "https",
+    "port": 443,
+    "firewallProfiles": ["Domain", "Private"],
+    "remoteAddressScope": "LocalSubnet"
+  },
+  "postInstallHealthEvidence": "C:\\ProgramData\\BIO-EMS\\logs\\post-install-health.json",
   "forbiddenPayloadPatterns": [
     ".env",
     "identity.json",

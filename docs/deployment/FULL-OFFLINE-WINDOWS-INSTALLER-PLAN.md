@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-03 COMPLETE
+**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-03 COMPLETE / DEP-01-04 IMPLEMENTED LOCALLY
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
@@ -152,3 +152,9 @@ virtual service identities and LIC-11 provisioning under the final Backend ident
 The local HTTPS/front-door, restricted firewall exposure, complete health evidence,
 lifecycle recovery and all Windows qualification remain open as recorded in
 `docs/deployment/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES.md`.
+
+DEP-01-04 now adds a machine-local HTTPS front-door on port 443, restricted
+Domain/Private LocalSubnet Firewall exposure and fail-closed secret-free
+post-install health evidence. Windows execution, lifecycle recovery, signing and
+clean-machine qualification remain open as recorded in
+`docs/deployment/DEP-01-04-HTTPS-FIREWALL-HEALTH.md`.

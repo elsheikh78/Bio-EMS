@@ -6,7 +6,7 @@ router.get("/", (_req, res) => {
   res.json({
     status: "UP",
     project: "BIO EMS",
-    version: "0.15.0",
+    version: process.env.BIOEMS_PRODUCT_VERSION || "0.20.0",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });

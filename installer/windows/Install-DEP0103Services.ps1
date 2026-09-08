@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
-    [Parameter(Mandatory = $true)][string]$PersistentRoot
+    [Parameter(Mandatory = $true)][string]$PersistentRoot,
+    [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$ProductVersion
 )
 
 $ErrorActionPreference = "Stop"
@@ -135,6 +136,7 @@ $mqttPassword = New-Secret 36
 $influxPassword = New-Secret 36
 $jwtSecret = New-Secret 48
 $platformJwtSecret = New-Secret 48
+$tlsPassword = New-Secret 36
 $mqttPasswordFile = Join-Path $paths.Config "mosquitto.passwords"
 $mqttConfig = Join-Path $paths.Config "mosquitto.conf"
 New-MosquittoPasswordFile $mosquittoPasswd $mqttPasswordFile "bioems-backend" $mqttPassword
@@ -159,6 +161,7 @@ Write-Utf8 (Join-Path $paths.Services "BIOEMS-MQTT.xml") (New-ServiceXml "BIOEMS
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-InfluxDB.xml") (New-ServiceXml "BIOEMS-InfluxDB" $influxd "--bolt-path `"$influxData\influxd.bolt`" --engine-path `"$influxData\engine`"" (Join-Path $paths.Logs "influxdb-service") @() @{} "")
 
 $backendEnv = Join-Path $paths.Config "backend.env"
+$tlsPfx = Join-Path $paths.Config "bioems-local.pfx"
 $identityPath = Join-Path $paths.Licensing "installation-identity.json"
 $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.json"
 $preStartScript = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
@@ -202,10 +205,21 @@ $setupBody = @{ username = "bioems-local"; password = $influxPassword; org = "bi
 $setup = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Post -ContentType "application/json" -Body $setupBody
 if (-not $setup.auth.token) { throw "InfluxDB onboarding did not return a token" }
 
+$secureTlsPassword = ConvertTo-SecureString $tlsPassword -AsPlainText -Force
+$certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -NotAfter (Get-Date).AddYears(3)
+Export-PfxCertificate -Cert $certificate -FilePath $tlsPfx -Password $secureTlsPassword -Force | Out-Null
+$publicCertificate = Join-Path $paths.Config "bioems-local.cer"
+Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
+Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
+
 Write-Utf8 $backendEnv @"
 NODE_ENV=production
-PORT=3001
+PORT=443
 API_PREFIX=/api/v1
+BIOEMS_FRONTEND_ROOT=$application\frontend
+BIOEMS_PRODUCT_VERSION=$ProductVersion
+BIOEMS_TLS_PFX_PATH=$tlsPfx
+BIOEMS_TLS_PFX_PASSPHRASE=$tlsPassword
 MQTT_HOST=127.0.0.1
 MQTT_PORT=1883
 MQTT_PROTOCOL=mqtt
@@ -228,6 +242,9 @@ BIOEMS_SHUTDOWN_GRACE_SECONDS=30
 BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
+Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
+if (Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue) { throw "BIO-EMS firewall rule already exists" }
+New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet | Out-Null
 Start-Service "BIOEMS-Backend"
 
 $receiptDeadline = (Get-Date).AddSeconds(45)
