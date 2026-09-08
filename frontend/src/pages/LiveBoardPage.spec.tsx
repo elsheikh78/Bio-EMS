@@ -124,7 +124,9 @@ describe("LiveBoardPage", () => {
     const timestamps = document.querySelectorAll('bdi[dir="ltr"]');
     expect(timestamps.length).toBeGreaterThan(0);
     expect(
-      Array.from(timestamps).some((timestamp) => timestamp.textContent?.includes("T10:")),
+      Array.from(timestamps).some((timestamp) =>
+        timestamp.textContent?.includes("T10:"),
+      ),
     ).toBe(false);
   });
 
