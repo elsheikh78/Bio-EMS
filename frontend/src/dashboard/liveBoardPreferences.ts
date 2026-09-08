@@ -56,8 +56,7 @@ export function readLiveBoardViewPreferences(): LiveBoardViewPreferences {
           ? parsed.site.slice(0, 200)
           : defaultLiveBoardViewPreferences.site,
       status:
-        typeof parsed.status === "string" &&
-        validStatuses.has(parsed.status)
+        typeof parsed.status === "string" && validStatuses.has(parsed.status)
           ? parsed.status
           : defaultLiveBoardViewPreferences.status,
     };
@@ -70,7 +69,10 @@ export function writeLiveBoardViewPreferences(
   preferences: LiveBoardViewPreferences,
 ) {
   try {
-    localStorage.setItem(LIVE_BOARD_VIEW_STORAGE_KEY, JSON.stringify(preferences));
+    localStorage.setItem(
+      LIVE_BOARD_VIEW_STORAGE_KEY,
+      JSON.stringify(preferences),
+    );
   } catch {
     // The live board remains usable when browser storage is unavailable.
   }
