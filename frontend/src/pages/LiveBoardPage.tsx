@@ -576,6 +576,31 @@ function AreaCard({
           </Typography>
         </Box>
 
+        {room.temperatureLast24Hours ? (
+          <Box
+            sx={{
+              alignItems: "end",
+              display: "grid",
+              gap: 2,
+              gridTemplateColumns: "auto auto minmax(80px, 1fr)",
+            }}
+          >
+            <Reading
+              label={copy.last24HourMin}
+              value={`${room.temperatureLast24Hours.min} ${temperatureUnit}`}
+            />
+            <Reading
+              label={copy.last24HourMax}
+              value={`${room.temperatureLast24Hours.max} ${temperatureUnit}`}
+            />
+            <Sparkline
+              label={copy.last24HourTrend}
+              status={status}
+              values={room.temperatureLast24Hours.trend}
+            />
+          </Box>
+        ) : null}
+
         <Box
           sx={{
             display: "grid",
@@ -628,6 +653,59 @@ function AreaCard({
       </Stack>
     </Paper>
   );
+}
+
+function Sparkline({
+  label,
+  status,
+  values,
+}: {
+  label: string;
+  status: LiveBoardStatus;
+  values: number[];
+}) {
+  if (values.length < 2) return null;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const spread = max - min || 1;
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * 100;
+      const y = 30 - ((value - min) / spread) * 26;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <Box
+      component="svg"
+      aria-label={label}
+      role="img"
+      viewBox="0 0 100 34"
+      preserveAspectRatio="none"
+      sx={{ height: 38, overflow: "visible", width: "100%" }}
+    >
+      <polyline
+        fill="none"
+        points={points}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        style={{ color: statusToneValue(status) }}
+      />
+    </Box>
+  );
+}
+
+function statusToneValue(status: LiveBoardStatus) {
+  return status === "NORMAL"
+    ? "#54D59A"
+    : status === "WARNING"
+      ? "#FFC15C"
+      : status === "ALARM"
+        ? "#FF736B"
+        : "#A8BBC0";
 }
 
 function Reading({ label, value }: { label: string; value: string }) {
