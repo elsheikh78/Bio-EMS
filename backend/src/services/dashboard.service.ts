@@ -86,10 +86,7 @@ export class DashboardService {
       getRoomTelemetryWindow().catch(() => []),
     ]);
 
-    const windowBySensor = new Map<
-      string,
-      { min?: number; max?: number; trend: number[] }
-    >();
+    const windowBySensor = new Map<string, { min?: number; max?: number; trend: number[] }>();
 
     for (const record of windowTelemetry) {
       const summary = windowBySensor.get(record.sensorCode) ?? { trend: [] };
@@ -218,8 +215,7 @@ export class DashboardService {
           : null,
 
         temperatureLast24Hours:
-          temperatureWindow?.min !== undefined &&
-          temperatureWindow.max !== undefined
+          temperatureWindow?.min !== undefined && temperatureWindow.max !== undefined
             ? {
                 min: temperatureWindow.min,
                 max: temperatureWindow.max,
