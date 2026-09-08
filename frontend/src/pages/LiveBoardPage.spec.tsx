@@ -134,8 +134,7 @@ describe("LiveBoardPage", () => {
     const user = userEvent.setup();
     renderBoard();
 
-    expect(screen.getByText("25%")).toBeVisible();
-    expect(screen.getByText("25")).toBeVisible();
+    expect(screen.getAllByText("25%")).toHaveLength(5);
 
     await user.click(
       screen.getByRole("checkbox", {
