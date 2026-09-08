@@ -12,7 +12,7 @@ function ModeProbe() {
 describe("ColorModeProvider", () => {
   afterEach(() => localStorage.clear());
 
-  it("defaults to light and persists the optional dark monitoring theme", async () => {
+  it("defaults to the approved dark control-room theme and persists light mode", async () => {
     const user = userEvent.setup();
     render(
       <ColorModeProvider>
@@ -20,20 +20,20 @@ describe("ColorModeProvider", () => {
       </ColorModeProvider>,
     );
 
-    await user.click(screen.getByRole("button", { name: "light" }));
+    await user.click(screen.getByRole("button", { name: "dark" }));
 
-    expect(screen.getByRole("button", { name: "dark" })).toBeVisible();
-    expect(localStorage.getItem(COLOR_MODE_STORAGE_KEY)).toBe("dark");
+    expect(screen.getByRole("button", { name: "light" })).toBeVisible();
+    expect(localStorage.getItem(COLOR_MODE_STORAGE_KEY)).toBe("light");
   });
 
   it("restores the persisted mode", () => {
-    localStorage.setItem(COLOR_MODE_STORAGE_KEY, "dark");
+    localStorage.setItem(COLOR_MODE_STORAGE_KEY, "light");
     render(
       <ColorModeProvider>
         <ModeProbe />
       </ColorModeProvider>,
     );
 
-    expect(screen.getByRole("button", { name: "dark" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "light" })).toBeVisible();
   });
 });
