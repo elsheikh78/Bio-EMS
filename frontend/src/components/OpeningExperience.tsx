@@ -133,6 +133,7 @@ function OpeningScreen() {
 
       <Box
         component="svg"
+        data-testid="opening-data-wave"
         aria-hidden
         viewBox="0 0 1200 220"
         preserveAspectRatio="none"
