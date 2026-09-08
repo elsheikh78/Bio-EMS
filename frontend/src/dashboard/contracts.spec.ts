@@ -81,6 +81,11 @@ describe("dashboard contracts", () => {
           temperature: 4.2,
           temperatureUnit: "°C",
           temperatureRange: { min: 2, max: 8 },
+          temperatureLast24Hours: {
+            min: 3.2,
+            max: 4.8,
+            trend: [3.2, 3.6, 4, 4.8],
+          },
           humidity: 56,
           temperatureStatus: "NORMAL",
           humidityStatus: "WARNING",
