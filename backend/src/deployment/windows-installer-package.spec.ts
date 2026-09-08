@@ -150,11 +150,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
 
   it("fails closed before replacing a pre-existing Mosquitto service", () => {
     expect(lifecycle).toContain('Get-Service -Name "mosquitto"');
-    expect(lifecycle).toContain(
-      "Fresh service installation refuses an existing Mosquitto service"
-    );
+    expect(lifecycle).toContain("Fresh service installation refuses an existing Mosquitto service");
     expect(lifecycle.indexOf('Get-Service -Name "mosquitto"')).toBeLessThan(
-      lifecycle.indexOf('Start-Process -FilePath $mosquittoInstaller')
+      lifecycle.indexOf("Start-Process -FilePath $mosquittoInstaller")
     );
   });
 
