@@ -5,7 +5,7 @@ import { loadCorsConfig } from "./cors.config";
 import { loadMqttConfig } from "./mqtt.config";
 import { loadNotificationDeliveryConfig } from "./notification-delivery.config";
 
-dotenv.config();
+dotenv.config(process.env.BIOEMS_ENV_FILE ? { path: process.env.BIOEMS_ENV_FILE } : undefined);
 
 export const config = {
   nodeEnv: process.env.NODE_ENV || "development",

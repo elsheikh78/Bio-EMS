@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-02 COMPLETE
+**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-02 COMPLETE / DEP-01-03 IMPLEMENTED LOCALLY
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
@@ -146,3 +146,9 @@ and implements deterministic staging and initial Setup build source. Protected
 configuration, service/lifecycle operations, executed/signed Setup evidence and
 clean-machine qualification remain open as recorded in
 `docs/deployment/DEP-01-02-INPUT-FREEZE-AND-BUILD.md`.
+
+DEP-01-03 now adds source-level protected configuration, three isolated Windows
+virtual service identities and LIC-11 provisioning under the final Backend identity.
+The local HTTPS/front-door, restricted firewall exposure, complete health evidence,
+lifecycle recovery and all Windows qualification remain open as recorded in
+`docs/deployment/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES.md`.
