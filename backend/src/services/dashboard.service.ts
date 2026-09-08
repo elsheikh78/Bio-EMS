@@ -8,7 +8,10 @@ import { AlarmStatistics } from "../types/alarm-statistics.types";
 import { DashboardSummary } from "../types/dashboard.types";
 import { getLatestTelemetry } from "../../database/influx/queries/telemetry.query";
 import { RoomStatus } from "../types/room-status.types";
-import { getLatestRoomTelemetry } from "../../database/influx/queries/room-status.query";
+import {
+  getLatestRoomTelemetry,
+  getRoomTelemetryWindow,
+} from "../../database/influx/queries/room-status.query";
 import { evaluateAlarm } from "../domain/engines/alarm-evaluation.engine";
 import { AlarmStatus } from "../domain/enums/alarm-status";
 import { SensorType } from "../domain/enums/sensor-type";
@@ -78,7 +81,20 @@ export class DashboardService {
   }
 
   async getRoomStatus(): Promise<RoomStatus[]> {
-    const telemetry = await getLatestRoomTelemetry();
+    const [telemetry, windowTelemetry] = await Promise.all([
+      getLatestRoomTelemetry(),
+      getRoomTelemetryWindow().catch(() => []),
+    ]);
+
+    const windowBySensor = new Map<string, { min?: number; max?: number; trend: number[] }>();
+
+    for (const record of windowTelemetry) {
+      const summary = windowBySensor.get(record.sensorCode) ?? { trend: [] };
+      if (record.statistic === "min") summary.min = record.value;
+      if (record.statistic === "max") summary.max = record.value;
+      if (record.statistic === "trend") summary.trend.push(record.value);
+      windowBySensor.set(record.sensorCode, summary);
+    }
 
     const sensorMap = this.buildSensorMap();
 
@@ -174,6 +190,10 @@ export class DashboardService {
 
       const humidity = room.sensors.get("humidity");
 
+      const temperatureWindow = temperature
+        ? windowBySensor.get(temperature.sensor.code)
+        : undefined;
+
       return {
         roomId: room.roomId,
 
@@ -193,6 +213,15 @@ export class DashboardService {
               max: temperature.sensor.max_value ?? null,
             }
           : null,
+
+        temperatureLast24Hours:
+          temperatureWindow?.min !== undefined && temperatureWindow.max !== undefined
+            ? {
+                min: temperatureWindow.min,
+                max: temperatureWindow.max,
+                trend: temperatureWindow.trend,
+              }
+            : null,
 
         humidity: humidity?.value ?? null,
 

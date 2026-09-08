@@ -16,6 +16,12 @@ export interface RoomStatus {
     max: number | null;
   } | null;
 
+  temperatureLast24Hours: {
+    min: number;
+    max: number;
+    trend: number[];
+  } | null;
+
   humidity: number | null;
 
   temperatureStatus: "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";

@@ -221,6 +221,9 @@ export interface TranslationResources {
     currentReading: string;
     allowedRange: string;
     sensors: string;
+    last24HourMin: string;
+    last24HourMax: string;
+    last24HourTrend: string;
   };
 
   monitoredAreas: {
@@ -528,6 +531,9 @@ export const englishResources = {
     currentReading: "Current reading",
     allowedRange: "Configured range",
     sensors: "Sensors",
+    last24HourMin: "24h minimum",
+    last24HourMax: "24h maximum",
+    last24HourTrend: "24-hour temperature trend",
   },
 
   monitoredAreas: {
@@ -795,6 +801,9 @@ export const arabicResources = {
     currentReading: "القراءة الحالية",
     allowedRange: "النطاق المُعد",
     sensors: "الحساسات",
+    last24HourMin: "أدنى قراءة خلال 24 ساعة",
+    last24HourMax: "أعلى قراءة خلال 24 ساعة",
+    last24HourTrend: "اتجاه الحرارة خلال 24 ساعة",
   },
   monitoredAreas: {
     title: "المناطق المراقبة",

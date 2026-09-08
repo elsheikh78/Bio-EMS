@@ -56,6 +56,15 @@ export const dashboardRoomStatusSchema = z
       .strict()
       .nullable()
       .optional(),
+    temperatureLast24Hours: z
+      .object({
+        min: finiteNumber,
+        max: finiteNumber,
+        trend: z.array(finiteNumber).max(24),
+      })
+      .strict()
+      .nullable()
+      .optional(),
     humidity: finiteNumber.nullable(),
     temperatureStatus: dashboardSensorStatusSchema,
     humidityStatus: dashboardSensorStatusSchema,
