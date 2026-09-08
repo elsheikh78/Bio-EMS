@@ -9,11 +9,15 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 **Latest published source release:** [`v0.20.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.20.0).
 **Current source-software version:** `0.20.0`.
 
-## Documentation Authority — Read This First
+## Documentation Authority â€” Read This First
+
+
+> Latest controlled continuation: [8 September 2026 end-of-day handoff](docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md). It records the internal unsigned Windows build evidence, open installer gates and the exact morning start point.
+
 
 | Need                                                                         | Authoritative document                                                                                                                                                 |
 | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Where is the whole project now?                                              | [`PROJECT_STATE.md`](PROJECT_STATE.md) — **single current-state authority**                                                                                            |
+| Where is the whole project now?                                              | [`PROJECT_STATE.md`](PROJECT_STATE.md) â€” **single current-state authority**                                                                                            |
 | What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)                                                                                                                     |
 | What is the approved SYSTEM_OWNER installation and RBAC plan?                | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
 | What is the approved customer Windows installer plan?                        | [`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md)                                                     |
@@ -23,7 +27,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 | What is the P8-02 through P8-08 closure evidence?                            | [`docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`](docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md)                                       |
 | What did the current documentation audit conclude?                           | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md)                                   |
 | What is the hardware validation path?                                        | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md)                               |
-| Historical Sprint/BF/PVR progress                                            | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) — historical ledger only                                                                                          |
+| Historical Sprint/BF/PVR progress                                            | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) â€” historical ledger only                                                                                          |
 
 **Rule:** if a historical document conflicts with current status, `PROJECT_STATE.md` controls.
 
@@ -33,7 +37,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
-- **P2:** software complete / merged / CI verified; physical controller }���$z{-���jםd by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
+- **P2:** software complete / merged / CI verified; physical controller }÷æÚ$z{-®éÜj×d by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 - **UI/UX UX-01 through UX-09:** product refresh implementation and full repository regression complete / merged / CI verified through PR #171 / CI #592 / merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`; the verified matrix covers 157 test files and 1,047 tests.
 
@@ -67,14 +71,14 @@ Global localization integration evidence: PR #155 / CI run #543 / merge `e0f305c
 
 P7 consists of eight controlled work packages:
 
-1. SYSTEM_OWNER frontend boundary and console shell — complete.
-2. Customer / Site fleet management — complete.
-3. License lifecycle and installation-binding UI — complete.
-4. Update-entitlement and release-eligibility UI — complete.
-5. Maintenance, calibration and support fleet operations — complete.
-6. Product UX and legacy cleanup — complete.
-7. End-to-end product workflow review — complete.
-8. Full regression, documentation reconciliation and software-product closure — complete.
+1. SYSTEM_OWNER frontend boundary and console shell â€” complete.
+2. Customer / Site fleet management â€” complete.
+3. License lifecycle and installation-binding UI â€” complete.
+4. Update-entitlement and release-eligibility UI â€” complete.
+5. Maintenance, calibration and support fleet operations â€” complete.
+6. Product UX and legacy cleanup â€” complete.
+7. End-to-end product workflow review â€” complete.
+8. Full regression, documentation reconciliation and software-product closure â€” complete.
 
 P7-01 through P7-08 are complete, merged and CI verified; external provider, physical, field, UAT and production evidence remain separately controlled.
 
@@ -112,7 +116,7 @@ BIO-EMS currently includes:
 
 Frontend **Monitored Area** is presentation terminology for the existing Room domain:
 
-**Site → Monitored Area (Room) → Sensor**
+**Site â†’ Monitored Area (Room) â†’ Sensor**
 
 No separate Monitoring Point or Asset backend domain is currently claimed.
 
@@ -132,4 +136,4 @@ Payment/invoicing integration and live remote OTA/update execution are also not 
 
 Before testing or developing the SYSTEM_OWNER surface, follow [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md); never commit real owner credentials or Platform JWT secrets.
 
-For continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and the latest P7 closure record. P7 software is closed; remaining work is in the separately controlled external evidence/acceptance tracks or later explicitly approved software scope.
+For continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md`. The next controlled work is isolated clean-machine installer qualification followed by Arabic/English visual review; signing, release publication and external acceptance remain separate gates.

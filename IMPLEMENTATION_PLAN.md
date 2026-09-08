@@ -2,9 +2,9 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 5 September 2026.**
+**Current controlled delivery sequence — reconciled 8 September 2026.**
 
-Historical P0-P8 software closure/evidence remains authoritative for completed scope. The UI/UX Product Refresh and Site-Bound Licensing LIC-01 through LIC-13 are complete/merged/CI verified. DEP-01 implementation and clean-machine qualification remain open.
+Historical P0-P8 software closure/evidence remains authoritative for completed scope. The UI/UX Product Refresh and Site-Bound Licensing LIC-01 through LIC-13 are complete/merged/CI verified. DEP-01-06 now has internal Windows build evidence and source corrections, while clean-machine qualification, signing and publication remain open.
 
 ## Current Position
 
@@ -14,7 +14,7 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 - P8-02 through P8-08: source complete/merged/CI verified.
 - Global Arabic/English localization: complete/merged/CI verified.
 - RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
-- DEP-01 Full Offline Windows Installer: DEP-01-01 through DEP-01-05 are complete/merged/CI verified through PR #181 and CI #621. DEP-01-06 release-candidate build/signing and clean-machine qualification is next.
+- DEP-01 Full Offline Windows Installer: DEP-01-01 through DEP-01-05 are complete/merged/CI verified through PR #181 and CI #621. DEP-01-06 embedded single-EXE and Mosquitto-collision corrections are merged through PR #183; an unsigned internal Windows 10 x64 build exists. Clean-machine install/lifecycle qualification, signing and publication are next.
 - UI/UX Product Refresh: complete/merged/CI verified; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
 - Site-Bound Licensing / Anti-Cloning: LIC-01 through LIC-13 complete/merged/CI verified. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
 
@@ -156,11 +156,13 @@ Commercial enforcement must not be designed to unexpectedly stop critical local 
 
 ## Next-Session Start Procedure
 
-1. Reconcile local Windows `main` with GitHub `origin/main`; confirm clean working tree.
-2. Read `PROJECT_STATE.md`, this file, the UI/UX work package/visual freeze, and `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
-3. Continue the current UI/UX controlled sequence unless an explicit decision starts the licensing workstream earlier.
-4. Preserve the rule that DEP-01 cannot become the final Production Installer before LIC-01 -> LIC-13 are complete and evidenced.
-5. Keep Meta/Telegram/provider evidence, hardware, field commissioning/UAT/customer acceptance and licensing as separately evidenced tracks.
+1. Reconcile local Windows `main` with GitHub `origin/main`; confirm a clean working tree and matching SHAs.
+2. Read `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md` and `PROJECT_STATE.md`.
+3. Qualify the internal unsigned Setup only on an isolated clean Windows 10/11 x64 target; do not remove the unrelated Mosquitto service from the development workstation.
+4. Capture secret-free evidence for Fresh Install, three BIO-EMS services, ports, HTTPS/API health, licensing receipt, reboot recovery, Repair/Upgrade rollback and retained-data Uninstall.
+5. Run Arabic/English, RTL/LTR, light/dark and responsive visual review of the post-v0.20.0 UI and record screenshots/defects separately.
+6. Decide Authenticode signing, next version/tag and Release publication only after installer evidence passes.
+7. Keep Meta/Telegram/provider evidence, hardware, field Commissioning/UAT/customer acceptance and licensing qualification as separately evidenced tracks.
 
 ## Execution Rule
 
