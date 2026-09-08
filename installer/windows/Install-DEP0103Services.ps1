@@ -211,6 +211,7 @@ Export-PfxCertificate -Cert $certificate -FilePath $tlsPfx -Password $secureTlsP
 $publicCertificate = Join-Path $paths.Config "bioems-local.cer"
 Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
 Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
+Write-Utf8 (Join-Path $paths.Config "tls-certificate.json") (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
 
 Write-Utf8 $backendEnv @"
 NODE_ENV=production
