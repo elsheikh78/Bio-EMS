@@ -126,3 +126,58 @@ describe("DEP-01-02 frozen inputs and build source", () => {
     expect(source).not.toContain("LicenseFile=identity.json");
   });
 });
+
+describe("DEP-01-03 protected configuration and service lifecycle source", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const windowsRoot = join(repositoryRoot, "installer/windows");
+  const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
+  const preStart = readFileSync(join(windowsRoot, "Invoke-BackendPreStart.ps1"), "utf8");
+
+  it("installs the exact services under separate virtual service identities", () => {
+    const contract = JSON.parse(readFileSync(join(windowsRoot, "package-contract.json"), "utf8"));
+    expect(contract.serviceAccounts).toEqual({
+      "BIOEMS-Backend": "NT SERVICE\\BIOEMS-Backend",
+      "BIOEMS-MQTT": "NT SERVICE\\BIOEMS-MQTT",
+      "BIOEMS-InfluxDB": "NT SERVICE\\BIOEMS-InfluxDB",
+    });
+    expect(lifecycle).toContain(
+      '$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")'
+    );
+    expect(lifecycle).toContain('"NT SERVICE\\$serviceId"');
+    expect(lifecycle).toContain('sc.exe" @("sidtype"');
+    expect(lifecycle).not.toMatch(/<password>|LocalSystem/);
+  });
+
+  it("creates runtime credentials without command-line or repository secrets", () => {
+    expect(lifecycle).toContain("RandomNumberGenerator");
+    expect(lifecycle).toContain("RedirectStandardInput = $true");
+    expect(lifecycle).toContain("BIOEMS_ENV_FILE = $backendEnv");
+    expect(lifecycle).not.toMatch(/MQTT_PASSWORD=(?:password|secret)|BEGIN PRIVATE KEY/);
+  });
+
+  it("runs LIC-11 only under the final Backend service identity and fails closed", () => {
+    expect(preStart).toContain("$identityExists -xor $receiptExists");
+    expect(preStart).toContain("automatic replacement is prohibited");
+    expect(preStart).toContain("& $NodeExecutable $ProvisioningScript");
+    expect(lifecycle.indexOf('sc.exe" @("config"')).toBeLessThan(
+      lifecycle.indexOf('Start-Service "BIOEMS-Backend"')
+    );
+  });
+
+  it("wires service installation into Setup without granting users access to ProgramData", () => {
+    const source = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+    expect(source).toContain("Install-DEP0103Services.ps1");
+    expect(source).toContain("runhidden waituntilterminated");
+    expect(source).not.toContain("Permissions: users-readexec");
+    expect(readFileSync(join(repositoryRoot, "backend/src/config/config.ts"), "utf8")).toContain(
+      "process.env.BIOEMS_ENV_FILE"
+    );
+    const bootstrap = readFileSync(
+      join(repositoryRoot, "backend/src/scripts/start-windows-service.ts"),
+      "utf8"
+    );
+    expect(bootstrap.indexOf("dotenv.config")).toBeLessThan(
+      bootstrap.indexOf('import("../server")')
+    );
+  });
+});
