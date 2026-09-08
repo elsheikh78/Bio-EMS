@@ -32,7 +32,7 @@ describe("OpeningExperience", () => {
     expect(sessionStorage.getItem(OPENING_SEEN_KEY)).toBe("1");
   });
 
-  it("keeps the opening screen visible for the full five-second default", () => {
+  it("keeps the opening screen visible for the full five-second default", async () => {
     vi.useFakeTimers();
     render(
       <LocalizationProvider language="en">
@@ -42,11 +42,11 @@ describe("OpeningExperience", () => {
       </LocalizationProvider>,
     );
 
-    act(() => vi.advanceTimersByTime(4_999));
+    await act(() => vi.advanceTimersByTimeAsync(4_999));
     expect(screen.getByRole("status")).toBeVisible();
     expect(screen.queryByText("Application ready")).not.toBeInTheDocument();
 
-    act(() => vi.advanceTimersByTime(1));
+    await act(() => vi.advanceTimersByTimeAsync(1));
     expect(screen.getByText("Application ready")).toBeVisible();
   });
 
