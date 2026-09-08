@@ -4,7 +4,7 @@ import { designTokens } from "./tokens";
 
 export function createAppTheme(
   direction: Direction,
-  mode: PaletteMode = "light",
+  mode: PaletteMode = "dark",
 ) {
   const dark = mode === "dark";
   const colors = dark ? designTokens.darkColors : designTokens.colors;
@@ -52,7 +52,19 @@ export function createAppTheme(
         },
       },
       MuiPaper: {
-        styleOverrides: { root: { backgroundImage: "none" } },
+        styleOverrides: {
+          root: {
+            backgroundImage: "none",
+            ...(dark
+              ? {
+                  backdropFilter: "blur(12px)",
+                  backgroundColor: "rgba(8, 31, 44, 0.9)",
+                  boxShadow:
+                    "inset 0 1px rgba(255, 255, 255, 0.025), 0 12px 32px rgba(0, 0, 0, 0.24)",
+                }
+              : {}),
+          },
+        },
       },
       MuiCard: {
         styleOverrides: {
@@ -66,11 +78,23 @@ export function createAppTheme(
       },
       MuiOutlinedInput: {
         styleOverrides: {
-          root: { borderRadius: designTokens.surfaces.controlRadius },
+          root: {
+            borderRadius: designTokens.surfaces.controlRadius,
+            ...(dark ? { backgroundColor: "rgba(3, 20, 31, 0.58)" } : {}),
+          },
         },
       },
       MuiCssBaseline: {
         styleOverrides: {
+          body: dark
+            ? {
+                backgroundAttachment: "fixed",
+                backgroundColor: colors.background,
+                backgroundImage:
+                  "radial-gradient(circle at 92% 12%, rgba(0, 139, 222, 0.18), transparent 30%), linear-gradient(rgba(39, 109, 145, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(39, 109, 145, 0.06) 1px, transparent 1px), linear-gradient(155deg, #030d18 0%, #061a2a 48%, #04111d 100%)",
+                backgroundSize: "auto, 48px 48px, 48px 48px, auto",
+              }
+            : {},
           ":focus-visible": {
             outline: `3px solid ${designTokens.colors.focus}`,
             outlineOffset: 2,
