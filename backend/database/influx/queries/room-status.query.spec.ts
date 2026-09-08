@@ -1,4 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+vi.mock("../client", () => ({
+  influxDB: { getQueryApi: () => ({ queryRows: vi.fn() }) },
+  org: "test-org",
+  bucket: "test-bucket",
+}));
+
 import { buildRoomTelemetryWindowQuery } from "./room-status.query";
 
 describe("room telemetry window query", () => {
