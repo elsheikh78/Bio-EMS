@@ -1,10 +1,13 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { OPENING_SEEN_KEY, OpeningExperience } from "./OpeningExperience";
 
 describe("OpeningExperience", () => {
-  afterEach(() => sessionStorage.clear());
+  afterEach(() => {
+    sessionStorage.clear();
+    vi.useRealTimers();
+  });
 
   it("shows only localized non-customer startup content before mounting protected flows", async () => {
     render(
@@ -27,6 +30,24 @@ describe("OpeningExperience", () => {
       expect(screen.getByText("Protected customer content")).toBeVisible(),
     );
     expect(sessionStorage.getItem(OPENING_SEEN_KEY)).toBe("1");
+  });
+
+  it("keeps the opening screen visible for the full five-second default", () => {
+    vi.useFakeTimers();
+    render(
+      <LocalizationProvider language="en">
+        <OpeningExperience>
+          <div>Application ready</div>
+        </OpeningExperience>
+      </LocalizationProvider>,
+    );
+
+    act(() => vi.advanceTimersByTime(4_999));
+    expect(screen.getByRole("status")).toBeVisible();
+    expect(screen.queryByText("Application ready")).not.toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByText("Application ready")).toBeVisible();
   });
 
   it("does not delay later application mounts in the same browser tab", () => {
