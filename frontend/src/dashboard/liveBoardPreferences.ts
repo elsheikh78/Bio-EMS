@@ -70,10 +70,7 @@ export function writeLiveBoardViewPreferences(
   preferences: LiveBoardViewPreferences,
 ) {
   try {
-    localStorage.setItem(
-      LIVE_BOARD_VIEW_STORAGE_KEY,
-      JSON.stringify(preferences),
-    );
+    localStorage.setItem(LIVE_BOARD_VIEW_STORAGE_KEY, JSON.stringify(preferences));
   } catch {
     // The live board remains usable when browser storage is unavailable.
   }
