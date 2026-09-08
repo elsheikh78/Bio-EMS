@@ -1,12 +1,12 @@
 # BIO-EMS Project State
 
-**State date:** 5 September 2026
+**State date:** 8 September 2026
 
 **Latest published source release:** `v0.20.0` (tag target `e50593ddfda7acd3996d11d1de53c86821cb6c83`)
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 THROUGH DEP-01-05 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-06 WINDOWS RELEASE-CANDIDATE BUILD AND QUALIFICATION IS NEXT.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 THROUGH DEP-01-05 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-06 SOURCE CORRECTIONS AND AN INTERNAL UNSIGNED WINDOWS 10 BUILD EXIST; CLEAN-MACHINE INSTALLER QUALIFICATION, SIGNING AND PUBLICATION REMAIN OPEN.**
 
 ## Current Controlled Continuation
 
@@ -31,6 +31,9 @@
 19. Development, laboratory, UI/UAT and explicitly non-production pilot work may continue before the licensing gate where appropriate.
 20. Licensing design must preserve monitoring continuity: loss of Internet alone must not unexpectedly stop permitted local telemetry/alarm operation.
 21. Keep live-provider, hardware qualification, licensing qualification, installer qualification, production deployment, field Commissioning/UAT and customer acceptance as separate evidence tracks.
+22. The 8 September 2026 installer/UI evidence and exact morning continuation are recorded in `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md`.
+23. Preserve the five-second opening boundary, default dark monitoring mode, corrected Arabic RTL content offset/timestamps, trusted Live Board controls, rolling 24-hour telemetry evidence and persisted local view preferences merged through PR #190 / CI #657 / `92040dfeacefb426e2446abddebdc528c69c3c35`.
+24. Do not execute Fresh Install over a workstation with an unrelated Mosquitto service. PR #183 makes this collision fail closed; qualification must use an isolated clean Windows target.
 
 ## Implemented Software Position
 
@@ -51,6 +54,8 @@
 - DEP-01-03 protected configuration/services: **COMPLETE / MERGED / CI VERIFIED** through PR #179, CI #615 and merge `0d5a4527ab69fa4972f9c2b0a7dc09464e422804`. Three isolated virtual service identities, runtime-generated ACL-protected configuration, local MQTT/InfluxDB initialization and LIC-11 execution under the final Backend identity are implemented at source level. Backend 113 files / 793 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,085 tests. Windows execution and qualification remain open.
 - DEP-01-04 HTTPS/firewall/health: **COMPLETE / MERGED / CI VERIFIED** through PR #180, CI #618 and merge `07c57f2744e75678f572e0450e295877031b5749`. Installer-generated local TLS, combined frontend/API HTTPS on 443, a Domain/Private LocalSubnet Firewall rule and secret-free post-install component health evidence are implemented at source level. Backend 113 files / 796 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,088 tests. Windows execution and qualification remain open.
 - DEP-01-05 lifecycle recovery: **COMPLETE / MERGED / CI VERIFIED** through PR #181, CI #621 and merge `dbb5595ec0c6e0ec8a7b20daa1bddda5a8463ad6`. Verified pre-update application/data/licensing backup, health-gated restore and retained-data Uninstall are implemented at source level. Backend 113 files / 799 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,091 tests. Windows execution and qualification remain open.
+- DEP-01-06 internal build preparation: **PARTIAL WINDOWS EVIDENCE / NOT QUALIFIED**. The single-EXE embedded archive correction passed PR #182 / CI #624 / merge `d0b4806197d90fb4fa3d2bd26ebb05afa65efa4a`. Mosquitto collision protection passed PR #183 / CI #627 / merge `c4f19879338090f8887ba18371367ad3f19cf9e1`. Deterministic staging, source validation and Inno Setup 6.7.3 compilation produced an unsigned internal Windows 10 x64 artifact; clean-machine execution, service/HTTPS/reboot/recovery/uninstall evidence, signing and release publication remain open.
+- Post-v0.20.0 UI/operations continuation: **MERGED / CI VERIFIED THROUGH PR #190**. RTL/timestamps, dark theme, five-second opening, Live Board controls, configured evidence, rolling 24-hour telemetry trends and persisted view preferences are on `main` through `92040dfeacefb426e2446abddebdc528c69c3c35`. Visual screenshot acceptance remains separate.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
 
@@ -102,9 +107,10 @@ Physical controller/hardware qualification, live SMS evidence, WhatsApp provider
 
 ## Next-Session Start Point
 
-1. Reconcile local Windows `main` with GitHub `main` and confirm a clean working tree.
-2. Read this file, `IMPLEMENTATION_PLAN.md`, the UI/UX work package, the UI/UX visual freeze, and `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
-3. Confirm LIC-11 through LIC-13 PR/CI/merge evidence and reconcile the local branch.
-4. Start DEP-01 implementation from the approved installer plan and LIC-11 machine-readable contract.
-5. Do not qualify the final Production Installer before the licensing gate passes.
-6. Do not claim UI/UX implementation, licensing implementation, installer qualification, physical receipt, Commissioning, provider acceptance or customer acceptance without actual evidence.
+1. Reconcile the local Windows working copy with GitHub `main`; confirm clean status and matching local/remote SHAs.
+2. Read `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md`, this file and `IMPLEMENTATION_PLAN.md`.
+3. Preserve the current development workstation and its unrelated Mosquitto service; use an isolated clean Windows 10/11 x64 target for installer qualification.
+4. Verify the unsigned internal Setup SHA-256, then execute Fresh Install and capture service, port, HTTPS/API health and secret-free licensing-receipt evidence.
+5. Reboot and verify recovery; then test Repair/Upgrade rollback and retained-data Uninstall.
+6. Review newly merged customer/SYSTEM_OWNER UI in Arabic/English and light/dark modes, capture screenshots and open focused fixes for actual defects.
+7. Keep signing, a future version/release, licensing qualification, provider/hardware/field/UAT/customer acceptance as explicit later decisions and distinct evidence gates.
