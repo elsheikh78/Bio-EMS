@@ -1,6 +1,6 @@
 # DEP-01-04 HTTPS, Firewall and Post-Install Health
 
-**Status:** Source implemented; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified through PR #180 and CI #618
 **Target:** Windows 11 Pro x64 fresh installation
 
 ## Delivered

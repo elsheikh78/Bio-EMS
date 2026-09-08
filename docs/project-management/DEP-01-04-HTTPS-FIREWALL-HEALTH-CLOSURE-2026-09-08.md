@@ -2,7 +2,7 @@
 
 **Date:** 8 September 2026
 **Branch:** `agent/dep-01-04-https-health`
-**Status:** IMPLEMENTED LOCALLY / PR AND CI PENDING
+**Status:** COMPLETE / MERGED / CI VERIFIED
 
 ## Implementation
 
@@ -18,7 +18,9 @@
 - Backend typecheck/build/lint/format and 113 test files / 796 tests: PASS.
 - Frontend typecheck/lint/format, 51 test files / 292 tests and production build: PASS.
 - Automated total: 164 files / 1,088 tests.
-- GitHub PR/CI/merge: pending.
+- GitHub PR #180: merged.
+- GitHub Actions CI #618: PASS.
+- Merge commit: `07c57f2744e75678f572e0450e295877031b5749`.
 
 ## Handoff
 
