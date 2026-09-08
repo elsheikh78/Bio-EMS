@@ -4,11 +4,10 @@ import { COLOR_MODE_STORAGE_KEY, ColorModeContext } from "./colorMode";
 
 function storedMode(): PaletteMode {
   try {
-    return localStorage.getItem(COLOR_MODE_STORAGE_KEY) === "dark"
-      ? "dark"
-      : "light";
+    const stored = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
+    return stored === "light" || stored === "dark" ? stored : "dark";
   } catch {
-    return "light";
+    return "dark";
   }
 }
 
