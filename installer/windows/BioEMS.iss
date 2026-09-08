@@ -1,0 +1,52 @@
+#ifndef StageRoot
+  #error StageRoot must point to a validated DEP-01 staging directory
+#endif
+#ifndef ProductVersion
+  #error ProductVersion must be supplied by the controlled build
+#endif
+
+#define ProductName "BIO-EMS"
+
+[Setup]
+AppId={{7F182A31-C831-4CCF-965B-BF40A54D14C3}
+AppName={#ProductName}
+AppVersion={#ProductVersion}
+DefaultDirName={autopf}\BIO-EMS
+DefaultGroupName=BIO-EMS
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+PrivilegesRequired=admin
+OutputDir={#StageRoot}\output
+OutputBaseFilename=BIO-EMS-Setup-{#ProductVersion}-x64
+Compression=lzma2/max
+SolidCompression=yes
+WizardStyle=modern dynamic windows11
+UseSetupLdr=x64
+RedirectionGuard=yes
+Uninstallable=yes
+SetupLogging=yes
+CloseApplications=yes
+RestartApplications=no
+
+[Dirs]
+Name: "{commonappdata}\BIO-EMS"; Permissions: users-readexec
+Name: "{commonappdata}\BIO-EMS\data"
+Name: "{commonappdata}\BIO-EMS\logs"
+Name: "{commonappdata}\BIO-EMS\backups"
+Name: "{commonappdata}\BIO-EMS\licensing"
+
+[Files]
+Source: "{#StageRoot}\package-manifest.json"; DestDir: "{app}\manifest"; Flags: ignoreversion notimestamp
+Source: "{#StageRoot}\payload\backend.zip"; DestDir: "{app}\backend"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
+Source: "{#StageRoot}\payload\frontend.zip"; DestDir: "{app}\frontend"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
+Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; DestDir: "{app}\runtime\node"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
+Source: "{#StageRoot}\payload\influxdb2-2.9.1-windows_amd64.zip"; DestDir: "{app}\runtime\influxdb"; Flags: extractarchive recursesubdirs createallsubdirs ignoreversion notimestamp
+Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
+Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
+
+[Icons]
+Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
+Name: "{commondesktop}\BIO-EMS"; Filename: "https://localhost/"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "Create a BIO-EMS desktop shortcut"

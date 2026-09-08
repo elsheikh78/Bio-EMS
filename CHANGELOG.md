@@ -9,6 +9,7 @@
 - Implemented LIC-07 through LIC-10: same-Site device authorization, offline validation/grace evidence, audited revoke/transfer lifecycle, and a bilingual SYSTEM_OWNER licensing-governance summary with recent audit history.
 - Implemented LIC-11 through LIC-13 source protection: create-only installer identity provisioning, anti-copy/tamper negative qualification, and controlled signing-key generation/rotation/backup/recovery operations. DEP-01 clean-machine installer qualification remains separate.
 - Started DEP-01 with a Windows 11 x64/Inno Setup package contract and a fail-closed staged-payload validator covering the exact application/runtime inventory, SHA-256 integrity, redistribution evidence and forbidden secret/identity payloads.
+- Implemented DEP-01-02 source: exact Node.js/Mosquitto/InfluxDB/WinSW input locks, checksum-enforcing acquisition, deterministic application staging, pinned commercial Inno Setup build gate, initial Setup source and hash-based build evidence. Setup execution and clean-machine qualification remain open.
 
 ## [0.20.0] - 2026-09-07
 
