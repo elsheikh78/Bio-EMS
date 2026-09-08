@@ -137,7 +137,7 @@ describe("LiveBoardPage", () => {
     expect(screen.getAllByText("25%")).toHaveLength(5);
 
     await user.click(
-      screen.getByRole("checkbox", {
+      screen.getByRole("switch", {
         name: englishResources.liveBoard.alarmFocus,
       }),
     );
