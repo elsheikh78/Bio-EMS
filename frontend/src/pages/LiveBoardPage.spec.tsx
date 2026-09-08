@@ -23,7 +23,7 @@ const rooms = [
     temperatureLast24Hours: {
       min: 3.2,
       max: 4.8,
-      trend: [3.2, 3.6, 4, 3.8, 4.8],
+      trend: [3.2, 3.6, 4, 3.8, 4.8] as number[],
     },
     humidity: 50,
     temperatureStatus: "NORMAL",
