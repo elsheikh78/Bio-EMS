@@ -6,7 +6,7 @@
 
 **Current source-software version:** `0.20.0`
 
-**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 THROUGH DEP-01-04 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-05 LIFECYCLE RECOVERY IS IMPLEMENTED LOCALLY; PR/CI/MERGE ARE PENDING.**
+**Current phase:** **SOURCE RELEASE v0.20.0 IS PUBLISHED. LIC-01 THROUGH LIC-13 AND DEP-01-01 THROUGH DEP-01-05 ARE COMPLETE / MERGED / CI VERIFIED. DEP-01-06 WINDOWS RELEASE-CANDIDATE BUILD AND QUALIFICATION IS NEXT.**
 
 ## Current Controlled Continuation
 
@@ -50,7 +50,7 @@
 - DEP-01-02 input freeze/build source: **COMPLETE / MERGED / CI VERIFIED** through PR #178, CI #612 and merge `cb45456fe2a53c286cd101f79d428312eaf13847`. Exact vendor versions and SHA-256 values, deterministic staging, pinned Inno Setup 6.7.3 compilation and build-evidence generation are implemented. Backend 113 files / 789 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,081 tests. Service lifecycle, Setup execution and clean-machine qualification remain open.
 - DEP-01-03 protected configuration/services: **COMPLETE / MERGED / CI VERIFIED** through PR #179, CI #615 and merge `0d5a4527ab69fa4972f9c2b0a7dc09464e422804`. Three isolated virtual service identities, runtime-generated ACL-protected configuration, local MQTT/InfluxDB initialization and LIC-11 execution under the final Backend identity are implemented at source level. Backend 113 files / 793 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,085 tests. Windows execution and qualification remain open.
 - DEP-01-04 HTTPS/firewall/health: **COMPLETE / MERGED / CI VERIFIED** through PR #180, CI #618 and merge `07c57f2744e75678f572e0450e295877031b5749`. Installer-generated local TLS, combined frontend/API HTTPS on 443, a Domain/Private LocalSubnet Firewall rule and secret-free post-install component health evidence are implemented at source level. Backend 113 files / 796 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,088 tests. Windows execution and qualification remain open.
-- DEP-01-05 lifecycle recovery: **IMPLEMENTED LOCALLY / PR AND CI PENDING**. Verified pre-update application/data/licensing backup, health-gated restore and retained-data Uninstall are implemented at source level. Backend 113 files / 799 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,091 tests. Windows execution and qualification remain open.
+- DEP-01-05 lifecycle recovery: **COMPLETE / MERGED / CI VERIFIED** through PR #181, CI #621 and merge `dbb5595ec0c6e0ec8a7b20daa1bddda5a8463ad6`. Verified pre-update application/data/licensing backup, health-gated restore and retained-data Uninstall are implemented at source level. Backend 113 files / 799 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,091 tests. Windows execution and qualification remain open.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
 

@@ -1,6 +1,6 @@
 # DEP-01-05 Lifecycle Recovery
 
-**Status:** Source implemented; PR/CI/merge evidence pending
+**Status:** Complete / merged / CI verified through PR #181 and CI #621
 
 Existing installations now take a pre-update snapshot before Setup overwrites files.
 The snapshot covers the immutable application and the persistent `config`, `data` and
