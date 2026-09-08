@@ -1,3 +1,4 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -39,9 +40,11 @@ export function LiveBoardPage() {
   const [fullScreen, setFullScreen] = useState(false);
 
   useEffect(() => {
-    const onFullScreenChange = () => setFullScreen(Boolean(document.fullscreenElement));
+    const onFullScreenChange = () =>
+      setFullScreen(Boolean(document.fullscreenElement));
     document.addEventListener("fullscreenchange", onFullScreenChange);
-    return () => document.removeEventListener("fullscreenchange", onFullScreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", onFullScreenChange);
   }, []);
 
   const rooms = useMemo(() => query.data ?? [], [query.data]);
@@ -74,7 +77,9 @@ export function LiveBoardPage() {
     { NORMAL: 0, WARNING: 0, ALARM: 0, OFFLINE: 0 },
   );
   const healthyPercent =
-    rooms.length === 0 ? 0 : Math.round((counts.NORMAL / rooms.length) * 1000) / 10;
+    rooms.length === 0
+      ? 0
+      : Math.round((counts.NORMAL / rooms.length) * 1000) / 10;
   const latestUpdate = rooms
     .map((room) => room.lastUpdate)
     .filter((value): value is string => Boolean(value))
@@ -93,7 +98,10 @@ export function LiveBoardPage() {
     return (
       <Stack spacing={3}>
         <PageHeading title={copy.title} description={copy.description} />
-        <Box role="status" sx={{ alignItems: "center", display: "flex", gap: 2 }}>
+        <Box
+          role="status"
+          sx={{ alignItems: "center", display: "flex", gap: 2 }}
+        >
           <CircularProgress size={24} />
           <Typography>{copy.loading}</Typography>
         </Box>
@@ -107,7 +115,11 @@ export function LiveBoardPage() {
         <PageHeading title={copy.title} description={copy.description} />
         <Alert
           action={
-            <Button color="inherit" onClick={() => void query.refetch()} size="small">
+            <Button
+              color="inherit"
+              onClick={() => void query.refetch()}
+              size="small"
+            >
               {copy.retry}
             </Button>
           }
@@ -157,7 +169,9 @@ export function LiveBoardPage() {
                     height: 8,
                     width: 8,
                     "@keyframes bioems-live-pulse": {
-                      "0%, 100%": { boxShadow: "0 0 0 0 rgba(84, 213, 154, .55)" },
+                      "0%, 100%": {
+                        boxShadow: "0 0 0 0 rgba(84, 213, 154, .55)",
+                      },
                       "50%": { boxShadow: "0 0 0 7px rgba(84, 213, 154, 0)" },
                     },
                   }}
@@ -309,7 +323,9 @@ export function LiveBoardPage() {
               value={density}
               aria-label={copy.density}
             >
-              <ToggleButton value="comfortable">{copy.comfortable}</ToggleButton>
+              <ToggleButton value="comfortable">
+                {copy.comfortable}
+              </ToggleButton>
               <ToggleButton value="compact">{copy.compact}</ToggleButton>
             </ToggleButtonGroup>
             <Box sx={{ alignItems: "center", display: "flex", px: 1 }}>
@@ -323,7 +339,9 @@ export function LiveBoardPage() {
           </Box>
         </Paper>
 
-        {rooms.length === 0 ? <Alert severity="info">{copy.empty}</Alert> : null}
+        {rooms.length === 0 ? (
+          <Alert severity="info">{copy.empty}</Alert>
+        ) : null}
         {rooms.length > 0 && visibleRooms.length === 0 ? (
           <Alert severity="info">{copy.noMatches}</Alert>
         ) : null}
@@ -545,7 +563,9 @@ function AreaCard({
               lineHeight: 1.1,
             }}
           >
-            {room.temperature === null ? copy.unavailable : `${room.temperature} °C`}
+            {room.temperature === null
+              ? copy.unavailable
+              : `${room.temperature} °C`}
           </Typography>
         </Box>
 
@@ -558,9 +578,14 @@ function AreaCard({
         >
           <Reading
             label={copy.humidity}
-            value={room.humidity === null ? copy.unavailable : `${room.humidity} %`}
+            value={
+              room.humidity === null ? copy.unavailable : `${room.humidity} %`
+            }
           />
-          <Reading label={copy.activeAlarms} value={String(room.activeAlarms)} />
+          <Reading
+            label={copy.activeAlarms}
+            value={String(room.activeAlarms)}
+          />
         </Box>
 
         <Box
@@ -628,7 +653,11 @@ function Timestamp({
   }
 
   return (
-    <Box component="bdi" dir="ltr" sx={{ display: "inline", unicodeBidi: "isolate" }}>
+    <Box
+      component="bdi"
+      dir="ltr"
+      sx={{ display: "inline", unicodeBidi: "isolate" }}
+    >
       {display}
     </Box>
   );
