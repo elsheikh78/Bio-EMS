@@ -152,9 +152,12 @@ describe("responsive application shell", () => {
     });
     const drawer = navigation.closest(".MuiDrawer-paper");
 
+    const main = screen.getByRole("main");
+
     expect(getComputedStyle(drawer as HTMLElement).right).toBe("0px");
-    expect(screen.getByTestId("app-shell")).toHaveStyle({
-      flexDirection: "row-reverse",
+    expect(main).toHaveStyle({
+      marginInlineStart: "248px",
+      width: "calc(100% - 248px)",
     });
   });
 
