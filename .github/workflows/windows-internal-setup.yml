@@ -142,13 +142,20 @@ jobs:
           Import-Certificate -FilePath $certificatePath -CertStoreLocation "Cert:\CurrentUser\Root" | Out-Null
           Import-Certificate -FilePath $certificatePath -CertStoreLocation "Cert:\CurrentUser\TrustedPublisher" | Out-Null
 
-          $signed = Set-AuthenticodeSignature `
-            -LiteralPath $setup.FullName `
-            -Certificate $certificate `
-            -HashAlgorithm SHA256
-          if ($signed.Status -ne "Valid") {
-            throw "Pilot Setup Authenticode signing failed: $($signed.Status)"
+          $signTool = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Windows Kits\10\bin" `
+            -Filter "signtool.exe" -File -Recurse |
+            Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if ($null -eq $signTool) {
+            throw "Windows SDK SignTool was not found"
           }
+          & $signTool.FullName sign /fd SHA256 /sha1 $certificate.Thumbprint /s My $setup.FullName
+          if ($LASTEXITCODE -ne 0) {
+            throw "Pilot Setup Authenticode signing failed"
+          }
+          & $signTool.FullName verify /pa /v $setup.FullName
+          if ($LASTEXITCODE -ne 0) { throw "SignTool could not verify the pilot Setup" }
           $signature = Get-AuthenticodeSignature -LiteralPath $setup.FullName
           if ($signature.Status -ne "Valid" -or $signature.SignerCertificate.Thumbprint -ne $certificate.Thumbprint) {
             throw "Pilot Setup signature verification failed"
