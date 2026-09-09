@@ -11,6 +11,7 @@ Historical P0-P8 software closure/evidence remains authoritative for completed s
 - P0-P7: completed/merged/CI verified according to existing closure records.
 - P8-01 WhatsApp/Email source delivery: software complete; Email live end-to-end Critical Alarm evidence passed on 9 September 2026; WhatsApp live evidence remains externally blocked by Meta.
 - P8-01A Telegram: source complete/merged/CI verified; live bot and end-to-end Critical Alarm delivery evidence passed on 9 September 2026. Evidence: `docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md`.
+- Alarm acknowledgment/recovery lifecycle: corrected through PR #196 / CI #680 / merge `13635eb9304b6c6daf3652d2ac055e1498bb2537`; live evidence confirms acknowledged Alarm #9 recovered on a normal 5 °C reading without losing acknowledgment evidence.
 - P8-02 through P8-08: source complete/merged/CI verified.
 - Global Arabic/English localization: complete/merged/CI verified.
 - RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.

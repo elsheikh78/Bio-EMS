@@ -35,6 +35,21 @@ The first orchestration attempt created no delivery jobs because the escalation 
 
 User-account RBAC roles and notification-recipient roles are distinct domains; an application User role does not replace escalation recipient-role matching.
 
+## Acknowledgment and recovery lifecycle evidence
+
+The same live Alarm exposed a lifecycle gap: after acknowledgment, a normal reading did not initially recover the Alarm because repository open/recovery predicates recognized only `TRIGGERED`. PR #196 corrected the open lifecycle to include both `TRIGGERED` and `ACKNOWLEDGED` until recovery.
+
+Verification after merge `13635eb9304b6c6daf3652d2ac055e1498bb2537`:
+
+1. Alarm `#9` had been acknowledged after successful Email and Telegram delivery.
+2. A valid normal telemetry reading of `5 °C` was accepted for the same Sensor.
+3. Alarm `#9` transitioned from `ACKNOWLEDGED` to `RECOVERED`.
+4. The History summary changed from 7 acknowledged / 2 recovered to 6 acknowledged / 3 recovered.
+5. Active and Critical counts remained zero.
+6. Repository regression coverage verifies that an acknowledged Alarm remains open, does not create a duplicate lifecycle, recovers on a normal reading, and preserves its acknowledgment timestamp/user evidence.
+
+**Result:** PASSED — live acknowledgment-to-recovery behavior verified after PR #196 / CI #680.
+
 ## Security and evidence boundaries
 
 - No Telegram bot token, Chat ID, Email address, SMTP password, provider secret, or message body containing personal data is recorded here.
