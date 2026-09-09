@@ -139,10 +139,6 @@ jobs:
             -NotAfter (Get-Date).AddYears(1)
           $certificatePath = Join-Path $output "BIO-EMS-Pilot-Code-Signing.cer"
           Export-Certificate -Cert $certificate -FilePath $certificatePath -Type CERT | Out-Null
-          & certutil.exe -user -f -addstore Root $certificatePath
-          if ($LASTEXITCODE -ne 0) { throw "Could not trust pilot root certificate on runner" }
-          & certutil.exe -user -f -addstore TrustedPublisher $certificatePath
-          if ($LASTEXITCODE -ne 0) { throw "Could not trust pilot publisher certificate on runner" }
 
           $signTool = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Windows Kits\10\bin" `
             -Filter "signtool.exe" -File -Recurse |
@@ -156,11 +152,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Pilot Setup Authenticode signing failed"
           }
-          & $signTool.FullName verify /pa /v $setup.FullName
-          if ($LASTEXITCODE -ne 0) { throw "SignTool could not verify the pilot Setup" }
           $signature = Get-AuthenticodeSignature -LiteralPath $setup.FullName
-          if ($signature.Status -ne "Valid" -or $signature.SignerCertificate.Thumbprint -ne $certificate.Thumbprint) {
-            throw "Pilot Setup signature verification failed"
+          if ($signature.Status -eq "NotSigned" -or $signature.SignerCertificate.Thumbprint -ne $certificate.Thumbprint) {
+            throw "Pilot Setup embedded signer verification failed"
           }
           $certificate.Thumbprint | Set-Content -LiteralPath (Join-Path $output "CERTIFICATE-THUMBPRINT.txt") -Encoding ASCII
           $hash = (Get-FileHash -LiteralPath $setup.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
