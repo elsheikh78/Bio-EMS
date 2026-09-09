@@ -91,13 +91,17 @@ describe("AlarmRepository", () => {
 
     expect(repository.acknowledgeAlarm(id, firstUserId)).toBe(true);
     const firstAudit = database
-      .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+      .prepare(
+        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
+      )
       .get(id);
 
     expect(repository.acknowledgeAlarm(id, secondUserId)).toBe(false);
     expect(
       database
-        .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+        .prepare(
+        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
+      )
         .get(id)
     ).toEqual(firstAudit);
   });
@@ -186,7 +190,9 @@ describe("AlarmRepository", () => {
 
     expect(repository.acknowledgeAlarm(id, userId)).toBe(true);
     const acknowledgment = database
-      .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+      .prepare(
+        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
+      )
       .get(id);
 
     expect(repository.recoverAlarm(id)).toBe(true);
@@ -198,7 +204,9 @@ describe("AlarmRepository", () => {
     });
     expect(
       database
-        .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+        .prepare(
+        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
+      )
         .get(id)
     ).toEqual(acknowledgment);
   });
