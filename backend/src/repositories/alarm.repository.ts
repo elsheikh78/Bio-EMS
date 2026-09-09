@@ -122,7 +122,7 @@ export class AlarmRepository {
 
             WHERE id = ?
 
-              AND status != 'RECOVERED'
+              AND status = 'TRIGGERED'
 
         `);
 
