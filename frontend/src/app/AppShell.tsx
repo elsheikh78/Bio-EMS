@@ -107,6 +107,7 @@ export function AppShell() {
               bgcolor: designTokens.colors.navigation,
               color: designTokens.colors.navigationText,
               border: 0,
+              overflow: "hidden",
             },
           }}
           variant="permanent"
@@ -127,6 +128,7 @@ export function AppShell() {
                 width: navigationWidth,
                 bgcolor: designTokens.colors.navigation,
                 color: designTokens.colors.navigationText,
+                overflow: "hidden",
               },
             },
           }}
