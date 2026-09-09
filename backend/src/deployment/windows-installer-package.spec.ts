@@ -277,6 +277,7 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
     expect(workflow).toContain("New-SelfSignedCertificate");
+    expect(workflow).toContain("certutil.exe -user -f -addstore Root");
     expect(workflow).toContain('Filter "signtool.exe"');
     expect(workflow).toContain("sign /fd SHA256 /sha1 $certificate.Thumbprint /s My");
     expect(workflow).toContain("verify /pa /v");
