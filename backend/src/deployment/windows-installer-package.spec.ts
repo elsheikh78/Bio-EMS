@@ -112,8 +112,8 @@ describe("DEP-01-02 frozen inputs and build source", () => {
 
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
     const script = readFileSync(join(repositoryRoot, "installer/windows/Build-Setup.ps1"), "utf8");
-    expect(script).toContain("Inno Setup compiler must be version 6.7.3");
-    expect(script).toContain('Join-Path $compilerDirectory "Compil32.exe"');
+    expect(script).toContain("Inno Setup compiler must have verified 6.7.3 package evidence");
+    expect(script).toContain("CompilerPackageEvidence");
     expect(script).toContain("CommercialLicenseEvidence");
     expect(script).toContain("validate:windows-installer");
     expect(script).toContain("setupSha256");
@@ -272,6 +272,7 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732");
     expect(workflow).toContain("Get-FileHash -LiteralPath $download -Algorithm SHA256");
     expect(workflow).toContain("BIOEMS_INNO_COMPILER=$compiler");
+    expect(workflow).toContain("BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence");
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
