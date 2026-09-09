@@ -1,6 +1,6 @@
 # BIO-EMS Project State
 
-**State date:** 8 September 2026
+**State date:** 9 September 2026
 
 **Latest published source release:** `v0.20.0` (tag target `e50593ddfda7acd3996d11d1de53c86821cb6c83`)
 
@@ -24,7 +24,7 @@
 12. UX-08 is complete through PR #170, CI #589 and merge `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`: isolated SYSTEM_OWNER login/console, customer fleet, commercial tables and P8 installation lifecycle surfaces are visually reconciled with explicit operational states and responsive behavior. Platform authentication, tenant/RBAC and installation/receipt/technical/customer acceptance boundaries remain unchanged. UX-09 is next.
 13. UX-09 is complete through PR #171, CI #592 and merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`: Backend 106 files/755 tests and Frontend 51 files/292 tests pass with typecheck/build/lint/format gates. Source release `v0.20.0` was prepared through PR #172 / CI #594 and published from tag target `e50593ddfda7acd3996d11d1de53c86821cb6c83` after explicit Owner approval.
 14. Do not invent a second Monitored Area backend domain. The controlled domain remains `Site -> Monitored Area (Room) -> Sensor`.
-15. Preserve passed Email SMTP evidence. Meta WhatsApp remains externally blocked; Telegram live bot/end-to-end evidence remains open unless separately executed and documented.
+15. Preserve passed Email and Telegram live end-to-end Alarm-delivery evidence recorded on 9 September 2026. Meta WhatsApp remains externally blocked; SMS live evidence remains open.
 16. DEP-01 Full Offline Windows Installer remains approved later scope and is not yet implemented/qualified.
 17. Site-Bound Licensing / Anti-Cloning is now an approved mandatory production gate. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
 18. LIC-01 through LIC-13 must be implemented and evidenced before DEP-01 can be declared the final Production Installer and before any commercial/customer production deployment is declared production-ready.
@@ -38,8 +38,8 @@
 ## Implemented Software Position
 
 - P0-P7 software/product closure remains valid.
-- P8-01 WhatsApp/Email source delivery is complete; Email live evidence passed; WhatsApp live evidence remains blocked by Meta.
-- P8-01A Telegram source delivery is complete/merged/CI verified; live bot and end-to-end evidence remain open.
+- P8-01 WhatsApp/Email source delivery is complete; Email live end-to-end evidence passed on 9 September 2026; WhatsApp live evidence remains blocked by Meta.
+- P8-01A Telegram source delivery is complete/merged/CI verified; live bot and end-to-end Critical Alarm delivery evidence passed on 9 September 2026.
 - P8-02 through P8-08 SYSTEM_OWNER installation provisioning/RBAC source work is complete/merged/CI verified.
 - Global customer and SYSTEM_OWNER Arabic/English localization is complete/merged/CI verified.
 - RTL navigation drawer correction is merged on `main` at `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
@@ -55,6 +55,7 @@
 - DEP-01-04 HTTPS/firewall/health: **COMPLETE / MERGED / CI VERIFIED** through PR #180, CI #618 and merge `07c57f2744e75678f572e0450e295877031b5749`. Installer-generated local TLS, combined frontend/API HTTPS on 443, a Domain/Private LocalSubnet Firewall rule and secret-free post-install component health evidence are implemented at source level. Backend 113 files / 796 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,088 tests. Windows execution and qualification remain open.
 - DEP-01-05 lifecycle recovery: **COMPLETE / MERGED / CI VERIFIED** through PR #181, CI #621 and merge `dbb5595ec0c6e0ec8a7b20daa1bddda5a8463ad6`. Verified pre-update application/data/licensing backup, health-gated restore and retained-data Uninstall are implemented at source level. Backend 113 files / 799 tests and Frontend 51 files / 292 tests pass; total 164 files / 1,091 tests. Windows execution and qualification remain open.
 - DEP-01-06 internal build preparation: **PARTIAL WINDOWS EVIDENCE / NOT QUALIFIED**. The single-EXE embedded archive correction passed PR #182 / CI #624 / merge `d0b4806197d90fb4fa3d2bd26ebb05afa65efa4a`. Mosquitto collision protection passed PR #183 / CI #627 / merge `c4f19879338090f8887ba18371367ad3f19cf9e1`. Deterministic staging, source validation and Inno Setup 6.7.3 compilation produced an unsigned internal Windows 10 x64 artifact; clean-machine execution, service/HTTPS/reboot/recovery/uninstall evidence, signing and release publication remain open.
+- Email and Telegram live Alarm delivery: **END-TO-END EVIDENCE PASSED 9 SEPTEMBER 2026**. The controlled MQTT -> telemetry acceptance -> InfluxDB write -> Critical Alarm -> Site-scoped escalation -> durable Email/Telegram delivery path completed successfully with both providers SENT on attempt 1/5 and actual receipt confirmed. Evidence: `docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md`.
 - Post-v0.20.0 UI/operations continuation: **MERGED / CI VERIFIED THROUGH PR #190**. RTL/timestamps, dark theme, five-second opening, Live Board controls, configured evidence, rolling 24-hour telemetry trends and persisted view preferences are on `main` through `92040dfeacefb426e2446abddebdc528c69c3c35`. Visual screenshot acceptance remains separate.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
@@ -103,7 +104,7 @@ Required work packages:
 
 ## External Evidence Still Open
 
-Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, Telegram live/end-to-end acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, Windows installer licensing integration/clean-machine qualification, final installer qualification, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
+Physical controller/hardware qualification, live SMS evidence, WhatsApp provider acceptance, deployed MQTT/recovery evidence, endurance, production backup/restore/rollback/DR execution, BIO EGYPT physical installation/calibration/commissioning, Windows installer licensing integration/clean-machine qualification, final installer qualification, customer UAT/Quality sign-off and production/customer acceptance remain separate gates unless actual evidence is recorded.
 
 ## Next-Session Start Point
 

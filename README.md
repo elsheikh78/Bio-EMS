@@ -37,7 +37,7 @@ Enterprise Environmental Monitoring System for pharmaceutical cold rooms, wareho
 
 - **P0:** software complete / merged / CI verified.
 - **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
-- **P2:** software complete / merged / CI verified; physical controller }÷æÚ$z{-®éÜj×d by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` evidence remain open.
+- **P2:** software complete / merged / CI verified; physical controller }÷æÚ$z{-®éÜj×d by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` Critical Alarm delivery evidence passed on 9 September 2026; WhatsApp remains blocked by Meta.
 - **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
 - **UI/UX UX-01 through UX-09:** product refresh implementation and full repository regression complete / merged / CI verified through PR #171 / CI #592 / merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`; the verified matrix covers 157 test files and 1,047 tests.
 
@@ -124,7 +124,7 @@ No separate Monitoring Point or Asset backend domain is currently claimed.
 
 Repository CI can establish source-software completion. It does not establish physical installation or operational acceptance.
 
-Still requiring external evidence include physical controller/hardware validation, live SIM800L delivery, deployed MQTT/endurance tests, the controlled 72-hour hardware gate where required, BIO EGYPT installation/calibration/commissioning, customer/Quality UAT, sign-off, and production acceptance.
+Still requiring external evidence include physical controller/hardware validation, live SIM800L delivery, WhatsApp provider acceptance, deployed MQTT/endurance tests, the controlled 72-hour hardware gate where required, BIO EGYPT installation/calibration/commissioning, customer/Quality UAT, sign-off, and production acceptance.
 
 Payment/invoicing integration and live remote OTA/update execution are also not implied by P5/P7 unless separately implemented and verified.
 
