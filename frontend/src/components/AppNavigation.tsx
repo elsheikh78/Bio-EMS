@@ -28,8 +28,28 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
   );
 
   return (
-    <nav aria-label={label}>
-      <Box sx={{ px: 4, pt: 5, pb: 4 }}>
+    <Box
+      component="nav"
+      aria-label={label}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        minHeight: 0,
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          bgcolor: designTokens.colors.navigation,
+          flexShrink: 0,
+          px: 4,
+          pt: 5,
+          pb: 4,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -48,82 +68,88 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
           {language === "ar" ? "المراقبة البيئية" : "ENVIRONMENTAL MONITORING"}
         </Typography>
       </Box>
-      <Box sx={{ mx: 4, mb: 5, p: 4, borderRadius: 3, bgcolor: "#0B4A5D" }}>
-        <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1 }}>
-          {language === "ar" ? "العميل / النطاق" : "CUSTOMER / SCOPE"}
-        </Typography>
-        <Typography
-          sx={{ color: "white", fontSize: 13, fontWeight: 700, mt: 1 }}
-        >
-          BIO EGYPT
-        </Typography>
-      </Box>
-      <List sx={{ px: 3, pb: 6 }}>
-        {permittedItems.map((item, index) => {
-          const showGroup =
-            index === 0 || permittedItems[index - 1]?.group !== item.group;
-          return (
-            <Fragment key={item.id}>
-              {showGroup ? (
-                <Typography
-                  component="li"
-                  sx={{
-                    color: "#77A9B0",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: 1.2,
-                    px: 3.5,
-                    pt: index === 0 ? 0 : 5,
-                    pb: 2,
-                  }}
-                >
-                  {item.group === "overview"
-                    ? language === "ar"
-                      ? "نظرة عامة"
-                      : "OVERVIEW"
-                    : language === "ar"
-                      ? "الإدارة"
-                      : "ADMINISTRATION"}
-                </Typography>
-              ) : null}
-              <ListItem disablePadding key={item.id}>
-                <ListItemButton
-                  component={NavLink}
-                  end={item.path === "/"}
-                  onClick={onNavigate}
-                  sx={{
-                    minHeight: 44,
-                    mb: 1,
-                    borderRadius: 2.25,
-                    color: designTokens.colors.navigationText,
-                    borderInlineStart: "4px solid transparent",
-                    "&.active": {
-                      bgcolor: designTokens.colors.navigationActive,
-                      borderInlineStartColor: "#6EE7DF",
-                      color: "white",
+      <Box
+        sx={{ minHeight: 0, overflowY: "auto", overscrollBehavior: "contain" }}
+      >
+        <Box sx={{ mx: 4, mb: 5, p: 4, borderRadius: 3, bgcolor: "#0B4A5D" }}>
+          <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1 }}>
+            {language === "ar" ? "العميل / النطاق" : "CUSTOMER / SCOPE"}
+          </Typography>
+          <Typography
+            sx={{ color: "white", fontSize: 13, fontWeight: 700, mt: 1 }}
+          >
+            BIO EGYPT
+          </Typography>
+        </Box>
+        <List sx={{ px: 3, pb: 6 }}>
+          {permittedItems.map((item, index) => {
+            const showGroup =
+              index === 0 || permittedItems[index - 1]?.group !== item.group;
+            return (
+              <Fragment key={item.id}>
+                {showGroup ? (
+                  <Typography
+                    component="li"
+                    sx={{
+                      color: "#77A9B0",
+                      fontSize: 10,
                       fontWeight: 700,
-                    },
-                    "&:hover": { bgcolor: designTokens.colors.navigationHover },
-                    "&:focus-visible": {
-                      outline: "3px solid",
-                      outlineColor: "primary.main",
-                      outlineOffset: -3,
-                    },
-                  }}
-                  to={item.path}
-                >
-                  <NavigationIcon id={item.id} />
-                  <ListItemText
-                    primary={resources.navigation[item.labelKey]}
-                    slotProps={{ primary: { sx: { fontWeight: "inherit" } } }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </Fragment>
-          );
-        })}
-      </List>
-    </nav>
+                      letterSpacing: 1.2,
+                      px: 3.5,
+                      pt: index === 0 ? 0 : 5,
+                      pb: 2,
+                    }}
+                  >
+                    {item.group === "overview"
+                      ? language === "ar"
+                        ? "نظرة عامة"
+                        : "OVERVIEW"
+                      : language === "ar"
+                        ? "الإدارة"
+                        : "ADMINISTRATION"}
+                  </Typography>
+                ) : null}
+                <ListItem disablePadding key={item.id}>
+                  <ListItemButton
+                    component={NavLink}
+                    end={item.path === "/"}
+                    onClick={onNavigate}
+                    sx={{
+                      minHeight: 44,
+                      mb: 1,
+                      borderRadius: 2.25,
+                      color: designTokens.colors.navigationText,
+                      borderInlineStart: "4px solid transparent",
+                      "&.active": {
+                        bgcolor: designTokens.colors.navigationActive,
+                        borderInlineStartColor: "#6EE7DF",
+                        color: "white",
+                        fontWeight: 700,
+                      },
+                      "&:hover": {
+                        bgcolor: designTokens.colors.navigationHover,
+                      },
+                      "&:focus-visible": {
+                        outline: "3px solid",
+                        outlineColor: "primary.main",
+                        outlineOffset: -3,
+                      },
+                    }}
+                    to={item.path}
+                  >
+                    <NavigationIcon id={item.id} />
+                    <ListItemText
+                      primary={resources.navigation[item.labelKey]}
+                      slotProps={{ primary: { sx: { fontWeight: "inherit" } } }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </Fragment>
+            );
+          })}
+        </List>
+      </Box>
+    </Box>
   );
 }
 

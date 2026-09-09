@@ -188,7 +188,10 @@ export function DevicesPage() {
               sx={{ alignItems: "center", flexWrap: "wrap" }}
             >
               <Chip
-                label={localizeDeviceValue(device.status, language)}
+                label={`${t("Lifecycle", "دورة الحياة")}: ${localizeDeviceValue(
+                  device.status,
+                  language,
+                )}`}
                 color={
                   device.status === "active"
                     ? "success"
@@ -350,20 +353,28 @@ export function DevicesPage() {
 }
 
 function localizeDeviceValue(value: string, language: "en" | "ar") {
-  if (language === "en") return value;
-  return (
-    (
-      {
-        active: "نشط",
-        disabled: "معطّل",
-        pending: "قيد الانتظار",
-        ONLINE: "متصل",
-        OFFLINE: "غير متصل",
-        STALE: "بيانات متأخرة",
-        NEVER_SEEN: "لم يتصل سابقًا",
-      } as Record<string, string>
-    )[value] ?? value
-  );
+  const translations =
+    language === "ar"
+      ? {
+          active: "نشط",
+          disabled: "معطّل",
+          pending: "قيد الانتظار",
+          ONLINE: "متصل",
+          OFFLINE: "غير متصل",
+          STALE: "بيانات متأخرة",
+          NEVER_SEEN: "لم يتصل سابقًا",
+        }
+      : {
+          active: "Active",
+          disabled: "Disabled",
+          pending: "Pending",
+          ONLINE: "Online",
+          OFFLINE: "Offline",
+          STALE: "Stale",
+          NEVER_SEEN: "Never seen",
+        };
+
+  return (translations as Record<string, string>)[value] ?? value;
 }
 
 function localizeDeviceField(field: string, language: "en" | "ar") {

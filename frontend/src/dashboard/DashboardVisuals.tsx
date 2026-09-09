@@ -50,9 +50,10 @@ function DistributionPanel({
     <Paper
       variant="outlined"
       sx={{
+        borderColor: "rgba(103, 214, 226, 0.34)",
         borderRadius: 3.5,
         overflow: "hidden",
-        boxShadow: "0 8px 24px rgba(7, 59, 76, 0.06)",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.22)",
       }}
     >
       <Stack spacing={2.5} sx={{ p: 3 }}>
@@ -82,6 +83,8 @@ function DistributionPanel({
               mx: "auto",
               borderRadius: "50%",
               background: chartBackground,
+              boxShadow:
+                "0 0 0 1px rgba(139, 225, 233, 0.28), 0 0 24px rgba(46, 196, 207, 0.12)",
               "&::after": {
                 content: '""',
                 position: "absolute",
@@ -135,14 +138,19 @@ function DistributionPanel({
                 <Typography
                   component="dt"
                   variant="body2"
-                  color="text.secondary"
+                  sx={{ color: "text.primary", fontWeight: 650 }}
                 >
                   {item.label}
                 </Typography>
                 <Typography
                   component="dd"
                   variant="subtitle2"
-                  sx={{ m: 0, fontVariantNumeric: "tabular-nums" }}
+                  sx={{
+                    color: "text.primary",
+                    fontVariantNumeric: "tabular-nums",
+                    fontWeight: 800,
+                    m: 0,
+                  }}
                 >
                   {item.value}
                 </Typography>

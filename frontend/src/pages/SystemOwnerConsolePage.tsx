@@ -57,7 +57,18 @@ export function SystemOwnerConsolePage() {
     <Box component="main" sx={{ minHeight: "100vh" }}>
       <AppBar position="static">
         <Toolbar sx={{ gap: 2, py: 1 }}>
-          <BrandLogo compact sx={{ flexShrink: 0, width: 42 }} />
+          <Box
+            sx={{
+              bgcolor: "rgba(255,255,255,0.96)",
+              borderRadius: 2,
+              boxShadow: "0 4px 18px rgba(0,0,0,0.24)",
+              flexShrink: 0,
+              px: 1.5,
+              py: 0.75,
+            }}
+          >
+            <BrandLogo sx={{ height: 38, width: { xs: 118, sm: 168 } }} />
+          </Box>
           <Box sx={{ flexGrow: 1 }}>
             <Typography component="h1" variant="h6">
               {text.title}
