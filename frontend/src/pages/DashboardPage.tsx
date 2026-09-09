@@ -492,7 +492,7 @@ function DashboardSummarySection({
           xs: "1fr",
           sm: "repeat(2, minmax(0, 1fr))",
           lg: "repeat(3, minmax(0, 1fr))",
-          xl: "repeat(6, minmax(0, 1fr))",
+          xl: "repeat(7, minmax(0, 1fr))",
         },
         gap: 2,
       }}
@@ -527,6 +527,12 @@ function DashboardSummarySection({
         label={resources.summary.offlineDevices}
         value={query.data.offlineDevices}
         tone={query.data.offlineDevices > 0 ? "warning" : "neutral"}
+      />
+
+      <SummaryCard
+        label={resources.summary.notOperationalDevices}
+        value={query.data.notOperationalDevices}
+        tone={query.data.notOperationalDevices > 0 ? "warning" : "neutral"}
       />
     </Box>
   );

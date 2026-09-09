@@ -224,6 +224,12 @@ describe("DashboardPage", () => {
       screen.getByText(englishResources.dashboard.summary.offlineDevices),
     ).toBeInTheDocument();
 
+    expect(
+      screen.getByText(
+        englishResources.dashboard.summary.notOperationalDevices,
+      ),
+    ).toBeInTheDocument();
+
     const summary = screen.getByRole("region", {
       name: englishResources.dashboard.title,
     });

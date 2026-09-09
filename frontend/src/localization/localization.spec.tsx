@@ -70,7 +70,8 @@ const alternativeResources = {
       totalDevices: "Alt Devices",
       totalSensors: "Alt Sensors",
       activeAlarms: "Alt Active Alarms",
-      offlineDevices: "Alt Offline Devices",
+      offlineDevices: "Alt Active Devices Offline",
+      notOperationalDevices: "Alt Disabled / Not Operational Devices",
     },
 
     rooms: {
