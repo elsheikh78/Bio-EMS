@@ -1,7 +1,7 @@
 # P8-01A — Telegram Interim Alarm Delivery
 
 **Date:** 3 September 2026  
-**Status:** IMPLEMENTED / MERGED / CI VERIFIED / LIVE BOT EVIDENCE OPEN
+**Status:** IMPLEMENTED / MERGED / CI VERIFIED / LIVE BOT SMOKE TEST PASSED
 
 ## Integration evidence
 
@@ -59,6 +59,16 @@ finally {
 
 `SENT` proves that Telegram returned a message receipt. Arrival must still be
 confirmed by the recipient and recorded without storing the token or Chat ID in Git.
+
+## Controlled live evidence — 9 September 2026
+
+- The BIO-EMS Telegram bot identity was validated through the Telegram Bot API.
+- A controlled private recipient Chat ID was resolved only in the local operator environment.
+- `npm run test:telegram-delivery` returned `BIO-EMS Telegram delivery test: SENT`.
+- The operator confirmed that the test message arrived in Telegram.
+- The Bot Token and Chat ID remain excluded from Git and this evidence document.
+- The recipient was enabled locally for `WARNING` and `CRITICAL` Telegram delivery.
+- Full Alarm-generated `TELEGRAM + EMAIL` end-to-end evidence remains open until a controlled Alarm is executed and Delivery Operations is reviewed.
 
 ## Evidence boundary and live closure
 
