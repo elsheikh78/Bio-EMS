@@ -153,6 +153,56 @@ describe("AlarmRepository", () => {
     expect(repository.getAll()[0]).not.toHaveProperty("acknowledged_by_user_id");
   });
 
+  it("keeps an acknowledged Alarm open until recovery", () => {
+    const userId = Number(
+      database.prepare("INSERT INTO users DEFAULT VALUES").run().lastInsertRowid
+    );
+    const id = repository.create({
+      sensor_id: 7,
+      type: "HIGH_TEMPERATURE",
+      severity: "CRITICAL",
+      status: "TRIGGERED",
+      trigger_value: 12,
+    });
+
+    expect(repository.acknowledgeAlarm(id, userId)).toBe(true);
+    expect(repository.findActiveAlarm(7, "HIGH_TEMPERATURE")).toMatchObject({
+      id,
+      status: "ACKNOWLEDGED",
+    });
+  });
+
+  it("recovers an acknowledged Alarm and preserves acknowledgment evidence", () => {
+    const userId = Number(
+      database.prepare("INSERT INTO users DEFAULT VALUES").run().lastInsertRowid
+    );
+    const id = repository.create({
+      sensor_id: 7,
+      type: "HIGH_TEMPERATURE",
+      severity: "CRITICAL",
+      status: "TRIGGERED",
+      trigger_value: 12,
+    });
+
+    expect(repository.acknowledgeAlarm(id, userId)).toBe(true);
+    const acknowledgment = database
+      .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+      .get(id);
+
+    expect(repository.recoverAlarm(id)).toBe(true);
+    expect(repository.recoverAlarm(id)).toBe(false);
+    expect(repository.getById(id)).toMatchObject({
+      status: "RECOVERED",
+      acknowledged_time: expect.any(String),
+      recovered_time: expect.any(String),
+    });
+    expect(
+      database
+        .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
+        .get(id)
+    ).toEqual(acknowledgment);
+  });
+
   it("recovers a triggered alarm", () => {
     const id = repository.create({
       sensor_id: 7,
