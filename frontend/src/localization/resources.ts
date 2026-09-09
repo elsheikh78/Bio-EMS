@@ -384,7 +384,8 @@ export const englishResources = {
       totalDevices: "Devices",
       totalSensors: "Sensors",
       activeAlarms: "Active alarms",
-      offlineDevices: "Offline devices",
+      offlineDevices: "Active devices offline",
+      notOperationalDevices: "Disabled / not operational devices",
     },
 
     operationalOverview: {
@@ -682,7 +683,8 @@ export const arabicResources = {
       totalDevices: "الأجهزة",
       totalSensors: "الحساسات",
       activeAlarms: "الإنذارات النشطة",
-      offlineDevices: "الأجهزة غير المتصلة",
+      offlineDevices: "أجهزة مفعّلة غير متصلة",
+      notOperationalDevices: "أجهزة معطّلة / غير تشغيلية",
     },
     operationalOverview: {
       title: "نظرة عامة تشغيلية",
