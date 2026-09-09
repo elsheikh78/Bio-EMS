@@ -9,6 +9,7 @@ import {
   Paper,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 import type {
   DashboardAlarmStatistics,
@@ -236,6 +237,7 @@ function CurrentTelemetryProfile({
   records: LatestTelemetryRecord[];
   resources: DashboardResources;
 }) {
+  const theme = useTheme();
   const temperatureRecords = records.filter(
     (record) =>
       record.unit.toLowerCase().includes("c") ||
@@ -294,15 +296,16 @@ function CurrentTelemetryProfile({
                 x2="96"
                 y1={y}
                 y2={y}
-                stroke="#E3ECEE"
-                strokeWidth="0.6"
+                stroke={theme.palette.divider}
+                strokeOpacity="0.9"
+                strokeWidth="1"
               />
             ))}
             <polyline
               points={points}
               fill="none"
-              stroke="#0B6B78"
-              strokeWidth="1.6"
+              stroke={theme.palette.primary.light}
+              strokeWidth="2.5"
               vectorEffect="non-scaling-stroke"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -314,10 +317,10 @@ function CurrentTelemetryProfile({
                   key={`${record.device}-${record.sensor}`}
                   cx={x}
                   cy={y}
-                  r="1.4"
-                  fill="#18A6A6"
-                  stroke="#FFFFFF"
-                  strokeWidth="0.6"
+                  r="2"
+                  fill={theme.palette.primary.light}
+                  stroke={theme.palette.background.paper}
+                  strokeWidth="1.2"
                 />
               );
             })}
@@ -337,11 +340,18 @@ function CurrentTelemetryProfile({
                 <Typography
                   variant="caption"
                   noWrap
-                  sx={{ display: "block", fontWeight: 700 }}
+                  sx={{
+                    color: "text.primary",
+                    display: "block",
+                    fontWeight: 800,
+                  }}
                 >
                   {record.sensor}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.primary", fontWeight: 700 }}
+                >
                   {record.value}
                   {record.unit}
                 </Typography>
