@@ -28,8 +28,28 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
   );
 
   return (
-    <nav aria-label={label}>
-      <Box sx={{ px: 4, pt: 5, pb: 4 }}>
+    <Box
+      component="nav"
+      aria-label={label}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        minHeight: 0,
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          bgcolor: designTokens.colors.navigation,
+          flexShrink: 0,
+          px: 4,
+          pt: 5,
+          pb: 4,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -48,7 +68,8 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
           {language === "ar" ? "المراقبة البيئية" : "ENVIRONMENTAL MONITORING"}
         </Typography>
       </Box>
-      <Box sx={{ mx: 4, mb: 5, p: 4, borderRadius: 3, bgcolor: "#0B4A5D" }}>
+      <Box sx={{ minHeight: 0, overflowY: "auto", overscrollBehavior: "contain" }}>
+        <Box sx={{ mx: 4, mb: 5, p: 4, borderRadius: 3, bgcolor: "#0B4A5D" }}>
         <Typography sx={{ color: "#9FC6CB", fontSize: 10, letterSpacing: 1 }}>
           {language === "ar" ? "العميل / النطاق" : "CUSTOMER / SCOPE"}
         </Typography>
@@ -122,8 +143,9 @@ export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
             </Fragment>
           );
         })}
-      </List>
-    </nav>
+        </List>
+      </Box>
+    </Box>
   );
 }
 
