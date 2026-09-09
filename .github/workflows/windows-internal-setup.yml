@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   build:
-    name: Build unsigned internal Setup
+    name: Build signed BIO EGYPT pilot Setup
     runs-on: windows-2022
     timeout-minutes: 45
 
@@ -119,29 +119,57 @@ jobs:
             -CompilerPackageEvidence $env:BIOEMS_INNO_COMPILER_EVIDENCE `
             -CommercialLicenseEvidence $evidence
 
-      - name: Verify and prepare internal test artifact
+      - name: Sign and verify BIO EGYPT pilot Setup
         shell: powershell
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
           $output = Join-Path $stage "output"
           $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
           if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
-          $signature = Get-AuthenticodeSignature -LiteralPath $setup.FullName
-          if ($signature.Status -ne "NotSigned") {
-            throw "Internal artifact must remain explicitly unsigned"
+
+          $subject = "CN=BIO-EMS Pilot Internal Code Signing"
+          $certificate = New-SelfSignedCertificate `
+            -Type CodeSigningCert `
+            -Subject $subject `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -KeyAlgorithm RSA `
+            -KeyLength 3072 `
+            -HashAlgorithm SHA256 `
+            -KeyExportPolicy NonExportable `
+            -NotAfter (Get-Date).AddYears(1)
+          $certificatePath = Join-Path $output "BIO-EMS-Pilot-Code-Signing.cer"
+          Export-Certificate -Cert $certificate -FilePath $certificatePath -Type CERT | Out-Null
+          Import-Certificate -FilePath $certificatePath -CertStoreLocation "Cert:\CurrentUser\Root" | Out-Null
+          Import-Certificate -FilePath $certificatePath -CertStoreLocation "Cert:\CurrentUser\TrustedPublisher" | Out-Null
+
+          $signed = Set-AuthenticodeSignature `
+            -LiteralPath $setup.FullName `
+            -Certificate $certificate `
+            -HashAlgorithm SHA256
+          if ($signed.Status -ne "Valid") {
+            throw "Pilot Setup Authenticode signing failed: $($signed.Status)"
           }
+          $signature = Get-AuthenticodeSignature -LiteralPath $setup.FullName
+          if ($signature.Status -ne "Valid" -or $signature.SignerCertificate.Thumbprint -ne $certificate.Thumbprint) {
+            throw "Pilot Setup signature verification failed"
+          }
+          $certificate.Thumbprint | Set-Content -LiteralPath (Join-Path $output "CERTIFICATE-THUMBPRINT.txt") -Encoding ASCII
           $hash = (Get-FileHash -LiteralPath $setup.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           "$hash  $($setup.Name)" | Set-Content -LiteralPath (Join-Path $output "SHA256SUMS.txt") -Encoding ASCII
           Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
+          Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
         with:
-          name: BIO-EMS-Setup-${{ github.sha }}-internal-unsigned
+          name: BIO-EMS-Setup-${{ github.sha }}-bio-egypt-pilot-signed
           path: |
             ${{ runner.temp }}\bioems-staging\output\BIO-EMS-Setup-*-x64.exe
             ${{ runner.temp }}\bioems-staging\output\build-evidence.json
             ${{ runner.temp }}\bioems-staging\output\SHA256SUMS.txt
+            ${{ runner.temp }}\bioems-staging\output\CERTIFICATE-THUMBPRINT.txt
+            ${{ runner.temp }}\bioems-staging\output\BIO-EMS-Pilot-Code-Signing.cer
+            ${{ runner.temp }}\bioems-staging\output\Install-PilotSigningCertificate.ps1
             ${{ runner.temp }}\bioems-staging\output\INTERNAL-SETUP-TESTING.md
           if-no-files-found: error
           retention-days: 14
