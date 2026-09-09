@@ -267,7 +267,8 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
   it("builds the unsigned internal Setup on a controlled Windows runner", () => {
     expect(workflow).toContain("runs-on: windows-2022");
     expect(workflow).toContain("node-version: 22.22.0");
-    expect(workflow).toContain("innosetup --version=6.7.3");
+    expect(workflow).toContain("VersionInfo.ProductVersion");
+    expect(workflow).toContain("Inno Setup compiler must be version 6.7.3");
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
