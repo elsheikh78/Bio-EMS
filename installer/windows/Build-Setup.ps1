@@ -26,9 +26,9 @@ foreach ($requiredFile in @(
     }
 }
 
-$compilerVersion = (& $compiler "/?") 2>&1 | Out-String
-if ($compilerVersion -notmatch 'Inno Setup.*6\.7\.3') {
-    throw "Inno Setup compiler must be version 6.7.3"
+$compilerVersion = (Get-Item -LiteralPath $compiler).VersionInfo.ProductVersion
+if ($compilerVersion -notmatch '^6\.7\.3(?:\D|$)') {
+    throw "Inno Setup compiler must be version 6.7.3; found $compilerVersion"
 }
 
 $env:BIOEMS_INSTALLER_STAGING_DIR = $staging
@@ -63,4 +63,3 @@ $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
     $utf8WithoutBom
 )
 Write-Host "BIO-EMS Setup build: PASS"
-
