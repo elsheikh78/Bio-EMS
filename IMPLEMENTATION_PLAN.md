@@ -2,15 +2,15 @@
 
 ## Status
 
-**Current controlled delivery sequence — reconciled 8 September 2026.**
+**Current controlled delivery sequence — reconciled 9 September 2026.**
 
 Historical P0-P8 software closure/evidence remains authoritative for completed scope. The UI/UX Product Refresh and Site-Bound Licensing LIC-01 through LIC-13 are complete/merged/CI verified. DEP-01-06 now has internal Windows build evidence and source corrections, while clean-machine qualification, signing and publication remain open.
 
 ## Current Position
 
 - P0-P7: completed/merged/CI verified according to existing closure records.
-- P8-01 WhatsApp/Email source delivery: software complete; Email live evidence passed; WhatsApp live evidence remains externally blocked by Meta.
-- P8-01A Telegram: source complete/merged/CI verified; live bot and end-to-end evidence remain open.
+- P8-01 WhatsApp/Email source delivery: software complete; Email live end-to-end Critical Alarm evidence passed on 9 September 2026; WhatsApp live evidence remains externally blocked by Meta.
+- P8-01A Telegram: source complete/merged/CI verified; live bot and end-to-end Critical Alarm delivery evidence passed on 9 September 2026. Evidence: `docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md`.
 - P8-02 through P8-08: source complete/merged/CI verified.
 - Global Arabic/English localization: complete/merged/CI verified.
 - RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
@@ -162,7 +162,7 @@ Commercial enforcement must not be designed to unexpectedly stop critical local 
 4. Capture secret-free evidence for Fresh Install, three BIO-EMS services, ports, HTTPS/API health, licensing receipt, reboot recovery, Repair/Upgrade rollback and retained-data Uninstall.
 5. Run Arabic/English, RTL/LTR, light/dark and responsive visual review of the post-v0.20.0 UI and record screenshots/defects separately.
 6. Decide Authenticode signing, next version/tag and Release publication only after installer evidence passes.
-7. Keep Meta/Telegram/provider evidence, hardware, field Commissioning/UAT/customer acceptance and licensing qualification as separately evidenced tracks.
+7. Preserve the passed Email/Telegram evidence; keep Meta WhatsApp, SMS, hardware, field Commissioning/UAT/customer acceptance and licensing qualification as separately evidenced tracks.
 
 ## Execution Rule
 
