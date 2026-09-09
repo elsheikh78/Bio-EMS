@@ -131,6 +131,10 @@ describe("responsive application shell", () => {
     ).toBeVisible();
 
     expect(drawer).not.toBeNull();
+    expect(navigation).toHaveStyle({
+      height: "100%",
+      overflow: "hidden",
+    });
 
     expect(drawer?.querySelector(".MuiToolbar-root")).not.toBeNull();
 
