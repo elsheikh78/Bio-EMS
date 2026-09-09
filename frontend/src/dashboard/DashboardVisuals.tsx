@@ -83,7 +83,8 @@ function DistributionPanel({
               mx: "auto",
               borderRadius: "50%",
               background: chartBackground,
-              boxShadow: "0 0 0 1px rgba(139, 225, 233, 0.28), 0 0 24px rgba(46, 196, 207, 0.12)",
+              boxShadow:
+                "0 0 0 1px rgba(139, 225, 233, 0.28), 0 0 24px rgba(46, 196, 207, 0.12)",
               "&::after": {
                 content: '""',
                 position: "absolute",
