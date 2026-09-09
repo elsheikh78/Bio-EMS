@@ -98,6 +98,7 @@ export interface TranslationResources {
       totalSensors: string;
       activeAlarms: string;
       offlineDevices: string;
+      notOperationalDevices: string;
     };
 
     operationalOverview?: {
