@@ -26,7 +26,12 @@ foreach ($requiredFile in @(
     }
 }
 
-$compilerVersion = (Get-Item -LiteralPath $compiler).VersionInfo.ProductVersion
+$compilerDirectory = Split-Path -Parent $compiler
+$versionedCompiler = Join-Path $compilerDirectory "Compil32.exe"
+if (-not (Test-Path -LiteralPath $versionedCompiler -PathType Leaf)) {
+    throw "Versioned Inno Setup compiler component is missing"
+}
+$compilerVersion = (Get-Item -LiteralPath $versionedCompiler).VersionInfo.ProductVersion
 if ($compilerVersion -notmatch '^6\.7\.3(?:\D|$)') {
     throw "Inno Setup compiler must be version 6.7.3; found $compilerVersion"
 }
