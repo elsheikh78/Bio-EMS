@@ -18,7 +18,11 @@ import { useAuthentication } from "../auth/useAuthentication";
 import { hasPermission } from "../authorization/permissions";
 import { useLocalization } from "../localization/useLocalization";
 import type { Device } from "../devices/contracts";
-import { summarizeDevices } from "../devices/presentation";
+import {
+  deriveDeviceCommunicationStatus,
+  summarizeDeviceCommunication,
+  summarizeDevices,
+} from "../devices/presentation";
 import {
   useDeviceHealth,
   useDeviceMutation,
@@ -38,6 +42,7 @@ export function DevicesPage() {
   const health = useDeviceHealth(selected?.device_id ?? null);
   const records = devices.data ?? [];
   const summary = summarizeDevices(records);
+  const communication = summarizeDeviceCommunication(records);
   const save = () => {
     if (!editing) return;
     mutation.mutate(
@@ -107,6 +112,64 @@ export function DevicesPage() {
           </Paper>
         ))}
       </Box>
+      <Box>
+        <Typography component="h2" variant="h6" sx={{ mb: 1 }}>
+          {t("Communication health", "حالة الاتصال")}
+        </Typography>
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: {
+              xs: "repeat(2, minmax(0, 1fr))",
+              sm: "repeat(3, minmax(0, 1fr))",
+              lg: "repeat(5, minmax(0, 1fr))",
+            },
+          }}
+        >
+          {[
+            [t("Online", "متصل"), communication.ONLINE, "success.main"],
+            [t("Stale", "بيانات متأخرة"), communication.STALE, "warning.main"],
+            [t("Offline", "غير متصل"), communication.OFFLINE, "error.main"],
+            [
+              t("Never seen", "لم يتصل سابقًا"),
+              communication.NEVER_SEEN,
+              "info.main",
+            ],
+            [
+              t("Not operational", "غير تشغيلي"),
+              communication.NOT_OPERATIONAL,
+              "text.secondary",
+            ],
+          ].map(([label, value, color]) => (
+            <Paper key={String(label)} variant="outlined" sx={{ p: 1.5 }}>
+              <Typography color="text.secondary" variant="body2">
+                {label}
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  color,
+                  fontWeight: 800,
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {value}
+              </Typography>
+            </Paper>
+          ))}
+        </Box>
+        <Typography
+          color="text.secondary"
+          variant="caption"
+          sx={{ mt: 1, display: "block" }}
+        >
+          {t(
+            "Lifecycle and communication are reported independently.",
+            "تُعرض دورة الحياة وحالة الاتصال بصورة مستقلة.",
+          )}
+        </Typography>
+      </Box>
       <Button
         variant="outlined"
         disabled={devices.isFetching}
@@ -145,101 +208,120 @@ export function DevicesPage() {
           {t("No Devices are registered.", "لا توجد أجهزة مسجلة.")}
         </Alert>
       ) : null}
-      {records.map((device) => (
-        <Paper
-          key={device.device_id}
-          variant="outlined"
-          sx={{
-            borderInlineStart: 5,
-            borderInlineStartColor:
-              device.status === "active"
-                ? "success.main"
-                : device.status === "pending"
-                  ? "warning.main"
-                  : "text.disabled",
-            p: 3,
-          }}
-        >
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={2}
-            sx={{ justifyContent: "space-between" }}
+      {records.map((device) => {
+        const communicationStatus = deriveDeviceCommunicationStatus(device);
+        return (
+          <Paper
+            key={device.device_id}
+            variant="outlined"
+            sx={{
+              borderInlineStart: 5,
+              borderInlineStartColor:
+                device.status === "active"
+                  ? "success.main"
+                  : device.status === "pending"
+                    ? "warning.main"
+                    : "text.disabled",
+              p: 3,
+            }}
           >
-            <Box>
-              <Typography variant="h6">{device.device_id}</Typography>
-              <Typography>
-                {device.device_type} · {device.protocol}
-              </Typography>
-              <Typography color="text.secondary">
-                {t("Site", "الموقع")} #{device.site_id} ·{" "}
-                {[device.manufacturer, device.model, device.firmware_version]
-                  .filter(Boolean)
-                  .join(" · ") ||
-                  t("Metadata unavailable", "بيانات التعريف غير متاحة")}
-              </Typography>
-              <Typography variant="body2">
-                {t("Last seen", "آخر اتصال")}:{" "}
-                {device.last_seen_at ?? t("Never", "لم يتصل")}
-              </Typography>
-            </Box>
             <Stack
-              direction="row"
-              spacing={1}
-              sx={{ alignItems: "center", flexWrap: "wrap" }}
+              direction={{ xs: "column", md: "row" }}
+              spacing={2}
+              sx={{ justifyContent: "space-between" }}
             >
-              <Chip
-                label={`${t("Lifecycle", "دورة الحياة")}: ${localizeDeviceValue(
-                  device.status,
-                  language,
-                )}`}
-                color={
-                  device.status === "active"
-                    ? "success"
-                    : device.status === "disabled"
-                      ? "default"
-                      : "warning"
-                }
-              />
-              <Button onClick={() => setSelected(device)}>
-                {t("Health", "الحالة")}
-              </Button>
-              {canManage ? (
-                <>
-                  <Button onClick={() => setEditing(device)}>
-                    {t("Edit", "تعديل")}
-                  </Button>
-                  {device.status === "active" ? (
-                    <Button
-                      color="warning"
-                      disabled={mutation.isPending}
-                      onClick={() =>
-                        mutation.mutate({
-                          id: device.device_id,
-                          action: "disable",
-                        })
-                      }
-                    >
-                      {t("Disable", "تعطيل")}
+              <Box>
+                <Typography variant="h6">{device.device_id}</Typography>
+                <Typography>
+                  {device.device_type} · {device.protocol}
+                </Typography>
+                <Typography color="text.secondary">
+                  {t("Site", "الموقع")} #{device.site_id} ·{" "}
+                  {[device.manufacturer, device.model, device.firmware_version]
+                    .filter(Boolean)
+                    .join(" · ") ||
+                    t("Metadata unavailable", "بيانات التعريف غير متاحة")}
+                </Typography>
+                <Typography variant="body2">
+                  {t("Last seen", "آخر اتصال")}:{" "}
+                  {device.last_seen_at ?? t("Never", "لم يتصل")}
+                </Typography>
+              </Box>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", flexWrap: "wrap" }}
+              >
+                <Chip
+                  label={`${t("Lifecycle", "دورة الحياة")}: ${localizeDeviceValue(
+                    device.status,
+                    language,
+                  )}`}
+                  color={
+                    device.status === "active"
+                      ? "success"
+                      : device.status === "disabled"
+                        ? "default"
+                        : "warning"
+                  }
+                />
+                <Chip
+                  label={`${t("Connection", "الاتصال")}: ${localizeDeviceValue(
+                    communicationStatus,
+                    language,
+                  )}`}
+                  color={
+                    communicationStatus === "ONLINE"
+                      ? "success"
+                      : communicationStatus === "OFFLINE"
+                        ? "error"
+                        : communicationStatus === "NOT_OPERATIONAL"
+                          ? "default"
+                          : "warning"
+                  }
+                  variant="outlined"
+                />
+                <Button onClick={() => setSelected(device)}>
+                  {t("Health", "الحالة")}
+                </Button>
+                {canManage ? (
+                  <>
+                    <Button onClick={() => setEditing(device)}>
+                      {t("Edit", "تعديل")}
                     </Button>
-                  ) : (
-                    <Button
-                      disabled={mutation.isPending}
-                      onClick={() =>
-                        mutation.mutate({
-                          id: device.device_id,
-                          action: "activate",
-                        })
-                      }
-                    >
-                      {t("Activate", "تفعيل")}
-                    </Button>
-                  )}
-                </>
-              ) : null}
+                    {device.status === "active" ? (
+                      <Button
+                        color="warning"
+                        disabled={mutation.isPending}
+                        onClick={() =>
+                          mutation.mutate({
+                            id: device.device_id,
+                            action: "disable",
+                          })
+                        }
+                      >
+                        {t("Disable", "تعطيل")}
+                      </Button>
+                    ) : (
+                      <Button
+                        disabled={mutation.isPending}
+                        onClick={() =>
+                          mutation.mutate({
+                            id: device.device_id,
+                            action: "activate",
+                          })
+                        }
+                      >
+                        {t("Activate", "تفعيل")}
+                      </Button>
+                    )}
+                  </>
+                ) : null}
+              </Stack>
             </Stack>
-          </Stack>
-        </Paper>
-      ))}
+          </Paper>
+        );
+      })}
       <Dialog
         open={Boolean(selected)}
         onClose={() => setSelected(null)}
@@ -363,6 +445,7 @@ function localizeDeviceValue(value: string, language: "en" | "ar") {
           OFFLINE: "غير متصل",
           STALE: "بيانات متأخرة",
           NEVER_SEEN: "لم يتصل سابقًا",
+          NOT_OPERATIONAL: "غير تشغيلي",
         }
       : {
           active: "Active",
@@ -372,6 +455,7 @@ function localizeDeviceValue(value: string, language: "en" | "ar") {
           OFFLINE: "Offline",
           STALE: "Stale",
           NEVER_SEEN: "Never seen",
+          NOT_OPERATIONAL: "Not operational",
         };
 
   return (translations as Record<string, string>)[value] ?? value;
