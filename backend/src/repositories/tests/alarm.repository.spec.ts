@@ -198,9 +198,7 @@ describe("AlarmRepository", () => {
     });
     expect(
       database
-        .prepare(
-          "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
-        )
+        .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
         .get(id)
     ).toEqual(acknowledgment);
   });
