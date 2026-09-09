@@ -277,11 +277,10 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
     expect(workflow).toContain("New-SelfSignedCertificate");
-    expect(workflow).toContain("certutil.exe -user -f -addstore Root");
     expect(workflow).toContain('Filter "signtool.exe"');
     expect(workflow).toContain("sign /fd SHA256 /sha1 $certificate.Thumbprint /s My");
-    expect(workflow).toContain("verify /pa /v");
-    expect(workflow).toContain('$signature.Status -ne "Valid"');
+    expect(workflow).toContain('$signature.Status -eq "NotSigned"');
+    expect(workflow).toContain("$signature.SignerCertificate.Thumbprint");
     expect(workflow).toContain("BIO-EMS-Pilot-Code-Signing.cer");
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("retention-days: 14");
