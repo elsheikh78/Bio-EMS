@@ -252,3 +252,35 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).not.toMatch(/Remove-Item[^\n]+\$persistent[^\n]+Recurse/);
   });
 });
+
+describe("DEP-01-06 repeatable internal Windows artifact", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const workflow = readFileSync(
+    join(repositoryRoot, ".github/workflows/windows-internal-setup.yml"),
+    "utf8"
+  );
+  const guide = readFileSync(
+    join(repositoryRoot, "installer/windows/INTERNAL-SETUP-TESTING.md"),
+    "utf8"
+  );
+
+  it("builds the unsigned internal Setup on a controlled Windows runner", () => {
+    expect(workflow).toContain("runs-on: windows-2022");
+    expect(workflow).toContain("node-version: 22.22.0");
+    expect(workflow).toContain("innosetup --version=6.7.3");
+    expect(workflow).toContain("Get-VendorInputs.ps1");
+    expect(workflow).toContain("New-InstallerStaging.ps1");
+    expect(workflow).toContain("Build-Setup.ps1");
+    expect(workflow).toContain('if ($signature.Status -ne "NotSigned")');
+    expect(workflow).toContain("actions/upload-artifact@v4");
+    expect(workflow).toContain("retention-days: 14");
+  });
+
+  it("ships a clean-machine guide without requesting production secrets", () => {
+    expect(guide).toContain("disposable clean Windows 10/11");
+    expect(guide).toContain("Get-Service mosquitto,BIOEMS-*");
+    expect(guide).toContain("post-install-health.json");
+    expect(guide).toContain("uninstall-retention.json");
+    expect(guide).toContain("Do not enter production");
+  });
+});
