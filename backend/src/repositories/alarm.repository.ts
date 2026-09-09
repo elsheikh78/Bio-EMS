@@ -77,7 +77,7 @@ export class AlarmRepository {
 
             AND type = ?
 
-            AND status = 'TRIGGERED'
+            AND status IN ('TRIGGERED', 'ACKNOWLEDGED')
 
             ORDER BY id DESC
 
@@ -100,7 +100,7 @@ export class AlarmRepository {
                 recovered_time = CURRENT_TIMESTAMP
 
             WHERE id = ?
-              AND status = 'TRIGGERED'
+              AND status IN ('TRIGGERED', 'ACKNOWLEDGED')
 
         `);
 
