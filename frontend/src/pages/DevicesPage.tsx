@@ -357,11 +357,11 @@ function localizeDeviceValue(value: string, language: "en" | "ar") {
     language === "ar"
       ? {
           active: "نشط",
-        disabled: "معطّل",
-        pending: "قيد الانتظار",
-        ONLINE: "متصل",
-        OFFLINE: "غير متصل",
-        STALE: "بيانات متأخرة",
+          disabled: "معطّل",
+          pending: "قيد الانتظار",
+          ONLINE: "متصل",
+          OFFLINE: "غير متصل",
+          STALE: "بيانات متأخرة",
           NEVER_SEEN: "لم يتصل سابقًا",
         }
       : {
