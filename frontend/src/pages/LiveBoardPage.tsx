@@ -368,15 +368,7 @@ export function LiveBoardPage() {
               gap: density === "compact" ? 2 : 3,
               gridTemplateColumns: {
                 xs: "1fr",
-                sm: "repeat(2, minmax(0, 1fr))",
-                lg:
-                  density === "compact"
-                    ? "repeat(3, minmax(0, 1fr))"
-                    : "repeat(2, minmax(0, 1fr))",
-                xl:
-                  density === "compact"
-                    ? "repeat(4, minmax(0, 1fr))"
-                    : "repeat(3, minmax(0, 1fr))",
+                sm: `repeat(auto-fit, minmax(${density === "compact" ? "300px" : "380px"}, 1fr))`,
               },
             }}
           >

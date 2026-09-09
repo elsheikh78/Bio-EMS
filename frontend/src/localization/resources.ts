@@ -403,8 +403,9 @@ export const englishResources = {
       notOperational: "Not operational",
       statusEvidence:
         "Online, Stale, Offline, Never seen, and Not operational are reported independently.",
-      severityTitle: "Alarm severity",
-      severityDescription: "Current recorded alarm severity distribution.",
+      severityTitle: "Historical alarm severity",
+      severityDescription:
+        "Severity distribution across recorded Alarm history; this is not the active Alarm count.",
       critical: "Critical",
       warning: "Warning",
       info: "Information",
@@ -699,8 +700,9 @@ export const arabicResources = {
       notOperational: "غير تشغيلي",
       statusEvidence:
         "تُعرض حالات متصل، وبيانات متأخرة، وغير متصل، ولم يتصل سابقًا، وغير تشغيلي بصورة مستقلة.",
-      severityTitle: "شدة الإنذارات",
-      severityDescription: "التوزيع الحالي لشدة الإنذارات المسجلة.",
+      severityTitle: "شدة الإنذارات التاريخية",
+      severityDescription:
+        "توزيع الشدة عبر سجل الإنذارات، ولا يمثل عدد الإنذارات النشطة حاليًا.",
       critical: "حرج",
       warning: "تحذير",
       info: "معلومات",
