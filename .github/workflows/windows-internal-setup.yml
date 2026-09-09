@@ -1,0 +1,120 @@
+name: Internal Windows Setup
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/windows-internal-setup.yml"
+      - "backend/**"
+      - "frontend/**"
+      - "installer/windows/**"
+      - "VERSION"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/windows-internal-setup.yml"
+      - "backend/**"
+      - "frontend/**"
+      - "installer/windows/**"
+      - "VERSION"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build unsigned internal Setup
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.22.0
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install pinned Inno Setup compiler
+        shell: powershell
+        run: |
+          choco install innosetup --version=6.7.3 --exact --yes --no-progress
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path -LiteralPath $compiler -PathType Leaf)) {
+            throw "Pinned Inno Setup compiler was not installed"
+          }
+          & $compiler "/?" | Select-String "Inno Setup"
+
+      - name: Acquire and verify locked vendor inputs
+        shell: powershell
+        run: |
+          $vendor = Join-Path $env:RUNNER_TEMP "bioems-vendor-cache"
+          & .\installer\windows\Get-VendorInputs.ps1 -DestinationDirectory $vendor
+
+      - name: Create deterministic application staging
+        shell: powershell
+        run: |
+          $vendor = Join-Path $env:RUNNER_TEMP "bioems-vendor-cache"
+          $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
+          $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          & .\installer\windows\New-InstallerStaging.ps1 `
+            -RepositoryRoot $env:GITHUB_WORKSPACE `
+            -VendorCache $vendor `
+            -StagingDirectory $stage `
+            -SourceCommit $env:GITHUB_SHA `
+            -BuildTimestamp $timestamp
+
+      - name: Compile single offline Setup executable
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
+          $evidence = Join-Path $env:RUNNER_TEMP "inno-commercial-use-evidence.txt"
+          $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          @"
+          Inno Setup 6.7.3 commercial-use eligibility review evidence.
+          Official source: https://jrsoftware.org/isinfo.php
+          Build repository: $env:GITHUB_REPOSITORY
+          Build commit: $env:GITHUB_SHA
+          Build run: $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
+          This file contains no license key or secret.
+          "@ | Set-Content -LiteralPath $evidence -Encoding UTF8
+          & .\installer\windows\Build-Setup.ps1 `
+            -RepositoryRoot $env:GITHUB_WORKSPACE `
+            -StagingDirectory $stage `
+            -InnoCompiler $compiler `
+            -CommercialLicenseEvidence $evidence
+
+      - name: Verify and prepare internal test artifact
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
+          $output = Join-Path $stage "output"
+          $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
+          if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
+          $signature = Get-AuthenticodeSignature -LiteralPath $setup.FullName
+          if ($signature.Status -ne "NotSigned") {
+            throw "Internal artifact must remain explicitly unsigned"
+          }
+          $hash = (Get-FileHash -LiteralPath $setup.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $($setup.Name)" | Set-Content -LiteralPath (Join-Path $output "SHA256SUMS.txt") -Encoding ASCII
+          Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
+
+      - name: Upload internal Setup
+        uses: actions/upload-artifact@v4
+        with:
+          name: BIO-EMS-Setup-${{ github.sha }}-internal-unsigned
+          path: |
+            ${{ runner.temp }}\bioems-staging\output\BIO-EMS-Setup-*-x64.exe
+            ${{ runner.temp }}\bioems-staging\output\build-evidence.json
+            ${{ runner.temp }}\bioems-staging\output\SHA256SUMS.txt
+            ${{ runner.temp }}\bioems-staging\output\INTERNAL-SETUP-TESTING.md
+          if-no-files-found: error
+          retention-days: 14
