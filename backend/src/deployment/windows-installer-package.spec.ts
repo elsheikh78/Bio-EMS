@@ -267,8 +267,10 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
   it("builds the unsigned internal Setup on a controlled Windows runner", () => {
     expect(workflow).toContain("runs-on: windows-2022");
     expect(workflow).toContain("node-version: 22.22.0");
-    expect(workflow).toContain("VersionInfo.ProductVersion");
-    expect(workflow).toContain("Inno Setup compiler must be version 6.7.3");
+    expect(workflow).toContain("issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe");
+    expect(workflow).toContain("9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732");
+    expect(workflow).toContain("Get-FileHash -LiteralPath $download -Algorithm SHA256");
+    expect(workflow).toContain("BIOEMS_INNO_COMPILER=$compiler");
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
