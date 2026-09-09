@@ -113,6 +113,7 @@ describe("DEP-01-02 frozen inputs and build source", () => {
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
     const script = readFileSync(join(repositoryRoot, "installer/windows/Build-Setup.ps1"), "utf8");
     expect(script).toContain("Inno Setup compiler must be version 6.7.3");
+    expect(script).toContain('Join-Path $compilerDirectory "Compil32.exe"');
     expect(script).toContain("CommercialLicenseEvidence");
     expect(script).toContain("validate:windows-installer");
     expect(script).toContain("setupSha256");
