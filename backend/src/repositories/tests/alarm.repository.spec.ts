@@ -91,17 +91,13 @@ describe("AlarmRepository", () => {
 
     expect(repository.acknowledgeAlarm(id, firstUserId)).toBe(true);
     const firstAudit = database
-      .prepare(
-        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
-      )
+      .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
       .get(id);
 
     expect(repository.acknowledgeAlarm(id, secondUserId)).toBe(false);
     expect(
       database
-        .prepare(
-        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
-      )
+        .prepare("SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?")
         .get(id)
     ).toEqual(firstAudit);
   });
@@ -157,7 +153,7 @@ describe("AlarmRepository", () => {
     expect(repository.getAll()[0]).not.toHaveProperty("acknowledged_by_user_id");
   });
 
-  it("keeps an acknowledged Alarm open and prevents a duplicate lifecycle", () => {
+  it("keeps an acknowledged Alarm open until recovery", () => {
     const userId = Number(
       database.prepare("INSERT INTO users DEFAULT VALUES").run().lastInsertRowid
     );
@@ -176,7 +172,7 @@ describe("AlarmRepository", () => {
     });
   });
 
-  it("recovers an acknowledged Alarm while preserving acknowledgment evidence", () => {
+  it("recovers an acknowledged Alarm and preserves acknowledgment evidence", () => {
     const userId = Number(
       database.prepare("INSERT INTO users DEFAULT VALUES").run().lastInsertRowid
     );
@@ -205,8 +201,8 @@ describe("AlarmRepository", () => {
     expect(
       database
         .prepare(
-        "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
-      )
+          "SELECT acknowledged_time, acknowledged_by_user_id FROM alarms WHERE id = ?"
+        )
         .get(id)
     ).toEqual(acknowledgment);
   });
