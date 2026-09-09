@@ -43,15 +43,18 @@ jobs:
             backend/package-lock.json
             frontend/package-lock.json
 
-      - name: Install pinned Inno Setup compiler
+      - name: Verify pinned Inno Setup compiler
         shell: powershell
         run: |
-          choco install innosetup --version=6.7.3 --exact --yes --no-progress
           $compiler = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path -LiteralPath $compiler -PathType Leaf)) {
-            throw "Pinned Inno Setup compiler was not installed"
+            throw "Pinned Inno Setup compiler is not available on the Windows runner"
           }
-          & $compiler "/?" | Select-String "Inno Setup"
+          $version = (Get-Item -LiteralPath $compiler).VersionInfo.ProductVersion
+          if ($version -notmatch '^6\.7\.3(?:\D|$)') {
+            throw "Inno Setup compiler must be version 6.7.3; found $version"
+          }
+          Write-Host "Verified Inno Setup compiler: $version"
 
       - name: Acquire and verify locked vendor inputs
         shell: powershell
