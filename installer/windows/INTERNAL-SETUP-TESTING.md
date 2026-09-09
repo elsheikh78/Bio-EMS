@@ -1,7 +1,8 @@
-# BIO-EMS Internal Unsigned Setup — Clean-Machine Test
+# BIO-EMS Signed BIO EGYPT Pilot Setup — Clean-Machine Test
 
 This artifact is for controlled qualification on a disposable clean Windows 10/11
-x64 computer or virtual machine. It is not a signed production release.
+x64 computer or virtual machine. It has an internal pilot Authenticode signature,
+not a publicly trusted production code-signing signature.
 
 ## Safety boundary
 
@@ -9,7 +10,7 @@ x64 computer or virtual machine. It is not a signed production release.
   has Mosquitto or BIO-EMS installed.
 - Use an Administrator account on an isolated test machine.
 - Do not enter production Email, Telegram, WhatsApp, SMS or licensing secrets.
-- Keep the Setup, `build-evidence.json` and `SHA256SUMS.txt` together.
+- Keep the Setup, certificate, thumbprint, build evidence and SHA-256 files together.
 
 ## Before installation
 
@@ -23,7 +24,18 @@ x64 computer or virtual machine. It is not a signed production release.
    ```
 
 4. Confirm the two SHA-256 values match exactly.
-5. Confirm no conflicting services exist:
+5. Install the BIO-EMS pilot signing certificate from an elevated PowerShell:
+
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\Install-PilotSigningCertificate.ps1
+   Get-AuthenticodeSignature .\BIO-EMS-Setup-*-x64.exe | Format-List Status,SignerCertificate
+   ```
+
+   Continue only when the status is `Valid` and the displayed certificate thumbprint
+   matches `CERTIFICATE-THUMBPRINT.txt`.
+
+6. Confirm no conflicting services exist:
 
    ```powershell
    Get-Service mosquitto,BIOEMS-* -ErrorAction SilentlyContinue

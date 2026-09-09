@@ -265,7 +265,7 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     "utf8"
   );
 
-  it("builds the unsigned internal Setup on a controlled Windows runner", () => {
+  it("builds and signs the BIO EGYPT pilot Setup on a controlled Windows runner", () => {
     expect(workflow).toContain("runs-on: windows-2022");
     expect(workflow).toContain("node-version: 22.22.0");
     expect(workflow).toContain("issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe");
@@ -276,7 +276,12 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
     expect(workflow).toContain("Build-Setup.ps1");
-    expect(workflow).toContain('if ($signature.Status -ne "NotSigned")');
+    expect(workflow).toContain("New-SelfSignedCertificate");
+    expect(workflow).toContain('Filter "signtool.exe"');
+    expect(workflow).toContain("sign /fd SHA256 /sha1 $certificate.Thumbprint /s My");
+    expect(workflow).toContain('$signature.Status -eq "NotSigned"');
+    expect(workflow).toContain("$signature.SignerCertificate.Thumbprint");
+    expect(workflow).toContain("BIO-EMS-Pilot-Code-Signing.cer");
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("retention-days: 14");
   });
@@ -284,8 +289,22 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
   it("ships a clean-machine guide without requesting production secrets", () => {
     expect(guide).toContain("disposable clean Windows 10/11");
     expect(guide).toContain("Get-Service mosquitto,BIOEMS-*");
+    expect(guide).toContain("Install-PilotSigningCertificate.ps1");
+    expect(guide).toContain("CERTIFICATE-THUMBPRINT.txt");
     expect(guide).toContain("post-install-health.json");
     expect(guide).toContain("uninstall-retention.json");
     expect(guide).toContain("Do not enter production");
+  });
+
+  it("trusts only the matching, unexpired pilot code-signing certificate", () => {
+    const trustScript = readFileSync(
+      join(repositoryRoot, "installer/windows/Install-PilotSigningCertificate.ps1"),
+      "utf8"
+    );
+    expect(trustScript).toContain("#Requires -RunAsAdministrator");
+    expect(trustScript).toContain("BIO-EMS pilot certificate thumbprint mismatch");
+    expect(trustScript).toContain("1.3.6.1.5.5.7.3.3");
+    expect(trustScript).toContain("Cert:\\LocalMachine\\Root");
+    expect(trustScript).toContain("Cert:\\LocalMachine\\TrustedPublisher");
   });
 });
