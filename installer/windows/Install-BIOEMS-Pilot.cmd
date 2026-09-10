@@ -32,7 +32,7 @@ for %%F in (
     goto :failed
   )
 )
-powershell.exe -NoProfile -Command "$s=@(Get-ChildItem -LiteralPath . -Filter 'BIO-EMS-Setup-*-x64.exe' -File); if($s.Count -ne 1){Write-Error ('Expected exactly one Setup executable; found '+$s.Count);exit 1};Write-Host ('Setup file: '+$s[0].Name)" >>"%LOG%" 2>&1
+powershell.exe -NoProfile -Command "$s=@(Get-ChildItem -LiteralPath . -Filter 'BIO-EMS-Setup-*-x64.exe' -File); if($s.Count -ne 1){Write-Error ('Expected exactly one BIO-EMS Setup executable; found '+$s.Count);exit 1};Write-Host ('Setup file: '+$s[0].Name)" >>"%LOG%" 2>&1
 if errorlevel 1 goto :failed
 
 echo Installing the BIO-EMS pilot signing certificate...
