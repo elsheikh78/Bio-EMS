@@ -161,6 +161,7 @@ jobs:
           "$hash  $($setup.Name)" | Set-Content -LiteralPath (Join-Path $output "SHA256SUMS.txt") -Encoding ASCII
           Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
           Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
+          Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
@@ -173,6 +174,7 @@ jobs:
             ${{ runner.temp }}\bioems-staging\output\CERTIFICATE-THUMBPRINT.txt
             ${{ runner.temp }}\bioems-staging\output\BIO-EMS-Pilot-Code-Signing.cer
             ${{ runner.temp }}\bioems-staging\output\Install-PilotSigningCertificate.ps1
+            ${{ runner.temp }}\bioems-staging\output\Install-BIOEMS-Pilot.cmd
             ${{ runner.temp }}\bioems-staging\output\INTERNAL-SETUP-TESTING.md
           if-no-files-found: error
           retention-days: 14
