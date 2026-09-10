@@ -1,11 +1,19 @@
 #Requires -RunAsAdministrator
 [CmdletBinding()]
 param(
-    [string]$CertificatePath = (Join-Path $PSScriptRoot "BIO-EMS-Pilot-Code-Signing.cer"),
-    [string]$ThumbprintPath = (Join-Path $PSScriptRoot "CERTIFICATE-THUMBPRINT.txt")
+    [string]$CertificatePath,
+    [string]$ThumbprintPath
 )
 
 $ErrorActionPreference = "Stop"
+$scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($CertificatePath)) {
+    $CertificatePath = Join-Path $scriptDirectory "BIO-EMS-Pilot-Code-Signing.cer"
+}
+if ([string]::IsNullOrWhiteSpace($ThumbprintPath)) {
+    $ThumbprintPath = Join-Path $scriptDirectory "CERTIFICATE-THUMBPRINT.txt"
+}
+
 $certificateFile = [System.IO.Path]::GetFullPath($CertificatePath)
 $thumbprintFile = [System.IO.Path]::GetFullPath($ThumbprintPath)
 foreach ($requiredFile in @($certificateFile, $thumbprintFile)) {

@@ -72,6 +72,7 @@ Name: "desktopicon"; Description: "Create a BIO-EMS desktop shortcut"
 [Code]
 var
   ExistingInstallAtStart: Boolean;
+  ServicesPresentAtStart: Boolean;
 
 function InitializeSetup(): Boolean;
 begin
@@ -91,12 +92,12 @@ end;
 
 function IsFreshInstall(): Boolean;
 begin
-  Result := not ExistingInstallAtStart;
+  Result := (not ExistingInstallAtStart) or (not ServicesPresentAtStart);
 end;
 
 function WasExistingInstall(): Boolean;
 begin
-  Result := ExistingInstallAtStart;
+  Result := ExistingInstallAtStart and ServicesPresentAtStart;
 end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
@@ -105,7 +106,7 @@ var
   ScriptPath: String;
 begin
   Result := '';
-  if ExistingInstallAtStart then begin
+  if ExistingInstallAtStart and ServicesPresentAtStart then begin
     ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
     ScriptPath := ExpandConstant('{tmp}\Invoke-DEP0105Lifecycle.ps1');
     if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode PreUpdate -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
