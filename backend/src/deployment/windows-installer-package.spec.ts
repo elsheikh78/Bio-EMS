@@ -290,10 +290,23 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(guide).toContain("disposable clean Windows 10/11");
     expect(guide).toContain("Get-Service mosquitto,BIOEMS-*");
     expect(guide).toContain("Install-PilotSigningCertificate.ps1");
+    expect(guide).toContain("Install-BIOEMS-Pilot.cmd");
     expect(guide).toContain("CERTIFICATE-THUMBPRINT.txt");
     expect(guide).toContain("post-install-health.json");
     expect(guide).toContain("uninstall-retention.json");
     expect(guide).toContain("Do not enter production");
+  });
+
+  it("ships a one-click elevated pilot launcher that fails closed on an invalid signature", () => {
+    const launcher = readFileSync(
+      join(repositoryRoot, "installer/windows/Install-BIOEMS-Pilot.cmd"),
+      "utf8"
+    );
+    expect(launcher).toContain("Start-Process -FilePath '%~f0' -Verb RunAs");
+    expect(launcher).toContain("Install-PilotSigningCertificate.ps1");
+    expect(launcher).toContain("$signature.Status -ne 'Valid'");
+    expect(launcher).toContain("Expected exactly one BIO-EMS Setup executable");
+    expect(launcher).toContain("goto :failed");
   });
 
   it("trusts only the matching, unexpired pilot code-signing certificate", () => {
