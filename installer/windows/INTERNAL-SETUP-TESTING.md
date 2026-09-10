@@ -16,6 +16,14 @@ not a publicly trusted production code-signing signature.
 
 1. Confirm Windows is 64-bit and apply current Windows updates.
 2. Extract the downloaded GitHub Actions artifact ZIP.
+3. For the normal pilot flow, double-click `Install-BIOEMS-Pilot.cmd`. Approve the
+   Administrator prompt. The launcher installs the matching certificate, requires a
+   `Valid` Setup signature, and then starts Setup automatically. Continue with the
+   fresh-install test below.
+
+The remaining steps are the manual verification fallback if the launcher reports a
+problem:
+
 3. Open PowerShell in the extracted directory and verify the Setup hash:
 
    ```powershell
