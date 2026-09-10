@@ -189,6 +189,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       bootstrap.indexOf('import("../server")')
     );
   });
+
+  it("opens HTTPS directly from Setup and installed shortcuts", () => {
+    const source = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+    expect(source).toContain('Filename: "https://localhost/"; Description: "Open BIO-EMS"');
+    expect(source).toContain('Name: "{group}\\BIO-EMS"; Filename: "https://localhost/"');
+    expect(source).toContain('Name: "{commondesktop}\\BIO-EMS"; Filename: "https://localhost/"');
+  });
 });
 
 describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
