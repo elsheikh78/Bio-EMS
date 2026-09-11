@@ -285,3 +285,23 @@ Implementation is not considered complete until automated/manual acceptance test
 This document is an **approved architecture and implementation requirement**, not evidence that licensing is currently implemented.
 
 Actual implementation status must be reflected separately in `IMPLEMENTATION_PLAN.md`, `PROJECT_STATE.md`, release documentation and test evidence as work packages are completed.
+
+
+## 21. Approved device trust and replaceable-host clarification (2026-09-11)
+
+The following clarification is approved for implementation:
+
+- Each ESP32/gateway receives its own unique key pair and client certificate.
+- Devices and the platform share a certificate authority trust chain, never a shared private key or reusable certificate.
+- MQTT/API device communication uses mutual TLS plus backend registry, Site, license and topic authorization.
+- ESP32 production security must evaluate Secure Boot, Flash Encryption, encrypted credential storage and, for the preferred commercial profile, a non-exportable hardware secure element.
+- The logical Installation ID survives an approved PC replacement; the Host ID, host key, hardware fingerprint, signed license binding and server TLS certificate are reissued.
+- Valid field-device certificates remain unchanged when only the platform PC is replaced.
+- Planned and emergency transfer workflows must atomically retire/revoke the old host and audit the change.
+- Offline transfer is supported through signed request/response packages and must not depend on editable database flags.
+- Monitoring continuity and safety-relevant data collection follow a defined grace/restricted policy; license failure must not destroy customer data.
+
+Detailed requirements and acceptance criteria are authoritative in:
+
+- `docs/security/device-registration.md`
+- `docs/security/activation-workflow.md`
