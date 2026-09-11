@@ -146,9 +146,29 @@ Prototype, development, laboratory, UI/UAT and controlled pilot work may continu
 
 Commercial enforcement must not be designed to unexpectedly stop critical local telemetry collection or alarm generation solely because Internet connectivity is lost. Offline/grace and monitoring-continuity behavior must be validated under LIC-08/LIC-12.
 
+## Communication Channel Administration — Approved Pilot Work Package
+
+**Status:** APPROVED / PLANNED — implementation not yet claimed.
+
+Authority: `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md`.
+
+The package introduces `Configuration -> Communication Channels` for SYSTEM_OWNER and ADMIN management of Email, Telegram, WhatsApp and SMS/GSM provider connectivity, protected secret storage, test actions, runtime reload/restart behavior, audit evidence and configurable channel failover. Notification Recipients and Escalation Policies remain separate authoritative domains.
+
+Controlled sequence:
+
+- COM-01 — Configuration domain and secure storage
+- COM-02 — RBAC-protected API
+- COM-03 — Provider runtime integration
+- COM-04 — Configuration UI
+- COM-05 — Test actions and diagnostics
+- COM-06 — Failover and operational regression
+- COM-07 — Pilot acceptance
+
+This is a pilot-completion requirement. No COM item is complete until source, tests, PR/CI and merge evidence exist, and external provider acceptance remains a separate evidence gate.
+
 ## Delivery Ordering
 
-1. Complete/stabilize the current UI/UX/P8/localization/notification work and its regression evidence.
+1. Preserve completed UI/UX/P8/localization/notification evidence and implement the approved COM-01 -> COM-07 Communication Channel Administration package before pilot closure.
 2. Execute the Licensing Core: LIC-01 -> LIC-06.
 3. Execute site/device governance and lifecycle: LIC-07 -> LIC-10.
 4. Use the completed LIC-11 contract in DEP-01 implementation and qualification.

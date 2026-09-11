@@ -34,6 +34,7 @@
 22. The 8 September 2026 installer/UI evidence and exact morning continuation are recorded in `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md`.
 23. Preserve the five-second opening boundary, default dark monitoring mode, corrected Arabic RTL content offset/timestamps, trusted Live Board controls, rolling 24-hour telemetry evidence and persisted local view preferences merged through PR #190 / CI #657 / `92040dfeacefb426e2446abddebdc528c69c3c35`.
 24. Do not execute Fresh Install over a workstation with an unrelated Mosquitto service. PR #183 makes this collision fail closed; qualification must use an isolated clean Windows target.
+25. Communication Channel Administration is approved as a pilot-completion requirement. The authoritative work package is `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md`; COM-01 through COM-07 are PLANNED, not yet implementation evidence.
 
 ## Implemented Software Position
 
@@ -58,6 +59,14 @@
 - Email and Telegram live Alarm delivery: **END-TO-END EVIDENCE PASSED 9 SEPTEMBER 2026**. The controlled MQTT -> telemetry acceptance -> InfluxDB write -> Critical Alarm -> Site-scoped escalation -> durable Email/Telegram delivery path completed successfully with both providers SENT on attempt 1/5 and actual receipt confirmed. Evidence: `docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md`.
 - Acknowledged Alarm recovery: **SOURCE FIX MERGED / CI VERIFIED / LIVE RECOVERY PASSED** through PR #196, CI #680 and merge `13635eb9304b6c6daf3652d2ac055e1498bb2537`. A normal 5 °C reading moved Alarm #9 from ACKNOWLEDGED to RECOVERED while preserving acknowledgment evidence and preventing duplicate active lifecycles.
 - Post-v0.20.0 UI/operations continuation: **MERGED / CI VERIFIED THROUGH PR #190**. RTL/timestamps, dark theme, five-second opening, Live Board controls, configured evidence, rolling 24-hour telemetry trends and persisted view preferences are on `main` through `92040dfeacefb426e2446abddebdc528c69c3c35`. Visual screenshot acceptance remains separate.
+
+## Approved Communication Channel Administration Scope — Planned
+
+The approved scope adds `Configuration -> Communication Channels` for SYSTEM_OWNER and ADMIN to manage Email, Telegram, WhatsApp and SMS/GSM provider connectivity without PowerShell, deployment-file editing or a new Setup build. It requires protected secret storage, masked UI fields, test actions, audit logging, runtime reload/restart handling, configurable channel priority/failover, bilingual RTL/LTR UI and non-regression of Notification Recipients, Escalation Policies and durable delivery jobs.
+
+Status: **COM-01 THROUGH COM-07 PLANNED / NOT YET IMPLEMENTED OR QUALIFIED**.
+
+Authority: `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md`.
 
 ## Approved UI/UX Refresh Scope — UX-01 through UX-09 Complete
 
