@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### 11 September 2026 audit reconciliation
+
+- Added the authoritative complete audit and Pilot-first execution order.
+- Reconciled current status through PR #205 and installer progress through PRs #199-#203.
+- Defined COM-01 through COM-07 as the immediate notification-administration work package.
+- Defined the next execution order as COM source -> fresh Pilot Setup -> multi-machine installer qualification -> hardware bench qualification -> field commissioning/UAT -> Pilot stabilization -> deferred production-grade Device Trust/commercial protection.
+- Added a populated `PILOT_SCOPE.md` and `RISK_REGISTER.md`.
+- Replaced stale/corrupted README status content and corrected the installer position.
+- Preserved source version `0.20.0`; this audit does not create a new release.
+
 ### Added / Changed
 
 - Corrected the offline Windows Setup to compile the four archive payloads into one executable and added a fail-closed preflight that protects an unrelated pre-existing Mosquitto service. An unsigned internal Windows 10 x64 build passed deterministic staging, source validation and Inno Setup compilation; clean-machine qualification and signing remain open.
