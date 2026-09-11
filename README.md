@@ -1,139 +1,139 @@
 # BIO-EMS
 
-![Source Version](https://img.shields.io/badge/source-0.20.0-blue)
-![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
+Enterprise Environmental Monitoring System for regulated and operational environments.
 
-Enterprise Environmental Monitoring System for pharmaceutical cold rooms, warehouses, hospitals, laboratories, clean rooms, manufacturing facilities, and other regulated environments.
+**Current source version:** `0.20.0`  
+**Latest published source release:** `v0.20.0`  
+**Current phase:** Pilot stabilization and qualification
 
-**Latest published source release:** [`v0.20.0`](https://github.com/elsheikh78/Bio-EMS/releases/tag/v0.20.0).
-**Current source-software version:** `0.20.0`.
+## Read these first
 
-## Documentation Authority â€” Read This First
+| Question | Authority |
+| --- | --- |
+| Where is the project now? | `PROJECT_STATE.md` |
+| What do we execute next? | `IMPLEMENTATION_PLAN.md` |
+| What did the 11 September complete audit conclude? | `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
+| What is the current Pilot scope? | `PILOT_SCOPE.md` |
+| What are the active project risks? | `RISK_REGISTER.md` |
+| What controls Communication Channel Administration? | `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md` |
+| What controls the Windows installer? | `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md` |
+| What controls future device trust? | `docs/security/device-registration.md` and `docs/security/activation-workflow.md` |
 
+Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a historical document conflicts with current status, `PROJECT_STATE.md` and `IMPLEMENTATION_PLAN.md` control.
 
-> Latest controlled continuation: [8 September 2026 end-of-day handoff](docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md). It records the internal unsigned Windows build evidence, open installer gates and the exact morning start point.
+## Current position
 
+The core source platform is mature. The latest audited CI baseline passed:
 
-| Need                                                                         | Authoritative document                                                                                                                                                 |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Where is the whole project now?                                              | [`PROJECT_STATE.md`](PROJECT_STATE.md) â€” **single current-state authority**                                                                                            |
-| What is the approved software/product execution plan and exact next package? | [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)                                                                                                                     |
-| What is the approved SYSTEM_OWNER installation and RBAC plan?                | [`docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md`](docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md) |
-| What is the approved customer Windows installer plan?                        | [`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md)                                                     |
-| What exactly is active P7 scope?                                             | [`docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`](docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md)                     |
-| How is SYSTEM_OWNER bootstrapped and Platform JWT configured safely?         | [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md)                                             |
-| What is the latest P7 closure evidence?                                      | [`docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md`](docs/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md)                   |
-| What is the P8-02 through P8-08 closure evidence?                            | [`docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md`](docs/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md)                                       |
-| What did the current documentation audit conclude?                           | [`docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md`](docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md)                                   |
-| What is the hardware validation path?                                        | [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md)                               |
-| Historical Sprint/BF/PVR progress                                            | [`docs/SPRINT_PROGRESS.md`](docs/SPRINT_PROGRESS.md) â€” historical ledger only                                                                                          |
+- Backend typecheck/build/lint/format;
+- Backend 114 test files / 809 tests;
+- Frontend typecheck/lint/format/build;
+- Frontend 52 test files / 299 tests.
 
-**Rule:** if a historical document conflicts with current status, `PROJECT_STATE.md` controls.
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
-## Current Position
+## Current execution order
 
-**The approved P0-P7 software scope is SOFTWARE PRODUCT COMPLETE.** P7-03 through P7-08 closed through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
+1. COM-01 through COM-06 Communication Channel Administration.
+2. Build a fresh controlled internal Pilot Setup.
+3. Qualify installation on multiple clean Windows computers.
+4. Complete COM-07 Pilot acceptance.
+5. Execute hardware bench qualification.
+6. Close required SMS/GSM and notification failover evidence.
+7. Install and commission BIO EGYPT Pilot.
+8. Stabilize defects from real operation.
+9. Implement deferred production-grade Device Trust/commercial protection.
+10. Complete production signing, manuals, presentation and final Production Installer release.
 
-- **P0:** software complete / merged / CI verified.
-- **P1:** software complete / merged / CI verified; live notification-provider/field evidence remains external.
-- **P2:** software complete / merged / CI verified; physical controller }÷æÚ$z{-®éÜj×d by Meta registration. The approved P8-01A extension adds Telegram as an independent interim primary channel; live bot and end-to-end `TELEGRAM + EMAIL` Critical Alarm delivery evidence passed on 9 September 2026; WhatsApp remains blocked by Meta.
-- **P8-02 through P8-08:** source complete / merged / CI verified through PR #152 / CI run #537 / merge `0666dd2bbf837c80cf52542062cf7cdd9a337907`; physical receipt, field Commissioning and customer acceptance remain external.
-- **UI/UX UX-01 through UX-09:** product refresh implementation and full repository regression complete / merged / CI verified through PR #171 / CI #592 / merge `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`; the verified matrix covers 157 test files and 1,047 tests.
+The production Device PKI/mTLS/Secure Boot/host-transfer architecture is approved, but final implementation is intentionally deferred until Pilot Setup and hardware are stable.
 
-BIO EGYPT Pilot remains **NOT COMMISSIONED / NOT ACCEPTED**.
-
-## Approved Full Offline Windows Installer
-
-DEP-01 is approved later software scope. It will deliver one offline customer
-Production Setup that installs BIO-EMS and required runtimes/services automatically,
-plus a separate technician Commissioning Package. It includes first-run
-configuration, Windows service startup, post-install health verification, and
-data-safe Repair/Upgrade/Uninstall requirements. Implementation and clean-machine
-qualification have not started and are not implied by P6 productization.
-
-Controlled plan:
-[`docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md`](docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md).
-
-## P8 Installation Provisioning and RBAC
-
-The application now provides explicit customer ownership, the approved customer-role
-matrix, SYSTEM_OWNER-managed customer ADMIN accounts, controlled configuration
-revisions and checksums, device receipt evidence, safe configuration activation,
-technical Commissioning and independent customer ADMIN acceptance. See the P8 plan
-and closure record above for the exact software/evidence boundary.
-
-The global language control persists Arabic/English selection and applies RTL/LTR across both SYSTEM_OWNER and customer operations. Customer navigation, monitoring, Alarm, Device, delivery, calibration, reporting, configuration, User/Audit and Workspace surfaces use Arabic copy when Arabic is selected; controlled report requests also use the selected language.
-
-Global localization integration evidence: PR #155 / CI run #543 / merge `e0f305c2286ff577f20df076b64118e327a5ba0c`.
-
-## P7 Final Product Completion (Historical)
-
-P7 consists of eight controlled work packages:
-
-1. SYSTEM_OWNER frontend boundary and console shell â€” complete.
-2. Customer / Site fleet management â€” complete.
-3. License lifecycle and installation-binding UI â€” complete.
-4. Update-entitlement and release-eligibility UI â€” complete.
-5. Maintenance, calibration and support fleet operations â€” complete.
-6. Product UX and legacy cleanup â€” complete.
-7. End-to-end product workflow review â€” complete.
-8. Full regression, documentation reconciliation and software-product closure â€” complete.
-
-P7-01 through P7-08 are complete, merged and CI verified; external provider, physical, field, UAT and production evidence remain separately controlled.
-
-## Hardware Track
-
-The hardware track remains deliberately independent from software-complete claims. Current approved direction is initial test kit first, then HV validation; do not infer Pilot hardware acceptance from repository status.
-
-Primary controlled hardware plan: [`docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md`](docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md).
-
-Hardware scope uses industrial DS18B20 temperature sensing, Standard/Advanced hardware tiers, ESP32-family controller direction, and SIM800L as the SMS-only fallback candidate. Final component approval requires actual validation evidence.
-
-## Platform Capabilities
+## Platform capabilities
 
 BIO-EMS currently includes:
 
-- TypeScript/Express backend and React/TypeScript/Vite frontend.
-- SQLite configuration/operational persistence and InfluxDB telemetry storage.
-- MQTT telemetry ingestion with TLS/QoS and LIVE/REPLAY recovery semantics.
-- Alarm evaluation, configurable thresholds and warning/critical persistence delays.
-- Operational Dashboard and Monitored Areas with authenticated telemetry-driven refresh.
-- JWT authentication, active-User enforcement, centralized RBAC, ADMIN User Management, and isolated SYSTEM_OWNER boundary.
-- Append-only Audit, Alarm acknowledgment evidence, calibration history, and Device communication-health evidence.
-- Notification recipients, Email/WhatsApp/Telegram escalation configuration, durable notification events/delivery operations, and SMS failover contracts/runtime.
-- BF-08 Site Controller offline-critical configuration synchronization.
-- Reporting Center with Calibration History, Temperature Performance, Alarm History, Device Communication Health, and Audit and Operations in Preview/CSV/PDF workflows.
-- P2 Site Controller host-side runtime and recovery/qualification software gates.
-- P3 Site-scoped commissioning sessions, evidence/deviations/decisions, readiness UI, and CSV/PDF commissioning records.
-- P4 production-hardening controls.
-- P5 isolated SYSTEM_OWNER customer, license/update-entitlement, and maintenance oversight backend/domain workflows with append-only provenance.
-- P6 controlled `0.18.0` release manifest and machine-checkable release-package validation.
-- P7-01 isolated SYSTEM_OWNER login/session/route boundary and bilingual owner console shell.
-- P7-02 owner customer fleet list/detail/create workflow with recorded Site/installation context and commercial provenance.
+- TypeScript/Express backend.
+- React/TypeScript/Vite frontend.
+- SQLite operational/configuration persistence.
+- InfluxDB telemetry history.
+- MQTT telemetry ingestion and recovery semantics.
+- Alarm thresholds, persistence delays and lifecycle evidence.
+- Dashboard, Monitored Areas and Live Monitoring Wall.
+- Arabic/English with RTL/LTR.
+- JWT/RBAC and isolated SYSTEM_OWNER trust boundary.
+- Audit trail and User Management.
+- Sensor calibration workflows.
+- Notification recipients and escalation policies.
+- Email, Telegram, WhatsApp source providers and SMS failover/provider contracts.
+- Durable notification delivery jobs and operations.
+- Reporting Center with Preview/CSV/PDF.
+- Installation provisioning and commissioning workflows.
+- Existing licensing/anti-copy source controls.
+- Full offline Windows installer source/build pipeline.
 
-## Architecture Boundary
+## Notification evidence
 
-Frontend **Monitored Area** is presentation terminology for the existing Room domain:
+- Email live delivery: passed.
+- Telegram live delivery: passed.
+- Critical Alarm -> Email + Telegram end-to-end path: passed.
+- Meta WhatsApp live acceptance: open and externally blocked.
+- SMS/GSM live evidence: open.
+- Telegram is the approved interim online Pilot channel while WhatsApp remains blocked.
 
-**Site â†’ Monitored Area (Room) â†’ Sensor**
+## Communication Channels configuration
 
-No separate Monitoring Point or Asset backend domain is currently claimed.
+Approved next source work adds:
 
-## Evidence Boundary
+`Configuration -> Communication Channels`
 
-Repository CI can establish source-software completion. It does not establish physical installation or operational acceptance.
+SYSTEM_OWNER and ADMIN will be able to manage Email, Telegram, WhatsApp and SMS/GSM provider connection settings, secure secrets, test actions and channel failover without rebuilding BIO-EMS or editing PowerShell/deployment files.
 
-Still requiring external evidence include physical controller/hardware validation, live SIM800L delivery, WhatsApp provider acceptance, deployed MQTT/endurance tests, the controlled 72-hour hardware gate where required, BIO EGYPT installation/calibration/commissioning, customer/Quality UAT, sign-off, and production acceptance.
+## Windows Setup status
 
-Payment/invoicing integration and live remote OTA/update execution are also not implied by P5/P7 unless separately implemented and verified.
+Installer source is materially advanced:
 
-## Development
+- single-EXE internal artifact pipeline;
+- internal Pilot Authenticode signing;
+- one-click elevated launcher;
+- automatic install diagnostics;
+- partial-install/clean-device repair fix.
 
-**Backend:** TypeScript / Express  
-**Frontend:** React / TypeScript / Vite  
-**License:** Proprietary
+Still required:
 
-Before testing or developing the SYSTEM_OWNER surface, follow [`docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md`](docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md); never commit real owner credentials or Platform JWT secrets.
+- successful post-fix clean-machine install evidence;
+- all three BIO-EMS services;
+- HTTPS/API/frontend health;
+- reboot recovery;
+- Repair/Upgrade/rollback;
+- retained-data Uninstall;
+- repeatability on more than one clean Windows PC;
+- final production signing/publication decision.
 
-For continuation, read `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md`. The next controlled work is isolated clean-machine installer qualification followed by Arabic/English visual review; signing, release publication and external acceptance remain separate gates.
+## Architecture boundary
+
+The controlled domain remains:
+
+`Site -> Monitored Area (Room) -> Sensor`
+
+Do not create a second competing Monitored Area backend domain.
+
+## Version / release rule
+
+`VERSION`, backend package version and `release-manifest.json` remain at `0.20.0` until an explicit next-release decision.
+
+No documentation merge by itself creates a new release or production-ready claim.
+
+## Evidence boundary
+
+Source/CI completion is not physical or customer acceptance.
+
+Separate evidence is still required for:
+
+- installer qualification;
+- hardware qualification;
+- SMS/GSM live failover;
+- physical installation;
+- calibration;
+- commissioning;
+- customer UAT/acceptance;
+- deferred production-grade security/protection;
+- commercial Production Installer release.
