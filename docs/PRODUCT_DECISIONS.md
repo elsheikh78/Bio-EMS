@@ -187,3 +187,15 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - On planned or emergency PC replacement, the existing logical Installation and valid device certificates are retained; the new Host receives a new key/fingerprint, signed license binding and server TLS certificate, while the old Host is retired/revoked.
 - Transfer, recovery, device issue/revocation and certificate lifecycle actions must be audited.
 - These are approved implementation requirements, not claims of currently deployed capability.
+
+
+## Pilot-First Execution Priority (Approved 2026-09-11)
+
+- Communication Channel Administration COM-01 through COM-06 is the immediate software priority.
+- After COM source merge, generate a fresh internal Pilot Setup and qualify it on multiple clean Windows computers.
+- Hardware bench validation and BIO EGYPT field commissioning follow the repeatable Setup baseline.
+- Telegram remains the interim online Pilot channel while Meta WhatsApp onboarding is externally blocked.
+- Final production Device PKI/mTLS, Secure Boot/Flash Encryption, host-transfer and commercial anti-copy qualification are deferred until Pilot software/hardware stability is established.
+- This sequencing is intentional: it avoids repeated certificate/host-protection rework while the Pilot is still being installed and tested across multiple computers.
+- Existing licensing source work remains preserved; deferral applies to the final production-grade protection/device-trust completion and qualification.
+- Current authority: `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
