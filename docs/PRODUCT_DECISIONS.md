@@ -175,3 +175,15 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - Delegated BIO-EMS roles such as INSTALLATION_ENGINEER are deferred.
 - These are approved requirements, not implemented behavior, until their P8 packages
   pass code review, tests, PR/CI and merge.
+
+
+## Device Trust and Replaceable Platform Host (Approved 2026-09-11)
+
+- Every Site Controller/ESP32 or future gateway has an individual cryptographic identity and client certificate.
+- The platform and controllers trust BIO-EMS-controlled CA roots; they must never share one certificate or private key.
+- Device communication requires mTLS and backend authorization against Customer, Site, Installation, device registry and signed license entitlements.
+- A controller remains bound to its licensed Customer/Site and is rejected when unknown, revoked, replaced or presented against another Site.
+- The customer platform computer is a replaceable Host, not the permanent Site identity.
+- On planned or emergency PC replacement, the existing logical Installation and valid device certificates are retained; the new Host receives a new key/fingerprint, signed license binding and server TLS certificate, while the old Host is retired/revoked.
+- Transfer, recovery, device issue/revocation and certificate lifecycle actions must be audited.
+- These are approved implementation requirements, not claims of currently deployed capability.
