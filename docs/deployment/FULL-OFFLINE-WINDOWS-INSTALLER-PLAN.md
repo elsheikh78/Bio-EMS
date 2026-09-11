@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / DEP-01-01 THROUGH DEP-01-04 COMPLETE
+**Status:** APPROVED REQUIREMENT / SOURCE + INTERNAL PILOT PACKAGING ADVANCED / CLEAN-MACHINE QUALIFICATION OPEN
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
@@ -129,8 +129,19 @@ evidence gates and must not be inferred from installer qualification.
 
 ## 8. Current Boundary
 
-This document approves and controls the requirement. It does not claim that a Full
-Offline Windows Installer currently exists. Until DEP-01 is implemented and its
+A Full Offline Windows Installer source/build pipeline and internal Pilot package now exist. PRs #199-#203 materially advanced this track:
+
+- #199: repeatable GitHub Actions single-EXE artifact;
+- #200: build-scoped internal Authenticode Pilot signing;
+- #201: one-click elevated Pilot launcher;
+- #202: automatic installation diagnostics;
+- #203: correction for clean-device/partial-install service setup failure.
+
+This is still **not** a final Production Installer. The current gate is successful post-#203 clean-machine execution, service/HTTPS/reboot/lifecycle evidence and repeatability on more than one target.
+
+The next installer build should occur after COM-01 through COM-06 merge so the Pilot package contains the Admin-managed Communication Channels configuration.
+
+Historical statement retained for evidence boundary: Until DEP-01 is implemented and its
 qualification evidence is recorded, the repository's existing deployment and
 productization tooling remains source-level capability rather than a customer-ready
 single-click installer.

@@ -1,190 +1,205 @@
 # BIO-EMS Implementation Plan
 
-## Status
+**Plan date:** 11 September 2026  
+**Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
-**Current controlled delivery sequence — reconciled 9 September 2026.**
+## Objective
 
-Historical P0-P8 software closure/evidence remains authoritative for completed scope. The UI/UX Product Refresh and Site-Bound Licensing LIC-01 through LIC-13 are complete/merged/CI verified. DEP-01-06 now has internal Windows build evidence and source corrections, while clean-machine qualification, signing and publication remain open.
+Move BIO-EMS from mature source software to a repeatable, field-tested BIO EGYPT Pilot, then implement the final commercial protection layer only after the Pilot software/hardware path is stable.
 
-## Current Position
+## Phase A — Communication Channel Administration
 
-- P0-P7: completed/merged/CI verified according to existing closure records.
-- P8-01 WhatsApp/Email source delivery: software complete; Email live end-to-end Critical Alarm evidence passed on 9 September 2026; WhatsApp live evidence remains externally blocked by Meta.
-- P8-01A Telegram: source complete/merged/CI verified; live bot and end-to-end Critical Alarm delivery evidence passed on 9 September 2026. Evidence: `docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md`.
-- Alarm acknowledgment/recovery lifecycle: corrected through PR #196 / CI #680 / merge `13635eb9304b6c6daf3652d2ac055e1498bb2537`; live evidence confirms acknowledged Alarm #9 recovered on a normal 5 °C reading without losing acknowledgment evidence.
-- P8-02 through P8-08: source complete/merged/CI verified.
-- Global Arabic/English localization: complete/merged/CI verified.
-- RTL navigation correction: merged on `main`; baseline `a47b11e9fb0691ffd2ee231935b51cff7ecf0035`.
-- DEP-01 Full Offline Windows Installer: DEP-01-01 through DEP-01-05 are complete/merged/CI verified through PR #181 and CI #621. DEP-01-06 embedded single-EXE and Mosquitto-collision corrections are merged through PR #183; an unsigned internal Windows 10 x64 build exists. Clean-machine install/lifecycle qualification, signing and publication are next.
-- UI/UX Product Refresh: complete/merged/CI verified; controlled work package: `docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md`.
-- Site-Bound Licensing / Anti-Cloning: LIC-01 through LIC-13 complete/merged/CI verified. Architecture authority: `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`.
+### COM-01 — Secure configuration domain
 
-## UI/UX Product Refresh — Approved Execution Plan
+Status: **NEXT**
 
-### UX-01 — Frontend Inventory and Non-Regression Baseline
+- define channel/provider configuration model;
+- protected/encrypted secret storage;
+- redacted read model;
+- migrations/repository/service;
+- no-secret logging and backup boundary.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
+### COM-02 — RBAC API
 
-- enumerate all customer, SYSTEM_OWNER and P8 routes/components/styles;
-- identify duplicate/stale styling and legacy artifacts;
-- capture current route/auth/RBAC/localization/live-refresh behavior before visual changes;
-- verify Arabic drawer/right and English drawer/left baseline;
-- preserve the existing `Site -> Monitored Area (Room) -> Sensor` domain.
+- SYSTEM_OWNER + ADMIN mutation authorization;
+- redacted GET;
+- update/enable/disable endpoints;
+- channel-order/failover contract;
+- negative RBAC and secret disclosure tests.
 
-Closure record: `docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md`. PR #162 passed CI #567 and merged to `main` at `7a50338c153bf1388d8d28a7f3b2b3658bfd69ac`. The three approved visual-reference masters are present under `docs/assets/ui-ux/`.
+### COM-03 — Provider runtime integration
 
-### UX-02 — Brand and Shared Design System
+- Email managed config;
+- Telegram managed config;
+- WhatsApp managed config;
+- SMS/GSM transport abstraction;
+- safe runtime reload or controlled restart;
+- migration compatibility from existing environment configuration.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
+### COM-04 — Frontend
 
-- implement the selected BIO-EMS logo direction (design option 5) as reusable background-independent assets;
-- establish typography, spacing, surface, card, navigation, control, status/severity, chart and responsive tokens/primitives;
-- use reusable theme/surface treatment rather than unrelated heavy per-screen backgrounds;
-- maintain operational contrast and non-color severity cues.
+- `Configuration -> Communication Channels`;
+- Email/Telegram/WhatsApp/SMS-GSM panels;
+- masked secrets;
+- Save/Cancel/validation;
+- Arabic/English;
+- RTL/LTR;
+- light/dark/responsive.
 
-Implementation record: `docs/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM-CLOSURE-2026-09-07.md`. Runtime code now contains background-independent horizontal and compact approved identity assets, shared light/dark palette and component primitives, persisted optional dark monitoring mode, localized theme controls and shell/navigation adoption. Frontend typecheck, 281 automated tests, lint, formatting and production build passed on `agent/ux-02-brand-theme`; PR #164 passed CI #571 and merged to `main` at `81ea4a9d91c862f31ad7d278914dcb34fa99d5c6`.
+### COM-05 — Test actions
 
-### UX-03 — Opening / Entry Experience
+- Test Email;
+- Test Telegram;
+- Test WhatsApp;
+- Test SMS;
+- secret-safe diagnostics/audit.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
+### COM-06 — Failover / regression
 
-- professional BIO-EMS opening/entry experience;
-- clean transition into customer or SYSTEM_OWNER authentication/product surfaces;
-- no trust-boundary or pre-auth information leakage.
+- ordered channel priority/fallback;
+- recipient/escalation non-regression;
+- durable delivery integration;
+- reboot persistence;
+- full Backend/Frontend quality gates.
 
-Implementation record: `docs/project-management/UX-03-OPENING-ENTRY-EXPERIENCE-CLOSURE-2026-09-07.md`. The responsive opening experience uses the approved production identity and dark technical composition, localized startup copy, reduced startup delay, per-tab completion persistence and a hard child-mount boundary so authentication/product flows are not mounted behind the opening screen. Frontend typecheck, 283 automated tests, lint, formatting and production build passed on `agent/ux-03-opening-entry`; PR #165 passed CI #574 and merged to `main` at `6a46ad24e49ae219d4ebb8c6e4289856febe6f36`.
+### COM-07 — Pilot acceptance
 
-### UX-04 — Compact Operational Dashboard Redesign
+Executed only after the software is installed on the Pilot target and real provider evidence is available.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
+## Phase B — Fresh Pilot Setup build
 
-- redesign Dashboard for a compact, high-information normal desktop viewport;
-- prioritize overall state, Alarm/actionable exceptions, monitored-area status, live environmental readings and relevant device health;
-- preserve authenticated telemetry-driven refresh, reconnect/cleanup and polling fallback;
-- provide a clear entry to the new Monitoring Areas Live Board.
+After COM-01 through COM-06 merge:
 
-Implementation record: `docs/project-management/UX-04-COMPACT-OPERATIONAL-DASHBOARD-CLOSURE-2026-09-07.md`. The Dashboard now provides a compact exception-first command surface, six condensed KPI cards, smaller current-reading and priority-area panels, shared-theme surfaces, bilingual copy and preserved detailed evidence sections. The current action safely opens Monitored Areas; UX-05 will retarget it to the dedicated Live Board only when that route exists. Frontend typecheck, 284 automated tests, lint, formatting and production build passed on `agent/ux-04-compact-dashboard`; PR #166 passed CI #577 and merged to `main` at `8f82c4e3a72064bc719c58feec4cf382393efd08`.
+1. Build from authoritative `main`.
+2. Generate controlled internal signed Pilot Setup.
+3. Record artifact SHA-256 and certificate fingerprint.
+4. Package one-click launcher and installation diagnostics.
+5. Keep artifact clearly labeled internal/Pilot, not Production.
 
-### UX-05 — Monitoring Areas Live Board
+## Phase C — Installer qualification
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
+Run on clean isolated Windows 10/11 x64 computers.
 
-- add a dedicated Dashboard-accessible route/screen;
-- one prominent live card/tile per Monitored Area;
-- show current measurement(s), unit, area identity, state/severity and freshness/communication indication where supported;
-- distinguish Normal/Warning/Alarm/Unavailable without color-only encoding;
-- responsive grouping/filtering for larger fleets;
-- first-class Arabic/English and RTL/LTR;
-- use existing trusted APIs/domain contracts and consistent live update/reconnect/fallback behavior.
+### IQ-01 Fresh Install
 
-Implementation record: `docs/project-management/UX-05-MONITORING-AREAS-LIVE-BOARD-CLOSURE-2026-09-07.md`. A protected `/live-board` route now uses the authoritative Dashboard room-status contract, existing polling and AppShell SSE invalidation to render summary counts and one responsive card per Monitored Area. Search, Site/status filtering and grid density are local presentation controls; unsupported ranges/min-max/trends are intentionally omitted. Frontend typecheck, 288 automated tests, lint, formatting and production build passed on `agent/ux-05-live-board`; PR #167 passed CI #580 and merged to `main` at `e989a516e6ab0f6566eb265aa623b4295ebc8404`.
+Verify:
+- Setup launches normally;
+- BIOEMS-MQTT installed/running;
+- BIOEMS-InfluxDB installed/running;
+- BIOEMS-Backend installed/running;
+- HTTPS application opens;
+- API health passes;
+- persistent data/config/log paths are correct.
 
-### UX-06 — High-Frequency Customer Operations Refresh
+### IQ-02 Reboot recovery
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
-Reconcile Monitored Areas, Alarms/acknowledgement, Devices/health, Configuration, Calibration, notifications/escalation/delivery operations and Reporting Center with the shared design system without changing their domain semantics.
+- automatic services;
+- application health;
+- retained configuration;
+- no manual PowerShell requirement for normal use.
 
-Implementation record: `docs/project-management/UX-06-HIGH-FREQUENCY-OPERATIONS-REFRESH-CLOSURE-2026-09-07.md`. The high-frequency operational review adds compact lifecycle summaries, responsive control surfaces, logical RTL-safe severity borders and preserved action/error behavior to Alarms, Monitored Areas, Devices and Notification Delivery. Configuration, Calibration, recipient/escalation operations and Reporting Center were reviewed against the shared theme and retained where already reconciled. No API, RBAC, tenant, Alarm lifecycle, calibration or reporting semantics changed. PR #168 passed CI #583 and merged to `main` at `b05181e0e89f8b3c97d24daac3a643d5f4be0c55`.
+### IQ-03 Repair / Upgrade / rollback
 
-### UX-07 — Remaining Customer Surface Refresh
+- verified backup;
+- controlled service lifecycle;
+- health-gated result;
+- rollback on failure;
+- no data loss.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
-Reconcile remaining user-facing commissioning/productization/operational surfaces, including loading/empty/error/action states, responsive behavior and accessibility.
+### IQ-04 Uninstall
 
-Implementation record: `docs/project-management/UX-07-REMAINING-CUSTOMER-SURFACES-CLOSURE-2026-09-07.md`. The operational workspace now exposes the complete permission-filtered customer workflow set without stale readiness claims. Commissioning adds explicit loading/empty states, responsive readiness summaries and an overflow-safe evidence table. User administration controls and access/error surfaces are responsive and keyboard-focus aware. Frontend typecheck, 51 test files/292 tests, lint, formatting and production build passed on `agent/ux-07-customer-surfaces`; PR #169 passed CI #586 and merged to `main` at `92449009e726d36b630179178cbd80d32db258ea`.
+- program/services removed as designed;
+- retained customer data/evidence preserved according to policy.
 
-### UX-08 — SYSTEM_OWNER and P8 Workflow Refresh
+### IQ-05 Repeatability
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
-Reconcile SYSTEM_OWNER customer/site/license/update/maintenance/support and P8 installation provisioning/revision/receipt/commissioning/acceptance surfaces while preserving isolated platform authentication and tenant/RBAC boundaries.
+Repeat on at least one additional clean PC to detect machine-specific assumptions.
 
-Implementation record: `docs/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-REFRESH-CLOSURE-2026-09-07.md`. SYSTEM_OWNER login and console now use approved identity/accessibility and responsive shell treatment. Customer fleet, commercial operations and installation lifecycle screens gain responsive controls/tables, explicit lifecycle loading/error/empty states, and authoritative installation summaries while preserving isolated platform authentication and P8 domain gates. Frontend typecheck, 51 test files/292 tests, lint, formatting and production build passed on `agent/ux-08-system-owner-p8`; PR #170 passed CI #589 and merged to `main` at `adce8acca13cfb2e82467c39ed5f6dbb4d7567af`.
+## Phase D — Hardware bench qualification
 
-### UX-09 — Full Regression and Closure
+1. Freeze Pilot BOM.
+2. Assemble Site Controller/Pilot hardware.
+3. Sensor accuracy and calibration checks.
+4. Wiring/protection checks.
+5. Controller registration/mapping.
+6. Real MQTT telemetry.
+7. disconnect/reconnect and buffering/replay.
+8. power-cycle recovery.
+9. real Alarm threshold challenge.
+10. Email/Telegram notification challenge.
+11. SMS/GSM fallback challenge.
+12. endurance gate where applicable.
 
-Status: **COMPLETE / MERGED / CI VERIFIED**
-Required gates include typecheck, build, lint, formatting, automated frontend tests, auth/RBAC/route regression, Arabic/English + RTL/LTR regression, Dashboard/Monitored Areas/Live Board live-refresh regression, responsive checks, accessibility sanity checks and affected export/report navigation regression.
+## Phase E — BIO EGYPT field Pilot
 
-Only after real implementation, PR, CI and merge evidence may this package be marked complete and reflected in release/version documentation.
+1. install Pilot platform at approved Site computer;
+2. install/map controller and Sensors;
+3. record calibration;
+4. verify all areas/readings;
+5. challenge warning/critical Alarms;
+6. verify recipient/escalation routes;
+7. network/power/reboot tests;
+8. technical Commissioning;
+9. customer ADMIN UAT/acceptance;
+10. close Pilot defects.
 
-Regression record: `docs/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md`. Backend typecheck/build/lint/format and 106 test files/755 tests passed. Frontend typecheck/lint/format, 51 test files/292 tests and production build passed. The automated total is 157 files/1,047 tests. Auth/RBAC/routes, localization/RTL, live refresh, responsive/accessibility behavior and reporting contracts are represented by the controlled suites. PR #171 passed CI #592 and merged to `main` at `eaa8a99bd2acf1b283c280eec4d54b09f789cd2f`. Version `0.20.0` was prepared through PR #172 / CI #594 and published as tag/Release `v0.20.0` from `e50593ddfda7acd3996d11d1de53c86821cb6c83` after explicit Owner approval.
+Pilot remains **NOT COMMISSIONED / NOT ACCEPTED** until this evidence exists.
 
-## Site-Bound Licensing / Anti-Cloning — Mandatory Production Gate
+## Phase F — Pilot stabilization
 
-**Decision:** LIC-01 through LIC-13 are mandatory before a BIO-EMS Production Installer or any commercial/customer production deployment may be declared production-ready.
+- collect real defects;
+- prioritize Severity 1/2;
+- implement/retest;
+- rerun installer/hardware regressions where affected;
+- freeze Pilot-stable baseline.
 
-**Architecture authority:** `docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md`
+## Phase G — Deferred commercial protection
 
-**Status:** **LIC-01 THROUGH LIC-13 COMPLETE / MERGED / CI VERIFIED / DEP-01 NEXT**
+Only after Phase F:
 
-### Controlled sequence
+- DEV-TRUST-01 PKI/key-management hierarchy;
+- DEV-TRUST-02 device lifecycle registry;
+- DEV-TRUST-03 protected ESP32 key generation/storage;
+- DEV-TRUST-04 MQTT mTLS/topic authorization;
+- DEV-TRUST-05 secure provisioning;
+- DEV-TRUST-06 revocation/rotation/replacement;
+- DEV-TRUST-07 signed firmware/Secure Boot/Flash Encryption;
+- DEV-TRUST-08 clone detection/security audit;
+- DEV-TRUST-09 offline trust/revocation;
+- DEV-TRUST-10 PC migration integration;
+- DEV-TRUST-11 negative/recovery/field acceptance.
 
-- LIC-01 — Licensing domain/data model
-- LIC-02 — Installation identity and protected key storage
-- LIC-03 — Hardware fingerprint and tolerance policy
-- LIC-04 — License certificate schema and cryptographic signing/verification
-- LIC-05 — Activation API and Platform Owner workflow
-- LIC-06 — Local runtime license validator
-- LIC-07 — Site and gateway/device binding
-- LIC-08 — Offline activation and offline/grace behavior
-- LIC-09 — Transfer/reactivation/revocation workflows
-- LIC-10 — Platform licensing dashboard and audit history
-- LIC-11 — Installer integration
-- LIC-12 — Anti-tamper/negative/security tests
-- LIC-13 — Operational signing-key management, backup and recovery procedure
+Existing LIC-01 through LIC-13 source work is retained. The deferred phase completes the production-grade device trust/host replacement/commercial protection architecture rather than forcing that moving target into early Pilot-machine testing.
 
-### Production-gate rule
+## Phase H — Commercial production release
 
-The following are prohibited until LIC-01 through LIC-13 have implementation and test evidence sufficient for production use:
+- final supported Windows matrix;
+- commercial/public Authenticode decision;
+- final Production Installer qualification;
+- licensing/security qualification;
+- backup/restore/DR drills;
+- User Instruction Manual;
+- SYSTEM_OWNER Instruction Manual;
+- commissioning/service documentation;
+- professional product presentation/video;
+- version/tag/release publication.
 
-- declaring DEP-01 a final Production Installer;
-- releasing a commercial reusable customer setup package;
-- declaring a customer/site deployment production-ready;
-- representing BIO-EMS as protected against unauthorized cross-PC/cross-site reuse.
+## Parallel non-blocking work
 
-Prototype, development, laboratory, UI/UAT and controlled pilot work may continue before this gate where explicitly identified as non-production and where licensing absence does not create a commercial deployment risk.
+- Meta WhatsApp onboarding may continue in parallel.
+- Telegram remains the interim online Pilot channel.
+- Documentation/manual content can be prepared incrementally but final screenshots/instructions wait for stable Pilot UI/hardware.
+- Hardware procurement can proceed while COM source implementation is underway if BOM items are already approved.
 
-Commercial enforcement must not be designed to unexpectedly stop critical local telemetry collection or alarm generation solely because Internet connectivity is lost. Offline/grace and monitoring-continuity behavior must be validated under LIC-08/LIC-12.
+## Definition of done
 
-## Communication Channel Administration — Approved Pilot Work Package
+Every package requires the evidence appropriate to its type:
 
-**Status:** APPROVED / PLANNED — implementation not yet claimed.
+- source package: code + tests + PR + CI + merge;
+- provider: actual provider delivery;
+- installer: real clean-machine execution;
+- hardware: real bench/field evidence;
+- commissioning: signed/recorded Site evidence;
+- production: security/licensing/signing/release gates.
 
-Authority: `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md`.
-
-The package introduces `Configuration -> Communication Channels` for SYSTEM_OWNER and ADMIN management of Email, Telegram, WhatsApp and SMS/GSM provider connectivity, protected secret storage, test actions, runtime reload/restart behavior, audit evidence and configurable channel failover. Notification Recipients and Escalation Policies remain separate authoritative domains.
-
-Controlled sequence:
-
-- COM-01 — Configuration domain and secure storage
-- COM-02 — RBAC-protected API
-- COM-03 — Provider runtime integration
-- COM-04 — Configuration UI
-- COM-05 — Test actions and diagnostics
-- COM-06 — Failover and operational regression
-- COM-07 — Pilot acceptance
-
-This is a pilot-completion requirement. No COM item is complete until source, tests, PR/CI and merge evidence exist, and external provider acceptance remains a separate evidence gate.
-
-## Delivery Ordering
-
-1. Preserve completed UI/UX/P8/localization/notification evidence and implement the approved COM-01 -> COM-07 Communication Channel Administration package before pilot closure.
-2. Execute the Licensing Core: LIC-01 -> LIC-06.
-3. Execute site/device governance and lifecycle: LIC-07 -> LIC-10.
-4. Use the completed LIC-11 contract in DEP-01 implementation and qualification.
-5. Qualify the final Production Installer on clean machines only after the licensing production gate is satisfied.
-6. Proceed to commercial/customer production deployment only after installer, licensing, deployment and applicable field/UAT gates are evidenced.
-
-## Next-Session Start Procedure
-
-1. Reconcile local Windows `main` with GitHub `origin/main`; confirm a clean working tree and matching SHAs.
-2. Read `docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md` and `PROJECT_STATE.md`.
-3. Qualify the internal unsigned Setup only on an isolated clean Windows 10/11 x64 target; do not remove the unrelated Mosquitto service from the development workstation.
-4. Capture secret-free evidence for Fresh Install, three BIO-EMS services, ports, HTTPS/API health, licensing receipt, reboot recovery, Repair/Upgrade rollback and retained-data Uninstall.
-5. Run Arabic/English, RTL/LTR, light/dark and responsive visual review of the post-v0.20.0 UI and record screenshots/defects separately.
-6. Decide Authenticode signing, next version/tag and Release publication only after installer evidence passes.
-7. Preserve the passed Email/Telegram evidence; keep Meta WhatsApp, SMS, hardware, field Commissioning/UAT/customer acceptance and licensing qualification as separately evidenced tracks.
-
-## Execution Rule
-
-Repository completion, CI success, provider delivery, physical/bench evidence, licensing qualification, installer qualification, field commissioning, production deployment, UAT and customer acceptance are distinct gates. Documentation or UI polish must never be used to imply completion of an implementation or external evidence gate.
+No package is closed by documentation alone.
