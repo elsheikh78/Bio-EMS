@@ -149,6 +149,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toMatch(/<password>|LocalSystem/);
   });
 
+  it("keeps service rollback PowerShell 5.1 compatible", () => {
+    expect(lifecycle).not.toContain("Select-Object -Reverse");
+    expect(lifecycle).toContain("[array]::Reverse($rollbackServiceIds)");
+    expect(lifecycle).toContain("$failure = $_");
+    expect(lifecycle).toContain("$failure.Exception.Message");
+  });
+
   it("fails closed before replacing a pre-existing Mosquitto service", () => {
     expect(lifecycle).toContain('Get-Service -Name "mosquitto"');
     expect(lifecycle).toContain("Fresh service installation refuses an existing Mosquitto service");
@@ -240,6 +247,12 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   const windowsRoot = join(repositoryRoot, "installer/windows");
   const lifecycle = readFileSync(join(windowsRoot, "Invoke-DEP0105Lifecycle.ps1"), "utf8");
   const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+
+  it("uses PowerShell 5.1-compatible service start order", () => {
+    expect(lifecycle).not.toContain("Select-Object -Reverse");
+    expect(lifecycle).toContain("[array]::Reverse($startOrder)");
+    expect(lifecycle).toContain("[array]::Reverse($restoreStartOrder)");
+  });
 
   it("creates SHA-256 inventory evidence before updating application or data", () => {
     expect(lifecycle).toContain("Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256");

@@ -50,7 +50,9 @@ if ($Mode -eq "PostUpdate") {
     $backup = [IO.Path]::GetFullPath($state.backupPath)
     if (-not $backup.StartsWith((Join-Path $persistent "backups"), [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path (Join-Path $backup "backup-manifest.json"))) { throw "Lifecycle backup is invalid" }
     try {
-        foreach ($service in @($services | Select-Object -Reverse)) { Start-Service -Name $service -ErrorAction Stop }
+        $startOrder = @($services)
+        [array]::Reverse($startOrder)
+        foreach ($service in $startOrder) { Start-Service -Name $service -ErrorAction Stop }
         & (Join-Path $application "installer\Test-PostInstallHealth.ps1") -ApplicationRoot $application -PersistentRoot $persistent
         if ($LASTEXITCODE -ne 0) { throw "Post-update health failed" }
         $state.state = "UPDATE_HEALTH_VERIFIED"
@@ -63,7 +65,9 @@ if ($Mode -eq "PostUpdate") {
             $source = Join-Path $backup "persistent\$name"
             if (Test-Path -LiteralPath $source) { Invoke-Robocopy $source (Join-Path $persistent $name) }
         }
-        foreach ($service in @($services | Select-Object -Reverse)) { Start-Service -Name $service -ErrorAction SilentlyContinue }
+        $restoreStartOrder = @($services)
+        [array]::Reverse($restoreStartOrder)
+        foreach ($service in $restoreStartOrder) { Start-Service -Name $service -ErrorAction SilentlyContinue }
         throw "Update verification failed and the previous application/data snapshot was restored"
     }
     Write-Host "DEP-01-05 update lifecycle: PASS"
