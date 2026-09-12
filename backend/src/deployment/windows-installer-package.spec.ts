@@ -285,6 +285,19 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(preStart).toContain("verify machine-scoped DPAPI and licensing ACLs");
   });
 
+  it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
+    expect(lifecycle).toContain('$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"');
+    expect(lifecycle).toContain('-DiagnosticLogPath `"$licensingDiagnosticLog`"');
+    expect(preStart).toContain("[Parameter(Mandatory = $true)][string]$DiagnosticLogPath");
+    expect(preStart).toContain("Tee-Object -FilePath $DiagnosticLogPath -Append");
+    expect(preStart).toContain("see $DiagnosticLogPath");
+    const provisioning = readFileSync(
+      join(repositoryRoot, "backend/src/scripts/provision-installation-identity.ts"),
+      "utf8"
+    );
+    expect(provisioning).toContain("Installation identity provisioning failed:");
+  });
+
   it("runs LIC-11 only under the final Backend service identity and fails closed", () => {
     expect(preStart).toContain("$identityExists -xor $receiptExists");
     expect(preStart).toContain("automatic replacement is prohibited");
