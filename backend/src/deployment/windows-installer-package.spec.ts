@@ -153,7 +153,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toContain("Select-Object -Reverse");
     expect(lifecycle).toContain("[array]::Reverse($rollbackServiceIds)");
     expect(lifecycle).toContain("$failure = $_");
-    expect(lifecycle).toContain('$failure.Exception.Message');
+    expect(lifecycle).toContain("$failure.Exception.Message");
   });
 
   it("fails closed before replacing a pre-existing Mosquitto service", () => {
