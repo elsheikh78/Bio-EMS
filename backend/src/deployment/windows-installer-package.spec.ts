@@ -170,6 +170,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("configures Windows virtual service accounts without an empty password argument", () => {
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\\$serviceId")'
+    );
+    expect(lifecycle).not.toContain('"password=", ""');
+  });
+
   it("reports controlled command failures with safe executable and exit context", () => {
     expect(lifecycle).toContain(
       "Controlled command failed: executable=$file exitCode=$LASTEXITCODE"

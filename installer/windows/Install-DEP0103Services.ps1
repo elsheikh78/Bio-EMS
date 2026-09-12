@@ -192,7 +192,7 @@ Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIO
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
     Invoke-Controlled "sc.exe" @("sidtype", $serviceId, "unrestricted")
-    Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\$serviceId", "password=", "")
+    Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\$serviceId")
 }
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
