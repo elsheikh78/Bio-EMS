@@ -193,6 +193,14 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toContain('throw "Controlled command failed"');
   });
 
+  it("reclaims stale installer-managed files before deleting them on retry", () => {
+    expect(lifecycle).toContain('Invoke-Controlled "takeown.exe" @("/F", $path, "/A")');
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "icacls.exe" @($path, "/grant:r", "Administrators:F")'
+    );
+    expect(lifecycle).toContain("Remove-Item -LiteralPath $path -Force");
+  });
+
   it("removes stale installer-managed config files before a fresh retry", () => {
     expect(lifecycle).toContain("function Remove-InstallerManagedFile");
     for (const managed of [
