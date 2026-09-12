@@ -93,7 +93,11 @@ function New-ServiceXml(
 ) {
     $settings = New-Object Xml.XmlWriterSettings
     $settings.Indent = $true
-    $settings.Encoding = New-Object Text.UTF8Encoding($false)
+    # XmlWriter backed by StringBuilder reports UTF-16 regardless of the requested
+    # Encoding. The resulting string is persisted by Write-Utf8, so omit the XML
+    # declaration to avoid a declaration/byte-encoding mismatch in WinSW on
+    # Windows PowerShell 5.1.
+    $settings.OmitXmlDeclaration = $true
     $builder = New-Object Text.StringBuilder
     $writer = [Xml.XmlWriter]::Create($builder, $settings)
     $writer.WriteStartElement("service")
