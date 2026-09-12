@@ -217,7 +217,8 @@ $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.jso
 $preStartScript = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
 $provisioningScript = Join-Path $application "backend\dist\scripts\provision-installation-identity.js"
 $backendServer = Join-Path $application "backend\dist\scripts\start-windows-service.js"
-$preStartArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$preStartScript`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`""
+$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
+$preStartArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$preStartScript`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`""
 $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" $node "`"$backendServer`"" (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment $preStartArgs)
 

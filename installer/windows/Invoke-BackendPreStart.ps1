@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory = $true)][string]$NodeExecutable,
     [Parameter(Mandatory = $true)][string]$ProvisioningScript,
     [Parameter(Mandatory = $true)][string]$IdentityPath,
-    [Parameter(Mandatory = $true)][string]$ReceiptPath
+    [Parameter(Mandatory = $true)][string]$ReceiptPath,
+    [Parameter(Mandatory = $true)][string]$DiagnosticLogPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -17,9 +18,13 @@ if ($identityExists -xor $receiptExists) {
 if (-not $identityExists) {
     $env:BIOEMS_INSTALLATION_IDENTITY_PATH = $IdentityPath
     $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $ReceiptPath
-    & $NodeExecutable $ProvisioningScript
+    $diagnosticDirectory = Split-Path -Parent $DiagnosticLogPath
+    if ($diagnosticDirectory) {
+        New-Item -ItemType Directory -Path $diagnosticDirectory -Force | Out-Null
+    }
+    & $NodeExecutable $ProvisioningScript 2>&1 | Tee-Object -FilePath $DiagnosticLogPath -Append
     if ($LASTEXITCODE -ne 0) {
-        throw "LIC-11 installation identity provisioning failed under service identity; verify machine-scoped DPAPI and licensing ACLs"
+        throw "LIC-11 installation identity provisioning failed under service identity; see $DiagnosticLogPath"
     }
 }
 

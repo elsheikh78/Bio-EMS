@@ -16,8 +16,9 @@ export function runProvisionInstallationIdentityCommand(
     });
     console.log(`Created unactivated installation identity ${receipt.installationId}`);
     return 0;
-  } catch {
-    console.error("Installation identity provisioning failed");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown error";
+    console.error(`Installation identity provisioning failed: ${message}`);
     return 1;
   }
 }

@@ -282,7 +282,24 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(keyProtection).toContain("DataProtectionScope]::LocalMachine");
     expect(keyProtection).not.toContain("WINDOWS-DPAPI/CURRENT-USER");
     expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
-    expect(preStart).toContain("verify machine-scoped DPAPI and licensing ACLs");
+    expect(preStart).toContain(
+      "LIC-11 installation identity provisioning failed under service identity; see $DiagnosticLogPath"
+    );
+  });
+
+  it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
+    expect(lifecycle).toContain(
+      '$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"'
+    );
+    expect(lifecycle).toContain('-DiagnosticLogPath `"$licensingDiagnosticLog`"');
+    expect(preStart).toContain("[Parameter(Mandatory = $true)][string]$DiagnosticLogPath");
+    expect(preStart).toContain("Tee-Object -FilePath $DiagnosticLogPath -Append");
+    expect(preStart).toContain("see $DiagnosticLogPath");
+    const provisioning = readFileSync(
+      join(repositoryRoot, "backend/src/scripts/provision-installation-identity.ts"),
+      "utf8"
+    );
+    expect(provisioning).toContain("Installation identity provisioning failed:");
   });
 
   it("runs LIC-11 only under the final Backend service identity and fails closed", () => {
