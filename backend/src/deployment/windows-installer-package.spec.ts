@@ -282,7 +282,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(keyProtection).toContain("DataProtectionScope]::LocalMachine");
     expect(keyProtection).not.toContain("WINDOWS-DPAPI/CURRENT-USER");
     expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
-    expect(preStart).toContain("verify machine-scoped DPAPI and licensing ACLs");
+    expect(preStart).toContain("LIC-11 installation identity provisioning failed under service identity; see $DiagnosticLogPath");
   });
 
   it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
