@@ -170,7 +170,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain('Invoke-Controlled "icacls.exe"');
     expect(lifecycle).toContain("Remove-Item -LiteralPath $temporary");
     expect(lifecycle).not.toContain("RedirectStandardInput = $true");
-    expect(lifecycle).not.toMatch(/mosquitto_passwd[^\n]+-b|MQTT_PASSWORD=(?:password|secret)|BEGIN PRIVATE KEY/);
+    expect(lifecycle).not.toMatch(
+      /mosquitto_passwd[^\n]+-b|MQTT_PASSWORD=(?:password|secret)|BEGIN PRIVATE KEY/
+    );
     expect(lifecycle).toContain("BIOEMS_ENV_FILE = $backendEnv");
   });
 
