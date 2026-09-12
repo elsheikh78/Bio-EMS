@@ -69,6 +69,11 @@ function New-Secret([int]$bytes = 32) {
 function Write-Utf8([string]$path, [string]$content) {
     [IO.File]::WriteAllText($path, $content, (New-Object Text.UTF8Encoding($false)))
 }
+function Remove-InstallerManagedFile([string]$path) {
+    if (Test-Path -LiteralPath $path -PathType Leaf) {
+        Remove-Item -LiteralPath $path -Force
+    }
+}
 function Protect-Path([string]$path, [string]$serviceId, [string]$rights = "(OI)(CI)M") {
     Invoke-Controlled "icacls.exe" @($path, "/inheritance:r")
     Invoke-Controlled "icacls.exe" @($path, "/grant:r", "SYSTEM:F", "Administrators:F", "NT SERVICE\$serviceId`:$rights")
@@ -161,6 +166,8 @@ $platformJwtSecret = New-Secret 48
 $tlsPassword = New-Secret 36
 $mqttPasswordFile = Join-Path $paths.Config "mosquitto.passwords"
 $mqttConfig = Join-Path $paths.Config "mosquitto.conf"
+Remove-InstallerManagedFile $mqttPasswordFile
+Remove-InstallerManagedFile $mqttConfig
 New-MosquittoPasswordFile $mosquittoPasswd $mqttPasswordFile "bioems-backend" $mqttPassword
 Write-Utf8 $mqttConfig @"
 allow_anonymous false
@@ -184,6 +191,12 @@ Write-Utf8 (Join-Path $paths.Services "BIOEMS-InfluxDB.xml") (New-ServiceXml "BI
 
 $backendEnv = Join-Path $paths.Config "backend.env"
 $tlsPfx = Join-Path $paths.Config "bioems-local.pfx"
+$publicCertificate = Join-Path $paths.Config "bioems-local.cer"
+$tlsMetadata = Join-Path $paths.Config "tls-certificate.json"
+Remove-InstallerManagedFile $backendEnv
+Remove-InstallerManagedFile $tlsPfx
+Remove-InstallerManagedFile $publicCertificate
+Remove-InstallerManagedFile $tlsMetadata
 $identityPath = Join-Path $paths.Licensing "installation-identity.json"
 $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.json"
 $preStartScript = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
@@ -231,10 +244,9 @@ if (-not $setup.auth.token) { throw "InfluxDB onboarding did not return a token"
 $secureTlsPassword = ConvertTo-SecureString $tlsPassword -AsPlainText -Force
 $certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -NotAfter (Get-Date).AddYears(3)
 Export-PfxCertificate -Cert $certificate -FilePath $tlsPfx -Password $secureTlsPassword -Force | Out-Null
-$publicCertificate = Join-Path $paths.Config "bioems-local.cer"
 Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
 Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
-Write-Utf8 (Join-Path $paths.Config "tls-certificate.json") (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
+Write-Utf8 $tlsMetadata (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
 
 Write-Utf8 $backendEnv @"
 NODE_ENV=production
