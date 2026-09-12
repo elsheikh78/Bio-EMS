@@ -317,9 +317,7 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
     const exportIndex = lifecycle.indexOf(
       "Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force"
     );
-    const protectIndex = lifecycle.indexOf(
-      'Protect-Path $publicCertificate "BIOEMS-Backend" "R"'
-    );
+    const protectIndex = lifecycle.indexOf('Protect-Path $publicCertificate "BIOEMS-Backend" "R"');
     const trustIndex = lifecycle.indexOf(
       'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
     );
