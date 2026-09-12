@@ -243,6 +243,11 @@ Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"
 Add-PathAccess $mqttConfig "BIOEMS-MQTT" "R"
 Protect-Path $paths.Licensing "BIOEMS-Backend"
+# Verify the service SID ACL is present before the service is allowed to provision LIC-11.
+$licensingAcl = (Invoke-Controlled "icacls.exe" @($paths.Licensing) | Out-String)
+if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\BIOEMS-Backend")) {
+    throw "BIOEMS-Backend licensing ACL verification failed"
+}
 Protect-Path (Join-Path $paths.Data "mqtt") "BIOEMS-MQTT"
 Protect-Path $influxData "BIOEMS-InfluxDB"
 Protect-Path $paths.Logs "BIOEMS-Backend"
