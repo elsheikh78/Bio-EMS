@@ -19,7 +19,11 @@ trap {
     foreach ($serviceId in $rollbackServiceIds) {
         Stop-Service -Name $serviceId -Force -ErrorAction SilentlyContinue
         if ($wrappers.ContainsKey($serviceId)) {
-            & $wrappers[$serviceId] uninstall 2>$null | Out-Null
+            try {
+                & $wrappers[$serviceId] uninstall 2>$null | Out-Null
+            } catch {
+                Write-Warning "Rollback could not execute $serviceId wrapper: $($_.Exception.Message)"
+            }
         }
     }
 
@@ -197,6 +201,7 @@ foreach ($serviceId in $serviceIds) {
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-InfluxDB" "(OI)(CI)RX"
+Add-PathAccess $paths.Services "Administrators" "(OI)(CI)F"
 Protect-Path $paths.Config "BIOEMS-Backend"
 Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"

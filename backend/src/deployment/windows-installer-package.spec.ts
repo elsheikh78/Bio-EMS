@@ -170,6 +170,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("preserves administrator access to WinSW wrappers and rollback root-cause diagnostics", () => {
+    expect(lifecycle).toContain('Add-PathAccess $paths.Services "Administrators" "(OI)(CI)F"');
+    expect(lifecycle).toContain("Rollback could not execute $serviceId wrapper");
+    expect(lifecycle).toContain("$failure = $_");
+    expect(lifecycle).toContain("$failure.Exception.Message");
+  });
+
   it("configures Windows virtual service accounts without an empty password argument", () => {
     expect(lifecycle).toContain(
       'Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\\$serviceId")'
