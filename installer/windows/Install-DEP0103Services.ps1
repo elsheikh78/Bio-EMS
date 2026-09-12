@@ -216,13 +216,13 @@ Remove-InstallerManagedFile $publicCertificate
 Remove-InstallerManagedFile $tlsMetadata
 $identityPath = Join-Path $paths.Licensing "installation-identity.json"
 $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.json"
-$preStartScript = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
+$backendLauncher = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
 $provisioningScript = Join-Path $application "backend\dist\scripts\provision-installation-identity.js"
 $backendServer = Join-Path $application "backend\dist\scripts\start-windows-service.js"
 $licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
-$preStartArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$preStartScript`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`""
+$backendLauncherArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$backendLauncher`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`" -BackendScript `"$backendServer`""
 $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
-Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" $node "`"$backendServer`"" (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment $preStartArgs)
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
 
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
