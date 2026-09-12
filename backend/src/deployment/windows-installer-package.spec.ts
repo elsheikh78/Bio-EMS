@@ -156,6 +156,12 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain("$failure.Exception.Message");
   });
 
+  it("writes WinSW XML without a UTF-16 declaration before UTF-8 persistence", () => {
+    expect(lifecycle).toContain("$settings.OmitXmlDeclaration = $true");
+    expect(lifecycle).not.toContain("$settings.Encoding = New-Object Text.UTF8Encoding($false)");
+    expect(lifecycle).toContain("Write-Utf8 $xmlPath");
+  });
+
   it("fails closed before replacing a pre-existing Mosquitto service", () => {
     expect(lifecycle).toContain('Get-Service -Name "mosquitto"');
     expect(lifecycle).toContain("Fresh service installation refuses an existing Mosquitto service");
