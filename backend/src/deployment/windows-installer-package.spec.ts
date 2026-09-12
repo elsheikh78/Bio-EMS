@@ -179,6 +179,22 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain("$failure.Exception.Message");
   });
 
+  it("repairs stale services-directory ACLs before copying or executing WinSW wrappers", () => {
+    const repairIndex = lifecycle.indexOf(
+      'Invoke-Controlled "icacls.exe" @($paths.Services, "/grant:r", "BUILTIN\\Administrators:(OI)(CI)F")'
+    );
+    const wrapperCopyIndex = lifecycle.indexOf(
+      "Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force"
+    );
+    const wrapperInstallIndex = lifecycle.indexOf(
+      'Invoke-Controlled $wrappers[$serviceId] @("install")'
+    );
+
+    expect(repairIndex).toBeGreaterThan(-1);
+    expect(repairIndex).toBeLessThan(wrapperCopyIndex);
+    expect(repairIndex).toBeLessThan(wrapperInstallIndex);
+  });
+
   it("does not mis-prefix the built-in Administrators principal as a virtual service account", () => {
     expect(lifecycle).toContain("function Add-PrincipalAccess");
     expect(lifecycle).toContain('"BUILTIN\\Administrators"');
