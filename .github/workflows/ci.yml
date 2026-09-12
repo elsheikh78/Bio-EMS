@@ -43,8 +43,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Check formatting
-        run: npm run format:check
+      - name: Show Prettier diff
+        run: |
+          npm run format
+          git diff -- src/deployment/windows-installer-package.spec.ts src/scripts/provision-installation-identity.ts
+          exit 1
 
       - name: Run tests
         run: npm run test:run
