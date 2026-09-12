@@ -49,7 +49,12 @@ function Find-One([string]$root, [string]$name) {
 }
 function Invoke-Controlled([string]$file, [string[]]$arguments) {
     & $file @arguments
-    if ($LASTEXITCODE -ne 0) { throw "Controlled command failed" }
+    if ($LASTEXITCODE -ne 0) {
+        $safeArguments = @($arguments | ForEach-Object {
+            if ($_ -match '(?i)(password|passphrase|secret|token)') { '<redacted>' } else { $_ }
+        })
+        throw "Controlled command failed: executable=$file exitCode=$LASTEXITCODE arguments=$($safeArguments -join ' ')"
+    }
 }
 function New-Secret([int]$bytes = 32) {
     $buffer = New-Object byte[] $bytes
