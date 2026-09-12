@@ -246,8 +246,12 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   });
 
   it("makes InfluxDB onboarding retry-safe by persisting and reusing the bootstrap token", () => {
-    expect(lifecycle).toContain('$influxTokenFile = Join-Path $paths.Config "influx-bootstrap.token"');
-    expect(lifecycle).toContain('$setupStatus = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Get');
+    expect(lifecycle).toContain(
+      '$influxTokenFile = Join-Path $paths.Config "influx-bootstrap.token"'
+    );
+    expect(lifecycle).toContain(
+      '$setupStatus = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Get'
+    );
     expect(lifecycle).toContain("if ($setupStatus.allowed -eq $true)");
     expect(lifecycle).toContain("Write-Utf8 $influxTokenFile $influxToken");
     expect(lifecycle).toContain('Protect-Path $influxTokenFile "BIOEMS-Backend" "R"');
