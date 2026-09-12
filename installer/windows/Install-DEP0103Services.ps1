@@ -22,7 +22,7 @@ trap {
             try {
                 & $wrappers[$serviceId] uninstall 2>$null | Out-Null
             } catch {
-                Write-Warning "Rollback could not execute $serviceId wrapper: $($_.Exception.Message)"
+                Write-Warning ("Rollback could not execute {0} wrapper: {1}" -f $serviceId, $_.Exception.Message)
             }
         }
     }
