@@ -193,6 +193,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toContain('throw "Controlled command failed"');
   });
 
+  it("reclaims stale WinSW wrapper and XML files before service regeneration", () => {
+    expect(lifecycle).toContain('Remove-InstallerManagedFile $wrapper');
+    expect(lifecycle).toContain('Remove-InstallerManagedFile $xmlPath');
+    const cleanupIndex = lifecycle.indexOf('Remove-InstallerManagedFile $wrapper');
+    const copyIndex = lifecycle.indexOf(
+      'Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force'
+    );
+    expect(cleanupIndex).toBeLessThan(copyIndex);
+  });
+
   it("reclaims stale installer-managed files before deleting them on retry", () => {
     expect(lifecycle).toContain('Invoke-Controlled "takeown.exe" @("/F", $path, "/A")');
     expect(lifecycle).toContain(
