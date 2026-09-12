@@ -283,8 +283,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(keyProtection).not.toContain("WINDOWS-DPAPI/CURRENT-USER");
     expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
     expect(preStart).toContain(
-      "LIC-11 installation identity provisioning failed under service identity; see $DiagnosticLogPath"
+      "LIC-11 installation identity provisioning failed under service identity"
     );
+    expect(preStart).toContain('Write-Diagnostic "FATAL:');
   });
 
   it("runs LIC-11 from the Backend service launcher instead of a WinSW prestart hook", () => {
@@ -292,7 +293,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       'New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs'
     );
     expect(lifecycle).toContain('-BackendScript `"$backendServer`"');
-    expect(preStart).toContain("LIC-11 prestart entered at");
+    expect(preStart).toContain('Write-Diagnostic "LIC-11 launcher entered"');
     expect(preStart).toContain("& $NodeExecutable $BackendScript");
   });
 
@@ -302,8 +303,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
     expect(lifecycle).toContain('-DiagnosticLogPath `"$licensingDiagnosticLog`"');
     expect(preStart).toContain("[Parameter(Mandatory = $true)][string]$DiagnosticLogPath");
-    expect(preStart).toContain("Tee-Object -FilePath $DiagnosticLogPath -Append");
-    expect(preStart).toContain("see $DiagnosticLogPath");
+    expect(preStart).toContain('Write-Diagnostic "provisioner: $line"');
+    expect(preStart).toContain('Write-Diagnostic "installation identity provisioner exitCode=$provisionExitCode"');
+    expect(preStart).toContain('Write-Diagnostic "FATAL:');
     const provisioning = readFileSync(
       join(repositoryRoot, "backend/src/scripts/provision-installation-identity.ts"),
       "utf8"
