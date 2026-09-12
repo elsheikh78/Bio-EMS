@@ -19,7 +19,11 @@ trap {
     foreach ($serviceId in $rollbackServiceIds) {
         Stop-Service -Name $serviceId -Force -ErrorAction SilentlyContinue
         if ($wrappers.ContainsKey($serviceId)) {
-            & $wrappers[$serviceId] uninstall 2>$null | Out-Null
+            try {
+                & $wrappers[$serviceId] uninstall 2>$null | Out-Null
+            } catch {
+                Write-Warning "Rollback could not execute $serviceId wrapper: $($_.Exception.Message)"
+            }
         }
     }
 
