@@ -204,6 +204,7 @@ Write-Utf8 (Join-Path $paths.Services "BIOEMS-MQTT.xml") (New-ServiceXml "BIOEMS
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-InfluxDB.xml") (New-ServiceXml "BIOEMS-InfluxDB" $influxd "--bolt-path `"$influxData\influxd.bolt`" --engine-path `"$influxData\engine`"" (Join-Path $paths.Logs "influxdb-service") @() @{} "")
 
 $backendEnv = Join-Path $paths.Config "backend.env"
+$influxTokenFile = Join-Path $paths.Config "influx-bootstrap.token"
 $tlsPfx = Join-Path $paths.Config "bioems-local.pfx"
 $publicCertificate = Join-Path $paths.Config "bioems-local.cer"
 $tlsMetadata = Join-Path $paths.Config "tls-certificate.json"
@@ -251,9 +252,23 @@ do {
 } while ((Get-Date) -lt $deadline)
 if ($health.status -ne "pass") { throw "InfluxDB local health gate failed" }
 
-$setupBody = @{ username = "bioems-local"; password = $influxPassword; org = "bioems"; bucket = "telemetry"; retentionPeriodSeconds = 0 } | ConvertTo-Json
-$setup = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Post -ContentType "application/json" -Body $setupBody
-if (-not $setup.auth.token) { throw "InfluxDB onboarding did not return a token" }
+$setupStatus = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Get -TimeoutSec 5
+$influxToken = $null
+if ($setupStatus.allowed -eq $true) {
+    $setupBody = @{ username = "bioems-local"; password = $influxPassword; org = "bioems"; bucket = "telemetry"; retentionPeriodSeconds = 0 } | ConvertTo-Json
+    $setup = Invoke-RestMethod -Uri "http://127.0.0.1:8086/api/v2/setup" -Method Post -ContentType "application/json" -Body $setupBody
+    $influxToken = $setup.auth.token
+    if (-not $influxToken) { throw "InfluxDB onboarding did not return a token" }
+    Write-Utf8 $influxTokenFile $influxToken
+    Protect-Path $influxTokenFile "BIOEMS-Backend" "R"
+}
+elseif (Test-Path -LiteralPath $influxTokenFile -PathType Leaf) {
+    $influxToken = [IO.File]::ReadAllText($influxTokenFile).Trim()
+    if (-not $influxToken) { throw "Persisted InfluxDB bootstrap token is empty" }
+}
+else {
+    throw "InfluxDB is already initialized but the installer bootstrap token is unavailable; controlled recovery is required"
+}
 
 $secureTlsPassword = ConvertTo-SecureString $tlsPassword -AsPlainText -Force
 $certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -NotAfter (Get-Date).AddYears(3)
@@ -278,7 +293,7 @@ MQTT_USERNAME=bioems-backend
 MQTT_PASSWORD=$mqttPassword
 MQTT_CLEAN=false
 INFLUX_URL=http://127.0.0.1:8086
-INFLUX_TOKEN=$($setup.auth.token)
+INFLUX_TOKEN=$influxToken
 INFLUX_ORG=bioems
 INFLUX_BUCKET=telemetry
 BIOEMS_JWT_SECRET=$jwtSecret
