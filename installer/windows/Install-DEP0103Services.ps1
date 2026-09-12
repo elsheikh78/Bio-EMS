@@ -10,6 +10,7 @@ $application = [System.IO.Path]::GetFullPath($ApplicationRoot)
 $persistent = [System.IO.Path]::GetFullPath($PersistentRoot)
 $serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
 $wrappers = @{}
+$firewallRuleCreated = $false
 
 trap {
     $failure = $_
@@ -25,6 +26,10 @@ trap {
                 Write-Warning ("Rollback could not execute {0} wrapper: {1}" -f $serviceId, $_.Exception.Message)
             }
         }
+    }
+
+    if ($firewallRuleCreated) {
+        Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue
     }
 
     Write-Error ("DEP-01-03 failed: " + $failure.Exception.Message)
@@ -216,13 +221,13 @@ Remove-InstallerManagedFile $publicCertificate
 Remove-InstallerManagedFile $tlsMetadata
 $identityPath = Join-Path $paths.Licensing "installation-identity.json"
 $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.json"
-$preStartScript = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
+$backendLauncher = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
 $provisioningScript = Join-Path $application "backend\dist\scripts\provision-installation-identity.js"
 $backendServer = Join-Path $application "backend\dist\scripts\start-windows-service.js"
 $licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
-$preStartArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$preStartScript`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`""
+$backendLauncherArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$backendLauncher`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`" -BackendScript `"$backendServer`""
 $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
-Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" $node "`"$backendServer`"" (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment $preStartArgs)
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
 
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
@@ -328,8 +333,9 @@ BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
-if (Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue) { throw "BIO-EMS firewall rule already exists" }
+Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue
 New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet | Out-Null
+$firewallRuleCreated = $true
 Start-Service "BIOEMS-Backend"
 
 $receiptDeadline = (Get-Date).AddSeconds(45)

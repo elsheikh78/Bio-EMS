@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory = $true)][string]$ProvisioningScript,
     [Parameter(Mandatory = $true)][string]$IdentityPath,
     [Parameter(Mandatory = $true)][string]$ReceiptPath,
-    [Parameter(Mandatory = $true)][string]$DiagnosticLogPath
+    [Parameter(Mandatory = $true)][string]$DiagnosticLogPath,
+    [Parameter(Mandatory = $true)][string]$BackendScript
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,3 +34,7 @@ if (-not (Test-Path -LiteralPath $IdentityPath -PathType Leaf) -or
     -not (Test-Path -LiteralPath $ReceiptPath -PathType Leaf)) {
     throw "LIC-11 installation identity evidence is missing"
 }
+
+"LIC-11 provisioning evidence verified; starting Backend service process" | Out-File -FilePath $DiagnosticLogPath -Append -Encoding utf8
+& $NodeExecutable $BackendScript
+exit $LASTEXITCODE
