@@ -10,6 +10,7 @@ $application = [System.IO.Path]::GetFullPath($ApplicationRoot)
 $persistent = [System.IO.Path]::GetFullPath($PersistentRoot)
 $serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
 $wrappers = @{}
+$firewallRuleCreated = $false
 
 trap {
     $failure = $_
@@ -25,6 +26,10 @@ trap {
                 Write-Warning ("Rollback could not execute {0} wrapper: {1}" -f $serviceId, $_.Exception.Message)
             }
         }
+    }
+
+    if ($firewallRuleCreated) {
+        Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue
     }
 
     Write-Error ("DEP-01-03 failed: " + $failure.Exception.Message)
@@ -328,8 +333,9 @@ BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
-if (Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue) { throw "BIO-EMS firewall rule already exists" }
+Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue
 New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet | Out-Null
+$firewallRuleCreated = $true
 Start-Service "BIOEMS-Backend"
 
 $receiptDeadline = (Get-Date).AddSeconds(45)
