@@ -313,17 +313,31 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
   const health = readFileSync(join(windowsRoot, "Test-PostInstallHealth.ps1"), "utf8");
 
+  it("uses certutil for machine Root trust installation instead of the PowerShell certificate provider", () => {
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
+    expect(lifecycle).not.toContain(
+      'Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\\LocalMachine\\Root"'
+    );
+  });
+
   it("makes the TLS private key explicitly exportable and reports certificate-stage failures precisely", () => {
     expect(lifecycle).toContain("-KeyExportPolicy Exportable");
     expect(lifecycle).toContain("TLS certificate creation failed:");
     expect(lifecycle).toContain("TLS PFX export failed:");
     expect(lifecycle).toContain("TLS public certificate export failed:");
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
     expect(lifecycle).toContain("TLS trust-store import failed:");
   });
 
   it("creates a trusted local certificate and keeps its PFX secret out of source", () => {
     expect(lifecycle).toContain("New-SelfSignedCertificate");
-    expect(lifecycle).toContain("Cert:\\LocalMachine\\Root");
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
     expect(lifecycle).toContain("BIOEMS_TLS_PFX_PASSPHRASE=$tlsPassword");
     expect(lifecycle).not.toMatch(/BEGIN CERTIFICATE|BIOEMS_TLS_PFX_PASSPHRASE=[A-Za-z0-9+/]{20}/);
   });

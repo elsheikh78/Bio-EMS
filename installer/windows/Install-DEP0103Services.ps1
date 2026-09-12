@@ -287,7 +287,7 @@ try {
     throw "TLS public certificate export failed: $($_.Exception.Message)"
 }
 try {
-    Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
+    Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)
 } catch {
     throw "TLS trust-store import failed: $($_.Exception.Message)"
 }
