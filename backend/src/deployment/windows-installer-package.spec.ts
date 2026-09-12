@@ -327,7 +327,9 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
     expect(lifecycle).toContain("TLS certificate creation failed:");
     expect(lifecycle).toContain("TLS PFX export failed:");
     expect(lifecycle).toContain("TLS public certificate export failed:");
-    expect(lifecycle).toContain('Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)');
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
     expect(lifecycle).toContain("TLS trust-store import failed:");
   });
 
