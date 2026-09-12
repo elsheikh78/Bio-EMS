@@ -149,12 +149,15 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toMatch(/<password>|LocalSystem/);
   });
 
-  it("keeps rollback compatible with Windows PowerShell 5.1 and preserves the original failure", () => {
-    expect(lifecycle).not.toContain("Select-Object -Reverse");
-    expect(lifecycle).toContain("[array]::Reverse($rollbackServiceIds)");
-    expect(lifecycle).toContain("$failure = $_");
-    expect(lifecycle).toContain('$failure.Exception.Message');
-  });
+  it(
+    "keeps rollback compatible with Windows PowerShell 5.1 and preserves the original failure",
+    () => {
+      expect(lifecycle).not.toContain("Select-Object -Reverse");
+      expect(lifecycle).toContain("[array]::Reverse($rollbackServiceIds)");
+      expect(lifecycle).toContain("$failure = $_");
+      expect(lifecycle).toContain('$failure.Exception.Message');
+    }
+  );
 
   it("fails closed before replacing a pre-existing Mosquitto service", () => {
     expect(lifecycle).toContain('Get-Service -Name "mosquitto"');
