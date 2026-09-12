@@ -331,6 +331,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("verifies the Backend service SID has licensing ACL access before service start", () => {
+    expect(lifecycle).toContain(
+      'if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\\BIOEMS-Backend"))'
+    );
+    expect(lifecycle).toContain('"BIOEMS-Backend licensing ACL verification failed"');
+  });
+
   it("recreates the HTTPS firewall rule safely and removes it on failed installation", () => {
     expect(lifecycle).toContain(
       'Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue'
