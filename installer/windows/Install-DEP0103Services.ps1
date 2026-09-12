@@ -149,6 +149,12 @@ $paths = @{
 }
 foreach ($path in $paths.Values) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
 
+# A failed prior install may leave the services directory with inheritance disabled
+# and without Administrators access. Repair the directory before creating or
+# executing fresh WinSW wrappers so copied files inherit an executable admin ACL.
+Invoke-Controlled "takeown.exe" @("/F", $paths.Services, "/A", "/R", "/D", "Y")
+Invoke-Controlled "icacls.exe" @($paths.Services, "/grant:r", "BUILTIN\Administrators:(OI)(CI)F")
+
 $node = Find-One (Join-Path $application "runtime\node") "node.exe"
 $influxd = Find-One (Join-Path $application "runtime\influxdb") "influxd.exe"
 $winswSource = Find-One (Join-Path $application "runtime\service-wrapper") "WinSW-x64.exe"
