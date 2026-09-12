@@ -197,6 +197,7 @@ foreach ($serviceId in $serviceIds) {
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-InfluxDB" "(OI)(CI)RX"
+Add-PathAccess $paths.Services "Administrators" "(OI)(CI)F"
 Protect-Path $paths.Config "BIOEMS-Backend"
 Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"
