@@ -197,7 +197,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain('Remove-InstallerManagedFile $wrapper');
     expect(lifecycle).toContain('Remove-InstallerManagedFile $xmlPath');
     expect(lifecycle.indexOf("Remove-InstallerManagedFile $wrapper")).toBeLessThan(
-      lifecycle.indexOf("Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force")
+      lifecycle.indexOf(
+        "Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force"
+      )
     );
   });
 
