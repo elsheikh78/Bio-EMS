@@ -193,6 +193,20 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).not.toContain('throw "Controlled command failed"');
   });
 
+  it("removes stale installer-managed config files before a fresh retry", () => {
+    expect(lifecycle).toContain("function Remove-InstallerManagedFile");
+    for (const managed of [
+      "$mqttPasswordFile",
+      "$mqttConfig",
+      "$backendEnv",
+      "$tlsPfx",
+      "$publicCertificate",
+      "$tlsMetadata",
+    ]) {
+      expect(lifecycle).toContain(`Remove-InstallerManagedFile ${managed}`);
+    }
+  });
+
   it("creates runtime credentials without command-line or repository secrets", () => {
     expect(lifecycle).toContain("RandomNumberGenerator");
     expect(lifecycle).toContain('Invoke-Controlled $executable @("-U", $temporary)');
