@@ -83,6 +83,9 @@ function Protect-Path([string]$path, [string]$serviceId, [string]$rights = "(OI)
 function Add-PathAccess([string]$path, [string]$serviceId, [string]$rights) {
     Invoke-Controlled "icacls.exe" @($path, "/grant", "NT SERVICE\$serviceId`:$rights")
 }
+function Add-PrincipalAccess([string]$path, [string]$principal, [string]$rights) {
+    Invoke-Controlled "icacls.exe" @($path, "/grant", "$principal`:$rights")
+}
 function New-MosquittoPasswordFile([string]$executable, [string]$path, [string]$username, [string]$password) {
     $temporary = "$path.plain.$([Guid]::NewGuid().ToString('N'))"
     try {
@@ -219,7 +222,7 @@ foreach ($serviceId in $serviceIds) {
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-InfluxDB" "(OI)(CI)RX"
-Add-PathAccess $paths.Services "Administrators" "(OI)(CI)F"
+Add-PrincipalAccess $paths.Services "BUILTIN\Administrators" "(OI)(CI)F"
 Protect-Path $paths.Config "BIOEMS-Backend"
 Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"
