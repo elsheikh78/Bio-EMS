@@ -271,10 +271,26 @@ else {
 }
 
 $secureTlsPassword = ConvertTo-SecureString $tlsPassword -AsPlainText -Force
-$certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -NotAfter (Get-Date).AddYears(3)
-Export-PfxCertificate -Cert $certificate -FilePath $tlsPfx -Password $secureTlsPassword -Force | Out-Null
-Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
-Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
+try {
+    $certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -NotAfter (Get-Date).AddYears(3)
+} catch {
+    throw "TLS certificate creation failed: $($_.Exception.Message)"
+}
+try {
+    Export-PfxCertificate -Cert $certificate -FilePath $tlsPfx -Password $secureTlsPassword -Force | Out-Null
+} catch {
+    throw "TLS PFX export failed: $($_.Exception.Message)"
+}
+try {
+    Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
+} catch {
+    throw "TLS public certificate export failed: $($_.Exception.Message)"
+}
+try {
+    Import-Certificate -FilePath $publicCertificate -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
+} catch {
+    throw "TLS trust-store import failed: $($_.Exception.Message)"
+}
 Write-Utf8 $tlsMetadata (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
 
 Write-Utf8 $backendEnv @"
