@@ -313,6 +313,20 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
   const health = readFileSync(join(windowsRoot, "Test-PostInstallHealth.ps1"), "utf8");
 
+  it("normalizes the exported public certificate ACL before certutil reads it", () => {
+    const exportIndex = lifecycle.indexOf(
+      "Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force"
+    );
+    const protectIndex = lifecycle.indexOf('Protect-Path $publicCertificate "BIOEMS-Backend" "R"');
+    const trustIndex = lifecycle.indexOf(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
+
+    expect(exportIndex).toBeGreaterThan(-1);
+    expect(protectIndex).toBeGreaterThan(exportIndex);
+    expect(trustIndex).toBeGreaterThan(protectIndex);
+  });
+
   it("uses certutil for machine Root trust installation instead of the PowerShell certificate provider", () => {
     expect(lifecycle).toContain(
       'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'

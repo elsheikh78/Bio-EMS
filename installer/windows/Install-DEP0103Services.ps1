@@ -283,6 +283,7 @@ try {
 }
 try {
     Export-Certificate -Cert $certificate -FilePath $publicCertificate -Force | Out-Null
+    Protect-Path $publicCertificate "BIOEMS-Backend" "R"
 } catch {
     throw "TLS public certificate export failed: $($_.Exception.Message)"
 }
