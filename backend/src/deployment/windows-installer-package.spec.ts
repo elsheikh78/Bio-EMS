@@ -196,7 +196,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   it("reclaims stale WinSW wrapper and XML files before service regeneration", () => {
     expect(lifecycle).toContain('Remove-InstallerManagedFile $wrapper');
     expect(lifecycle).toContain('Remove-InstallerManagedFile $xmlPath');
-    expect(lifecycle.indexOf('Remove-InstallerManagedFile $wrapper')).toBeLessThan(
+    expect(lifecycle.indexOf("Remove-InstallerManagedFile $wrapper")).toBeLessThan(
       lifecycle.indexOf("Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force")
     );
   });
