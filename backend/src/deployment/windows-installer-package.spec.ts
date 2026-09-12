@@ -304,7 +304,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain('-DiagnosticLogPath `"$licensingDiagnosticLog`"');
     expect(preStart).toContain("[Parameter(Mandatory = $true)][string]$DiagnosticLogPath");
     expect(preStart).toContain('Write-Diagnostic "provisioner: $line"');
-    expect(preStart).toContain('Write-Diagnostic "installation identity provisioner exitCode=$provisionExitCode"');
+    expect(preStart).toContain(
+      'Write-Diagnostic "installation identity provisioner exitCode=$provisionExitCode"'
+    );
     expect(preStart).toContain('Write-Diagnostic "FATAL:');
     const provisioning = readFileSync(
       join(repositoryRoot, "backend/src/scripts/provision-installation-identity.ts"),
