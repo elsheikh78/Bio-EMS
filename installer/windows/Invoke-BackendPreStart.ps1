@@ -8,6 +8,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$diagnosticDirectory = Split-Path -Parent $DiagnosticLogPath
+if ($diagnosticDirectory) {
+    New-Item -ItemType Directory -Path $diagnosticDirectory -Force | Out-Null
+}
+"LIC-11 prestart entered at $([DateTimeOffset]::Now.ToString('o'))" | Out-File -FilePath $DiagnosticLogPath -Append -Encoding utf8
 $identityExists = Test-Path -LiteralPath $IdentityPath -PathType Leaf
 $receiptExists = Test-Path -LiteralPath $ReceiptPath -PathType Leaf
 
@@ -18,10 +23,6 @@ if ($identityExists -xor $receiptExists) {
 if (-not $identityExists) {
     $env:BIOEMS_INSTALLATION_IDENTITY_PATH = $IdentityPath
     $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $ReceiptPath
-    $diagnosticDirectory = Split-Path -Parent $DiagnosticLogPath
-    if ($diagnosticDirectory) {
-        New-Item -ItemType Directory -Path $diagnosticDirectory -Force | Out-Null
-    }
     & $NodeExecutable $ProvisioningScript 2>&1 | Tee-Object -FilePath $DiagnosticLogPath -Append
     if ($LASTEXITCODE -ne 0) {
         throw "LIC-11 installation identity provisioning failed under service identity; see $DiagnosticLogPath"

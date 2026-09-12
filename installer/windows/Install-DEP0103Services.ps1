@@ -131,6 +131,8 @@ function New-ServiceXml(
         $writer.WriteStartElement("prestart")
         $writer.WriteElementString("executable", "powershell.exe")
         $writer.WriteElementString("arguments", $preStart)
+        $writer.WriteElementString("stdoutPath", "$logPath-prestart.stdout.log")
+        $writer.WriteElementString("stderrPath", "$logPath-prestart.stderr.log")
         $writer.WriteEndElement()
     }
     $writer.WriteStartElement("log"); $writer.WriteAttributeString("mode", "roll"); $writer.WriteEndElement()

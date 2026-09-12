@@ -287,6 +287,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("captures WinSW prestart stdout and stderr before the Node provisioner runs", () => {
+    expect(lifecycle).toContain(
+      '$writer.WriteElementString("stdoutPath", "$logPath-prestart.stdout.log")'
+    );
+    expect(lifecycle).toContain(
+      '$writer.WriteElementString("stderrPath", "$logPath-prestart.stderr.log")'
+    );
+    expect(preStart).toContain("LIC-11 prestart entered at");
+  });
+
   it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
     expect(lifecycle).toContain(
       '$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"'
