@@ -335,7 +335,9 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
 
   it("creates a trusted local certificate and keeps its PFX secret out of source", () => {
     expect(lifecycle).toContain("New-SelfSignedCertificate");
-    expect(lifecycle).toContain("Cert:\\LocalMachine\\Root");
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "certutil.exe" @("-addstore", "-f", "Root", $publicCertificate)'
+    );
     expect(lifecycle).toContain("BIOEMS_TLS_PFX_PASSPHRASE=$tlsPassword");
     expect(lifecycle).not.toMatch(/BEGIN CERTIFICATE|BIOEMS_TLS_PFX_PASSPHRASE=[A-Za-z0-9+/]{20}/);
   });
