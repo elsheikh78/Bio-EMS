@@ -18,7 +18,9 @@ if (-not $identityExists) {
     $env:BIOEMS_INSTALLATION_IDENTITY_PATH = $IdentityPath
     $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $ReceiptPath
     & $NodeExecutable $ProvisioningScript
-    if ($LASTEXITCODE -ne 0) { throw "LIC-11 installation identity provisioning failed" }
+    if ($LASTEXITCODE -ne 0) {
+        throw "LIC-11 installation identity provisioning failed under service identity; verify machine-scoped DPAPI and licensing ACLs"
+    }
 }
 
 if (-not (Test-Path -LiteralPath $IdentityPath -PathType Leaf) -or
