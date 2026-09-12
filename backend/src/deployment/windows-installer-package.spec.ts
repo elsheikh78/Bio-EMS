@@ -311,6 +311,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(provisioning).toContain("Installation identity provisioning failed:");
   });
 
+  it("persists the launcher identity, stage, provisioner output, and fatal exception", () => {
+    expect(preStart).toContain('Write-Diagnostic "service identity=');
+    expect(preStart).toContain('Write-Diagnostic "required executable/script files verified"');
+    expect(preStart).toContain('Write-Diagnostic "licensing directories verified"');
+    expect(preStart).toContain('Write-Diagnostic "starting installation identity provisioner"');
+    expect(preStart).toContain('Write-Diagnostic "provisioner: $line"');
+    expect(preStart).toContain('Write-Diagnostic "FATAL:');
+    expect(preStart).toContain("exit 1");
+  });
+
   it("runs LIC-11 only under the final Backend service identity and fails closed", () => {
     expect(preStart).toContain("$identityExists -xor $receiptExists");
     expect(preStart).toContain("automatic replacement is prohibited");
