@@ -287,14 +287,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
-  it("captures WinSW prestart stdout and stderr before the Node provisioner runs", () => {
+  it("runs LIC-11 from the Backend service launcher instead of a WinSW prestart hook", () => {
     expect(lifecycle).toContain(
-      '$writer.WriteElementString("stdoutPath", "$logPath-prestart.stdout.log")'
+      'New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs'
     );
-    expect(lifecycle).toContain(
-      '$writer.WriteElementString("stderrPath", "$logPath-prestart.stderr.log")'
-    );
+    expect(lifecycle).toContain('-BackendScript `"$backendServer`"');
     expect(preStart).toContain("LIC-11 prestart entered at");
+    expect(preStart).toContain("& $NodeExecutable $BackendScript");
   });
 
   it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
@@ -316,9 +315,18 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(preStart).toContain("$identityExists -xor $receiptExists");
     expect(preStart).toContain("automatic replacement is prohibited");
     expect(preStart).toContain("& $NodeExecutable $ProvisioningScript");
+    expect(preStart).toContain("& $NodeExecutable $BackendScript");
     expect(lifecycle.indexOf('sc.exe" @("config"')).toBeLessThan(
       lifecycle.indexOf('Start-Service "BIOEMS-Backend"')
     );
+  });
+
+  it("recreates the HTTPS firewall rule safely and removes it on failed installation", () => {
+    expect(lifecycle).toContain(
+      'Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue'
+    );
+    expect(lifecycle).toContain("$firewallRuleCreated = $true");
+    expect(lifecycle).toContain("if ($firewallRuleCreated)");
   });
 
   it("wires service installation into Setup without granting users access to ProgramData", () => {
