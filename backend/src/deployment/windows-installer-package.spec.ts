@@ -171,10 +171,18 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   });
 
   it("preserves administrator access to WinSW wrappers and rollback root-cause diagnostics", () => {
-    expect(lifecycle).toContain('Add-PathAccess $paths.Services "Administrators" "(OI)(CI)F"');
+    expect(lifecycle).toContain(
+      'Add-PrincipalAccess $paths.Services "BUILTIN\\Administrators" "(OI)(CI)F"'
+    );
     expect(lifecycle).toContain("Rollback could not execute {0} wrapper: {1}");
     expect(lifecycle).toContain("$failure = $_");
     expect(lifecycle).toContain("$failure.Exception.Message");
+  });
+
+  it("does not mis-prefix the built-in Administrators principal as a virtual service account", () => {
+    expect(lifecycle).toContain("function Add-PrincipalAccess");
+    expect(lifecycle).toContain('"BUILTIN\\Administrators"');
+    expect(lifecycle).not.toContain("NT SERVICE\\Administrators");
   });
 
   it("configures Windows virtual service accounts without an empty password argument", () => {
