@@ -286,7 +286,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   });
 
   it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
-    expect(lifecycle).toContain('$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"');
+    expect(lifecycle).toContain(
+      '$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"'
+    );
     expect(lifecycle).toContain('-DiagnosticLogPath `"$licensingDiagnosticLog`"');
     expect(preStart).toContain("[Parameter(Mandatory = $true)][string]$DiagnosticLogPath");
     expect(preStart).toContain("Tee-Object -FilePath $DiagnosticLogPath -Append");
