@@ -183,6 +183,9 @@ New-Item -ItemType Directory -Path (Join-Path $paths.Data "mqtt") -Force | Out-N
 
 foreach ($serviceId in $serviceIds) {
     $wrapper = Join-Path $paths.Services "$serviceId.exe"
+    $xmlPath = Join-Path $paths.Services "$serviceId.xml"
+    Remove-InstallerManagedFile $wrapper
+    Remove-InstallerManagedFile $xmlPath
     Copy-Item -LiteralPath $winswSource -Destination $wrapper -Force
     $wrappers[$serviceId] = $wrapper
 }
