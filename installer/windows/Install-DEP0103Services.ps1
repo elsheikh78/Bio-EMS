@@ -68,18 +68,19 @@ function Add-PathAccess([string]$path, [string]$serviceId, [string]$rights) {
     Invoke-Controlled "icacls.exe" @($path, "/grant", "NT SERVICE\$serviceId`:$rights")
 }
 function New-MosquittoPasswordFile([string]$executable, [string]$path, [string]$username, [string]$password) {
-    $start = New-Object Diagnostics.ProcessStartInfo
-    $start.FileName = $executable
-    $start.Arguments = "-c `"$path`" $username"
-    $start.UseShellExecute = $false
-    $start.RedirectStandardInput = $true
-    $start.CreateNoWindow = $true
-    $process = [Diagnostics.Process]::Start($start)
-    $process.StandardInput.WriteLine($password)
-    $process.StandardInput.WriteLine($password)
-    $process.StandardInput.Close()
-    $process.WaitForExit()
-    if ($process.ExitCode -ne 0) { throw "Mosquitto credential creation failed" }
+    $temporary = "$path.plain.$([Guid]::NewGuid().ToString('N'))"
+    try {
+        New-Item -ItemType File -Path $temporary -Force | Out-Null
+        Invoke-Controlled "icacls.exe" @($temporary, "/inheritance:r")
+        Invoke-Controlled "icacls.exe" @($temporary, "/grant:r", "SYSTEM:F", "Administrators:F")
+        Write-Utf8 $temporary "$username`:$password`r`n"
+        Invoke-Controlled $executable @("-U", $temporary)
+        Move-Item -LiteralPath $temporary -Destination $path -Force
+    } finally {
+        if (Test-Path -LiteralPath $temporary) {
+            Remove-Item -LiteralPath $temporary -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 function New-ServiceXml(
     [string]$id,
