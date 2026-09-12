@@ -12,13 +12,18 @@ $serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
 $wrappers = @{}
 
 trap {
-    foreach ($serviceId in @($serviceIds | Select-Object -Reverse)) {
+    $failure = $_
+    $rollbackServiceIds = @($serviceIds)
+    [array]::Reverse($rollbackServiceIds)
+
+    foreach ($serviceId in $rollbackServiceIds) {
         Stop-Service -Name $serviceId -Force -ErrorAction SilentlyContinue
         if ($wrappers.ContainsKey($serviceId)) {
             & $wrappers[$serviceId] uninstall 2>$null | Out-Null
         }
     }
-    Write-Error "DEP-01-03 failed; no secret values were written to this error output"
+
+    Write-Error ("DEP-01-03 failed: " + $failure.Exception.Message)
     exit 1
 }
 
