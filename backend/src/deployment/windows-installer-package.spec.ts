@@ -278,9 +278,9 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       join(repositoryRoot, "backend/src/modules/licensing/key-protection.ts"),
       "utf8"
     );
-    expect(keyProtection).toContain('WINDOWS-DPAPI/LOCAL-MACHINE');
+    expect(keyProtection).toContain("WINDOWS-DPAPI/LOCAL-MACHINE");
     expect(keyProtection).toContain("DataProtectionScope]::LocalMachine");
-    expect(keyProtection).not.toContain('WINDOWS-DPAPI/CURRENT-USER');
+    expect(keyProtection).not.toContain("WINDOWS-DPAPI/CURRENT-USER");
     expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
     expect(preStart).toContain("verify machine-scoped DPAPI and licensing ACLs");
   });
