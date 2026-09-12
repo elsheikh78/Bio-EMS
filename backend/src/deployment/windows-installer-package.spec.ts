@@ -170,6 +170,15 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("reports controlled command failures with safe executable and exit context", () => {
+    expect(lifecycle).toContain(
+      "Controlled command failed: executable=$file exitCode=$LASTEXITCODE"
+    );
+    expect(lifecycle).toContain("'<redacted>'");
+    expect(lifecycle).toMatch(/password\|passphrase\|secret\|token/i);
+    expect(lifecycle).not.toContain('throw "Controlled command failed"');
+  });
+
   it("creates runtime credentials without command-line or repository secrets", () => {
     expect(lifecycle).toContain("RandomNumberGenerator");
     expect(lifecycle).toContain('Invoke-Controlled $executable @("-U", $temporary)');
