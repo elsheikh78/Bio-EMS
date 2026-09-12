@@ -71,6 +71,8 @@ function Write-Utf8([string]$path, [string]$content) {
 }
 function Remove-InstallerManagedFile([string]$path) {
     if (Test-Path -LiteralPath $path -PathType Leaf) {
+        Invoke-Controlled "takeown.exe" @("/F", $path, "/A")
+        Invoke-Controlled "icacls.exe" @($path, "/grant:r", "Administrators:F")
         Remove-Item -LiteralPath $path -Force
     }
 }
