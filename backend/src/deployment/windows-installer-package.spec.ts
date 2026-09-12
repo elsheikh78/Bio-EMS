@@ -273,6 +273,18 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain("BIOEMS_ENV_FILE = $backendEnv");
   });
 
+  it("binds Windows installation identity protection to the local machine for service-account provisioning", () => {
+    const keyProtection = readFileSync(
+      join(repositoryRoot, "backend/src/modules/licensing/key-protection.ts"),
+      "utf8"
+    );
+    expect(keyProtection).toContain('WINDOWS-DPAPI/LOCAL-MACHINE');
+    expect(keyProtection).toContain("DataProtectionScope]::LocalMachine");
+    expect(keyProtection).not.toContain('WINDOWS-DPAPI/CURRENT-USER');
+    expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
+    expect(preStart).toContain("verify machine-scoped DPAPI and licensing ACLs");
+  });
+
   it("runs LIC-11 only under the final Backend service identity and fails closed", () => {
     expect(preStart).toContain("$identityExists -xor $receiptExists");
     expect(preStart).toContain("automatic replacement is prohibited");
