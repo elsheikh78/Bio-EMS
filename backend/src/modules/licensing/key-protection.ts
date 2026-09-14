@@ -46,7 +46,7 @@ export class WindowsDpapiKeyProtector implements KeyProtector {
 
   private execute(operation: "Protect" | "Unprotect", input: Buffer): Buffer {
     if (process.platform !== "win32") throw new Error("Windows DPAPI is only available on Windows");
-    const script = `$data=[Convert]::FromBase64String([Console]::In.ReadToEnd());$out=[Security.Cryptography.ProtectedData]::${operation}($data,$null,[Security.Cryptography.DataProtectionScope]::LocalMachine);[Console]::Out.Write([Convert]::ToBase64String($out))`;
+    const script = `$data=[Convert]::FromBase64String([Console]::In.ReadToEnd());$out=[System.Security.Cryptography.ProtectedData]::${operation}($data,$null,[System.Security.Cryptography.DataProtectionScope]::LocalMachine);[Console]::Out.Write([Convert]::ToBase64String($out))`;
     const output = execFileSync(
       "powershell.exe",
       ["-NoProfile", "-NonInteractive", "-Command", script],

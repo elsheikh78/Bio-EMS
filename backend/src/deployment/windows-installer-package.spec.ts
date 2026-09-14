@@ -279,7 +279,10 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       "utf8"
     );
     expect(keyProtection).toContain("WINDOWS-DPAPI/LOCAL-MACHINE");
-    expect(keyProtection).toContain("DataProtectionScope]::LocalMachine");
+    expect(keyProtection).toContain("[System.Security.Cryptography.ProtectedData]");
+    expect(keyProtection).toContain(
+      "[System.Security.Cryptography.DataProtectionScope]::LocalMachine"
+    );
     expect(keyProtection).not.toContain("WINDOWS-DPAPI/CURRENT-USER");
     expect(keyProtection).not.toContain("DataProtectionScope]::CurrentUser");
     expect(preStart).toContain(
