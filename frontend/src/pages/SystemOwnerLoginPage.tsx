@@ -52,7 +52,7 @@ export function SystemOwnerLoginPage() {
     event.preventDefault();
     setFailed(false);
     try {
-      await login({ username, password, code: code || undefined });
+      await login({ username, password, ...(code ? { code } : {}) });
     } catch {
       setFailed(true);
     }
