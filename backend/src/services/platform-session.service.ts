@@ -21,13 +21,15 @@ export class PlatformSessionService {
     principalId: string,
     accessToken: string,
     expiresAt: Date,
-    metadata: PlatformSessionMetadata = {}
+    metadata: PlatformSessionMetadata = {},
+    sessionId: string = randomUUID()
   ): CreatedPlatformSession {
     const createdAt = this.now();
     if (expiresAt.getTime() <= createdAt.getTime()) {
       throw new Error("Platform session expiry must be in the future");
     }
-    const id = randomUUID();
+    const id = sessionId;
+    if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(id)) throw new Error("Invalid platform session ID");
     this.database
       .prepare(
         `INSERT INTO platform_sessions (
