@@ -213,13 +213,20 @@ jobs:
               }
             throw "BIO-EMS installation failed: exitCode=$($process.ExitCode) missingServices=$($missingServices -join ',')"
           }
-          & "C:\Program Files\BIO-EMS\installer\Test-PostInstallHealth.ps1" `
-            -ApplicationRoot "C:\Program Files\BIO-EMS" `
-            -PersistentRoot "C:\ProgramData\BIO-EMS" `
-            -PilotMode
+          $setupLogText = Get-Content -LiteralPath $setupLog -Raw
+          if ($setupLogText -notmatch '(?s)Install-DEP0103Services\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS service installation did not report exit code 0"
+          }
+          if ($setupLogText -notmatch '(?s)Test-PostInstallHealth\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS elevated post-install health did not report exit code 0"
+          }
           Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
             Where-Object Status -ne "Running" |
             ForEach-Object { throw "BIO-EMS service is not running: $($_.Name)" }
+          $backendHealth = Invoke-RestMethod -Uri "https://localhost/api/v1/health" -TimeoutSec 15
+          if ($backendHealth.status -ne "UP") {
+            throw "BIO-EMS HTTPS backend health is not UP"
+          }
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
