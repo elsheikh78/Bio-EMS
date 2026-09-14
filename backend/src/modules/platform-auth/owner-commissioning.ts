@@ -3,6 +3,17 @@ import type Database from "better-sqlite3";
 import { z } from "zod";
 import { normalizePlatformUsername } from "../../entities/PlatformPrincipal";
 
+export const ownerCommissioningRequestSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    commissioningId: z.string().uuid(),
+    installationId: z.string().uuid(),
+    requestedAt: z.string().datetime(),
+  })
+  .strict();
+
+export type OwnerCommissioningRequest = z.infer<typeof ownerCommissioningRequestSchema>;
+
 const bcryptHash = z.string().regex(/^\$2[aby]\$(1[2-9]|2[0-9]|3[01])\$[./A-Za-z0-9]{53}$/);
 
 export const ownerCommissioningClaimsSchema = z
