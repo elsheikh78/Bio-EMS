@@ -46,6 +46,7 @@ Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wr
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Initialize-PilotAdmin.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; Flags: dontcopy
 
@@ -55,6 +56,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\\runtime\\node' -Force"""; StatusMsg: "Extracting Node.js runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
 Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
@@ -73,6 +75,91 @@ Name: "desktopicon"; Description: "Create a BIO-EMS desktop shortcut"
 var
   ExistingInstallAtStart: Boolean;
   ServicesPresentAtStart: Boolean;
+  AdminPage: TInputQueryWizardPage;
+
+function HasUppercase(const Value: String): Boolean;
+var I: Integer;
+begin
+  Result := False;
+  for I := 1 to Length(Value) do
+    if (Value[I] >= 'A') and (Value[I] <= 'Z') then begin Result := True; Exit; end;
+end;
+
+function HasLowercase(const Value: String): Boolean;
+var I: Integer;
+begin
+  Result := False;
+  for I := 1 to Length(Value) do
+    if (Value[I] >= 'a') and (Value[I] <= 'z') then begin Result := True; Exit; end;
+end;
+
+function HasDigit(const Value: String): Boolean;
+var I: Integer;
+begin
+  Result := False;
+  for I := 1 to Length(Value) do
+    if (Value[I] >= '0') and (Value[I] <= '9') then begin Result := True; Exit; end;
+end;
+
+procedure InitializeWizard();
+begin
+  if not WizardSilent then begin
+    AdminPage := CreateInputQueryPage(wpSelectTasks, 'Customer Administrator',
+      'Create the customer Admin account',
+      'Enter credentials for the customer Admin. SYSTEM_OWNER is not created or displayed by this Setup.');
+    AdminPage.Add('Admin username:', False);
+    AdminPage.Add('Admin email (optional):', False);
+    AdminPage.Add('Admin password:', True);
+    AdminPage.Add('Confirm Admin password:', True);
+    AdminPage.Values[0] := 'admin';
+  end;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var Password: String;
+begin
+  Result := True;
+  if (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
+    Password := AdminPage.Values[2];
+    if Trim(AdminPage.Values[0]) = '' then begin
+      MsgBox('Admin username is required.', mbError, MB_OK); Result := False;
+    end else if Password <> AdminPage.Values[3] then begin
+      MsgBox('The Admin passwords do not match.', mbError, MB_OK); Result := False;
+    end else if (Length(Password) < 12) or (not HasUppercase(Password)) or
+      (not HasLowercase(Password)) or (not HasDigit(Password)) then begin
+      MsgBox('The password must contain at least 12 characters, an uppercase letter, a lowercase letter, and a digit.', mbError, MB_OK);
+      Result := False;
+    end;
+  end;
+end;
+
+procedure PrepareAdminBootstrap();
+var Username, Password, Email: String;
+begin
+  if WizardSilent then begin
+    Username := GetEnv('BIOEMS_CI_ADMIN_USERNAME');
+    Password := GetEnv('BIOEMS_CI_ADMIN_PASSWORD');
+    Email := GetEnv('BIOEMS_CI_ADMIN_EMAIL');
+  end else begin
+    Username := Trim(AdminPage.Values[0]);
+    Email := Trim(AdminPage.Values[1]);
+    Password := AdminPage.Values[2];
+  end;
+  SaveStringToFile(
+    ExpandConstant('{tmp}\bioems-admin-bootstrap.txt'),
+    Username + #13#10 + Email + #13#10 + Password,
+    False
+  );
+end;
+
+procedure ClearAdminBootstrap();
+begin
+  DeleteFile(ExpandConstant('{tmp}\bioems-admin-bootstrap.txt'));
+  if AdminPage <> nil then begin
+    AdminPage.Values[2] := '';
+    AdminPage.Values[3] := '';
+  end;
+end;
 
 function InitializeSetup(): Boolean;
 begin
@@ -93,6 +180,11 @@ end;
 function IsFreshInstall(): Boolean;
 begin
   Result := (not ExistingInstallAtStart) or (not ServicesPresentAtStart);
+end;
+
+function ShouldInitializeAdmin(): Boolean;
+begin
+  Result := IsFreshInstall() and (not WizardSilent);
 end;
 
 function WasExistingInstall(): Boolean;

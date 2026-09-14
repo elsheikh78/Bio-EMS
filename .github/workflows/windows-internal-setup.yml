@@ -190,6 +190,9 @@ jobs:
           $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
           if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
           $setupLog = Join-Path $env:RUNNER_TEMP "bioems-clean-install.log"
+          $env:BIOEMS_CI_ADMIN_USERNAME = "ci-admin"
+          $env:BIOEMS_CI_ADMIN_PASSWORD = "CiAdminPilot2026"
+          $env:BIOEMS_CI_ADMIN_EMAIL = "ci-admin@example.invalid"
           $process = Start-Process -FilePath $setup.FullName -ArgumentList @(
             "/VERYSILENT",
             "/SUPPRESSMSGBOXES",
@@ -197,6 +200,25 @@ jobs:
             "/SP-",
             "/LOG=`"$setupLog`""
           ) -Wait -PassThru
+          if ($process.ExitCode -eq 0) {
+            $credentialFile = Join-Path $env:RUNNER_TEMP "bioems-ci-admin-bootstrap.txt"
+            [IO.File]::WriteAllLines(
+              $credentialFile,
+              @(
+                $env:BIOEMS_CI_ADMIN_USERNAME,
+                $env:BIOEMS_CI_ADMIN_EMAIL,
+                $env:BIOEMS_CI_ADMIN_PASSWORD
+              ),
+              [Text.Encoding]::Unicode
+            )
+            & "C:\Program Files\BIO-EMS\installer\Initialize-PilotAdmin.ps1" `
+              -ApplicationRoot "C:\Program Files\BIO-EMS" `
+              -PersistentRoot "C:\ProgramData\BIO-EMS" `
+              -CredentialFile $credentialFile
+            if ($LASTEXITCODE -ne 0) {
+              throw "BIO-EMS customer administrator bootstrap command failed"
+            }
+          }
           $missingServices = @(
             "BIOEMS-MQTT",
             "BIOEMS-InfluxDB",
@@ -227,6 +249,17 @@ jobs:
           if ($backendHealth.status -ne "UP") {
             throw "BIO-EMS HTTPS backend health is not UP"
           }
+          $loginBody = @{
+            username = $env:BIOEMS_CI_ADMIN_USERNAME
+            password = $env:BIOEMS_CI_ADMIN_PASSWORD
+          } | ConvertTo-Json
+          $login = Invoke-RestMethod -Uri "https://localhost/api/v1/auth/login" -Method Post -ContentType "application/json" -Body $loginBody -TimeoutSec 15
+          if (-not $login.access_token -or $login.user.role -ne "ADMIN") {
+            throw "BIO-EMS installed customer administrator login verification failed"
+          }
+          Remove-Item Env:BIOEMS_CI_ADMIN_USERNAME -ErrorAction SilentlyContinue
+          Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
+          Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
