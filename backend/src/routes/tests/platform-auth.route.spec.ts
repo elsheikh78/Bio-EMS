@@ -101,10 +101,16 @@ describe("Platform Login REST API", () => {
       .send({ username: " Platform-Owner ", password: "owner-password" })
       .expect(200);
 
-    expect(mocks.login).toHaveBeenCalledWith({
-      username: "platform-owner",
-      password: "owner-password",
-    });
+    expect(mocks.login).toHaveBeenCalledWith(
+      {
+        username: "platform-owner",
+        password: "owner-password",
+      },
+      {
+        ipAddress: "::ffff:127.0.0.1",
+        userAgent: undefined,
+      }
+    );
     expect(response.body.principal.type).toBe("SYSTEM_OWNER");
     expect(JSON.stringify(response.body)).not.toMatch(/password_hash|owner-password|secret/i);
   });
