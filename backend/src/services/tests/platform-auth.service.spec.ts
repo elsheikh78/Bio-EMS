@@ -90,4 +90,59 @@ describe("platform authentication service", () => {
     ).rejects.toMatchObject({ statusCode: 401, code: "INVALID_CREDENTIALS" });
     expect(issuer.issueAccessToken).not.toHaveBeenCalled();
   });
+  it("rejects a locked owner and records failures without issuing a token", async () => {
+    const passwordHash = await hashPassword("OwnerPassword1");
+    const recordFailedLogin = vi.fn();
+    const repository = {
+      findCredentialsByUsername: vi.fn(() => ({
+        id: "system-owner",
+        principal_type: "SYSTEM_OWNER" as const,
+        username: "platform-owner",
+        password_hash: passwordHash,
+        status: "active" as const,
+        created_at: "2026-08-24T00:00:00.000Z",
+        updated_at: null,
+        locked_until: "2026-09-14T12:15:00.000Z",
+      })),
+      recordFailedLogin,
+    };
+    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+
+    await expect(
+      new PlatformAuthService(
+        repository,
+        issuer,
+        () => new Date("2026-09-14T12:00:00.000Z")
+      ).login({ username: "platform-owner", password: "OwnerPassword1" })
+    ).rejects.toMatchObject({ statusCode: 401, code: "INVALID_CREDENTIALS" });
+    expect(recordFailedLogin).not.toHaveBeenCalled();
+    expect(issuer.issueAccessToken).not.toHaveBeenCalled();
+  });
+
+  it("clears accumulated failures after successful authentication", async () => {
+    const passwordHash = await hashPassword("OwnerPassword1");
+    const clearFailedLogins = vi.fn();
+    const repository = {
+      findCredentialsByUsername: vi.fn(() => ({
+        id: "system-owner",
+        principal_type: "SYSTEM_OWNER" as const,
+        username: "platform-owner",
+        password_hash: passwordHash,
+        status: "active" as const,
+        created_at: "2026-08-24T00:00:00.000Z",
+        updated_at: null,
+        failed_login_count: 2,
+        locked_until: null,
+      })),
+      clearFailedLogins,
+    };
+
+    await new PlatformAuthService(repository, tokenIssuer).login({
+      username: "platform-owner",
+      password: "OwnerPassword1",
+    });
+
+    expect(clearFailedLogins).toHaveBeenCalledWith("system-owner", expect.any(Date));
+  });
+
 });
