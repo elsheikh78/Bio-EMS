@@ -11,6 +11,8 @@ const DUMMY_BCRYPT_HASH = "$2b$12$a4qNLowNiYMqjgUx2Pa8D.ubXSEImfhQDmrsw.MYU80cl5
 
 export interface PlatformAuthRepository {
   findCredentialsByUsername(username: string): PlatformPrincipalCredentialRecord | undefined;
+  recordFailedLogin?(id: string, now?: Date): void;
+  clearFailedLogins?(id: string, now?: Date): void;
 }
 
 export interface PlatformAccessTokenIssuer {
@@ -29,24 +31,35 @@ const invalidCredentials = () => new AppError("Invalid credentials", 401, "INVAL
 export class PlatformAuthService {
   constructor(
     private readonly repository: PlatformAuthRepository,
-    private readonly tokenIssuer: PlatformAccessTokenIssuer
+    private readonly tokenIssuer: PlatformAccessTokenIssuer,
+    private readonly now: () => Date = () => new Date()
   ) {}
 
   async login(input: PlatformLoginInput): Promise<PlatformLoginResponse> {
     const credentials = this.repository.findCredentialsByUsername(input.username);
+    const now = this.now();
     const passwordMatches = await verifyPassword(
       input.password,
       credentials?.password_hash ?? DUMMY_BCRYPT_HASH
     );
 
+    const locked =
+      credentials?.locked_until !== undefined &&
+      credentials.locked_until !== null &&
+      new Date(credentials.locked_until).getTime() > now.getTime();
+
     if (
       !credentials ||
       !passwordMatches ||
       credentials.status !== "active" ||
-      credentials.principal_type !== "SYSTEM_OWNER"
+      credentials.principal_type !== "SYSTEM_OWNER" ||
+      locked
     ) {
+      if (credentials && !locked) this.repository.recordFailedLogin?.(credentials.id, now);
       throw invalidCredentials();
     }
+
+    this.repository.clearFailedLogins?.(credentials.id, now);
 
     const principal: PlatformPrincipal = {
       kind: "platform",
