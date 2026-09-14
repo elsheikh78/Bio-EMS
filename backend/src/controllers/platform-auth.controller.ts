@@ -5,6 +5,7 @@ import { AppError } from "../errors/app-error";
 import { asyncHandler } from "../middleware/async-handler";
 import { PlatformPrincipalRepository } from "../repositories/platform-principal.repository";
 import { PlatformAuthService } from "../services/platform-auth.service";
+import { OwnerMfaService } from "../services/owner-mfa.service";
 import { PlatformSessionService } from "../services/platform-session.service";
 import { PlatformTokenService } from "../services/platform-token.service";
 
@@ -49,4 +50,41 @@ export const platformLogoutController = (req: Request, res: Response): void => {
 export const revokeAllPlatformSessionsController = (req: Request, res: Response): void => {
   const revoked = new PlatformSessionService(sqlite).revokeAll(req.platformPrincipal!.id);
   res.status(200).json({ revoked_sessions: revoked });
+};
+
+function ownerMfaService(): OwnerMfaService {
+  if (!config.ownerMfaEncryptionKey) {
+    throw new AppError("Owner MFA unavailable", 503, "OWNER_MFA_UNAVAILABLE");
+  }
+  return new OwnerMfaService(
+    new PlatformPrincipalRepository(),
+    config.ownerMfaEncryptionKey
+  );
+}
+
+export const beginOwnerMfaEnrollmentController = (req: Request, res: Response): void => {
+  try {
+    const enrollment = ownerMfaService().beginEnrollment(req.platformPrincipal!.id);
+    res.status(201).json({
+      secret: enrollment.secret,
+      otpauth_uri: enrollment.otpauthUri,
+    });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      "Owner MFA enrollment unavailable",
+      409,
+      "OWNER_MFA_ENROLLMENT_UNAVAILABLE"
+    );
+  }
+};
+
+export const confirmOwnerMfaEnrollmentController = (req: Request, res: Response): void => {
+  try {
+    ownerMfaService().confirmEnrollment(req.platformPrincipal!.id, req.body.code);
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError("Owner MFA confirmation rejected", 400, "OWNER_MFA_CONFIRMATION_REJECTED");
+  }
 };
