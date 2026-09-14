@@ -35,6 +35,10 @@ export interface PlatformSessionWriter {
   ): { id: string };
 }
 
+export interface PlatformMfaVerifier {
+  verifyLoginCode(state: PlatformPrincipalCredentialRecord, code: string): boolean;
+}
+
 export interface PlatformLoginResponse {
   access_token: string;
   token_type: "bearer";
@@ -49,7 +53,8 @@ export class PlatformAuthService {
     private readonly repository: PlatformAuthRepository,
     private readonly tokenIssuer: PlatformAccessTokenIssuer,
     private readonly now: () => Date = () => new Date(),
-    private readonly sessions?: PlatformSessionWriter
+    private readonly sessions?: PlatformSessionWriter,
+    private readonly mfa?: PlatformMfaVerifier
   ) {}
 
   async login(
@@ -77,6 +82,19 @@ export class PlatformAuthService {
     ) {
       if (credentials && !locked) this.repository.recordFailedLogin?.(credentials.id, now);
       throw invalidCredentials();
+    }
+
+    if (credentials.mfa_enabled_at) {
+      let verified = false;
+      try {
+        verified = Boolean(input.code && this.mfa?.verifyLoginCode(credentials, input.code));
+      } catch {
+        verified = false;
+      }
+      if (!verified) {
+        this.repository.recordFailedLogin?.(credentials.id, now);
+        throw new AppError("MFA verification required", 401, "OWNER_MFA_REQUIRED");
+      }
     }
 
     this.repository.clearFailedLogins?.(credentials.id, now);
