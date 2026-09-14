@@ -23,6 +23,7 @@ describe("owner commissioning", () => {
   beforeEach(() => {
     database = new Database(":memory:");
     database.exec("PRAGMA foreign_keys = ON");
+    database.exec("CREATE TABLE sites (id INTEGER PRIMARY KEY)");
     migration009.up(database);
     migration010.up(database);
     migration025.up(database);
