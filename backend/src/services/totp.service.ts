@@ -23,8 +23,7 @@ function encodeBase32(value: Buffer): string {
   for (const byte of value) bits += byte.toString(2).padStart(8, "0");
   let result = "";
   for (let index = 0; index < bits.length; index += 5) {
-    result +=
-      BASE32_ALPHABET[Number.parseInt(bits.slice(index, index + 5).padEnd(5, "0"), 2)];
+    result += BASE32_ALPHABET[Number.parseInt(bits.slice(index, index + 5).padEnd(5, "0"), 2)];
   }
   return result;
 }
@@ -47,12 +46,7 @@ export function generateTotpCode(secret: string, at = new Date()): string {
   return String(binary % 10 ** DIGITS).padStart(DIGITS, "0");
 }
 
-export function verifyTotpCode(
-  secret: string,
-  code: string,
-  at = new Date(),
-  window = 1
-): boolean {
+export function verifyTotpCode(secret: string, code: string, at = new Date(), window = 1): boolean {
   if (!/^\d{6}$/.test(code) || !Number.isInteger(window) || window < 0 || window > 2) return false;
   const supplied = Buffer.from(code);
   for (let offset = -window; offset <= window; offset += 1) {
@@ -64,11 +58,7 @@ export function verifyTotpCode(
   return false;
 }
 
-export function buildTotpUri(
-  secret: string,
-  username: string,
-  issuer = "BIO-EMS"
-): string {
+export function buildTotpUri(secret: string, username: string, issuer = "BIO-EMS"): string {
   const label = encodeURIComponent(`${issuer}:${username}`);
   const query = new URLSearchParams({
     secret,
