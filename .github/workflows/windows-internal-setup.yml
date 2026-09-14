@@ -163,6 +163,30 @@ jobs:
           Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
+      - name: Install Setup and verify pilot health on Windows
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
+          $output = Join-Path $stage "output"
+          $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
+          if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
+          $process = Start-Process -FilePath $setup.FullName -ArgumentList @(
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-"
+          ) -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            throw "BIO-EMS clean Windows installation exited with code $($process.ExitCode)"
+          }
+          & "C:\Program Files\BIO-EMS\installer\Test-PostInstallHealth.ps1" `
+            -ApplicationRoot "C:\Program Files\BIO-EMS" `
+            -PersistentRoot "C:\ProgramData\BIO-EMS" `
+            -PilotMode
+          Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
+            Where-Object Status -ne "Running" |
+            ForEach-Object { throw "BIO-EMS service is not running: $($_.Name)" }
+
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
         with:
