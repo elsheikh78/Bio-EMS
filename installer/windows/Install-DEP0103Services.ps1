@@ -7,6 +7,10 @@ param(
 $ErrorActionPreference = "Stop"
 $application = [System.IO.Path]::GetFullPath($ApplicationRoot)
 $persistent = [System.IO.Path]::GetFullPath($PersistentRoot)
+$installerLogDirectory = Join-Path $persistent "logs"
+New-Item -ItemType Directory -Path $installerLogDirectory -Force | Out-Null
+$installerDiagnosticLog = Join-Path $installerLogDirectory "service-install.log"
+Add-Content -LiteralPath $installerDiagnosticLog -Value "$(Get-Date -Format o) installer entered pilotMode=$PilotMode"
 $serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
 $wrappers = @{}
 $firewallRuleCreated = $false
@@ -31,6 +35,10 @@ trap {
         Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue
     }
 
+    $failureLine = $failure.InvocationInfo.PositionMessage
+    Add-Content -LiteralPath $installerDiagnosticLog -Value "$(Get-Date -Format o) FATAL: $($failure.Exception.ToString())"
+    Add-Content -LiteralPath $installerDiagnosticLog -Value "POSITION: $failureLine"
+    Add-Content -LiteralPath $installerDiagnosticLog -Value "STACK: $($failure.ScriptStackTrace)"
     Write-Error ("DEP-01-03 failed: " + $failure.Exception.Message)
     exit 1
 }
