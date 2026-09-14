@@ -1,12 +1,5 @@
-import {
-  decryptMfaSecret,
-  encryptMfaSecret,
-} from "./owner-mfa-crypto.service";
-import {
-  buildTotpUri,
-  generateTotpSecret,
-  verifyTotpCode,
-} from "./totp.service";
+import { decryptMfaSecret, encryptMfaSecret } from "./owner-mfa-crypto.service";
+import { buildTotpUri, generateTotpSecret, verifyTotpCode } from "./totp.service";
 
 export interface OwnerMfaState {
   username: string;

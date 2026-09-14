@@ -1,11 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import { decryptMfaSecret } from "./owner-mfa-crypto.service";
-import {
-  OwnerMfaRepository,
-  OwnerMfaService,
-  OwnerMfaState,
-} from "./owner-mfa.service";
+import { OwnerMfaRepository, OwnerMfaService, OwnerMfaState } from "./owner-mfa.service";
 import { generateTotpCode } from "./totp.service";
 
 function fixture() {
@@ -30,7 +26,12 @@ function fixture() {
   const key = randomBytes(32);
   const now = new Date("2026-09-14T12:00:00.000Z");
   const secret = "JBSWY3DPEHPK3PXP";
-  const service = new OwnerMfaService(repository, key, () => now, () => secret);
+  const service = new OwnerMfaService(
+    repository,
+    key,
+    () => now,
+    () => secret
+  );
   return { state, repository, key, now, secret, service };
 }
 
