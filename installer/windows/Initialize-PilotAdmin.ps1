@@ -11,7 +11,11 @@ New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
 
 function Write-Diagnostic([string]$message) {
-    Add-Content -LiteralPath $logPath -Value "$(Get-Date -Format o) $message"
+    try {
+        Add-Content -LiteralPath $logPath -Value "$(Get-Date -Format o) $message" -ErrorAction Stop
+    } catch {
+        Write-Verbose "Administrator bootstrap diagnostic log is not writable in the current host context"
+    }
 }
 
 try {
