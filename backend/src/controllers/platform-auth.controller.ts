@@ -34,3 +34,19 @@ export const platformLoginController = asyncHandler(async (req: Request, res: Re
 export const currentPlatformPrincipalController = (req: Request, res: Response): void => {
   res.status(200).json({ principal: req.platformPrincipal! });
 };
+
+export const platformLogoutController = (req: Request, res: Response): void => {
+  const revoked = new PlatformSessionService(sqlite).revoke(
+    req.platformSessionId!,
+    req.platformPrincipal!.id
+  );
+  if (!revoked) {
+    throw new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED");
+  }
+  res.status(204).send();
+};
+
+export const revokeAllPlatformSessionsController = (req: Request, res: Response): void => {
+  const revoked = new PlatformSessionService(sqlite).revokeAll(req.platformPrincipal!.id);
+  res.status(200).json({ revoked_sessions: revoked });
+};
