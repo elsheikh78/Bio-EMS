@@ -37,7 +37,7 @@ describe("platform authentication service", () => {
         username: "platform-owner",
       },
     });
-    expect(tokenIssuer.issueAccessToken).toHaveBeenCalledWith(response.principal);
+    expect(tokenIssuer.issueAccessToken).toHaveBeenCalledWith(response.principal, expect.any(String));
   });
 
   it.each([
@@ -142,4 +142,34 @@ describe("platform authentication service", () => {
 
     expect(clearFailedLogins).toHaveBeenCalledWith("system-owner", expect.any(Date));
   });
+  it("persists the issued token in a matching revocable session", async () => {
+    const passwordHash = await hashPassword("OwnerPassword1");
+    const repository = {
+      findCredentialsByUsername: vi.fn(() => ({
+        id: "system-owner",
+        principal_type: "SYSTEM_OWNER" as const,
+        username: "platform-owner",
+        password_hash: passwordHash,
+        status: "active" as const,
+        created_at: "2026-08-24T00:00:00.000Z",
+        updated_at: null,
+      })),
+    };
+    const sessions = { create: vi.fn(() => ({ id: "session-id" })) };
+    const now = new Date("2026-09-14T12:00:00.000Z");
+
+    await new PlatformAuthService(repository, tokenIssuer, () => now, sessions).login(
+      { username: "platform-owner", password: "OwnerPassword1" },
+      { ipAddress: "127.0.0.1", userAgent: "test" }
+    );
+
+    expect(sessions.create).toHaveBeenCalledWith(
+      "system-owner",
+      "platform-token",
+      new Date("2026-09-14T12:15:00.000Z"),
+      { ipAddress: "127.0.0.1", userAgent: "test" },
+      expect.any(String)
+    );
+  });
+
 });
