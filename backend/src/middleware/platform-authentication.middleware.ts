@@ -1,8 +1,10 @@
+import { sqlite } from "../../database/sqlite/client";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { config } from "../config/config";
 import { AppError } from "../errors/app-error";
 import { PlatformPrincipalRecord } from "../entities/PlatformPrincipal";
 import { PlatformPrincipalRepository } from "../repositories/platform-principal.repository";
+import { PlatformSessionService } from "../services/platform-session.service";
 import { PlatformTokenService } from "../services/platform-token.service";
 import { parseSingleAuthorizationHeader } from "./authentication.middleware";
 
@@ -10,6 +12,7 @@ export interface PlatformAccessTokenVerifier {
   verifyAccessToken(token: string): {
     principalId: string;
     principalType: "SYSTEM_OWNER";
+    sessionId?: string;
   };
 }
 
@@ -17,12 +20,17 @@ export interface PlatformAuthenticationRepository {
   findById(id: string): PlatformPrincipalRecord | undefined;
 }
 
+export interface PlatformSessionVerifier {
+  isActive(sessionId: string, principalId: string, accessToken: string): boolean;
+}
+
 const authenticationRequired = () =>
   new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED");
 
 export function createPlatformAuthenticationMiddleware(
   tokenVerifier: PlatformAccessTokenVerifier | undefined,
-  repository: PlatformAuthenticationRepository
+  repository: PlatformAuthenticationRepository,
+  sessions?: PlatformSessionVerifier
 ): RequestHandler {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const token = parseSingleAuthorizationHeader(req);
@@ -44,7 +52,9 @@ export function createPlatformAuthenticationMiddleware(
       !record ||
       record.status !== "active" ||
       record.principal_type !== "SYSTEM_OWNER" ||
-      verified.principalType !== "SYSTEM_OWNER"
+      verified.principalType !== "SYSTEM_OWNER" ||
+      !verified.sessionId ||
+      !sessions?.isActive(verified.sessionId, verified.principalId, token)
     ) {
       next(authenticationRequired());
       return;
@@ -62,5 +72,6 @@ export function createPlatformAuthenticationMiddleware(
 
 export const platformAuthenticationMiddleware = createPlatformAuthenticationMiddleware(
   config.platformJwt ? new PlatformTokenService(config.platformJwt) : undefined,
-  new PlatformPrincipalRepository()
+  new PlatformPrincipalRepository(),
+  new PlatformSessionService(sqlite)
 );
