@@ -49,24 +49,13 @@ describe("PlatformSessionService", () => {
 
   it("rejects expired sessions and supports immediate revocation", () => {
     const service = new PlatformSessionService(database, () => now);
-    const active = service.create(
-      "owner",
-      "active-token",
-      new Date("2026-09-14T12:15:00.000Z")
-    );
-    const expired = service.create(
-      "owner",
-      "expired-token",
-      new Date("2026-09-14T12:00:01.000Z")
-    );
+    const active = service.create("owner", "active-token", new Date("2026-09-14T12:15:00.000Z"));
+    const expired = service.create("owner", "expired-token", new Date("2026-09-14T12:00:01.000Z"));
 
     expect(service.revoke(active.id, "owner")).toBe(true);
     expect(service.isActive(active.id, "owner", "active-token")).toBe(false);
 
-    const later = new PlatformSessionService(
-      database,
-      () => new Date("2026-09-14T12:00:02.000Z")
-    );
+    const later = new PlatformSessionService(database, () => new Date("2026-09-14T12:00:02.000Z"));
     expect(later.isActive(expired.id, "owner", "expired-token")).toBe(false);
   });
 
