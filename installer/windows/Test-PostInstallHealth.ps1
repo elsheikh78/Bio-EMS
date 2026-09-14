@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
-    [Parameter(Mandatory = $true)][string]$PersistentRoot
+    [Parameter(Mandatory = $true)][string]$PersistentRoot,
+    [switch]$PilotMode
 )
 
 $ErrorActionPreference = "Stop"
@@ -23,8 +24,10 @@ try {
     $checks["mqtt:loopback"] = $mqttSocket.Connected
 } catch { $checks["mqtt:loopback"] = $false } finally { $mqttSocket.Dispose() }
 $checks["frontend:index"] = Test-Path -LiteralPath (Join-Path $ApplicationRoot "frontend\index.html") -PathType Leaf
-$checks["licensing:identity"] = Test-Path -LiteralPath (Join-Path $PersistentRoot "licensing\installation-identity.json") -PathType Leaf
-$checks["licensing:receipt"] = Test-Path -LiteralPath (Join-Path $PersistentRoot "licensing\installation-provisioning-receipt.json") -PathType Leaf
+if (-not $PilotMode) {
+    $checks["licensing:identity"] = Test-Path -LiteralPath (Join-Path $PersistentRoot "licensing\installation-identity.json") -PathType Leaf
+    $checks["licensing:receipt"] = Test-Path -LiteralPath (Join-Path $PersistentRoot "licensing\installation-provisioning-receipt.json") -PathType Leaf
+}
 $checks["firewall:https-only"] = @(Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue).Count -eq 1
 
 $passed = -not ($checks.Values -contains $false)
