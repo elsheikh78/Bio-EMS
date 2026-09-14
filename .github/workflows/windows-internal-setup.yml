@@ -79,6 +79,25 @@ jobs:
           "BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Verified Inno Setup 6.7.3 installer SHA-256 and isolated compiler path"
 
+      - name: Parse Windows PowerShell installer scripts
+        shell: powershell
+        run: |
+          $failed = $false
+          Get-ChildItem ".\installer\windows" -Filter "*.ps1" -File | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            [Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName,
+              [ref]$tokens,
+              [ref]$parseErrors
+            ) | Out-Null
+            foreach ($parseError in @($parseErrors)) {
+              Write-Error "$($_.Name): $($parseError.Message) at $($parseError.Extent.StartLineNumber):$($parseError.Extent.StartColumnNumber)"
+              $failed = $true
+            }
+          }
+          if ($failed) { throw "Windows PowerShell installer script parsing failed" }
+
       - name: Acquire and verify locked vendor inputs
         shell: powershell
         run: |
