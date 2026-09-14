@@ -127,20 +127,23 @@ export function PlatformAuthenticationProvider({
     }
   };
 
-  const logout = async () => {
-    try {
-      if (session) {
-        await apiClient.request("/platform-auth/logout", {
-          method: "POST",
-          auth: "protected",
-        });
+  const logout = () => {
+    const revokeAndClear = async () => {
+      try {
+        if (session) {
+          await apiClient.request("/platform-auth/logout", {
+            method: "POST",
+            auth: "protected",
+          });
+        }
+      } finally {
+        window.sessionStorage.removeItem(STORAGE_KEY);
+        void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
+        setSession(undefined);
+        setStatus("unauthenticated");
       }
-    } finally {
-      window.sessionStorage.removeItem(STORAGE_KEY);
-      void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
-      setSession(undefined);
-      setStatus("unauthenticated");
-    }
+    };
+    void revokeAndClear();
   };
 
   return (
