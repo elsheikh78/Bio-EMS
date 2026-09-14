@@ -17,11 +17,7 @@ const router = Router();
 router.post("/login", validateBody(platformLoginSchema), platformLoginController);
 router.get("/me", platformAuthenticationMiddleware, currentPlatformPrincipalController);
 router.post("/logout", platformAuthenticationMiddleware, platformLogoutController);
-router.post(
-  "/mfa/enrollment",
-  platformAuthenticationMiddleware,
-  beginOwnerMfaEnrollmentController
-);
+router.post("/mfa/enrollment", platformAuthenticationMiddleware, beginOwnerMfaEnrollmentController);
 router.post(
   "/mfa/enrollment/confirm",
   platformAuthenticationMiddleware,

@@ -56,10 +56,7 @@ function ownerMfaService(): OwnerMfaService {
   if (!config.ownerMfaEncryptionKey) {
     throw new AppError("Owner MFA unavailable", 503, "OWNER_MFA_UNAVAILABLE");
   }
-  return new OwnerMfaService(
-    new PlatformPrincipalRepository(),
-    config.ownerMfaEncryptionKey
-  );
+  return new OwnerMfaService(new PlatformPrincipalRepository(), config.ownerMfaEncryptionKey);
 }
 
 export const beginOwnerMfaEnrollmentController = (req: Request, res: Response): void => {
@@ -71,11 +68,7 @@ export const beginOwnerMfaEnrollmentController = (req: Request, res: Response): 
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new AppError(
-      "Owner MFA enrollment unavailable",
-      409,
-      "OWNER_MFA_ENROLLMENT_UNAVAILABLE"
-    );
+    throw new AppError("Owner MFA enrollment unavailable", 409, "OWNER_MFA_ENROLLMENT_UNAVAILABLE");
   }
 };
 
