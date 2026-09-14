@@ -194,7 +194,7 @@ describe("platform authentication service", () => {
       clearFailedLogins,
     };
     const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
-    const mfa = { verifyLoginCode: vi.fn((_state, code: string) => code === "123456") };
+    const mfa = { verifyLoginCode: vi.fn((_state: unknown, code: string) => code === "123456") };
     const service = new PlatformAuthService(repository, issuer, () => new Date(), undefined, mfa);
 
     await expect(
