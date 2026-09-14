@@ -1,6 +1,9 @@
 import "dotenv/config";
 import { readFileSync, writeFileSync } from "node:fs";
-import { ownerCommissioningRequestSchema, signOwnerCommissioningPackage } from "../modules/platform-auth/owner-commissioning";
+import {
+  ownerCommissioningRequestSchema,
+  signOwnerCommissioningPackage,
+} from "../modules/platform-auth/owner-commissioning";
 import { hashPassword } from "../services/password.service";
 
 export async function runIssueOwnerCommissioningPackage(
@@ -14,7 +17,9 @@ export async function runIssueOwnerCommissioningPackage(
     const keyId = environment.BIOEMS_OWNER_COMMISSIONING_KEY_ID;
     const username = environment.BIOEMS_OWNER_COMMISSIONING_USERNAME;
     const password = environment.BIOEMS_OWNER_COMMISSIONING_PASSWORD;
-    const validityMinutes = Number(environment.BIOEMS_OWNER_COMMISSIONING_VALIDITY_MINUTES || "15");
+    const validityMinutes = Number(
+      environment.BIOEMS_OWNER_COMMISSIONING_VALIDITY_MINUTES || "15"
+    );
     if (!requestPath || !privateKeyPath || !outputPath || !keyId || !username || !password) {
       throw new Error("Owner commissioning issuance inputs are required");
     }
@@ -50,7 +55,9 @@ export async function runIssueOwnerCommissioningPackage(
       flag: "wx",
       mode: 0o600,
     });
-    console.log("Signed owner commissioning package created; plaintext credentials were not printed");
+    console.log(
+      "Signed owner commissioning package created; plaintext credentials were not printed"
+    );
     return 0;
   } catch {
     console.error("Owner commissioning package issuance failed");
