@@ -46,7 +46,12 @@ export function generateTotpCode(secret: string, at = new Date()): string {
   return String(binary % 10 ** DIGITS).padStart(DIGITS, "0");
 }
 
-export function verifyTotpCode(secret: string, code: string, at = new Date(), window = 1): boolean {
+export function verifyTotpCode(
+  secret: string,
+  code: string,
+  at = new Date(),
+  window = 1
+): boolean {
   if (!/^\d{6}$/.test(code) || !Number.isInteger(window) || window < 0 || window > 2) return false;
   const supplied = Buffer.from(code);
   for (let offset = -window; offset <= window; offset += 1) {
@@ -60,6 +65,12 @@ export function verifyTotpCode(secret: string, code: string, at = new Date(), wi
 
 export function buildTotpUri(secret: string, username: string, issuer = "BIO-EMS"): string {
   const label = encodeURIComponent(`${issuer}:${username}`);
-  const query = new URLSearchParams({ secret, issuer, algorithm: "SHA1", digits: "6", period: "30" });
+  const query = new URLSearchParams({
+    secret,
+    issuer,
+    algorithm: "SHA1",
+    digits: "6",
+    period: "30",
+  });
   return `otpauth://totp/${label}?${query.toString()}`;
 }
