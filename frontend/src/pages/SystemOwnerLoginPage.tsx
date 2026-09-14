@@ -19,6 +19,8 @@ const copy = {
     description: "Restricted platform operations access.",
     username: "Owner username",
     password: "Password",
+    code: "Authenticator code",
+    codeHelp: "Enter the 6-digit code after MFA is activated.",
     signIn: "Sign in",
     signingIn: "Signing in…",
     error: "System Owner authentication failed.",
@@ -28,6 +30,8 @@ const copy = {
     description: "دخول مقيد لعمليات إدارة المنصة.",
     username: "اسم مستخدم مالك النظام",
     password: "كلمة المرور",
+    code: "رمز تطبيق المصادقة",
+    codeHelp: "أدخل الرمز المكوّن من 6 أرقام بعد تفعيل المصادقة الثنائية.",
     signIn: "تسجيل الدخول",
     signingIn: "جارٍ تسجيل الدخول…",
     error: "فشل تسجيل دخول مالك النظام.",
@@ -39,6 +43,7 @@ export function SystemOwnerLoginPage() {
   const { login, loginPending } = usePlatformAuthentication();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [failed, setFailed] = useState(false);
   const text = copy[language];
   const headingRef = useInitialFocus<HTMLHeadingElement>();
@@ -47,7 +52,7 @@ export function SystemOwnerLoginPage() {
     event.preventDefault();
     setFailed(false);
     try {
-      await login({ username, password });
+      await login({ username, password, code: code || undefined });
     } catch {
       setFailed(true);
     }
@@ -95,6 +100,14 @@ export function SystemOwnerLoginPage() {
             required
             type="password"
             value={password}
+          />
+          <TextField
+            autoComplete="one-time-code"
+            helperText={text.codeHelp}
+            inputProps={{ inputMode: "numeric", maxLength: 6, pattern: "[0-9]{6}" }}
+            label={text.code}
+            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+            value={code}
           />
           <Button disabled={loginPending} type="submit" variant="contained">
             {loginPending ? text.signingIn : text.signIn}
