@@ -60,6 +60,7 @@ export function createPlatformAuthenticationMiddleware(
       return;
     }
 
+    req.platformSessionId = verified.sessionId;
     req.platformPrincipal = {
       kind: "platform",
       type: "SYSTEM_OWNER",
