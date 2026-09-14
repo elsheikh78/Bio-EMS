@@ -2,7 +2,9 @@
 param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot,
-    [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+
+    [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$ProductVersion,
+    [switch]$PilotMode
+)
 
 $ErrorActionPreference = "Stop"
 $application = [System.IO.Path]::GetFullPath($ApplicationRoot)
