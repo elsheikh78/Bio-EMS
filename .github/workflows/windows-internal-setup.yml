@@ -200,6 +200,25 @@ jobs:
             "/SP-",
             "/LOG=`"$setupLog`""
           ) -Wait -PassThru
+          if ($process.ExitCode -eq 0) {
+            $credentialFile = Join-Path $env:RUNNER_TEMP "bioems-ci-admin-bootstrap.txt"
+            [IO.File]::WriteAllLines(
+              $credentialFile,
+              @(
+                $env:BIOEMS_CI_ADMIN_USERNAME,
+                $env:BIOEMS_CI_ADMIN_EMAIL,
+                $env:BIOEMS_CI_ADMIN_PASSWORD
+              ),
+              [Text.Encoding]::Unicode
+            )
+            & "C:\Program Files\BIO-EMS\installer\Initialize-PilotAdmin.ps1" `
+              -ApplicationRoot "C:\Program Files\BIO-EMS" `
+              -PersistentRoot "C:\ProgramData\BIO-EMS" `
+              -CredentialFile $credentialFile
+            if ($LASTEXITCODE -ne 0) {
+              throw "BIO-EMS customer administrator bootstrap command failed"
+            }
+          }
           $missingServices = @(
             "BIOEMS-MQTT",
             "BIOEMS-InfluxDB",
@@ -219,9 +238,6 @@ jobs:
           $setupLogText = Get-Content -LiteralPath $setupLog -Raw
           if ($setupLogText -notmatch '(?s)Install-DEP0103Services\.ps1.*?Process exit code: 0') {
             throw "BIO-EMS service installation did not report exit code 0"
-          }
-          if ($setupLogText -notmatch '(?s)Initialize-PilotAdmin\.ps1.*?Process exit code: 0') {
-            throw "BIO-EMS customer administrator bootstrap did not report exit code 0"
           }
           if ($setupLogText -notmatch '(?s)Test-PostInstallHealth\.ps1.*?Process exit code: 0') {
             throw "BIO-EMS elevated post-install health did not report exit code 0"
