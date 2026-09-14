@@ -37,7 +37,10 @@ describe("platform authentication service", () => {
         username: "platform-owner",
       },
     });
-    expect(tokenIssuer.issueAccessToken).toHaveBeenCalledWith(response.principal, expect.any(String));
+    expect(tokenIssuer.issueAccessToken).toHaveBeenCalledWith(
+      response.principal,
+      expect.any(String)
+    );
   });
 
   it.each([
@@ -171,5 +174,4 @@ describe("platform authentication service", () => {
       expect.any(String)
     );
   });
-
 });
