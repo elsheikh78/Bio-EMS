@@ -77,6 +77,9 @@ var
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
 
+function SetEnvironmentVariable(lpName, lpValue: String): Boolean;
+  external 'SetEnvironmentVariableW@kernel32.dll stdcall';
+
 function HasUppercase(const Value: String): Boolean;
 var I: Integer;
 begin
