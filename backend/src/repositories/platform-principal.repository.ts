@@ -94,6 +94,49 @@ export class PlatformPrincipalRepository {
       .get(normalizePlatformUsername(username)) as PlatformPrincipalCredentialRecord | undefined;
   }
 
+  findMfaState(id: string):
+    | {
+        username: string;
+        mfa_secret_encrypted: string | null;
+        mfa_enabled_at: string | null;
+      }
+    | undefined {
+    return this.database
+      .prepare(
+        `SELECT username, mfa_secret_encrypted, mfa_enabled_at
+         FROM platform_principals WHERE id = ? LIMIT 1`
+      )
+      .get(id) as
+      | {
+          username: string;
+          mfa_secret_encrypted: string | null;
+          mfa_enabled_at: string | null;
+        }
+      | undefined;
+  }
+
+  beginMfaEnrollment(id: string, encryptedSecret: string, now = new Date()): boolean {
+    const result = this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET mfa_secret_encrypted = ?, mfa_enabled_at = NULL, updated_at = ?
+         WHERE id = ? AND mfa_secret_encrypted IS NULL`
+      )
+      .run(encryptedSecret, now.toISOString(), id);
+    return result.changes === 1;
+  }
+
+  enableMfa(id: string, now = new Date()): boolean {
+    const result = this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET mfa_enabled_at = ?, updated_at = ?
+         WHERE id = ? AND mfa_secret_encrypted IS NOT NULL AND mfa_enabled_at IS NULL`
+      )
+      .run(now.toISOString(), now.toISOString(), id);
+    return result.changes === 1;
+  }
+
   recordFailedLogin(id: string, now = new Date(), threshold = 5, lockMinutes = 15): void {
     const record = this.database
       .prepare(
