@@ -56,7 +56,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\\runtime\\node' -Force"""; StatusMsg: "Extracting Node.js runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
 Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
@@ -76,9 +76,6 @@ var
   ExistingInstallAtStart: Boolean;
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
-
-function SetEnvironmentVariable(lpName, lpValue: String): Boolean;
-  external 'SetEnvironmentVariableW@kernel32.dll stdcall';
 
 function HasUppercase(const Value: String): Boolean;
 var I: Integer;
@@ -146,16 +143,16 @@ begin
     Email := Trim(AdminPage.Values[1]);
     Password := AdminPage.Values[2];
   end;
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_USERNAME', Username);
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_PASSWORD', Password);
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_EMAIL', Email);
+  SaveStringToFile(
+    ExpandConstant('{tmp}\bioems-admin-bootstrap.txt'),
+    Username + #13#10 + Email + #13#10 + Password,
+    False
+  );
 end;
 
 procedure ClearAdminBootstrap();
 begin
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_USERNAME', '');
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_PASSWORD', '');
-  SetEnvironmentVariable('BIOEMS_BOOTSTRAP_ADMIN_EMAIL', '');
+  DeleteFile(ExpandConstant('{tmp}\bioems-admin-bootstrap.txt'));
   AdminPage.Values[2] := '';
   AdminPage.Values[3] := '';
 end;
