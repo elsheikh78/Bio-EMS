@@ -38,7 +38,10 @@
     "format:check": "prettier --check \"{src,database}/**/*.ts\" \"*.{json,js}\"",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "owner:commissioning-request": "tsx src/scripts/create-owner-commissioning-request.ts",
+    "owner:commissioning-issue": "tsx src/scripts/issue-owner-commissioning-package.ts",
+    "owner:commissioning-import": "tsx src/scripts/import-owner-commissioning-package.ts"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
