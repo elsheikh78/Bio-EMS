@@ -79,6 +79,25 @@ jobs:
           "BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Verified Inno Setup 6.7.3 installer SHA-256 and isolated compiler path"
 
+      - name: Parse Windows PowerShell installer scripts
+        shell: powershell
+        run: |
+          $failed = $false
+          Get-ChildItem ".\installer\windows" -Filter "*.ps1" -File | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            [Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName,
+              [ref]$tokens,
+              [ref]$parseErrors
+            ) | Out-Null
+            foreach ($parseError in @($parseErrors)) {
+              Write-Error "$($_.Name): $($parseError.Message) at $($parseError.Extent.StartLineNumber):$($parseError.Extent.StartColumnNumber)"
+              $failed = $true
+            }
+          }
+          if ($failed) { throw "Windows PowerShell installer script parsing failed" }
+
       - name: Acquire and verify locked vendor inputs
         shell: powershell
         run: |
@@ -162,6 +181,52 @@ jobs:
           Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
           Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
+
+      - name: Install Setup and verify pilot health on Windows
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
+          $output = Join-Path $stage "output"
+          $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
+          if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
+          $setupLog = Join-Path $env:RUNNER_TEMP "bioems-clean-install.log"
+          $process = Start-Process -FilePath $setup.FullName -ArgumentList @(
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-",
+            "/LOG=`"$setupLog`""
+          ) -Wait -PassThru
+          $missingServices = @(
+            "BIOEMS-MQTT",
+            "BIOEMS-InfluxDB",
+            "BIOEMS-Backend"
+          ) | Where-Object { -not (Get-Service -Name $_ -ErrorAction SilentlyContinue) }
+          if ($process.ExitCode -ne 0 -or @($missingServices).Count -gt 0) {
+            Write-Host "=== SETUP LOG ==="
+            Get-Content -LiteralPath $setupLog -Tail 300 -ErrorAction SilentlyContinue
+            Write-Host "=== BIO-EMS RUNTIME LOGS ==="
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -ErrorAction SilentlyContinue |
+              ForEach-Object {
+                Write-Host "--- $($_.FullName) ---"
+                Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
+              }
+            throw "BIO-EMS installation failed: exitCode=$($process.ExitCode) missingServices=$($missingServices -join ',')"
+          }
+          $setupLogText = Get-Content -LiteralPath $setupLog -Raw
+          if ($setupLogText -notmatch '(?s)Install-DEP0103Services\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS service installation did not report exit code 0"
+          }
+          if ($setupLogText -notmatch '(?s)Test-PostInstallHealth\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS elevated post-install health did not report exit code 0"
+          }
+          Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
+            Where-Object Status -ne "Running" |
+            ForEach-Object { throw "BIO-EMS service is not running: $($_.Name)" }
+          $backendHealth = Invoke-RestMethod -Uri "https://localhost/api/v1/health" -TimeoutSec 15
+          if ($backendHealth.status -ne "UP") {
+            throw "BIO-EMS HTTPS backend health is not UP"
+          }
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
