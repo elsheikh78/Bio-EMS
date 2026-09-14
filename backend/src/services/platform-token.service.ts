@@ -10,17 +10,19 @@ export interface IssuedPlatformAccessToken {
 export interface VerifiedPlatformAccessToken {
   principalId: string;
   principalType: "SYSTEM_OWNER";
+  sessionId?: string;
 }
 
 export class PlatformTokenService {
   constructor(private readonly configuration: PlatformJwtConfig) {}
 
-  issueAccessToken(principal: PlatformPrincipal): IssuedPlatformAccessToken {
+  issueAccessToken(principal: PlatformPrincipal, sessionId?: string): IssuedPlatformAccessToken {
     const expiresIn = this.configuration.expireMinutes * 60;
     const accessToken = jwt.sign(
       {
         principal_kind: "platform",
         principal_type: principal.type,
+        ...(sessionId ? { session_id: sessionId } : {}),
       },
       this.configuration.secret,
       {
@@ -50,6 +52,7 @@ export class PlatformTokenService {
     return {
       principalId: payload.sub,
       principalType: payload.principal_type,
+      sessionId: typeof payload.session_id === "string" ? payload.session_id : undefined,
     };
   }
 }
@@ -59,6 +62,7 @@ function isValidPlatformAccessTokenPayload(payload: string | JwtPayload): payloa
   sub: string;
   principal_kind: "platform";
   principal_type: "SYSTEM_OWNER";
+  session_id?: string;
 } {
   return (
     typeof payload !== "string" &&
@@ -67,6 +71,8 @@ function isValidPlatformAccessTokenPayload(payload: string | JwtPayload): payloa
     typeof payload.sub === "string" &&
     payload.sub.length > 0 &&
     payload.principal_kind === "platform" &&
-    payload.principal_type === "SYSTEM_OWNER"
+    payload.principal_type === "SYSTEM_OWNER" &&
+    (payload.session_id === undefined ||
+      (typeof payload.session_id === "string" && payload.session_id.length > 0))
   );
 }
