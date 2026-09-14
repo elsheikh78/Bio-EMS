@@ -219,5 +219,4 @@ describe("platform authentication service", () => {
     ).resolves.toMatchObject({ access_token: "x" });
     expect(clearFailedLogins).toHaveBeenCalled();
   });
-
 });
