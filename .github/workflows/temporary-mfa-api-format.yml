@@ -1,0 +1,36 @@
+name: Temporary MFA API formatter
+
+on:
+  push:
+    branches:
+      - feat/sec-owner-01
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/sec-owner-01
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - working-directory: backend
+        run: npm ci
+      - working-directory: backend
+        run: npx prettier --write src/config/config.ts src/repositories/platform-principal.repository.ts src/controllers/platform-auth.controller.ts src/routes/platform-auth.route.ts src/modules/platform-auth/dto/owner-mfa.schema.ts
+      - run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend
+          git commit -m "style(security): apply exact MFA API formatting"
+          git push origin HEAD:feat/sec-owner-01
