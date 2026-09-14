@@ -36,7 +36,6 @@ vi.hoisted(() => {
       expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
     );
   });
-
 });
 
 import { createPlatformAuthenticationMiddleware } from "../platform-authentication.middleware";
