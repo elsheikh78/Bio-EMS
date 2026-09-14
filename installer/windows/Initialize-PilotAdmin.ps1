@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
-    [Parameter(Mandatory = $true)][string]$PersistentRoot
+    [Parameter(Mandatory = $true)][string]$PersistentRoot,
+    [Parameter(Mandatory = $true)][string]$CredentialFile
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,12 +15,23 @@ function Write-Diagnostic([string]$message) {
 }
 
 try {
-    $username = $env:BIOEMS_BOOTSTRAP_ADMIN_USERNAME
-    $password = $env:BIOEMS_BOOTSTRAP_ADMIN_PASSWORD
-    $email = $env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL
+    if (-not (Test-Path -LiteralPath $CredentialFile -PathType Leaf)) {
+        throw "Administrator credential handoff is missing"
+    }
+    $credentialLines = @([IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::Unicode))
+    Remove-Item -LiteralPath $CredentialFile -Force
+    if ($credentialLines.Count -ne 3) {
+        throw "Administrator credential handoff is invalid"
+    }
+    $username = $credentialLines[0]
+    $email = $credentialLines[1]
+    $password = $credentialLines[2]
     if ([string]::IsNullOrWhiteSpace($username) -or [string]::IsNullOrEmpty($password)) {
         throw "Administrator credentials were not supplied by the Setup wizard"
     }
+    $env:BIOEMS_BOOTSTRAP_ADMIN_USERNAME = $username
+    $env:BIOEMS_BOOTSTRAP_ADMIN_PASSWORD = $password
+    $env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL = $email
 
     $nodes = @(Get-ChildItem -LiteralPath (Join-Path $ApplicationRoot "runtime\node") -Filter "node.exe" -File -Recurse)
     if ($nodes.Count -ne 1) { throw "Expected exactly one controlled Node.js executable" }
@@ -47,6 +59,7 @@ finally {
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_PASSWORD -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_SQLITE_PATH -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $CredentialFile -Force -ErrorAction SilentlyContinue
     Start-Service -Name "BIOEMS-Backend" -ErrorAction SilentlyContinue
 }
 
