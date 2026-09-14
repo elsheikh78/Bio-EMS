@@ -222,8 +222,8 @@ Remove-InstallerManagedFile $tlsMetadata
 $identityPath = Join-Path $paths.Licensing "installation-identity.json"
 $receiptPath = Join-Path $paths.Licensing "installation-provisioning-receipt.json"
 $backendLauncher = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
-$provisioningScript = Join-Path $application "backend\dist\scripts\provision-installation-identity.js"
-$backendServer = Join-Path $application "backend\dist\scripts\start-windows-service.js"
+$provisioningScript = Join-Path $application "backend\dist\src\scripts\provision-installation-identity.js"
+$backendServer = Join-Path $application "backend\dist\src\scripts\start-windows-service.js"
 $licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
 $backendLauncherArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$backendLauncher`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`" -BackendScript `"$backendServer`""
 $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
