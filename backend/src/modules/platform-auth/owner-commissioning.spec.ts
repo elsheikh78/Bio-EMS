@@ -17,7 +17,9 @@ describe("owner commissioning", () => {
   const installationId = randomUUID();
   const now = new Date("2026-09-14T12:00:00.000Z");
   const pair = generateKeyPairSync("ed25519");
-  const privateKey = pair.privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+  const privateKey = pair.privateKey
+    .export({ type: "pkcs8", format: "pem" })
+    .toString();
   const publicKey = pair.publicKey.export({ type: "spki", format: "pem" }).toString();
 
   beforeEach(() => {
