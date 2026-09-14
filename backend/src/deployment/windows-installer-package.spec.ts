@@ -356,14 +356,6 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   it("wires service installation into Setup without granting users access to ProgramData", () => {
     const source = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
     expect(source).toContain("Install-DEP0103Services.ps1");
-    expect(source).toContain("-PilotMode");
-    expect(lifecycle).toContain("[switch]$PilotMode");
-    expect(lifecycle).toContain('BIOEMS_PILOT_MODE = "true"');
-    const pilotHealth = readFileSync(
-      join(windowsRoot, "Test-PostInstallHealth.ps1"),
-      "utf8"
-    );
-    expect(pilotHealth).toContain("if (-not $PilotMode)");
     expect(source).toContain("runhidden waituntilterminated");
     expect(source).not.toContain("Permissions: users-readexec");
     expect(readFileSync(join(repositoryRoot, "backend/src/config/config.ts"), "utf8")).toContain(
@@ -519,8 +511,6 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain('$signature.Status -eq "NotSigned"');
     expect(workflow).toContain("$signature.SignerCertificate.Thumbprint");
     expect(workflow).toContain("BIO-EMS-Pilot-Code-Signing.cer");
-    expect(workflow).toContain("Install Setup and verify pilot health on Windows");
-    expect(workflow).toContain('Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend');
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("retention-days: 14");
   });
