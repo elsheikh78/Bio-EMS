@@ -22,13 +22,13 @@ export interface PlatformPrincipalRecord {
 
 export interface PlatformPrincipalCredentialRecord extends PlatformPrincipalRecord {
   password_hash: string;
-  failed_login_count: number;
-  locked_until: string | null;
-  last_failed_login_at: string | null;
-  mfa_secret_encrypted: string | null;
-  mfa_enabled_at: string | null;
-  mfa_recovery_hashes: string | null;
-  session_version: number;
+  failed_login_count?: number;
+  locked_until?: string | null;
+  last_failed_login_at?: string | null;
+  mfa_secret_encrypted?: string | null;
+  mfa_enabled_at?: string | null;
+  mfa_recovery_hashes?: string | null;
+  session_version?: number;
 }
 
 export type PlatformPrincipal = SystemOwnerPrincipal;
