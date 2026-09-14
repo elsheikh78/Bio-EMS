@@ -109,11 +109,9 @@ describe("platform authentication service", () => {
     const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
 
     await expect(
-      new PlatformAuthService(
-        repository,
-        issuer,
-        () => new Date("2026-09-14T12:00:00.000Z")
-      ).login({ username: "platform-owner", password: "OwnerPassword1" })
+      new PlatformAuthService(repository, issuer, () => new Date("2026-09-14T12:00:00.000Z")).login(
+        { username: "platform-owner", password: "OwnerPassword1" }
+      )
     ).rejects.toMatchObject({ statusCode: 401, code: "INVALID_CREDENTIALS" });
     expect(recordFailedLogin).not.toHaveBeenCalled();
     expect(issuer.issueAccessToken).not.toHaveBeenCalled();
@@ -144,5 +142,4 @@ describe("platform authentication service", () => {
 
     expect(clearFailedLogins).toHaveBeenCalledWith("system-owner", expect.any(Date));
   });
-
 });

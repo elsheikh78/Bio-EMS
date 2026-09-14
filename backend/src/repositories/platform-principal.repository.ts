@@ -109,9 +109,7 @@ export class PlatformPrincipalRepository {
     const withinWindow = now.getTime() - previousAt <= lockMinutes * 60_000;
     const nextCount = (withinWindow ? record.failed_login_count : 0) + 1;
     const lockedUntil =
-      nextCount >= threshold
-        ? new Date(now.getTime() + lockMinutes * 60_000).toISOString()
-        : null;
+      nextCount >= threshold ? new Date(now.getTime() + lockMinutes * 60_000).toISOString() : null;
 
     this.database
       .prepare(
