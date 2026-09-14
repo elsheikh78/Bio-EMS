@@ -10,6 +10,7 @@ declare global {
         role: UserRole;
       };
       platformPrincipal?: PlatformPrincipal;
+      platformSessionId?: string;
     }
   }
 }
