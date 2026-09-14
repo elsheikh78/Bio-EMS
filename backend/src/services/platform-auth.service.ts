@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { AppError } from "../errors/app-error";
 import {
   PlatformPrincipal,
@@ -16,7 +17,22 @@ export interface PlatformAuthRepository {
 }
 
 export interface PlatformAccessTokenIssuer {
-  issueAccessToken(principal: PlatformPrincipal): IssuedPlatformAccessToken;
+  issueAccessToken(principal: PlatformPrincipal, sessionId?: string): IssuedPlatformAccessToken;
+}
+
+export interface PlatformLoginMetadata {
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+export interface PlatformSessionWriter {
+  create(
+    principalId: string,
+    accessToken: string,
+    expiresAt: Date,
+    metadata: PlatformLoginMetadata,
+    sessionId: string
+  ): { id: string };
 }
 
 export interface PlatformLoginResponse {
@@ -32,10 +48,14 @@ export class PlatformAuthService {
   constructor(
     private readonly repository: PlatformAuthRepository,
     private readonly tokenIssuer: PlatformAccessTokenIssuer,
-    private readonly now: () => Date = () => new Date()
+    private readonly now: () => Date = () => new Date(),
+    private readonly sessions?: PlatformSessionWriter
   ) {}
 
-  async login(input: PlatformLoginInput): Promise<PlatformLoginResponse> {
+  async login(
+    input: PlatformLoginInput,
+    metadata: PlatformLoginMetadata = {}
+  ): Promise<PlatformLoginResponse> {
     const credentials = this.repository.findCredentialsByUsername(input.username);
     const now = this.now();
     const passwordMatches = await verifyPassword(
@@ -67,7 +87,17 @@ export class PlatformAuthService {
       id: credentials.id,
       username: credentials.username,
     };
-    const issued = this.tokenIssuer.issueAccessToken(principal);
+    const sessionId = randomUUID();
+    const issued = this.tokenIssuer.issueAccessToken(principal, sessionId);
+    if (this.sessions) {
+      this.sessions.create(
+        principal.id,
+        issued.accessToken,
+        new Date(now.getTime() + issued.expiresIn * 1000),
+        metadata,
+        sessionId
+      );
+    }
 
     return {
       access_token: issued.accessToken,
