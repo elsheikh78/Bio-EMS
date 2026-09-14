@@ -158,35 +158,32 @@ describe("Platform Login REST API", () => {
   });
 });
 
-  it("revokes the current persisted session during logout", async () => {
-    mocks.revokeSession.mockReturnValue(true);
+it("revokes the current persisted session during logout", async () => {
+  mocks.revokeSession.mockReturnValue(true);
 
-    await request(app)
-      .post("/api/v1/platform-auth/logout")
-      .set("Authorization", "Bearer platform-token")
-      .expect(204);
+  await request(app)
+    .post("/api/v1/platform-auth/logout")
+    .set("Authorization", "Bearer platform-token")
+    .expect(204);
 
-    expect(mocks.revokeSession).toHaveBeenCalledWith("session-id", "system-owner");
-  });
+  expect(mocks.revokeSession).toHaveBeenCalledWith("session-id", "system-owner");
+});
 
-  it("revokes every persisted owner session", async () => {
-    mocks.revokeAllSessions.mockReturnValue(3);
+it("revokes every persisted owner session", async () => {
+  mocks.revokeAllSessions.mockReturnValue(3);
 
-    const response = await request(app)
-      .post("/api/v1/platform-auth/sessions/revoke-all")
-      .set("Authorization", "Bearer platform-token")
-      .expect(200);
+  const response = await request(app)
+    .post("/api/v1/platform-auth/sessions/revoke-all")
+    .set("Authorization", "Bearer platform-token")
+    .expect(200);
 
-    expect(mocks.revokeAllSessions).toHaveBeenCalledWith("system-owner");
-    expect(response.body).toEqual({ revoked_sessions: 3 });
-  });
+  expect(mocks.revokeAllSessions).toHaveBeenCalledWith("system-owner");
+  expect(response.body).toEqual({ revoked_sessions: 3 });
+});
 
-  it.each(["/logout", "/sessions/revoke-all"])(
-    "protects POST /platform-auth%s",
-    async (path) => {
-      await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
-    }
-  );
+it.each(["/logout", "/sessions/revoke-all"])("protects POST /platform-auth%s", async (path) => {
+  await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
+});
 
 describe("Current Platform Principal REST API", () => {
   it("returns only the isolated platform principal", async () => {
