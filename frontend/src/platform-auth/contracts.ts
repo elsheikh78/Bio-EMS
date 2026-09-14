@@ -13,6 +13,7 @@ export const platformLoginRequestSchema = z
   .object({
     username: z.string().trim().min(1),
     password: z.string().min(1),
+    code: z.string().regex(/^\d{6}$/).optional(),
   })
   .strict();
 
