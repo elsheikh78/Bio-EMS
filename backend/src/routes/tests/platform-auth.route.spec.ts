@@ -20,6 +20,8 @@ const mocks = vi.hoisted(() => ({
       | undefined,
   },
   login: vi.fn(),
+  revokeSession: vi.fn(),
+  revokeAllSessions: vi.fn(),
 }));
 
 vi.mock("../../config/config", () => ({ config: mocks.config }));
@@ -30,6 +32,13 @@ vi.mock("../../repositories/platform-principal.repository", () => ({
 
 vi.mock("../../services/platform-token.service", () => ({
   PlatformTokenService: class {},
+}));
+
+vi.mock("../../services/platform-session.service", () => ({
+  PlatformSessionService: class {
+    revoke = mocks.revokeSession;
+    revokeAll = mocks.revokeAllSessions;
+  },
 }));
 
 vi.mock("../../services/platform-auth.service", () => ({
@@ -54,6 +63,7 @@ vi.mock("../../middleware/platform-authentication.middleware", async () => {
         return;
       }
 
+      req.platformSessionId = "session-id";
       req.platformPrincipal = {
         kind: "platform",
         type: "SYSTEM_OWNER",
@@ -147,6 +157,36 @@ describe("Platform Login REST API", () => {
     expect(mocks.login).not.toHaveBeenCalled();
   });
 });
+
+  it("revokes the current persisted session during logout", async () => {
+    mocks.revokeSession.mockReturnValue(true);
+
+    await request(app)
+      .post("/api/v1/platform-auth/logout")
+      .set("Authorization", "Bearer platform-token")
+      .expect(204);
+
+    expect(mocks.revokeSession).toHaveBeenCalledWith("session-id", "system-owner");
+  });
+
+  it("revokes every persisted owner session", async () => {
+    mocks.revokeAllSessions.mockReturnValue(3);
+
+    const response = await request(app)
+      .post("/api/v1/platform-auth/sessions/revoke-all")
+      .set("Authorization", "Bearer platform-token")
+      .expect(200);
+
+    expect(mocks.revokeAllSessions).toHaveBeenCalledWith("system-owner");
+    expect(response.body).toEqual({ revoked_sessions: 3 });
+  });
+
+  it.each(["/logout", "/sessions/revoke-all"])(
+    "protects POST /platform-auth%s",
+    async (path) => {
+      await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
+    }
+  );
 
 describe("Current Platform Principal REST API", () => {
   it("returns only the isolated platform principal", async () => {
