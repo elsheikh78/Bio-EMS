@@ -359,9 +359,8 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(source).toContain("-PilotMode");
     expect(lifecycle).toContain("[switch]$PilotMode");
     expect(lifecycle).toContain('BIOEMS_PILOT_MODE = "true"');
-    expect(
-      readFileSync(join(windowsRoot, "Test-PostInstallHealth.ps1"), "utf8")
-    ).toContain("if (-not $PilotMode)");
+    const pilotHealth = readFileSync(join(windowsRoot, "Test-PostInstallHealth.ps1"), "utf8");
+    expect(pilotHealth).toContain("if (-not $PilotMode)");
     expect(source).toContain("runhidden waituntilterminated");
     expect(source).not.toContain("Permissions: users-readexec");
     expect(readFileSync(join(repositoryRoot, "backend/src/config/config.ts"), "utf8")).toContain(
