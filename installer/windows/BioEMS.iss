@@ -103,21 +103,23 @@ end;
 
 procedure InitializeWizard();
 begin
-  AdminPage := CreateInputQueryPage(wpSelectTasks, 'Customer Administrator',
-    'Create the customer Admin account',
-    'Enter credentials for the customer Admin. SYSTEM_OWNER is not created or displayed by this Setup.');
-  AdminPage.Add('Admin username:', False);
-  AdminPage.Add('Admin email (optional):', False);
-  AdminPage.Add('Admin password:', True);
-  AdminPage.Add('Confirm Admin password:', True);
-  AdminPage.Values[0] := 'admin';
+  if not WizardSilent then begin
+    AdminPage := CreateInputQueryPage(wpSelectTasks, 'Customer Administrator',
+      'Create the customer Admin account',
+      'Enter credentials for the customer Admin. SYSTEM_OWNER is not created or displayed by this Setup.');
+    AdminPage.Add('Admin username:', False);
+    AdminPage.Add('Admin email (optional):', False);
+    AdminPage.Add('Admin password:', True);
+    AdminPage.Add('Confirm Admin password:', True);
+    AdminPage.Values[0] := 'admin';
+  end;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
   Result := True;
-  if CurPageID = AdminPage.ID then begin
+  if (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
     Password := AdminPage.Values[2];
     if Trim(AdminPage.Values[0]) = '' then begin
       MsgBox('Admin username is required.', mbError, MB_OK); Result := False;
@@ -153,8 +155,10 @@ end;
 procedure ClearAdminBootstrap();
 begin
   DeleteFile(ExpandConstant('{tmp}\bioems-admin-bootstrap.txt'));
-  AdminPage.Values[2] := '';
-  AdminPage.Values[3] := '';
+  if AdminPage <> nil then begin
+    AdminPage.Values[2] := '';
+    AdminPage.Values[3] := '';
+  end;
 end;
 
 function InitializeSetup(): Boolean;
