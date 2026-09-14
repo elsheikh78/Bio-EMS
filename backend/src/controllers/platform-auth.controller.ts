@@ -21,7 +21,10 @@ export const platformLoginController = asyncHandler(async (req: Request, res: Re
     new PlatformPrincipalRepository(),
     new PlatformTokenService(config.platformJwt),
     undefined,
-    new PlatformSessionService(sqlite)
+    new PlatformSessionService(sqlite),
+    config.ownerMfaEncryptionKey
+      ? new OwnerMfaService(new PlatformPrincipalRepository(), config.ownerMfaEncryptionKey)
+      : undefined
   );
 
   res.status(200).json(
