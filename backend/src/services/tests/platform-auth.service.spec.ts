@@ -174,4 +174,50 @@ describe("platform authentication service", () => {
       expect.any(String)
     );
   });
+  it("requires a valid TOTP code after owner MFA activation", async () => {
+    const passwordHash = await hashPassword("OwnerPassword1");
+    const recordFailedLogin = vi.fn();
+    const clearFailedLogins = vi.fn();
+    const repository = {
+      findCredentialsByUsername: vi.fn(() => ({
+        id: "system-owner",
+        principal_type: "SYSTEM_OWNER" as const,
+        username: "platform-owner",
+        password_hash: passwordHash,
+        status: "active" as const,
+        created_at: "2026-08-24T00:00:00.000Z",
+        updated_at: null,
+        mfa_secret_encrypted: "v1.encrypted",
+        mfa_enabled_at: "2026-09-14T11:00:00.000Z",
+      })),
+      recordFailedLogin,
+      clearFailedLogins,
+    };
+    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+    const mfa = { verifyLoginCode: vi.fn((_state, code: string) => code === "123456") };
+    const service = new PlatformAuthService(repository, issuer, () => new Date(), undefined, mfa);
+
+    await expect(
+      service.login({ username: "platform-owner", password: "OwnerPassword1" })
+    ).rejects.toMatchObject({ statusCode: 401, code: "OWNER_MFA_REQUIRED" });
+    await expect(
+      service.login({
+        username: "platform-owner",
+        password: "OwnerPassword1",
+        code: "000000",
+      })
+    ).rejects.toMatchObject({ statusCode: 401, code: "OWNER_MFA_REQUIRED" });
+    expect(issuer.issueAccessToken).not.toHaveBeenCalled();
+    expect(recordFailedLogin).toHaveBeenCalledTimes(2);
+
+    await expect(
+      service.login({
+        username: "platform-owner",
+        password: "OwnerPassword1",
+        code: "123456",
+      })
+    ).resolves.toMatchObject({ access_token: "x" });
+    expect(clearFailedLogins).toHaveBeenCalled();
+  });
+
 });
