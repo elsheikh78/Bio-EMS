@@ -5,7 +5,10 @@ const PREFIX = "v1";
 
 export function parseMfaEncryptionKey(encoded: string): Buffer {
   const key = Buffer.from(encoded, "base64");
-  if (key.length !== 32 || key.toString("base64").replace(/=+$/g, "") !== encoded.replace(/=+$/g, "")) {
+  if (
+    key.length !== 32 ||
+    key.toString("base64").replace(/=+$/g, "") !== encoded.replace(/=+$/g, "")
+  ) {
     throw new Error("MFA encryption key must be canonical base64 for exactly 32 bytes");
   }
   return key;
@@ -19,7 +22,12 @@ export function encryptMfaSecret(secret: string, key: Buffer): string {
   cipher.setAAD(Buffer.from("BIO-EMS:SYSTEM_OWNER:MFA:v1"));
   const encrypted = Buffer.concat([cipher.update(secret, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return [PREFIX, iv.toString("base64url"), tag.toString("base64url"), encrypted.toString("base64url")].join(".");
+  return [
+    PREFIX,
+    iv.toString("base64url"),
+    tag.toString("base64url"),
+    encrypted.toString("base64url"),
+  ].join(".");
 }
 
 export function decryptMfaSecret(value: string, key: Buffer): string {
