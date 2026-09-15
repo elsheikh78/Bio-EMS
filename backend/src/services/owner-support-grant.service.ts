@@ -128,6 +128,28 @@ export class OwnerSupportGrantService {
       .all(principalId) as OwnerSupportGrant[];
   }
 
+  isGrantActive(
+    grantId: string,
+    principalId: string,
+    siteId: number | null
+  ): boolean {
+    const checkedAt = this.now().toISOString();
+    const row = this.database
+      .prepare(
+        `SELECT 1
+         FROM owner_support_grants
+         WHERE id = ?
+           AND principal_id = ?
+           AND revoked_at IS NULL
+           AND issued_at <= ?
+           AND expires_at > ?
+           AND ((site_id IS NULL AND ? IS NULL) OR site_id = ?)
+         LIMIT 1`
+      )
+      .get(grantId, principalId, checkedAt, checkedAt, siteId, siteId);
+    return Boolean(row);
+  }
+
   isActive(principalId: string, siteId: number | null): boolean {
     const checkedAt = this.now().toISOString();
     const row = this.database
