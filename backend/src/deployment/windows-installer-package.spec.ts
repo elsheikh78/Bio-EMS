@@ -175,7 +175,11 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   const repositoryRoot = join(process.cwd(), "..");
   const windowsRoot = join(repositoryRoot, "installer/windows");
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
-  const adminBootstrap = readFileSync(join(windowsRoot, "Initialize-PilotAdmin.ps1"), "utf8");
+  const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+  const workflow = readFileSync(
+    join(repositoryRoot, ".github/workflows/windows-internal-setup.yml"),
+    "utf8"
+  );
   const preStart = readFileSync(join(windowsRoot, "Invoke-BackendPreStart.ps1"), "utf8");
 
   it("installs the exact services under separate virtual service identities", () => {
@@ -230,20 +234,12 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
-  it("temporarily grants the elevated bootstrap identity SQLite access and restores the ACL", () => {
-    expect(adminBootstrap).toContain(
-      "$bootstrapPrincipal = [Security.Principal.WindowsIdentity]::GetCurrent().Name"
-    );
-    expect(adminBootstrap).toContain(
-      'Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*"'
-    );
-    expect(adminBootstrap).toContain("Acl = Get-Acl -LiteralPath $_");
-    expect(adminBootstrap).toContain(
-      '& icacls.exe $dataDirectory /grant "$bootstrapPrincipal`:(OI)(CI)M"'
-    );
-    expect(adminBootstrap).toContain('& icacls.exe $databasePath /grant "$bootstrapPrincipal`:M"');
-    expect(adminBootstrap).toContain(
-      "Set-Acl -LiteralPath $snapshot.Path -AclObject $snapshot.Acl"
+  it("runs silent CI administrator bootstrap inside elevated Setup exactly once", () => {
+    expect(setup).toContain("Trim(GetEnv('BIOEMS_CI_ADMIN_USERNAME')) <> ''");
+    expect(setup).toContain("GetEnv('BIOEMS_CI_ADMIN_PASSWORD') <> ''");
+    expect(workflow).not.toContain("-CredentialFile $credentialFile");
+    expect(workflow).toContain(
+      "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
     );
   });
 

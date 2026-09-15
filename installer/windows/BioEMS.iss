@@ -185,7 +185,11 @@ end;
 
 function ShouldInitializeAdmin(): Boolean;
 begin
-  Result := IsFreshInstall() and (not WizardSilent);
+  Result := IsFreshInstall() and (
+    (not WizardSilent) or
+    ((Trim(GetEnv('BIOEMS_CI_ADMIN_USERNAME')) <> '') and
+     (GetEnv('BIOEMS_CI_ADMIN_PASSWORD') <> ''))
+  );
 end;
 
 function WasExistingInstall(): Boolean;

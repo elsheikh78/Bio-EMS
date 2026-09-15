@@ -214,31 +214,6 @@ jobs:
             throw "BIO-EMS Setup exceeded the 10-minute installation timeout"
           }
           $process.Refresh()
-          if ($process.ExitCode -eq 0) {
-            $credentialFile = Join-Path $env:RUNNER_TEMP "bioems-ci-admin-bootstrap.txt"
-            [IO.File]::WriteAllLines(
-              $credentialFile,
-              @(
-                $env:BIOEMS_CI_ADMIN_USERNAME,
-                $env:BIOEMS_CI_ADMIN_EMAIL,
-                $env:BIOEMS_CI_ADMIN_PASSWORD
-              ),
-              [Text.Encoding]::Unicode
-            )
-            $previousErrorActionPreference = $ErrorActionPreference
-            $ErrorActionPreference = "Continue"
-            & "C:\Program Files\BIO-EMS\installer\Initialize-PilotAdmin.ps1" `
-              -ApplicationRoot "C:\Program Files\BIO-EMS" `
-              -PersistentRoot "C:\ProgramData\BIO-EMS" `
-              -CredentialFile $credentialFile
-            $bootstrapExitCode = $LASTEXITCODE
-            $ErrorActionPreference = $previousErrorActionPreference
-            if ($bootstrapExitCode -ne 0) {
-              Write-Host "=== ADMIN BOOTSTRAP LOG ==="
-              Get-Content "C:\ProgramData\BIO-EMS\logs\admin-bootstrap.log" -Tail 120 -ErrorAction SilentlyContinue
-              throw "BIO-EMS customer administrator bootstrap command failed"
-            }
-          }
           $missingServices = @(
             "BIOEMS-MQTT",
             "BIOEMS-InfluxDB",
@@ -261,6 +236,9 @@ jobs:
           }
           if ($setupLogText -notmatch '(?s)Test-PostInstallHealth\.ps1.*?Process exit code: 0') {
             throw "BIO-EMS elevated post-install health did not report exit code 0"
+          }
+          if ($setupLogText -notmatch '(?s)Initialize-PilotAdmin\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
           }
           Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
             Where-Object Status -ne "Running" |
