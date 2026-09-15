@@ -4,10 +4,14 @@ import { PlatformAuthService } from "../platform-auth.service";
 
 const tokenIssuer = {
   issueAccessToken: vi.fn(() => ({ accessToken: "platform-token", expiresIn: 900 })),
+  issueMfaEnrollmentToken: vi.fn(() => ({
+    enrollmentToken: "enrollment-token",
+    expiresIn: 300,
+  })),
 };
 
 describe("platform authentication service", () => {
-  it("authenticates an active SYSTEM_OWNER and returns a platform principal", async () => {
+  it("returns only a short-lived enrollment token before owner MFA activation", async () => {
     const passwordHash = await hashPassword("OwnerPassword1");
     const repository = {
       findCredentialsByUsername: vi.fn(() => ({
@@ -27,20 +31,18 @@ describe("platform authentication service", () => {
     });
 
     expect(response).toEqual({
-      access_token: "platform-token",
+      mfa_enrollment_required: true,
+      enrollment_token: "enrollment-token",
       token_type: "bearer",
-      expires_in: 900,
-      principal: {
-        kind: "platform",
-        type: "SYSTEM_OWNER",
-        id: "system-owner",
-        username: "platform-owner",
-      },
+      expires_in: 300,
     });
-    expect(tokenIssuer.issueAccessToken).toHaveBeenCalledWith(
-      response.principal,
-      expect.any(String)
-    );
+    expect(tokenIssuer.issueMfaEnrollmentToken).toHaveBeenCalledWith({
+      kind: "platform",
+      type: "SYSTEM_OWNER",
+      id: "system-owner",
+      username: "platform-owner",
+    });
+    expect(tokenIssuer.issueAccessToken).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -59,7 +61,13 @@ describe("platform authentication service", () => {
     ],
   ])("rejects %s without issuing a token", async (_case, credentials) => {
     const repository = { findCredentialsByUsername: vi.fn(() => credentials) };
-    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+    const issuer = {
+      issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })),
+      issueMfaEnrollmentToken: vi.fn(() => ({
+        enrollmentToken: "enrollment-token",
+        expiresIn: 300,
+      })),
+    };
 
     await expect(
       new PlatformAuthService(repository, issuer).login({
@@ -83,7 +91,13 @@ describe("platform authentication service", () => {
         updated_at: null,
       })),
     };
-    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+    const issuer = {
+      issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })),
+      issueMfaEnrollmentToken: vi.fn(() => ({
+        enrollmentToken: "enrollment-token",
+        expiresIn: 300,
+      })),
+    };
 
     await expect(
       new PlatformAuthService(repository, issuer).login({
@@ -109,7 +123,13 @@ describe("platform authentication service", () => {
       })),
       recordFailedLogin,
     };
-    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+    const issuer = {
+      issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })),
+      issueMfaEnrollmentToken: vi.fn(() => ({
+        enrollmentToken: "enrollment-token",
+        expiresIn: 300,
+      })),
+    };
 
     await expect(
       new PlatformAuthService(repository, issuer, () => new Date("2026-09-14T12:00:00.000Z")).login(
@@ -156,13 +176,16 @@ describe("platform authentication service", () => {
         status: "active" as const,
         created_at: "2026-08-24T00:00:00.000Z",
         updated_at: null,
+        mfa_secret_encrypted: "v1.encrypted",
+        mfa_enabled_at: "2026-09-14T11:00:00.000Z",
       })),
     };
     const sessions = { create: vi.fn(() => ({ id: "session-id" })) };
+    const mfa = { verifyLoginCode: vi.fn(() => true) };
     const now = new Date("2026-09-14T12:00:00.000Z");
 
-    await new PlatformAuthService(repository, tokenIssuer, () => now, sessions).login(
-      { username: "platform-owner", password: "OwnerPassword1" },
+    await new PlatformAuthService(repository, tokenIssuer, () => now, sessions, mfa).login(
+      { username: "platform-owner", password: "OwnerPassword1", code: "123456" },
       { ipAddress: "127.0.0.1", userAgent: "test" }
     );
 
@@ -193,7 +216,13 @@ describe("platform authentication service", () => {
       recordFailedLogin,
       clearFailedLogins,
     };
-    const issuer = { issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })) };
+    const issuer = {
+      issueAccessToken: vi.fn(() => ({ accessToken: "x", expiresIn: 900 })),
+      issueMfaEnrollmentToken: vi.fn(() => ({
+        enrollmentToken: "enrollment-token",
+        expiresIn: 300,
+      })),
+    };
     const mfa = { verifyLoginCode: vi.fn((_state: unknown, code: string) => code === "123456") };
     const service = new PlatformAuthService(repository, issuer, () => new Date(), undefined, mfa);
 
