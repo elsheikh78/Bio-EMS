@@ -16,6 +16,13 @@ export interface PlatformAccessTokenVerifier {
   };
 }
 
+export interface OwnerMfaEnrollmentTokenVerifier {
+  verifyMfaEnrollmentToken(token: string): {
+    principalId: string;
+    principalType: "SYSTEM_OWNER";
+  };
+}
+
 export interface PlatformAuthenticationRepository {
   findById(id: string): PlatformPrincipalRecord | undefined;
 }
@@ -71,8 +78,56 @@ export function createPlatformAuthenticationMiddleware(
   };
 }
 
+export function createOwnerMfaEnrollmentAuthenticationMiddleware(
+  tokenVerifier: OwnerMfaEnrollmentTokenVerifier | undefined,
+  repository: PlatformAuthenticationRepository
+): RequestHandler {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const token = parseSingleAuthorizationHeader(req);
+    if (!tokenVerifier || !token) {
+      next(authenticationRequired());
+      return;
+    }
+
+    let verified: ReturnType<OwnerMfaEnrollmentTokenVerifier["verifyMfaEnrollmentToken"]>;
+    try {
+      verified = tokenVerifier.verifyMfaEnrollmentToken(token);
+    } catch {
+      next(authenticationRequired());
+      return;
+    }
+
+    const record = repository.findById(verified.principalId);
+    if (
+      !record ||
+      record.status !== "active" ||
+      record.principal_type !== "SYSTEM_OWNER" ||
+      verified.principalType !== "SYSTEM_OWNER"
+    ) {
+      next(authenticationRequired());
+      return;
+    }
+
+    req.platformPrincipal = {
+      kind: "platform",
+      type: "SYSTEM_OWNER",
+      id: record.id,
+      username: record.username,
+    };
+    next();
+  };
+}
+
+const tokenService = config.platformJwt
+  ? new PlatformTokenService(config.platformJwt)
+  : undefined;
+const principalRepository = new PlatformPrincipalRepository();
+
 export const platformAuthenticationMiddleware = createPlatformAuthenticationMiddleware(
-  config.platformJwt ? new PlatformTokenService(config.platformJwt) : undefined,
-  new PlatformPrincipalRepository(),
+  tokenService,
+  principalRepository,
   new PlatformSessionService(sqlite)
 );
+
+export const ownerMfaEnrollmentAuthenticationMiddleware =
+  createOwnerMfaEnrollmentAuthenticationMiddleware(tokenService, principalRepository);
