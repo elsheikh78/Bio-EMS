@@ -9,6 +9,12 @@ $ErrorActionPreference = "Stop"
 $logDirectory = Join-Path $PersistentRoot "logs"
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
+New-Item -ItemType File -Path $logPath -Force | Out-Null
+$installerPrincipal = "$env:USERDOMAIN\$env:USERNAME"
+& icacls.exe $logPath /grant:r "$installerPrincipal`:R" | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Administrator bootstrap diagnostic access could not be prepared"
+}
 
 function Write-Diagnostic([string]$message) {
     Write-Host "BIO-EMS admin bootstrap: $message"
