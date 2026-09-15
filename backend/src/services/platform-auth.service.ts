@@ -5,6 +5,7 @@ import {
   PlatformPrincipalCredentialRecord,
 } from "../entities/PlatformPrincipal";
 import { PlatformLoginInput } from "../modules/platform-auth/dto/platform-login.schema";
+import { OwnerSecurityAuditService } from "./owner-security-audit.service";
 import { verifyPassword } from "./password.service";
 import { IssuedOwnerMfaEnrollmentToken, IssuedPlatformAccessToken } from "./platform-token.service";
 
@@ -65,7 +66,8 @@ export class PlatformAuthService {
     private readonly tokenIssuer: PlatformAccessTokenIssuer,
     private readonly now: () => Date = () => new Date(),
     private readonly sessions?: PlatformSessionWriter,
-    private readonly mfa?: PlatformMfaVerifier
+    private readonly mfa?: PlatformMfaVerifier,
+    private readonly audit?: Pick<OwnerSecurityAuditService, "record">
   ) {}
 
   async login(
@@ -92,6 +94,14 @@ export class PlatformAuthService {
       locked
     ) {
       if (credentials && !locked) this.repository.recordFailedLogin?.(credentials.id, now);
+      this.audit?.record({
+        action: "OWNER_LOGIN_DENIED",
+        result: "DENIED",
+        principalId: credentials?.id,
+        username: credentials?.username,
+        reason: locked ? "OWNER_LOCKED" : "INVALID_CREDENTIALS",
+        ...metadata,
+      });
       throw invalidCredentials();
     }
 
@@ -105,6 +115,13 @@ export class PlatformAuthService {
     if (!credentials.mfa_enabled_at) {
       this.repository.clearFailedLogins?.(credentials.id, now);
       const issued = this.tokenIssuer.issueMfaEnrollmentToken(principal);
+      this.audit?.record({
+        action: "OWNER_MFA_ENROLLMENT_REQUIRED",
+        result: "SUCCESS",
+        principalId: principal.id,
+        username: principal.username,
+        ...metadata,
+      });
       return {
         mfa_enrollment_required: true,
         enrollment_token: issued.enrollmentToken,
@@ -122,6 +139,14 @@ export class PlatformAuthService {
     })();
     if (!verified) {
       this.repository.recordFailedLogin?.(credentials.id, now);
+      this.audit?.record({
+        action: "OWNER_MFA_DENIED",
+        result: "DENIED",
+        principalId: principal.id,
+        username: principal.username,
+        reason: "INVALID_OR_MISSING_TOTP",
+        ...metadata,
+      });
       throw new AppError("MFA verification required", 401, "OWNER_MFA_REQUIRED");
     }
 
@@ -138,6 +163,15 @@ export class PlatformAuthService {
         sessionId
       );
     }
+
+    this.audit?.record({
+      action: "OWNER_LOGIN_SUCCEEDED",
+      result: "SUCCESS",
+      principalId: principal.id,
+      username: principal.username,
+      sessionId,
+      ...metadata,
+    });
 
     return {
       access_token: issued.accessToken,
