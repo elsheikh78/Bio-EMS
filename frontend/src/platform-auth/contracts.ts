@@ -57,4 +57,6 @@ export const currentPlatformPrincipalResponseSchema = z
 export type PlatformPrincipal = z.infer<typeof platformPrincipalSchema>;
 export type PlatformLoginRequest = z.infer<typeof platformLoginRequestSchema>;
 export type PlatformLoginResponse = z.infer<typeof platformLoginResponseSchema>;
-export type OwnerMfaEnrollmentResponse = z.infer<typeof ownerMfaEnrollmentResponseSchema>;
+export type OwnerMfaEnrollmentResponse = z.infer<
+  typeof ownerMfaEnrollmentResponseSchema
+>;
