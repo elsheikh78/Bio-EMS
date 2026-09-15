@@ -83,8 +83,8 @@ describe("owner support grant service", () => {
 
   it.each([0, 481, 1.5])("rejects invalid duration %s", (durationMinutes) => {
     const service = new OwnerSupportGrantService(database);
-    expect(() =>
-      service.issue("owner", 7, "Investigate sensor outage", durationMinutes)
-    ).toThrow("INVALID_SUPPORT_GRANT");
+    expect(() => service.issue("owner", 7, "Investigate sensor outage", durationMinutes)).toThrow(
+      "INVALID_SUPPORT_GRANT"
+    );
   });
 });
