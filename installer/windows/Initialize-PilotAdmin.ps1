@@ -9,6 +9,9 @@ $ErrorActionPreference = "Stop"
 $logDirectory = Join-Path $PersistentRoot "logs"
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
+$dataDirectory = Join-Path $PersistentRoot "data"
+$bootstrapPrincipal = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+$originalDataAcl = $null
 
 function Write-Diagnostic([string]$message) {
     try {
@@ -46,6 +49,11 @@ try {
 
     $env:BIOEMS_SQLITE_PATH = Join-Path $PersistentRoot "data\bioems.db"
     Stop-Service -Name "BIOEMS-Backend" -Force -ErrorAction Stop
+    $originalDataAcl = Get-Acl -LiteralPath $dataDirectory -ErrorAction Stop
+    & icacls.exe $dataDirectory /grant "$bootstrapPrincipal`:(OI)(CI)M" | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Temporary administrator database access could not be granted"
+    }
     Write-Diagnostic "starting one-time customer administrator bootstrap"
     & $nodes[0].FullName $script
     if ($LASTEXITCODE -ne 0) {
@@ -64,6 +72,9 @@ finally {
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_SQLITE_PATH -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $CredentialFile -Force -ErrorAction SilentlyContinue
+    if ($null -ne $originalDataAcl) {
+        Set-Acl -LiteralPath $dataDirectory -AclObject $originalDataAcl -ErrorAction SilentlyContinue
+    }
     Start-Service -Name "BIOEMS-Backend" -ErrorAction SilentlyContinue
 }
 

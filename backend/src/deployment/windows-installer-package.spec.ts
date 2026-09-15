@@ -175,6 +175,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   const repositoryRoot = join(process.cwd(), "..");
   const windowsRoot = join(repositoryRoot, "installer/windows");
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
+  const adminBootstrap = readFileSync(join(windowsRoot, "Initialize-PilotAdmin.ps1"), "utf8");
   const preStart = readFileSync(join(windowsRoot, "Invoke-BackendPreStart.ps1"), "utf8");
 
   it("installs the exact services under separate virtual service identities", () => {
@@ -226,6 +227,19 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain('Protect-Path $paths.Data "BIOEMS-Backend"');
     expect(lifecycle.indexOf('Protect-Path $paths.Data "BIOEMS-Backend"')).toBeLessThan(
       lifecycle.indexOf('Start-Service "BIOEMS-Backend"')
+    );
+  });
+
+  it("temporarily grants the elevated bootstrap identity SQLite access and restores the ACL", () => {
+    expect(adminBootstrap).toContain(
+      "$bootstrapPrincipal = [Security.Principal.WindowsIdentity]::GetCurrent().Name"
+    );
+    expect(adminBootstrap).toContain("$originalDataAcl = Get-Acl -LiteralPath $dataDirectory");
+    expect(adminBootstrap).toContain(
+      '& icacls.exe $dataDirectory /grant "$bootstrapPrincipal`:(OI)(CI)M"'
+    );
+    expect(adminBootstrap).toContain(
+      "Set-Acl -LiteralPath $dataDirectory -AclObject $originalDataAcl"
     );
   });
 
