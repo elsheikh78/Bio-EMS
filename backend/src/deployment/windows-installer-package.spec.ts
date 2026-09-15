@@ -254,15 +254,19 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
 
   it("prepares elevated database access before bootstrap and restores protected SQLite ACLs", () => {
     const prepareIndex = adminBootstrap.indexOf(
-      '& icacls.exe $dataDirectory /grant:r "BUILTIN\\Administrators:(OI)(CI)F" /T /C'
+      '& icacls.exe $dataDirectory /grant:r "BUILTIN\\Administrators:(OI)(CI)F"'
     );
     const nodeIndex = adminBootstrap.indexOf("& $nodes[0].FullName $script 2>&1");
     expect(prepareIndex).toBeGreaterThan(-1);
     expect(prepareIndex).toBeLessThan(nodeIndex);
+    expect(adminBootstrap).not.toContain("/T /C");
+    expect(adminBootstrap).toContain("& takeown.exe /F $_.FullName /A");
+    expect(adminBootstrap.indexOf("& takeown.exe /F $_.FullName /A")).toBeLessThan(nodeIndex);
     expect(adminBootstrap).toContain('-Filter "bioems.db*" -File');
     expect(adminBootstrap).toContain(
       '& icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\\Administrators:F" "NT SERVICE\\BIOEMS-Backend:M"'
     );
+    expect(adminBootstrap).toContain('& icacls.exe $_.FullName /setowner "SYSTEM"');
     expect(
       adminBootstrap.indexOf("Backend database-file access could not be restored")
     ).toBeLessThan(adminBootstrap.indexOf('Start-Service -Name "BIOEMS-Backend"'));

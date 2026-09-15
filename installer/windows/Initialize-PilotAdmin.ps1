@@ -54,10 +54,21 @@ try {
     $env:BIOEMS_SQLITE_PATH = Join-Path $PersistentRoot "data\bioems.db"
     Stop-Service -Name "BIOEMS-Backend" -Force -ErrorAction Stop
     $dataDirectory = Join-Path $PersistentRoot "data"
-    & icacls.exe $dataDirectory /grant:r "BUILTIN\Administrators:(OI)(CI)F" /T /C | Out-Null
+    & icacls.exe $dataDirectory /grant:r "BUILTIN\Administrators:(OI)(CI)F" | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "Administrator database access could not be prepared"
     }
+    Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*" -File -ErrorAction Stop |
+        ForEach-Object {
+            & takeown.exe /F $_.FullName /A | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Administrator database-file ownership could not be prepared"
+            }
+            & icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\Administrators:F" "NT SERVICE\BIOEMS-Backend:M" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Administrator database-file access could not be prepared"
+            }
+        }
     Write-Diagnostic "starting one-time customer administrator bootstrap"
     $bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)
     $bootstrapExitCode = $LASTEXITCODE
@@ -70,6 +81,10 @@ try {
             & icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\Administrators:F" "NT SERVICE\BIOEMS-Backend:M" | Out-Null
             if ($LASTEXITCODE -ne 0) {
                 throw "Backend database-file access could not be restored"
+            }
+            & icacls.exe $_.FullName /setowner "SYSTEM" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Backend database-file ownership could not be restored"
             }
         }
     Write-Diagnostic "customer administrator bootstrap completed"
