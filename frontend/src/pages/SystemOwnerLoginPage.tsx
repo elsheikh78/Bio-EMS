@@ -49,7 +49,8 @@ const copy = {
     secret: "مفتاح إعداد تطبيق المصادقة",
     verify: "تفعيل المصادقة الثنائية",
     verifying: "جارٍ التفعيل…",
-    activated: "تم تفعيل المصادقة الثنائية. سجّل الدخول مجددًا باستخدام رمز التطبيق.",
+    activated:
+      "تم تفعيل المصادقة الثنائية. سجّل الدخول مجددًا باستخدام رمز التطبيق.",
   },
 } as const;
 
@@ -95,14 +96,21 @@ export function SystemOwnerLoginPage() {
         return;
       }
 
-      const response = await login({ username, password, ...(code ? { code } : {}) });
+      const response = await login({
+        username,
+        password,
+        ...(code ? { code } : {}),
+      });
       if ("mfa_enrollment_required" in response) {
         setSetupPending(true);
-        const raw = await apiClient.request<unknown>("/platform-auth/mfa/enrollment", {
-          method: "POST",
-          auth: "public",
-          headers: { Authorization: `Bearer ${response.enrollment_token}` },
-        });
+        const raw = await apiClient.request<unknown>(
+          "/platform-auth/mfa/enrollment",
+          {
+            method: "POST",
+            auth: "public",
+            headers: { Authorization: `Bearer ${response.enrollment_token}` },
+          },
+        );
         const setup = ownerMfaEnrollmentResponseSchema.parse(raw);
         setEnrollment({
           token: response.enrollment_token,
@@ -135,7 +143,12 @@ export function SystemOwnerLoginPage() {
         <Stack spacing={2.5}>
           <BrandLogo sx={{ maxWidth: 220 }} />
           <Box>
-            <Typography component="h1" ref={headingRef} tabIndex={-1} variant="h4">
+            <Typography
+              component="h1"
+              ref={headingRef}
+              tabIndex={-1}
+              variant="h4"
+            >
               {enrollment ? text.setupTitle : text.title}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -143,7 +156,9 @@ export function SystemOwnerLoginPage() {
             </Typography>
           </Box>
           {failed ? <Alert severity="error">{text.error}</Alert> : null}
-          {activated ? <Alert severity="success">{text.activated}</Alert> : null}
+          {activated ? (
+            <Alert severity="success">{text.activated}</Alert>
+          ) : null}
           {enrollment ? (
             <Box>
               <Typography color="text.secondary" variant="caption">
@@ -151,7 +166,11 @@ export function SystemOwnerLoginPage() {
               </Typography>
               <Typography
                 component="code"
-                sx={{ display: "block", overflowWrap: "anywhere", userSelect: "all" }}
+                sx={{
+                  display: "block",
+                  overflowWrap: "anywhere",
+                  userSelect: "all",
+                }}
               >
                 {enrollment.secret}
               </Typography>
