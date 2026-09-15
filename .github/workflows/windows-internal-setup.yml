@@ -273,8 +273,11 @@ jobs:
             Start-Sleep -Seconds 5
           }
           if (-not $backendHealth -or $backendHealth.status -ne "UP") {
+            Write-Host "=== BIO-EMS BACKEND SERVICE STATUS AFTER HEALTH TIMEOUT ==="
+            Get-Service "BIOEMS-Backend" -ErrorAction SilentlyContinue | Format-List *
+            & sc.exe queryex "BIOEMS-Backend"
             Write-Host "=== BIO-EMS RUNTIME LOGS AFTER HEALTH TIMEOUT ==="
-            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -ErrorAction SilentlyContinue |
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -Recurse -ErrorAction SilentlyContinue |
               ForEach-Object {
                 Write-Host "--- $($_.FullName) ---"
                 Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
