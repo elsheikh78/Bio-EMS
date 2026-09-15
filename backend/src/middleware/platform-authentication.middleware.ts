@@ -118,9 +118,7 @@ export function createOwnerMfaEnrollmentAuthenticationMiddleware(
   };
 }
 
-const tokenService = config.platformJwt
-  ? new PlatformTokenService(config.platformJwt)
-  : undefined;
+const tokenService = config.platformJwt ? new PlatformTokenService(config.platformJwt) : undefined;
 const principalRepository = new PlatformPrincipalRepository();
 
 export const platformAuthenticationMiddleware = createPlatformAuthenticationMiddleware(
