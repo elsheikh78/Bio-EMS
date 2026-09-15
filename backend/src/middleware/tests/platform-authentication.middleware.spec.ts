@@ -38,7 +38,10 @@ vi.hoisted(() => {
   });
 });
 
-import { createPlatformAuthenticationMiddleware } from "../platform-authentication.middleware";
+import {
+  createOwnerSupportAuthenticationMiddleware,
+  createPlatformAuthenticationMiddleware,
+} from "../platform-authentication.middleware";
 
 function request(authorization?: string): Request {
   return {
@@ -163,6 +166,69 @@ describe("platform authentication middleware", () => {
 
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
+    );
+  });
+});
+
+
+describe("owner support authentication middleware", () => {
+  const verifier = {
+    verifySupportToken: vi.fn(() => ({
+      principalId: "system-owner",
+      principalType: "SYSTEM_OWNER" as const,
+      grantId: "grant-id",
+      siteId: 7,
+    })),
+  };
+  const repository = {
+    findById: vi.fn(() => ({
+      id: "system-owner",
+      principal_type: "SYSTEM_OWNER" as const,
+      username: "platform-owner",
+      status: "active" as const,
+      created_at: "2026-08-24T00:00:00.000Z",
+      updated_at: null,
+    })),
+  };
+
+  it("attaches only the exact active delegated support scope", () => {
+    const grants = { isGrantActive: vi.fn(() => true) };
+    const middleware = createOwnerSupportAuthenticationMiddleware(
+      verifier,
+      repository,
+      grants
+    );
+    const req = request("Bearer support-token");
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(req, response, next);
+
+    expect(grants.isGrantActive).toHaveBeenCalledWith(
+      "grant-id",
+      "system-owner",
+      7
+    );
+    expect(req.ownerSupportGrantId).toBe("grant-id");
+    expect(req.ownerSupportSiteId).toBe(7);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it("rejects an expired or revoked delegated support grant", () => {
+    const grants = { isGrantActive: vi.fn(() => false) };
+    const middleware = createOwnerSupportAuthenticationMiddleware(
+      verifier,
+      repository,
+      grants
+    );
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(request("Bearer support-token"), response, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+        code: "PLATFORM_AUTHENTICATION_REQUIRED",
+      })
     );
   });
 });
