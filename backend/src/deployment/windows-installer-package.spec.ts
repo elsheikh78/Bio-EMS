@@ -176,6 +176,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   const windowsRoot = join(repositoryRoot, "installer/windows");
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
   const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+  const adminBootstrap = readFileSync(join(windowsRoot, "Initialize-PilotAdmin.ps1"), "utf8");
   const workflow = readFileSync(
     join(repositoryRoot, ".github/workflows/windows-internal-setup.yml"),
     "utf8"
@@ -241,6 +242,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(workflow).toContain(
       "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
     );
+  });
+
+  it("restores explicit Backend access to every SQLite file written during bootstrap", () => {
+    expect(adminBootstrap).toContain('-Filter "bioems.db*" -File');
+    expect(adminBootstrap).toContain(
+      '& icacls.exe $_.FullName /grant:r "NT SERVICE\\BIOEMS-Backend:M"'
+    );
+    expect(
+      adminBootstrap.indexOf("Backend database-file access could not be restored")
+    ).toBeLessThan(adminBootstrap.indexOf('Start-Service -Name "BIOEMS-Backend"'));
   });
 
   it("repairs stale services-directory ACLs before copying or executing WinSW wrappers", () => {

@@ -51,6 +51,13 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Administrator bootstrap command failed with exit code $LASTEXITCODE"
     }
+    Get-ChildItem -LiteralPath (Join-Path $PersistentRoot "data") -Filter "bioems.db*" -File -ErrorAction Stop |
+        ForEach-Object {
+            & icacls.exe $_.FullName /grant:r "NT SERVICE\BIOEMS-Backend:M" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Backend database-file access could not be restored"
+            }
+        }
     Write-Diagnostic "customer administrator bootstrap completed"
 }
 catch {
