@@ -105,7 +105,7 @@ export function SystemOwnerLoginPage() {
             autoComplete="one-time-code"
             helperText={text.codeHelp}
             inputProps={{
-              inputMode: "numeric",
+              inputMode: "numeric" as const,
               maxLength: 6,
               pattern: "[0-9]{6}",
             }}
