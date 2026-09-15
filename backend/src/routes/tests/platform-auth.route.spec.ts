@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
   listSupportGrants: vi.fn(),
   issueSupportGrant: vi.fn(),
   revokeSupportGrant: vi.fn(),
+  recordSecurityAudit: vi.fn(),
 }));
 
 vi.mock("../../config/config", () => ({ config: mocks.config }));
@@ -54,6 +55,12 @@ vi.mock("../../services/owner-support-grant.service", () => ({
     list = mocks.listSupportGrants;
     issue = mocks.issueSupportGrant;
     revoke = mocks.revokeSupportGrant;
+  },
+}));
+
+vi.mock("../../services/owner-security-audit.service", () => ({
+  OwnerSecurityAuditService: class {
+    record = mocks.recordSecurityAudit;
   },
 }));
 
