@@ -29,7 +29,7 @@ try {
     if (-not (Test-Path -LiteralPath $CredentialFile -PathType Leaf)) {
         throw "Administrator credential handoff is missing"
     }
-    $credentialLines = @([IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::Unicode))
+    $credentialLines = @([IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::UTF8))
     Remove-Item -LiteralPath $CredentialFile -Force
     if ($credentialLines.Count -ne 3) {
         throw "Administrator credential handoff is invalid"

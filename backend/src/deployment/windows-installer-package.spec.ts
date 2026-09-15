@@ -244,6 +244,14 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("reads the Inno Setup credential handoff using its UTF-8 encoding", () => {
+    expect(setup).toContain("Username + #13#10 + Email + #13#10 + Password");
+    expect(adminBootstrap).toContain(
+      "[IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::UTF8)"
+    );
+    expect(adminBootstrap).not.toContain("[Text.Encoding]::Unicode");
+  });
+
   it("prepares elevated database access before bootstrap and restores protected SQLite ACLs", () => {
     const prepareIndex = adminBootstrap.indexOf(
       '& icacls.exe $dataDirectory /grant:r "BUILTIN\\Administrators:(OI)(CI)F" /T /C'
