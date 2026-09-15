@@ -1,6 +1,6 @@
 # BIO-EMS Communication Channel Administration Work Package
 
-**Status:** APPROVED / PLANNED — implementation not yet claimed  
+**Status:** COM-01 through COM-06 SOURCE IMPLEMENTED / COM-07 LIVE ACCEPTANCE PENDING  
 **Decision date:** 11 September 2026  
 **Target:** Controlled pilot completion before pilot closure  
 **Parent area:** Customer Configuration / Alarm Notification Infrastructure
@@ -231,3 +231,34 @@ No COM item may be marked complete until its source, automated tests, PR/CI and 
 ## 11. Pilot priority
 
 This work package is approved as a pilot-completion requirement because normal operation must not require PowerShell or deployment-file edits when a SIM, Email account, Telegram bot/target or WhatsApp account changes.
+
+## 12. Implementation evidence — 15 September 2026
+
+Source implementation is carried by PR #235 on branch
+`feat/com-01-06-communication-channels`, stacked on `feat/sec-owner-01`.
+
+Implemented source boundaries:
+
+- Migration 27 and customer/Site-scoped encrypted provider configuration;
+- independent installer-generated AES-256-GCM key and authenticated encryption;
+- redacted ADMIN and SYSTEM_OWNER APIs with customer ownership enforcement;
+- managed Email, Telegram, Meta WhatsApp, HTTP SMS and Windows local-modem SMS providers;
+- dynamic configuration resolution without rebuild or reinstall;
+- masked-secret update behavior where blank retains the current encrypted secret;
+- configuration test-message actions with bounded timeout;
+- append-only audit evidence containing no provider credentials;
+- ADMIN and SYSTEM_OWNER configuration surfaces;
+- enable/disable and priority fields preserved in the managed configuration.
+
+Verified local gates at PR head source:
+
+- Backend TypeScript, ESLint and Prettier passed;
+- Backend full suite: 126 files / 883 tests passed;
+- Frontend TypeScript, ESLint and Prettier passed;
+- Frontend full suite: 54 files / 303 tests passed;
+- Frontend production build passed.
+
+This evidence does not close COM-07. Merge and pilot acceptance still require GitHub CI,
+the signed Windows Setup test, restart/reboot persistence, real Email and Telegram test
+messages, the available Meta WhatsApp validation boundary, real SIM/modem SMS evidence,
+and verified operational failover using the pilot's actual accounts and hardware.

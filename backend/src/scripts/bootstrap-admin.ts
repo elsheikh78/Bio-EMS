@@ -31,9 +31,13 @@ export async function runBootstrapAdminCommand(
     });
     return 0;
   } catch (error) {
-    console.error(
-      error instanceof BootstrapAdminError ? error.message : "Administrator bootstrap failed"
-    );
+    const message =
+      error instanceof BootstrapAdminError
+        ? error.message
+        : error instanceof Error
+          ? `Administrator bootstrap failed: ${error.message}`
+          : "Administrator bootstrap failed";
+    console.error(message);
     return 1;
   } finally {
     database?.close();

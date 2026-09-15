@@ -190,6 +190,8 @@ $mqttPassword = New-Secret 36
 $influxPassword = New-Secret 36
 $jwtSecret = New-Secret 48
 $platformJwtSecret = New-Secret 48
+$ownerMfaEncryptionKey = New-Secret 32
+$communicationConfigEncryptionKey = New-Secret 32
 $tlsPassword = New-Secret 36
 $mqttPasswordFile = Join-Path $paths.Config "mosquitto.passwords"
 $mqttConfig = Join-Path $paths.Config "mosquitto.conf"
@@ -265,6 +267,7 @@ if (-not $PilotMode) {
         throw "BIOEMS-Backend licensing ACL verification failed"
     }
 }
+Protect-Path $paths.Data "BIOEMS-Backend"
 Protect-Path (Join-Path $paths.Data "mqtt") "BIOEMS-MQTT"
 Protect-Path $influxData "BIOEMS-InfluxDB"
 Protect-Path $paths.Logs "BIOEMS-Backend"
@@ -345,13 +348,15 @@ INFLUX_ORG=bioems
 INFLUX_BUCKET=telemetry
 BIOEMS_JWT_SECRET=$jwtSecret
 BIOEMS_PLATFORM_JWT_SECRET=$platformJwtSecret
+BIOEMS_OWNER_MFA_ENCRYPTION_KEY=$ownerMfaEncryptionKey
+BIOEMS_COMMUNICATION_CONFIG_ENCRYPTION_KEY=$communicationConfigEncryptionKey
 BIOEMS_CORS_ALLOWED_ORIGINS=https://localhost
 BIOEMS_SQLITE_PATH=$($paths.Data)\bioems.db
 BIOEMS_SQLITE_BACKUP_DIR=$($paths.Backups)
 LOG_LEVEL=info
 BIOEMS_LOG_RETENTION_DAYS=90
 BIOEMS_SHUTDOWN_GRACE_SECONDS=30
-BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
+BIOEMS_NOTIFICATION_DELIVERY_ENABLED=true
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"

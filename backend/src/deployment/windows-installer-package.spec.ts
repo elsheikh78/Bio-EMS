@@ -20,6 +20,7 @@ function manifest() {
     product: "BIO-EMS",
     productVersion: "0.20.0",
     architecture: "x64",
+    releaseChannel: "Pilot",
     installerTechnology: "Inno Setup 6",
     generatedAt: "2026-09-07T00:00:00.000Z",
     sourceCommit: "a".repeat(40),
@@ -58,6 +59,31 @@ describe("DEP-01 controlled Windows installer package", () => {
     expect(validateWindowsInstallerPackage(input).issues).toContainEqual({
       code: WINDOWS_INSTALLER_ISSUES.MANIFEST_INVALID,
     });
+  });
+
+  it("requires the manufacturer trust artifact only for Production", () => {
+    expect(
+      validateWindowsInstallerPackage({ ...manifest(), releaseChannel: "Production" }).ready
+    ).toBe(false);
+
+    const production = {
+      ...manifest(),
+      releaseChannel: "Production",
+      artifacts: [
+        ...manifest().artifacts,
+        {
+          id: "owner-commissioning-trust",
+          version: "1",
+          relativePath: "payload/manufacturer-owner-trust.json",
+          sha256: checksum(content("owner-commissioning-trust")),
+          redistributionEvidence: "BIO-EMS-MANUFACTURER-PUBLIC-KEYS",
+        },
+      ],
+    };
+    expect(validateWindowsInstallerPackage(production).ready).toBe(true);
+
+    production.releaseChannel = "Pilot";
+    expect(validateWindowsInstallerPackage(production).ready).toBe(false);
   });
 
   it("rejects traversal, private material and reusable installation state", () => {
@@ -110,6 +136,23 @@ describe("DEP-01-02 frozen inputs and build source", () => {
     expect(scripts).not.toMatch(/BEGIN PRIVATE KEY|activation-receipt\.json|identity\.json/);
   });
 
+  it("fails closed for Production without an approved owner trust keyring", () => {
+    const staging = readFileSync(
+      join(repositoryRoot, "installer/windows/New-InstallerStaging.ps1"),
+      "utf8"
+    );
+    const setup = readFileSync(join(repositoryRoot, "installer/windows/BioEMS.iss"), "utf8");
+
+    expect(staging).toContain('[ValidateSet("Pilot", "Production")]');
+    expect(staging).toContain("Production staging requires an owner commissioning trust keyring");
+    expect(staging).toContain("Pilot staging must not embed the Production owner trust keyring");
+    expect(staging).toContain("Production trust keyring requires at least one active key");
+    expect(staging).toContain('id = "owner-commissioning-trust"');
+    expect(staging).toContain("releaseChannel = $ReleaseChannel");
+    expect(setup).toContain("manufacturer-owner-trust.json");
+    expect(setup).toContain("{commonappdata}\\BIO-EMS\\licensing");
+  });
+
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
     const script = readFileSync(join(repositoryRoot, "installer/windows/Build-Setup.ps1"), "utf8");
     expect(script).toContain("Inno Setup compiler must have verified 6.7.3 package evidence");
@@ -132,6 +175,12 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   const repositoryRoot = join(process.cwd(), "..");
   const windowsRoot = join(repositoryRoot, "installer/windows");
   const lifecycle = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
+  const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+  const adminBootstrap = readFileSync(join(windowsRoot, "Initialize-PilotAdmin.ps1"), "utf8");
+  const workflow = readFileSync(
+    join(repositoryRoot, ".github/workflows/windows-internal-setup.yml"),
+    "utf8"
+  );
   const preStart = readFileSync(join(windowsRoot, "Invoke-BackendPreStart.ps1"), "utf8");
 
   it("installs the exact services under separate virtual service identities", () => {
@@ -177,6 +226,60 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain("Rollback could not execute {0} wrapper: {1}");
     expect(lifecycle).toContain("$failure = $_");
     expect(lifecycle).toContain("$failure.Exception.Message");
+  });
+
+  it("grants the Backend service durable access to SQLite data across administrator bootstrap", () => {
+    expect(lifecycle).toContain('Protect-Path $paths.Data "BIOEMS-Backend"');
+    expect(lifecycle.indexOf('Protect-Path $paths.Data "BIOEMS-Backend"')).toBeLessThan(
+      lifecycle.indexOf('Start-Service "BIOEMS-Backend"')
+    );
+  });
+
+  it("runs silent CI administrator bootstrap inside elevated Setup exactly once", () => {
+    expect(setup).toContain("Trim(GetEnv('BIOEMS_CI_ADMIN_USERNAME')) <> ''");
+    expect(setup).toContain("GetEnv('BIOEMS_CI_ADMIN_PASSWORD') <> ''");
+    expect(workflow).not.toContain("-CredentialFile $credentialFile");
+    expect(workflow).toContain(
+      "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
+    );
+  });
+
+  it("reads the Inno Setup credential handoff using its UTF-8 encoding", () => {
+    expect(setup).toContain("Username + #13#10 + Email + #13#10 + Password");
+    expect(adminBootstrap).toContain(
+      "[IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::UTF8)"
+    );
+    expect(adminBootstrap).not.toContain("[Text.Encoding]::Unicode");
+  });
+
+  it("prepares elevated database access before bootstrap and restores protected SQLite ACLs", () => {
+    const prepareIndex = adminBootstrap.indexOf(
+      '& icacls.exe $dataDirectory /grant:r "BUILTIN\\Administrators:(OI)(CI)F"'
+    );
+    const nodeIndex = adminBootstrap.indexOf("& $nodes[0].FullName $script 2>&1");
+    expect(prepareIndex).toBeGreaterThan(-1);
+    expect(prepareIndex).toBeLessThan(nodeIndex);
+    expect(adminBootstrap).not.toContain("/T /C");
+    expect(adminBootstrap).toContain("& takeown.exe /F $_.FullName /A");
+    expect(adminBootstrap.indexOf("& takeown.exe /F $_.FullName /A")).toBeLessThan(nodeIndex);
+    expect(adminBootstrap).toContain('-Filter "bioems.db*" -File');
+    expect(adminBootstrap).toContain(
+      '& icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\\Administrators:F" "NT SERVICE\\BIOEMS-Backend:M"'
+    );
+    expect(adminBootstrap).toContain('& icacls.exe $_.FullName /setowner "SYSTEM"');
+    expect(
+      adminBootstrap.indexOf("Backend database-file access could not be restored")
+    ).toBeLessThan(adminBootstrap.indexOf('Start-Service -Name "BIOEMS-Backend"'));
+  });
+
+  it("prints bootstrap subprocess diagnostics into the elevated Setup log", () => {
+    expect(setup.match(/Flags: runhidden waituntilterminated logoutput/g)?.length).toBe(2);
+    expect(adminBootstrap).toContain('Write-Host "BIO-EMS admin bootstrap: $message"');
+    expect(adminBootstrap).toContain("$bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)");
+    expect(adminBootstrap).toContain(
+      '$bootstrapOutput | ForEach-Object { Write-Diagnostic "node: $_" }'
+    );
+    expect(adminBootstrap).toContain('& icacls.exe $logPath /grant:r "$installerPrincipal`:R"');
   });
 
   it("repairs stale services-directory ACLs before copying or executing WinSW wrappers", () => {
