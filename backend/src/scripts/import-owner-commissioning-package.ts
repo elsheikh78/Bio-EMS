@@ -1,12 +1,17 @@
 import "dotenv/config";
 import type Database from "better-sqlite3";
 import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { z } from "zod";
 import {
   applyOwnerCommissioning,
   type SignedOwnerCommissioningPackage,
   verifyOwnerCommissioningPackage,
 } from "../modules/platform-auth/owner-commissioning";
+import {
+  parseOwnerCommissioningTrustedKeyring,
+  resolveOwnerCommissioningPublicKey,
+} from "../modules/platform-auth/owner-commissioning-trust";
 
 const identitySchema = z
   .object({
@@ -24,8 +29,7 @@ export async function runImportOwnerCommissioningPackage(
   try {
     const identityPath = environment.BIOEMS_INSTALLATION_IDENTITY_PATH;
     const packagePath = environment.BIOEMS_OWNER_COMMISSIONING_PACKAGE;
-    const publicKeyPath = environment.BIOEMS_OWNER_COMMISSIONING_PUBLIC_KEY;
-    if (!identityPath || !packagePath || !publicKeyPath) {
+    if (!identityPath || !packagePath) {
       throw new Error("Owner commissioning import paths are required");
     }
 
@@ -33,7 +37,11 @@ export async function runImportOwnerCommissioningPackage(
     const candidate = JSON.parse(
       readFileSync(packagePath, "utf8")
     ) as SignedOwnerCommissioningPackage;
-    const publicKeyPem = readFileSync(publicKeyPath, "utf8");
+    const keyringPath = join(dirname(identityPath), "manufacturer-owner-trust.json");
+    const keyring = parseOwnerCommissioningTrustedKeyring(
+      JSON.parse(readFileSync(keyringPath, "utf8"))
+    );
+    const publicKeyPem = resolveOwnerCommissioningPublicKey(keyring, candidate.keyId);
     const claims = verifyOwnerCommissioningPackage(
       candidate,
       publicKeyPem,
