@@ -86,7 +86,6 @@ export const confirmOwnerMfaEnrollmentController = (req: Request, res: Response)
   }
 };
 
-
 const ownerSupportGrantService = () => new OwnerSupportGrantService(sqlite);
 
 export const listOwnerSupportGrantsController = (req: Request, res: Response): void => {
