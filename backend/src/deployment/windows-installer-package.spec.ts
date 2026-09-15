@@ -518,3 +518,85 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).toContain("VERIFIED_BACKUP_READY");
     expect(setup).toContain("PrepareToInstall");
     expect(setup).toContain("-Mode PreUpdate");
+  });
+
+  it("restores application, configuration, data and licensing after failed health", () => {
+    expect(lifecycle).toContain('Invoke-Robocopy (Join-Path $backup "application") $application');
+    expect(lifecycle).toContain('@("config", "data", "licensing")');
+    expect(lifecycle).toContain("previous application/data snapshot was restored");
+  });
+
+  it("preserves persistent customer and licensing state during uninstall", () => {
+    expect(lifecycle).toContain("APPLICATION_REMOVED_DATA_RETAINED");
+    expect(lifecycle).toContain("uninstall-retention.json");
+    expect(lifecycle).not.toMatch(/Remove-Item[^\n]+\$persistent[^\n]+Recurse/);
+  });
+});
+
+describe("DEP-01-06 repeatable internal Windows artifact", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const workflow = readFileSync(
+    join(repositoryRoot, ".github/workflows/windows-internal-setup.yml"),
+    "utf8"
+  );
+  const guide = readFileSync(
+    join(repositoryRoot, "installer/windows/INTERNAL-SETUP-TESTING.md"),
+    "utf8"
+  );
+
+  it("builds and signs the BIO EGYPT pilot Setup on a controlled Windows runner", () => {
+    expect(workflow).toContain("runs-on: windows-2022");
+    expect(workflow).toContain("node-version: 22.22.0");
+    expect(workflow).toContain("issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe");
+    expect(workflow).toContain("9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732");
+    expect(workflow).toContain("Get-FileHash -LiteralPath $download -Algorithm SHA256");
+    expect(workflow).toContain("BIOEMS_INNO_COMPILER=$compiler");
+    expect(workflow).toContain("BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence");
+    expect(workflow).toContain("Get-VendorInputs.ps1");
+    expect(workflow).toContain("New-InstallerStaging.ps1");
+    expect(workflow).toContain("Build-Setup.ps1");
+    expect(workflow).toContain("New-SelfSignedCertificate");
+    expect(workflow).toContain('Filter "signtool.exe"');
+    expect(workflow).toContain("sign /fd SHA256 /sha1 $certificate.Thumbprint /s My");
+    expect(workflow).toContain('$signature.Status -eq "NotSigned"');
+    expect(workflow).toContain("$signature.SignerCertificate.Thumbprint");
+    expect(workflow).toContain("BIO-EMS-Pilot-Code-Signing.cer");
+    expect(workflow).toContain("actions/upload-artifact@v4");
+    expect(workflow).toContain("retention-days: 14");
+  });
+
+  it("ships a clean-machine guide without requesting production secrets", () => {
+    expect(guide).toContain("disposable clean Windows 10/11");
+    expect(guide).toContain("Get-Service mosquitto,BIOEMS-*");
+    expect(guide).toContain("Install-PilotSigningCertificate.ps1");
+    expect(guide).toContain("Install-BIOEMS-Pilot.cmd");
+    expect(guide).toContain("CERTIFICATE-THUMBPRINT.txt");
+    expect(guide).toContain("post-install-health.json");
+    expect(guide).toContain("uninstall-retention.json");
+    expect(guide).toContain("Do not enter production");
+  });
+
+  it("ships a one-click elevated pilot launcher that fails closed on an invalid signature", () => {
+    const launcher = readFileSync(
+      join(repositoryRoot, "installer/windows/Install-BIOEMS-Pilot.cmd"),
+      "utf8"
+    );
+    expect(launcher).toContain("Start-Process -FilePath '%~f0' -Verb RunAs");
+    expect(launcher).toContain("Install-PilotSigningCertificate.ps1");
+    expect(launcher).toContain("$signature.Status -ne 'Valid'");
+    expect(launcher).toContain("Expected exactly one BIO-EMS Setup executable");
+    expect(launcher).toContain("goto :failed");
+  });
+
+  it("trusts only the matching, unexpired pilot code-signing certificate", () => {
+    const trustScript = readFileSync(
+      join(repositoryRoot, "installer/windows/Install-PilotSigningCertificate.ps1"),
+      "utf8"
+    );
+    expect(trustScript).toContain("#Requires -RunAsAdministrator");
+    expect(trustScript).toContain("BIO-EMS pilot certificate thumbprint mismatch");
+    expect(trustScript).toContain("1.3.6.1.5.5.7.3.3");
+    expect(trustScript).toContain("Cert:\\LocalMachine\\Root");
+    expect(trustScript).toContain("Cert:\\LocalMachine\\TrustedPublisher");
+  });
+});
