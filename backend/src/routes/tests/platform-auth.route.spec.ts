@@ -235,9 +235,7 @@ describe("Owner support grant REST API", () => {
     expect(listed.body).toEqual({ grants: [grant] });
 
     await request(app)
-      .post(
-        "/api/v1/platform-auth/support-grants/123e4567-e89b-12d3-a456-426614174000/revoke"
-      )
+      .post("/api/v1/platform-auth/support-grants/123e4567-e89b-12d3-a456-426614174000/revoke")
       .set("Authorization", "Bearer platform-token")
       .send({ reason: "Customer ended support" })
       .expect(204);
