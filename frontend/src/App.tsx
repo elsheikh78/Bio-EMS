@@ -19,6 +19,7 @@ import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPa
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
 import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPage";
+import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdminsPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -61,6 +62,10 @@ export function App() {
         <Route
           path="system-owner/customers/:customerId"
           element={<SystemOwnerCustomerFleetPage />}
+        />
+        <Route
+          path="system-owner/admins"
+          element={<SystemOwnerCustomerAdminsPage />}
         />
         <Route
           path="system-owner/installations"
