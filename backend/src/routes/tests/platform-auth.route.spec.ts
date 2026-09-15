@@ -207,6 +207,16 @@ it.each(["/logout", "/sessions/revoke-all"])("protects POST /platform-auth%s", a
 });
 
 describe("Owner support grant REST API", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.config.platformJwt = {
+      secret: "p".repeat(32),
+      expireMinutes: 15,
+      issuer: "bio-ems-platform",
+      audience: "bio-ems-platform-api",
+    };
+  });
+
   it("issues, lists, and revokes grants through the authenticated owner boundary", async () => {
     const grant = {
       id: "123e4567-e89b-12d3-a456-426614174000",
