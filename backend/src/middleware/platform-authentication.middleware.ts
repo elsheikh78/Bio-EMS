@@ -158,11 +158,7 @@ export function createOwnerSupportAuthenticationMiddleware(
       record.status !== "active" ||
       record.principal_type !== "SYSTEM_OWNER" ||
       verified.principalType !== "SYSTEM_OWNER" ||
-      !grants.isGrantActive(
-        verified.grantId,
-        verified.principalId,
-        verified.siteId
-      )
+      !grants.isGrantActive(verified.grantId, verified.principalId, verified.siteId)
     ) {
       next(authenticationRequired());
       return;
@@ -192,9 +188,8 @@ export const platformAuthenticationMiddleware = createPlatformAuthenticationMidd
 export const ownerMfaEnrollmentAuthenticationMiddleware =
   createOwnerMfaEnrollmentAuthenticationMiddleware(tokenService, principalRepository);
 
-export const ownerSupportAuthenticationMiddleware =
-  createOwnerSupportAuthenticationMiddleware(
-    tokenService,
-    principalRepository,
-    new OwnerSupportGrantService(sqlite)
-  );
+export const ownerSupportAuthenticationMiddleware = createOwnerSupportAuthenticationMiddleware(
+  tokenService,
+  principalRepository,
+  new OwnerSupportGrantService(sqlite)
+);
