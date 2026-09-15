@@ -118,17 +118,13 @@ describe("DEP-01-02 frozen inputs and build source", () => {
     const setup = readFileSync(join(repositoryRoot, "installer/windows/BioEMS.iss"), "utf8");
 
     expect(staging).toContain('[ValidateSet("Pilot", "Production")]');
-    expect(staging).toContain(
-      "Production staging requires an owner commissioning trust keyring"
-    );
-    expect(staging).toContain(
-      "Pilot staging must not embed the Production owner trust keyring"
-    );
+    expect(staging).toContain("Production staging requires an owner commissioning trust keyring");
+    expect(staging).toContain("Pilot staging must not embed the Production owner trust keyring");
     expect(staging).toContain("Production trust keyring requires at least one active key");
     expect(staging).toContain('id = "owner-commissioning-trust"');
     expect(staging).toContain("releaseChannel = $ReleaseChannel");
     expect(setup).toContain("manufacturer-owner-trust.json");
-    expect(setup).toContain('{commonappdata}\\BIO-EMS\\licensing');
+    expect(setup).toContain("{commonappdata}\\BIO-EMS\\licensing");
   });
 
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
