@@ -110,6 +110,27 @@ describe("DEP-01-02 frozen inputs and build source", () => {
     expect(scripts).not.toMatch(/BEGIN PRIVATE KEY|activation-receipt\.json|identity\.json/);
   });
 
+  it("fails closed for Production without an approved owner trust keyring", () => {
+    const staging = readFileSync(
+      join(repositoryRoot, "installer/windows/New-InstallerStaging.ps1"),
+      "utf8"
+    );
+    const setup = readFileSync(join(repositoryRoot, "installer/windows/BioEMS.iss"), "utf8");
+
+    expect(staging).toContain('[ValidateSet("Pilot", "Production")]');
+    expect(staging).toContain(
+      "Production staging requires an owner commissioning trust keyring"
+    );
+    expect(staging).toContain(
+      "Pilot staging must not embed the Production owner trust keyring"
+    );
+    expect(staging).toContain("Production trust keyring requires at least one active key");
+    expect(staging).toContain('id = "owner-commissioning-trust"');
+    expect(staging).toContain("releaseChannel = $ReleaseChannel");
+    expect(setup).toContain("manufacturer-owner-trust.json");
+    expect(setup).toContain('{commonappdata}\\BIO-EMS\\licensing');
+  });
+
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
     const script = readFileSync(join(repositoryRoot, "installer/windows/Build-Setup.ps1"), "utf8");
     expect(script).toContain("Inno Setup compiler must have verified 6.7.3 package evidence");
