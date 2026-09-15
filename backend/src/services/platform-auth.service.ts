@@ -6,10 +6,7 @@ import {
 } from "../entities/PlatformPrincipal";
 import { PlatformLoginInput } from "../modules/platform-auth/dto/platform-login.schema";
 import { verifyPassword } from "./password.service";
-import {
-  IssuedOwnerMfaEnrollmentToken,
-  IssuedPlatformAccessToken,
-} from "./platform-token.service";
+import { IssuedOwnerMfaEnrollmentToken, IssuedPlatformAccessToken } from "./platform-token.service";
 
 const DUMMY_BCRYPT_HASH = "$2b$12$a4qNLowNiYMqjgUx2Pa8D.ubXSEImfhQDmrsw.MYU80cl5Ge4FijK";
 
@@ -58,8 +55,7 @@ export interface PlatformMfaEnrollmentRequiredResponse {
 }
 
 export type PlatformLoginResponse =
-  | PlatformAuthenticatedResponse
-  | PlatformMfaEnrollmentRequiredResponse;
+  PlatformAuthenticatedResponse | PlatformMfaEnrollmentRequiredResponse;
 
 const invalidCredentials = () => new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
 
