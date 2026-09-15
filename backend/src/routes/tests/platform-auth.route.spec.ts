@@ -34,7 +34,12 @@ vi.mock("../../repositories/platform-principal.repository", () => ({
 }));
 
 vi.mock("../../services/platform-token.service", () => ({
-  PlatformTokenService: class {},
+  PlatformTokenService: class {
+    issueSupportToken = vi.fn(() => ({
+      supportToken: "support-token",
+      expiresIn: 1800,
+    }));
+  },
 }));
 
 vi.mock("../../services/platform-session.service", () => ({
