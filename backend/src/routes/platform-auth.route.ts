@@ -39,11 +39,7 @@ router.post(
   validateBody(confirmOwnerMfaSchema),
   confirmOwnerMfaEnrollmentController
 );
-router.get(
-  "/support-grants",
-  platformAuthenticationMiddleware,
-  listOwnerSupportGrantsController
-);
+router.get("/support-grants", platformAuthenticationMiddleware, listOwnerSupportGrantsController);
 router.post(
   "/support-grants",
   platformAuthenticationMiddleware,
