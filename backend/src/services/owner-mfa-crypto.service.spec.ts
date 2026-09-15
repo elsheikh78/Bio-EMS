@@ -28,7 +28,11 @@ describe("owner MFA secret encryption", () => {
   it("rejects tampering and the wrong key", () => {
     const key = randomBytes(32);
     const encrypted = encryptMfaSecret("JBSWY3DPEHPK3PXP", key);
-    const tampered = encrypted.slice(0, -1) + (encrypted.endsWith("A") ? "B" : "A");
+    const parts = encrypted.split(".");
+    const authenticationTag = Buffer.from(parts[2], "base64url");
+    authenticationTag[0] ^= 1;
+    parts[2] = authenticationTag.toString("base64url");
+    const tampered = parts.join(".");
 
     expect(() => decryptMfaSecret(tampered, key)).toThrow(/authentication failed/);
     expect(() => decryptMfaSecret(encrypted, randomBytes(32))).toThrow(/authentication failed/);
