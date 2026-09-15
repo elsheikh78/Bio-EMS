@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
 $dataDirectory = Join-Path $PersistentRoot "data"
 $bootstrapPrincipal = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-$originalDataAcl = $null
+$dataAclSnapshots = @()
 
 function Write-Diagnostic([string]$message) {
     try {
@@ -49,10 +49,22 @@ try {
 
     $env:BIOEMS_SQLITE_PATH = Join-Path $PersistentRoot "data\bioems.db"
     Stop-Service -Name "BIOEMS-Backend" -Force -ErrorAction Stop
-    $originalDataAcl = Get-Acl -LiteralPath $dataDirectory -ErrorAction Stop
+    $databasePaths = @($dataDirectory) + @(
+        Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*" -File -ErrorAction Stop |
+            Select-Object -ExpandProperty FullName
+    )
+    $dataAclSnapshots = @($databasePaths | ForEach-Object {
+        [PSCustomObject]@{ Path = $_; Acl = Get-Acl -LiteralPath $_ -ErrorAction Stop }
+    })
     & icacls.exe $dataDirectory /grant "$bootstrapPrincipal`:(OI)(CI)M" | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "Temporary administrator database access could not be granted"
+    }
+    foreach ($databasePath in $databasePaths | Where-Object { $_ -ne $dataDirectory }) {
+        & icacls.exe $databasePath /grant "$bootstrapPrincipal`:M" | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Temporary administrator database-file access could not be granted"
+        }
     }
     Write-Diagnostic "starting one-time customer administrator bootstrap"
     & $nodes[0].FullName $script
@@ -72,8 +84,8 @@ finally {
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_SQLITE_PATH -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $CredentialFile -Force -ErrorAction SilentlyContinue
-    if ($null -ne $originalDataAcl) {
-        Set-Acl -LiteralPath $dataDirectory -AclObject $originalDataAcl -ErrorAction SilentlyContinue
+    foreach ($snapshot in $dataAclSnapshots) {
+        Set-Acl -LiteralPath $snapshot.Path -AclObject $snapshot.Acl -ErrorAction SilentlyContinue
     }
     Start-Service -Name "BIOEMS-Backend" -ErrorAction SilentlyContinue
 }

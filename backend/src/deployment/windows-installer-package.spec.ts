@@ -234,12 +234,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(adminBootstrap).toContain(
       "$bootstrapPrincipal = [Security.Principal.WindowsIdentity]::GetCurrent().Name"
     );
-    expect(adminBootstrap).toContain("$originalDataAcl = Get-Acl -LiteralPath $dataDirectory");
+    expect(adminBootstrap).toContain(
+      'Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*"'
+    );
+    expect(adminBootstrap).toContain("Acl = Get-Acl -LiteralPath $_");
     expect(adminBootstrap).toContain(
       '& icacls.exe $dataDirectory /grant "$bootstrapPrincipal`:(OI)(CI)M"'
     );
+    expect(adminBootstrap).toContain('& icacls.exe $databasePath /grant "$bootstrapPrincipal`:M"');
     expect(adminBootstrap).toContain(
-      "Set-Acl -LiteralPath $dataDirectory -AclObject $originalDataAcl"
+      "Set-Acl -LiteralPath $snapshot.Path -AclObject $snapshot.Acl"
     );
   });
 
