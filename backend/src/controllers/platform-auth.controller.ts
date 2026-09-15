@@ -102,7 +102,23 @@ export const issueOwnerSupportGrantController = (req: Request, res: Response): v
       req.body.reason,
       req.body.duration_minutes
     );
-    res.status(201).json({ grant });
+    if (!config.platformJwt) throw unavailable();
+    const expiresIn = Math.max(
+      1,
+      Math.floor((new Date(grant.expiresAt).getTime() - new Date(grant.issuedAt).getTime()) / 1000)
+    );
+    const issued = new PlatformTokenService(config.platformJwt).issueSupportToken(
+      req.platformPrincipal!,
+      grant.id,
+      grant.siteId,
+      expiresIn
+    );
+    res.status(201).json({
+      grant,
+      support_token: issued.supportToken,
+      token_type: "bearer",
+      expires_in: issued.expiresIn,
+    });
   } catch {
     throw new AppError("Owner support grant rejected", 400, "OWNER_SUPPORT_GRANT_REJECTED");
   }
