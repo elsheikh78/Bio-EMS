@@ -14,6 +14,7 @@ import {
   ownerMfaEnrollmentAuthenticationMiddleware,
   platformAuthenticationMiddleware,
 } from "../middleware/platform-authentication.middleware";
+import { platformLoginRateLimitMiddleware } from "../middleware/platform-login-rate-limit.middleware";
 import { validateBody, validateParams } from "../middleware/validate-request";
 import { platformLoginSchema } from "../modules/platform-auth/dto/platform-login.schema";
 import { confirmOwnerMfaSchema } from "../modules/platform-auth/dto/owner-mfa.schema";
@@ -25,7 +26,12 @@ import {
 
 const router = Router();
 
-router.post("/login", validateBody(platformLoginSchema), platformLoginController);
+router.post(
+  "/login",
+  platformLoginRateLimitMiddleware,
+  validateBody(platformLoginSchema),
+  platformLoginController
+);
 router.get("/me", platformAuthenticationMiddleware, currentPlatformPrincipalController);
 router.post("/logout", platformAuthenticationMiddleware, platformLogoutController);
 router.post(
