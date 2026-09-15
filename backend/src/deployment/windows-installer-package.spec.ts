@@ -273,7 +273,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   });
 
   it("prints bootstrap subprocess diagnostics into the elevated Setup log", () => {
-    expect(setup).toContain("Flags: runhidden waituntilterminated logoutput");
+    expect(setup.match(/Flags: runhidden waituntilterminated logoutput/g)?.length).toBe(2);
     expect(adminBootstrap).toContain('Write-Host "BIO-EMS admin bootstrap: $message"');
     expect(adminBootstrap).toContain("$bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)");
     expect(adminBootstrap).toContain(
