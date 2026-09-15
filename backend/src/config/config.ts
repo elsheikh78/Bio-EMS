@@ -5,6 +5,7 @@ import { loadCorsConfig } from "./cors.config";
 import { loadMqttConfig } from "./mqtt.config";
 import { loadNotificationDeliveryConfig } from "./notification-delivery.config";
 import { parseMfaEncryptionKey } from "../services/owner-mfa-crypto.service";
+import { parseCommunicationConfigEncryptionKey } from "../modules/communication-channels/communication-channel-crypto";
 
 dotenv.config(process.env.BIOEMS_ENV_FILE ? { path: process.env.BIOEMS_ENV_FILE } : undefined);
 
@@ -37,6 +38,10 @@ export const config = {
 
   ownerMfaEncryptionKey: process.env.BIOEMS_OWNER_MFA_ENCRYPTION_KEY
     ? parseMfaEncryptionKey(process.env.BIOEMS_OWNER_MFA_ENCRYPTION_KEY)
+    : undefined,
+
+  communicationConfigEncryptionKey: process.env.BIOEMS_COMMUNICATION_CONFIG_ENCRYPTION_KEY
+    ? parseCommunicationConfigEncryptionKey(process.env.BIOEMS_COMMUNICATION_CONFIG_ENCRYPTION_KEY)
     : undefined,
 
   cors: loadCorsConfig(process.env),

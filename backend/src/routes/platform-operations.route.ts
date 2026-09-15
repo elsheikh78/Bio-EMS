@@ -61,6 +61,17 @@ import {
   licenseTransferSchema,
   licenseValidationSchema,
 } from "../modules/licensing/licensing.schema";
+import {
+  listOwnerCommunicationChannels,
+  saveOwnerCommunicationChannel,
+  testOwnerCommunicationChannel,
+} from "../controllers/communication-channel.controller";
+import {
+  communicationChannelListQuerySchema,
+  platformCommunicationChannelParamsSchema,
+  saveCommunicationChannelSchema,
+  testCommunicationChannelSchema,
+} from "../modules/communication-channels/communication-channel.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
@@ -77,6 +88,24 @@ router.post(
   validateParams(platformCustomerParamsSchema),
   validateBody(createInstallationSchema),
   createInstallation
+);
+router.get(
+  "/customers/:customerId/communication-channels",
+  validateParams(platformCustomerParamsSchema),
+  validateQuery(communicationChannelListQuerySchema),
+  listOwnerCommunicationChannels
+);
+router.put(
+  "/customers/:customerId/communication-channels/:channel",
+  validateParams(platformCommunicationChannelParamsSchema),
+  validateBody(saveCommunicationChannelSchema),
+  saveOwnerCommunicationChannel
+);
+router.post(
+  "/customers/:customerId/communication-channels/:channel/test",
+  validateParams(platformCommunicationChannelParamsSchema),
+  validateBody(testCommunicationChannelSchema),
+  testOwnerCommunicationChannel
 );
 router.post(
   "/licensing/licenses/:licenseId/devices",

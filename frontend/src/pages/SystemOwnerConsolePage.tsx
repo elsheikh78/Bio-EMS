@@ -26,6 +26,7 @@ const copy = {
     modules: [
       { key: "customers", label: "Customer fleet" },
       { key: "admins", label: "Customer ADMIN accounts" },
+      { key: "communication-channels", label: "Communication channels" },
       { key: "installations", label: "Installation configuration" },
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
@@ -42,6 +43,7 @@ const copy = {
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
       { key: "admins", label: "إدارة حسابات Admin" },
+      { key: "communication-channels", label: "قنوات الاتصال" },
       { key: "installations", label: "تهيئة التركيبات" },
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },

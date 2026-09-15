@@ -28,6 +28,7 @@ import { migration023 } from "./migrations/023_create_licensing_activation_workf
 import { migration024 } from "./migrations/024_create_licensing_governance";
 import { migration025 } from "./migrations/025_create_owner_commissioning_receipts";
 import { migration026 } from "./migrations/026_harden_owner_access";
+import { migration027 } from "./migrations/027_create_communication_channel_configs";
 
 export interface Migration {
   version: number;
@@ -64,6 +65,7 @@ const migrations: Migration[] = [
   migration024,
   migration025,
   migration026,
+  migration027,
 ];
 
 export function runMigrations(
