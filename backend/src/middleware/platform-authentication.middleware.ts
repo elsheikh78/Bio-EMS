@@ -4,6 +4,7 @@ import { config } from "../config/config";
 import { AppError } from "../errors/app-error";
 import { PlatformPrincipalRecord } from "../entities/PlatformPrincipal";
 import { PlatformPrincipalRepository } from "../repositories/platform-principal.repository";
+import { OwnerSupportGrantService } from "../services/owner-support-grant.service";
 import { PlatformSessionService } from "../services/platform-session.service";
 import { PlatformTokenService } from "../services/platform-token.service";
 import { parseSingleAuthorizationHeader } from "./authentication.middleware";
@@ -21,6 +22,19 @@ export interface OwnerMfaEnrollmentTokenVerifier {
     principalId: string;
     principalType: "SYSTEM_OWNER";
   };
+}
+
+export interface OwnerSupportTokenVerifier {
+  verifySupportToken(token: string): {
+    principalId: string;
+    principalType: "SYSTEM_OWNER";
+    grantId: string;
+    siteId: number | null;
+  };
+}
+
+export interface OwnerSupportGrantVerifier {
+  isGrantActive(grantId: string, principalId: string, siteId: number | null): boolean;
 }
 
 export interface PlatformAuthenticationRepository {
@@ -118,6 +132,54 @@ export function createOwnerMfaEnrollmentAuthenticationMiddleware(
   };
 }
 
+export function createOwnerSupportAuthenticationMiddleware(
+  tokenVerifier: OwnerSupportTokenVerifier | undefined,
+  repository: PlatformAuthenticationRepository,
+  grants: OwnerSupportGrantVerifier
+): RequestHandler {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const token = parseSingleAuthorizationHeader(req);
+    if (!tokenVerifier || !token) {
+      next(authenticationRequired());
+      return;
+    }
+
+    let verified: ReturnType<OwnerSupportTokenVerifier["verifySupportToken"]>;
+    try {
+      verified = tokenVerifier.verifySupportToken(token);
+    } catch {
+      next(authenticationRequired());
+      return;
+    }
+
+    const record = repository.findById(verified.principalId);
+    if (
+      !record ||
+      record.status !== "active" ||
+      record.principal_type !== "SYSTEM_OWNER" ||
+      verified.principalType !== "SYSTEM_OWNER" ||
+      !grants.isGrantActive(
+        verified.grantId,
+        verified.principalId,
+        verified.siteId
+      )
+    ) {
+      next(authenticationRequired());
+      return;
+    }
+
+    req.ownerSupportGrantId = verified.grantId;
+    req.ownerSupportSiteId = verified.siteId;
+    req.platformPrincipal = {
+      kind: "platform",
+      type: "SYSTEM_OWNER",
+      id: record.id,
+      username: record.username,
+    };
+    next();
+  };
+}
+
 const tokenService = config.platformJwt ? new PlatformTokenService(config.platformJwt) : undefined;
 const principalRepository = new PlatformPrincipalRepository();
 
@@ -129,3 +191,10 @@ export const platformAuthenticationMiddleware = createPlatformAuthenticationMidd
 
 export const ownerMfaEnrollmentAuthenticationMiddleware =
   createOwnerMfaEnrollmentAuthenticationMiddleware(tokenService, principalRepository);
+
+export const ownerSupportAuthenticationMiddleware =
+  createOwnerSupportAuthenticationMiddleware(
+    tokenService,
+    principalRepository,
+    new OwnerSupportGrantService(sqlite)
+  );
