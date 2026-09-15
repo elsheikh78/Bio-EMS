@@ -85,12 +85,13 @@ export class PlatformAuthService {
     }
 
     if (credentials.mfa_enabled_at) {
-      let verified = false;
-      try {
-        verified = Boolean(input.code && this.mfa?.verifyLoginCode(credentials, input.code));
-      } catch {
-        verified = false;
-      }
+      const verified = (() => {
+        try {
+          return Boolean(input.code && this.mfa?.verifyLoginCode(credentials, input.code));
+        } catch {
+          return false;
+        }
+      })();
       if (!verified) {
         this.repository.recordFailedLogin?.(credentials.id, now);
         throw new AppError("MFA verification required", 401, "OWNER_MFA_REQUIRED");
