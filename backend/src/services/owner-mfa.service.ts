@@ -3,8 +3,8 @@ import { buildTotpUri, generateTotpSecret, verifyTotpCode } from "./totp.service
 
 export interface OwnerMfaState {
   username: string;
-  mfa_secret_encrypted: string | null;
-  mfa_enabled_at: string | null;
+  mfa_secret_encrypted?: string | null;
+  mfa_enabled_at?: string | null;
 }
 
 export interface OwnerMfaRepository {
