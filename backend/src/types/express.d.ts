@@ -11,6 +11,8 @@ declare global {
       };
       platformPrincipal?: PlatformPrincipal;
       platformSessionId?: string;
+      ownerSupportGrantId?: string;
+      ownerSupportSiteId?: number | null;
     }
   }
 }
