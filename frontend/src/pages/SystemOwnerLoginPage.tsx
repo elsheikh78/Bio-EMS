@@ -104,15 +104,17 @@ export function SystemOwnerLoginPage() {
           <TextField
             autoComplete="one-time-code"
             helperText={text.codeHelp}
-            inputProps={{
-              inputMode: "numeric" as const,
-              maxLength: 6,
-              pattern: "[0-9]{6}",
-            }}
             label={text.code}
             onChange={(event) =>
               setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
             }
+            slotProps={{
+              htmlInput: {
+                inputMode: "numeric",
+                maxLength: 6,
+                pattern: "[0-9]{6}",
+              },
+            }}
             value={code}
           />
           <Button disabled={loginPending} type="submit" variant="contained">
