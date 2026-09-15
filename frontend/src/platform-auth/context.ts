@@ -7,10 +7,7 @@ import type {
 } from "./contracts";
 
 export type PlatformAuthenticationStatus =
-  | "bootstrapping"
-  | "authenticated"
-  | "unauthenticated"
-  | "restoration-error";
+  "bootstrapping" | "authenticated" | "unauthenticated" | "restoration-error";
 
 export interface PlatformAuthenticationValue {
   status: PlatformAuthenticationStatus;
