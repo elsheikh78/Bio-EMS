@@ -23,12 +23,12 @@ describe("owner commissioning trusted keyring", () => {
       ],
     });
 
-    expect(
-      resolveOwnerCommissioningPublicKey(keyring, "owner-primary-2026")
-    ).toBe(ed25519PublicKey);
-    expect(() =>
-      resolveOwnerCommissioningPublicKey(keyring, "attacker-key")
-    ).toThrow("not trusted");
+    expect(resolveOwnerCommissioningPublicKey(keyring, "owner-primary-2026")).toBe(
+      ed25519PublicKey
+    );
+    expect(() => resolveOwnerCommissioningPublicKey(keyring, "attacker-key")).toThrow(
+      "not trusted"
+    );
   });
 
   it("rejects revoked, duplicate, and non-Ed25519 trust entries", () => {
@@ -42,9 +42,9 @@ describe("owner commissioning trusted keyring", () => {
         },
       ],
     });
-    expect(() =>
-      resolveOwnerCommissioningPublicKey(revoked, "owner-revoked-2026")
-    ).toThrow("not trusted");
+    expect(() => resolveOwnerCommissioningPublicKey(revoked, "owner-revoked-2026")).toThrow(
+      "not trusted"
+    );
 
     expect(() =>
       parseOwnerCommissioningTrustedKeyring({
