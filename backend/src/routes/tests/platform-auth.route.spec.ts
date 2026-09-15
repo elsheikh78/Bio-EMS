@@ -49,29 +49,34 @@ vi.mock("../../services/platform-auth.service", () => ({
 
 vi.mock("../../middleware/platform-authentication.middleware", async () => {
   const { AppError } = await import("../../errors/app-error");
+  const authenticate = (
+    req: express.Request,
+    _res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (
+      req.headers.authorization !== "Bearer platform-token" &&
+      req.headers.authorization !== "Bearer enrollment-token"
+    ) {
+      next(
+        new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED")
+      );
+      return;
+    }
+
+    req.platformSessionId = "session-id";
+    req.platformPrincipal = {
+      kind: "platform",
+      type: "SYSTEM_OWNER",
+      id: "system-owner",
+      username: "platform-owner",
+    };
+    next();
+  };
 
   return {
-    platformAuthenticationMiddleware: (
-      req: express.Request,
-      _res: express.Response,
-      next: express.NextFunction
-    ) => {
-      if (req.headers.authorization !== "Bearer platform-token") {
-        next(
-          new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED")
-        );
-        return;
-      }
-
-      req.platformSessionId = "session-id";
-      req.platformPrincipal = {
-        kind: "platform",
-        type: "SYSTEM_OWNER",
-        id: "system-owner",
-        username: "platform-owner",
-      };
-      next();
-    },
+    platformAuthenticationMiddleware: authenticate,
+    ownerMfaEnrollmentAuthenticationMiddleware: authenticate,
   };
 });
 
