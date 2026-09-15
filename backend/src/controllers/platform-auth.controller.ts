@@ -111,7 +111,7 @@ export const issueOwnerSupportGrantController = (req: Request, res: Response): v
 export const revokeOwnerSupportGrantController = (req: Request, res: Response): void => {
   try {
     const revoked = ownerSupportGrantService().revoke(
-      req.params.grantId,
+      req.params.grantId as string,
       req.platformPrincipal!.id,
       req.body.reason
     );
