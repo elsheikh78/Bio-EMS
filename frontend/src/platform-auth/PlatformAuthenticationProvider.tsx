@@ -113,6 +113,9 @@ export function PlatformAuthenticationProvider({
         body: JSON.stringify(credentials),
       });
       const response = platformLoginResponseSchema.parse(raw);
+      if ("mfa_enrollment_required" in response) {
+        return response;
+      }
       const next: StoredPlatformSession = {
         accessToken: response.access_token,
         expiresAt: Date.now() + response.expires_in * 1000,
@@ -122,16 +125,29 @@ export function PlatformAuthenticationProvider({
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       setSession(next);
       setStatus("authenticated");
+      return response;
     } finally {
       setLoginPending(false);
     }
   };
 
   const logout = () => {
-    window.sessionStorage.removeItem(STORAGE_KEY);
-    void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
-    setSession(undefined);
-    setStatus("unauthenticated");
+    const revokeAndClear = async () => {
+      try {
+        if (session) {
+          await apiClient.request("/platform-auth/logout", {
+            method: "POST",
+            auth: "protected",
+          });
+        }
+      } finally {
+        window.sessionStorage.removeItem(STORAGE_KEY);
+        void queryClient.removeQueries({ queryKey: PLATFORM_QUERY_KEY });
+        setSession(undefined);
+        setStatus("unauthenticated");
+      }
+    };
+    void revokeAndClear();
   };
 
   return (

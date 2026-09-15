@@ -25,6 +25,7 @@ const copy = {
     open: "Open",
     modules: [
       { key: "customers", label: "Customer fleet" },
+      { key: "admins", label: "Customer ADMIN accounts" },
       { key: "installations", label: "Installation configuration" },
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
@@ -40,6 +41,7 @@ const copy = {
     open: "فتح",
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
+      { key: "admins", label: "إدارة حسابات Admin" },
       { key: "installations", label: "تهيئة التركيبات" },
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },

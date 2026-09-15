@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
+import { migration026 } from "../../../database/sqlite/migrations/026_harden_owner_access";
 import { PlatformPrincipalRepository } from "../../repositories/platform-principal.repository";
 import {
   bootstrapSystemOwner,
@@ -19,6 +20,8 @@ describe("secure SYSTEM_OWNER bootstrap", () => {
   beforeEach(() => {
     database = new Database(":memory:");
     migration009.up(database);
+    database.exec("CREATE TABLE sites (id INTEGER PRIMARY KEY)");
+    migration026.up(database);
     repository = new PlatformPrincipalRepository(database);
     messages = [];
   });

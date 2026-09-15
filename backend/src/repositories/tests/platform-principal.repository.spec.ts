@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
+import { migration026 } from "../../../database/sqlite/migrations/026_harden_owner_access";
 import { PlatformPrincipalRepository } from "../platform-principal.repository";
 
 const VALID_BCRYPT_HASH = "$2b$12$a4qNLowNiYMqjgUx2Pa8D.ubXSEImfhQDmrsw.MYU80cl5Ge4FijK";
@@ -12,6 +13,8 @@ describe("PlatformPrincipalRepository", () => {
   beforeEach(() => {
     database = new Database(":memory:");
     migration009.up(database);
+    database.exec("CREATE TABLE sites (id INTEGER PRIMARY KEY)");
+    migration026.up(database);
     repository = new PlatformPrincipalRepository(database);
   });
 

@@ -183,6 +183,7 @@ jobs:
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
       - name: Install Setup and verify pilot health on Windows
+        timeout-minutes: 15
         shell: powershell
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
@@ -199,7 +200,20 @@ jobs:
             "/NORESTART",
             "/SP-",
             "/LOG=`"$setupLog`""
-          ) -Wait -PassThru
+          ) -PassThru
+          if (-not $process.WaitForExit(600000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            Write-Host "=== SETUP LOG AFTER TIMEOUT ==="
+            Get-Content -LiteralPath $setupLog -Tail 300 -ErrorAction SilentlyContinue
+            Write-Host "=== BIO-EMS RUNTIME LOGS AFTER TIMEOUT ==="
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -ErrorAction SilentlyContinue |
+              ForEach-Object {
+                Write-Host "--- $($_.FullName) ---"
+                Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
+              }
+            throw "BIO-EMS Setup exceeded the 10-minute installation timeout"
+          }
+          $process.Refresh()
           if ($process.ExitCode -eq 0) {
             $credentialFile = Join-Path $env:RUNNER_TEMP "bioems-ci-admin-bootstrap.txt"
             [IO.File]::WriteAllLines(

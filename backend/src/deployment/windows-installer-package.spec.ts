@@ -20,6 +20,7 @@ function manifest() {
     product: "BIO-EMS",
     productVersion: "0.20.0",
     architecture: "x64",
+    releaseChannel: "Pilot",
     installerTechnology: "Inno Setup 6",
     generatedAt: "2026-09-07T00:00:00.000Z",
     sourceCommit: "a".repeat(40),
@@ -58,6 +59,31 @@ describe("DEP-01 controlled Windows installer package", () => {
     expect(validateWindowsInstallerPackage(input).issues).toContainEqual({
       code: WINDOWS_INSTALLER_ISSUES.MANIFEST_INVALID,
     });
+  });
+
+  it("requires the manufacturer trust artifact only for Production", () => {
+    expect(
+      validateWindowsInstallerPackage({ ...manifest(), releaseChannel: "Production" }).ready
+    ).toBe(false);
+
+    const production = {
+      ...manifest(),
+      releaseChannel: "Production",
+      artifacts: [
+        ...manifest().artifacts,
+        {
+          id: "owner-commissioning-trust",
+          version: "1",
+          relativePath: "payload/manufacturer-owner-trust.json",
+          sha256: checksum(content("owner-commissioning-trust")),
+          redistributionEvidence: "BIO-EMS-MANUFACTURER-PUBLIC-KEYS",
+        },
+      ],
+    };
+    expect(validateWindowsInstallerPackage(production).ready).toBe(true);
+
+    production.releaseChannel = "Pilot";
+    expect(validateWindowsInstallerPackage(production).ready).toBe(false);
   });
 
   it("rejects traversal, private material and reusable installation state", () => {
@@ -108,6 +134,23 @@ describe("DEP-01-02 frozen inputs and build source", () => {
     expect(scripts).toContain("[string]$BuildTimestamp");
     expect(scripts).toContain("generatedAt = $BuildTimestamp");
     expect(scripts).not.toMatch(/BEGIN PRIVATE KEY|activation-receipt\.json|identity\.json/);
+  });
+
+  it("fails closed for Production without an approved owner trust keyring", () => {
+    const staging = readFileSync(
+      join(repositoryRoot, "installer/windows/New-InstallerStaging.ps1"),
+      "utf8"
+    );
+    const setup = readFileSync(join(repositoryRoot, "installer/windows/BioEMS.iss"), "utf8");
+
+    expect(staging).toContain('[ValidateSet("Pilot", "Production")]');
+    expect(staging).toContain("Production staging requires an owner commissioning trust keyring");
+    expect(staging).toContain("Pilot staging must not embed the Production owner trust keyring");
+    expect(staging).toContain("Production trust keyring requires at least one active key");
+    expect(staging).toContain('id = "owner-commissioning-trust"');
+    expect(staging).toContain("releaseChannel = $ReleaseChannel");
+    expect(setup).toContain("manufacturer-owner-trust.json");
+    expect(setup).toContain("{commonappdata}\\BIO-EMS\\licensing");
   });
 
   it("requires the pinned compiler, commercial license evidence and package validation", () => {
