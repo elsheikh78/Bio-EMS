@@ -128,11 +128,7 @@ export class OwnerSupportGrantService {
       .all(principalId) as OwnerSupportGrant[];
   }
 
-  isGrantActive(
-    grantId: string,
-    principalId: string,
-    siteId: number | null
-  ): boolean {
+  isGrantActive(grantId: string, principalId: string, siteId: number | null): boolean {
     const checkedAt = this.now().toISOString();
     const row = this.database
       .prepare(
