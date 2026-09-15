@@ -56,17 +56,9 @@ export class OwnerSupportGrantService {
           expiresAt.toISOString(),
           principalId
         );
-      this.audit(
-        "OWNER_SUPPORT_GRANTED",
-        id,
-        principalId,
-        siteId,
-        normalizedReason,
-        issuedAt,
-        {
-          expires_at: expiresAt.toISOString(),
-        }
-      );
+      this.audit("OWNER_SUPPORT_GRANTED", id, principalId, siteId, normalizedReason, issuedAt, {
+        expires_at: expiresAt.toISOString(),
+      });
     })();
 
     return {
