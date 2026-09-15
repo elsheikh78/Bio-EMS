@@ -69,8 +69,18 @@ describe("platform JWT access-token service", () => {
       principalType: "SYSTEM_OWNER",
     });
     expect(enrollment.expiresIn).toBe(300);
+    const support = service.issueSupportToken(owner, "grant-id", 7, 1800);
+
+    expect(service.verifySupportToken(support.supportToken)).toEqual({
+      principalId: "system-owner",
+      principalType: "SYSTEM_OWNER",
+      grantId: "grant-id",
+      siteId: 7,
+    });
     expect(() => service.verifyAccessToken(enrollment.enrollmentToken)).toThrow();
+    expect(() => service.verifyAccessToken(support.supportToken)).toThrow();
     expect(() => service.verifyMfaEnrollmentToken(access.accessToken)).toThrow();
+    expect(() => service.verifySupportToken(access.accessToken)).toThrow();
   });
 
   it("does not accept a customer JWT signed for the customer trust domain", () => {
