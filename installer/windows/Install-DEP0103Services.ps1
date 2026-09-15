@@ -267,6 +267,7 @@ if (-not $PilotMode) {
         throw "BIOEMS-Backend licensing ACL verification failed"
     }
 }
+Protect-Path $paths.Data "BIOEMS-Backend"
 Protect-Path (Join-Path $paths.Data "mqtt") "BIOEMS-MQTT"
 Protect-Path $influxData "BIOEMS-InfluxDB"
 Protect-Path $paths.Logs "BIOEMS-Backend"
