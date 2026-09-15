@@ -244,14 +244,28 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
-  it("restores explicit Backend access to every SQLite file written during bootstrap", () => {
+  it("prepares elevated database access before bootstrap and restores protected SQLite ACLs", () => {
+    const prepareIndex = adminBootstrap.indexOf(
+      '& icacls.exe $dataDirectory /grant:r "BUILTIN\\Administrators:(OI)(CI)F" /T /C'
+    );
+    const nodeIndex = adminBootstrap.indexOf("& $nodes[0].FullName $script 2>&1");
+    expect(prepareIndex).toBeGreaterThan(-1);
+    expect(prepareIndex).toBeLessThan(nodeIndex);
     expect(adminBootstrap).toContain('-Filter "bioems.db*" -File');
     expect(adminBootstrap).toContain(
-      '& icacls.exe $_.FullName /grant:r "NT SERVICE\\BIOEMS-Backend:M"'
+      '& icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\\Administrators:F" "NT SERVICE\\BIOEMS-Backend:M"'
     );
     expect(
       adminBootstrap.indexOf("Backend database-file access could not be restored")
     ).toBeLessThan(adminBootstrap.indexOf('Start-Service -Name "BIOEMS-Backend"'));
+  });
+
+  it("prints bootstrap subprocess diagnostics into the elevated Setup log", () => {
+    expect(adminBootstrap).toContain('Write-Host "BIO-EMS admin bootstrap: $message"');
+    expect(adminBootstrap).toContain("$bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)");
+    expect(adminBootstrap).toContain(
+      '$bootstrapOutput | ForEach-Object { Write-Diagnostic "node: $_" }'
+    );
   });
 
   it("repairs stale services-directory ACLs before copying or executing WinSW wrappers", () => {

@@ -11,6 +11,7 @@ New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
 
 function Write-Diagnostic([string]$message) {
+    Write-Host "BIO-EMS admin bootstrap: $message"
     try {
         Add-Content -LiteralPath $logPath -Value "$(Get-Date -Format o) $message" -ErrorAction Stop
     } catch {
@@ -46,14 +47,21 @@ try {
 
     $env:BIOEMS_SQLITE_PATH = Join-Path $PersistentRoot "data\bioems.db"
     Stop-Service -Name "BIOEMS-Backend" -Force -ErrorAction Stop
-    Write-Diagnostic "starting one-time customer administrator bootstrap"
-    & $nodes[0].FullName $script
+    $dataDirectory = Join-Path $PersistentRoot "data"
+    & icacls.exe $dataDirectory /grant:r "BUILTIN\Administrators:(OI)(CI)F" /T /C | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        throw "Administrator bootstrap command failed with exit code $LASTEXITCODE"
+        throw "Administrator database access could not be prepared"
     }
-    Get-ChildItem -LiteralPath (Join-Path $PersistentRoot "data") -Filter "bioems.db*" -File -ErrorAction Stop |
+    Write-Diagnostic "starting one-time customer administrator bootstrap"
+    $bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)
+    $bootstrapExitCode = $LASTEXITCODE
+    $bootstrapOutput | ForEach-Object { Write-Diagnostic "node: $_" }
+    if ($bootstrapExitCode -ne 0) {
+        throw "Administrator bootstrap command failed with exit code $bootstrapExitCode"
+    }
+    Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*" -File -ErrorAction Stop |
         ForEach-Object {
-            & icacls.exe $_.FullName /grant:r "NT SERVICE\BIOEMS-Backend:M" | Out-Null
+            & icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\Administrators:F" "NT SERVICE\BIOEMS-Backend:M" | Out-Null
             if ($LASTEXITCODE -ne 0) {
                 throw "Backend database-file access could not be restored"
             }
