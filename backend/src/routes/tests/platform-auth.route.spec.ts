@@ -22,6 +22,9 @@ const mocks = vi.hoisted(() => ({
   login: vi.fn(),
   revokeSession: vi.fn(),
   revokeAllSessions: vi.fn(),
+  listSupportGrants: vi.fn(),
+  issueSupportGrant: vi.fn(),
+  revokeSupportGrant: vi.fn(),
 }));
 
 vi.mock("../../config/config", () => ({ config: mocks.config }));
@@ -38,6 +41,14 @@ vi.mock("../../services/platform-session.service", () => ({
   PlatformSessionService: class {
     revoke = mocks.revokeSession;
     revokeAll = mocks.revokeAllSessions;
+  },
+}));
+
+vi.mock("../../services/owner-support-grant.service", () => ({
+  OwnerSupportGrantService: class {
+    list = mocks.listSupportGrants;
+    issue = mocks.issueSupportGrant;
+    revoke = mocks.revokeSupportGrant;
   },
 }));
 
@@ -188,6 +199,69 @@ it("revokes every persisted owner session", async () => {
 
 it.each(["/logout", "/sessions/revoke-all"])("protects POST /platform-auth%s", async (path) => {
   await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
+});
+
+describe("Owner support grant REST API", () => {
+  it("issues, lists, and revokes grants through the authenticated owner boundary", async () => {
+    const grant = {
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      principalId: "system-owner",
+      siteId: 7,
+      reason: "Investigate sensor outage",
+      issuedAt: "2026-09-15T10:00:00.000Z",
+      expiresAt: "2026-09-15T10:30:00.000Z",
+      revokedAt: null,
+    };
+    mocks.issueSupportGrant.mockReturnValue(grant);
+    mocks.listSupportGrants.mockReturnValue([grant]);
+    mocks.revokeSupportGrant.mockReturnValue(true);
+
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 30 })
+      .expect(201);
+    expect(mocks.issueSupportGrant).toHaveBeenCalledWith(
+      "system-owner",
+      7,
+      "Investigate sensor outage",
+      30
+    );
+
+    const listed = await request(app)
+      .get("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .expect(200);
+    expect(listed.body).toEqual({ grants: [grant] });
+
+    await request(app)
+      .post(
+        "/api/v1/platform-auth/support-grants/123e4567-e89b-12d3-a456-426614174000/revoke"
+      )
+      .set("Authorization", "Bearer platform-token")
+      .send({ reason: "Customer ended support" })
+      .expect(204);
+    expect(mocks.revokeSupportGrant).toHaveBeenCalledWith(
+      "123e4567-e89b-12d3-a456-426614174000",
+      "system-owner",
+      "Customer ended support"
+    );
+  });
+
+  it("rejects unauthenticated and overlong support grants before service invocation", async () => {
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 30 })
+      .expect(401);
+
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 481 })
+      .expect(400);
+
+    expect(mocks.issueSupportGrant).not.toHaveBeenCalled();
+  });
 });
 
 describe("Current Platform Principal REST API", () => {
