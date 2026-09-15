@@ -170,7 +170,6 @@ describe("platform authentication middleware", () => {
   });
 });
 
-
 describe("owner support authentication middleware", () => {
   const verifier = {
     verifySupportToken: vi.fn(() => ({
@@ -193,21 +192,13 @@ describe("owner support authentication middleware", () => {
 
   it("attaches only the exact active delegated support scope", () => {
     const grants = { isGrantActive: vi.fn(() => true) };
-    const middleware = createOwnerSupportAuthenticationMiddleware(
-      verifier,
-      repository,
-      grants
-    );
+    const middleware = createOwnerSupportAuthenticationMiddleware(verifier, repository, grants);
     const req = request("Bearer support-token");
     const next = vi.fn() as unknown as NextFunction;
 
     middleware(req, response, next);
 
-    expect(grants.isGrantActive).toHaveBeenCalledWith(
-      "grant-id",
-      "system-owner",
-      7
-    );
+    expect(grants.isGrantActive).toHaveBeenCalledWith("grant-id", "system-owner", 7);
     expect(req.ownerSupportGrantId).toBe("grant-id");
     expect(req.ownerSupportSiteId).toBe(7);
     expect(next).toHaveBeenCalledWith();
@@ -215,11 +206,7 @@ describe("owner support authentication middleware", () => {
 
   it("rejects an expired or revoked delegated support grant", () => {
     const grants = { isGrantActive: vi.fn(() => false) };
-    const middleware = createOwnerSupportAuthenticationMiddleware(
-      verifier,
-      repository,
-      grants
-    );
+    const middleware = createOwnerSupportAuthenticationMiddleware(verifier, repository, grants);
     const next = vi.fn() as unknown as NextFunction;
 
     middleware(request("Bearer support-token"), response, next);
