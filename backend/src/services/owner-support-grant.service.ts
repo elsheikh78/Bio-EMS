@@ -110,6 +110,24 @@ export class OwnerSupportGrantService {
     })();
   }
 
+  list(principalId: string): OwnerSupportGrant[] {
+    return this.database
+      .prepare(
+        `SELECT
+          id,
+          principal_id AS principalId,
+          site_id AS siteId,
+          reason,
+          issued_at AS issuedAt,
+          expires_at AS expiresAt,
+          revoked_at AS revokedAt
+         FROM owner_support_grants
+         WHERE principal_id = ?
+         ORDER BY issued_at DESC, id DESC`
+      )
+      .all(principalId) as OwnerSupportGrant[];
+  }
+
   isActive(principalId: string, siteId: number | null): boolean {
     const checkedAt = this.now().toISOString();
     const row = this.database
