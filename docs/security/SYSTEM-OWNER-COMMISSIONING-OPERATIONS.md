@@ -3,6 +3,13 @@
 Status: required production control for SEC-OWNER-01  
 Audience: BIO-EMS manufacturer security and release personnel only
 
+Arabic operator references:
+
+- `SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md` — exact offline key ceremony and public
+  keyring creation steps.
+- `SEC-OWNER-01-STATUS-AND-MERGE-CHECKLIST-AR.md` — current evidence, owner actions,
+  remaining Production acceptance work, and the final merge gate.
+
 ## Security boundary
 
 The customer Setup creates only the customer ADMIN. It does not create, display, reset,
