@@ -51,7 +51,7 @@ export class UserRepository {
     return Number(result.lastInsertRowid);
   }
 
-  createFirstUser(user: CreateUserRecord): number {
+  createFirstUser(user: Parameters<UserRepository["create"]>[0]): number {
     return this.database.transaction(() => {
       const existing = this.database.prepare("SELECT 1 FROM users LIMIT 1").get();
 
