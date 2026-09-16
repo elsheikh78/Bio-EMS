@@ -92,7 +92,7 @@ function Remove-InstallerManagedFile([string]$path) {
 }
 function Protect-Path([string]$path, [string]$serviceId, [string]$rights = "(OI)(CI)M") {
     Invoke-Controlled "icacls.exe" @($path, "/inheritance:r")
-    Invoke-Controlled "icacls.exe" @($path, "/grant:r", "SYSTEM:F", "Administrators:F", "NT SERVICE\$serviceId`:$rights")
+    Invoke-Controlled "icacls.exe" @($path, "/grant:r", "*S-1-5-18:F", "*S-1-5-32-544:F", "*S-1-5-32-544:(OI)(CI)F", "NT SERVICE\$serviceId`:$rights")
 }
 function Add-PathAccess([string]$path, [string]$serviceId, [string]$rights) {
     Invoke-Controlled "icacls.exe" @($path, "/grant", "NT SERVICE\$serviceId`:$rights")
