@@ -1,6 +1,6 @@
 # حالة SEC-OWNER-01 وخطوات الوصول إلى الدمج
 
-آخر تحديث: 15 سبتمبر 2026  
+آخر تحديث: 16 سبتمبر 2026  
 PR: `#233`  
 Issue: `#232`  
 آخر Commit برمجي متحقق منه: `cf66ebe354986c1db03df3d4da57bfb9e1979cda`
@@ -32,6 +32,33 @@ Issue: `#232`
 - Pilot artifact SHA-256:
   `0cb582c31e6fa403175d29d5ed2dd57fdbdd4c297ac52d45554b3fcca19d61ac`.
 - النسخة الحالية Pilot وليست دليل قبول Production.
+
+### 2.1 تحقق Pilot فعلي لاحق — 16 سبتمبر 2026
+
+تم تنفيذ دورة تثبيت نظيف فعلية من Artifact مبني من commit `e48bba4168ee53393740125963cdc8ec278f4cff`
+(`fix(installer): inject bootstrap admin credentials during setup`).
+
+الأدلة التشغيلية المسجلة في جلسة القبول:
+
+- GitHub Actions workflow `Internal Windows Setup` run ID `35132483885` اكتمل بنجاح.
+- Artifact: `BIO-EMS-Setup-e48bba4168ee53393740125963cdc8ec278f4cff-bio-egypt-pilot-signed`.
+- ملف التثبيت: `BIO-EMS-Setup-0.20.0-x64.exe`.
+- SHA-256 المحسوب للـSetup طابق `SHA256SUMS.txt`:
+  `F788804F9D1C58CB1298C22836A22D1FB6AC7DD491A39601386E5077E242C4C`.
+- التثبيت النظيف أنشأ خدمات `BIOEMS-Backend` و`BIOEMS-InfluxDB` و`BIOEMS-MQTT`
+  وجميعها وصلت إلى حالة `Running`.
+- التثبيت أنشأ بيانات Administrator أولية عشوائية في
+  `C:\\ProgramData\\BIO-EMS\\config\\bootstrap-credentials.txt`؛ لا تُسجل كلمة المرور
+  نفسها في التوثيق أو GitHub.
+- تسجيل الدخول بالحساب `admin` ذي الدور `ADMIN` نجح فعليًا، وظهرت واجهة
+  Administration / Users والحساب بحالة `active`.
+- فحص قاعدة بيانات التثبيت بعد الاختبار أظهر مستخدم العميل `admin / ADMIN` فقط؛ لم
+  يُنشأ `SYSTEM_OWNER` تلقائيًا، وهو متوافق مع حد SEC-OWNER-01 الذي يفصل Owner عن
+  Customer Setup وCustomer ADMIN.
+- مسار `/system-owner/login` موجود، لكن إنشاء Owner يظل خاضعًا لمسار Commissioning
+  الموقع من الشركة ولا يُعامل غياب Owner بعد Pilot Setup كعطل في Customer Admin bootstrap.
+
+هذا التحقق يثبت مسار Pilot Admin/Installer فقط، ولا يغير بوابة قبول Production أدناه.
 
 ## 3. لماذا لم يتم الدمج بعد
 
