@@ -117,3 +117,28 @@
 6. هذا الملف.
 
 ثم ابدأ **بمراسم المفتاح الحقيقي SEC-OWNER**، وليس بكتابة Feature جديدة.
+
+
+## 10. ملاحظات COM-07 المؤجلة لاختبار الأحد
+
+### فصل إعداد المرسِل عن المستلمين
+
+صفحة Communication Channels Configuration مخصصة لضبط **وسيلة/حساب الإرسال** الخاصة بالعميل، ولذلك يجب مراجعة الواجهة والـAPI للتأكد من عدم خلط Sender Configuration مع Recipients/Escalation.
+
+- Telegram Sender Configuration: الـBot Token هو هوية/اعتماد البوت المرسِل. لا يُعامل Chat ID كبيان لحساب المرسِل؛ Chat ID يحدد وجهة الرسالة (شخص/Group/Channel) ويجب أن يكون ضمن Recipient/Escalation configuration أو اختيار وجهة واضح منفصل.
+- Email Sender Configuration: SMTP Host/Port/Username/Password/From تخص المرسِل. عناوين المستلمين تخص Recipient/Escalation.
+- WhatsApp: بيانات Meta/WhatsApp Business تخص المرسِل، وأرقام المستلمين منفصلة.
+- SMS: إعداد Provider أو Modem/SIM تخص وسيلة الإرسال، وأرقام المستلمين منفصلة.
+
+### Site ID في Test actions
+
+في الاختبار الحالي للإيميل، Save تم تجاوزه/نجح، لكن Test يطلب Site ID داخلي غير معروف للمستخدم. عند العودة للجهاز يجب مراجعة UI/API:
+
+1. تحديد سبب حاجة Test إلى Site scope.
+2. إذا كان Site مطلوبًا فعليًا، تعرض الواجهة Site **بالاسم** في قائمة اختيار ولا تطلب من المستخدم كتابة ID داخلي.
+3. إذا كان اختبار Sender Configuration لا يحتاج Site، يفصل Test Sender عن Site/recipient routing.
+4. تطبيق نفس المبدأ على Telegram/WhatsApp/SMS حيث ينطبق.
+
+### أول اختبار عند العودة
+
+ابدأ COM-07 بمراجعة Sender vs Recipient model وSite selector قبل إدخال Chat ID أو تنفيذ live delivery، ثم نفذ اختبارات القنوات الحية بعد تصحيح/تأكيد هذا الفصل.
