@@ -31,9 +31,7 @@ export class BootstrapAdminError extends Error {
   }
 }
 
-export function readBootstrapAdminEnvironment(
-  environment: NodeJS.ProcessEnv
-): BootstrapAdminInput {
+export function readBootstrapAdminEnvironment(environment: NodeJS.ProcessEnv): BootstrapAdminInput {
   const username = environment.BIOEMS_BOOTSTRAP_ADMIN_USERNAME;
   const password = environment.BIOEMS_BOOTSTRAP_ADMIN_PASSWORD;
   const email = environment.BIOEMS_BOOTSTRAP_ADMIN_EMAIL;
@@ -69,8 +67,7 @@ export async function bootstrapAdmin(
             `INSERT INTO platform_customers (code,name,status,created_at,created_by)
              VALUES (?,?, 'ACTIVE', ?, ?)`
           )
-          .run(customerCode, customerName, now, BOOTSTRAP_ACTOR)
-          .lastInsertRowid
+          .run(customerCode, customerName, now, BOOTSTRAP_ACTOR).lastInsertRowid
       );
 
       const userId = dependencies.userRepository.createFirstUser({
