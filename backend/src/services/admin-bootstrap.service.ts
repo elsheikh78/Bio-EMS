@@ -10,8 +10,8 @@ export interface BootstrapAdminInput {
   username: string;
   password: string;
   email?: string;
-  customerCode: string;
-  customerName: string;
+  customerCode?: string;
+  customerName?: string;
 }
 
 export interface BootstrapLogger {
@@ -56,6 +56,9 @@ export async function bootstrapAdmin(
   try {
     const passwordHash = await hashPassword(input.password);
     const now = new Date().toISOString();
+    const customerCode = (input.customerCode || DEFAULT_CUSTOMER_CODE).trim();
+    const customerName = (input.customerName || DEFAULT_CUSTOMER_NAME).trim();
+    if (!customerCode || !customerName) throw new BootstrapAdminError();
 
     const id = dependencies.database.transaction(() => {
       const customerId = Number(
@@ -64,7 +67,7 @@ export async function bootstrapAdmin(
             `INSERT INTO platform_customers (code,name,status,created_at,created_by)
              VALUES (?,?, 'ACTIVE', ?, ?)`
           )
-          .run(input.customerCode.trim(), input.customerName.trim(), now, BOOTSTRAP_ACTOR)
+          .run(customerCode, customerName, now, BOOTSTRAP_ACTOR)
           .lastInsertRowid
       );
 
