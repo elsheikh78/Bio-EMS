@@ -327,6 +327,26 @@ try {
 }
 Write-Utf8 $tlsMetadata (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
 
+$bootstrapAdminUsername = "admin"
+
+$bootstrapAdminPassword = (
+    [Guid]::NewGuid().ToString("N") +
+    [Guid]::NewGuid().ToString("N").Substring(0,8)
+)
+
+$bootstrapCustomerCode = "INSTALLATION-CUSTOMER"
+$bootstrapCustomerName = "BIO-EMS Customer"
+
+$bootstrapCredentialPath = Join-Path $paths.Config "bootstrap-credentials.txt"
+
+Write-Utf8 $bootstrapCredentialPath @"
+BIO-EMS Initial Administrator
+Username: $bootstrapAdminUsername
+Password: $bootstrapAdminPassword
+"@
+
+Protect-Path $bootstrapCredentialPath "BIOEMS-Backend" "R"
+
 Write-Utf8 $backendEnv @"
 NODE_ENV=production
 PORT=443
@@ -357,6 +377,10 @@ LOG_LEVEL=info
 BIOEMS_LOG_RETENTION_DAYS=90
 BIOEMS_SHUTDOWN_GRACE_SECONDS=30
 BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
+BIOEMS_BOOTSTRAP_ADMIN_USERNAME=$bootstrapAdminUsername
+BIOEMS_BOOTSTRAP_ADMIN_PASSWORD=$bootstrapAdminPassword
+BIOEMS_BOOTSTRAP_CUSTOMER_CODE=$bootstrapCustomerCode
+BIOEMS_BOOTSTRAP_CUSTOMER_NAME=$bootstrapCustomerName
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
