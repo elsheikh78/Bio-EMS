@@ -12,6 +12,7 @@ Enterprise Environmental Monitoring System for regulated and operational environ
 | --- | --- |
 | Where is the project now? | `PROJECT_STATE.md` |
 | What do we execute next? | `IMPLEMENTATION_PLAN.md` |
+| ماذا يجب على مالك المنصة أن يفعل بنفسه الآن؟ | `docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md` |
 | What did the 11 September complete audit conclude? | `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
 | What is the current Pilot scope? | `PILOT_SCOPE.md` |
 | What are the active project risks? | `RISK_REGISTER.md` |
