@@ -86,7 +86,7 @@ function Write-Utf8([string]$path, [string]$content) {
 function Remove-InstallerManagedFile([string]$path) {
     if (Test-Path -LiteralPath $path -PathType Leaf) {
         Invoke-Controlled "takeown.exe" @("/F", $path, "/A")
-        Invoke-Controlled "icacls.exe" @($path, "/grant:r", "Administrators:F")
+        Invoke-Controlled "icacls.exe" @($path, "/grant:r", "*S-1-5-32-544:F")
         Remove-Item -LiteralPath $path -Force
     }
 }
@@ -105,7 +105,7 @@ function New-MosquittoPasswordFile([string]$executable, [string]$path, [string]$
     try {
         New-Item -ItemType File -Path $temporary -Force | Out-Null
         Invoke-Controlled "icacls.exe" @($temporary, "/inheritance:r")
-        Invoke-Controlled "icacls.exe" @($temporary, "/grant:r", "SYSTEM:F", "Administrators:F")
+        Invoke-Controlled "icacls.exe" @($temporary, "/grant:r", "*S-1-5-18:F", "*S-1-5-32-544:F")
         Write-Utf8 $temporary "$username`:$password`r`n"
         Invoke-Controlled $executable @("-U", $temporary)
         Move-Item -LiteralPath $temporary -Destination $path -Force
