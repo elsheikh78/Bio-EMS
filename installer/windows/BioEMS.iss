@@ -63,7 +63,9 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode Uninstall -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; Flags: runhidden waituntilterminated; RunOnceId: "BIOEMSRetainData"
+; Uninstall lifecycle is executed from InitializeUninstall below so a non-zero
+; lifecycle exit code can abort removal instead of Inno continuing and reporting
+; a false successful uninstall.
 
 [Icons]
 Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
@@ -77,6 +79,38 @@ var
   ExistingInstallAtStart: Boolean;
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
+
+function InitializeUninstall(): Boolean;
+var
+  ResultCode: Integer;
+  ScriptPath: String;
+  Params: String;
+begin
+  Result := False;
+  ScriptPath := ExpandConstant('{app}\installer\Invoke-DEP0105Lifecycle.ps1');
+
+  if not FileExists(ScriptPath) then begin
+    MsgBox('BIO-EMS uninstall lifecycle script is missing. Removal has been stopped to protect customer data.', mbError, MB_OK);
+    Exit;
+  end;
+
+  Params :=
+    '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath +
+    '" -Mode Uninstall -ApplicationRoot "' + ExpandConstant('{app}') +
+    '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"';
+
+  if (not Exec('powershell.exe', Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode)) or
+     (ResultCode <> 0) then begin
+    MsgBox(
+      'BIO-EMS uninstall preparation failed (exit code ' + IntToStr(ResultCode) +
+      '). Removal has been stopped. Customer data has not been intentionally deleted.',
+      mbError, MB_OK
+    );
+    Exit;
+  end;
+
+  Result := True;
+end;
 
 function HasUppercase(const Value: String): Boolean;
 var I: Integer;
