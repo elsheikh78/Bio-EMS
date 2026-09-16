@@ -54,12 +54,14 @@ describe("secure ADMIN bootstrap", () => {
     expect(stored.password_hash).not.toBe(VALID_PASSWORD);
     await expect(bcrypt.compare(VALID_PASSWORD, stored.password_hash)).resolves.toBe(true);
     expect(
-      database.prepare(
-        `SELECT c.code,c.name,b.user_id AS userId
-         FROM customer_user_bindings b
-         JOIN platform_customers c ON c.id = b.customer_id
-         WHERE b.user_id = ?`
-      ).get(id)
+      database
+        .prepare(
+          `SELECT c.code,c.name,b.user_id AS userId
+           FROM customer_user_bindings b
+           JOIN platform_customers c ON c.id = b.customer_id
+           WHERE b.user_id = ?`
+        )
+        .get(id)
     ).toEqual({
       code: "INSTALLATION-CUSTOMER",
       name: "BIO-EMS Customer",
