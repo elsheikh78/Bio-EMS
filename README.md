@@ -34,10 +34,10 @@ BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## Current execution order
 
-1. COM-01 through COM-06 Communication Channel Administration.
-2. Build a fresh controlled internal Pilot Setup.
-3. Qualify installation on multiple clean Windows computers.
-4. Complete COM-07 Pilot acceptance.
+1. Preserve and close the SEC-OWNER-01 Production key/commissioning gate.
+2. COM-01 through COM-06 are source implemented on PR #235; complete COM-07 live acceptance.
+3. Continue qualification on multiple clean Windows computers.
+4. Close remaining installer lifecycle evidence.
 5. Execute hardware bench qualification.
 6. Close required SMS/GSM and notification failover evidence.
 7. Install and commission BIO EGYPT Pilot.
@@ -81,7 +81,7 @@ BIO-EMS currently includes:
 
 ## Communication Channels configuration
 
-Approved next source work adds:
+Implemented source work on PR #235 adds:
 
 `Configuration -> Communication Channels`
 
@@ -97,11 +97,11 @@ Installer source is materially advanced:
 - automatic install diagnostics;
 - partial-install/clean-device repair fix.
 
+Current PR #235 automated Windows evidence verifies deterministic staging, signed Setup compilation, clean installation and Pilot health. A separate 16 September clean-install exercise also verified all three BIO-EMS services and customer ADMIN login.
+
 Still required:
 
-- successful post-fix clean-machine install evidence;
-- all three BIO-EMS services;
-- HTTPS/API/frontend health;
+- HTTPS/API/frontend health regression where affected;
 - reboot recovery;
 - Repair/Upgrade/rollback;
 - retained-data Uninstall;
@@ -137,3 +137,11 @@ Separate evidence is still required for:
 - customer UAT/acceptance;
 - deferred production-grade security/protection;
 - commercial Production Installer release.
+
+
+## 16 September 2026 status note
+
+- `main`: `653a573` (customer ADMIN Setup provisioning merged via PR #231).
+- SEC-OWNER-01: implemented on PR #233; Production acceptance/merge remains gated by the real manufacturer key ceremony and offline commissioning evidence.
+- Active integration: draft PR #235 / `feat/com-01-06-communication-channels`; COM-01 through COM-06 source implemented and automated Windows Setup gate passed; COM-07 live acceptance remains open.
+- Product version remains `0.20.0`; this documentation sync does not create a new release.
