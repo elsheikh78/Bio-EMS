@@ -82,9 +82,21 @@ foreach ($service in $services) {
 Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue | Remove-NetFirewallRule
 $certificateEvidence = Join-Path $persistent "config\tls-certificate.json"
 if (Test-Path -LiteralPath $certificateEvidence) {
-    $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
-    foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
-        Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+    try {
+        # BIO-EMS protects persistent configuration with restrictive ACLs. The
+        # uninstall lifecycle must be able to read its own TLS evidence before
+        # Inno removes the application payload.
+        & icacls.exe $certificateEvidence /grant "*S-1-5-32-544:(R)" /C /Q | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Unable to grant temporary administrator read access to TLS certificate evidence" }
+
+        $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
+        if ($thumbprint) {
+            foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
+                Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+            }
+        }
+    } catch {
+        throw "Unable to remove BIO-EMS TLS certificate: $($_.Exception.Message)"
     }
 }
 $evidence = [ordered]@{ schemaVersion = 1; state = "APPLICATION_REMOVED_DATA_RETAINED"; retainedRoot = $persistent; completedAt = (Get-Date).ToUniversalTime().ToString("o") }
