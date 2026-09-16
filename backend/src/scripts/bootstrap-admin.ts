@@ -26,6 +26,7 @@ export async function runBootstrapAdminCommand(
     createTables(database);
     runMigrations(database);
     await bootstrapAdmin(input, {
+      database,
       userRepository: new UserRepository(database),
       logger: { info: (message) => console.log(message) },
     });
