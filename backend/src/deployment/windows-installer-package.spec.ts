@@ -298,6 +298,13 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(repairIndex).toBeLessThan(wrapperInstallIndex);
   });
 
+  it("uses language-independent well-known SIDs for protected SYSTEM and Administrators ACLs", () => {
+    expect(lifecycle).toContain('"*S-1-5-18:F"');
+    expect(lifecycle).toContain('"*S-1-5-32-544:F"');
+    expect(lifecycle).toContain('"*S-1-5-32-544:(OI)(CI)F"');
+    expect(lifecycle).not.toContain('"SYSTEM:F", "Administrators:F"');
+  });
+
   it("does not mis-prefix the built-in Administrators principal as a virtual service account", () => {
     expect(lifecycle).toContain("function Add-PrincipalAccess");
     expect(lifecycle).toContain('"BUILTIN\\Administrators"');
@@ -329,7 +336,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   it("reclaims stale installer-managed files before deleting them on retry", () => {
     expect(lifecycle).toContain('Invoke-Controlled "takeown.exe" @("/F", $path, "/A")');
     expect(lifecycle).toContain(
-      'Invoke-Controlled "icacls.exe" @($path, "/grant:r", "Administrators:F")'
+      'Invoke-Controlled "icacls.exe" @($path, "/grant:r", "*S-1-5-32-544:F")'
     );
     expect(lifecycle).toContain("Remove-Item -LiteralPath $path -Force");
   });
