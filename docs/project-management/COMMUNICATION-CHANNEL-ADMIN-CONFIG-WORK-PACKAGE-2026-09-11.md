@@ -262,3 +262,8 @@ This evidence does not close COM-07. Merge and pilot acceptance still require Gi
 the signed Windows Setup test, restart/reboot persistence, real Email and Telegram test
 messages, the available Meta WhatsApp validation boundary, real SIM/modem SMS evidence,
 and verified operational failover using the pilot's actual accounts and hardware.
+
+
+## 16 September 2026 implementation update
+
+COM-01 through COM-06 source implementation is present on draft PR #235, stacked on SEC-OWNER-01. The verified PR evidence includes CI run #1021 and Internal Windows Setup run #330 passing the locked vendor acquisition, deterministic staging, single offline Setup compilation, signing/signature verification, Windows installation and Pilot health gates. COM-07 remains a separate external/live acceptance boundary: actual Email/Telegram/WhatsApp/SMS delivery and local modem/SIM evidence must be recorded where applicable. No live credential or secret belongs in Git or this document.
