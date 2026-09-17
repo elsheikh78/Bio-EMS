@@ -50,10 +50,14 @@ export function createAuthenticationStorageAdapter(
     }
   };
 
-  const parse = (raw: string | null): StoredAuthenticationSession | undefined => {
+  const parse = (
+    raw: string | null,
+  ): StoredAuthenticationSession | undefined => {
     if (raw === null) return undefined;
     try {
-      const result = storedAuthenticationSessionSchema.safeParse(JSON.parse(raw));
+      const result = storedAuthenticationSessionSchema.safeParse(
+        JSON.parse(raw),
+      );
       if (!result.success || result.data.expiresAt <= now()) {
         clear();
         return undefined;

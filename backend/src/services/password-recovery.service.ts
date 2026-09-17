@@ -39,7 +39,11 @@ export class PasswordRecoveryService {
     return GENERIC_FORGOT_RESPONSE;
   }
 
-  async changeOwnPassword(userId: number, currentPassword: string, newPassword: string): Promise<void> {
+  async changeOwnPassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
     const user = this.users.findById(userId);
     if (!user) throw new AppError("Authentication required", 401, "AUTHENTICATION_REQUIRED");
     const credentials = this.users.findCredentialsByUsername(user.username);
@@ -51,7 +55,8 @@ export class PasswordRecoveryService {
     try {
       passwordHash = await hashPassword(newPassword);
     } catch (error) {
-      if (error instanceof PasswordPolicyError) throw new AppError(error.message, 400, "VALIDATION_ERROR");
+      if (error instanceof PasswordPolicyError)
+        throw new AppError(error.message, 400, "VALIDATION_ERROR");
       throw error;
     }
 

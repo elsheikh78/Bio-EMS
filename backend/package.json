@@ -7,8 +7,16 @@
   "main": "dist/server.js",
   "author": "Ahmed A. Elsheikh",
   "license": "Proprietary",
-  "engines": { "node": ">=22" },
-  "keywords": ["bio-ems", "environmental-monitoring", "temperature-monitoring", "cold-room", "iot"],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "bio-ems",
+    "environmental-monitoring",
+    "temperature-monitoring",
+    "cold-room",
+    "iot"
+  ],
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",

@@ -3,10 +3,7 @@ import type { ApiRequestOptions } from "../api/client";
 import type { AuthenticatedUser, LoginRequest } from "./contracts";
 
 export type AuthenticationStatus =
-  | "bootstrapping"
-  | "unauthenticated"
-  | "authenticated"
-  | "restoration-error";
+  "bootstrapping" | "unauthenticated" | "authenticated" | "restoration-error";
 
 export type AuthenticationFailureKind =
   | "invalid-credentials"

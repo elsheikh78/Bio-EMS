@@ -32,9 +32,13 @@ export class AuthService {
 
   async login(input: LoginInput): Promise<LoginResponse> {
     const credentials = this.userRepository.findCredentialsByUsername(input.username);
-    const passwordMatches = await verifyPassword(input.password, credentials?.password_hash ?? DUMMY_BCRYPT_HASH);
+    const passwordMatches = await verifyPassword(
+      input.password,
+      credentials?.password_hash ?? DUMMY_BCRYPT_HASH
+    );
 
-    if (!credentials || !passwordMatches || credentials.status !== "active") throw invalidCredentials();
+    if (!credentials || !passwordMatches || credentials.status !== "active")
+      throw invalidCredentials();
 
     const issued = this.tokenIssuer.issueAccessToken(credentials.id);
     return {

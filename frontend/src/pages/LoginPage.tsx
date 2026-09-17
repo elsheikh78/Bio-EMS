@@ -25,7 +25,8 @@ const recoveryCopy = {
     help: "Enter your username. If the account is eligible, an administrator can continue the reset process. For security, the response does not reveal whether an account exists.",
     submit: "Request password reset",
     pending: "Submitting…",
-    success: "If the account is eligible, the password recovery request has been recorded.",
+    success:
+      "If the account is eligible, the password recovery request has been recorded.",
     error: "The recovery request could not be submitted. Try again.",
     back: "Back to sign in",
   },
@@ -80,32 +81,127 @@ export function LoginPage() {
     try {
       const authenticatedUser = await login({ username, password });
       setPassword("");
-      void navigate(resolveSafeReturnPath(location.state, authenticatedUser.role), {
-        replace: true,
-        state: { focusAfterLogin: true },
-      });
+      void navigate(
+        resolveSafeReturnPath(location.state, authenticatedUser.role),
+        {
+          replace: true,
+          state: { focusAfterLogin: true },
+        },
+      );
     } catch (error) {
       setPassword("");
-      setFailure(error instanceof AuthenticationFailure ? error.kind : "malformed-response");
+      setFailure(
+        error instanceof AuthenticationFailure
+          ? error.kind
+          : "malformed-response",
+      );
       window.requestAnimationFrame(() => errorRef.current?.focus());
     }
   };
 
   return (
-    <Box component="main" sx={{ display: "grid", minHeight: "100vh", placeItems: "center", p: 2 }}>
-      <Box component="form" onSubmit={(event) => void submit(event)} sx={{ maxWidth: 420, width: "100%" }}>
-        <Typography component="h1" gutterBottom ref={headingRef} tabIndex={-1} variant="h4">
+    <Box
+      component="main"
+      sx={{ display: "grid", minHeight: "100vh", placeItems: "center", p: 2 }}
+    >
+      <Box
+        component="form"
+        onSubmit={(event) => void submit(event)}
+        sx={{ maxWidth: 420, width: "100%" }}
+      >
+        <Typography
+          component="h1"
+          gutterBottom
+          ref={headingRef}
+          tabIndex={-1}
+          variant="h4"
+        >
           {recovering ? recovery.title : resources.authentication.loginTitle}
         </Typography>
-        {recovering ? <Typography color="text.secondary" sx={{ mb: 2 }}>{recovery.help}</Typography> : null}
-        {failure && !recovering ? <Alert id="login-error" ref={errorRef} severity="error" sx={{ mb: 2 }} tabIndex={-1}>{resources.authentication.errors[failure]}</Alert> : null}
-        {recoveryResult ? <Alert severity={recoveryResult === "success" ? "success" : "error"} sx={{ mb: 2 }}>{recoveryResult === "success" ? recovery.success : recovery.error}</Alert> : null}
-        <TextField autoComplete="username" disabled={loginPending || recoveryPending} fullWidth label={resources.authentication.username} margin="normal" name="username" onChange={(event) => setUsername(event.target.value)} required value={username} />
-        {!recovering ? <TextField autoComplete="current-password" disabled={loginPending} fullWidth label={resources.authentication.password} margin="normal" name="password" onChange={(event) => setPassword(event.target.value)} required type="password" value={password} /> : null}
-        <Button disabled={loginPending || recoveryPending} fullWidth sx={{ mt: 2, minHeight: 44 }} type="submit" variant="contained">
-          {recovering ? (recoveryPending ? recovery.pending : recovery.submit) : loginPending ? <><CircularProgress aria-hidden size={20} sx={{ mr: 1 }} />{resources.authentication.signingIn}</> : resources.authentication.signIn}
+        {recovering ? (
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            {recovery.help}
+          </Typography>
+        ) : null}
+        {failure && !recovering ? (
+          <Alert
+            id="login-error"
+            ref={errorRef}
+            severity="error"
+            sx={{ mb: 2 }}
+            tabIndex={-1}
+          >
+            {resources.authentication.errors[failure]}
+          </Alert>
+        ) : null}
+        {recoveryResult ? (
+          <Alert
+            severity={recoveryResult === "success" ? "success" : "error"}
+            sx={{ mb: 2 }}
+          >
+            {recoveryResult === "success" ? recovery.success : recovery.error}
+          </Alert>
+        ) : null}
+        <TextField
+          autoComplete="username"
+          disabled={loginPending || recoveryPending}
+          fullWidth
+          label={resources.authentication.username}
+          margin="normal"
+          name="username"
+          onChange={(event) => setUsername(event.target.value)}
+          required
+          value={username}
+        />
+        {!recovering ? (
+          <TextField
+            autoComplete="current-password"
+            disabled={loginPending}
+            fullWidth
+            label={resources.authentication.password}
+            margin="normal"
+            name="password"
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            type="password"
+            value={password}
+          />
+        ) : null}
+        <Button
+          disabled={loginPending || recoveryPending}
+          fullWidth
+          sx={{ mt: 2, minHeight: 44 }}
+          type="submit"
+          variant="contained"
+        >
+          {recovering ? (
+            recoveryPending ? (
+              recovery.pending
+            ) : (
+              recovery.submit
+            )
+          ) : loginPending ? (
+            <>
+              <CircularProgress aria-hidden size={20} sx={{ mr: 1 }} />
+              {resources.authentication.signingIn}
+            </>
+          ) : (
+            resources.authentication.signIn
+          )}
         </Button>
-        <Button disabled={loginPending || recoveryPending} fullWidth onClick={() => { setRecovering((value) => !value); setFailure(undefined); setRecoveryResult(undefined); setPassword(""); }} sx={{ mt: 1 }} type="button" variant="text">
+        <Button
+          disabled={loginPending || recoveryPending}
+          fullWidth
+          onClick={() => {
+            setRecovering((value) => !value);
+            setFailure(undefined);
+            setRecoveryResult(undefined);
+            setPassword("");
+          }}
+          sx={{ mt: 1 }}
+          type="button"
+          variant="text"
+        >
           {recovering ? recovery.back : recovery.forgot}
         </Button>
       </Box>
