@@ -86,7 +86,7 @@ describe("PasswordRecoveryPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset password" }));
 
     const password = "TemporaryRecovery1!";
-    const input = screen.getByLabelText("Temporary password");
+    const input = screen.getByRole("textbox", { name: /Temporary password/ });
     fireEvent.change(input, { target: { value: password } });
 
     expect(input).toHaveAttribute("type", "password");
