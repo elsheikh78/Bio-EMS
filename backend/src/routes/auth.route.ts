@@ -5,6 +5,7 @@ import {
   forgotPasswordController,
   loginController,
 } from "../controllers/auth.controller";
+import { passwordRecoveryRateLimitMiddleware } from "../middleware/password-recovery-rate-limit.middleware";
 import { validateBody } from "../middleware/validate-request";
 import { loginSchema } from "../modules/auth/dto/login.schema";
 import {
@@ -15,7 +16,12 @@ import {
 const router = Router();
 
 router.post("/login", validateBody(loginSchema), loginController);
-router.post("/forgot-password", validateBody(forgotPasswordSchema), forgotPasswordController);
+router.post(
+  "/forgot-password",
+  passwordRecoveryRateLimitMiddleware,
+  validateBody(forgotPasswordSchema),
+  forgotPasswordController
+);
 router.post("/change-password", validateBody(changePasswordSchema), changePasswordController);
 router.get("/me", currentUserController);
 
