@@ -49,7 +49,10 @@ export function PasswordRecoveryPanel() {
 
         {requests.isPending ? (
           <CircularProgress
-            aria-label={t("Loading recovery requests", "جارٍ تحميل طلبات الاستعادة")}
+            aria-label={t(
+              "Loading recovery requests",
+              "جارٍ تحميل طلبات الاستعادة",
+            )}
           />
         ) : null}
         {requests.isError ? (
@@ -67,7 +70,9 @@ export function PasswordRecoveryPanel() {
             )}
           </Alert>
         ) : null}
-        {!requests.isPending && !requests.isError && requests.data?.length === 0 ? (
+        {!requests.isPending &&
+        !requests.isError &&
+        requests.data?.length === 0 ? (
           <Alert severity="info">
             {t("No pending recovery requests.", "لا توجد طلبات استعادة معلقة.")}
           </Alert>
@@ -86,15 +91,22 @@ export function PasswordRecoveryPanel() {
             <Box>
               <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                 <Typography component="h3" variant="h6">
-                  {request.username_hint ?? t("Unknown user", "مستخدم غير معروف")}
+                  {request.username_hint ??
+                    t("Unknown user", "مستخدم غير معروف")}
                 </Typography>
-                <Chip size="small" label={t("Pending", "معلق")} color="warning" />
+                <Chip
+                  size="small"
+                  label={t("Pending", "معلق")}
+                  color="warning"
+                />
               </Stack>
               <Typography variant="body2" color="text.secondary">
-                {t("Requested", "تاريخ الطلب")}: {new Date(request.requested_at).toLocaleString()}
+                {t("Requested", "تاريخ الطلب")}:{" "}
+                {new Date(request.requested_at).toLocaleString()}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {t("Expires", "ينتهي")}: {new Date(request.expires_at).toLocaleString()}
+                {t("Expires", "ينتهي")}:{" "}
+                {new Date(request.expires_at).toLocaleString()}
               </Typography>
             </Box>
             <Button variant="outlined" onClick={() => setSelected(request)}>
@@ -194,7 +206,9 @@ function RecoveryResetDialog({
 function recoveryErrorMessage(error: unknown, language: "en" | "ar") {
   const ar = language === "ar";
   if (!(error instanceof ApiResponseError)) {
-    return ar ? "تعذر إعادة تعيين كلمة المرور." : "Password could not be reset.";
+    return ar
+      ? "تعذر إعادة تعيين كلمة المرور."
+      : "Password could not be reset.";
   }
   switch (error.code) {
     case "PASSWORD_RECOVERY_REQUEST_NOT_FOUND":
@@ -215,6 +229,8 @@ function recoveryErrorMessage(error: unknown, language: "en" | "ar") {
         ? "كلمة المرور لا تطابق سياسة كلمة المرور المطلوبة."
         : "The password does not meet the required password policy.";
     default:
-      return ar ? "تعذر إعادة تعيين كلمة المرور." : "Password could not be reset.";
+      return ar
+        ? "تعذر إعادة تعيين كلمة المرور."
+        : "Password could not be reset.";
   }
 }
