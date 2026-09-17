@@ -1,4 +1,4 @@
-name: Auth recovery test fixture repair
+name: Auth recovery final validation
 
 on:
   push:
@@ -9,94 +9,74 @@ permissions:
   contents: write
 
 jobs:
-  repair:
+  repair-and-validate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           ref: feat/auth-password-recovery
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - name: Repair tests for migration 028 and recovery vocabulary
+      - name: Restore accidentally replaced test and apply only evidenced fixes
         run: |
+          git checkout 01a08408683553681f24f0e5947cc64b75c81604 -- backend/src/app.user-management.spec.ts
           python3 - <<'PY'
           from pathlib import Path
 
-          def patch(path, old, new):
-              p=Path(path); s=p.read_text()
-              if old not in s:
-                  raise SystemExit(f'missing expected text in {path}: {old[:80]}')
-              p.write_text(s.replace(old,new))
+          p = Path('backend/src/app.user-management.spec.ts')
+          s = p.read_text()
+          old = '''    expect(passwordAudit).toMatchObject({
+      result: "SUCCESS",
+      previous_values_json: null,
+      new_values_json: null,
+    });'''
+          new = '''    expect(passwordAudit).toMatchObject({
+      result: "SUCCESS",
+      previous_values_json: null,
+      new_values_json: JSON.stringify({ password_change_required: "[REDACTED]" }),
+    });'''
+          if old not in s:
+              raise SystemExit('expected password audit assertion not found')
+          p.write_text(s.replace(old, new, 1))
 
-          p=Path('backend/database/sqlite/tests/migration-runner.spec.ts')
-          s=p.read_text()
-          s=s.replace('25, 26, 27,\n];','25, 26, 27, 28,\n];')
-          s=s.replace('expect(historyCount.count).toBe(27);','expect(historyCount.count).toBe(28);')
-          s=s.replace('      "updated_at",\n    ]);','      "updated_at",\n      "password_change_required",\n    ]);')
-          p.write_text(s)
-
-          patch('backend/src/repositories/tests/user.repository.spec.ts',
-                'import { migration003 } from "../../../database/sqlite/migrations/003_create_users";',
-                'import { migration003 } from "../../../database/sqlite/migrations/003_create_users";\nimport { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";')
-          patch('backend/src/repositories/tests/user.repository.spec.ts',
-                '    migration003.up(database);\n    repository = new UserRepository(database);',
-                '    migration003.up(database);\n    migration028.up(database);\n    repository = new UserRepository(database);')
-
-          patch('backend/src/services/tests/admin-bootstrap.service.spec.ts',
-                'import { migration019 } from "../../../database/sqlite/migrations/019_create_customer_ownership";',
-                'import { migration019 } from "../../../database/sqlite/migrations/019_create_customer_ownership";\nimport { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";')
-          patch('backend/src/services/tests/admin-bootstrap.service.spec.ts',
-                '    migration019.up(database);\n    repository = new UserRepository(database);',
-                '    migration019.up(database);\n    migration028.up(database);\n    repository = new UserRepository(database);')
-
-          patch('backend/src/repositories/tests/user.repository.atomicity.spec.ts',
-                'import { migration003 } from "../../../database/sqlite/migrations/003_create_users";',
-                'import { migration003 } from "../../../database/sqlite/migrations/003_create_users";\nimport { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";')
-          patch('backend/src/repositories/tests/user.repository.atomicity.spec.ts',
-                '    migration003.up(setup);\n    const insert = setup.prepare(',
-                '    migration003.up(setup);\n    migration028.up(setup);\n    const insert = setup.prepare(')
-
-          patch('backend/src/modules/platform-operations/customer-admin.service.spec.ts',
-                "        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n      );",
-                "        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,\n        password_change_required INTEGER NOT NULL DEFAULT 0 CHECK (password_change_required IN (0, 1))\n      );")
-
-          p=Path('backend/src/app.user-management.spec.ts')
-          s=p.read_text().replace('/password_hash|password|\\$2b\\$/i','/password_hash|\\$2b\\$/i')
-          s=s.replace('/password_hash|password|ReplacementPass1/i','/password_hash|ReplacementPass1/i')
-          s=s.replace('latestAudit("USER.PASSWORD_UPDATED", "3")','latestAudit("USER.PASSWORD_RESET", "3")')
-          s=s.replace('latestAudit("USER.PASSWORD_UPDATED", "99")','latestAudit("USER.PASSWORD_RESET", "99")')
-          p.write_text(s)
-
-          p=Path('backend/src/services/tests/user.service.spec.ts')
-          s=p.read_text()
-          s=s.replace('    repository.updateStatus.mockImplementation(() => {\n      throw new LastActiveAdminError();\n    });',
-                      '    repository.findById.mockReturnValue(user({ id: 2, role: "VIEWER" }));\n    repository.updateStatus.mockImplementation(() => {\n      throw new LastActiveAdminError();\n    });')
-          p.write_text(s)
-
-          p=Path('frontend/src/App.spec.tsx')
-          s=p.read_text()
-          s=s.replace('    protectedRequest: vi.fn(),\n    ...overrides,',
-                      '    protectedRequest: vi.fn(),\n    passwordChangeRequired: false,\n    completePasswordChange: vi.fn().mockResolvedValue(undefined),\n    ...overrides,')
-          s=s.replace('        user: users.ADMIN,\n      }),', '        user: users.ADMIN,\n        password_change_required: false,\n      }),')
-          p.write_text(s)
-
-          p=Path('frontend/src/pages/LoginPage.spec.tsx')
-          s=p.read_text()
-          s=s.replace('    protectedRequest: vi.fn(),\n    ...overrides,',
-                      '    protectedRequest: vi.fn(),\n    passwordChangeRequired: false,\n    completePasswordChange: vi.fn().mockResolvedValue(undefined),\n    ...overrides,')
+          p = Path('frontend/src/pages/LoginPage.tsx')
+          s = p.read_text()
+          for field in ('username', 'password'):
+              marker = f'id="{field}"'
+              if marker not in s:
+                  raise SystemExit(f'{marker} not found')
+              replacement = marker + '\n                aria-describedby={failure ? "login-error" : undefined}'
+              if 'aria-describedby={failure ? "login-error" : undefined}' not in s[s.index(marker):s.index(marker)+180]:
+                  s = s.replace(marker, replacement, 1)
           p.write_text(s)
           PY
-      - name: Format changed files
+      - name: Backend validation
         run: |
-          cd backend && npm ci && npx prettier --write database/sqlite/tests/migration-runner.spec.ts src/repositories/tests/user.repository.spec.ts src/repositories/tests/user.repository.atomicity.spec.ts src/services/tests/admin-bootstrap.service.spec.ts src/modules/platform-operations/customer-admin.service.spec.ts src/app.user-management.spec.ts src/services/tests/user.service.spec.ts
-          cd ../frontend && npm ci && npx prettier --write src/App.spec.tsx src/pages/LoginPage.spec.tsx
-      - name: Commit repairs
+          cd backend
+          npm ci
+          npx prettier --write src/app.user-management.spec.ts
+          npm run typecheck
+          npm run build
+          npm run lint
+          npm run format:check
+          npm test -- --run
+      - name: Frontend validation
+        run: |
+          cd frontend
+          npm ci
+          npx prettier --write src/pages/LoginPage.tsx
+          npm run typecheck
+          npm run lint
+          npm run format:check
+          npm test -- --run
+      - name: Commit verified fixes
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add backend frontend
+          git add backend/src/app.user-management.spec.ts frontend/src/pages/LoginPage.tsx
           git diff --cached --quiet && exit 0
-          git commit -m "test(auth): align recovery fixtures with migration 028"
+          git commit -m "test(auth): fix final recovery validation failures"
           git push origin HEAD:feat/auth-password-recovery
