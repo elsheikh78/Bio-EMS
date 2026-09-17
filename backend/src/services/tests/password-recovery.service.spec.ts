@@ -28,9 +28,7 @@ const user = (overrides: Partial<User> = {}): User => ({
   ...overrides,
 });
 
-const request = (
-  overrides: Partial<PasswordRecoveryRequest> = {},
-): PasswordRecoveryRequest => ({
+const request = (overrides: Partial<PasswordRecoveryRequest> = {}): PasswordRecoveryRequest => ({
   request_id: REQUEST_ID,
   principal_type: "USER",
   principal_id: 7,
@@ -61,7 +59,7 @@ describe("PasswordRecoveryService customer recovery", () => {
   };
   const service = new PasswordRecoveryService(
     users as unknown as UserRepository,
-    recovery as unknown as PasswordRecoveryRepository,
+    recovery as unknown as PasswordRecoveryRepository
   );
 
   beforeEach(() => {
@@ -92,7 +90,7 @@ describe("PasswordRecoveryService customer recovery", () => {
     expect(service.requestCustomerRecovery(" Operator ")).toMatchObject({ accepted: true });
     expect(users.findByUsername).toHaveBeenCalledWith("operator");
     expect(recovery.createUserRequest).toHaveBeenCalledWith(
-      expect.objectContaining({ principalId: 7, usernameHint: "operator" }),
+      expect.objectContaining({ principalId: 7, usernameHint: "operator" })
     );
     expect(recovery.recordAudit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -102,7 +100,7 @@ describe("PasswordRecoveryService customer recovery", () => {
         principalId: 7,
         actorType: "PUBLIC",
         outcome: "SUCCESS",
-      }),
+      })
     );
   });
 
@@ -124,13 +122,13 @@ describe("PasswordRecoveryService customer recovery", () => {
     users.updatePasswordHash.mockReturnValue(user({ password_change_required: 1 }));
 
     await expect(
-      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3),
+      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3)
     ).resolves.toEqual({ request_id: REQUEST_ID, principal_id: 7, status: "CONSUMED" });
 
     expect(users.updatePasswordHash).toHaveBeenCalledWith(
       7,
       expect.stringMatching(/^\$2[aby]\$12\$/),
-      true,
+      true
     );
     expect(recovery.consume).toHaveBeenCalledWith(REQUEST_ID);
     expect(recovery.recordAudit).toHaveBeenCalledWith({
@@ -148,7 +146,7 @@ describe("PasswordRecoveryService customer recovery", () => {
     recovery.findPendingUserRequest.mockReturnValue(undefined);
 
     await expect(
-      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3),
+      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3)
     ).rejects.toMatchObject({
       statusCode: 404,
       code: "PASSWORD_RECOVERY_REQUEST_NOT_FOUND",
@@ -162,7 +160,7 @@ describe("PasswordRecoveryService customer recovery", () => {
     users.findById.mockReturnValue(user({ role: "ADMIN" }));
 
     await expect(
-      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3),
+      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3)
     ).rejects.toMatchObject({ statusCode: 403, code: "ADMIN_MANAGED_BY_SYSTEM_OWNER" });
     expect(users.updatePasswordHash).not.toHaveBeenCalled();
     expect(recovery.consume).not.toHaveBeenCalled();
@@ -173,7 +171,7 @@ describe("PasswordRecoveryService customer recovery", () => {
     users.findById.mockReturnValue(user({ status: "disabled" }));
 
     await expect(
-      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3),
+      service.resetCustomerPasswordFromRecoveryRequest(REQUEST_ID, NEW_PASSWORD, 3)
     ).rejects.toMatchObject({ statusCode: 409, code: "USER_NOT_ACTIVE" });
     expect(users.updatePasswordHash).not.toHaveBeenCalled();
     expect(recovery.consume).not.toHaveBeenCalled();
