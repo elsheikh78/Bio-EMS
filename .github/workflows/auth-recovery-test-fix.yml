@@ -1,4 +1,4 @@
-name: Auth recovery final validation
+name: Auth recovery exact formatter
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  repair-and-validate:
+  format-and-validate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -20,63 +20,25 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - name: Restore accidentally replaced test and apply only evidenced fixes
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+      - name: Apply project Prettier to recovery rate limiter
+        working-directory: backend
+        run: npx prettier --write src/middleware/password-recovery-rate-limit.middleware.ts
+      - name: Validate backend
+        working-directory: backend
         run: |
-          git checkout 01a08408683553681f24f0e5947cc64b75c81604 -- backend/src/app.user-management.spec.ts
-          python3 - <<'PY'
-          from pathlib import Path
-
-          p = Path('backend/src/app.user-management.spec.ts')
-          s = p.read_text()
-          old = '''    expect(passwordAudit).toMatchObject({
-      result: "SUCCESS",
-      previous_values_json: null,
-      new_values_json: null,
-    });'''
-          new = '''    expect(passwordAudit).toMatchObject({
-      result: "SUCCESS",
-      previous_values_json: null,
-      new_values_json: JSON.stringify({ password_change_required: "[REDACTED]" }),
-    });'''
-          if old not in s:
-              raise SystemExit('expected password audit assertion not found')
-          p.write_text(s.replace(old, new, 1))
-
-          p = Path('frontend/src/pages/LoginPage.tsx')
-          s = p.read_text()
-          for field in ('username', 'password'):
-              marker = f'id="{field}"'
-              if marker not in s:
-                  raise SystemExit(f'{marker} not found')
-              replacement = marker + '\n                aria-describedby={failure ? "login-error" : undefined}'
-              if 'aria-describedby={failure ? "login-error" : undefined}' not in s[s.index(marker):s.index(marker)+180]:
-                  s = s.replace(marker, replacement, 1)
-          p.write_text(s)
-          PY
-      - name: Backend validation
-        run: |
-          cd backend
-          npm ci
-          npx prettier --write src/app.user-management.spec.ts
           npm run typecheck
           npm run build
           npm run lint
           npm run format:check
           npm test -- --run
-      - name: Frontend validation
-        run: |
-          cd frontend
-          npm ci
-          npx prettier --write src/pages/LoginPage.tsx
-          npm run typecheck
-          npm run lint
-          npm run format:check
-          npm test -- --run
-      - name: Commit verified fixes
+      - name: Commit exact formatter output
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add backend/src/app.user-management.spec.ts frontend/src/pages/LoginPage.tsx
+          git add backend/src/middleware/password-recovery-rate-limit.middleware.ts
           git diff --cached --quiet && exit 0
-          git commit -m "test(auth): fix final recovery validation failures"
+          git commit -m "style(auth): apply project prettier to recovery rate limiter"
           git push origin HEAD:feat/auth-password-recovery
