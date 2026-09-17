@@ -2,7 +2,7 @@ import { generateKeyPairSync, randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
-import { migration027 } from "../../../database/sqlite/migrations/027_create_password_recovery_domain";
+import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery_domain";
 import { hashPassword } from "../../services/password.service";
 import {
   applyOwnerRecovery,
@@ -34,7 +34,7 @@ describe("system owner recovery", () => {
   beforeEach(async () => {
     database = new Database(":memory:");
     migration009.up(database);
-    migration027.up(database);
+    migration028.up(database);
     database
       .prepare(
         `INSERT INTO platform_principals (id, principal_type, username, password_hash, status, mfa_enabled, failed_login_count, session_version, created_at, updated_at) VALUES (?, 'SYSTEM_OWNER', 'system-owner', ?, 'active', 1, 3, 7, ?, ?)`
