@@ -1,4 +1,4 @@
-name: Auth recovery exact formatter
+name: Auth recovery exact repair
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  format-and-validate:
+  repair-and-validate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -20,12 +20,28 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - name: Repair authorization fixture for recovery route
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'backend/src/routes/tests/route.authorization.spec.ts';
+          let source = fs.readFileSync(path, 'utf8');
+          const mockNeedle = '  createUser: controller,\n  listUsers: controller,';
+          const mockReplacement = '  createUser: controller,\n  listPendingPasswordRecoveryRequests: controller,\n  listUsers: controller,';
+          if (!source.includes(mockNeedle)) throw new Error('Expected user controller mock fixture not found');
+          source = source.replace(mockNeedle, mockReplacement);
+          const routeNeedle = '  userRoute("get", "/users", "/"),';
+          const routeReplacement = '  userRoute("get", "/users", "/"),\n  userRoute("get", "/users/password-recovery/requests", "/password-recovery/requests"),';
+          if (!source.includes(routeNeedle)) throw new Error('Expected user route inventory fixture not found');
+          source = source.replace(routeNeedle, routeReplacement);
+          fs.writeFileSync(path, source);
+          NODE
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
-      - name: Apply project Prettier to recovery rate limiter
+      - name: Apply project formatter
         working-directory: backend
-        run: npx prettier --write src/middleware/password-recovery-rate-limit.middleware.ts
+        run: npx prettier --write src/routes/tests/route.authorization.spec.ts
       - name: Validate backend
         working-directory: backend
         run: |
@@ -34,11 +50,11 @@ jobs:
           npm run lint
           npm run format:check
           npm test -- --run
-      - name: Commit exact formatter output
+      - name: Commit validated repair
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add backend/src/middleware/password-recovery-rate-limit.middleware.ts
+          git add backend/src/routes/tests/route.authorization.spec.ts
           git diff --cached --quiet && exit 0
-          git commit -m "style(auth): apply project prettier to recovery rate limiter"
+          git commit -m "test(auth): cover admin recovery request authorization"
           git push origin HEAD:feat/auth-password-recovery
