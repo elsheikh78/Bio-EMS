@@ -9,6 +9,7 @@ export const storedAuthenticationSessionSchema = z
     accessToken: z.string().min(1),
     tokenType: z.literal("bearer"),
     expiresAt: z.number().int().positive().safe(),
+    passwordChangeRequired: z.boolean().default(false),
     user: authenticatedUserSchema,
   })
   .strict();
@@ -32,6 +33,7 @@ export function createStoredAuthenticationSession(
     accessToken: response.access_token,
     tokenType: response.token_type,
     expiresAt: responseReceivedAt + response.expires_in * 1000,
+    passwordChangeRequired: response.password_change_required,
     user: response.user,
   });
 }
@@ -48,15 +50,10 @@ export function createAuthenticationStorageAdapter(
     }
   };
 
-  const parse = (
-    raw: string | null,
-  ): StoredAuthenticationSession | undefined => {
+  const parse = (raw: string | null): StoredAuthenticationSession | undefined => {
     if (raw === null) return undefined;
-
     try {
-      const result = storedAuthenticationSessionSchema.safeParse(
-        JSON.parse(raw),
-      );
+      const result = storedAuthenticationSessionSchema.safeParse(JSON.parse(raw));
       if (!result.success || result.data.expiresAt <= now()) {
         clear();
         return undefined;
@@ -71,33 +68,21 @@ export function createAuthenticationStorageAdapter(
   return {
     clear,
     read() {
-      try {
-        return parse(getStorage().getItem(AUTHENTICATION_SESSION_KEY));
-      } catch {
-        clear();
-        return undefined;
-      }
+      try { return parse(getStorage().getItem(AUTHENTICATION_SESSION_KEY)); }
+      catch { clear(); return undefined; }
     },
     write(session) {
       const validation = storedAuthenticationSessionSchema.safeParse(session);
-      if (!validation.success || validation.data.expiresAt <= now()) {
-        clear();
-        return false;
-      }
-
+      if (!validation.success || validation.data.expiresAt <= now()) { clear(); return false; }
       try {
         const serialized = JSON.stringify(validation.data);
         const storage = getStorage();
         storage.setItem(AUTHENTICATION_SESSION_KEY, serialized);
         const persisted = parse(storage.getItem(AUTHENTICATION_SESSION_KEY));
-        const verified =
-          persisted !== undefined && JSON.stringify(persisted) === serialized;
+        const verified = persisted !== undefined && JSON.stringify(persisted) === serialized;
         if (!verified) clear();
         return verified;
-      } catch {
-        clear();
-        return false;
-      }
+      } catch { clear(); return false; }
     },
   };
 }
