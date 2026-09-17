@@ -46,7 +46,9 @@ export class PasswordRecoveryService {
   }
 
   listPendingCustomerRecoveryRequests(): SafePasswordRecoveryRequest[] {
-    return this.recovery.listPendingUserRequests().map(({ challenge_hash: _challengeHash, ...request }) => request);
+    return this.recovery
+      .listPendingUserRequests()
+      .map(({ challenge_hash: _challengeHash, ...request }) => request);
   }
 
   async resetCustomerPasswordFromRecoveryRequest(
@@ -66,7 +68,11 @@ export class PasswordRecoveryService {
     return sqlite.transaction(() => {
       const request = this.recovery.findPendingUserRequest(requestId);
       if (!request || request.principal_id === null) {
-        throw new AppError("Password recovery request not found", 404, "PASSWORD_RECOVERY_REQUEST_NOT_FOUND");
+        throw new AppError(
+          "Password recovery request not found",
+          404,
+          "PASSWORD_RECOVERY_REQUEST_NOT_FOUND"
+        );
       }
 
       const user = this.users.findById(request.principal_id);
