@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration003 } from "../../../database/sqlite/migrations/003_create_users";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
 import { migration019 } from "../../../database/sqlite/migrations/019_create_customer_ownership";
+import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";
 import { UserRepository } from "../../repositories/user.repository";
 import {
   bootstrapAdmin,
@@ -23,6 +24,7 @@ describe("secure ADMIN bootstrap", () => {
     migration003.up(database);
     migration018.up(database);
     migration019.up(database);
+    migration028.up(database);
     repository = new UserRepository(database);
     messages = [];
   });

@@ -88,6 +88,7 @@ describe("UserService recovery behavior", () => {
   });
   it("maps last-active-admin repository protection", async () => {
     const { repository, service } = dependencies();
+    repository.findById.mockReturnValue(user({ id: 2, role: "VIEWER" }));
     repository.updateStatus.mockImplementation(() => {
       throw new LastActiveAdminError();
     });

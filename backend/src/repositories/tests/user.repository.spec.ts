@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration003 } from "../../../database/sqlite/migrations/003_create_users";
+import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";
 import { UserRepository } from "../user.repository";
 
 const VALID_BCRYPT_HASH = `$2b$12$${"A".repeat(53)}`;
@@ -13,6 +14,7 @@ describe("UserRepository", () => {
   beforeEach(() => {
     database = new Database(":memory:");
     migration003.up(database);
+    migration028.up(database);
     repository = new UserRepository(database);
   });
 
