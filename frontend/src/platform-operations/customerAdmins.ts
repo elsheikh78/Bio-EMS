@@ -66,3 +66,19 @@ export function useCustomerAdminStatus(customerId: number) {
     onSuccess: () => cache.invalidateQueries({ queryKey: key(customerId) }),
   });
 }
+
+export function useResetCustomerAdminPassword(customerId: number) {
+  const { apiClient } = usePlatformAuthentication();
+  return useMutation({
+    mutationFn: (input: { userId: number; password: string }) =>
+      apiClient.request(
+        `/platform-operations/customers/${customerId}/admins/${input.userId}/password`,
+        {
+          method: "PATCH",
+          auth: "protected",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: input.password }),
+        },
+      ),
+  });
+}

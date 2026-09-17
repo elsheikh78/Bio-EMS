@@ -9,8 +9,15 @@ $ErrorActionPreference = "Stop"
 $logDirectory = Join-Path $PersistentRoot "logs"
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $logPath = Join-Path $logDirectory "admin-bootstrap.log"
+New-Item -ItemType File -Path $logPath -Force | Out-Null
+$installerPrincipal = "$env:USERDOMAIN\$env:USERNAME"
+& icacls.exe $logPath /grant:r "$installerPrincipal`:R" | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Administrator bootstrap diagnostic access could not be prepared"
+}
 
 function Write-Diagnostic([string]$message) {
+    Write-Host "BIO-EMS admin bootstrap: $message"
     try {
         Add-Content -LiteralPath $logPath -Value "$(Get-Date -Format o) $message" -ErrorAction Stop
     } catch {
@@ -22,7 +29,7 @@ try {
     if (-not (Test-Path -LiteralPath $CredentialFile -PathType Leaf)) {
         throw "Administrator credential handoff is missing"
     }
-    $credentialLines = @([IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::Unicode))
+    $credentialLines = @([IO.File]::ReadAllLines($CredentialFile, [Text.Encoding]::UTF8))
     Remove-Item -LiteralPath $CredentialFile -Force
     if ($credentialLines.Count -ne 3) {
         throw "Administrator credential handoff is invalid"
@@ -46,11 +53,40 @@ try {
 
     $env:BIOEMS_SQLITE_PATH = Join-Path $PersistentRoot "data\bioems.db"
     Stop-Service -Name "BIOEMS-Backend" -Force -ErrorAction Stop
-    Write-Diagnostic "starting one-time customer administrator bootstrap"
-    & $nodes[0].FullName $script
+    $dataDirectory = Join-Path $PersistentRoot "data"
+    & icacls.exe $dataDirectory /grant:r "BUILTIN\Administrators:(OI)(CI)F" | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        throw "Administrator bootstrap command failed with exit code $LASTEXITCODE"
+        throw "Administrator database access could not be prepared"
     }
+    Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*" -File -ErrorAction Stop |
+        ForEach-Object {
+            & takeown.exe /F $_.FullName /A | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Administrator database-file ownership could not be prepared"
+            }
+            & icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\Administrators:F" "NT SERVICE\BIOEMS-Backend:M" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Administrator database-file access could not be prepared"
+            }
+        }
+    Write-Diagnostic "starting one-time customer administrator bootstrap"
+    $bootstrapOutput = @(& $nodes[0].FullName $script 2>&1)
+    $bootstrapExitCode = $LASTEXITCODE
+    $bootstrapOutput | ForEach-Object { Write-Diagnostic "node: $_" }
+    if ($bootstrapExitCode -ne 0) {
+        throw "Administrator bootstrap command failed with exit code $bootstrapExitCode"
+    }
+    Get-ChildItem -LiteralPath $dataDirectory -Filter "bioems.db*" -File -ErrorAction Stop |
+        ForEach-Object {
+            & icacls.exe $_.FullName /inheritance:r /grant:r "SYSTEM:F" "BUILTIN\Administrators:F" "NT SERVICE\BIOEMS-Backend:M" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Backend database-file access could not be restored"
+            }
+            & icacls.exe $_.FullName /setowner "SYSTEM" | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Backend database-file ownership could not be restored"
+            }
+        }
     Write-Diagnostic "customer administrator bootstrap completed"
 }
 catch {

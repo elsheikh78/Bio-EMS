@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration003 } from "../../../database/sqlite/migrations/003_create_users";
+import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
+import { migration019 } from "../../../database/sqlite/migrations/019_create_customer_ownership";
 import { UserRepository } from "../../repositories/user.repository";
 import {
   bootstrapAdmin,
@@ -19,6 +21,8 @@ describe("secure ADMIN bootstrap", () => {
   beforeEach(() => {
     database = new Database(":memory:");
     migration003.up(database);
+    migration018.up(database);
+    migration019.up(database);
     repository = new UserRepository(database);
     messages = [];
   });
@@ -32,7 +36,11 @@ describe("secure ADMIN bootstrap", () => {
         password: VALID_PASSWORD,
         email: "admin@example.com",
       },
-      { userRepository: repository, logger: { info: (message) => messages.push(message) } }
+      {
+        database,
+        userRepository: repository,
+        logger: { info: (message) => messages.push(message) },
+      }
     );
 
     expect(repository.findByUsername("primary.admin")).toMatchObject({
@@ -49,7 +57,21 @@ describe("secure ADMIN bootstrap", () => {
     };
     expect(stored.password_hash).not.toBe(VALID_PASSWORD);
     await expect(bcrypt.compare(VALID_PASSWORD, stored.password_hash)).resolves.toBe(true);
-    expect(messages).toEqual(["Bootstrap administrator created"]);
+    expect(
+      database
+        .prepare(
+          `SELECT c.code,c.name,b.user_id AS userId
+         FROM customer_user_bindings b
+         JOIN platform_customers c ON c.id = b.customer_id
+         WHERE b.user_id = ?`
+        )
+        .get(id)
+    ).toEqual({
+      code: "INSTALLATION-CUSTOMER",
+      name: "BIO-EMS Customer",
+      userId: id,
+    });
+    expect(messages).toEqual(["Bootstrap customer administrator created and bound"]);
     expect(messages.join(" ")).not.toContain(VALID_PASSWORD);
     expect(messages.join(" ")).not.toContain(stored.password_hash);
   });
@@ -57,7 +79,11 @@ describe("secure ADMIN bootstrap", () => {
   it("stores null when the optional email is omitted", async () => {
     await bootstrapAdmin(
       { username: "admin", password: VALID_PASSWORD },
-      { userRepository: repository, logger: { info: (message) => messages.push(message) } }
+      {
+        database,
+        userRepository: repository,
+        logger: { info: (message) => messages.push(message) },
+      }
     );
 
     expect(repository.findByUsername("admin")?.email).toBeNull();
@@ -65,6 +91,7 @@ describe("secure ADMIN bootstrap", () => {
 
   it("fails safely on repeated execution without overwriting the existing User", async () => {
     const dependencies = {
+      database,
       userRepository: repository,
       logger: { info: (message: string) => messages.push(message) },
     };
@@ -89,7 +116,11 @@ describe("secure ADMIN bootstrap", () => {
     await expect(
       bootstrapAdmin(
         { username: "different-admin", password: VALID_PASSWORD },
-        { userRepository: repository, logger: { info: (message) => messages.push(message) } }
+        {
+          database,
+          userRepository: repository,
+          logger: { info: (message) => messages.push(message) },
+        }
       )
     ).rejects.toEqual(new BootstrapAdminError());
     expect(database.prepare("SELECT COUNT(*) AS count FROM users").get()).toEqual({ count: 1 });
@@ -116,6 +147,8 @@ describe("secure ADMIN bootstrap", () => {
       username: " Admin ",
       password: ` ${VALID_PASSWORD} `,
       email: "admin@example.com",
+      customerCode: "INSTALLATION-CUSTOMER",
+      customerName: "BIO-EMS Customer",
     });
   });
 
@@ -123,7 +156,11 @@ describe("secure ADMIN bootstrap", () => {
     await expect(
       bootstrapAdmin(
         { username: "invalid user", password: VALID_PASSWORD },
-        { userRepository: repository, logger: { info: (message) => messages.push(message) } }
+        {
+          database,
+          userRepository: repository,
+          logger: { info: (message) => messages.push(message) },
+        }
       )
     ).rejects.toEqual(new BootstrapAdminError());
 
@@ -137,7 +174,11 @@ describe("secure ADMIN bootstrap", () => {
     await expect(
       bootstrapAdmin(
         { username: "admin", password },
-        { userRepository: repository, logger: { info: (message) => messages.push(message) } }
+        {
+          database,
+          userRepository: repository,
+          logger: { info: (message) => messages.push(message) },
+        }
       )
     ).rejects.toEqual(new BootstrapAdminError());
 

@@ -31,7 +31,7 @@ const auth = (id: number) => ({
 
 describe("Admin User Management application boundary", () => {
   beforeEach(() => {
-    database.exec("DELETE FROM users");
+    database.exec("DELETE FROM users; DELETE FROM platform_principals");
     insert(1, "admin", "ADMIN");
     insert(2, "operator", "OPERATOR");
     insert(3, "viewer", "VIEWER");
@@ -42,6 +42,46 @@ describe("Admin User Management application boundary", () => {
     const response = await request(app).get("/api/v1/users").set(auth(1)).expect(200);
     expect(response.body.map((item: { id: number }) => item.id)).toEqual([1, 2, 3]);
     expect(JSON.stringify(response.body)).not.toMatch(/password_hash|password|\$2b\$/i);
+  });
+
+  it("keeps SYSTEM_OWNER invisible and unmanageable from every customer Admin user API", async () => {
+    database
+      .prepare(
+        `INSERT INTO platform_principals
+          (id, principal_type, username, password_hash, status)
+         VALUES (?, 'SYSTEM_OWNER', ?, ?, 'active')`
+      )
+      .run("owner-id", "manufacturer-owner", hash);
+
+    const listed = await request(app).get("/api/v1/users").set(auth(1)).expect(200);
+    expect(listed.body).toHaveLength(3);
+    expect(JSON.stringify(listed.body)).not.toContain("manufacturer-owner");
+
+    await request(app)
+      .post("/api/v1/users")
+      .set(auth(1))
+      .send({
+        username: "forged-owner",
+        password: "StrongPassword1",
+        role: "SYSTEM_OWNER",
+      })
+      .expect(400);
+    await request(app)
+      .patch("/api/v1/users/3")
+      .set(auth(1))
+      .send({ role: "SYSTEM_OWNER" })
+      .expect(400);
+    await request(app)
+      .put("/api/v1/users/owner-id/password")
+      .set(auth(1))
+      .send({ password: "ReplacementPass1" })
+      .expect(400);
+
+    expect(
+      database
+        .prepare("SELECT username, status FROM platform_principals WHERE id = ?")
+        .get("owner-id")
+    ).toEqual({ username: "manufacturer-owner", status: "active" });
   });
 
   it.each([

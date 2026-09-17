@@ -37,6 +37,7 @@ Name: "{commonappdata}\BIO-EMS\licensing"
 
 [Files]
 Source: "{#StageRoot}\package-manifest.json"; DestDir: "{app}\manifest"; Flags: ignoreversion notimestamp
+Source: "{#StageRoot}\payload\manufacturer-owner-trust.json"; DestDir: "{commonappdata}\BIO-EMS\licensing"; Flags: ignoreversion notimestamp skipifsourcedoesntexist
 Source: "{#StageRoot}\payload\backend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\frontend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencryption
@@ -56,13 +57,15 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\\runtime\\node' -Force"""; StatusMsg: "Extracting Node.js runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated logoutput; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated logoutput; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
 Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode Uninstall -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; Flags: runhidden waituntilterminated; RunOnceId: "BIOEMSRetainData"
+; Uninstall lifecycle is executed from InitializeUninstall below so a non-zero
+; lifecycle exit code can abort removal instead of Inno continuing and reporting
+; a false successful uninstall.
 
 [Icons]
 Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
@@ -76,6 +79,38 @@ var
   ExistingInstallAtStart: Boolean;
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
+
+function InitializeUninstall(): Boolean;
+var
+  ResultCode: Integer;
+  ScriptPath: String;
+  Params: String;
+begin
+  Result := False;
+  ScriptPath := ExpandConstant('{app}\installer\Invoke-DEP0105Lifecycle.ps1');
+
+  if not FileExists(ScriptPath) then begin
+    MsgBox('BIO-EMS uninstall lifecycle script is missing. Removal has been stopped to protect customer data.', mbError, MB_OK);
+    Exit;
+  end;
+
+  Params :=
+    '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath +
+    '" -Mode Uninstall -ApplicationRoot "' + ExpandConstant('{app}') +
+    '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"';
+
+  if (not Exec('powershell.exe', Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode)) or
+     (ResultCode <> 0) then begin
+    MsgBox(
+      'BIO-EMS uninstall preparation failed (exit code ' + IntToStr(ResultCode) +
+      '). Removal has been stopped. Customer data has not been intentionally deleted.',
+      mbError, MB_OK
+    );
+    Exit;
+  end;
+
+  Result := True;
+end;
 
 function HasUppercase(const Value: String): Boolean;
 var I: Integer;
@@ -184,7 +219,11 @@ end;
 
 function ShouldInitializeAdmin(): Boolean;
 begin
-  Result := IsFreshInstall() and (not WizardSilent);
+  Result := IsFreshInstall() and (
+    (not WizardSilent) or
+    ((Trim(GetEnv('BIOEMS_CI_ADMIN_USERNAME')) <> '') and
+     (GetEnv('BIOEMS_CI_ADMIN_PASSWORD') <> ''))
+  );
 end;
 
 function WasExistingInstall(): Boolean;

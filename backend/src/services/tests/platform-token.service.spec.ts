@@ -31,6 +31,7 @@ describe("platform JWT access-token service", () => {
       "principal_kind",
       "principal_type",
       "sub",
+      "token_purpose",
     ]);
     expect(payload).toMatchObject({
       sub: "system-owner",
@@ -38,6 +39,7 @@ describe("platform JWT access-token service", () => {
       aud: "bio-ems-platform-api",
       principal_kind: "platform",
       principal_type: "SYSTEM_OWNER",
+      token_purpose: "ACCESS",
     });
     expect(payload.iat).toBeUndefined();
     expect(issued.expiresIn).toBe(900);
@@ -55,6 +57,30 @@ describe("platform JWT access-token service", () => {
     expect(() => service.verifyAccessToken(signToken({ principal_type: "ADMIN" }))).toThrow();
     expect(() => service.verifyAccessToken(signToken({ principal_kind: "customer" }))).toThrow();
     expect(() => service.verifyAccessToken(signToken({}, { audience: "bio-ems-api" }))).toThrow();
+  });
+
+  it("keeps MFA enrollment and full access token purposes mutually exclusive", () => {
+    const service = new PlatformTokenService(configuration);
+    const access = service.issueAccessToken(owner, "session-id");
+    const enrollment = service.issueMfaEnrollmentToken(owner);
+
+    expect(service.verifyMfaEnrollmentToken(enrollment.enrollmentToken)).toEqual({
+      principalId: "system-owner",
+      principalType: "SYSTEM_OWNER",
+    });
+    expect(enrollment.expiresIn).toBe(300);
+    const support = service.issueSupportToken(owner, "grant-id", 7, 1800);
+
+    expect(service.verifySupportToken(support.supportToken)).toEqual({
+      principalId: "system-owner",
+      principalType: "SYSTEM_OWNER",
+      grantId: "grant-id",
+      siteId: 7,
+    });
+    expect(() => service.verifyAccessToken(enrollment.enrollmentToken)).toThrow();
+    expect(() => service.verifyAccessToken(support.supportToken)).toThrow();
+    expect(() => service.verifyMfaEnrollmentToken(access.accessToken)).toThrow();
+    expect(() => service.verifySupportToken(access.accessToken)).toThrow();
   });
 
   it("does not accept a customer JWT signed for the customer trust domain", () => {
@@ -81,6 +107,7 @@ function signToken(
     {
       principal_kind: "platform",
       principal_type: "SYSTEM_OWNER",
+      token_purpose: "ACCESS",
       ...overrides,
     },
     configuration.secret,

@@ -11,7 +11,10 @@ param(
     [string]$SourceCommit,
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')]
-    [string]$BuildTimestamp
+    [string]$BuildTimestamp,
+    [ValidateSet("Pilot", "Production")]
+    [string]$ReleaseChannel = "Pilot",
+    [string]$OwnerTrustKeyring
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,6 +31,48 @@ if (Test-Path -LiteralPath $staging) {
     Remove-Item -LiteralPath $staging -Recurse -Force
 }
 New-Item -ItemType Directory -Path (Join-Path $staging "payload") -Force | Out-Null
+
+$ownerTrustArtifact = $null
+if ($ReleaseChannel -eq "Production") {
+    if ([string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
+        throw "Production staging requires an owner commissioning trust keyring"
+    }
+    $keyringPath = [System.IO.Path]::GetFullPath($OwnerTrustKeyring)
+    if (-not (Test-Path -LiteralPath $keyringPath -PathType Leaf)) {
+        throw "Owner commissioning trust keyring was not found"
+    }
+    $keyring = Get-Content -LiteralPath $keyringPath -Raw | ConvertFrom-Json
+    if ($keyring.schemaVersion -ne 1 -or -not $keyring.keys -or $keyring.keys.Count -lt 1) {
+        throw "Invalid owner commissioning trust keyring"
+    }
+    $keyIds = @{}
+    $activeKeys = 0
+    foreach ($key in $keyring.keys) {
+        $validKeyId = $key.keyId -match "^[a-zA-Z0-9][a-zA-Z0-9._-]{2,63}$"
+        $validPublicKey = -not [string]::IsNullOrWhiteSpace($key.publicKeyPem) -and
+            $key.publicKeyPem -match "-----BEGIN PUBLIC KEY-----"
+        $validStatus = @("active", "revoked") -contains $key.status
+        if (-not $validKeyId -or -not $validPublicKey -or -not $validStatus -or $keyIds.ContainsKey($key.keyId)) {
+            throw "Invalid owner commissioning trust key entry"
+        }
+        $keyIds[$key.keyId] = $true
+        if ($key.status -eq "active") { $activeKeys++ }
+    }
+    if ($activeKeys -lt 1) {
+        throw "Production trust keyring requires at least one active key"
+    }
+    $trustRelativePath = "payload/manufacturer-owner-trust.json"
+    Copy-Item -LiteralPath $keyringPath -Destination (Join-Path $staging $trustRelativePath)
+    $ownerTrustArtifact = [ordered]@{
+        id = "owner-commissioning-trust"
+        version = "1"
+        relativePath = $trustRelativePath
+        redistributionEvidence = "BIO-EMS-MANUFACTURER-PUBLIC-KEYS"
+    }
+}
+elseif (-not [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
+    throw "Pilot staging must not embed the Production owner trust keyring"
+}
 
 function Invoke-Npm([string]$WorkingDirectory, [string[]]$Arguments) {
     & npm @Arguments --prefix $WorkingDirectory
@@ -86,6 +131,9 @@ $artifacts = @(
     [ordered]@{ id = "backend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/backend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
     [ordered]@{ id = "frontend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/frontend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" }
 )
+if ($null -ne $ownerTrustArtifact) {
+    $artifacts += $ownerTrustArtifact
+}
 foreach ($input in $lock.inputs) {
     $source = Join-Path $vendor $input.fileName
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing vendor input: $($input.id)" }
@@ -104,6 +152,7 @@ $manifest = [ordered]@{
     product = "BIO-EMS"
     productVersion = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim()
     architecture = "x64"
+    releaseChannel = $ReleaseChannel
     installerTechnology = "Inno Setup 6"
     generatedAt = $BuildTimestamp
     sourceCommit = $SourceCommit

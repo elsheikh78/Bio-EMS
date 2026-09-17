@@ -226,3 +226,32 @@ BIO-EMS Pilot is ready for controlled customer deployment only when:
 - no open Severity-1 Pilot blocker remains.
 
 Commercial-production readiness is a later gate and additionally requires deferred security/protection and production-signing qualification.
+
+
+## 14. Audit addendum — 16 September 2026
+
+This addendum supersedes only current-status/next-action statements from the 11 September audit; historical evidence remains unchanged.
+
+### Repository and integration state
+
+- Authoritative `main`: `653a573584122a2fa72e4e762d8f0337ae0f6712` (PR #231 merged: customer ADMIN provisioning during Setup).
+- SEC-OWNER-01: source implemented on PR #233; Production acceptance and merge remain gated by the real manufacturer Ed25519 public keyring, matching offline-held private key commissioning exercise, and recorded Production security review.
+- COM-01 through COM-06: source implemented on draft PR #235, stacked on SEC-OWNER; CI #1021 and Internal Windows Setup #330 passed.
+- COM-07: live external acceptance remains open.
+- Product source version remains `0.20.0`; no new Release is created by this audit.
+
+### 16 September physical Pilot evidence
+
+A clean Pilot installation from commit `e48bba4` verified Setup integrity against its published SHA-256 list, installation of the three BIO-EMS Windows services, successful customer `admin / ADMIN` login, and the expected absence of automatic SYSTEM_OWNER creation. The actual generated password is intentionally excluded from repository documentation.
+
+### Correct next start point
+
+1. Complete the manufacturer key ceremony exactly as documented, outside GitHub/CI/customer machines.
+2. Execute end-to-end SEC-OWNER commissioning with the offline-held private key and retain security evidence.
+3. Close the SEC-OWNER merge/Production gate only after that evidence passes.
+4. Execute COM-07 live provider/hardware acceptance.
+5. Finish installer lifecycle and second-clean-PC qualification.
+6. Execute hardware bench qualification.
+7. Proceed to BIO EGYPT field commissioning/UAT and stabilization.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
