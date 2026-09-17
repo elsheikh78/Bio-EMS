@@ -143,8 +143,6 @@ export function LoginPage() {
           </Alert>
         ) : null}
         <TextField
-          aria-describedby={failure && !recovering ? "login-error" : undefined}
-          aria-invalid={failure && !recovering ? true : undefined}
           autoComplete="username"
           disabled={loginPending || recoveryPending}
           fullWidth
@@ -153,12 +151,17 @@ export function LoginPage() {
           name="username"
           onChange={(event) => setUsername(event.target.value)}
           required
+          slotProps={{
+            htmlInput: {
+              "aria-describedby":
+                failure && !recovering ? "login-error" : undefined,
+              "aria-invalid": failure && !recovering ? true : undefined,
+            },
+          }}
           value={username}
         />
         {!recovering ? (
           <TextField
-            aria-describedby={failure ? "login-error" : undefined}
-            aria-invalid={failure ? true : undefined}
             autoComplete="current-password"
             disabled={loginPending}
             fullWidth
@@ -167,6 +170,12 @@ export function LoginPage() {
             name="password"
             onChange={(event) => setPassword(event.target.value)}
             required
+            slotProps={{
+              htmlInput: {
+                "aria-describedby": failure ? "login-error" : undefined,
+                "aria-invalid": failure ? true : undefined,
+              },
+            }}
             type="password"
             value={password}
           />
