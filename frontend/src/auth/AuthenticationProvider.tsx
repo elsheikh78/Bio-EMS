@@ -276,7 +276,9 @@ class AuthenticationController {
       this.queryClient.clear();
       try {
         await cancellation;
-      } catch {}
+      } catch {
+        // Query cancellation failures must not block authentication cleanup.
+      }
       if (!this.disposed && this.generation === cleanupGeneration)
         this.queryClient.clear();
     })();
