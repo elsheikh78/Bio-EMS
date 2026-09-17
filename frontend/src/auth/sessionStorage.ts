@@ -14,26 +14,30 @@ export const storedAuthenticationSessionSchema = z
   })
   .strict();
 
-export type StoredAuthenticationSession = z.infer<
+export type StoredAuthenticationSession = z.input<
+  typeof storedAuthenticationSessionSchema
+>;
+
+type NormalizedAuthenticationSession = z.output<
   typeof storedAuthenticationSessionSchema
 >;
 
 export interface AuthenticationStorageAdapter {
   clear(): void;
-  read(): StoredAuthenticationSession | undefined;
+  read(): NormalizedAuthenticationSession | undefined;
   write(session: StoredAuthenticationSession): boolean;
 }
 
 export function createStoredAuthenticationSession(
   response: LoginResponse,
   responseReceivedAt: number,
-): StoredAuthenticationSession {
+): NormalizedAuthenticationSession {
   return storedAuthenticationSessionSchema.parse({
     version: 1,
     accessToken: response.access_token,
     tokenType: response.token_type,
     expiresAt: responseReceivedAt + response.expires_in * 1000,
-    passwordChangeRequired: response.password_change_required,
+    passwordChangeRequired: response.password_change_required ?? false,
     user: response.user,
   });
 }
@@ -50,7 +54,9 @@ export function createAuthenticationStorageAdapter(
     }
   };
 
-  const parse = (raw: string | null): StoredAuthenticationSession | undefined => {
+  const parse = (
+    raw: string | null,
+  ): NormalizedAuthenticationSession | undefined => {
     if (raw === null) return undefined;
     try {
       const result = storedAuthenticationSessionSchema.safeParse(JSON.parse(raw));
@@ -68,21 +74,32 @@ export function createAuthenticationStorageAdapter(
   return {
     clear,
     read() {
-      try { return parse(getStorage().getItem(AUTHENTICATION_SESSION_KEY)); }
-      catch { clear(); return undefined; }
+      try {
+        return parse(getStorage().getItem(AUTHENTICATION_SESSION_KEY));
+      } catch {
+        clear();
+        return undefined;
+      }
     },
     write(session) {
       const validation = storedAuthenticationSessionSchema.safeParse(session);
-      if (!validation.success || validation.data.expiresAt <= now()) { clear(); return false; }
+      if (!validation.success || validation.data.expiresAt <= now()) {
+        clear();
+        return false;
+      }
       try {
         const serialized = JSON.stringify(validation.data);
         const storage = getStorage();
         storage.setItem(AUTHENTICATION_SESSION_KEY, serialized);
         const persisted = parse(storage.getItem(AUTHENTICATION_SESSION_KEY));
-        const verified = persisted !== undefined && JSON.stringify(persisted) === serialized;
+        const verified =
+          persisted !== undefined && JSON.stringify(persisted) === serialized;
         if (!verified) clear();
         return verified;
-      } catch { clear(); return false; }
+      } catch {
+        clear();
+        return false;
+      }
     },
   };
 }
