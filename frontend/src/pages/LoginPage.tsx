@@ -81,14 +81,19 @@ export function LoginPage() {
     try {
       const authenticatedUser = await login({ username, password });
       setPassword("");
-      void navigate(resolveSafeReturnPath(location.state, authenticatedUser.role), {
-        replace: true,
-        state: { focusAfterLogin: true },
-      });
+      void navigate(
+        resolveSafeReturnPath(location.state, authenticatedUser.role),
+        {
+          replace: true,
+          state: { focusAfterLogin: true },
+        },
+      );
     } catch (error) {
       setPassword("");
       setFailure(
-        error instanceof AuthenticationFailure ? error.kind : "malformed-response",
+        error instanceof AuthenticationFailure
+          ? error.kind
+          : "malformed-response",
       );
       window.requestAnimationFrame(() => errorRef.current?.focus());
     }
