@@ -7,21 +7,14 @@
   "main": "dist/server.js",
   "author": "Ahmed A. Elsheikh",
   "license": "Proprietary",
-  "engines": {
-    "node": ">=22"
-  },
-  "keywords": [
-    "bio-ems",
-    "environmental-monitoring",
-    "temperature-monitoring",
-    "cold-room",
-    "iot"
-  ],
+  "engines": { "node": ">=22" },
+  "keywords": ["bio-ems", "environmental-monitoring", "temperature-monitoring", "cold-room", "iot"],
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
+    "recover:admin-password": "tsx src/scripts/recover-admin-password.ts",
     "licensing:provision-installation": "tsx src/scripts/provision-installation-identity.ts",
     "licensing:generate-signing-key": "tsx src/scripts/generate-license-signing-key.ts",
     "test:email-delivery": "tsx src/scripts/test-email-delivery.ts",
