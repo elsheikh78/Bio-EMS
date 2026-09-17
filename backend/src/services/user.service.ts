@@ -168,7 +168,6 @@ export class UserService {
           action: USER_AUDIT_ACTION.PASSWORD_RESET,
           target: { type: "USER", id: String(userId) },
           result: "SUCCESS",
-          newValues: { password_change_required: true },
           requestContext,
         });
         return updated;
