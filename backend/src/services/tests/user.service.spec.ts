@@ -75,9 +75,10 @@ describe("UserService recovery behavior", () => {
       expect.objectContaining({
         action: "USER.PASSWORD_RESET",
         result: "SUCCESS",
-        newValues: expect.objectContaining({ password_change_required: true }),
       })
     );
+    const successEvent = record.mock.calls.find(([event]) => event.result === "SUCCESS")?.[0];
+    expect(successEvent).not.toHaveProperty("newValues");
   });
   it("prevents customer ADMIN from resetting another ADMIN password", async () => {
     const { repository, service } = dependencies();
@@ -86,14 +87,20 @@ describe("UserService recovery behavior", () => {
       service.updatePassword(actor, 2, { password: "TemporaryPassword1" }, requestContext)
     ).rejects.toMatchObject({ code: "ADMIN_MANAGED_BY_SYSTEM_OWNER" });
   });
-  it("maps last-active-admin repository protection", async () => {
+  it("maps last-active-admin repository protection", () => {
     const { repository, service } = dependencies();
     repository.findById.mockReturnValue(user({ id: 2, role: "VIEWER" }));
     repository.updateStatus.mockImplementation(() => {
       throw new LastActiveAdminError();
     });
-    await expect(
-      service.updateStatus(actor, 2, { status: "disabled" }, requestContext)
-    ).rejects.toMatchObject({ code: "LAST_ACTIVE_ADMIN_REQUIRED" });
+
+    let thrown: unknown;
+    try {
+      service.updateStatus(actor, 2, { status: "disabled" }, requestContext);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toMatchObject({ code: "LAST_ACTIVE_ADMIN_REQUIRED" });
   });
 });
