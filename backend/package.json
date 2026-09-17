@@ -33,7 +33,10 @@
     "test:watch": "vitest --watch",
     "owner:commissioning-request": "tsx src/scripts/create-owner-commissioning-request.ts",
     "owner:commissioning-issue": "tsx src/scripts/issue-owner-commissioning-package.ts",
-    "owner:commissioning-import": "tsx src/scripts/import-owner-commissioning-package.ts"
+    "owner:commissioning-import": "tsx src/scripts/import-owner-commissioning-package.ts",
+    "owner:recovery-request": "tsx src/scripts/create-owner-recovery-request.ts",
+    "owner:recovery-issue": "tsx src/scripts/issue-owner-recovery-package.ts",
+    "owner:recovery-import": "tsx src/scripts/import-owner-recovery-package.ts"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
