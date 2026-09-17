@@ -8,6 +8,7 @@ import {
 } from "../modules/audit/customer-audit-context";
 
 const userId = (req: Request) => Number(req.params.user_id);
+const routeParam = (value: string | string[]) => (Array.isArray(value) ? value[0] : value);
 
 export const listUsers = asyncHandler(async (req: Request, res: Response) => {
   res.json(userService.listUsers(req.user!.id));
@@ -23,7 +24,7 @@ export const resetPasswordFromRecoveryRequest = asyncHandler(
   async (req: Request, res: Response) => {
     res.json(
       await passwordRecoveryService.resetCustomerPasswordFromRecoveryRequest(
-        req.params.request_id,
+        routeParam(req.params.request_id),
         req.body.password,
         req.user!.id
       )
