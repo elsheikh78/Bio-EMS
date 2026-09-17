@@ -22,6 +22,7 @@ export const loginResponseSchema = z
     access_token: z.string().min(1),
     token_type: z.literal("bearer"),
     expires_in: z.number().int().positive().finite(),
+    password_change_required: z.boolean(),
     user: authenticatedUserSchema,
   })
   .strict();
