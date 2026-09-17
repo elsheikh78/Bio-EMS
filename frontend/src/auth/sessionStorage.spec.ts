@@ -102,7 +102,8 @@ describe("versioned authentication session storage", () => {
   it("accepts a legacy v1 session without the recovery flag as false", () => {
     const storage = new MemoryStorage();
     const session = createStoredAuthenticationSession(loginResponse, 1_000);
-    const { passwordChangeRequired: _removed, ...legacy } = session;
+    const legacy = { ...session } as Partial<StoredAuthenticationSession>;
+    delete legacy.passwordChangeRequired;
     storage.setItem(AUTHENTICATION_SESSION_KEY, JSON.stringify(legacy));
     const adapter = createAuthenticationStorageAdapter(
       () => storage,
