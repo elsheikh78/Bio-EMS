@@ -45,7 +45,9 @@ describe("PasswordRecoveryPanel", () => {
 
   it("renders the empty pending-request state", () => {
     render(<PasswordRecoveryPanel />);
-    expect(screen.getByText("No pending recovery requests.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No pending recovery requests."),
+    ).toBeInTheDocument();
   });
 
   it("renders loading and retry states without exposing credentials", () => {
@@ -56,7 +58,9 @@ describe("PasswordRecoveryPanel", () => {
       refetch,
     } as unknown as ReturnType<typeof usePasswordRecoveryRequests>);
     const { rerender } = render(<PasswordRecoveryPanel />);
-    expect(screen.getByLabelText("Loading recovery requests")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Loading recovery requests"),
+    ).toBeInTheDocument();
 
     requests.mockReturnValue({
       data: undefined,
@@ -88,7 +92,9 @@ describe("PasswordRecoveryPanel", () => {
     expect(input).toHaveAttribute("type", "password");
     expect(screen.queryByText(password)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/The new password is never displayed or returned by BIO-EMS/),
+      screen.getByText(
+        /The new password is never displayed or returned by BIO-EMS/,
+      ),
     ).toBeInTheDocument();
   });
 });
