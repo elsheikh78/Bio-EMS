@@ -3,6 +3,7 @@ import {
   createUser,
   listPendingPasswordRecoveryRequests,
   listUsers,
+  resetPasswordFromRecoveryRequest,
   updateUser,
   updateUserPassword,
   updateUserStatus,
@@ -11,6 +12,7 @@ import { requireUserManagementPermission } from "../middleware/user-management-a
 import { validateBody, validateParams } from "../middleware/validate-request";
 import {
   createUserSchema,
+  passwordRecoveryRequestParamsSchema,
   updateUserPasswordSchema,
   updateUserSchema,
   updateUserStatusSchema,
@@ -25,6 +27,13 @@ router.get(
   "/password-recovery/requests",
   requireUserManagementPermission(),
   listPendingPasswordRecoveryRequests
+);
+router.post(
+  "/password-recovery/requests/:request_id/reset",
+  requireUserManagementPermission(USER_AUDIT_ACTION.PASSWORD_UPDATED),
+  validateParams(passwordRecoveryRequestParamsSchema),
+  validateBody(updateUserPasswordSchema),
+  resetPasswordFromRecoveryRequest
 );
 router.post(
   "/",
