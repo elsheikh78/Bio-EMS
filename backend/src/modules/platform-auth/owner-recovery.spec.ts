@@ -2,8 +2,8 @@ import { generateKeyPairSync, randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
+import { migration026 } from "../../../database/sqlite/migrations/026_harden_owner_access";
 import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery_domain";
-import { createTables } from "../../../database/sqlite/schema";
 import { hashPassword } from "../../services/password.service";
 import {
   applyOwnerRecovery,
@@ -34,12 +34,12 @@ describe("system owner recovery", () => {
 
   beforeEach(async () => {
     database = new Database(":memory:");
-    createTables(database);
     migration009.up(database);
+    migration026.up(database);
     migration028.up(database);
     database
       .prepare(
-        `INSERT INTO platform_principals (id, principal_type, username, password_hash, status, mfa_enabled, failed_login_count, session_version, created_at, updated_at) VALUES (?, 'SYSTEM_OWNER', 'system-owner', ?, 'active', 1, 3, 7, ?, ?)`
+        `INSERT INTO platform_principals (id, principal_type, username, password_hash, status, failed_login_count, session_version, created_at, updated_at) VALUES (?, 'SYSTEM_OWNER', 'system-owner', ?, 'active', 3, 7, ?, ?)`
       )
       .run(
         randomUUID(),
@@ -83,14 +83,13 @@ describe("system owner recovery", () => {
 
     const owner = database
       .prepare(
-        `SELECT failed_login_count, locked_until, session_version, mfa_enabled FROM platform_principals WHERE principal_type = 'SYSTEM_OWNER'`
+        `SELECT failed_login_count, locked_until, session_version FROM platform_principals WHERE principal_type = 'SYSTEM_OWNER'`
       )
       .get();
     expect(owner).toEqual({
       failed_login_count: 0,
       locked_until: null,
       session_version: 8,
-      mfa_enabled: 1,
     });
     expect(
       database
