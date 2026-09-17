@@ -81,19 +81,14 @@ export function LoginPage() {
     try {
       const authenticatedUser = await login({ username, password });
       setPassword("");
-      void navigate(
-        resolveSafeReturnPath(location.state, authenticatedUser.role),
-        {
-          replace: true,
-          state: { focusAfterLogin: true },
-        },
-      );
+      void navigate(resolveSafeReturnPath(location.state, authenticatedUser.role), {
+        replace: true,
+        state: { focusAfterLogin: true },
+      });
     } catch (error) {
       setPassword("");
       setFailure(
-        error instanceof AuthenticationFailure
-          ? error.kind
-          : "malformed-response",
+        error instanceof AuthenticationFailure ? error.kind : "malformed-response",
       );
       window.requestAnimationFrame(() => errorRef.current?.focus());
     }
@@ -143,6 +138,8 @@ export function LoginPage() {
           </Alert>
         ) : null}
         <TextField
+          aria-describedby={failure && !recovering ? "login-error" : undefined}
+          aria-invalid={failure && !recovering ? true : undefined}
           autoComplete="username"
           disabled={loginPending || recoveryPending}
           fullWidth
@@ -155,6 +152,8 @@ export function LoginPage() {
         />
         {!recovering ? (
           <TextField
+            aria-describedby={failure ? "login-error" : undefined}
+            aria-invalid={failure ? true : undefined}
             autoComplete="current-password"
             disabled={loginPending}
             fullWidth
