@@ -3,7 +3,10 @@ import type { ApiRequestOptions } from "../api/client";
 import type { AuthenticatedUser, LoginRequest } from "./contracts";
 
 export type AuthenticationStatus =
-  "bootstrapping" | "unauthenticated" | "authenticated" | "restoration-error";
+  | "bootstrapping"
+  | "unauthenticated"
+  | "authenticated"
+  | "restoration-error";
 
 export type AuthenticationFailureKind =
   | "invalid-credentials"
@@ -15,6 +18,7 @@ export type AuthenticationFailureKind =
 
 export class AuthenticationFailure extends Error {
   readonly kind: AuthenticationFailureKind;
+
   constructor(kind: AuthenticationFailureKind) {
     super("Authentication failed");
     this.name = "AuthenticationFailure";
@@ -25,13 +29,20 @@ export class AuthenticationFailure extends Error {
 export interface AuthenticationContextValue {
   status: AuthenticationStatus;
   user?: AuthenticatedUser;
-  passwordChangeRequired: boolean;
+  passwordChangeRequired?: boolean;
   loginPending: boolean;
   login: (credentials: LoginRequest) => Promise<AuthenticatedUser>;
   logout: () => Promise<void>;
   retryRestoration: () => Promise<void>;
-  completePasswordChange: (currentPassword: string, newPassword: string) => Promise<void>;
-  protectedRequest: <T>(path: `/${string}`, options?: Omit<ApiRequestOptions, "auth">) => Promise<T>;
+  completePasswordChange?: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<void>;
+  protectedRequest: <T>(
+    path: `/${string}`,
+    options?: Omit<ApiRequestOptions, "auth">,
+  ) => Promise<T>;
 }
 
-export const AuthenticationContext = createContext<AuthenticationContextValue | null>(null);
+export const AuthenticationContext =
+  createContext<AuthenticationContextValue | null>(null);
