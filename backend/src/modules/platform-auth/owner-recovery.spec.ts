@@ -1,6 +1,7 @@
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { migration003 } from "../../../database/sqlite/migrations/003_create_users";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
 import { migration026 } from "../../../database/sqlite/migrations/026_harden_owner_access";
 import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery_domain";
@@ -34,6 +35,7 @@ describe("system owner recovery", () => {
 
   beforeEach(async () => {
     database = new Database(":memory:");
+    migration003.up(database);
     migration009.up(database);
     migration026.up(database);
     migration028.up(database);
