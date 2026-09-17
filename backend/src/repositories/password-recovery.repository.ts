@@ -32,10 +32,22 @@ export class PasswordRecoveryRepository {
       .prepare(
         `INSERT INTO password_recovery_requests
          (request_id, principal_type, principal_id, username_hint, expires_at)
-         VALUES (?, 'USER', ?, ?, ?)`
+         VALUES (?, 'USER', ?, ?, ?)`,
       )
       .run(requestId, input.principalId, input.usernameHint, input.expiresAt);
     return requestId;
+  }
+
+  listPendingUserRequests(): PasswordRecoveryRequest[] {
+    return this.database
+      .prepare(
+        `SELECT request_id, principal_type, principal_id, username_hint, installation_id,
+                challenge_hash, status, requested_at, expires_at, approved_at, consumed_at
+         FROM password_recovery_requests
+         WHERE principal_type = 'USER' AND status = 'PENDING' AND expires_at > CURRENT_TIMESTAMP
+         ORDER BY requested_at ASC`,
+      )
+      .all() as PasswordRecoveryRequest[];
   }
 
   findPendingUserRequest(requestId: string): PasswordRecoveryRequest | undefined {
@@ -45,7 +57,7 @@ export class PasswordRecoveryRepository {
                 challenge_hash, status, requested_at, expires_at, approved_at, consumed_at
          FROM password_recovery_requests
          WHERE request_id = ? AND principal_type = 'USER' AND status = 'PENDING'
-         LIMIT 1`
+         LIMIT 1`,
       )
       .get(requestId) as PasswordRecoveryRequest | undefined;
   }
@@ -55,7 +67,7 @@ export class PasswordRecoveryRepository {
       .prepare(
         `UPDATE password_recovery_requests
          SET status = 'CONSUMED', consumed_at = CURRENT_TIMESTAMP
-         WHERE request_id = ? AND status IN ('PENDING', 'APPROVED') AND expires_at > CURRENT_TIMESTAMP`
+         WHERE request_id = ? AND status IN ('PENDING', 'APPROVED') AND expires_at > CURRENT_TIMESTAMP`,
       )
       .run(requestId);
     return result.changes === 1;
@@ -75,7 +87,7 @@ export class PasswordRecoveryRepository {
       .prepare(
         `INSERT INTO password_recovery_audit
          (event_type, request_id, principal_type, principal_id, actor_type, actor_id, outcome, details_json)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         input.eventType,
@@ -85,7 +97,7 @@ export class PasswordRecoveryRepository {
         input.actorType,
         input.actorId ?? null,
         input.outcome,
-        input.details ? JSON.stringify(input.details) : null
+        input.details ? JSON.stringify(input.details) : null,
       );
   }
 }
