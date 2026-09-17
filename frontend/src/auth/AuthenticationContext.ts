@@ -15,7 +15,6 @@ export type AuthenticationFailureKind =
 
 export class AuthenticationFailure extends Error {
   readonly kind: AuthenticationFailureKind;
-
   constructor(kind: AuthenticationFailureKind) {
     super("Authentication failed");
     this.name = "AuthenticationFailure";
@@ -26,15 +25,13 @@ export class AuthenticationFailure extends Error {
 export interface AuthenticationContextValue {
   status: AuthenticationStatus;
   user?: AuthenticatedUser;
+  passwordChangeRequired: boolean;
   loginPending: boolean;
   login: (credentials: LoginRequest) => Promise<AuthenticatedUser>;
   logout: () => Promise<void>;
   retryRestoration: () => Promise<void>;
-  protectedRequest: <T>(
-    path: `/${string}`,
-    options?: Omit<ApiRequestOptions, "auth">,
-  ) => Promise<T>;
+  completePasswordChange: (currentPassword: string, newPassword: string) => Promise<void>;
+  protectedRequest: <T>(path: `/${string}`, options?: Omit<ApiRequestOptions, "auth">) => Promise<T>;
 }
 
-export const AuthenticationContext =
-  createContext<AuthenticationContextValue | null>(null);
+export const AuthenticationContext = createContext<AuthenticationContextValue | null>(null);
