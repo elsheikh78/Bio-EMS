@@ -63,9 +63,9 @@ describe("local ADMIN password recovery", () => {
   });
 
   it("rejects missing recovery credentials before hashing", async () => {
-    await expect(
-      recoverAdminPassword({ BIOEMS_RECOVERY_ADMIN_USERNAME: "admin" })
-    ).rejects.toThrow("Administrator recovery credentials are required");
+    await expect(recoverAdminPassword({ BIOEMS_RECOVERY_ADMIN_USERNAME: "admin" })).rejects.toThrow(
+      "Administrator recovery credentials are required"
+    );
     expect(hashPassword).not.toHaveBeenCalled();
     expect(updatePasswordHash).not.toHaveBeenCalled();
     expect(recordAudit).not.toHaveBeenCalled();
