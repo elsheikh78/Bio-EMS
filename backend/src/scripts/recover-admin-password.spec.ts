@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const findByUsername = vi.fn();
-const updatePasswordHash = vi.fn();
-const hashPassword = vi.fn();
-const recordAudit = vi.fn();
+const { findByUsername, updatePasswordHash, hashPassword, recordAudit } = vi.hoisted(() => ({
+  findByUsername: vi.fn(),
+  updatePasswordHash: vi.fn(),
+  hashPassword: vi.fn(),
+  recordAudit: vi.fn(),
+}));
 
 vi.mock("../../database/sqlite/client", () => ({ sqlite: {} }));
 vi.mock("../repositories/user.repository", () => ({
