@@ -17,25 +17,16 @@ const authenticationRequired = () =>
   new AppError("Authentication required", 401, "AUTHENTICATION_REQUIRED");
 
 export function parseAuthorizationHeader(value: unknown): string | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
+  if (typeof value !== "string") return undefined;
   return /^Bearer +([^\s]+)$/i.exec(value)?.[1];
 }
 
 export function parseSingleAuthorizationHeader(req: Request): string | undefined {
   let authorizationHeaderCount = 0;
   for (let index = 0; index < req.rawHeaders.length; index += 2) {
-    if (req.rawHeaders[index]?.toLowerCase() === "authorization") {
-      authorizationHeaderCount += 1;
-    }
+    if (req.rawHeaders[index]?.toLowerCase() === "authorization") authorizationHeaderCount += 1;
   }
-
-  if (authorizationHeaderCount !== 1) {
-    return undefined;
-  }
-
+  if (authorizationHeaderCount !== 1) return undefined;
   return parseAuthorizationHeader(req.headers.authorization);
 }
 
@@ -50,7 +41,6 @@ export function createAuthenticationMiddleware(
     }
 
     const token = parseSingleAuthorizationHeader(req);
-
     if (!token) {
       next(authenticationRequired());
       return;
@@ -70,11 +60,7 @@ export function createAuthenticationMiddleware(
       return;
     }
 
-    req.user = {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    };
+    req.user = { id: user.id, username: user.username, role: user.role };
     next();
   };
 }
@@ -82,7 +68,8 @@ export function createAuthenticationMiddleware(
 function isPublicRequest(req: Request): boolean {
   return (
     (req.method === "GET" && req.path === "/health") ||
-    (req.method === "POST" && req.path === "/auth/login")
+    (req.method === "POST" && req.path === "/auth/login") ||
+    (req.method === "POST" && req.path === "/auth/forgot-password")
   );
 }
 
