@@ -14,23 +14,20 @@ export const storedAuthenticationSessionSchema = z
   })
   .strict();
 
-export type StoredAuthenticationSession = z.input<
-  typeof storedAuthenticationSessionSchema
->;
-export type NormalizedAuthenticationSession = z.output<
+export type StoredAuthenticationSession = z.infer<
   typeof storedAuthenticationSessionSchema
 >;
 
 export interface AuthenticationStorageAdapter {
   clear(): void;
-  read(): NormalizedAuthenticationSession | undefined;
+  read(): StoredAuthenticationSession | undefined;
   write(session: StoredAuthenticationSession): boolean;
 }
 
 export function createStoredAuthenticationSession(
   response: LoginResponse,
   responseReceivedAt: number,
-): NormalizedAuthenticationSession {
+): StoredAuthenticationSession {
   return storedAuthenticationSessionSchema.parse({
     version: 1,
     accessToken: response.access_token,
@@ -53,9 +50,7 @@ export function createAuthenticationStorageAdapter(
     }
   };
 
-  const parse = (
-    raw: string | null,
-  ): NormalizedAuthenticationSession | undefined => {
+  const parse = (raw: string | null): StoredAuthenticationSession | undefined => {
     if (raw === null) return undefined;
     try {
       const result = storedAuthenticationSessionSchema.safeParse(JSON.parse(raw));
