@@ -136,12 +136,7 @@ describe("system owner recovery", () => {
     );
 
     expect(() =>
-      verifyOwnerRecoveryPackage(
-        signed,
-        publicKey,
-        request,
-        new Date("2026-09-17T20:10:00.000Z")
-      )
+      verifyOwnerRecoveryPackage(signed, publicKey, request, new Date("2026-09-17T20:10:00.000Z"))
     ).toThrow(/not currently valid/);
 
     const verified = verifyOwnerRecoveryPackage(signed, publicKey, request, now);
