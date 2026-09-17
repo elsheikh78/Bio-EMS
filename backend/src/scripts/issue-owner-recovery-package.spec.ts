@@ -83,9 +83,7 @@ describe("offline System Owner recovery package issuance", () => {
       BIOEMS_OWNER_RECOVERY_VALIDITY_MINUTES: "15",
     };
 
-    expect(
-      await runIssueOwnerRecoveryPackage(base, new Date("2026-09-18T20:00:01.000Z"))
-    ).toBe(1);
+    expect(await runIssueOwnerRecoveryPackage(base, new Date("2026-09-18T20:00:01.000Z"))).toBe(1);
     expect(
       await runIssueOwnerRecoveryPackage(
         { ...base, BIOEMS_OWNER_RECOVERY_VALIDITY_MINUTES: "61" },
@@ -100,9 +98,7 @@ describe("offline System Owner recovery package issuance", () => {
     ).toBe(1);
 
     writeFileSync(fixture.outputPath, "existing");
-    expect(
-      await runIssueOwnerRecoveryPackage(base, new Date("2026-09-17T20:00:00.000Z"))
-    ).toBe(1);
+    expect(await runIssueOwnerRecoveryPackage(base, new Date("2026-09-17T20:00:00.000Z"))).toBe(1);
     expect(error.mock.calls.flat().join(" ")).not.toContain(base.BIOEMS_OWNER_RECOVERY_PASSWORD);
     expect(error.mock.calls.flat().join(" ")).not.toContain(fixture.privateKey);
   });
