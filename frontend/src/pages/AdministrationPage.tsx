@@ -393,7 +393,8 @@ function PasswordDialog({
     <Dialog open fullWidth onClose={mutation.isPending ? undefined : onClose}>
       <Box component="form" onSubmit={(event) => void submit(event)}>
         <DialogTitle>
-          {t("Change password for", "تغيير كلمة المرور للمستخدم")} {user.username}
+          {t("Change password for", "تغيير كلمة المرور للمستخدم")}{" "}
+          {user.username}
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
@@ -576,7 +577,7 @@ function AuditPanel() {
               {event.actor.username} ({event.actor.role}) ·{" "}
               {event.target
                 ? `${event.target.type}:${event.target.id}`
-                : t("No target", "لا يوجد هدف")} {" "}
+                : t("No target", "لا يوجد هدف")}{" "}
               · {new Date(event.occurredAt ?? event.createdAt).toLocaleString()}
             </Typography>
           </Box>
