@@ -57,6 +57,7 @@ export class PasswordRecoveryRepository {
                 challenge_hash, status, requested_at, expires_at, approved_at, consumed_at
          FROM password_recovery_requests
          WHERE request_id = ? AND principal_type = 'USER' AND status = 'PENDING'
+           AND expires_at > CURRENT_TIMESTAMP
          LIMIT 1`
       )
       .get(requestId) as PasswordRecoveryRequest | undefined;
