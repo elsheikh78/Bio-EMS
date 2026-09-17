@@ -3,6 +3,7 @@ import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../../database/sqlite/migrations/009_create_platform_principals";
 import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery_domain";
+import { createTables } from "../../../database/sqlite/schema";
 import { hashPassword } from "../../services/password.service";
 import {
   applyOwnerRecovery,
@@ -33,6 +34,7 @@ describe("system owner recovery", () => {
 
   beforeEach(async () => {
     database = new Database(":memory:");
+    createTables(database);
     migration009.up(database);
     migration028.up(database);
     database
