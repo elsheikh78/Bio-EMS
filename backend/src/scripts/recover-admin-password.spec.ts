@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { findByUsername, updatePasswordHash, hashPassword, recordAudit } = vi.hoisted(() => ({
   findByUsername: vi.fn(),
@@ -27,6 +27,10 @@ import { recoverAdminPassword } from "./recover-admin-password";
 describe("local ADMIN password recovery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    findByUsername.mockReset();
+    updatePasswordHash.mockReset();
+    hashPassword.mockReset();
+    recordAudit.mockReset();
     findByUsername.mockReturnValue({
       id: 7,
       username: "admin",
@@ -35,10 +39,6 @@ describe("local ADMIN password recovery", () => {
     });
     hashPassword.mockResolvedValue("$2b$12$recoveryhash");
     updatePasswordHash.mockReturnValue({ id: 7 });
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   it("forces a password change and records a secret-free audit event", async () => {
