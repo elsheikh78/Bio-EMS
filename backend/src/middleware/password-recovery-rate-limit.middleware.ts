@@ -12,7 +12,7 @@ type AttemptWindow = {
 
 export function createPasswordRecoveryRateLimitMiddleware(
   now: () => number = () => Date.now(),
-  attempts = new Map<string, AttemptWindow>()
+  attempts = new Map<string, AttemptWindow>(),
 ) {
   return (request: Request, response: Response, next: NextFunction): void => {
     const currentTime = now();
@@ -39,12 +39,12 @@ export function createPasswordRecoveryRateLimitMiddleware(
     if (current.count >= MAX_ATTEMPTS_PER_WINDOW) {
       response.setHeader(
         "Retry-After",
-        Math.max(1, Math.ceil((current.resetAt - currentTime) / 1000))
+        Math.max(1, Math.ceil((current.resetAt - currentTime) / 1000)),
       );
       throw new AppError(
         "Too many password recovery requests",
         429,
-        "PASSWORD_RECOVERY_RATE_LIMITED"
+        "PASSWORD_RECOVERY_RATE_LIMITED",
       );
     }
 
@@ -53,4 +53,5 @@ export function createPasswordRecoveryRateLimitMiddleware(
   };
 }
 
-export const passwordRecoveryRateLimitMiddleware = createPasswordRecoveryRateLimitMiddleware();
+export const passwordRecoveryRateLimitMiddleware =
+  createPasswordRecoveryRateLimitMiddleware();
