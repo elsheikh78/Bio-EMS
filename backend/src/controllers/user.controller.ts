@@ -19,6 +19,18 @@ export const listPendingPasswordRecoveryRequests = asyncHandler(
   }
 );
 
+export const resetPasswordFromRecoveryRequest = asyncHandler(
+  async (req: Request, res: Response) => {
+    res.json(
+      await passwordRecoveryService.resetCustomerPasswordFromRecoveryRequest(
+        req.params.request_id,
+        req.body.password,
+        req.user!.id
+      )
+    );
+  }
+);
+
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
   res
     .status(201)
