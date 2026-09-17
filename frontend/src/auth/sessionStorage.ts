@@ -17,8 +17,7 @@ export const storedAuthenticationSessionSchema = z
 export type StoredAuthenticationSession = z.input<
   typeof storedAuthenticationSessionSchema
 >;
-
-type NormalizedAuthenticationSession = z.output<
+export type NormalizedAuthenticationSession = z.output<
   typeof storedAuthenticationSessionSchema
 >;
 
