@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createUser,
+  listPendingPasswordRecoveryRequests,
   listUsers,
   updateUser,
   updateUserPassword,
@@ -20,6 +21,11 @@ import { USER_AUDIT_ACTION } from "../modules/user/user-audit";
 const router = Router();
 
 router.get("/", requireUserManagementPermission(), listUsers);
+router.get(
+  "/password-recovery/requests",
+  requireUserManagementPermission(),
+  listPendingPasswordRecoveryRequests
+);
 router.post(
   "/",
   requireUserManagementPermission(USER_AUDIT_ACTION.CREATED),
