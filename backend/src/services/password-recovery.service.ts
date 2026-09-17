@@ -1,6 +1,9 @@
 import { AppError } from "../errors/app-error";
 import { normalizeUsername } from "../entities/User";
-import { PasswordRecoveryRepository } from "../repositories/password-recovery.repository";
+import {
+  PasswordRecoveryRepository,
+  PasswordRecoveryRequest,
+} from "../repositories/password-recovery.repository";
 import { UserRepository } from "../repositories/user.repository";
 import { hashPassword, PasswordPolicyError, verifyPassword } from "./password.service";
 
@@ -37,6 +40,10 @@ export class PasswordRecoveryService {
     }
 
     return GENERIC_FORGOT_RESPONSE;
+  }
+
+  listPendingCustomerRecoveryRequests(): PasswordRecoveryRequest[] {
+    return this.recovery.listPendingUserRequests();
   }
 
   async changeOwnPassword(
