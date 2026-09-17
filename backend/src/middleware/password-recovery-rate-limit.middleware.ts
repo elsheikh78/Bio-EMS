@@ -53,5 +53,4 @@ export function createPasswordRecoveryRateLimitMiddleware(
   };
 }
 
-export const passwordRecoveryRateLimitMiddleware =
-  createPasswordRecoveryRateLimitMiddleware();
+export const passwordRecoveryRateLimitMiddleware = createPasswordRecoveryRateLimitMiddleware();
