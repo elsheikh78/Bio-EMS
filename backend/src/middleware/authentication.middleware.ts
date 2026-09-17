@@ -15,6 +15,8 @@ export interface AuthenticationUserRepository {
 
 const authenticationRequired = () =>
   new AppError("Authentication required", 401, "AUTHENTICATION_REQUIRED");
+const passwordChangeRequired = () =>
+  new AppError("Password change required", 403, "PASSWORD_CHANGE_REQUIRED");
 
 export function parseAuthorizationHeader(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
@@ -61,6 +63,12 @@ export function createAuthenticationMiddleware(
     }
 
     req.user = { id: user.id, username: user.username, role: user.role };
+
+    if (user.password_change_required === 1 && !isPasswordChangeRequest(req)) {
+      next(passwordChangeRequired());
+      return;
+    }
+
     next();
   };
 }
@@ -71,6 +79,10 @@ function isPublicRequest(req: Request): boolean {
     (req.method === "POST" && req.path === "/auth/login") ||
     (req.method === "POST" && req.path === "/auth/forgot-password")
   );
+}
+
+function isPasswordChangeRequest(req: Request): boolean {
+  return req.method === "POST" && req.path === "/auth/change-password";
 }
 
 export const authenticationMiddleware = createAuthenticationMiddleware(
