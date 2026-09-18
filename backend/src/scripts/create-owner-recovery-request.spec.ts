@@ -55,7 +55,7 @@ describe("System Owner recovery request creation", () => {
         now.toISOString()
       );
     vi.restoreAllMocks();
-    vi.spyOn(database, "close").mockImplementation(() => undefined);
+    vi.spyOn(database, "close").mockImplementation(() => database);
   });
 
   afterEach(() => {
