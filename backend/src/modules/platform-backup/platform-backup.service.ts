@@ -367,3 +367,51 @@ export async function validatePlatformBackupForRestore(
 
   return { directory, manifest };
 }
+
+
+export async function restorePlatformBackup(
+  backupId: string,
+  options: { allowIdentityTransfer?: boolean } = {},
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformBackupManifest> {
+  const validated = await validatePlatformBackupForRestore(backupId, options, environment);
+  const executable = requireValue(environment.BIOEMS_POWERSHELL_PATH ?? "powershell.exe", "PowerShell");
+  const script = requireValue(environment.BIOEMS_PLATFORM_RESTORE_SCRIPT, "BIOEMS_PLATFORM_RESTORE_SCRIPT");
+  const applicationRoot = requireValue(environment.BIOEMS_APPLICATION_ROOT, "BIOEMS_APPLICATION_ROOT");
+  const persistentRoot = requireValue(environment.BIOEMS_PERSISTENT_ROOT, "BIOEMS_PERSISTENT_ROOT");
+  const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
+  const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
+  const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
+  const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
+
+  await execFileAsync(
+    executable,
+    [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      script,
+      "-ApplicationRoot",
+      applicationRoot,
+      "-PersistentRoot",
+      persistentRoot,
+      "-BackupDirectory",
+      validated.directory,
+      "-InfluxCli",
+      influxCli,
+      "-HostUrl",
+      hostUrl,
+      "-Org",
+      org,
+    ],
+    {
+      windowsHide: true,
+      maxBuffer: 1024 * 1024,
+      env: { ...environment, INFLUX_TOKEN: token },
+    }
+  );
+
+  return validated.manifest;
+}
