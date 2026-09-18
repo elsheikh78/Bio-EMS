@@ -45,9 +45,9 @@ export async function getCustomerPlatformRestoreJob(req: Request, res: Response)
 export async function getOwnerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
   const restoreJob = await getPlatformRestoreJob(requireJobId(req));
   if (restoreJob.state === "SUCCEEDED" || restoreJob.state === "FAILED") {
-    auditEventService.record({
+    auditEventService.recordOnce(restoreJob.jobId, {
       actor: platformAuditActor(req),
-      action: "PLATFORM_BACKUP.RESTORE_STATUS_OBSERVED",
+      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
       target: { type: "PLATFORM_BACKUP", id: restoreJob.backupId },
       result: restoreJob.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
       newValues: {
