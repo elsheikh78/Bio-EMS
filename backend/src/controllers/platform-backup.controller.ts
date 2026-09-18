@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { platformAuditActor, platformRequestContext } from "../modules/audit/platform-audit-context";
+import { auditEventService } from "../services/audit-event.service";
 import {
   createCompletePlatformBackup,
   listPlatformBackups,
@@ -43,4 +45,58 @@ export async function restoreOwnerPlatformBackup(req: Request, res: Response): P
     allowIdentityTransfer: false,
   });
   res.status(200).json({ backup: manifest, restored: true });
+}
+
+export async function restoreOwnerPlatformBackupForDisasterRecovery(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const backupId = requireBackupId(req);
+  const confirmation = req.body?.confirmation;
+  if (confirmation !== "TRANSFER_INSTALLATION_IDENTITY") {
+    auditEventService.record({
+      actor: platformAuditActor(req),
+      action: "PLATFORM_BACKUP.DR_RESTORE",
+      target: { type: "PLATFORM_BACKUP", id: backupId },
+      result: "DENIED",
+      requestContext: platformRequestContext(req, "platform-backup-dr"),
+      reason: "Explicit disaster-recovery identity-transfer confirmation was not supplied",
+    });
+    res.status(400).json({
+      success: false,
+      error: {
+        code: "DR_CONFIRMATION_REQUIRED",
+        message: "Explicit disaster-recovery identity-transfer confirmation is required",
+      },
+    });
+    return;
+  }
+
+  try {
+    const manifest = await restorePlatformBackup(backupId, { allowIdentityTransfer: true });
+    auditEventService.record({
+      actor: platformAuditActor(req),
+      action: "PLATFORM_BACKUP.DR_RESTORE",
+      target: { type: "PLATFORM_BACKUP", id: backupId },
+      result: "SUCCESS",
+      newValues: {
+        installationId: manifest.identity.installationId,
+        customerCode: manifest.identity.customerCode,
+        siteCode: manifest.identity.siteCode,
+      },
+      requestContext: platformRequestContext(req, "platform-backup-dr"),
+      reason: "Controlled PC replacement/disaster recovery identity transfer",
+    });
+    res.status(200).json({ backup: manifest, restored: true, identityTransferred: true });
+  } catch (error) {
+    auditEventService.record({
+      actor: platformAuditActor(req),
+      action: "PLATFORM_BACKUP.DR_RESTORE",
+      target: { type: "PLATFORM_BACKUP", id: backupId },
+      result: "FAILED",
+      requestContext: platformRequestContext(req, "platform-backup-dr"),
+      reason: error instanceof Error ? error.message : "Controlled disaster recovery failed",
+    });
+    throw error;
+  }
 }
