@@ -303,7 +303,6 @@ export async function createCompletePlatformBackup(
   return sealPlatformBackup(directory, environment);
 }
 
-
 export interface PlatformBackupValidationResult {
   directory: string;
   manifest: PlatformBackupManifest;
@@ -326,7 +325,9 @@ export async function validatePlatformBackupForRestore(
   if (!/^[0-9a-f-]{36}$/i.test(backupId)) throw new Error("Invalid platform backup id");
   const root = resolveAllowedBackupDestination(undefined, environment);
   const directory = join(root, `platform-${backupId}`);
-  const manifest = JSON.parse(await readFile(join(directory, "manifest.json"), "utf8")) as PlatformBackupManifest;
+  const manifest = JSON.parse(
+    await readFile(join(directory, "manifest.json"), "utf8")
+  ) as PlatformBackupManifest;
 
   if (manifest.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION) {
     throw new Error("Incompatible platform backup format");
