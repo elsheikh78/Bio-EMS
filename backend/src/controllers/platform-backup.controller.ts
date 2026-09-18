@@ -5,3 +5,8 @@ export async function listCustomerPlatformBackups(_req: Request, res: Response):
   const backups = await listPlatformBackups();
   res.status(200).json({ backups });
 }
+
+export async function listOwnerPlatformBackups(_req: Request, res: Response): Promise<void> {
+  const backups = await listPlatformBackups();
+  res.status(200).json({ backups });
+}
