@@ -54,6 +54,24 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(controllerSource).toContain("restoreQueued: true");
   });
 
+  it("binds persisted restore jobs to installation identity and uses strict UUID validation", async () => {
+    const serviceSource = await readFile(
+      join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    const controllerSource = await readFile(
+      join(process.cwd(), "src/controllers/platform-backup.controller.ts"),
+      "utf8"
+    );
+    expect(serviceSource).toContain("identity: PlatformBackupIdentity");
+    expect(serviceSource).toContain("identity: validated.manifest.identity");
+    expect(serviceSource).toContain("[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}");
+    expect(controllerSource).toContain("readInstalledBackupIdentity");
+    expect(controllerSource).toContain("RESTORE_JOB_NOT_FOUND");
+    expect(controllerSource).toContain("customerAuditActor(req)");
+    expect(controllerSource).toContain('customerRequestContext("platform-backup-restore-status")');
+  });
+
   it("does not accept an Influx token as a command-line parameter", async () => {
     const backupSource = await readFile(
       join(process.cwd(), "../installer/windows/Invoke-PlatformInfluxBackup.ps1"),
