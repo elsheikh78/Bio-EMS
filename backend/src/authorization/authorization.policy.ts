@@ -22,6 +22,8 @@ const ROLE_PERMISSIONS: Readonly<Record<UserRole, ReadonlySet<Permission>>> = {
     "COMMISSIONING_MANAGE",
     "COMMUNICATION_CHANNEL_READ",
     "COMMUNICATION_CHANNEL_MANAGE",
+    "PLATFORM_BACKUP_READ",
+    "PLATFORM_BACKUP_MANAGE",
   ]),
   OPERATOR: new Set<Permission>([
     "CONFIGURATION_READ",
