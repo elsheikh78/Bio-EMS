@@ -255,7 +255,6 @@ export async function listPlatformBackups(
   return backups.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
 
-
 function resolveInfluxBackupCommand(environment: NodeJS.ProcessEnv): {
   executable: string;
   script: string;
