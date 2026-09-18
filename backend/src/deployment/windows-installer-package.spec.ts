@@ -244,6 +244,33 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
   });
 
+  it("collects customer and site identity and passes it through the controlled service installer", () => {
+    for (const field of [
+      "Customer name:",
+      "Customer code:",
+      "Site name:",
+      "Site code:",
+      "Site location (optional):",
+      "Contact name (optional):",
+      "Contact email (optional):",
+      "Contact phone (optional):",
+    ]) {
+      expect(setup).toContain(field);
+    }
+    expect(setup).toContain("-CustomerName \"\"{code:GetCustomerName}\"\"");
+    expect(setup).toContain("-CustomerCode \"\"{code:GetCustomerCode}\"\"");
+    expect(setup).toContain("-SiteName \"\"{code:GetSiteName}\"\"");
+    expect(setup).toContain("-SiteCode \"\"{code:GetSiteCode}\"\"");
+    expect(lifecycle).toContain("[string]$CustomerName");
+    expect(lifecycle).toContain("[string]$CustomerCode");
+    expect(lifecycle).toContain("[string]$SiteName");
+    expect(lifecycle).toContain("[string]$SiteCode");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_CUSTOMER_NAME=$CustomerName");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_SITE_CODE=$SiteCode");
+    expect(lifecycle).not.toContain('$bootstrapCustomerCode = "INSTALLATION-CUSTOMER"');
+    expect(lifecycle).not.toContain('$bootstrapCustomerName = "BIO-EMS Customer"');
+  });
+
   it("reads the Inno Setup credential handoff using its UTF-8 encoding", () => {
     expect(setup).toContain("Username + #13#10 + Email + #13#10 + Password");
     expect(adminBootstrap).toContain(
