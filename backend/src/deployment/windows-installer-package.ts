@@ -26,6 +26,7 @@ export const windowsInstallerManifestSchema = z
               "mosquitto",
               "influxdb",
               "winsw",
+              "influx-cli",
               "owner-commissioning-trust",
             ]),
             version: z.string().min(1),
@@ -35,8 +36,8 @@ export const windowsInstallerManifestSchema = z
           })
           .strict()
       )
-      .min(6)
-      .max(7),
+      .min(7)
+      .max(8),
   })
   .strict()
   .superRefine((manifest, context) => {
@@ -76,7 +77,7 @@ export const vendorInputLockSchema = z
       .array(
         z
           .object({
-            id: z.enum(["node", "mosquitto", "influxdb", "winsw"]),
+            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]),
             version: z.string().regex(/^\d+\.\d+\.\d+$/),
             fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
             sourceUrl: z
@@ -98,11 +99,11 @@ export const vendorInputLockSchema = z
           })
           .strict()
       )
-      .length(4),
+      .length(5),
   })
   .strict()
   .superRefine((value, context) => {
-    const expected = new Set(["node", "mosquitto", "influxdb", "winsw"]);
+    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]);
     const ids = value.inputs.map((input) => input.id);
     if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
       context.addIssue({ code: "custom", message: "Vendor input set must be exact" });
@@ -126,7 +127,15 @@ export type WindowsInstallerIssue = {
   artifactId?: string;
 };
 
-const runtimeArtifactIds = ["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"];
+const runtimeArtifactIds = [
+  "backend",
+  "frontend",
+  "node",
+  "mosquitto",
+  "influxdb",
+  "winsw",
+  "influx-cli",
+];
 const forbiddenNames = [
   ".env",
   "identity.json",
