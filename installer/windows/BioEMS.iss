@@ -80,6 +80,7 @@ var
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
   IdentityPage: TInputQueryWizardPage;
+  InstallModePage: TInputOptionWizardPage;
 
 function InitializeUninstall(): Boolean;
 var
@@ -140,7 +141,15 @@ end;
 procedure InitializeWizard();
 begin
   if not WizardSilent then begin
-    IdentityPage := CreateInputQueryPage(wpSelectTasks, 'Customer and Site',
+    InstallModePage := CreateInputOptionPage(wpSelectTasks, 'Installation Mode',
+      'Choose how BIO-EMS should be installed',
+      'New Install creates a new installation identity. Reinstall / Repair preserves the existing customer, site, readings, identity, and configuration.', True, False);
+    InstallModePage.Add('New Install');
+    InstallModePage.Add('Reinstall / Repair');
+    if ExistingInstallAtStart or ServicesPresentAtStart then InstallModePage.SelectedValueIndex := 1
+    else InstallModePage.SelectedValueIndex := 0;
+
+    IdentityPage := CreateInputQueryPage(InstallModePage.ID, 'Customer and Site',
       'Configure this BIO-EMS installation',
       'Enter the customer and site identity. BIO-EMS generates the Installation ID automatically.');
     IdentityPage.Add('Customer name:', False);
@@ -184,7 +193,11 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
   Result := True;
-  if (IdentityPage <> nil) and (CurPageID = IdentityPage.ID) then begin
+  if (InstallModePage <> nil) and (CurPageID = InstallModePage.ID) and IsNewInstallSelected() and
+     (ExistingInstallAtStart or ServicesPresentAtStart or DirExists(ExpandConstant('{commonappdata}\\BIO-EMS'))) then begin
+    Result := MsgBox('Existing BIO-EMS state was detected. New Install will replace the existing BIO-EMS installation identity and customer data after controlled cleanup. Continue only when this is intentionally a fresh installation.', mbConfirmation, MB_YESNO) = IDYES;
+  end;
+  if Result and (IdentityPage <> nil) and (CurPageID = IdentityPage.ID) and IsNewInstallSelected() then begin
     if Trim(IdentityPage.Values[0]) = '' then begin
       MsgBox('Customer name is required.', mbError, MB_OK); Result := False;
     end else if Trim(IdentityPage.Values[1]) = '' then begin
@@ -253,9 +266,20 @@ begin
   end;
 end;
 
+function IsNewInstallSelected(): Boolean;
+begin
+  if WizardSilent then Result := CompareText(GetEnv('BIOEMS_CI_INSTALL_MODE'), 'repair') <> 0
+  else Result := (InstallModePage <> nil) and (InstallModePage.SelectedValueIndex = 0);
+end;
+
+function IsRepairSelected(): Boolean;
+begin
+  Result := not IsNewInstallSelected();
+end;
+
 function IsFreshInstall(): Boolean;
 begin
-  Result := (not ExistingInstallAtStart) or (not ServicesPresentAtStart);
+  Result := IsNewInstallSelected();
 end;
 
 function ShouldInitializeAdmin(): Boolean;
@@ -269,7 +293,7 @@ end;
 
 function WasExistingInstall(): Boolean;
 begin
-  Result := ExistingInstallAtStart and ServicesPresentAtStart;
+  Result := IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart;
 end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
@@ -278,7 +302,7 @@ var
   ScriptPath: String;
 begin
   Result := '';
-  if ExistingInstallAtStart and ServicesPresentAtStart then begin
+  if IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart then begin
     ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
     ScriptPath := ExpandConstant('{tmp}\Invoke-DEP0105Lifecycle.ps1');
     if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode PreUpdate -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
