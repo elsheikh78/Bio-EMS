@@ -76,13 +76,14 @@ describe("DEP-BR restore validation contract", () => {
   });
 });
 
-
 describe("DEP-BR restore validation behavior", () => {
-  async function fixture(identity = {
-    installationId: randomUUID(),
-    customerCode: "CUST-1",
-    siteCode: "SITE-1",
-  }) {
+  async function fixture(
+    identity = {
+      installationId: randomUUID(),
+      customerCode: "CUST-1",
+      siteCode: "SITE-1",
+    }
+  ) {
     const root = await mkdtemp(join(tmpdir(), "bioems-restore-"));
     const backupId = randomUUID();
     const directory = join(root, `platform-${backupId}`);
@@ -110,7 +111,10 @@ describe("DEP-BR restore validation behavior", () => {
     };
     await writeFile(join(directory, "manifest.json"), JSON.stringify(manifest));
     const receipt = join(root, "receipt.json");
-    await writeFile(receipt, JSON.stringify({ installationId: identity.installationId, customerSite: identity }));
+    await writeFile(
+      receipt,
+      JSON.stringify({ installationId: identity.installationId, customerSite: identity })
+    );
     return {
       root,
       backupId,
@@ -125,7 +129,9 @@ describe("DEP-BR restore validation behavior", () => {
 
   it("accepts a sealed same-installation backup with intact artifacts", async () => {
     const value = await fixture();
-    await expect(validatePlatformBackupForRestore(value.backupId, {}, value.environment)).resolves.toMatchObject({
+    await expect(
+      validatePlatformBackupForRestore(value.backupId, {}, value.environment)
+    ).resolves.toMatchObject({
       manifest: { backupId: value.backupId },
     });
   });
@@ -133,9 +139,9 @@ describe("DEP-BR restore validation behavior", () => {
   it("rejects a tampered artifact", async () => {
     const value = await fixture();
     await writeFile(join(value.directory, "bioems.sqlite"), "tampered");
-    await expect(validatePlatformBackupForRestore(value.backupId, {}, value.environment)).rejects.toThrow(
-      /size mismatch|checksum mismatch/
-    );
+    await expect(
+      validatePlatformBackupForRestore(value.backupId, {}, value.environment)
+    ).rejects.toThrow(/size mismatch|checksum mismatch/);
   });
 
   it("rejects a wrong installation for normal restore", async () => {
@@ -147,9 +153,9 @@ describe("DEP-BR restore validation behavior", () => {
         customerSite: { customerCode: "OTHER", siteCode: "OTHER" },
       })
     );
-    await expect(validatePlatformBackupForRestore(value.backupId, {}, value.environment)).rejects.toThrow(
-      "does not match this installation"
-    );
+    await expect(
+      validatePlatformBackupForRestore(value.backupId, {}, value.environment)
+    ).rejects.toThrow("does not match this installation");
   });
 
   it("allows identity mismatch only when the caller explicitly enables DR transfer", async () => {
@@ -162,7 +168,11 @@ describe("DEP-BR restore validation behavior", () => {
       })
     );
     await expect(
-      validatePlatformBackupForRestore(value.backupId, { allowIdentityTransfer: true }, value.environment)
+      validatePlatformBackupForRestore(
+        value.backupId,
+        { allowIdentityTransfer: true },
+        value.environment
+      )
     ).resolves.toMatchObject({ manifest: { backupId: value.backupId } });
   });
 });
