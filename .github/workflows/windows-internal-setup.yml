@@ -191,6 +191,7 @@ jobs:
           $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
           if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
           $setupLog = Join-Path $env:RUNNER_TEMP "bioems-clean-install.log"
+          $env:BIOEMS_CI_INSTALL_MODE = "new"
           $env:BIOEMS_CI_ADMIN_USERNAME = "ci-admin"
           $env:BIOEMS_CI_ADMIN_PASSWORD = "CiAdminPilot2026"
           $env:BIOEMS_CI_ADMIN_EMAIL = "ci-admin@example.invalid"
