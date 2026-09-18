@@ -20,6 +20,7 @@ import {
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
 import {
   createOwnerPlatformBackup,
+  getOwnerPlatformRestoreJob,
   listOwnerPlatformBackups,
   restoreOwnerPlatformBackup,
   restoreOwnerPlatformBackupForDisasterRecovery,
@@ -86,6 +87,7 @@ router.get("/backups", listOwnerPlatformBackups);
 router.post("/backups", createOwnerPlatformBackup);
 router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
 router.post("/backups/:backupId/dr-restore", restoreOwnerPlatformBackupForDisasterRecovery);
+router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
