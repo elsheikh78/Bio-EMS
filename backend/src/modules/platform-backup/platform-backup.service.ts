@@ -13,6 +13,8 @@ import {
 } from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { sqlite } from "../../../database/sqlite/client";
+import { AuditActorSnapshot } from "../../entities/AuditEvent";
+import { auditEventService } from "../../services/audit-event.service";
 
 export const PLATFORM_BACKUP_FORMAT_VERSION = 1;
 const execFileAsync = promisify(execFile);
@@ -466,6 +468,11 @@ export interface PlatformRestoreJobStatus {
   updatedAt: string;
   allowIdentityTransfer: boolean;
   identity: PlatformBackupIdentity;
+  audit?: {
+    actor: AuditActorSnapshot;
+    source: string;
+    finalAuditEventId: string;
+  };
   error?: string;
 }
 
@@ -513,9 +520,52 @@ export async function getPlatformRestoreJob(
   return value as unknown as PlatformRestoreJobStatus;
 }
 
+export async function reconcilePlatformRestoreAudits(
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<void> {
+  const directory = restoreJobDirectory(environment);
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
+    throw error;
+  }
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
+    const jobId = entry.name.slice(0, -5);
+    let job: PlatformRestoreJobStatus;
+    try {
+      job = await getPlatformRestoreJob(jobId, environment);
+    } catch {
+      continue;
+    }
+    if (!job.audit || (job.state !== "SUCCEEDED" && job.state !== "FAILED")) continue;
+    auditEventService.recordOnce(job.audit.finalAuditEventId, {
+      actor: job.audit.actor,
+      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
+      target: { type: "PLATFORM_BACKUP", id: job.backupId },
+      result: job.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
+      newValues: {
+        restoreJobId: job.jobId,
+        restoreState: job.state,
+        identityTransfer: job.allowIdentityTransfer,
+      },
+      requestContext: { source: job.audit.source },
+      reason:
+        job.state === "SUCCEEDED"
+          ? "Restore worker reported successful completion"
+          : (job.error ?? "Restore worker reported failure after rollback handling"),
+    });
+  }
+}
+
 export async function restorePlatformBackup(
   backupId: string,
-  options: { allowIdentityTransfer?: boolean } = {},
+  options: {
+    allowIdentityTransfer?: boolean;
+    audit?: { actor: AuditActorSnapshot; source: string };
+  } = {},
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformRestoreJob> {
   const validated = await validatePlatformBackupForRestore(backupId, options, environment);
@@ -546,6 +596,9 @@ export async function restorePlatformBackup(
     updatedAt: queuedAt,
     allowIdentityTransfer: options.allowIdentityTransfer === true,
     identity: validated.manifest.identity,
+    audit: options.audit
+      ? { ...options.audit, finalAuditEventId: randomUUID() }
+      : undefined,
   };
   const jobsDirectory = restoreJobDirectory(environment);
   await mkdir(jobsDirectory, { recursive: true });
