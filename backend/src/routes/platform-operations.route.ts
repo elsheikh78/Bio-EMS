@@ -18,6 +18,7 @@ import {
   transferSiteBoundLicense,
 } from "../controllers/platform-operations.controller";
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
+import { listOwnerPlatformBackups } from "../controllers/platform-backup.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
   createPlatformCustomerSchema,
@@ -76,6 +77,7 @@ import {
 const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
+router.get("/backups", listOwnerPlatformBackups);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
