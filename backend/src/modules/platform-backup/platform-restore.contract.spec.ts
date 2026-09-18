@@ -17,6 +17,21 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).not.toContain("Invoke-Robocopy $liveInflux");
   });
 
+  it("revalidates sealed artifacts inside the worker before quiescing services", async () => {
+    const source = await readFile(
+      join(process.cwd(), "../installer/windows/Invoke-PlatformRestore.ps1"),
+      "utf8"
+    );
+    const validationIndex = source.indexOf("Revalidate the sealed payload inside the external worker");
+    const stopIndex = source.indexOf("Stop-ControlledServices", validationIndex);
+    expect(validationIndex).toBeGreaterThan(-1);
+    expect(stopIndex).toBeGreaterThan(validationIndex);
+    expect(source).toContain("Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256");
+    expect(source).toContain("artifact checksum mismatch in restore worker");
+    expect(source).toContain("artifact size mismatch in restore worker");
+    expect(source).toContain("artifact reparse points are not allowed in restore worker");
+  });
+
   it("queues a detached worker before the backend service is quiesced", async () => {
     const serviceSource = await readFile(
       join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
