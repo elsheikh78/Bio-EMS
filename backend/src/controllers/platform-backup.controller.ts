@@ -5,9 +5,14 @@ import {
 } from "../modules/audit/platform-audit-context";
 import { auditEventService } from "../services/audit-event.service";
 import {
+  customerAuditActor,
+  customerRequestContext,
+} from "../modules/audit/customer-audit-context";
+import {
   createCompletePlatformBackup,
   getPlatformRestoreJob,
   listPlatformBackups,
+  readInstalledBackupIdentity,
   restorePlatformBackup,
 } from "../modules/platform-backup/platform-backup.service";
 
@@ -39,7 +44,38 @@ function requireJobId(req: Request): string {
 }
 
 export async function getCustomerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
-  res.status(200).json({ restoreJob: await getPlatformRestoreJob(requireJobId(req)) });
+  const restoreJob = await getPlatformRestoreJob(requireJobId(req));
+  const installedIdentity = await readInstalledBackupIdentity();
+  if (
+    restoreJob.identity.installationId !== installedIdentity.installationId ||
+    restoreJob.identity.customerCode !== installedIdentity.customerCode ||
+    restoreJob.identity.siteCode !== installedIdentity.siteCode
+  ) {
+    res.status(404).json({
+      success: false,
+      error: { code: "RESTORE_JOB_NOT_FOUND", message: "Platform restore job was not found" },
+    });
+    return;
+  }
+  if (restoreJob.state === "SUCCEEDED" || restoreJob.state === "FAILED") {
+    auditEventService.recordOnce(restoreJob.jobId, {
+      actor: customerAuditActor(req),
+      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
+      target: { type: "PLATFORM_BACKUP", id: restoreJob.backupId },
+      result: restoreJob.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
+      newValues: {
+        restoreJobId: restoreJob.jobId,
+        restoreState: restoreJob.state,
+        identityTransfer: false,
+      },
+      requestContext: customerRequestContext("platform-backup-restore-status"),
+      reason:
+        restoreJob.state === "SUCCEEDED"
+          ? "Restore worker reported successful completion"
+          : (restoreJob.error ?? "Restore worker reported failure after rollback handling"),
+    });
+  }
+  res.status(200).json({ restoreJob });
 }
 
 export async function getOwnerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
