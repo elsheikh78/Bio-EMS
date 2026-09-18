@@ -596,9 +596,7 @@ export async function restorePlatformBackup(
     updatedAt: queuedAt,
     allowIdentityTransfer: options.allowIdentityTransfer === true,
     identity: validated.manifest.identity,
-    audit: options.audit
-      ? { ...options.audit, finalAuditEventId: randomUUID() }
-      : undefined,
+    audit: options.audit ? { ...options.audit, finalAuditEventId: randomUUID() } : undefined,
   };
   const jobsDirectory = restoreJobDirectory(environment);
   await mkdir(jobsDirectory, { recursive: true });
