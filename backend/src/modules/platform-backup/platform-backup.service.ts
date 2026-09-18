@@ -1,9 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { mkdir, readFile, readdir, rename, stat, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { sqlite } from "../../../database/sqlite/client";
 
 export const PLATFORM_BACKUP_FORMAT_VERSION = 1;
+const execFileAsync = promisify(execFile);
 
 export interface PlatformBackupIdentity {
   installationId: string;
@@ -250,4 +253,53 @@ export async function listPlatformBackups(
     }
   }
   return backups.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
+
+function resolveInfluxBackupCommand(environment: NodeJS.ProcessEnv): {
+  executable: string;
+  script: string;
+} {
+  return {
+    executable: requireValue(environment.BIOEMS_POWERSHELL_PATH ?? "powershell.exe", "PowerShell"),
+    script: requireValue(environment.BIOEMS_INFLUX_BACKUP_SCRIPT, "BIOEMS_INFLUX_BACKUP_SCRIPT"),
+  };
+}
+
+export async function createCompletePlatformBackup(
+  requestedDestination?: string,
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformBackupManifest> {
+  const { directory } = await createPlatformBackupFoundation(requestedDestination, environment);
+  const { executable, script } = resolveInfluxBackupCommand(environment);
+  const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
+  const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
+  const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
+  const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
+  const influxDirectory = join(directory, "influxdb");
+
+  await execFileAsync(
+    executable,
+    [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      script,
+      "-InfluxCli",
+      influxCli,
+      "-BackupDirectory",
+      influxDirectory,
+      "-HostUrl",
+      hostUrl,
+      "-Org",
+      org,
+      "-Token",
+      token,
+    ],
+    { windowsHide: true, maxBuffer: 1024 * 1024 }
+  );
+
+  return sealPlatformBackup(directory, environment);
 }
