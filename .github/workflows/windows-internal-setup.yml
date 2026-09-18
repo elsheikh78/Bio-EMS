@@ -291,6 +291,12 @@ jobs:
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
 
+      - name: Exercise installed InfluxDB backup and historical telemetry restore
+        timeout-minutes: 10
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-DEPBRInfluxRoundTrip.ps1" -ApplicationRoot "C:\Program Files\BIO-EMS" -PersistentRoot "C:\ProgramData\BIO-EMS"
+
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4
         with:
