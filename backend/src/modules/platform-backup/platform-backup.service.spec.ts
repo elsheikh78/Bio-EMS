@@ -176,3 +176,26 @@ describe("DEP-BR restore validation behavior", () => {
     ).resolves.toMatchObject({ manifest: { backupId: value.backupId } });
   });
 });
+
+
+describe("DEP-BR malicious backup rejection", () => {
+  it("uses strict UUID and rejects duplicate artifacts and symlinks before restore", async () => {
+    const source = await readFile(
+      join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    expect(source).toContain("[1-5][0-9a-f]{3}");
+    expect(source).toContain("Platform backup contains duplicate artifact paths");
+    expect(source).toContain("Platform backup SQLite artifact is invalid");
+    expect(source).toContain("Platform backup artifact symlinks are not allowed");
+    expect(source).toContain("Platform backup artifact resolves outside the backup directory");
+  });
+
+  it("rejects malformed backup ids before reading a backup directory", async () => {
+    await expect(
+      validatePlatformBackupForRestore("../outside", {}, {
+        BIOEMS_SQLITE_BACKUP_DIR: "/var/lib/bioems/backups",
+      })
+    ).rejects.toThrow("Invalid platform backup id");
+  });
+});
