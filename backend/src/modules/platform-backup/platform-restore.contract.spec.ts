@@ -13,6 +13,25 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).toContain("Test-PostInstallHealth.ps1");
     expect(source).toContain("Platform restore failed; safety snapshot was restored");
     expect(source).toContain("InfluxDB restore failed");
+    expect(source).toContain("& $InfluxCli backup $safetyInflux");
+    expect(source).toContain("WAL-consistent SQLite safety backup is missing");
+    expect(source).not.toContain("Invoke-Robocopy $liveInflux");
+  });
+
+  it("queues a detached worker before the backend service is quiesced", async () => {
+    const serviceSource = await readFile(
+      join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    const controllerSource = await readFile(
+      join(process.cwd(), "src/controllers/platform-backup.controller.ts"),
+      "utf8"
+    );
+    expect(serviceSource).toContain("detached: true");
+    expect(serviceSource).toContain("child.unref()");
+    expect(serviceSource).toContain('await sqlite.backup(join(safetyDirectory, "bioems.sqlite"))');
+    expect(controllerSource).toContain("res.status(202)");
+    expect(controllerSource).toContain("restoreQueued: true");
   });
 
   it("does not accept an Influx token as a command-line parameter", async () => {
