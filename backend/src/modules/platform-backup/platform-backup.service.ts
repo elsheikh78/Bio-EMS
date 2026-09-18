@@ -362,6 +362,8 @@ export async function createCompletePlatformBackup(
       hostUrl,
       "-Org",
       org,
+      "-JobStatusPath",
+      statusPath,
     ],
     {
       windowsHide: true,
@@ -456,10 +458,54 @@ export async function validatePlatformBackupForRestore(
   return { directory, manifest };
 }
 
+export type PlatformRestoreJobState = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED";
+
+export interface PlatformRestoreJobStatus {
+  jobId: string;
+  backupId: string;
+  state: PlatformRestoreJobState;
+  queuedAt: string;
+  updatedAt: string;
+  allowIdentityTransfer: boolean;
+  error?: string;
+}
+
 export interface PlatformRestoreJob {
   backup: PlatformBackupManifest;
   queued: true;
   safetyDirectory: string;
+  status: PlatformRestoreJobStatus;
+}
+
+function restoreJobDirectory(environment: NodeJS.ProcessEnv): string {
+  return join(
+    requireValue(environment.BIOEMS_PERSISTENT_ROOT, "BIOEMS_PERSISTENT_ROOT"),
+    "restore-jobs"
+  );
+}
+
+function restoreJobPath(jobId: string, environment: NodeJS.ProcessEnv): string {
+  if (!/^[0-9a-f-]{36}$/i.test(jobId)) throw new Error("Invalid platform restore job id");
+  return join(restoreJobDirectory(environment), `${jobId}.json`);
+}
+
+export async function getPlatformRestoreJob(
+  jobId: string,
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformRestoreJobStatus> {
+  const value = JSON.parse(await readFile(restoreJobPath(jobId, environment), "utf8")) as unknown;
+  if (
+    !isRecord(value) ||
+    value.jobId !== jobId ||
+    typeof value.backupId !== "string" ||
+    !["QUEUED", "RUNNING", "SUCCEEDED", "FAILED"].includes(String(value.state)) ||
+    typeof value.queuedAt !== "string" ||
+    typeof value.updatedAt !== "string" ||
+    typeof value.allowIdentityTransfer !== "boolean"
+  ) {
+    throw new Error("Platform restore job status is invalid");
+  }
+  return value as unknown as PlatformRestoreJobStatus;
 }
 
 export async function restorePlatformBackup(
@@ -485,6 +531,23 @@ export async function restorePlatformBackup(
   const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
   const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
   const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
+  const jobId = randomUUID();
+  const queuedAt = new Date().toISOString();
+  const status: PlatformRestoreJobStatus = {
+    jobId,
+    backupId,
+    state: "QUEUED",
+    queuedAt,
+    updatedAt: queuedAt,
+    allowIdentityTransfer: options.allowIdentityTransfer === true,
+  };
+  const jobsDirectory = restoreJobDirectory(environment);
+  await mkdir(jobsDirectory, { recursive: true });
+  const statusPath = restoreJobPath(jobId, environment);
+  await writeFile(statusPath, `${JSON.stringify(status, null, 2)}\n`, {
+    encoding: "utf8",
+    flag: "wx",
+  });
 
   // Take the SQLite safety snapshot while this process still owns a live,
   // WAL-consistent database connection. The external worker will take the
@@ -529,5 +592,5 @@ export async function restorePlatformBackup(
   );
   child.unref();
 
-  return { backup: validated.manifest, queued: true, safetyDirectory };
+  return { backup: validated.manifest, queued: true, safetyDirectory, status };
 }
