@@ -109,9 +109,9 @@ export function applyOwnerRecovery(
   database.transaction(() => {
     const request = database
       .prepare(
-        `SELECT status, challenge_hash FROM password_recovery_requests WHERE request_id = ? AND principal_type = 'SYSTEM_OWNER' LIMIT 1`
+        `SELECT status, challenge_hash, expires_at FROM password_recovery_requests WHERE request_id = ? AND principal_type = 'SYSTEM_OWNER' LIMIT 1`
       )
-      .get(claims.recoveryId) as { status: string; challenge_hash: string | null } | undefined;
+      .get(claims.recoveryId) as\n      | { status: string; challenge_hash: string | null; expires_at: string }\n      | undefined;
     if (!request || request.status !== "PENDING" || request.challenge_hash !== claims.challengeHash)
       throw new Error("Recovery request is unavailable or already used");
     const owner = database
