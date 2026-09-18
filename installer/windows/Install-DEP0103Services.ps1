@@ -334,8 +334,8 @@ $bootstrapAdminPassword = (
     [Guid]::NewGuid().ToString("N").Substring(0,8)
 )
 
-$bootstrapCustomerCode = "INSTALLATION-CUSTOMER"
-$bootstrapCustomerName = "BIO-EMS Customer"
+$bootstrapCustomerCode = $CustomerCode
+$bootstrapCustomerName = $CustomerName
 
 $bootstrapCredentialPath = Join-Path $paths.Config "bootstrap-credentials.txt"
 
@@ -381,6 +381,14 @@ BIOEMS_BOOTSTRAP_ADMIN_USERNAME=$bootstrapAdminUsername
 BIOEMS_BOOTSTRAP_ADMIN_PASSWORD=$bootstrapAdminPassword
 BIOEMS_BOOTSTRAP_CUSTOMER_CODE=$bootstrapCustomerCode
 BIOEMS_BOOTSTRAP_CUSTOMER_NAME=$bootstrapCustomerName
+BIOEMS_INSTALLATION_CUSTOMER_NAME=$CustomerName
+BIOEMS_INSTALLATION_CUSTOMER_CODE=$CustomerCode
+BIOEMS_INSTALLATION_SITE_NAME=$SiteName
+BIOEMS_INSTALLATION_SITE_CODE=$SiteCode
+BIOEMS_INSTALLATION_SITE_LOCATION=$SiteLocation
+BIOEMS_INSTALLATION_CONTACT_NAME=$ContactName
+BIOEMS_INSTALLATION_CONTACT_EMAIL=$ContactEmail
+BIOEMS_INSTALLATION_CONTACT_PHONE=$ContactPhone
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
