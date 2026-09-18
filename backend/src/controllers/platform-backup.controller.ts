@@ -13,6 +13,7 @@ import {
   getPlatformRestoreJob,
   listPlatformBackups,
   readInstalledBackupIdentity,
+  recordPlatformRestoreTerminalAudit,
   restorePlatformBackup,
 } from "../modules/platform-backup/platform-backup.service";
 
@@ -57,47 +58,13 @@ export async function getCustomerPlatformRestoreJob(req: Request, res: Response)
     });
     return;
   }
-  if (restoreJob.state === "SUCCEEDED" || restoreJob.state === "FAILED") {
-    auditEventService.recordOnce(restoreJob.jobId, {
-      actor: customerAuditActor(req),
-      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
-      target: { type: "PLATFORM_BACKUP", id: restoreJob.backupId },
-      result: restoreJob.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
-      newValues: {
-        restoreJobId: restoreJob.jobId,
-        restoreState: restoreJob.state,
-        identityTransfer: false,
-      },
-      requestContext: customerRequestContext("platform-backup-restore-status"),
-      reason:
-        restoreJob.state === "SUCCEEDED"
-          ? "Restore worker reported successful completion"
-          : (restoreJob.error ?? "Restore worker reported failure after rollback handling"),
-    });
-  }
+  recordPlatformRestoreTerminalAudit(restoreJob);
   res.status(200).json({ restoreJob });
 }
 
 export async function getOwnerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
   const restoreJob = await getPlatformRestoreJob(requireJobId(req));
-  if (restoreJob.state === "SUCCEEDED" || restoreJob.state === "FAILED") {
-    auditEventService.recordOnce(restoreJob.jobId, {
-      actor: platformAuditActor(req),
-      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
-      target: { type: "PLATFORM_BACKUP", id: restoreJob.backupId },
-      result: restoreJob.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
-      newValues: {
-        restoreJobId: restoreJob.jobId,
-        restoreState: restoreJob.state,
-        identityTransfer: restoreJob.allowIdentityTransfer,
-      },
-      requestContext: platformRequestContext(req, "platform-backup-restore-status"),
-      reason:
-        restoreJob.state === "SUCCEEDED"
-          ? "Restore worker reported successful completion"
-          : (restoreJob.error ?? "Restore worker reported failure after rollback handling"),
-    });
-  }
+  recordPlatformRestoreTerminalAudit(restoreJob);
   res.status(200).json({ restoreJob });
 }
 
