@@ -1,0 +1,35 @@
+name: DEP-BR Prettier Fix
+
+on:
+  push:
+    branches: [feat/dep-br-backup-restore]
+    paths: [.github/workflows/dep-br-prettier-fix.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/dep-br-backup-restore
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - name: Format exact CI-reported files
+        working-directory: backend
+        run: npm exec prettier -- --write src/deployment/windows-installer-package.spec.ts src/modules/licensing/installer-integration.ts src/scripts/provision-installation-identity.ts
+      - name: Commit formatter output only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/src/deployment/windows-installer-package.spec.ts backend/src/modules/licensing/installer-integration.ts backend/src/scripts/provision-installation-identity.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "style: apply backend prettier to DEP-BR files"
+          git push origin HEAD:feat/dep-br-backup-restore
