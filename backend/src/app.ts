@@ -30,10 +30,15 @@ import installationAcceptanceRouter from "./routes/installation-acceptance.route
 import communicationChannelRouter from "./routes/communication-channel.route";
 import platformBackupRouter from "./routes/platform-backup.route";
 import { resolve } from "node:path";
+import { reconcilePlatformRestoreAudits } from "./modules/platform-backup/platform-backup.service";
 
 createTables();
 
 runMigrations();
+
+void reconcilePlatformRestoreAudits().catch((error) => {
+  console.error("Platform restore audit reconciliation failed", error);
+});
 
 const app = express();
 
