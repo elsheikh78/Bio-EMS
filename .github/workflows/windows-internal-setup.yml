@@ -337,7 +337,8 @@ jobs:
           $backup = Join-Path $env:RUNNER_TEMP "depbr-influx-backup"
           & $backupScript -InfluxCli $influx -BackupDirectory $backup -HostUrl $settings.INFLUX_URL -Org $settings.INFLUX_ORG
           if ($LASTEXITCODE -ne 0) { throw "Installed Influx backup helper failed" }
-          & $influx delete --bucket $bucket --org $settings.INFLUX_ORG --start 1970-01-01T00:00:00Z --stop 2100-01-01T00:00:00Z --predicate "_measurement=\\\"$marker\\\""
+          $predicate = "_measurement=" + [char]34 + $marker + [char]34
+          & $influx delete --bucket $bucket --org $settings.INFLUX_ORG --start 1970-01-01T00:00:00Z --stop 2100-01-01T00:00:00Z --predicate $predicate
           if ($LASTEXITCODE -ne 0) { throw "Failed to remove historical telemetry marker before restore" }
           $deleted = & $influx query --org $settings.INFLUX_ORG --raw $query
           if (($deleted -join "`n") -match $marker) { throw "Historical telemetry marker still exists before restore" }
