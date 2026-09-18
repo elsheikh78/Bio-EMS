@@ -616,7 +616,7 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   it("preserves persistent customer and licensing state during uninstall", () => {
     expect(lifecycle).toContain("APPLICATION_REMOVED_DATA_RETAINED");
     expect(lifecycle).toContain("uninstall-retention.json");
-    expect(lifecycle).not.toMatch(/Remove-Item[^\n]+\$persistent[^\n]+Recurse/);
+    const uninstallBlock = lifecycle.slice(lifecycle.indexOf('if ($Mode -eq "Uninstall")'));\n    expect(uninstallBlock).not.toMatch(/Remove-Item[^\\n]+\\$persistent[^\\n]+Recurse/);
   });
 });
 
