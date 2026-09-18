@@ -9,12 +9,10 @@ import { migration026 } from "../../database/sqlite/migrations/026_harden_owner_
 import { migration028 } from "../../database/sqlite/migrations/028_create_password_recovery_domain";
 import { hashPassword } from "../services/password.service";
 
-const { database } = vi.hoisted(() => {
-  const Database = require("better-sqlite3") as typeof import("better-sqlite3");
-  return { database: new Database(":memory:") };
+vi.mock("../../database/sqlite/client", async () => {
+  const { default: SqliteDatabase } = await import("better-sqlite3");
+  return { sqlite: new SqliteDatabase(":memory:") };
 });
-
-vi.mock("../../database/sqlite/client", () => ({ sqlite: database }));
 vi.mock("../../database/sqlite/schema", () => ({ createTables: vi.fn() }));
 vi.mock("../../database/sqlite/migration-runner", () => ({ runMigrations: vi.fn() }));
 
