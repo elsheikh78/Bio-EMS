@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { migration003 } from "../../database/sqlite/migrations/003_create_users";
 import { migration009 } from "../../database/sqlite/migrations/009_create_platform_principals";
@@ -10,9 +9,10 @@ import { migration026 } from "../../database/sqlite/migrations/026_harden_owner_
 import { migration028 } from "../../database/sqlite/migrations/028_create_password_recovery_domain";
 import { hashPassword } from "../services/password.service";
 
-const { database } = vi.hoisted(() => ({
-  database: new Database(":memory:"),
-}));
+const { database } = vi.hoisted(() => {
+  const Database = require("better-sqlite3") as typeof import("better-sqlite3");
+  return { database: new Database(":memory:") };
+});
 
 vi.mock("../../database/sqlite/client", () => ({ sqlite: database }));
 vi.mock("../../database/sqlite/schema", () => ({ createTables: vi.fn() }));
