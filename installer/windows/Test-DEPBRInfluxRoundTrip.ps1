@@ -34,7 +34,7 @@ $query = "from(bucket: `"$bucket`") |> range(start: -10m) |> filter(fn: (r) => r
 $backup = Join-Path $env:TEMP "depbr-influx-$([Guid]::NewGuid().ToString('N'))"
 
 try {
-    "$marker,source=windows-ci value=41.25 $timestamp" | & $influx write --bucket $bucket --org $settings.INFLUX_ORG --precision s
+    & $influx write --bucket $bucket --org $settings.INFLUX_ORG --precision s --record "$marker,source=windows-ci value=41.25 $timestamp"
     if ($LASTEXITCODE -ne 0) { throw "Failed to seed historical telemetry marker" }
 
     $before = & $influx query --org $settings.INFLUX_ORG --raw $query
