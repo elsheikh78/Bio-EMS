@@ -81,6 +81,7 @@ var
   AdminPage: TInputQueryWizardPage;
   IdentityPage: TInputQueryWizardPage;
   InstallModePage: TInputOptionWizardPage;
+  NewInstallCleanupRequired: Boolean;
 
 function InitializeUninstall(): Boolean;
 var
@@ -196,6 +197,7 @@ begin
   if (InstallModePage <> nil) and (CurPageID = InstallModePage.ID) and IsNewInstallSelected() and
      (ExistingInstallAtStart or ServicesPresentAtStart or DirExists(ExpandConstant('{commonappdata}\\BIO-EMS'))) then begin
     Result := MsgBox('Existing BIO-EMS state was detected. New Install will replace the existing BIO-EMS installation identity and customer data after controlled cleanup. Continue only when this is intentionally a fresh installation.', mbConfirmation, MB_YESNO) = IDYES;
+    NewInstallCleanupRequired := Result;
   end;
   if Result and (IdentityPage <> nil) and (CurPageID = IdentityPage.ID) and IsNewInstallSelected() then begin
     if Trim(IdentityPage.Values[0]) = '' then begin
@@ -302,6 +304,14 @@ var
   ScriptPath: String;
 begin
   Result := '';
+  if IsNewInstallSelected() and NewInstallCleanupRequired then begin
+    ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
+    ScriptPath := ExpandConstant('{tmp}\\Invoke-DEP0105Lifecycle.ps1');
+    if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode NewInstallCleanup -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then begin
+      Result := 'BIO-EMS controlled New Install cleanup failed. No fresh installation was started.';
+      Exit;
+    end;
+  end;
   if IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart then begin
     ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
     ScriptPath := ExpandConstant('{tmp}\Invoke-DEP0105Lifecycle.ps1');
