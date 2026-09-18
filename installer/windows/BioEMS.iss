@@ -305,6 +305,7 @@ begin
     ExtractTemporaryFile('frontend.zip');
     ExtractTemporaryFile('node-v22.22.0-win-x64.zip');
     ExtractTemporaryFile('influxdb2-2.9.1-windows_amd64.zip');
+    ExtractTemporaryFile('influxdb2-client-2.8.0-windows-amd64.zip');
   end;
 end;
 
