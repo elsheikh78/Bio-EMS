@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, stat, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { sqlite } from "../../../database/sqlite/client";
 
@@ -12,7 +12,7 @@ export interface PlatformBackupIdentity {
 }
 
 export interface PlatformBackupArtifact {
-  kind: "sqlite";
+  kind: "sqlite" | "influxdb";
   file: string;
   bytes: number;
   sha256: string;
@@ -24,10 +24,15 @@ export interface PlatformBackupManifest {
   createdAt: string;
   identity: PlatformBackupIdentity;
   artifacts: PlatformBackupArtifact[];
-  telemetry: {
-    state: "PENDING_EXTERNAL_SNAPSHOT";
-    reason: "INFLUXDB_SNAPSHOT_REQUIRED";
-  };
+  telemetry:
+    | {
+        state: "PENDING_EXTERNAL_SNAPSHOT";
+        reason: "INFLUXDB_SNAPSHOT_REQUIRED";
+      }
+    | {
+        state: "SEALED";
+        artifactCount: number;
+      };
 }
 
 function requireValue(value: string | undefined, name: string): string {
@@ -124,4 +129,71 @@ export async function createPlatformBackupFoundation(
     flag: "wx",
   });
   return { directory, manifest };
+}
+
+
+async function collectFiles(root: string, prefix = ""): Promise<string[]> {
+  const entries = await readdir(join(root, prefix), { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const relativePath = join(prefix, entry.name);
+    if (entry.isDirectory()) files.push(...(await collectFiles(root, relativePath)));
+    else if (entry.isFile()) files.push(relativePath);
+  }
+  return files;
+}
+
+export async function sealPlatformBackup(
+  directory: string,
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformBackupManifest> {
+  const allowedRoot = resolveAllowedBackupDestination(undefined, environment);
+  const normalizedDirectory = resolve(directory);
+  const traversal = relative(allowedRoot, normalizedDirectory);
+  if (traversal.startsWith("..") || isAbsolute(traversal)) {
+    throw new Error("Backup directory is outside the configured allowed root");
+  }
+
+  const pendingPath = join(normalizedDirectory, "manifest.pending.json");
+  const pending = JSON.parse(await readFile(pendingPath, "utf8")) as PlatformBackupManifest;
+  if (pending.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION) {
+    throw new Error("Unsupported platform backup format");
+  }
+  const currentIdentity = await readInstalledBackupIdentity(environment);
+  if (
+    pending.identity.installationId !== currentIdentity.installationId ||
+    pending.identity.customerCode !== currentIdentity.customerCode ||
+    pending.identity.siteCode !== currentIdentity.siteCode
+  ) {
+    throw new Error("Platform backup identity changed before sealing");
+  }
+
+  const influxRoot = join(normalizedDirectory, "influxdb");
+  const influxFiles = await collectFiles(influxRoot);
+  if (influxFiles.length === 0) throw new Error("InfluxDB snapshot is empty");
+
+  const influxArtifacts: PlatformBackupArtifact[] = [];
+  for (const relativeFile of influxFiles) {
+    const fullPath = join(influxRoot, relativeFile);
+    const fileStat = await stat(fullPath);
+    influxArtifacts.push({
+      kind: "influxdb",
+      file: join("influxdb", relativeFile).replaceAll("\\", "/"),
+      bytes: fileStat.size,
+      sha256: await sha256(fullPath),
+    });
+  }
+
+  const manifest: PlatformBackupManifest = {
+    ...pending,
+    artifacts: [...pending.artifacts, ...influxArtifacts],
+    telemetry: { state: "SEALED", artifactCount: influxArtifacts.length },
+  };
+  const finalPath = join(normalizedDirectory, "manifest.json");
+  await writeFile(finalPath, `${JSON.stringify(manifest, null, 2)}\n`, {
+    encoding: "utf8",
+    flag: "wx",
+  });
+  await rename(pendingPath, join(normalizedDirectory, "manifest.sealed-source.json"));
+  return manifest;
 }
