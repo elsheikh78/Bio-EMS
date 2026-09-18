@@ -30,7 +30,10 @@ $env:INFLUX_ORG = $settings.INFLUX_ORG
 $bucket = $settings.INFLUX_BUCKET
 $marker = "depbr_$([Guid]::NewGuid().ToString('N'))"
 $timestamp = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$queryFile = Join-Path $env:TEMP "depbr-query-$([Guid]::NewGuid().ToString('N')).flux"
+$utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
 $query = "from(bucket: `"$bucket`") |> range(start: -10m) |> filter(fn: (r) => r._measurement == `"$marker`") |> count()"
+[System.IO.File]::WriteAllText($queryFile, $query, $utf8WithoutBom)
 $backup = Join-Path $env:TEMP "depbr-influx-$([Guid]::NewGuid().ToString('N'))"
 
 try {
@@ -40,7 +43,7 @@ try {
     & $influx write --bucket $bucket --org $settings.INFLUX_ORG --precision s --file $lineProtocolFile
     if ($LASTEXITCODE -ne 0) { throw "Failed to seed historical telemetry marker" }
 
-    $before = & $influx query --org $settings.INFLUX_ORG --raw $query
+    $before = & $influx query --org $settings.INFLUX_ORG --raw --file $queryFile
     if ($LASTEXITCODE -ne 0 -or ($before -join "`n") -notmatch $marker) {
         throw "Seeded historical telemetry marker was not queryable"
     }
@@ -52,7 +55,7 @@ try {
     & $influx delete --bucket $bucket --org $settings.INFLUX_ORG --start 1970-01-01T00:00:00Z --stop 2100-01-01T00:00:00Z --predicate $predicate
     if ($LASTEXITCODE -ne 0) { throw "Failed to remove telemetry marker before restore" }
 
-    $deleted = & $influx query --org $settings.INFLUX_ORG --raw $query
+    $deleted = & $influx query --org $settings.INFLUX_ORG --raw --file $queryFile
     if (($deleted -join "`n") -match $marker) { throw "Telemetry marker still exists before restore" }
 
     Stop-Service BIOEMS-Backend -Force
@@ -60,7 +63,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "InfluxDB restore failed in round-trip acceptance" }
     Start-Service BIOEMS-Backend
 
-    $after = & $influx query --org $settings.INFLUX_ORG --raw $query
+    $after = & $influx query --org $settings.INFLUX_ORG --raw --file $queryFile
     if ($LASTEXITCODE -ne 0 -or ($after -join "`n") -notmatch $marker) {
         throw "Historical telemetry marker was not recovered by restore"
     }
@@ -75,4 +78,5 @@ finally {
     Remove-Item Env:INFLUX_ORG -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction SilentlyContinue
     if ($lineProtocolFile) { Remove-Item -LiteralPath $lineProtocolFile -Force -ErrorAction SilentlyContinue }
+    if ($queryFile) { Remove-Item -LiteralPath $queryFile -Force -ErrorAction SilentlyContinue }
 }
