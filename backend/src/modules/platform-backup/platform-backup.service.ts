@@ -294,10 +294,12 @@ export async function createCompletePlatformBackup(
       hostUrl,
       "-Org",
       org,
-      "-Token",
-      token,
     ],
-    { windowsHide: true, maxBuffer: 1024 * 1024 }
+    {
+      windowsHide: true,
+      maxBuffer: 1024 * 1024,
+      env: { ...environment, INFLUX_TOKEN: token },
+    }
   );
 
   return sealPlatformBackup(directory, environment);
