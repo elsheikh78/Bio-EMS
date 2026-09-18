@@ -15,6 +15,9 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).toContain("& $InfluxCli backup $safetyInflux");
     expect(source).toContain("WAL-consistent SQLite safety backup is missing");
     expect(source).not.toContain("Invoke-Robocopy $liveInflux");
+    expect(source).toContain("trap {");
+    expect(source).toContain('Set-RestoreJobState "FAILED" $fatalFailure.Exception.Message');
+    expect(source.indexOf("trap {")).toBeLessThan(source.indexOf('Set-RestoreJobState "RUNNING"'));
   });
 
   it("revalidates sealed artifacts inside the worker before quiescing services", async () => {
