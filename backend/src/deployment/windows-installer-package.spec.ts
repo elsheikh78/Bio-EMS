@@ -10,7 +10,15 @@ import {
   WINDOWS_INSTALLER_ISSUES,
 } from "./windows-installer-package";
 
-const ids = ["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"] as const;
+const ids = [
+  "backend",
+  "frontend",
+  "node",
+  "mosquitto",
+  "influxdb",
+  "winsw",
+  "influx-cli",
+] as const;
 const content = (id: string) => Buffer.from(`controlled-${id}`);
 const checksum = (value: Buffer) => createHash("sha256").update(value).digest("hex");
 
@@ -46,7 +54,7 @@ function stage(input = manifest()) {
 }
 
 describe("DEP-01 controlled Windows installer package", () => {
-  it("accepts exactly the six controlled, checksummed runtime/application inputs", () => {
+  it("accepts exactly the seven controlled, checksummed runtime/application inputs", () => {
     expect(readAndValidateWindowsInstallerPackage(stage())).toMatchObject({
       ready: true,
       issues: [],
