@@ -148,4 +148,16 @@ describe("system owner recovery", () => {
       /unavailable or already used/
     );
   });
+
+  it("rejects a valid signed package when the local recovery request has expired", async () => {
+    const signed = signOwnerRecoveryPackage(await claims(), "owner-key-2026", privateKey);
+    const verified = verifyOwnerRecoveryPackage(signed, publicKey, request, now);
+    database
+      .prepare(`UPDATE password_recovery_requests SET expires_at = ? WHERE request_id = ?`)
+      .run("2026-09-17T19:59:59.000Z", recoveryId);
+
+    expect(() => applyOwnerRecovery(database, verified, signed.keyId, now)).toThrow(
+      /unavailable or already used/
+    );
+  });
 });
