@@ -3,7 +3,7 @@ name: DEP-BR Prettier Fix
 on:
   push:
     branches: [feat/dep-br-backup-restore]
-    paths: [.github/workflows/dep-br-prettier-fix.yml, backend/src/deployment/windows-installer-package.spec.ts, backend/src/modules/platform-backup/**, backend/src/routes/platform-backup.route.ts, backend/src/controllers/platform-backup.controller.ts, backend/src/authorization/**, backend/src/app.ts]
+    paths: [.github/workflows/dep-br-prettier-fix.yml, backend/src/deployment/windows-installer-package.spec.ts, backend/src/modules/platform-backup/**, backend/src/modules/audit/platform-audit-context.ts, backend/src/routes/platform-backup.route.ts, backend/src/controllers/platform-backup.controller.ts, backend/src/authorization/**, backend/src/app.ts]
 
 permissions:
   contents: write
@@ -29,7 +29,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add backend/src/deployment/windows-installer-package.spec.ts backend/src/modules/licensing/installer-integration.ts backend/src/scripts/provision-installation-identity.ts backend/src/modules/platform-backup backend/src/routes/platform-backup.route.ts backend/src/controllers/platform-backup.controller.ts backend/src/authorization backend/src/app.ts
+          git add backend/src/deployment/windows-installer-package.spec.ts backend/src/modules/licensing/installer-integration.ts backend/src/scripts/provision-installation-identity.ts backend/src/modules/platform-backup backend/src/modules/audit/platform-audit-context.ts backend/src/routes/platform-backup.route.ts backend/src/controllers/platform-backup.controller.ts backend/src/authorization backend/src/app.ts
           git diff --cached --quiet && exit 0
           git commit -m "style: apply backend prettier to DEP-BR files"
           git push origin HEAD:feat/dep-br-backup-restore
