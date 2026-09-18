@@ -190,6 +190,9 @@ function GetContactName(Param: String): String; begin Result := IdentityValue(5,
 function GetContactEmail(Param: String): String; begin Result := IdentityValue(6, 'BIOEMS_CI_CONTACT_EMAIL'); end;
 function GetContactPhone(Param: String): String; begin Result := IdentityValue(7, 'BIOEMS_CI_CONTACT_PHONE'); end;
 
+function IsNewInstallSelected(): Boolean; forward;
+function IsRepairSelected(): Boolean; forward;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
