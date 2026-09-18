@@ -38,17 +38,17 @@ function requireBackupId(req: Request): string {
 }
 
 export async function restoreCustomerPlatformBackup(req: Request, res: Response): Promise<void> {
-  const manifest = await restorePlatformBackup(requireBackupId(req), {
+  const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
   });
-  res.status(200).json({ backup: manifest, restored: true });
+  res.status(202).json({ backup: job.backup, restoreQueued: true });
 }
 
 export async function restoreOwnerPlatformBackup(req: Request, res: Response): Promise<void> {
-  const manifest = await restorePlatformBackup(requireBackupId(req), {
+  const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
   });
-  res.status(200).json({ backup: manifest, restored: true });
+  res.status(202).json({ backup: job.backup, restoreQueued: true });
 }
 
 export async function restoreOwnerPlatformBackupForDisasterRecovery(
@@ -77,21 +77,21 @@ export async function restoreOwnerPlatformBackupForDisasterRecovery(
   }
 
   try {
-    const manifest = await restorePlatformBackup(backupId, { allowIdentityTransfer: true });
+    const job = await restorePlatformBackup(backupId, { allowIdentityTransfer: true });
     auditEventService.record({
       actor: platformAuditActor(req),
       action: "PLATFORM_BACKUP.DR_RESTORE",
       target: { type: "PLATFORM_BACKUP", id: backupId },
       result: "SUCCESS",
       newValues: {
-        installationId: manifest.identity.installationId,
-        customerCode: manifest.identity.customerCode,
-        siteCode: manifest.identity.siteCode,
+        installationId: job.backup.identity.installationId,
+        customerCode: job.backup.identity.customerCode,
+        siteCode: job.backup.identity.siteCode,
       },
       requestContext: platformRequestContext(req, "platform-backup-dr"),
-      reason: "Controlled PC replacement/disaster recovery identity transfer",
+      reason: "Controlled PC replacement/disaster recovery identity transfer queued",
     });
-    res.status(200).json({ backup: manifest, restored: true, identityTransferred: true });
+    res.status(202).json({ backup: job.backup, restoreQueued: true, identityTransferQueued: true });
   } catch (error) {
     auditEventService.record({
       actor: platformAuditActor(req),
