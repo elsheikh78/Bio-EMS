@@ -82,6 +82,58 @@ describe("LIC-11 installer identity integration", () => {
     expect(second.installationId).not.toBe(receipt.installationId);
   });
 
+  it("binds validated customer and site metadata to the provisioning receipt", () => {
+    const directory = mkdtempSync(join(tmpdir(), "bioems-installer-metadata-"));
+    const protector = new AesGcmKeyProtector(randomBytes(32));
+    const input = {
+      identityPath: join(directory, "identity.json"),
+      receiptPath: join(directory, "receipt.json"),
+      protector,
+      customerSite: {
+        customerName: "BIO EGYPT",
+        customerCode: "BIO-EGYPT",
+        siteName: "6th October",
+        siteCode: "OCT-01",
+        siteLocation: "6th October City",
+        contactName: "Quality Manager",
+        contactEmail: "quality@example.com",
+        contactPhone: "+201000000000",
+      },
+    };
+
+    const receipt = provisionInstallationIdentity(input);
+    expect(receipt.customerSite).toEqual(input.customerSite);
+    expect(JSON.parse(readFileSync(input.receiptPath, "utf8"))).toMatchObject({
+      installationId: receipt.installationId,
+      customerSite: input.customerSite,
+    });
+    expect(receipt.installationId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    );
+  });
+
+  it("rejects invalid installer customer and site codes before creating identity files", () => {
+    const directory = mkdtempSync(join(tmpdir(), "bioems-installer-invalid-metadata-"));
+    const identityPath = join(directory, "identity.json");
+    const receiptPath = join(directory, "receipt.json");
+
+    expect(() =>
+      provisionInstallationIdentity({
+        identityPath,
+        receiptPath,
+        protector: new AesGcmKeyProtector(randomBytes(32)),
+        customerSite: {
+          customerName: "BIO EGYPT",
+          customerCode: "BIO EGYPT",
+          siteName: "Manial",
+          siteCode: "MANIAL-01",
+        },
+      })
+    ).toThrow();
+    expect(() => readFileSync(identityPath, "utf8")).toThrow();
+    expect(() => readFileSync(receiptPath, "utf8")).toThrow();
+  });
+
   it("does not make a copied protected identity usable with another host KEK", () => {
     const source = mkdtempSync(join(tmpdir(), "bioems-copy-source-"));
     const target = mkdtempSync(join(tmpdir(), "bioems-copy-target-"));
