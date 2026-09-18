@@ -29,12 +29,14 @@ describe("System Owner recovery request creation", () => {
   const now = new Date("2026-09-18T08:00:00.000Z");
 
   beforeEach(async () => {
+    database.pragma("foreign_keys = OFF");
     database.exec(`
       DROP TABLE IF EXISTS password_recovery_audit;
       DROP TABLE IF EXISTS password_recovery_requests;
       DROP TABLE IF EXISTS platform_principals;
       DROP TABLE IF EXISTS users;
     `);
+    database.pragma("foreign_keys = ON");
     migration003.up(database);
     migration009.up(database);
     migration026.up(database);
@@ -59,12 +61,14 @@ describe("System Owner recovery request creation", () => {
   });
 
   afterEach(() => {
+    database.pragma("foreign_keys = OFF");
     database.exec(`
       DROP TABLE IF EXISTS password_recovery_audit;
       DROP TABLE IF EXISTS password_recovery_requests;
       DROP TABLE IF EXISTS platform_principals;
       DROP TABLE IF EXISTS users;
     `);
+    database.pragma("foreign_keys = ON");
   });
 
   it("creates an installation-bound 24-hour request while storing only the challenge hash", async () => {
