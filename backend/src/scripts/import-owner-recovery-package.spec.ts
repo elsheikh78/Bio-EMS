@@ -73,9 +73,9 @@ describe("System Owner recovery package import boundary", () => {
       purpose: "SYSTEM_OWNER_PASSWORD_RECOVERY" as const,
       recoveryId: fixture.request.recoveryId,
       installationId: fixture.request.installationId,
-      challengeHash: (await import("../modules/platform-auth/owner-recovery")).hashOwnerRecoveryChallenge(
-        fixture.request.challenge
-      ),
+      challengeHash: (
+        await import("../modules/platform-auth/owner-recovery")
+      ).hashOwnerRecoveryChallenge(fixture.request.challenge),
       passwordHash: await hashPassword(password),
       issuedAt: "2026-09-17T19:59:00.000Z",
       expiresAt: "2026-09-17T20:10:00.000Z",
