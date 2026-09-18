@@ -736,3 +736,4 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(trustScript).toContain("Cert:\\LocalMachine\\TrustedPublisher");
   });
 });
+
