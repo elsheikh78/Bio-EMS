@@ -22,6 +22,7 @@ import {
   createOwnerPlatformBackup,
   listOwnerPlatformBackups,
   restoreOwnerPlatformBackup,
+  restoreOwnerPlatformBackupForDisasterRecovery,
 } from "../controllers/platform-backup.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
@@ -84,6 +85,7 @@ router.get("/", platformOperationsOverview);
 router.get("/backups", listOwnerPlatformBackups);
 router.post("/backups", createOwnerPlatformBackup);
 router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
+router.post("/backups/:backupId/dr-restore", restoreOwnerPlatformBackupForDisasterRecovery);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
