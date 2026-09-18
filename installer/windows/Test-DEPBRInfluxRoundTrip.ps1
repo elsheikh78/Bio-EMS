@@ -59,6 +59,8 @@ try {
     if (($deleted -join "`n") -match $marker) { throw "Telemetry marker still exists before restore" }
 
     Stop-Service BIOEMS-Backend -Force
+    & $influx bucket delete --name $bucket --org $settings.INFLUX_ORG --force
+    if ($LASTEXITCODE -ne 0) { throw "Failed to remove existing InfluxDB bucket before restore" }
     & $influx restore $backup
     if ($LASTEXITCODE -ne 0) { throw "InfluxDB restore failed in round-trip acceptance" }
     Start-Service BIOEMS-Backend
