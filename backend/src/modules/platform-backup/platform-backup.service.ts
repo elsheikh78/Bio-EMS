@@ -215,6 +215,65 @@ export async function sealPlatformBackup(
   return manifest;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseSealedPlatformBackupManifest(value: unknown): PlatformBackupManifest {
+  if (!isRecord(value) || value.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION) {
+    throw new Error("Incompatible platform backup format");
+  }
+  if (
+    typeof value.backupId !== "string" ||
+    typeof value.createdAt !== "string" ||
+    Number.isNaN(Date.parse(value.createdAt)) ||
+    !isRecord(value.identity) ||
+    typeof value.identity.installationId !== "string" ||
+    typeof value.identity.customerCode !== "string" ||
+    typeof value.identity.siteCode !== "string" ||
+    !Array.isArray(value.artifacts) ||
+    !isRecord(value.telemetry) ||
+    value.telemetry.state !== "SEALED" ||
+    typeof value.telemetry.artifactCount !== "number"
+  ) {
+    throw new Error("Platform backup manifest schema is invalid");
+  }
+  for (const artifact of value.artifacts) {
+    if (
+      !isRecord(artifact) ||
+      (artifact.kind !== "sqlite" && artifact.kind !== "influxdb") ||
+      typeof artifact.file !== "string" ||
+      typeof artifact.bytes !== "number" ||
+      !Number.isSafeInteger(artifact.bytes) ||
+      artifact.bytes < 0 ||
+      typeof artifact.sha256 !== "string" ||
+      !/^[0-9a-f]{64}$/i.test(artifact.sha256)
+    ) {
+      throw new Error("Platform backup manifest schema is invalid");
+    }
+  }
+  if (
+    value.telemetry.artifactCount !==
+    value.artifacts.filter((artifact) => isRecord(artifact) && artifact.kind === "influxdb").length
+  ) {
+    throw new Error("Platform backup manifest telemetry count is invalid");
+  }
+  return value as unknown as PlatformBackupManifest;
+}
+
+async function assertSafeBackupDirectory(root: string, directory: string): Promise<void> {
+  const rootReal = await realpath(root);
+  const directoryEntry = await lstat(directory);
+  if (directoryEntry.isSymbolicLink() || !directoryEntry.isDirectory()) {
+    throw new Error("Platform backup directory must be a real directory");
+  }
+  const directoryReal = await realpath(directory);
+  const traversal = relative(rootReal, directoryReal);
+  if (traversal.startsWith("..") || isAbsolute(traversal)) {
+    throw new Error("Platform backup directory resolves outside the configured allowed root");
+  }
+}
+
 export interface PlatformBackupListItem {
   backupId: string;
   createdAt: string;
@@ -348,13 +407,10 @@ export async function validatePlatformBackupForRestore(
   }
   const root = resolveAllowedBackupDestination(undefined, environment);
   const directory = join(root, `platform-${backupId}`);
-  const manifest = JSON.parse(
-    await readFile(join(directory, "manifest.json"), "utf8")
-  ) as PlatformBackupManifest;
-
-  if (manifest.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION) {
-    throw new Error("Incompatible platform backup format");
-  }
+  await assertSafeBackupDirectory(root, directory);
+  const manifest = parseSealedPlatformBackupManifest(
+    JSON.parse(await readFile(join(directory, "manifest.json"), "utf8")) as unknown
+  );
   if (manifest.backupId !== backupId || manifest.telemetry.state !== "SEALED") {
     throw new Error("Platform backup is not sealed for restore");
   }
