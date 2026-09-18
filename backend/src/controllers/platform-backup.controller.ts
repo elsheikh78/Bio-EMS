@@ -31,7 +31,8 @@ export async function createOwnerPlatformBackup(_req: Request, res: Response): P
 }
 
 function requireBackupId(req: Request): string {
-  const backupId = req.params.backupId;
+  const value = req.params.backupId;
+  const backupId = Array.isArray(value) ? value[0] : value;
   if (!backupId) throw new Error("Platform backup id is required");
   return backupId;
 }
