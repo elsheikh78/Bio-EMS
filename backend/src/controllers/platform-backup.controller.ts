@@ -111,6 +111,7 @@ function requireBackupId(req: Request): string {
 export async function restoreCustomerPlatformBackup(req: Request, res: Response): Promise<void> {
   const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
+    audit: { actor: customerAuditActor(req), source: "platform-backup-restore" },
   });
   res.status(202).json({ backup: job.backup, restoreQueued: true, restoreJob: job.status });
 }
@@ -118,6 +119,7 @@ export async function restoreCustomerPlatformBackup(req: Request, res: Response)
 export async function restoreOwnerPlatformBackup(req: Request, res: Response): Promise<void> {
   const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
+    audit: { actor: platformAuditActor(req), source: "platform-backup-restore" },
   });
   res.status(202).json({ backup: job.backup, restoreQueued: true, restoreJob: job.status });
 }
@@ -148,7 +150,10 @@ export async function restoreOwnerPlatformBackupForDisasterRecovery(
   }
 
   try {
-    const job = await restorePlatformBackup(backupId, { allowIdentityTransfer: true });
+    const job = await restorePlatformBackup(backupId, {
+      allowIdentityTransfer: true,
+      audit: { actor: platformAuditActor(req), source: "platform-backup-dr" },
+    });
     auditEventService.record({
       actor: platformAuditActor(req),
       action: "PLATFORM_BACKUP.DR_RESTORE_QUEUED",
