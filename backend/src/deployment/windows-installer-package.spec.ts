@@ -737,7 +737,6 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
   });
 });
 
-
 describe("DEP-BR packaged restore helper contract", () => {
   const repositoryRoot = join(process.cwd(), "..");
   const windowsRoot = join(repositoryRoot, "installer/windows");
