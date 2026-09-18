@@ -484,9 +484,7 @@ function restoreJobDirectory(environment: NodeJS.ProcessEnv): string {
 }
 
 function restoreJobPath(jobId: string, environment: NodeJS.ProcessEnv): string {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)
-  ) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)) {
     throw new Error("Invalid platform restore job id");
   }
   return join(restoreJobDirectory(environment), `${jobId}.json`);
