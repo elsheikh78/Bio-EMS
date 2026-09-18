@@ -59,7 +59,7 @@ export async function getOwnerPlatformRestoreJob(req: Request, res: Response): P
       reason:
         restoreJob.state === "SUCCEEDED"
           ? "Restore worker reported successful completion"
-          : restoreJob.error ?? "Restore worker reported failure after rollback handling",
+          : (restoreJob.error ?? "Restore worker reported failure after rollback handling"),
     });
   }
   res.status(200).json({ restoreJob });
