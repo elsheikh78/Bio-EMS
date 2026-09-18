@@ -202,3 +202,53 @@ export async function sealPlatformBackup(
   await rename(pendingPath, join(normalizedDirectory, "manifest.sealed-source.json"));
   return manifest;
 }
+
+
+export interface PlatformBackupListItem {
+  backupId: string;
+  createdAt: string;
+  identity: PlatformBackupIdentity;
+  artifactCount: number;
+  totalBytes: number;
+  telemetryState: PlatformBackupManifest["telemetry"]["state"];
+}
+
+export async function listPlatformBackups(
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformBackupListItem[]> {
+  const root = resolveAllowedBackupDestination(undefined, environment);
+  let entries;
+  try {
+    entries = await readdir(root, { withFileTypes: true });
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return [];
+    throw error;
+  }
+
+  const backups: PlatformBackupListItem[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !entry.name.startsWith("platform-")) continue;
+    const manifestPath = join(root, entry.name, "manifest.json");
+    try {
+      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as PlatformBackupManifest;
+      if (
+        manifest.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION ||
+        manifest.telemetry.state !== "SEALED"
+      ) {
+        continue;
+      }
+      backups.push({
+        backupId: manifest.backupId,
+        createdAt: manifest.createdAt,
+        identity: manifest.identity,
+        artifactCount: manifest.artifacts.length,
+        totalBytes: manifest.artifacts.reduce((sum, artifact) => sum + artifact.bytes, 0),
+        telemetryState: manifest.telemetry.state,
+      });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  return backups.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
