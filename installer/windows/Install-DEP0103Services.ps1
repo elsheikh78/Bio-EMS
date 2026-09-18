@@ -3,6 +3,14 @@ param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot,
     [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$ProductVersion,
+    [string]$CustomerName = "BIO-EMS Customer",
+    [string]$CustomerCode = "INSTALLATION-CUSTOMER",
+    [string]$SiteName = "BIO-EMS Site",
+    [string]$SiteCode = "INSTALLATION-SITE",
+    [string]$SiteLocation = "",
+    [string]$ContactName = "",
+    [string]$ContactEmail = "",
+    [string]$ContactPhone = "",
     [switch]$PilotMode
 )
 
