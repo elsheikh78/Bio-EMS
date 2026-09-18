@@ -177,7 +177,6 @@ describe("DEP-BR restore validation behavior", () => {
   });
 });
 
-
 describe("DEP-BR malicious backup rejection", () => {
   it("uses strict UUID and rejects duplicate artifacts and symlinks before restore", async () => {
     const source = await readFile(
@@ -193,9 +192,13 @@ describe("DEP-BR malicious backup rejection", () => {
 
   it("rejects malformed backup ids before reading a backup directory", async () => {
     await expect(
-      validatePlatformBackupForRestore("../outside", {}, {
-        BIOEMS_SQLITE_BACKUP_DIR: "/var/lib/bioems/backups",
-      })
+      validatePlatformBackupForRestore(
+        "../outside",
+        {},
+        {
+          BIOEMS_SQLITE_BACKUP_DIR: "/var/lib/bioems/backups",
+        }
+      )
     ).rejects.toThrow("Invalid platform backup id");
   });
 });
