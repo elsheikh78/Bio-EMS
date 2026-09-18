@@ -22,7 +22,9 @@ describe("DEP-BR controlled restore helper contract", () => {
       join(process.cwd(), "../installer/windows/Invoke-PlatformRestore.ps1"),
       "utf8"
     );
-    const validationIndex = source.indexOf("Revalidate the sealed payload inside the external worker");
+    const validationIndex = source.indexOf(
+      "Revalidate the sealed payload inside the external worker"
+    );
     const stopIndex = source.indexOf("Stop-ControlledServices", validationIndex);
     expect(validationIndex).toBeGreaterThan(-1);
     expect(stopIndex).toBeGreaterThan(validationIndex);
