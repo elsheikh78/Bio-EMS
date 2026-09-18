@@ -16,18 +16,18 @@ describe("DEP-BR platform backup authorization", () => {
 
 describe("DEP-BR backup destination boundary", () => {
   const environment = {
-    BIOEMS_SQLITE_BACKUP_DIR: "C:\\ProgramData\\BIO-EMS\\backups",
+    BIOEMS_SQLITE_BACKUP_DIR: "/var/lib/bioems/backups",
   } as NodeJS.ProcessEnv;
 
   it("uses the configured backup root by default", () => {
     expect(resolveAllowedBackupDestination(undefined, environment)).toMatch(
-      /ProgramData[\\/]BIO-EMS[\\/]backups$/
+      /var\\/lib\\/bioems\\/backups$/
     );
   });
 
   it("rejects a destination outside the configured backup root", () => {
     expect(() =>
-      resolveAllowedBackupDestination("C:\\Temp\\stolen-backup", environment)
+      resolveAllowedBackupDestination("/tmp/stolen-backup", environment)
     ).toThrow("outside the configured allowed root");
   });
 
