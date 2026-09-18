@@ -648,14 +648,20 @@ describe("DEP-BR explicit installer mode contract", () => {
   });
 
   it("removes only product-owned services, firewall and evidenced TLS certificate", () => {
-    expect(lifecycle).toContain('$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")');
-    expect(lifecycle).toContain('Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"');
+    expect(lifecycle).toContain(
+      '$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
+    );
+    expect(lifecycle).toContain(
+      'Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"'
+    );
     expect(lifecycle).toContain('"config\\tls-certificate.json"');
     expect(lifecycle).toContain("Where-Object Thumbprint -eq $thumbprint");
   });
 
   it("routes repair through preservation lifecycle and never NewInstallCleanup", () => {
-    expect(setup).toContain("IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart");
+    expect(setup).toContain(
+      "IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart"
+    );
     expect(setup).toContain("-Mode PreUpdate");
     expect(setup).toContain("-Mode PostUpdate");
     expect(lifecycle).toContain("VERIFIED_BACKUP_READY");
