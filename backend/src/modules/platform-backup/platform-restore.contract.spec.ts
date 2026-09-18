@@ -69,7 +69,7 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(controllerSource).toContain("readInstalledBackupIdentity");
     expect(controllerSource).toContain("RESTORE_JOB_NOT_FOUND");
     expect(controllerSource).toContain("customerAuditActor(req)");
-    expect(controllerSource).toContain('customerRequestContext("platform-backup-restore-status")');
+    expect(controllerSource).toContain("recordPlatformRestoreTerminalAudit(restoreJob)");
   });
 
   it("persists initiating actor metadata and reconciles terminal audit after backend restart", async () => {
@@ -84,7 +84,11 @@ describe("DEP-BR controlled restore helper contract", () => {
     const appSource = await readFile(join(process.cwd(), "src/app.ts"), "utf8");
     expect(serviceSource).toContain("finalAuditEventId: randomUUID()");
     expect(serviceSource).toContain("reconcilePlatformRestoreAudits");
+    expect(serviceSource).toContain("recordPlatformRestoreTerminalAudit");
     expect(serviceSource).toContain("recordOnce(job.audit.finalAuditEventId");
+    expect(serviceSource).toContain("Platform restore job audit metadata is invalid");
+    expect(controllerSource).toContain("recordPlatformRestoreTerminalAudit(restoreJob)");
+    expect(controllerSource).not.toContain("recordOnce(restoreJob.jobId");
     expect(controllerSource).toContain('source: "platform-backup-restore"');
     expect(controllerSource).toContain('source: "platform-backup-dr"');
     expect(appSource).toContain("reconcilePlatformRestoreAudits()");
