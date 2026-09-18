@@ -21,6 +21,7 @@ import { platformAuthenticationMiddleware } from "../middleware/platform-authent
 import {
   createOwnerPlatformBackup,
   listOwnerPlatformBackups,
+  restoreOwnerPlatformBackup,
 } from "../controllers/platform-backup.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
@@ -82,6 +83,7 @@ router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
 router.get("/backups", listOwnerPlatformBackups);
 router.post("/backups", createOwnerPlatformBackup);
+router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
