@@ -58,7 +58,9 @@ export function resolveAllowedBackupDestination(
 }
 
 async function sha256(path: string): Promise<string> {
-  return createHash("sha256").update(await readFile(path)).digest("hex");
+  return createHash("sha256")
+    .update(await readFile(path))
+    .digest("hex");
 }
 
 export async function readInstalledBackupIdentity(
@@ -124,13 +126,16 @@ export async function createPlatformBackupFoundation(
       reason: "INFLUXDB_SNAPSHOT_REQUIRED",
     },
   };
-  await writeFile(join(directory, "manifest.pending.json"), `${JSON.stringify(manifest, null, 2)}\n`, {
-    encoding: "utf8",
-    flag: "wx",
-  });
+  await writeFile(
+    join(directory, "manifest.pending.json"),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    {
+      encoding: "utf8",
+      flag: "wx",
+    }
+  );
   return { directory, manifest };
 }
-
 
 async function collectFiles(root: string, prefix = ""): Promise<string[]> {
   const entries = await readdir(join(root, prefix), { withFileTypes: true });

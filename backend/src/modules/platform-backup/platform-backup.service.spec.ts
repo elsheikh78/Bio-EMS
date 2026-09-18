@@ -26,9 +26,9 @@ describe("DEP-BR backup destination boundary", () => {
   });
 
   it("rejects a destination outside the configured backup root", () => {
-    expect(() =>
-      resolveAllowedBackupDestination("/tmp/stolen-backup", environment)
-    ).toThrow("outside the configured allowed root");
+    expect(() => resolveAllowedBackupDestination("/tmp/stolen-backup", environment)).toThrow(
+      "outside the configured allowed root"
+    );
   });
 
   it("requires an absolute configured backup root", () => {
