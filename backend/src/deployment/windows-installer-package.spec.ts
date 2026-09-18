@@ -651,9 +651,7 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(lifecycle).toContain(
       '$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
     );
-    expect(lifecycle).toContain(
-      'Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"'
-    );
+    expect(lifecycle).toContain('Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"');
     expect(lifecycle).toContain('"config\\tls-certificate.json"');
     expect(lifecycle).toContain("Where-Object Thumbprint -eq $thumbprint");
   });
@@ -736,4 +734,3 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(trustScript).toContain("Cert:\\LocalMachine\\TrustedPublisher");
   });
 });
-
