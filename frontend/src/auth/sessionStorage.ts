@@ -9,6 +9,7 @@ export const storedAuthenticationSessionSchema = z
     accessToken: z.string().min(1),
     tokenType: z.literal("bearer"),
     expiresAt: z.number().int().positive().safe(),
+    passwordChangeRequired: z.boolean().default(false),
     user: authenticatedUserSchema,
   })
   .strict();
@@ -32,6 +33,7 @@ export function createStoredAuthenticationSession(
     accessToken: response.access_token,
     tokenType: response.token_type,
     expiresAt: responseReceivedAt + response.expires_in * 1000,
+    passwordChangeRequired: response.password_change_required ?? false,
     user: response.user,
   });
 }
@@ -52,7 +54,6 @@ export function createAuthenticationStorageAdapter(
     raw: string | null,
   ): StoredAuthenticationSession | undefined => {
     if (raw === null) return undefined;
-
     try {
       const result = storedAuthenticationSessionSchema.safeParse(
         JSON.parse(raw),
@@ -84,7 +85,6 @@ export function createAuthenticationStorageAdapter(
         clear();
         return false;
       }
-
       try {
         const serialized = JSON.stringify(validation.data);
         const storage = getStorage();

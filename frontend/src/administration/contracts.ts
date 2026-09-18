@@ -12,6 +12,32 @@ export const userSchema = z
   })
   .strict();
 export const usersSchema = z.array(userSchema);
+
+export const passwordRecoveryRequestSchema = z
+  .object({
+    request_id: z.string().uuid(),
+    principal_type: z.literal("USER"),
+    principal_id: z.number().int().positive().nullable(),
+    username_hint: z.string().nullable(),
+    installation_id: z.string().nullable(),
+    status: z.literal("PENDING"),
+    requested_at: z.string(),
+    expires_at: z.string(),
+    approved_at: z.string().nullable(),
+    consumed_at: z.string().nullable(),
+  })
+  .strict();
+export const passwordRecoveryRequestsSchema = z.array(
+  passwordRecoveryRequestSchema,
+);
+export const passwordRecoveryResetResultSchema = z
+  .object({
+    request_id: z.string().uuid(),
+    principal_id: z.number().int().positive(),
+    status: z.literal("CONSUMED"),
+  })
+  .strict();
+
 const structuredValues = z.record(z.string(), z.unknown());
 export const auditEventSchema = z
   .object({
@@ -47,6 +73,12 @@ export const auditEventsResponseSchema = z
   .object({ events: z.array(auditEventSchema) })
   .strict();
 export type ManagedUser = z.infer<typeof userSchema>;
+export type PasswordRecoveryRequest = z.infer<
+  typeof passwordRecoveryRequestSchema
+>;
+export type PasswordRecoveryResetResult = z.infer<
+  typeof passwordRecoveryResetResultSchema
+>;
 export type AuditEvent = z.infer<typeof auditEventSchema>;
 export interface CreateUserInput {
   username: string;

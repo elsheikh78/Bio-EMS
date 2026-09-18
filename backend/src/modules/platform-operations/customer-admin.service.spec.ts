@@ -21,7 +21,8 @@ describe("SYSTEM_OWNER customer administrator lifecycle", () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, email TEXT,
         password_hash TEXT NOT NULL, role TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active',
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        password_change_required INTEGER NOT NULL DEFAULT 0 CHECK (password_change_required IN (0, 1))
       );
     `);
     migration018.up(database);

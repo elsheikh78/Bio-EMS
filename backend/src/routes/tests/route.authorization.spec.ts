@@ -52,7 +52,9 @@ vi.mock("../../controllers/dashboard.controller", () => ({
 }));
 vi.mock("../../controllers/user.controller", () => ({
   createUser: controller,
+  listPendingPasswordRecoveryRequests: controller,
   listUsers: controller,
+  resetPasswordFromRecoveryRequest: controller,
   updateUser: controller,
   updateUserPassword: controller,
   updateUserStatus: controller,
@@ -179,6 +181,13 @@ const ROUTES: readonly RouteCase[] = [
   dashboardRoute("/dashboard/rooms/status", "/rooms/status"),
   dashboardRoute("/dashboard/alarm-statistics", "/alarm-statistics"),
   userRoute("get", "/users", "/"),
+  userRoute("get", "/users/password-recovery/requests", "/password-recovery/requests"),
+  userRoute(
+    "post",
+    "/users/password-recovery/requests/49db1d2a-95cc-4ad9-bdcb-823d8a29890f/reset",
+    "/password-recovery/requests/:request_id/reset",
+    { password: "Password1234" }
+  ),
   userRoute("post", "/users", "/", {
     username: "new-user",
     password: "Password1234",

@@ -18,6 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { type FormEvent, useState } from "react";
+import { PasswordRecoveryPanel } from "../administration/PasswordRecoveryPanel";
 import {
   userRoles,
   type ManagedUser,
@@ -58,6 +59,7 @@ export function AdministrationPage() {
         </Typography>
       </Box>
       <UsersPanel />
+      <PasswordRecoveryPanel />
       <AuditPanel />
     </Stack>
   );

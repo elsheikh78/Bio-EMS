@@ -32,6 +32,19 @@ const copy = {
     verify: "Activate MFA",
     verifying: "Activating…",
     activated: "MFA is active. Sign in again using your authenticator code.",
+    forgot: "Forgot password?",
+    recoveryTitle: "System Owner password recovery",
+    recoveryHelp:
+      "System Owner recovery is manufacturer-controlled. Generate an installation-bound recovery request on this BIO-EMS computer, send only that request to the manufacturer, then import the signed recovery package returned by the manufacturer.",
+    recoveryRequest: "1. Generate recovery request",
+    recoveryIssue: "2. Manufacturer signs the request offline",
+    recoveryImport:
+      "3. Import the signed recovery package on this installation",
+    recoverySecurity:
+      "The manufacturer private key must never be copied to this computer, GitHub, CI, Setup, logs or screenshots. There is no master password or customer-admin override.",
+    recoveryCommand:
+      "Use the local BIO-EMS recovery utility supplied with the installation. The web page never asks for the manufacturer private key.",
+    back: "Back to System Owner sign in",
   },
   ar: {
     title: "مالك نظام BIO-EMS",
@@ -51,6 +64,18 @@ const copy = {
     verifying: "جارٍ التفعيل…",
     activated:
       "تم تفعيل المصادقة الثنائية. سجّل الدخول مجددًا باستخدام رمز التطبيق.",
+    forgot: "نسيت كلمة المرور؟",
+    recoveryTitle: "استعادة كلمة مرور مالك النظام",
+    recoveryHelp:
+      "استعادة حساب مالك النظام خاضعة لتحكم الشركة المصنّعة. أنشئ طلب استعادة مرتبطًا بهذه النسخة من BIO-EMS، وأرسل الطلب فقط إلى الشركة، ثم استورد حزمة الاستعادة الموقعة التي تعيدها الشركة.",
+    recoveryRequest: "1. إنشاء طلب الاستعادة",
+    recoveryIssue: "2. توقيع الطلب لدى الشركة دون اتصال بالمفتاح الخاص",
+    recoveryImport: "3. استيراد حزمة الاستعادة الموقعة على نفس النسخة",
+    recoverySecurity:
+      "يُحظر نسخ المفتاح الخاص للشركة إلى هذا الجهاز أو GitHub أو CI أو Setup أو السجلات أو الصور. ولا توجد كلمة مرور رئيسية أو صلاحية للـADMIN لتجاوز ذلك.",
+    recoveryCommand:
+      "استخدم أداة BIO-EMS المحلية للاستعادة المرفقة مع التثبيت. واجهة الويب لا تطلب المفتاح الخاص للشركة مطلقًا.",
+    back: "العودة لتسجيل دخول مالك النظام",
   },
 } as const;
 
@@ -70,11 +95,12 @@ export function SystemOwnerLoginPage() {
   const [setupPending, setSetupPending] = useState(false);
   const [failed, setFailed] = useState(false);
   const [activated, setActivated] = useState(false);
+  const [recovery, setRecovery] = useState(false);
   const text = copy[language];
   const headingRef = useInitialFocus<HTMLHeadingElement>();
-
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (recovery) return;
     setFailed(false);
     setActivated(false);
     try {
@@ -95,7 +121,6 @@ export function SystemOwnerLoginPage() {
         setActivated(true);
         return;
       }
-
       const response = await login({
         username,
         password,
@@ -125,9 +150,7 @@ export function SystemOwnerLoginPage() {
       setSetupPending(false);
     }
   };
-
   const pending = loginPending || setupPending;
-
   return (
     <Box
       component="main"
@@ -135,10 +158,8 @@ export function SystemOwnerLoginPage() {
     >
       <Paper
         component="form"
-        onSubmit={(event) => {
-          void submit(event);
-        }}
-        sx={{ maxWidth: 440, p: 4, width: "100%" }}
+        onSubmit={(event) => void submit(event)}
+        sx={{ maxWidth: recovery ? 560 : 440, p: 4, width: "100%" }}
       >
         <Stack spacing={2.5}>
           <BrandLogo sx={{ maxWidth: 220 }} />
@@ -149,90 +170,137 @@ export function SystemOwnerLoginPage() {
               tabIndex={-1}
               variant="h4"
             >
-              {enrollment ? text.setupTitle : text.title}
+              {recovery
+                ? text.recoveryTitle
+                : enrollment
+                  ? text.setupTitle
+                  : text.title}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
-              {enrollment ? text.setupHelp : text.description}
+              {recovery
+                ? text.recoveryHelp
+                : enrollment
+                  ? text.setupHelp
+                  : text.description}
             </Typography>
           </Box>
-          {failed ? <Alert severity="error">{text.error}</Alert> : null}
-          {activated ? (
-            <Alert severity="success">{text.activated}</Alert>
-          ) : null}
-          {enrollment ? (
-            <Box>
-              <Typography color="text.secondary" variant="caption">
-                {text.secret}
+          {recovery ? (
+            <>
+              <Alert severity="info">
+                <Stack spacing={1}>
+                  <Typography>{text.recoveryRequest}</Typography>
+                  <Typography>{text.recoveryIssue}</Typography>
+                  <Typography>{text.recoveryImport}</Typography>
+                </Stack>
+              </Alert>
+              <Alert severity="warning">{text.recoverySecurity}</Alert>
+              <Typography color="text.secondary">
+                {text.recoveryCommand}
               </Typography>
-              <Typography
-                component="code"
-                sx={{
-                  display: "block",
-                  overflowWrap: "anywhere",
-                  userSelect: "all",
-                }}
+              <Button
+                onClick={() => setRecovery(false)}
+                type="button"
+                variant="outlined"
               >
-                {enrollment.secret}
-              </Typography>
-              <Typography
-                color="text.secondary"
-                component="code"
-                sx={{
-                  display: "block",
-                  fontSize: "0.7rem",
-                  mt: 1,
-                  overflowWrap: "anywhere",
-                  userSelect: "all",
-                }}
-              >
-                {enrollment.otpauthUri}
-              </Typography>
-            </Box>
+                {text.back}
+              </Button>
+            </>
           ) : (
             <>
+              {failed ? <Alert severity="error">{text.error}</Alert> : null}
+              {activated ? (
+                <Alert severity="success">{text.activated}</Alert>
+              ) : null}
+              {enrollment ? (
+                <Box>
+                  <Typography color="text.secondary" variant="caption">
+                    {text.secret}
+                  </Typography>
+                  <Typography
+                    component="code"
+                    sx={{
+                      display: "block",
+                      overflowWrap: "anywhere",
+                      userSelect: "all",
+                    }}
+                  >
+                    {enrollment.secret}
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    component="code"
+                    sx={{
+                      display: "block",
+                      fontSize: "0.7rem",
+                      mt: 1,
+                      overflowWrap: "anywhere",
+                      userSelect: "all",
+                    }}
+                  >
+                    {enrollment.otpauthUri}
+                  </Typography>
+                </Box>
+              ) : (
+                <>
+                  <TextField
+                    autoComplete="username"
+                    label={text.username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    value={username}
+                  />
+                  <TextField
+                    autoComplete="current-password"
+                    label={text.password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    type="password"
+                    value={password}
+                  />
+                </>
+              )}
               <TextField
-                autoComplete="username"
-                label={text.username}
-                onChange={(event) => setUsername(event.target.value)}
-                required
-                value={username}
+                autoComplete="one-time-code"
+                helperText={text.codeHelp}
+                label={text.code}
+                onChange={(e) =>
+                  setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                required={Boolean(enrollment)}
+                slotProps={{
+                  htmlInput: {
+                    inputMode: "numeric",
+                    maxLength: 6,
+                    pattern: "[0-9]{6}",
+                  },
+                }}
+                value={code}
               />
-              <TextField
-                autoComplete="current-password"
-                label={text.password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                type="password"
-                value={password}
-              />
+              <Button disabled={pending} type="submit" variant="contained">
+                {enrollment
+                  ? setupPending
+                    ? text.verifying
+                    : text.verify
+                  : loginPending
+                    ? text.signingIn
+                    : text.signIn}
+              </Button>
+              {!enrollment ? (
+                <Button
+                  onClick={() => {
+                    setRecovery(true);
+                    setFailed(false);
+                    setPassword("");
+                    setCode("");
+                  }}
+                  type="button"
+                  variant="text"
+                >
+                  {text.forgot}
+                </Button>
+              ) : null}
             </>
           )}
-          <TextField
-            autoComplete="one-time-code"
-            helperText={text.codeHelp}
-            label={text.code}
-            onChange={(event) =>
-              setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
-            }
-            required={Boolean(enrollment)}
-            slotProps={{
-              htmlInput: {
-                inputMode: "numeric",
-                maxLength: 6,
-                pattern: "[0-9]{6}",
-              },
-            }}
-            value={code}
-          />
-          <Button disabled={pending} type="submit" variant="contained">
-            {enrollment
-              ? setupPending
-                ? text.verifying
-                : text.verify
-              : loginPending
-                ? text.signingIn
-                : text.signIn}
-          </Button>
         </Stack>
       </Paper>
     </Box>

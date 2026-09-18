@@ -19,6 +19,7 @@ const PUBLIC_USER_COLUMNS = `
   email,
   role,
   status,
+  password_change_required,
   created_at,
   updated_at
 `;
@@ -54,11 +55,7 @@ export class UserRepository {
   createFirstUser(user: Parameters<UserRepository["create"]>[0]): number {
     return this.database.transaction(() => {
       const existing = this.database.prepare("SELECT 1 FROM users LIMIT 1").get();
-
-      if (existing) {
-        throw new Error("User bootstrap conflict");
-      }
-
+      if (existing) throw new Error("User bootstrap conflict");
       return this.create(user);
     })();
   }
@@ -91,7 +88,6 @@ export class UserRepository {
     return this.database.transaction(() => {
       const current = this.findById(id);
       if (!current) return undefined;
-
       if (
         current.role === "ADMIN" &&
         current.status === "active" &&
@@ -100,19 +96,15 @@ export class UserRepository {
       ) {
         this.assertAnotherActiveAdmin(id);
       }
-
       this.database
         .prepare(
-          `UPDATE users
-           SET email = ?, role = ?, updated_at = CURRENT_TIMESTAMP
-           WHERE id = ?`
+          `UPDATE users SET email = ?, role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
         )
         .run(
           input.email === undefined ? current.email : input.email,
           input.role ?? current.role,
           id
         );
-
       return this.findById(id);
     })();
   }
@@ -121,45 +113,45 @@ export class UserRepository {
     return this.database.transaction(() => {
       const current = this.findById(id);
       if (!current) return undefined;
-
-      if (current.role === "ADMIN" && current.status === "active" && status === "disabled") {
+      if (current.role === "ADMIN" && current.status === "active" && status === "disabled")
         this.assertAnotherActiveAdmin(id);
-      }
-
       this.database
-        .prepare(
-          `UPDATE users
-           SET status = ?, updated_at = CURRENT_TIMESTAMP
-           WHERE id = ?`
-        )
+        .prepare(`UPDATE users SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`)
         .run(status, id);
-
       return this.findById(id);
     })();
   }
 
-  updatePasswordHash(id: number, passwordHash: string): User | undefined {
+  updatePasswordHash(
+    id: number,
+    passwordHash: string,
+    passwordChangeRequired = false
+  ): User | undefined {
     assertValidBcryptHash(passwordHash);
     const result = this.database
       .prepare(
-        `UPDATE users
-         SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?`
+        `UPDATE users SET password_hash = ?, password_change_required = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
       )
-      .run(passwordHash, id);
-
+      .run(passwordHash, passwordChangeRequired ? 1 : 0, id);
     return result.changes === 0 ? undefined : this.findById(id);
+  }
+
+  clearPasswordChangeRequired(id: number): boolean {
+    return (
+      this.database
+        .prepare(
+          `UPDATE users SET password_change_required = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+        )
+        .run(id).changes === 1
+    );
   }
 
   private assertAnotherActiveAdmin(excludedId: number): void {
     const row = this.database
       .prepare(
-        `SELECT COUNT(*) AS count
-         FROM users
-         WHERE role = 'ADMIN' AND status = 'active' AND id <> ?`
+        `SELECT COUNT(*) AS count FROM users WHERE role = 'ADMIN' AND status = 'active' AND id <> ?`
       )
       .get(excludedId) as { count: number };
-
     if (row.count === 0) throw new LastActiveAdminError();
   }
 }
@@ -174,8 +166,6 @@ export class LastActiveAdminError extends Error {
 function assertValidBcryptHash(passwordHash: string): void {
   const match = BCRYPT_HASH_PATTERN.exec(passwordHash);
   const cost = match ? Number(match[1]) : Number.NaN;
-
-  if (!match || cost < MINIMUM_BCRYPT_COST || cost > MAXIMUM_BCRYPT_COST) {
+  if (!match || cost < MINIMUM_BCRYPT_COST || cost > MAXIMUM_BCRYPT_COST)
     throw new Error("Invalid bcrypt password hash");
-  }
 }

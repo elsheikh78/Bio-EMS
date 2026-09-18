@@ -22,6 +22,7 @@ export const loginResponseSchema = z
     access_token: z.string().min(1),
     token_type: z.literal("bearer"),
     expires_in: z.number().int().positive().finite(),
+    password_change_required: z.boolean(),
     user: authenticatedUserSchema,
   })
   .strict();
@@ -41,5 +42,10 @@ export const backendErrorEnvelopeSchema = z
 
 export type AuthenticatedUser = z.infer<typeof authenticatedUserSchema>;
 export type LoginRequest = z.infer<typeof loginRequestSchema>;
-export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type LoginResponse = Omit<
+  z.infer<typeof loginResponseSchema>,
+  "password_change_required"
+> & {
+  password_change_required?: boolean;
+};
 export type UserRole = z.infer<typeof userRoleSchema>;

@@ -18,11 +18,8 @@ export interface LoginResponse {
   access_token: string;
   token_type: "bearer";
   expires_in: number;
-  user: {
-    id: number;
-    username: string;
-    role: UserRole;
-  };
+  password_change_required: boolean;
+  user: { id: number; username: string; role: UserRole };
 }
 
 const invalidCredentials = () => new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
@@ -40,20 +37,16 @@ export class AuthService {
       credentials?.password_hash ?? DUMMY_BCRYPT_HASH
     );
 
-    if (!credentials || !passwordMatches || credentials.status !== "active") {
+    if (!credentials || !passwordMatches || credentials.status !== "active")
       throw invalidCredentials();
-    }
 
     const issued = this.tokenIssuer.issueAccessToken(credentials.id);
     return {
       access_token: issued.accessToken,
       token_type: "bearer",
       expires_in: issued.expiresIn,
-      user: {
-        id: credentials.id,
-        username: credentials.username,
-        role: credentials.role,
-      },
+      password_change_required: credentials.password_change_required === 1,
+      user: { id: credentials.id, username: credentials.username, role: credentials.role },
     };
   }
 }
