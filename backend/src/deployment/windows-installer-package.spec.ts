@@ -620,6 +620,49 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   });
 });
 
+describe("DEP-BR explicit installer mode contract", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const windowsRoot = join(repositoryRoot, "installer/windows");
+  const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+  const lifecycle = readFileSync(join(windowsRoot, "Invoke-DEP0105Lifecycle.ps1"), "utf8");
+
+  it("offers New Install and Reinstall / Repair explicitly", () => {
+    expect(setup).toContain("'Installation Mode'");
+    expect(setup).toContain("InstallModePage.Add('New Install')");
+    expect(setup).toContain("InstallModePage.Add('Reinstall / Repair')");
+    expect(setup).toContain("BIOEMS_CI_INSTALL_MODE");
+  });
+
+  it("requires explicit confirmation before destructive New Install cleanup", () => {
+    expect(setup).toContain("Existing BIO-EMS state was detected");
+    expect(setup).toContain("mbConfirmation, MB_YESNO");
+    expect(setup).toContain("NewInstallCleanupRequired := Result");
+    expect(setup).toContain("-Mode NewInstallCleanup");
+  });
+
+  it("fails closed unless cleanup targets the BIO-EMS ProgramData root", () => {
+    expect(lifecycle).toContain('"NewInstallCleanup"');
+    expect(lifecycle).toContain('Join-Path $env:ProgramData "BIO-EMS"');
+    expect(lifecycle).toContain("New Install cleanup refuses a persistent root");
+    expect(lifecycle).toContain("Remove-Item -LiteralPath $persistent -Recurse -Force");
+  });
+
+  it("removes only product-owned services, firewall and evidenced TLS certificate", () => {
+    expect(lifecycle).toContain('$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")');
+    expect(lifecycle).toContain('Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"');
+    expect(lifecycle).toContain('"config\\tls-certificate.json"');
+    expect(lifecycle).toContain("Where-Object Thumbprint -eq $thumbprint");
+  });
+
+  it("routes repair through preservation lifecycle and never NewInstallCleanup", () => {
+    expect(setup).toContain("IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart");
+    expect(setup).toContain("-Mode PreUpdate");
+    expect(setup).toContain("-Mode PostUpdate");
+    expect(lifecycle).toContain("VERIFIED_BACKUP_READY");
+    expect(lifecycle).toContain('@("config", "data", "licensing")');
+  });
+});
+
 describe("DEP-01-06 repeatable internal Windows artifact", () => {
   const repositoryRoot = join(process.cwd(), "..");
   const workflow = readFileSync(
