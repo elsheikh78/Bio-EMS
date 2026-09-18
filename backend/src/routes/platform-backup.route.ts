@@ -5,10 +5,6 @@ import { requirePermission } from "../middleware/authorization.middleware";
 
 const router = Router();
 
-router.get(
-  "/",
-  requirePermission(PERMISSION.PLATFORM_BACKUP_READ),
-  listCustomerPlatformBackups
-);
+router.get("/", requirePermission(PERMISSION.PLATFORM_BACKUP_READ), listCustomerPlatformBackups);
 
 export default router;

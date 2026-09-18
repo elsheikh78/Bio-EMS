@@ -203,7 +203,6 @@ export async function sealPlatformBackup(
   return manifest;
 }
 
-
 export interface PlatformBackupListItem {
   backupId: string;
   createdAt: string;
