@@ -39,3 +39,16 @@ describe("DEP-BR backup destination boundary", () => {
     ).toThrow("must be absolute");
   });
 });
+
+describe("DEP-BR sealed backup contract", () => {
+  it("keeps telemetry pending until the external InfluxDB snapshot is sealed", async () => {
+    const source = await import("node:fs/promises").then(({ readFile }) =>
+      readFile(new URL("./platform-backup.service.ts", import.meta.url), "utf8")
+    );
+    expect(source).toContain("PENDING_EXTERNAL_SNAPSHOT");
+    expect(source).toContain("INFLUXDB_SNAPSHOT_REQUIRED");
+    expect(source).toContain("InfluxDB snapshot is empty");
+    expect(source).toContain('telemetry: { state: "SEALED"');
+    expect(source).toContain("Platform backup identity changed before sealing");
+  });
+});
