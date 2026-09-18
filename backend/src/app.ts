@@ -28,6 +28,7 @@ import commissioningRouter from "./routes/commissioning.route";
 import platformOperationsRouter from "./routes/platform-operations.route";
 import installationAcceptanceRouter from "./routes/installation-acceptance.route";
 import communicationChannelRouter from "./routes/communication-channel.route";
+import platformBackupRouter from "./routes/platform-backup.route";
 import { resolve } from "node:path";
 
 createTables();
@@ -64,6 +65,7 @@ app.use(`${config.apiPrefix}/escalation-policies`, escalationPolicyRouter);
 app.use(`${config.apiPrefix}/realtime`, realtimeRouter);
 app.use(`${config.apiPrefix}/notification-deliveries`, notificationDeliveryRouter);
 app.use(`${config.apiPrefix}/communication-channels`, communicationChannelRouter);
+app.use(`${config.apiPrefix}/platform-backups`, platformBackupRouter);
 app.use(`${config.apiPrefix}/installations`, installationAcceptanceRouter);
 app.use(config.apiPrefix, commissioningRouter);
 
