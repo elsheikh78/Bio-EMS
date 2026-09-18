@@ -266,8 +266,7 @@ end;
 function InstallResiduePresent(): Boolean;
 begin
   Result := ExistingInstallAtStart or ServicesPresentAtStart or
-    DirExists(ExpandConstant('{commonappdata}\\BIO-EMS')) or
-    DirExists(ExpandConstant('{app}'));
+    DirExists(ExpandConstant('{commonappdata}\\BIO-EMS'));
 end;
 
 function InitializeSetup(): Boolean;
