@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdir, readFile, readdir, rename, stat, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, realpath, rename, stat, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { sqlite } from "../../../database/sqlite/client";
 
@@ -310,11 +310,19 @@ export interface PlatformBackupValidationResult {
   manifest: PlatformBackupManifest;
 }
 
-function assertSafeArtifactPath(directory: string, artifactFile: string): string {
+async function assertSafeArtifactPath(directory: string, artifactFile: string): Promise<string> {
   const fullPath = resolve(directory, artifactFile);
   const traversal = relative(directory, fullPath);
   if (!artifactFile || traversal.startsWith("..") || isAbsolute(traversal)) {
     throw new Error("Platform backup contains an unsafe artifact path");
+  }
+  const entry = await lstat(fullPath);
+  if (entry.isSymbolicLink()) throw new Error("Platform backup artifact symlinks are not allowed");
+  const realDirectory = await realpath(directory);
+  const realArtifact = await realpath(fullPath);
+  const realTraversal = relative(realDirectory, realArtifact);
+  if (realTraversal.startsWith("..") || isAbsolute(realTraversal)) {
+    throw new Error("Platform backup artifact resolves outside the backup directory");
   }
   return fullPath;
 }
@@ -324,7 +332,9 @@ export async function validatePlatformBackupForRestore(
   options: { allowIdentityTransfer?: boolean } = {},
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformBackupValidationResult> {
-  if (!/^[0-9a-f-]{36}$/i.test(backupId)) throw new Error("Invalid platform backup id");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(backupId)) {
+    throw new Error("Invalid platform backup id");
+  }
   const root = resolveAllowedBackupDestination(undefined, environment);
   const directory = join(root, `platform-${backupId}`);
   const manifest = JSON.parse(
@@ -338,13 +348,24 @@ export async function validatePlatformBackupForRestore(
     throw new Error("Platform backup is not sealed for restore");
   }
 
+  if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length < 2) {
+    throw new Error("Platform backup is incomplete");
+  }
+  const artifactFiles = manifest.artifacts.map((artifact) => artifact.file);
+  if (new Set(artifactFiles).size !== artifactFiles.length) {
+    throw new Error("Platform backup contains duplicate artifact paths");
+  }
+  const sqliteArtifacts = manifest.artifacts.filter((artifact) => artifact.kind === "sqlite");
+  if (sqliteArtifacts.length !== 1 || sqliteArtifacts[0]?.file !== "bioems.sqlite") {
+    throw new Error("Platform backup SQLite artifact is invalid");
+  }
   const artifactKinds = new Set(manifest.artifacts.map((artifact) => artifact.kind));
   if (!artifactKinds.has("sqlite") || !artifactKinds.has("influxdb")) {
     throw new Error("Platform backup is incomplete");
   }
 
   for (const artifact of manifest.artifacts) {
-    const artifactPath = assertSafeArtifactPath(directory, artifact.file);
+    const artifactPath = await assertSafeArtifactPath(directory, artifact.file);
     const artifactStat = await stat(artifactPath);
     if (!artifactStat.isFile() || artifactStat.size !== artifact.bytes) {
       throw new Error("Platform backup artifact size mismatch");
