@@ -43,7 +43,26 @@ export async function getCustomerPlatformRestoreJob(req: Request, res: Response)
 }
 
 export async function getOwnerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
-  res.status(200).json({ restoreJob: await getPlatformRestoreJob(requireJobId(req)) });
+  const restoreJob = await getPlatformRestoreJob(requireJobId(req));
+  if (restoreJob.state === "SUCCEEDED" || restoreJob.state === "FAILED") {
+    auditEventService.record({
+      actor: platformAuditActor(req),
+      action: "PLATFORM_BACKUP.RESTORE_STATUS_OBSERVED",
+      target: { type: "PLATFORM_BACKUP", id: restoreJob.backupId },
+      result: restoreJob.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
+      newValues: {
+        restoreJobId: restoreJob.jobId,
+        restoreState: restoreJob.state,
+        identityTransfer: restoreJob.allowIdentityTransfer,
+      },
+      requestContext: platformRequestContext(req, "platform-backup-restore-status"),
+      reason:
+        restoreJob.state === "SUCCEEDED"
+          ? "Restore worker reported successful completion"
+          : restoreJob.error ?? "Restore worker reported failure after rollback handling",
+    });
+  }
+  res.status(200).json({ restoreJob });
 }
 
 function requireBackupId(req: Request): string {
@@ -96,7 +115,7 @@ export async function restoreOwnerPlatformBackupForDisasterRecovery(
     const job = await restorePlatformBackup(backupId, { allowIdentityTransfer: true });
     auditEventService.record({
       actor: platformAuditActor(req),
-      action: "PLATFORM_BACKUP.DR_RESTORE",
+      action: "PLATFORM_BACKUP.DR_RESTORE_QUEUED",
       target: { type: "PLATFORM_BACKUP", id: backupId },
       result: "SUCCESS",
       newValues: {
