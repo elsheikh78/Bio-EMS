@@ -21,7 +21,7 @@ describe("DEP-BR backup destination boundary", () => {
 
   it("uses the configured backup root by default", () => {
     expect(resolveAllowedBackupDestination(undefined, environment)).toMatch(
-      /var\\/lib\\/bioems\\/backups$/
+      /\/var\/lib\/bioems\/backups$/
     );
   });
 
