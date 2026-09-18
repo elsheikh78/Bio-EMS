@@ -362,8 +362,6 @@ export async function createCompletePlatformBackup(
       hostUrl,
       "-Org",
       org,
-      "-JobStatusPath",
-      statusPath,
     ],
     {
       windowsHide: true,
@@ -582,6 +580,8 @@ export async function restorePlatformBackup(
       hostUrl,
       "-Org",
       org,
+      "-JobStatusPath",
+      statusPath,
     ],
     {
       windowsHide: true,
