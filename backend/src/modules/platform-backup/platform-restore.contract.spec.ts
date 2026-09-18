@@ -72,6 +72,24 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(controllerSource).toContain('customerRequestContext("platform-backup-restore-status")');
   });
 
+  it("persists initiating actor metadata and reconciles terminal audit after backend restart", async () => {
+    const serviceSource = await readFile(
+      join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    const controllerSource = await readFile(
+      join(process.cwd(), "src/controllers/platform-backup.controller.ts"),
+      "utf8"
+    );
+    const appSource = await readFile(join(process.cwd(), "src/app.ts"), "utf8");
+    expect(serviceSource).toContain("finalAuditEventId: randomUUID()");
+    expect(serviceSource).toContain("reconcilePlatformRestoreAudits");
+    expect(serviceSource).toContain("recordOnce(job.audit.finalAuditEventId");
+    expect(controllerSource).toContain('source: "platform-backup-restore"');
+    expect(controllerSource).toContain('source: "platform-backup-dr"');
+    expect(appSource).toContain("reconcilePlatformRestoreAudits()");
+  });
+
   it("does not accept an Influx token as a command-line parameter", async () => {
     const backupSource = await readFile(
       join(process.cwd(), "../installer/windows/Invoke-PlatformInfluxBackup.ps1"),
