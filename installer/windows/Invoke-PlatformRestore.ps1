@@ -63,7 +63,7 @@ function Restore-InfluxSnapshot([string]$snapshot) {
     # the backed-up bucket instead of failing with HTTP 422 "already exists".
     $bucketName = $env:BIOEMS_RESTORE_INFLUX_BUCKET
     if ([string]::IsNullOrWhiteSpace($bucketName)) { throw "BIOEMS_RESTORE_INFLUX_BUCKET is unavailable" }
-    & $InfluxCli bucket delete --name $bucketName --org $Org --force
+    & $InfluxCli bucket delete --name $bucketName --org $Org
     if ($LASTEXITCODE -ne 0) { throw "Existing InfluxDB bucket could not be removed before restore" }
     & $InfluxCli restore $snapshot
     if ($LASTEXITCODE -ne 0) { throw "InfluxDB snapshot restore failed with exit code $LASTEXITCODE" }
