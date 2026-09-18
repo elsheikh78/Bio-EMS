@@ -517,7 +517,45 @@ export async function getPlatformRestoreJob(
   ) {
     throw new Error("Platform restore job status is invalid");
   }
+  if (value.audit !== undefined) {
+    if (
+      !isRecord(value.audit) ||
+      !isRecord(value.audit.actor) ||
+      !["CUSTOMER_USER", "PLATFORM"].includes(String(value.audit.actor.kind)) ||
+      typeof value.audit.actor.id !== "string" ||
+      typeof value.audit.actor.username !== "string" ||
+      typeof value.audit.actor.role !== "string" ||
+      typeof value.audit.source !== "string" ||
+      !value.audit.source.trim() ||
+      typeof value.audit.finalAuditEventId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        value.audit.finalAuditEventId
+      )
+    ) {
+      throw new Error("Platform restore job audit metadata is invalid");
+    }
+  }
   return value as unknown as PlatformRestoreJobStatus;
+}
+
+export function recordPlatformRestoreTerminalAudit(job: PlatformRestoreJobStatus): void {
+  if (!job.audit || (job.state !== "SUCCEEDED" && job.state !== "FAILED")) return;
+  auditEventService.recordOnce(job.audit.finalAuditEventId, {
+    actor: job.audit.actor,
+    action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
+    target: { type: "PLATFORM_BACKUP", id: job.backupId },
+    result: job.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
+    newValues: {
+      restoreJobId: job.jobId,
+      restoreState: job.state,
+      identityTransfer: job.allowIdentityTransfer,
+    },
+    requestContext: { source: job.audit.source },
+    reason:
+      job.state === "SUCCEEDED"
+        ? "Restore worker reported successful completion"
+        : (job.error ?? "Restore worker reported failure after rollback handling"),
+  });
 }
 
 export async function reconcilePlatformRestoreAudits(
@@ -540,23 +578,7 @@ export async function reconcilePlatformRestoreAudits(
     } catch {
       continue;
     }
-    if (!job.audit || (job.state !== "SUCCEEDED" && job.state !== "FAILED")) continue;
-    auditEventService.recordOnce(job.audit.finalAuditEventId, {
-      actor: job.audit.actor,
-      action: "PLATFORM_BACKUP.RESTORE_COMPLETED",
-      target: { type: "PLATFORM_BACKUP", id: job.backupId },
-      result: job.state === "SUCCEEDED" ? "SUCCESS" : "FAILED",
-      newValues: {
-        restoreJobId: job.jobId,
-        restoreState: job.state,
-        identityTransfer: job.allowIdentityTransfer,
-      },
-      requestContext: { source: job.audit.source },
-      reason:
-        job.state === "SUCCEEDED"
-          ? "Restore worker reported successful completion"
-          : (job.error ?? "Restore worker reported failure after rollback handling"),
-    });
+    recordPlatformRestoreTerminalAudit(job);
   }
 }
 
