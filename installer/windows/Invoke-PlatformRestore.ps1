@@ -58,6 +58,22 @@ function Stop-ControlledServices {
     }
 }
 
+# Persist a terminal FAILED state for any unhandled terminating error, including
+# validation/safety-backup failures that occur before service quiesce and
+# rollback failures that would otherwise leave the job stuck in RUNNING.
+trap {
+    $fatalFailure = $_
+    try {
+        if (Test-Path -LiteralPath $jobStatus -PathType Leaf) {
+            Set-RestoreJobState "FAILED" $fatalFailure.Exception.Message
+        }
+    }
+    catch {
+        Write-Error "Restore failed and terminal job status could not be persisted: $($_.Exception.Message)"
+    }
+    throw $fatalFailure
+}
+
 Assert-ChildPath $backupRoot $backup "Backup directory"
 Assert-ChildPath $backupRoot $safety "Safety directory"
 Assert-ChildPath $jobRoot $jobStatus "Restore job status"
