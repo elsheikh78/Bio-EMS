@@ -465,6 +465,7 @@ export interface PlatformRestoreJobStatus {
   queuedAt: string;
   updatedAt: string;
   allowIdentityTransfer: boolean;
+  identity: PlatformBackupIdentity;
   error?: string;
 }
 
@@ -483,7 +484,11 @@ function restoreJobDirectory(environment: NodeJS.ProcessEnv): string {
 }
 
 function restoreJobPath(jobId: string, environment: NodeJS.ProcessEnv): string {
-  if (!/^[0-9a-f-]{36}$/i.test(jobId)) throw new Error("Invalid platform restore job id");
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)
+  ) {
+    throw new Error("Invalid platform restore job id");
+  }
   return join(restoreJobDirectory(environment), `${jobId}.json`);
 }
 
@@ -499,7 +504,11 @@ export async function getPlatformRestoreJob(
     !["QUEUED", "RUNNING", "SUCCEEDED", "FAILED"].includes(String(value.state)) ||
     typeof value.queuedAt !== "string" ||
     typeof value.updatedAt !== "string" ||
-    typeof value.allowIdentityTransfer !== "boolean"
+    typeof value.allowIdentityTransfer !== "boolean" ||
+    !isRecord(value.identity) ||
+    typeof value.identity.installationId !== "string" ||
+    typeof value.identity.customerCode !== "string" ||
+    typeof value.identity.siteCode !== "string"
   ) {
     throw new Error("Platform restore job status is invalid");
   }
@@ -538,6 +547,7 @@ export async function restorePlatformBackup(
     queuedAt,
     updatedAt: queuedAt,
     allowIdentityTransfer: options.allowIdentityTransfer === true,
+    identity: validated.manifest.identity,
   };
   const jobsDirectory = restoreJobDirectory(environment);
   await mkdir(jobsDirectory, { recursive: true });
