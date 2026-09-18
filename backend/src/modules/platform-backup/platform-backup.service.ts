@@ -1,7 +1,16 @@
 import { createHash, randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { lstat, mkdir, readFile, readdir, realpath, rename, stat, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  readFile,
+  readdir,
+  realpath,
+  rename,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { sqlite } from "../../../database/sqlite/client";
 
@@ -332,7 +341,9 @@ export async function validatePlatformBackupForRestore(
   options: { allowIdentityTransfer?: boolean } = {},
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformBackupValidationResult> {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(backupId)) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(backupId)
+  ) {
     throw new Error("Invalid platform backup id");
   }
   const root = resolveAllowedBackupDestination(undefined, environment);
