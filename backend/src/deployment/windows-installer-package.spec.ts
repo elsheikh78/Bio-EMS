@@ -114,7 +114,7 @@ describe("DEP-01 controlled Windows installer package", () => {
 describe("DEP-01-02 frozen inputs and build source", () => {
   const repositoryRoot = join(process.cwd(), "..");
 
-  it("locks the exact four vendor inputs to HTTPS sources, versions and SHA-256", () => {
+  it("locks the exact vendor inputs to HTTPS sources, versions and SHA-256", () => {
     const lock = JSON.parse(
       readFileSync(join(repositoryRoot, "installer/windows/vendor-input-lock.json"), "utf8")
     );
@@ -123,6 +123,7 @@ describe("DEP-01-02 frozen inputs and build source", () => {
       "mosquitto",
       "influxdb",
       "winsw",
+      "influx-cli",
     ]);
   });
 
