@@ -56,7 +56,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\frontend.zip' -DestinationPath '{app}\\frontend' -Force"""; StatusMsg: "Extracting BIO-EMS frontend..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\\runtime\\node' -Force"""; StatusMsg: "Extracting Node.js runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"" -ContactName ""{code:GetContactName}"" -ContactEmail ""{code:GetContactEmail}"" -ContactPhone ""{code:GetContactPhone}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated logoutput; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated logoutput; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
@@ -79,6 +79,7 @@ var
   ExistingInstallAtStart: Boolean;
   ServicesPresentAtStart: Boolean;
   AdminPage: TInputQueryWizardPage;
+  IdentityPage: TInputQueryWizardPage;
 
 function InitializeUninstall(): Boolean;
 var
@@ -139,7 +140,19 @@ end;
 procedure InitializeWizard();
 begin
   if not WizardSilent then begin
-    AdminPage := CreateInputQueryPage(wpSelectTasks, 'Customer Administrator',
+    IdentityPage := CreateInputQueryPage(wpSelectTasks, 'Customer and Site',
+      'Configure this BIO-EMS installation',
+      'Enter the customer and site identity. BIO-EMS generates the Installation ID automatically.');
+    IdentityPage.Add('Customer name:', False);
+    IdentityPage.Add('Customer code:', False);
+    IdentityPage.Add('Site name:', False);
+    IdentityPage.Add('Site code:', False);
+    IdentityPage.Add('Site location (optional):', False);
+    IdentityPage.Add('Contact name (optional):', False);
+    IdentityPage.Add('Contact email (optional):', False);
+    IdentityPage.Add('Contact phone (optional):', False);
+
+    AdminPage := CreateInputQueryPage(IdentityPage.ID, 'Customer Administrator',
       'Create the customer Admin account',
       'Enter credentials for the customer Admin. SYSTEM_OWNER is not created or displayed by this Setup.');
     AdminPage.Add('Admin username:', False);
@@ -150,11 +163,39 @@ begin
   end;
 end;
 
+
+function IdentityValue(Index: Integer; const EnvironmentName: String): String;
+begin
+  if WizardSilent then Result := GetEnv(EnvironmentName)
+  else if IdentityPage <> nil then Result := Trim(IdentityPage.Values[Index])
+  else Result := '';
+end;
+
+function GetCustomerName(Param: String): String; begin Result := IdentityValue(0, 'BIOEMS_CI_CUSTOMER_NAME'); end;
+function GetCustomerCode(Param: String): String; begin Result := IdentityValue(1, 'BIOEMS_CI_CUSTOMER_CODE'); end;
+function GetSiteName(Param: String): String; begin Result := IdentityValue(2, 'BIOEMS_CI_SITE_NAME'); end;
+function GetSiteCode(Param: String): String; begin Result := IdentityValue(3, 'BIOEMS_CI_SITE_CODE'); end;
+function GetSiteLocation(Param: String): String; begin Result := IdentityValue(4, 'BIOEMS_CI_SITE_LOCATION'); end;
+function GetContactName(Param: String): String; begin Result := IdentityValue(5, 'BIOEMS_CI_CONTACT_NAME'); end;
+function GetContactEmail(Param: String): String; begin Result := IdentityValue(6, 'BIOEMS_CI_CONTACT_EMAIL'); end;
+function GetContactPhone(Param: String): String; begin Result := IdentityValue(7, 'BIOEMS_CI_CONTACT_PHONE'); end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
   Result := True;
-  if (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
+  if (IdentityPage <> nil) and (CurPageID = IdentityPage.ID) then begin
+    if Trim(IdentityPage.Values[0]) = '' then begin
+      MsgBox('Customer name is required.', mbError, MB_OK); Result := False;
+    end else if Trim(IdentityPage.Values[1]) = '' then begin
+      MsgBox('Customer code is required.', mbError, MB_OK); Result := False;
+    end else if Trim(IdentityPage.Values[2]) = '' then begin
+      MsgBox('Site name is required.', mbError, MB_OK); Result := False;
+    end else if Trim(IdentityPage.Values[3]) = '' then begin
+      MsgBox('Site code is required.', mbError, MB_OK); Result := False;
+    end;
+  end;
+  if Result and (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
     Password := AdminPage.Values[2];
     if Trim(AdminPage.Values[0]) = '' then begin
       MsgBox('Admin username is required.', mbError, MB_OK); Result := False;
