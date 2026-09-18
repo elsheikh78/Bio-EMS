@@ -32,11 +32,15 @@ function requireBackupId(req: Request): string {
 }
 
 export async function restoreCustomerPlatformBackup(req: Request, res: Response): Promise<void> {
-  const manifest = await restorePlatformBackup(requireBackupId(req), { allowIdentityTransfer: false });
+  const manifest = await restorePlatformBackup(requireBackupId(req), {
+    allowIdentityTransfer: false,
+  });
   res.status(200).json({ backup: manifest, restored: true });
 }
 
 export async function restoreOwnerPlatformBackup(req: Request, res: Response): Promise<void> {
-  const manifest = await restorePlatformBackup(requireBackupId(req), { allowIdentityTransfer: false });
+  const manifest = await restorePlatformBackup(requireBackupId(req), {
+    allowIdentityTransfer: false,
+  });
   res.status(200).json({ backup: manifest, restored: true });
 }
