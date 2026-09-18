@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot,
     [Parameter(Mandatory = $true)][string]$BackupDirectory,
+    [Parameter(Mandatory = $true)][string]$SafetyDirectory,
     [Parameter(Mandatory = $true)][string]$InfluxCli,
     [Parameter(Mandatory = $true)][string]$HostUrl,
     [Parameter(Mandatory = $true)][string]$Org
@@ -14,7 +15,7 @@ $persistent = [IO.Path]::GetFullPath($PersistentRoot)
 $backup = [IO.Path]::GetFullPath($BackupDirectory)
 $backupRoot = [IO.Path]::GetFullPath((Join-Path $persistent "backups"))
 $services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
-$safety = Join-Path $backupRoot ("restore-safety-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
+$safety = [IO.Path]::GetFullPath($SafetyDirectory)
 
 function Assert-ChildPath([string]$parent, [string]$child, [string]$label) {
     $prefix = $parent.TrimEnd('\') + '\'
@@ -39,6 +40,7 @@ function Stop-ControlledServices {
 }
 
 Assert-ChildPath $backupRoot $backup "Backup directory"
+Assert-ChildPath $backupRoot $safety "Safety directory"
 if (-not (Test-Path -LiteralPath (Join-Path $backup "manifest.json") -PathType Leaf)) {
     throw "Validated sealed backup manifest is missing"
 }
@@ -49,16 +51,19 @@ if (-not (Test-Path -LiteralPath $influxSource -PathType Container)) { throw "Va
 if (-not (Test-Path -LiteralPath $InfluxCli -PathType Leaf)) { throw "InfluxDB CLI is unavailable for restore" }
 if (-not $env:INFLUX_TOKEN) { throw "INFLUX_TOKEN is unavailable to the controlled restore process" }
 
-# Safety snapshot is always taken before destructive restore work.
-New-Item -ItemType Directory -Path $safety -Force | Out-Null
-$liveSqlite = Join-Path $persistent "data\bioems.db"
-if (Test-Path -LiteralPath $liveSqlite -PathType Leaf) {
-    Copy-Item -LiteralPath $liveSqlite -Destination (Join-Path $safety "bioems.db") -Force
+# SQLite safety state was created by the backend using SQLite's online backup API.
+# Complete the safety snapshot with the supported InfluxDB backup command while
+# InfluxDB is still running; never copy its live engine directory.
+$safetySqlite = Join-Path $safety "bioems.sqlite"
+if (-not (Test-Path -LiteralPath $safetySqlite -PathType Leaf)) {
+    throw "WAL-consistent SQLite safety backup is missing"
 }
-$liveInflux = Join-Path $persistent "data\influxdb"
-if (Test-Path -LiteralPath $liveInflux -PathType Container) {
-    Invoke-Robocopy $liveInflux (Join-Path $safety "influxdb")
-}
+$safetyInflux = Join-Path $safety "influxdb"
+New-Item -ItemType Directory -Path $safetyInflux -Force | Out-Null
+$env:INFLUX_HOST = $HostUrl
+$env:INFLUX_ORG = $Org
+& $InfluxCli backup $safetyInflux
+if ($LASTEXITCODE -ne 0) { throw "InfluxDB safety backup failed with exit code $LASTEXITCODE" }
 
 Stop-ControlledServices
 try {
@@ -79,12 +84,15 @@ try {
 catch {
     $failure = $_
     Stop-ControlledServices
-    if (Test-Path -LiteralPath (Join-Path $safety "bioems.db") -PathType Leaf) {
-        Copy-Item -LiteralPath (Join-Path $safety "bioems.db") -Destination $liveSqlite -Force
+    if (Test-Path -LiteralPath $safetySqlite -PathType Leaf) {
+        Copy-Item -LiteralPath $safetySqlite -Destination $liveSqlite -Force
     }
-    if (Test-Path -LiteralPath (Join-Path $safety "influxdb") -PathType Container) {
-        Invoke-Robocopy (Join-Path $safety "influxdb") $liveInflux
+    Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
+    & $InfluxCli restore $safetyInflux
+    if ($LASTEXITCODE -ne 0) {
+        throw "Platform restore failed and InfluxDB safety rollback also failed with exit code $LASTEXITCODE. Original cause: $($failure.Exception.Message)"
     }
+    Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
     Start-ControlledServices
     throw "Platform restore failed; safety snapshot was restored. Cause: $($failure.Exception.Message)"
 }
