@@ -3,7 +3,7 @@ name: DEP-BR Prettier Fix
 on:
   push:
     branches: [feat/dep-br-backup-restore]
-    paths: [.github/workflows/dep-br-prettier-fix.yml]
+    paths: [.github/workflows/dep-br-prettier-fix.yml, backend/src/deployment/windows-installer-package.spec.ts]
 
 permissions:
   contents: write
