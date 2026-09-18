@@ -68,7 +68,36 @@ $seenArtifacts = @{}
 foreach ($artifact in @($manifest.artifacts)) {
     if ($artifact.kind -notin @("sqlite", "influxdb") -or
         [string]::IsNullOrWhiteSpace([string]$artifact.file) -or
-        [string]$artifact.sha256 -notmatch '^[0-9a-fA-F]{64}
+        [string]$artifact.sha256 -notmatch '^[0-9a-fA-F]{64}$' -or
+        [long]$artifact.bytes -lt 0) {
+        throw "Platform backup artifact manifest is invalid in restore worker"
+    }
+    $relativeArtifact = ([string]$artifact.file).Replace('/', '\\')
+    if ([IO.Path]::IsPathRooted($relativeArtifact) -or $relativeArtifact.Split('\\') -contains '..') {
+        throw "Platform backup contains an unsafe artifact path in restore worker"
+    }
+    if ($seenArtifacts.ContainsKey($relativeArtifact)) {
+        throw "Platform backup contains duplicate artifact paths in restore worker"
+    }
+    $seenArtifacts[$relativeArtifact] = $true
+    $artifactPath = [IO.Path]::GetFullPath((Join-Path $backup $relativeArtifact))
+    Assert-ChildPath $backup $artifactPath "Backup artifact"
+    if (-not (Test-Path -LiteralPath $artifactPath -PathType Leaf)) {
+        throw "Platform backup artifact is missing in restore worker"
+    }
+    $item = Get-Item -LiteralPath $artifactPath -Force
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Platform backup artifact reparse points are not allowed in restore worker"
+    }
+    if ($item.Length -ne [long]$artifact.bytes) {
+        throw "Platform backup artifact size mismatch in restore worker"
+    }
+    $actualHash = (Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256).Hash
+    if ($actualHash -ne [string]$artifact.sha256) {
+        throw "Platform backup artifact checksum mismatch in restore worker"
+    }
+}
+
 # SQLite safety state was created by the backend using SQLite's online backup API.
 # Complete the safety snapshot with the supported InfluxDB backup command while
 # InfluxDB is still running; never copy its live engine directory.
