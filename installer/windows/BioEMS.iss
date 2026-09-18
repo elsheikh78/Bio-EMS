@@ -42,6 +42,7 @@ Source: "{#StageRoot}\payload\backend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\frontend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\influxdb2-2.9.1-windows_amd64.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\influxdb2-client-2.8.0-windows-amd64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
