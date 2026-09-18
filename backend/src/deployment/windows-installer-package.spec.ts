@@ -736,3 +736,24 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(trustScript).toContain("Cert:\\LocalMachine\\TrustedPublisher");
   });
 });
+
+
+describe("DEP-BR packaged restore helper contract", () => {
+  const repositoryRoot = join(process.cwd(), "..");
+  const windowsRoot = join(repositoryRoot, "installer/windows");
+  const setup = readFileSync(join(windowsRoot, "BioEMS.iss"), "utf8");
+  const services = readFileSync(join(windowsRoot, "Install-DEP0103Services.ps1"), "utf8");
+
+  it("packages the backup and restore helpers and configures deterministic runtime paths", () => {
+    expect(setup).toContain("Invoke-PlatformInfluxBackup.ps1");
+    expect(setup).toContain("Invoke-PlatformRestore.ps1");
+    expect(services).toContain(
+      "BIOEMS_INFLUX_BACKUP_SCRIPT=$application\\installer\\Invoke-PlatformInfluxBackup.ps1"
+    );
+    expect(services).toContain(
+      "BIOEMS_PLATFORM_RESTORE_SCRIPT=$application\\installer\\Invoke-PlatformRestore.ps1"
+    );
+    expect(services).toContain("BIOEMS_APPLICATION_ROOT=$application");
+    expect(services).toContain("BIOEMS_PERSISTENT_ROOT=$persistent");
+  });
+});
