@@ -6,7 +6,8 @@ param(
     [Parameter(Mandatory = $true)][string]$SafetyDirectory,
     [Parameter(Mandatory = $true)][string]$InfluxCli,
     [Parameter(Mandatory = $true)][string]$HostUrl,
-    [Parameter(Mandatory = $true)][string]$Org
+    [Parameter(Mandatory = $true)][string]$Org,
+    [Parameter(Mandatory = $true)][string]$JobStatusPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -17,6 +18,23 @@ $backupRoot = [IO.Path]::GetFullPath((Join-Path $persistent "backups"))
 $services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
 $safety = [IO.Path]::GetFullPath($SafetyDirectory)
 $liveSqlite = Join-Path $persistent "data\bioems.db"
+$jobStatus = [IO.Path]::GetFullPath($JobStatusPath)
+$jobRoot = [IO.Path]::GetFullPath((Join-Path $persistent "restore-jobs"))
+
+function Set-RestoreJobState([string]$state, [string]$errorMessage = "") {
+    $status = Get-Content -LiteralPath $jobStatus -Raw | ConvertFrom-Json
+    $status.state = $state
+    $status.updatedAt = [DateTime]::UtcNow.ToString("o")
+    if ([string]::IsNullOrWhiteSpace($errorMessage)) {
+        if ($status.PSObject.Properties.Name -contains "error") { $status.PSObject.Properties.Remove("error") }
+    }
+    else {
+        $status | Add-Member -NotePropertyName error -NotePropertyValue $errorMessage -Force
+    }
+    $temporary = "$jobStatus.tmp"
+    $status | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $temporary -Encoding UTF8
+    Move-Item -LiteralPath $temporary -Destination $jobStatus -Force
+}
 
 function Assert-ChildPath([string]$parent, [string]$child, [string]$label) {
     $prefix = $parent.TrimEnd('\') + '\'
@@ -42,6 +60,9 @@ function Stop-ControlledServices {
 
 Assert-ChildPath $backupRoot $backup "Backup directory"
 Assert-ChildPath $backupRoot $safety "Safety directory"
+Assert-ChildPath $jobRoot $jobStatus "Restore job status"
+if (-not (Test-Path -LiteralPath $jobStatus -PathType Leaf)) { throw "Restore job status file is missing" }
+Set-RestoreJobState "RUNNING"
 if (-not (Test-Path -LiteralPath (Join-Path $backup "manifest.json") -PathType Leaf)) {
     throw "Validated sealed backup manifest is missing"
 }
@@ -127,6 +148,7 @@ try {
     Start-ControlledServices
     & (Join-Path $application "installer\Test-PostInstallHealth.ps1") -ApplicationRoot $application -PersistentRoot $persistent
     if ($LASTEXITCODE -ne 0) { throw "Restored platform health verification failed" }
+    Set-RestoreJobState "SUCCEEDED"
 }
 catch {
     $failure = $_
@@ -141,6 +163,7 @@ catch {
     }
     Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
     Start-ControlledServices
+    Set-RestoreJobState "FAILED" $failure.Exception.Message
     throw "Platform restore failed; safety snapshot was restored. Cause: $($failure.Exception.Message)"
 }
 finally {
