@@ -111,11 +111,13 @@ export function applyOwnerRecovery(
       .prepare(
         `SELECT status, challenge_hash, expires_at FROM password_recovery_requests WHERE request_id = ? AND principal_type = 'SYSTEM_OWNER' LIMIT 1`
       )
-      .get(claims.recoveryId) as {
-      status: string;
-      challenge_hash: string | null;
-      expires_at: string;
-    } | undefined;
+      .get(claims.recoveryId) as
+      | {
+          status: string;
+          challenge_hash: string | null;
+          expires_at: string;
+        }
+      | undefined;
     if (
       !request ||
       request.status !== "PENDING" ||
