@@ -302,3 +302,65 @@ export async function createCompletePlatformBackup(
 
   return sealPlatformBackup(directory, environment);
 }
+
+
+export interface PlatformBackupValidationResult {
+  directory: string;
+  manifest: PlatformBackupManifest;
+}
+
+function assertSafeArtifactPath(directory: string, artifactFile: string): string {
+  const fullPath = resolve(directory, artifactFile);
+  const traversal = relative(directory, fullPath);
+  if (!artifactFile || traversal.startsWith("..") || isAbsolute(traversal)) {
+    throw new Error("Platform backup contains an unsafe artifact path");
+  }
+  return fullPath;
+}
+
+export async function validatePlatformBackupForRestore(
+  backupId: string,
+  options: { allowIdentityTransfer?: boolean } = {},
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformBackupValidationResult> {
+  if (!/^[0-9a-f-]{36}$/i.test(backupId)) throw new Error("Invalid platform backup id");
+  const root = resolveAllowedBackupDestination(undefined, environment);
+  const directory = join(root, `platform-${backupId}`);
+  const manifest = JSON.parse(await readFile(join(directory, "manifest.json"), "utf8")) as PlatformBackupManifest;
+
+  if (manifest.formatVersion !== PLATFORM_BACKUP_FORMAT_VERSION) {
+    throw new Error("Incompatible platform backup format");
+  }
+  if (manifest.backupId !== backupId || manifest.telemetry.state !== "SEALED") {
+    throw new Error("Platform backup is not sealed for restore");
+  }
+
+  const artifactKinds = new Set(manifest.artifacts.map((artifact) => artifact.kind));
+  if (!artifactKinds.has("sqlite") || !artifactKinds.has("influxdb")) {
+    throw new Error("Platform backup is incomplete");
+  }
+
+  for (const artifact of manifest.artifacts) {
+    const artifactPath = assertSafeArtifactPath(directory, artifact.file);
+    const artifactStat = await stat(artifactPath);
+    if (!artifactStat.isFile() || artifactStat.size !== artifact.bytes) {
+      throw new Error("Platform backup artifact size mismatch");
+    }
+    if ((await sha256(artifactPath)) !== artifact.sha256) {
+      throw new Error("Platform backup artifact checksum mismatch");
+    }
+  }
+
+  if (!options.allowIdentityTransfer) {
+    const currentIdentity = await readInstalledBackupIdentity(environment);
+    if (
+      manifest.identity.installationId !== currentIdentity.installationId ||
+      manifest.identity.customerCode !== currentIdentity.customerCode ||
+      manifest.identity.siteCode !== currentIdentity.siteCode
+    ) {
+      throw new Error("Platform backup identity does not match this installation");
+    }
+  }
+
+  return { directory, manifest };
+}
