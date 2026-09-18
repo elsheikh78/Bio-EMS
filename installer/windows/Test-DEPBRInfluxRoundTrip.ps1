@@ -34,7 +34,10 @@ $query = "from(bucket: `"$bucket`") |> range(start: -10m) |> filter(fn: (r) => r
 $backup = Join-Path $env:TEMP "depbr-influx-$([Guid]::NewGuid().ToString('N'))"
 
 try {
-    & $influx write --bucket $bucket --org $settings.INFLUX_ORG --precision s --record "$marker,source=windows-ci value=41.25 $timestamp"
+    $lineProtocolFile = Join-Path $env:TEMP "depbr-line-protocol-$([Guid]::NewGuid().ToString('N')).lp"
+    $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($lineProtocolFile, "$marker,source=windows-ci value=41.25 $timestamp`n", $utf8WithoutBom)
+    & $influx write --bucket $bucket --org $settings.INFLUX_ORG --precision s --file $lineProtocolFile
     if ($LASTEXITCODE -ne 0) { throw "Failed to seed historical telemetry marker" }
 
     $before = & $influx query --org $settings.INFLUX_ORG --raw $query
@@ -71,4 +74,5 @@ finally {
     Remove-Item Env:INFLUX_HOST -ErrorAction SilentlyContinue
     Remove-Item Env:INFLUX_ORG -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction SilentlyContinue
+    if ($lineProtocolFile) { Remove-Item -LiteralPath $lineProtocolFile -Force -ErrorAction SilentlyContinue }
 }
