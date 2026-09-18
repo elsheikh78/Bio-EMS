@@ -18,7 +18,10 @@ vi.mock("../../database/sqlite/client", () => ({ sqlite: database }));
 vi.mock("../../database/sqlite/schema", () => ({ createTables: vi.fn() }));
 vi.mock("../../database/sqlite/migration-runner", () => ({ runMigrations: vi.fn() }));
 
+import { sqlite } from "../../database/sqlite/client";
 import { runCreateOwnerRecoveryRequest } from "./create-owner-recovery-request";
+
+const database = sqlite;
 
 describe("System Owner recovery request creation", () => {
   let directory: string;
