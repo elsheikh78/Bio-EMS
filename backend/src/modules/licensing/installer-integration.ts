@@ -11,9 +11,19 @@ import type { KeyProtector } from "./key-protection";
 const installationCustomerSiteMetadataSchema = z
   .object({
     customerName: z.string().trim().min(1).max(200),
-    customerCode: z.string().trim().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/),
+    customerCode: z
+      .string()
+      .trim()
+      .min(1)
+      .max(64)
+      .regex(/^[A-Za-z0-9_-]+$/),
     siteName: z.string().trim().min(1).max(200),
-    siteCode: z.string().trim().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/),
+    siteCode: z
+      .string()
+      .trim()
+      .min(1)
+      .max(64)
+      .regex(/^[A-Za-z0-9_-]+$/),
     siteLocation: z.string().trim().max(300).nullable().optional(),
     contactName: z.string().trim().max(200).nullable().optional(),
     contactEmail: z.string().trim().email().max(254).nullable().optional(),

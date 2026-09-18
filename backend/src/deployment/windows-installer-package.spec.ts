@@ -257,10 +257,10 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     ]) {
       expect(setup).toContain(field);
     }
-    expect(setup).toContain("-CustomerName \"\"{code:GetCustomerName}\"\"");
-    expect(setup).toContain("-CustomerCode \"\"{code:GetCustomerCode}\"\"");
-    expect(setup).toContain("-SiteName \"\"{code:GetSiteName}\"\"");
-    expect(setup).toContain("-SiteCode \"\"{code:GetSiteCode}\"\"");
+    expect(setup).toContain('-CustomerName ""{code:GetCustomerName}""');
+    expect(setup).toContain('-CustomerCode ""{code:GetCustomerCode}""');
+    expect(setup).toContain('-SiteName ""{code:GetSiteName}""');
+    expect(setup).toContain('-SiteCode ""{code:GetSiteCode}""');
     expect(lifecycle).toContain("[string]$CustomerName");
     expect(lifecycle).toContain("[string]$CustomerCode");
     expect(lifecycle).toContain("[string]$SiteName");

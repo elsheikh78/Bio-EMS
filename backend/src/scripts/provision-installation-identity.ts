@@ -17,10 +17,7 @@ export function runProvisionInstallationIdentityCommand(
     const suppliedMetadata = [customerName, customerCode, siteName, siteCode].some(
       (value) => value !== undefined
     );
-    if (
-      suppliedMetadata &&
-      (!customerName || !customerCode || !siteName || !siteCode)
-    ) {
+    if (suppliedMetadata && (!customerName || !customerCode || !siteName || !siteCode)) {
       throw new Error("Complete installer customer and site metadata is required");
     }
 
