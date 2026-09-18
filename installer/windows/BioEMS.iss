@@ -255,9 +255,46 @@ begin
   end;
 end;
 
-function InitializeSetup(): Boolean;
+function ControlledServicePresent(): Boolean;
 begin
-  ExistingInstallAtStart := RegKeyExists(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{7F182A31-C831-4CCF-965B-BF40A54D14C3}_is1');
+  Result :=
+    RegKeyExists(HKLM, 'SYSTEM\\CurrentControlSet\\Services\\BIOEMS-Backend') or
+    RegKeyExists(HKLM, 'SYSTEM\\CurrentControlSet\\Services\\BIOEMS-InfluxDB') or
+    RegKeyExists(HKLM, 'SYSTEM\\CurrentControlSet\\Services\\BIOEMS-MQTT');
+end;
+
+function InstallResiduePresent(): Boolean;
+begin
+  Result := ExistingInstallAtStart or ServicesPresentAtStart or
+    DirExists(ExpandConstant('{commonappdata}\\BIO-EMS')) or
+    DirExists(ExpandConstant('{app}'));
+end;
+
+function InitializeSetup(): Boolean;
+var
+  SilentMode: String;
+begin
+  ExistingInstallAtStart := RegKeyExists(HKLM64, 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7F182A31-C831-4CCF-965B-BF40A54D14C3}_is1');
+  ServicesPresentAtStart := ControlledServicePresent();
+  NewInstallCleanupRequired := False;
+
+  if WizardSilent then begin
+    SilentMode := Lowercase(Trim(GetEnv('BIOEMS_CI_INSTALL_MODE')));
+    if (SilentMode <> 'new') and (SilentMode <> 'repair') then begin
+      Log('BIO-EMS silent Setup rejected: BIOEMS_CI_INSTALL_MODE must be new or repair.');
+      Result := False;
+      Exit;
+    end;
+    if (SilentMode = 'new') and InstallResiduePresent() then begin
+      if CompareText(Trim(GetEnv('BIOEMS_CI_CONFIRM_NEW_INSTALL_CLEANUP')), 'YES') <> 0 then begin
+        Log('BIO-EMS silent New Install rejected: explicit cleanup confirmation is required.');
+        Result := False;
+        Exit;
+      end;
+      NewInstallCleanupRequired := True;
+    end;
+  end;
+
   Result := True;
 end;
 
@@ -273,7 +310,7 @@ end;
 
 function IsNewInstallSelected(): Boolean;
 begin
-  if WizardSilent then Result := CompareText(GetEnv('BIOEMS_CI_INSTALL_MODE'), 'repair') <> 0
+  if WizardSilent then Result := CompareText(Trim(GetEnv('BIOEMS_CI_INSTALL_MODE')), 'new') = 0
   else Result := (InstallModePage <> nil) and (InstallModePage.SelectedValueIndex = 0);
 end;
 
