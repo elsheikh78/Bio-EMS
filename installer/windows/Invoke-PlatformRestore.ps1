@@ -57,6 +57,17 @@ function Stop-ControlledServices {
         Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
     }
 }
+function Restore-InfluxSnapshot([string]$snapshot) {
+    # A portable Influx backup contains the bucket metadata as well as its data.
+    # Remove the current application bucket before restore so the CLI can recreate
+    # the backed-up bucket instead of failing with HTTP 422 "already exists".
+    $bucketName = $env:BIOEMS_RESTORE_INFLUX_BUCKET
+    if ([string]::IsNullOrWhiteSpace($bucketName)) { throw "BIOEMS_RESTORE_INFLUX_BUCKET is unavailable" }
+    & $InfluxCli bucket delete --name $bucketName --org $Org --force
+    if ($LASTEXITCODE -ne 0) { throw "Existing InfluxDB bucket could not be removed before restore" }
+    & $InfluxCli restore $snapshot
+    if ($LASTEXITCODE -ne 0) { throw "InfluxDB snapshot restore failed with exit code $LASTEXITCODE" }
+}
 
 # Persist a terminal FAILED state for any unhandled terminating error, including
 # validation/safety-backup failures that occur before service quiesce and
@@ -157,8 +168,7 @@ try {
     Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
     $env:INFLUX_HOST = $HostUrl
     $env:INFLUX_ORG = $Org
-    & $InfluxCli restore $influxSource
-    if ($LASTEXITCODE -ne 0) { throw "InfluxDB restore failed with exit code $LASTEXITCODE" }
+    Restore-InfluxSnapshot $influxSource
     Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
 
     Start-ControlledServices
@@ -173,9 +183,9 @@ catch {
         Copy-Item -LiteralPath $safetySqlite -Destination $liveSqlite -Force
     }
     Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
-    & $InfluxCli restore $safetyInflux
-    if ($LASTEXITCODE -ne 0) {
-        throw "Platform restore failed and InfluxDB safety rollback also failed with exit code $LASTEXITCODE. Original cause: $($failure.Exception.Message)"
+    try { Restore-InfluxSnapshot $safetyInflux }
+    catch {
+        throw "Platform restore failed and InfluxDB safety rollback also failed. Original cause: $($failure.Exception.Message). Rollback cause: $($_.Exception.Message)"
     }
     Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
     Start-ControlledServices
