@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import {
   lstat,
@@ -400,11 +400,17 @@ export async function validatePlatformBackupForRestore(
   return { directory, manifest };
 }
 
+export interface PlatformRestoreJob {
+  backup: PlatformBackupManifest;
+  queued: true;
+  safetyDirectory: string;
+}
+
 export async function restorePlatformBackup(
   backupId: string,
   options: { allowIdentityTransfer?: boolean } = {},
   environment: NodeJS.ProcessEnv = process.env
-): Promise<PlatformBackupManifest> {
+): Promise<PlatformRestoreJob> {
   const validated = await validatePlatformBackupForRestore(backupId, options, environment);
   const executable = requireValue(
     environment.BIOEMS_POWERSHELL_PATH ?? "powershell.exe",
@@ -424,7 +430,17 @@ export async function restorePlatformBackup(
   const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
   const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
 
-  await execFileAsync(
+  // Take the SQLite safety snapshot while this process still owns a live,
+  // WAL-consistent database connection. The external worker will take the
+  // supported InfluxDB safety backup before quiescing services.
+  const safetyDirectory = join(
+    resolveAllowedBackupDestination(undefined, environment),
+    `restore-safety-${randomUUID()}`
+  );
+  await mkdir(safetyDirectory, { recursive: false });
+  await sqlite.backup(join(safetyDirectory, "bioems.sqlite"));
+
+  const child = spawn(
     executable,
     [
       "-NoProfile",
@@ -439,6 +455,8 @@ export async function restorePlatformBackup(
       persistentRoot,
       "-BackupDirectory",
       validated.directory,
+      "-SafetyDirectory",
+      safetyDirectory,
       "-InfluxCli",
       influxCli,
       "-HostUrl",
@@ -448,10 +466,12 @@ export async function restorePlatformBackup(
     ],
     {
       windowsHide: true,
-      maxBuffer: 1024 * 1024,
+      detached: true,
+      stdio: "ignore",
       env: { ...environment, INFLUX_TOKEN: token },
     }
   );
+  child.unref();
 
-  return validated.manifest;
+  return { backup: validated.manifest, queued: true, safetyDirectory };
 }
