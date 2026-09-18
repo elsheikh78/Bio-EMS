@@ -6,6 +6,7 @@ import {
 import { auditEventService } from "../services/audit-event.service";
 import {
   createCompletePlatformBackup,
+  getPlatformRestoreJob,
   listPlatformBackups,
   restorePlatformBackup,
 } from "../modules/platform-backup/platform-backup.service";
@@ -30,6 +31,21 @@ export async function createOwnerPlatformBackup(_req: Request, res: Response): P
   res.status(201).json({ backup: manifest });
 }
 
+function requireJobId(req: Request): string {
+  const value = req.params.jobId;
+  const jobId = Array.isArray(value) ? value[0] : value;
+  if (!jobId) throw new Error("Platform restore job id is required");
+  return jobId;
+}
+
+export async function getCustomerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
+  res.status(200).json({ restoreJob: await getPlatformRestoreJob(requireJobId(req)) });
+}
+
+export async function getOwnerPlatformRestoreJob(req: Request, res: Response): Promise<void> {
+  res.status(200).json({ restoreJob: await getPlatformRestoreJob(requireJobId(req)) });
+}
+
 function requireBackupId(req: Request): string {
   const value = req.params.backupId;
   const backupId = Array.isArray(value) ? value[0] : value;
@@ -41,14 +57,14 @@ export async function restoreCustomerPlatformBackup(req: Request, res: Response)
   const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
   });
-  res.status(202).json({ backup: job.backup, restoreQueued: true });
+  res.status(202).json({ backup: job.backup, restoreQueued: true, restoreJob: job.status });
 }
 
 export async function restoreOwnerPlatformBackup(req: Request, res: Response): Promise<void> {
   const job = await restorePlatformBackup(requireBackupId(req), {
     allowIdentityTransfer: false,
   });
-  res.status(202).json({ backup: job.backup, restoreQueued: true });
+  res.status(202).json({ backup: job.backup, restoreQueued: true, restoreJob: job.status });
 }
 
 export async function restoreOwnerPlatformBackupForDisasterRecovery(
@@ -84,14 +100,21 @@ export async function restoreOwnerPlatformBackupForDisasterRecovery(
       target: { type: "PLATFORM_BACKUP", id: backupId },
       result: "SUCCESS",
       newValues: {
+        restoreJobId: job.status.jobId,
+        restoreState: job.status.state,
         installationId: job.backup.identity.installationId,
         customerCode: job.backup.identity.customerCode,
         siteCode: job.backup.identity.siteCode,
       },
       requestContext: platformRequestContext(req, "platform-backup-dr"),
-      reason: "Controlled PC replacement/disaster recovery identity transfer queued",
+      reason: "Controlled PC replacement/disaster recovery identity transfer accepted and queued",
     });
-    res.status(202).json({ backup: job.backup, restoreQueued: true, identityTransferQueued: true });
+    res.status(202).json({
+      backup: job.backup,
+      restoreQueued: true,
+      identityTransferQueued: true,
+      restoreJob: job.status,
+    });
   } catch (error) {
     auditEventService.record({
       actor: platformAuditActor(req),
