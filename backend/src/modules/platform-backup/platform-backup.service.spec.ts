@@ -136,6 +136,28 @@ describe("DEP-BR restore validation behavior", () => {
     });
   });
 
+  it("rejects a malformed sealed manifest before artifact restore", async () => {
+    const value = await fixture();
+    const manifestPath = join(value.directory, "manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.identity = { installationId: value.identity.installationId };
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    await expect(
+      validatePlatformBackupForRestore(value.backupId, {}, value.environment)
+    ).rejects.toThrow("manifest schema is invalid");
+  });
+
+  it("rejects a sealed manifest whose telemetry count does not match its Influx artifacts", async () => {
+    const value = await fixture();
+    const manifestPath = join(value.directory, "manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.telemetry.artifactCount = 99;
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    await expect(
+      validatePlatformBackupForRestore(value.backupId, {}, value.environment)
+    ).rejects.toThrow("telemetry count is invalid");
+  });
+
   it("rejects a tampered artifact", async () => {
     const value = await fixture();
     await writeFile(join(value.directory, "bioems.sqlite"), "tampered");
