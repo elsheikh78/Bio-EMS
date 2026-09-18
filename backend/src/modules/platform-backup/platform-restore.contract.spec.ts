@@ -8,7 +8,6 @@ describe("DEP-BR controlled restore helper contract", () => {
       join(process.cwd(), "../installer/windows/Invoke-PlatformRestore.ps1"),
       "utf8"
     );
-    expect(source).toContain("restore-safety-");
     expect(source).toContain("Stop-ControlledServices");
     expect(source).toContain("Test-PostInstallHealth.ps1");
     expect(source).toContain("Platform restore failed; safety snapshot was restored");
@@ -27,6 +26,7 @@ describe("DEP-BR controlled restore helper contract", () => {
       join(process.cwd(), "src/controllers/platform-backup.controller.ts"),
       "utf8"
     );
+    expect(serviceSource).toContain("restore-safety-");
     expect(serviceSource).toContain("detached: true");
     expect(serviceSource).toContain("child.unref()");
     expect(serviceSource).toContain('await sqlite.backup(join(safetyDirectory, "bioems.sqlite"))');
