@@ -55,3 +55,18 @@ describe("DEP-BR sealed backup contract", () => {
     expect(source).toContain("Platform backup identity changed before sealing");
   });
 });
+
+describe("DEP-BR restore validation contract", () => {
+  it("fails closed on incompatible, tampered, incomplete and wrong-installation backups", async () => {
+    const source = await readFile(
+      join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    expect(source).toContain("Incompatible platform backup format");
+    expect(source).toContain("Platform backup artifact checksum mismatch");
+    expect(source).toContain("Platform backup artifact size mismatch");
+    expect(source).toContain("Platform backup is incomplete");
+    expect(source).toContain("Platform backup identity does not match this installation");
+    expect(source).toContain("Platform backup contains an unsafe artifact path");
+  });
+});
