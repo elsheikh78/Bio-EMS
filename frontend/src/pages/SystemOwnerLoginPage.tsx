@@ -7,7 +7,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import QRCode from "qrcode";
 import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 import { ownerMfaEnrollmentResponseSchema } from "../platform-auth/contracts";
@@ -28,6 +29,7 @@ const copy = {
     setupTitle: "Secure your owner account",
     setupHelp:
       "Add this key to your authenticator app, then enter the first 6-digit code. This setup token cannot open the owner console.",
+    qrHelp: "Scan this QR code with your authenticator app. If scanning is unavailable, enter the setup key below manually.",
     secret: "Authenticator setup key",
     verify: "Activate MFA",
     verifying: "Activating…",
@@ -59,6 +61,7 @@ const copy = {
     setupTitle: "تأمين حساب مالك النظام",
     setupHelp:
       "أضف هذا المفتاح إلى تطبيق المصادقة ثم أدخل أول رمز مكوّن من 6 أرقام. تذكرة الإعداد لا تستطيع فتح لوحة المالك.",
+    qrHelp: "امسح رمز QR بتطبيق المصادقة. إذا تعذر المسح، أدخل مفتاح الإعداد الموجود أدناه يدويًا.",
     secret: "مفتاح إعداد تطبيق المصادقة",
     verify: "تفعيل المصادقة الثنائية",
     verifying: "جارٍ التفعيل…",
@@ -96,8 +99,20 @@ export function SystemOwnerLoginPage() {
   const [failed, setFailed] = useState(false);
   const [activated, setActivated] = useState(false);
   const [recovery, setRecovery] = useState(false);
+  const [qrCode, setQrCode] = useState<string>();
   const text = copy[language];
   const headingRef = useInitialFocus<HTMLHeadingElement>();
+  useEffect(() => {
+    let active = true;
+    if (!enrollment) {
+      setQrCode(undefined);
+      return () => { active = false; };
+    }
+    void QRCode.toDataURL(enrollment.otpauthUri, { errorCorrectionLevel: "M", margin: 1, width: 220 })
+      .then((url) => { if (active) setQrCode(url); })
+      .catch(() => { if (active) setQrCode(undefined); });
+    return () => { active = false; };
+  }, [enrollment]);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (recovery) return;
@@ -213,7 +228,13 @@ export function SystemOwnerLoginPage() {
               ) : null}
               {enrollment ? (
                 <Box>
-                  <Typography color="text.secondary" variant="caption">
+                  <Typography color="text.secondary" sx={{ mb: 1 }}>
+                    {text.qrHelp}
+                  </Typography>
+                  {qrCode ? (
+                    <Box alt="Authenticator enrollment QR code" component="img" src={qrCode} sx={{ display: "block", height: 220, maxWidth: "100%", mx: "auto", width: 220 }} />
+                  ) : null}
+                  <Typography color="text.secondary" sx={{ mt: 1 }} variant="caption">
                     {text.secret}
                   </Typography>
                   <Typography
