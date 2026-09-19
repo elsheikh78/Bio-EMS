@@ -3,7 +3,7 @@ name: DEP-BR Prettier Fix
 on:
   push:
     branches: [feat/dep-br-backup-restore]
-    paths: [.github/workflows/dep-br-prettier-fix.yml, backend/src/deployment/windows-installer-package.spec.ts, backend/src/modules/platform-backup/**, backend/src/modules/audit/platform-audit-context.ts, backend/src/routes/platform-backup.route.ts, backend/src/controllers/platform-backup.controller.ts, backend/src/authorization/**, backend/src/app.ts, backend/src/services/admin-bootstrap.service.ts, backend/src/services/tests/admin-bootstrap.service.spec.ts, frontend/src/administration/contracts.ts, frontend/src/communication-channels/CommunicationChannelsPanel.tsx]
+    paths: [.github/workflows/dep-br-prettier-fix.yml, backend/src/deployment/windows-installer-package.spec.ts, backend/src/modules/platform-backup/**, backend/src/modules/audit/platform-audit-context.ts, backend/src/routes/platform-backup.route.ts, backend/src/controllers/platform-backup.controller.ts, backend/src/authorization/**, backend/src/app.ts, backend/src/services/admin-bootstrap.service.ts, backend/src/services/tests/admin-bootstrap.service.spec.ts, frontend/src/administration/contracts.ts, frontend/src/communication-channels/CommunicationChannelsPanel.tsx src/pages/ConfigurationPage.tsx src/pages/SystemOwnerCommunicationChannelsPage.tsx src/pages/SystemOwnerLoginPage.tsx, frontend/src/pages/ConfigurationPage.tsx, frontend/src/pages/SystemOwnerCommunicationChannelsPage.tsx, frontend/src/pages/SystemOwnerLoginPage.tsx]
 
 permissions:
   contents: write
@@ -36,7 +36,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add backend/src/deployment/windows-installer-package.spec.ts backend/src/modules/licensing/installer-integration.ts backend/src/scripts/provision-installation-identity.ts backend/src/modules/platform-backup backend/src/modules/audit/platform-audit-context.ts backend/src/routes/platform-backup.route.ts backend/src/controllers/platform-backup.controller.ts backend/src/authorization backend/src/app.ts backend/src/services/admin-bootstrap.service.ts backend/src/services/tests/admin-bootstrap.service.spec.ts frontend/src/administration/contracts.ts frontend/src/communication-channels/CommunicationChannelsPanel.tsx
+          git add backend/src/deployment/windows-installer-package.spec.ts backend/src/modules/licensing/installer-integration.ts backend/src/scripts/provision-installation-identity.ts backend/src/modules/platform-backup backend/src/modules/audit/platform-audit-context.ts backend/src/routes/platform-backup.route.ts backend/src/controllers/platform-backup.controller.ts backend/src/authorization backend/src/app.ts backend/src/services/admin-bootstrap.service.ts backend/src/services/tests/admin-bootstrap.service.spec.ts frontend/src/administration/contracts.ts frontend/src/communication-channels/CommunicationChannelsPanel.tsx frontend/src/pages/ConfigurationPage.tsx frontend/src/pages/SystemOwnerCommunicationChannelsPage.tsx frontend/src/pages/SystemOwnerLoginPage.tsx
           git diff --cached --quiet && exit 0
           git commit -m "style: apply backend prettier to DEP-BR files"
           git push origin HEAD:feat/dep-br-backup-restore
