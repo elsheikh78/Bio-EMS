@@ -144,28 +144,28 @@ export function CommunicationChannelsPanel({
         {Object.keys(defaults[channel])
           .filter((name) => shouldShowField(channel, name, displayed))
           .map((name) => (
-          <TextField
-            key={`${channel}-${name}`}
-            label={label(name)}
-            type={
-              secretFields.has(name)
-                ? "password"
-                : name === "port"
-                  ? "number"
-                  : "text"
-            }
-            value={String(displayed[name] ?? "")}
-            onChange={(e) => {
-              setForm({ ...displayed, [name]: e.target.value });
-              setDirty(true);
-            }}
-            helperText={
-              secretFields.has(name) && current?.secretsConfigured
-                ? "Configured — blank keeps current value"
-                : undefined
-            }
-          />
-        ))}
+            <TextField
+              key={`${channel}-${name}`}
+              label={label(name)}
+              type={
+                secretFields.has(name)
+                  ? "password"
+                  : name === "port"
+                    ? "number"
+                    : "text"
+              }
+              value={String(displayed[name] ?? "")}
+              onChange={(e) => {
+                setForm({ ...displayed, [name]: e.target.value });
+                setDirty(true);
+              }}
+              helperText={
+                secretFields.has(name) && current?.secretsConfigured
+                  ? "Configured — blank keeps current value"
+                  : undefined
+              }
+            />
+          ))}
         {mutation.isError ? (
           <Alert severity="error">Settings were not saved.</Alert>
         ) : null}
@@ -254,13 +254,24 @@ function shouldShowField(
   if (channel !== "SMS") return true;
   const transport = form.transport || "HTTP";
   if (transport === "LOCAL_MODEM") {
-    return ["enabled", "priority", "transport", "simNumber", "operator", "apn", "comPort"].includes(
-      name,
-    );
+    return [
+      "enabled",
+      "priority",
+      "transport",
+      "simNumber",
+      "operator",
+      "apn",
+      "comPort",
+    ].includes(name);
   }
-  return ["enabled", "priority", "transport", "providerUrl", "providerAccount", "providerToken"].includes(
-    name,
-  );
+  return [
+    "enabled",
+    "priority",
+    "transport",
+    "providerUrl",
+    "providerAccount",
+    "providerToken",
+  ].includes(name);
 }
 function buildSecrets(channel: Channel, form: Record<string, string>) {
   const field = {
