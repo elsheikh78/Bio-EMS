@@ -12,6 +12,9 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).toContain("Test-PostInstallHealth.ps1");
     expect(source).toContain("Platform restore failed; safety snapshot was restored");
     expect(source).toContain("InfluxDB snapshot restore failed");
+    expect(source).toContain("$env:INFLUX_BUCKET");
+    expect(source).toContain("bucket list --name $bucketName");
+    expect(source).not.toContain("$env:BIOEMS_RESTORE_INFLUX_BUCKET");
     expect(source).toContain("& $InfluxCli backup $safetyInflux");
     expect(source).toContain("WAL-consistent SQLite safety backup is missing");
     expect(source).not.toContain("Invoke-Robocopy $liveInflux");
