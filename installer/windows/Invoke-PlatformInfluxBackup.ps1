@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory = $true)][string]$InfluxCli,
     [Parameter(Mandatory = $true)][string]$BackupDirectory,
     [Parameter(Mandatory = $true)][string]$HostUrl,
-    [Parameter(Mandatory = $true)][string]$Org
+    [Parameter(Mandatory = $true)][string]$Org,
+    [ValidateRange(1, 5)][int]$MaxAttempts = 3,
+    [ValidateRange(1, 30)][int]$RetryDelaySeconds = 2
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,9 +24,24 @@ $previousOrg = $env:INFLUX_ORG
 try {
     $env:INFLUX_HOST = $HostUrl
     $env:INFLUX_ORG = $Org
-    & $InfluxCli backup $BackupDirectory
-    if ($LASTEXITCODE -ne 0) {
-        throw "InfluxDB backup failed with exit code $LASTEXITCODE"
+    $backupSucceeded = $false
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        if (Test-Path -LiteralPath $BackupDirectory) {
+            Get-ChildItem -LiteralPath $BackupDirectory -Force -ErrorAction SilentlyContinue |
+                Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        & $InfluxCli backup $BackupDirectory
+        if ($LASTEXITCODE -eq 0) {
+            $backupSucceeded = $true
+            break
+        }
+        if ($attempt -lt $MaxAttempts) {
+            Write-Warning "InfluxDB backup attempt $attempt/$MaxAttempts failed with exit code $LASTEXITCODE; retrying after $RetryDelaySeconds second(s)."
+            Start-Sleep -Seconds $RetryDelaySeconds
+        }
+    }
+    if (-not $backupSucceeded) {
+        throw "InfluxDB backup failed after $MaxAttempts attempt(s)"
     }
 }
 finally {
