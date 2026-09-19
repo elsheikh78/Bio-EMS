@@ -79,6 +79,9 @@ if (config.frontendRoot) {
   app.use(express.static(frontendRoot, { index: false, fallthrough: true }));
   app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith(config.apiPrefix)) return next();
+    response.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    response.set("Pragma", "no-cache");
+    response.set("Expires", "0");
     return response.sendFile("index.html", { root: frontendRoot });
   });
 }
