@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useSites } from "../monitoredAreas/queries";
 import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 import type { ApiRequestOptions } from "../api/client";
+import type { Site } from "../monitoredAreas/contracts";
 
 type Channel = "EMAIL" | "TELEGRAM" | "WHATSAPP" | "SMS";
 type Request = <T>(
@@ -22,6 +22,7 @@ interface Props {
   request: Request;
   basePath: `/${string}`;
   title?: string;
+  sites: Site[];
 }
 const channels: Channel[] = ["EMAIL", "TELEGRAM", "WHATSAPP", "SMS"];
 const commonDefaults = { enabled: "true", priority: "1" };
@@ -63,11 +64,11 @@ export function CommunicationChannelsPanel({
   request,
   basePath,
   title = "Communication channels",
+  sites,
 }: Props) {
   const cache = useQueryClient();
   const { language } = useLocalization();
   const ar = language === "ar";
-  const sitesQuery = useSites();
   const [channel, setChannel] = useState<Channel>("EMAIL");
   const [form, setForm] = useState(defaults.EMAIL);
   const [dirty, setDirty] = useState(false);
@@ -196,7 +197,7 @@ export function CommunicationChannelsPanel({
           <MenuItem value="" disabled>
             {ar ? "اختر موقعًا" : "Select a Site"}
           </MenuItem>
-          {(sitesQuery.data ?? [])
+          {sites
             .filter((site) => site.id)
             .map((site) => (
               <MenuItem key={site.id} value={String(site.id)}>
