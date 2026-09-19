@@ -1,7 +1,17 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 16 September 2026  
+**Plan date:** 19 September 2026  
 **Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+
+## Immediate restart point — 20 September 2026
+
+1. Verify the latest PR #239 Prettier, CI and Internal Windows Setup results for the frontend cache revalidation fix.
+2. Build/use only the resulting current artifact and physically retest bare `https://localhost/login` with no query-string cache bust and no hard refresh.
+3. Create the installation-bound SYSTEM_OWNER commissioning request on the customer host; sign it only on the manufacturer-controlled machine with the encrypted private key; import the signed package; enroll MFA via the locally rendered QR; confirm SYSTEM_OWNER login and audit evidence.
+4. Execute physical Repair and prove preservation of customer/site/installation identity, SQLite, Influx telemetry, configuration and commissioned owner state.
+5. Execute physical Platform Backup -> controlled mutation -> Restore and prove SQLite + historical Influx telemetry + identity restoration and negative rejection cases.
+6. Review stacked PRs: #239 is the current merge vehicle; #233/#235/#237 are ancestor integration layers to close as superseded only after final #239 acceptance; #138 is stale/conflicted documentation and should not be merged as-is.
+7. Only after all PR #239 acceptance gates are green, update final evidence/docs and decide the merge to `main`.
 
 ## Objective
 
