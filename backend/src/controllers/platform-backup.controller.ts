@@ -4,10 +4,7 @@ import {
   platformRequestContext,
 } from "../modules/audit/platform-audit-context";
 import { auditEventService } from "../services/audit-event.service";
-import {
-  customerAuditActor,
-  customerRequestContext,
-} from "../modules/audit/customer-audit-context";
+import { customerAuditActor } from "../modules/audit/customer-audit-context";
 import {
   createCompletePlatformBackup,
   getPlatformRestoreJob,
