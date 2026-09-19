@@ -140,6 +140,15 @@ Separate evidence is still required for:
 - commercial Production Installer release.
 
 
+## 19 September 2026 integration checkpoint
+
+- Active integration authority: draft PR #239 / `feat/dep-br-backup-restore`; it contains the stacked SEC-OWNER, COM, AUTH-RECOVERY and DEP-BR work carried forward from PRs #233, #235 and #237.
+- Manufacturer owner key `owner-primary-2026` was verified directly against the encrypted offline private key; approved SPKI DER SHA-256 is `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`.
+- Automated fingerprint pinning, CI and the prior Internal Windows Setup gate passed. Physical commissioning remains open.
+- Physical Windows acceptance on 19 September confirmed services and HTTPS health and exposed a stale browser/frontend shell at bare `/login`; cache-busted navigation loaded the current UI and ADMIN credentials succeeded. PR #239 now carries a cache revalidation fix which must pass CI/Windows and then be physically retested without cache-busting.
+- Do not merge PR #239 until physical SEC-OWNER commissioning/MFA, Repair preservation, Backup/Restore historical telemetry and remaining DEP-BR acceptance are complete.
+- Older stacked PRs #233/#235/#237 are historical integration layers; reconcile/close them only after confirming #239 remains a strict descendant and is the selected merge vehicle. PR #138 is obsolete/conflicted documentation and should not be merged as-is.
+
 ## 16 September 2026 status note
 
 - `main`: `653a573` (customer ADMIN Setup provisioning merged via PR #231).
