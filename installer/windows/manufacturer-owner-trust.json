@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "keys": [
+    {
+      "keyId": "owner-primary-2026",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA8a91/WEJzQneF8VIOsf9hN8MBy5MW0TqubhhsX5i8Oo=\n-----END PUBLIC KEY-----\n",
+      "status": "active"
+    }
+  ]
+}
