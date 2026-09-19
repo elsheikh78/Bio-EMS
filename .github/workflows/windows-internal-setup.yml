@@ -195,6 +195,11 @@ jobs:
           $env:BIOEMS_CI_ADMIN_USERNAME = "ci-admin"
           $env:BIOEMS_CI_ADMIN_PASSWORD = "CiAdminPilot2026"
           $env:BIOEMS_CI_ADMIN_EMAIL = "ci-admin@example.invalid"
+          $env:BIOEMS_CI_CUSTOMER_NAME = "BIO-EMS CI Customer"
+          $env:BIOEMS_CI_CUSTOMER_CODE = "CI-CUSTOMER"
+          $env:BIOEMS_CI_SITE_NAME = "BIO-EMS CI Site"
+          $env:BIOEMS_CI_SITE_CODE = "CI-SITE"
+          $env:BIOEMS_CI_SITE_LOCATION = "CI"
           $process = Start-Process -FilePath $setup.FullName -ArgumentList @(
             "/VERYSILENT",
             "/SUPPRESSMSGBOXES",
@@ -286,6 +291,11 @@ jobs:
           $login = Invoke-RestMethod -Uri "https://localhost/api/v1/auth/login" -Method Post -ContentType "application/json" -Body $loginBody -TimeoutSec 15
           if (-not $login.access_token -or $login.user.role -ne "ADMIN") {
             throw "BIO-EMS installed customer administrator login verification failed"
+          }
+          $headers = @{ Authorization = "Bearer $($login.access_token)" }
+          $users = Invoke-RestMethod -Uri "https://localhost/api/v1/users" -Headers $headers -TimeoutSec 15
+          if (@($users).Count -ne 1 -or $users[0].username -ne $env:BIOEMS_CI_ADMIN_USERNAME) {
+            throw "BIO-EMS installed user-management API verification failed"
           }
           Remove-Item Env:BIOEMS_CI_ADMIN_USERNAME -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
