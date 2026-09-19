@@ -141,7 +141,9 @@ export function CommunicationChannelsPanel({
             </MenuItem>
           ))}
         </TextField>
-        {Object.keys(defaults[channel]).map((name) => (
+        {Object.keys(defaults[channel])
+          .filter((name) => shouldShowField(channel, name, displayed))
+          .map((name) => (
           <TextField
             key={`${channel}-${name}`}
             label={label(name)}
@@ -243,6 +245,23 @@ const secretFields = new Set([
 ]);
 const label = (name: string) =>
   name.replace(/([A-Z])/g, " $1").replace(/^./, (value) => value.toUpperCase());
+
+function shouldShowField(
+  channel: Channel,
+  name: string,
+  form: Record<string, string>,
+): boolean {
+  if (channel !== "SMS") return true;
+  const transport = form.transport || "HTTP";
+  if (transport === "LOCAL_MODEM") {
+    return ["enabled", "priority", "transport", "simNumber", "operator", "apn", "comPort"].includes(
+      name,
+    );
+  }
+  return ["enabled", "priority", "transport", "providerUrl", "providerAccount", "providerToken"].includes(
+    name,
+  );
+}
 function buildSecrets(channel: Channel, form: Record<string, string>) {
   const field = {
     EMAIL: "password",
