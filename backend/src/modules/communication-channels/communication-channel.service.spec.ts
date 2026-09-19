@@ -84,6 +84,64 @@ describe("CommunicationChannelService authorization scope", () => {
     ).toEqual({ botToken: "first-token" });
   });
 
+  it("allows initial LOCAL_MODEM SMS configuration without a provider secret", () => {
+    const scope = service.scopeForAdmin(7, null);
+    expect(() =>
+      service.save(
+        scope,
+        "SMS",
+        {
+          siteId: null,
+          config: {
+            channel: "SMS",
+            enabled: true,
+            priority: 4,
+            transport: "LOCAL_MODEM",
+            simNumber: "+201000000000",
+            operator: "test",
+            apn: "",
+            comPort: "COM3",
+            providerUrl: "",
+            providerAccount: "",
+          },
+          secrets: {},
+        },
+        "admin#7"
+      )
+    ).not.toThrow();
+
+    expect(
+      new CommunicationChannelRepository(key, database).getRuntimeSecrets(scope, "SMS")
+    ).toEqual({});
+  });
+
+  it("still requires a provider secret for initial HTTP SMS configuration", () => {
+    const scope = service.scopeForAdmin(7, null);
+    expect(() =>
+      service.save(
+        scope,
+        "SMS",
+        {
+          siteId: null,
+          config: {
+            channel: "SMS",
+            enabled: true,
+            priority: 4,
+            transport: "HTTP",
+            simNumber: "",
+            operator: "",
+            apn: "",
+            comPort: "",
+            providerUrl: "https://sms.example.test/send",
+            providerAccount: "bio-ems",
+          },
+          secrets: {},
+        },
+        "admin#7"
+      )
+    ).toThrow(/initial configuration/);
+  });
+
   it("requires a secret only on initial configuration", () => {
     expect(() =>
       service.save(
