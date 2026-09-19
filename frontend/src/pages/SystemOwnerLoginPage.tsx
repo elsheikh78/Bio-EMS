@@ -107,7 +107,6 @@ export function SystemOwnerLoginPage() {
   useEffect(() => {
     let active = true;
     if (!enrollment) {
-      setQrCode(undefined);
       return () => {
         active = false;
       };
