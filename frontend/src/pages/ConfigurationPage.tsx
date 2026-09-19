@@ -18,7 +18,7 @@ import {
   useUpdateSensorThresholds,
 } from "../configuration/queries";
 import type { Sensor } from "../monitoredAreas/contracts";
-import { useSensors } from "../monitoredAreas/queries";
+import { useSensors, useSites } from "../monitoredAreas/queries";
 import { NotificationRecipientsPanel } from "../configuration/NotificationRecipientsPanel";
 import { EscalationPoliciesPanel } from "../configuration/EscalationPoliciesPanel";
 import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
@@ -30,6 +30,7 @@ export function ConfigurationPage() {
   const { language } = useLocalization();
   const ar = language === "ar";
   const sensorsQuery = useSensors();
+  const sitesQuery = useSites();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Sensor>();
   const sensors = useMemo(() => {
@@ -138,6 +139,7 @@ export function ConfigurationPage() {
         <CommunicationChannelsPanel
           request={authentication.protectedRequest}
           basePath="/communication-channels"
+          sites={sitesQuery.data ?? []}
         />
       ) : null}
     </Stack>
