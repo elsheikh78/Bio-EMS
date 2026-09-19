@@ -12,7 +12,6 @@ const config = {
   channel: "TELEGRAM" as const,
   enabled: true,
   priority: 1,
-  chatId: "-100123",
 };
 
 describe("CommunicationChannelService authorization scope", () => {
@@ -76,7 +75,7 @@ describe("CommunicationChannelService authorization scope", () => {
     service.save(
       scope,
       "TELEGRAM",
-      { siteId: null, config: { ...config, chatId: "-100999" }, secrets: { botToken: "" } },
+      { siteId: null, config: config, secrets: { botToken: "" } },
       "admin#7"
     );
 
