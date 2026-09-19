@@ -20,7 +20,6 @@ export const communicationChannelConfigSchema = z.discriminatedUnion("channel", 
   }),
   commonSchema.extend({
     channel: z.literal("TELEGRAM"),
-    chatId: z.string().trim().min(1).max(128),
   }),
   commonSchema.extend({
     channel: z.literal("WHATSAPP"),
