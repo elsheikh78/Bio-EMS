@@ -23,6 +23,17 @@ describe("secure ADMIN bootstrap", () => {
     database = new Database(":memory:");
     migration003.up(database);
     migration018.up(database);
+    database.exec(`
+      CREATE TABLE sites (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        code TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        location TEXT,
+        timezone TEXT,
+        active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
     migration019.up(database);
     migration028.up(database);
     repository = new UserRepository(database);
@@ -73,6 +84,15 @@ describe("secure ADMIN bootstrap", () => {
       name: "BIO-EMS Customer",
       userId: id,
     });
+    expect(
+      database
+        .prepare(
+          `SELECT s.code,s.name,b.customer_id AS customerId
+           FROM customer_site_bindings b
+           JOIN sites s ON s.id = b.site_id`
+        )
+        .get()
+    ).toEqual({ code: "INSTALLATION-SITE", name: "BIO-EMS Site", customerId: 1 });
     expect(messages).toEqual(["Bootstrap customer administrator created and bound"]);
     expect(messages.join(" ")).not.toContain(VALID_PASSWORD);
     expect(messages.join(" ")).not.toContain(stored.password_hash);
