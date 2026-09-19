@@ -4,6 +4,8 @@ import { hashPassword } from "./password.service";
 
 const DEFAULT_CUSTOMER_CODE = "INSTALLATION-CUSTOMER";
 const DEFAULT_CUSTOMER_NAME = "BIO-EMS Customer";
+const DEFAULT_SITE_CODE = "INSTALLATION-SITE";
+const DEFAULT_SITE_NAME = "BIO-EMS Site";
 const BOOTSTRAP_ACTOR = "INSTALLER_ADMIN_BOOTSTRAP";
 
 export interface BootstrapAdminInput {
@@ -49,9 +51,15 @@ export function readBootstrapAdminEnvironment(environment: NodeJS.ProcessEnv): B
     email: email || undefined,
     customerCode: environment.BIOEMS_BOOTSTRAP_CUSTOMER_CODE || DEFAULT_CUSTOMER_CODE,
     customerName: environment.BIOEMS_BOOTSTRAP_CUSTOMER_NAME || DEFAULT_CUSTOMER_NAME,
-    siteCode: environment.BIOEMS_BOOTSTRAP_SITE_CODE,
-    siteName: environment.BIOEMS_BOOTSTRAP_SITE_NAME,
-    siteLocation: environment.BIOEMS_BOOTSTRAP_SITE_LOCATION,
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_CODE
+      ? { siteCode: environment.BIOEMS_BOOTSTRAP_SITE_CODE }
+      : {}),
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_NAME
+      ? { siteName: environment.BIOEMS_BOOTSTRAP_SITE_NAME }
+      : {}),
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_LOCATION
+      ? { siteLocation: environment.BIOEMS_BOOTSTRAP_SITE_LOCATION }
+      : {}),
   };
 }
 
@@ -64,8 +72,8 @@ export async function bootstrapAdmin(
     const now = new Date().toISOString();
     const customerCode = (input.customerCode || DEFAULT_CUSTOMER_CODE).trim();
     const customerName = (input.customerName || DEFAULT_CUSTOMER_NAME).trim();
-    const siteCode = input.siteCode?.trim();
-    const siteName = input.siteName?.trim();
+    const siteCode = (input.siteCode || DEFAULT_SITE_CODE).trim();
+    const siteName = (input.siteName || DEFAULT_SITE_NAME).trim();
     const siteLocation = input.siteLocation?.trim() || null;
     if (!customerCode || !customerName || !siteCode || !siteName) throw new BootstrapAdminError();
 
