@@ -2,7 +2,12 @@
 param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot,
-    [Parameter(Mandatory = $true)][string]$CredentialFile
+    [Parameter(Mandatory = $true)][string]$CredentialFile,
+    [Parameter(Mandatory = $true)][string]$CustomerName,
+    [Parameter(Mandatory = $true)][string]$CustomerCode,
+    [Parameter(Mandatory = $true)][string]$SiteName,
+    [Parameter(Mandatory = $true)][string]$SiteCode,
+    [string]$SiteLocation = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,6 +48,11 @@ try {
     $env:BIOEMS_BOOTSTRAP_ADMIN_USERNAME = $username
     $env:BIOEMS_BOOTSTRAP_ADMIN_PASSWORD = $password
     $env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL = $email
+    $env:BIOEMS_BOOTSTRAP_CUSTOMER_NAME = $CustomerName
+    $env:BIOEMS_BOOTSTRAP_CUSTOMER_CODE = $CustomerCode
+    $env:BIOEMS_BOOTSTRAP_SITE_NAME = $SiteName
+    $env:BIOEMS_BOOTSTRAP_SITE_CODE = $SiteCode
+    $env:BIOEMS_BOOTSTRAP_SITE_LOCATION = $SiteLocation
 
     $nodes = @(Get-ChildItem -LiteralPath (Join-Path $ApplicationRoot "runtime\node") -Filter "node.exe" -File -Recurse)
     if ($nodes.Count -ne 1) { throw "Expected exactly one controlled Node.js executable" }
@@ -98,6 +108,11 @@ finally {
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_USERNAME -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_PASSWORD -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_BOOTSTRAP_ADMIN_EMAIL -ErrorAction SilentlyContinue
+    Remove-Item Env:BIOEMS_BOOTSTRAP_CUSTOMER_NAME -ErrorAction SilentlyContinue
+    Remove-Item Env:BIOEMS_BOOTSTRAP_CUSTOMER_CODE -ErrorAction SilentlyContinue
+    Remove-Item Env:BIOEMS_BOOTSTRAP_SITE_NAME -ErrorAction SilentlyContinue
+    Remove-Item Env:BIOEMS_BOOTSTRAP_SITE_CODE -ErrorAction SilentlyContinue
+    Remove-Item Env:BIOEMS_BOOTSTRAP_SITE_LOCATION -ErrorAction SilentlyContinue
     Remove-Item Env:BIOEMS_SQLITE_PATH -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $CredentialFile -Force -ErrorAction SilentlyContinue
     Start-Service -Name "BIOEMS-Backend" -ErrorAction SilentlyContinue
