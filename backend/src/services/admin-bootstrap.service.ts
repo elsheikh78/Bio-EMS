@@ -12,6 +12,9 @@ export interface BootstrapAdminInput {
   email?: string;
   customerCode?: string;
   customerName?: string;
+  siteCode?: string;
+  siteName?: string;
+  siteLocation?: string;
 }
 
 export interface BootstrapLogger {
@@ -46,6 +49,9 @@ export function readBootstrapAdminEnvironment(environment: NodeJS.ProcessEnv): B
     email: email || undefined,
     customerCode: environment.BIOEMS_BOOTSTRAP_CUSTOMER_CODE || DEFAULT_CUSTOMER_CODE,
     customerName: environment.BIOEMS_BOOTSTRAP_CUSTOMER_NAME || DEFAULT_CUSTOMER_NAME,
+    siteCode: environment.BIOEMS_BOOTSTRAP_SITE_CODE,
+    siteName: environment.BIOEMS_BOOTSTRAP_SITE_NAME,
+    siteLocation: environment.BIOEMS_BOOTSTRAP_SITE_LOCATION,
   };
 }
 
@@ -58,7 +64,10 @@ export async function bootstrapAdmin(
     const now = new Date().toISOString();
     const customerCode = (input.customerCode || DEFAULT_CUSTOMER_CODE).trim();
     const customerName = (input.customerName || DEFAULT_CUSTOMER_NAME).trim();
-    if (!customerCode || !customerName) throw new BootstrapAdminError();
+    const siteCode = input.siteCode?.trim();
+    const siteName = input.siteName?.trim();
+    const siteLocation = input.siteLocation?.trim() || null;
+    if (!customerCode || !customerName || !siteCode || !siteName) throw new BootstrapAdminError();
 
     const id = dependencies.database.transaction(() => {
       const customerId = Number(
@@ -69,6 +78,19 @@ export async function bootstrapAdmin(
           )
           .run(customerCode, customerName, now, BOOTSTRAP_ACTOR).lastInsertRowid
       );
+
+      const siteId = Number(
+        dependencies.database
+          .prepare(`INSERT INTO sites (code,name,location,active) VALUES (?,?,?,1)`)
+          .run(siteCode, siteName, siteLocation).lastInsertRowid
+      );
+
+      dependencies.database
+        .prepare(
+          `INSERT INTO customer_site_bindings (customer_id,site_id,bound_at,bound_by)
+           VALUES (?,?,?,?)`
+        )
+        .run(customerId, siteId, now, BOOTSTRAP_ACTOR);
 
       const userId = dependencies.userRepository.createFirstUser({
         username: input.username,
