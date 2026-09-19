@@ -87,6 +87,10 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(serviceSource).toContain("recordPlatformRestoreTerminalAudit");
     expect(serviceSource).toContain("recordOnce(job.audit.finalAuditEventId");
     expect(serviceSource).toContain("Platform restore job audit metadata is invalid");
+    expect(serviceSource).toContain("assertSafeRestoreJobPath");
+    expect(serviceSource).toContain("Platform restore job directory must be a real directory");
+    expect(serviceSource).toContain("Platform restore job status must be a real file");
+    expect(serviceSource).toContain("resolves outside the restore job directory");
     expect(controllerSource).toContain("recordPlatformRestoreTerminalAudit(restoreJob)");
     expect(controllerSource).not.toContain("recordOnce(restoreJob.jobId");
     expect(controllerSource).toContain('source: "platform-backup-restore"');
