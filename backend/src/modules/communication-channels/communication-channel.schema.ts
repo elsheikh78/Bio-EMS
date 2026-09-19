@@ -47,10 +47,7 @@ export const communicationChannelConfigSchema = z.discriminatedUnion("channel", 
 
 export type CommunicationChannelConfig = z.infer<typeof communicationChannelConfigSchema>;
 
-export const communicationChannelSecretsSchema = z.record(
-  z.string(),
-  z.string().min(1).max(8192)
-);
+export const communicationChannelSecretsSchema = z.record(z.string(), z.string().min(1).max(8192));
 export type CommunicationChannelSecrets = z.infer<typeof communicationChannelSecretsSchema>;
 
 export const communicationChannelScopeSchema = z.object({
