@@ -13,7 +13,7 @@ param(
     [ValidatePattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')]
     [string]$BuildTimestamp,
     [ValidateSet("Pilot", "Production")]
-    [string]$ReleaseChannel = "Pilot",
+    [string]$ReleaseChannel = "Production",
     [string]$OwnerTrustKeyring
 )
 
@@ -23,6 +23,10 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repository = [System.IO.Path]::GetFullPath($RepositoryRoot)
 $vendor = [System.IO.Path]::GetFullPath($VendorCache)
 $staging = [System.IO.Path]::GetFullPath($StagingDirectory)
+
+if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
+    $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
+}
 
 if ($staging -eq [System.IO.Path]::GetPathRoot($staging) -or $staging -eq $repository) {
     throw "Unsafe staging directory"
