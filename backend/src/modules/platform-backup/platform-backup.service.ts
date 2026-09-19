@@ -497,11 +497,42 @@ function restoreJobPath(jobId: string, environment: NodeJS.ProcessEnv): string {
   return join(restoreJobDirectory(environment), `${jobId}.json`);
 }
 
+async function assertSafeRestoreJobPath(
+  jobId: string,
+  environment: NodeJS.ProcessEnv
+): Promise<string> {
+  const directory = restoreJobDirectory(environment);
+  const path = restoreJobPath(jobId, environment);
+  const directoryEntry = await lstat(directory);
+  if (directoryEntry.isSymbolicLink() || !directoryEntry.isDirectory()) {
+    throw new Error("Platform restore job directory must be a real directory");
+  }
+  const directoryReal = await realpath(directory);
+  const persistentRootReal = await realpath(
+    requireValue(environment.BIOEMS_PERSISTENT_ROOT, "BIOEMS_PERSISTENT_ROOT")
+  );
+  const directoryTraversal = relative(persistentRootReal, directoryReal);
+  if (directoryTraversal.startsWith("..") || isAbsolute(directoryTraversal)) {
+    throw new Error("Platform restore job directory resolves outside the persistent root");
+  }
+  const entry = await lstat(path);
+  if (entry.isSymbolicLink() || !entry.isFile()) {
+    throw new Error("Platform restore job status must be a real file");
+  }
+  const pathReal = await realpath(path);
+  const traversal = relative(directoryReal, pathReal);
+  if (traversal.startsWith("..") || isAbsolute(traversal)) {
+    throw new Error("Platform restore job status resolves outside the restore job directory");
+  }
+  return path;
+}
+
 export async function getPlatformRestoreJob(
   jobId: string,
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformRestoreJobStatus> {
-  const value = JSON.parse(await readFile(restoreJobPath(jobId, environment), "utf8")) as unknown;
+  const path = await assertSafeRestoreJobPath(jobId, environment);
+  const value = JSON.parse(await readFile(path, "utf8")) as unknown;
   if (
     !isRecord(value) ||
     value.jobId !== jobId ||
