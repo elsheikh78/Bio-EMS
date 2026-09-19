@@ -4,10 +4,13 @@ import {
   useUpdateSensorAlarmDelay,
   useUpdateSensorThresholds,
 } from "../configuration/queries";
-import { useSensors } from "../monitoredAreas/queries";
+import { useSensors, useSites } from "../monitoredAreas/queries";
 import { ConfigurationPage } from "./ConfigurationPage";
 
-vi.mock("../monitoredAreas/queries", () => ({ useSensors: vi.fn() }));
+vi.mock("../monitoredAreas/queries", () => ({
+  useSensors: vi.fn(),
+  useSites: vi.fn(),
+}));
 vi.mock("../configuration/queries", () => ({
   useUpdateSensorThresholds: vi.fn(),
   useUpdateSensorAlarmDelay: vi.fn(),
@@ -20,6 +23,7 @@ vi.mock("../configuration/EscalationPoliciesPanel", () => ({
 }));
 
 const mockedSensors = vi.mocked(useSensors);
+const mockedSites = vi.mocked(useSites);
 const mockedThresholds = vi.mocked(useUpdateSensorThresholds);
 const mockedDelays = vi.mocked(useUpdateSensorAlarmDelay);
 const sensor = {
@@ -46,6 +50,11 @@ describe("ConfigurationPage", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
+    mockedSites.mockReturnValue({
+      data: [{ id: 1, code: "SITE-01", name: "Pilot Site" }],
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useSites>);
     mockedSensors.mockReturnValue({
       data: [sensor],
       isPending: false,
