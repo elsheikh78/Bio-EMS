@@ -73,7 +73,9 @@ export class CommunicationChannelService {
         throw error;
       }
     }
-    if (Object.keys(secrets).length === 0) {
+    const requiresSecret =
+      input.config.channel !== "SMS" || input.config.transport !== "LOCAL_MODEM";
+    if (requiresSecret && Object.keys(secrets).length === 0) {
       throw new AppError(
         "A secret is required for initial configuration",
         400,
