@@ -1,10 +1,18 @@
 # BIO-EMS Project State
 
-**State date:** 16 September 2026  
+**State date:** 19 September 2026  
 **Authoritative main audited:** `653a573584122a2fa72e4e762d8f0337ae0f6712`  
-**Current integration branch:** `feat/com-01-06-communication-channels` @ `53c4d7416ff601609a953794436f0293acbf1cd0`  
+**Current integration branch:** `feat/dep-br-backup-restore` / draft PR #239  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 19 September integration checkpoint
+
+- PR #239 is the current stacked integration line and contains the work carried forward from PRs #233, #235 and #237 plus DEP-BR.
+- Manufacturer owner key fingerprint is verified as `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`; the repository trust keyring matches it and an automated fingerprint test is present.
+- Physical New Install reached healthy services/HTTPS and ADMIN login. A stale cached customer login shell was reproduced at bare `/login`; cache-busted navigation loaded the current UI. A cache revalidation fix is under CI/Windows verification and requires physical retest without `?fresh` or hard refresh.
+- Physical SEC-OWNER commissioning, MFA enrollment/login, Repair preservation, and Backup/Restore historical telemetry acceptance remain open. PR #239 must remain unmerged until those gates pass.
+- PR #138 is stale/conflicted documentation and is not an authoritative merge candidate.
 
 ## Current phase
 
