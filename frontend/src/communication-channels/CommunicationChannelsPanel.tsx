@@ -37,7 +37,7 @@ const defaults: Record<Channel, Record<string, string>> = {
     username: "",
     password: "",
   },
-  TELEGRAM: { ...commonDefaults, chatId: "", botToken: "" },
+  TELEGRAM: { ...commonDefaults, botToken: "" },
   WHATSAPP: {
     ...commonDefaults,
     phoneNumberId: "",
@@ -268,7 +268,7 @@ function buildConfig(channel: Channel, form: Record<string, string>) {
       senderAddress: form.senderAddress,
       username: form.username,
     };
-  if (channel === "TELEGRAM") return { ...common, chatId: form.chatId };
+  if (channel === "TELEGRAM") return common;
   if (channel === "WHATSAPP")
     return {
       ...common,
