@@ -61,9 +61,29 @@ if ($Mode -eq "NewInstallCleanup") {
     }
 
     if (Test-Path -LiteralPath $persistent) {
-        & takeown.exe /F $persistent /A /R /D Y | Out-Null
-        & icacls.exe $persistent /grant:r "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
-        Remove-Item -LiteralPath $persistent -Recurse -Force
+        $cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
+        try {
+            & takeown.exe /F $persistent /A /R /D Y | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "takeown failed with exit code $LASTEXITCODE" }
+
+            & icacls.exe $persistent /inheritance:e /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "ACL inheritance repair failed with exit code $LASTEXITCODE" }
+
+            & icacls.exe $persistent /grant:r "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Administrator ACL repair failed with exit code $LASTEXITCODE" }
+
+            Get-ChildItem -LiteralPath $persistent -Force -Recurse -ErrorAction SilentlyContinue |
+                ForEach-Object { $_.Attributes = $_.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }
+
+            Remove-Item -LiteralPath $persistent -Recurse -Force
+            if (Test-Path -LiteralPath $persistent) { throw "Persistent BIO-EMS directory still exists after controlled removal" }
+            Remove-Item -LiteralPath $cleanupDiagnostic -Force -ErrorAction SilentlyContinue
+        } catch {
+            $detail = "BIO-EMS New Install cleanup failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
+            [IO.File]::WriteAllText($cleanupDiagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
+            Write-Error "$detail Diagnostic: $cleanupDiagnostic"
+            exit 41
+        }
     }
     Write-Host "BIO-EMS controlled New Install cleanup: PASS"
     exit 0
