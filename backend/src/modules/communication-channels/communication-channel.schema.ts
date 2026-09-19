@@ -47,9 +47,10 @@ export const communicationChannelConfigSchema = z.discriminatedUnion("channel", 
 
 export type CommunicationChannelConfig = z.infer<typeof communicationChannelConfigSchema>;
 
-export const communicationChannelSecretsSchema = z
-  .record(z.string(), z.string().min(1).max(8192))
-  .refine((value) => Object.keys(value).length > 0, "At least one secret is required");
+export const communicationChannelSecretsSchema = z.record(
+  z.string(),
+  z.string().min(1).max(8192)
+);
 export type CommunicationChannelSecrets = z.infer<typeof communicationChannelSecretsSchema>;
 
 export const communicationChannelScopeSchema = z.object({
