@@ -76,7 +76,21 @@ app.use(config.apiPrefix, commissioningRouter);
 
 if (config.frontendRoot) {
   const frontendRoot = resolve(config.frontendRoot);
-  app.use(express.static(frontendRoot, { index: false, fallthrough: true }));
+  app.use(
+    express.static(frontendRoot, {
+      index: false,
+      fallthrough: true,
+      setHeaders(response, filePath) {
+        if (filePath.endsWith(".html")) {
+          response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+          response.setHeader("Pragma", "no-cache");
+          response.setHeader("Expires", "0");
+          return;
+        }
+        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+    })
+  );
   app.use((request, response, next) => {
     if (request.method !== "GET" || request.path.startsWith(config.apiPrefix)) return next();
     response.set("Cache-Control", "no-store, no-cache, must-revalidate");
