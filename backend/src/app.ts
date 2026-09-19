@@ -87,7 +87,7 @@ if (config.frontendRoot) {
           response.setHeader("Expires", "0");
           return;
         }
-        response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        response.setHeader("Cache-Control", "no-cache");
       },
     })
   );
