@@ -61,10 +61,14 @@ function Restore-InfluxSnapshot([string]$snapshot) {
     # A portable Influx backup contains the bucket metadata as well as its data.
     # Remove the current application bucket before restore so the CLI can recreate
     # the backed-up bucket instead of failing with HTTP 422 "already exists".
-    $bucketName = $env:BIOEMS_RESTORE_INFLUX_BUCKET
-    if ([string]::IsNullOrWhiteSpace($bucketName)) { throw "BIOEMS_RESTORE_INFLUX_BUCKET is unavailable" }
-    & $InfluxCli bucket delete --name $bucketName --org $Org
-    if ($LASTEXITCODE -ne 0) { throw "Existing InfluxDB bucket could not be removed before restore" }
+    $bucketName = $env:INFLUX_BUCKET
+    if ([string]::IsNullOrWhiteSpace($bucketName)) { throw "INFLUX_BUCKET is unavailable" }
+    $bucketList = & $InfluxCli bucket list --name $bucketName --org $Org --hide-headers 2>&1
+    if ($LASTEXITCODE -ne 0) { throw "Existing InfluxDB bucket could not be inspected before restore" }
+    if ($bucketList) {
+        & $InfluxCli bucket delete --name $bucketName --org $Org
+        if ($LASTEXITCODE -ne 0) { throw "Existing InfluxDB bucket could not be removed before restore" }
+    }
     & $InfluxCli restore $snapshot
     if ($LASTEXITCODE -ne 0) { throw "InfluxDB snapshot restore failed with exit code $LASTEXITCODE" }
 }
