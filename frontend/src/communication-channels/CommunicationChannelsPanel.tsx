@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useSites } from "../monitoredAreas/queries";
+import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
 import type { ApiRequestOptions } from "../api/client";
 
 type Channel = "EMAIL" | "TELEGRAM" | "WHATSAPP" | "SMS";
@@ -63,6 +65,9 @@ export function CommunicationChannelsPanel({
   title = "Communication channels",
 }: Props) {
   const cache = useQueryClient();
+  const { language } = useLocalization();
+  const ar = language === "ar";
+  const sitesQuery = useSites();
   const [channel, setChannel] = useState<Channel>("EMAIL");
   const [form, setForm] = useState(defaults.EMAIL);
   const [dirty, setDirty] = useState(false);
@@ -116,8 +121,9 @@ export function CommunicationChannelsPanel({
           {title}
         </Typography>
         <Typography color="text.secondary">
-          Secrets are never displayed. Leave a secret blank to keep its saved
-          value.
+          {ar
+            ? "هذه البيانات تخص حسابات الإرسال الخاصة بمنصة BIO-EMS وليست بيانات مستلمي الإنذارات. الأسرار لا تُعرض بعد حفظها؛ ترك حقل السر فارغًا يحتفظ بالقيمة الحالية."
+            : "These are BIO-EMS platform sender-account settings, not alarm-recipient details. Secrets are never displayed after saving; leave a secret blank to keep its current value."}
         </Typography>
         <TextField
           select
@@ -177,13 +183,34 @@ export function CommunicationChannelsPanel({
           Send configuration test
         </Typography>
         <TextField
-          label="Site ID"
-          type="number"
+          select
+          label={ar ? "الموقع لاختبار الإرسال" : "Site for delivery test"}
           value={testSiteId}
           onChange={(event) => setTestSiteId(event.target.value)}
-        />
+          helperText={
+            ar
+              ? "اختر موقعًا مسجلًا فعليًا؛ لا تُدخل Site ID يدويًا."
+              : "Choose a registered Site; do not enter a Site ID manually."
+          }
+        >
+          <MenuItem value="" disabled>
+            {ar ? "اختر موقعًا" : "Select a Site"}
+          </MenuItem>
+          {(sitesQuery.data ?? [])
+            .filter((site) => site.id)
+            .map((site) => (
+              <MenuItem key={site.id} value={String(site.id)}>
+                {site.name} ({site.code})
+              </MenuItem>
+            ))}
+        </TextField>
         <TextField
-          label="Test destination"
+          label={ar ? "مستلم رسالة الاختبار" : "Test recipient"}
+          helperText={
+            ar
+              ? "للاختبار فقط: بريد إلكتروني أو Telegram Chat ID أو رقم E.164 حسب القناة. مستلمو الإنذارات الفعليون يُدارون في Notification recipients."
+              : "Test only: email, Telegram Chat ID, or E.164 number as appropriate. Production alarm recipients are managed under Notification recipients."
+          }
           value={destination}
           onChange={(event) => setDestination(event.target.value)}
         />
