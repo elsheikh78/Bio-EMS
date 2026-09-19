@@ -46,6 +46,11 @@ export function SystemOwnerCommunicationChannelsPage() {
           <CommunicationChannelsPanel
             request={request}
             basePath={`/platform-operations/customers/${customerId}/communication-channels`}
+            sites={(overview.data?.sites ?? []).filter((site) =>
+              (overview.data?.siteBoundLicensing.installations ?? []).some(
+                (installation) => installation.customerId === customerId && installation.siteId === site.id,
+              ),
+            )}
           />
         ) : null}
       </Stack>
