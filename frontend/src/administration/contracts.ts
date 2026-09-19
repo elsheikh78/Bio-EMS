@@ -7,6 +7,7 @@ export const userSchema = z
     email: z.string().nullable(),
     role: z.enum(userRoles),
     status: z.enum(["active", "disabled"]),
+    password_change_required: z.number().int().min(0).max(1),
     created_at: z.string(),
     updated_at: z.string().nullable(),
   })
