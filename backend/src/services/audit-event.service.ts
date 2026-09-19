@@ -42,6 +42,32 @@ export class AuditEventService {
     });
   }
 
+  recordOnce(id: string, input: AuditEventInput): AuditEvent {
+    const existing = this.dependencies.repository.findById(id);
+    if (existing) return existing;
+    return this.dependencies.repository.append({
+      ...input,
+      actor: {
+        ...input.actor,
+        id: redactAuditText(input.actor.id)!,
+        username: redactAuditText(input.actor.username)!,
+      },
+      target: input.target ? { ...input.target, id: redactAuditText(input.target.id)! } : undefined,
+      previousValues: redactAuditValues(input.previousValues),
+      newValues: redactAuditValues(input.newValues),
+      requestContext: {
+        ...input.requestContext,
+        requestId: redactAuditText(input.requestContext.requestId),
+        sessionId: redactAuditText(input.requestContext.sessionId),
+        correlationId: redactAuditText(input.requestContext.correlationId),
+        source: redactAuditText(input.requestContext.source)!,
+      },
+      reason: redactAuditText(input.reason),
+      id,
+      occurredAt: this.now().toISOString(),
+    });
+  }
+
   listForCustomerSite(siteId: number, limit: number): AuditEvent[] {
     return this.dependencies.repository.list({ siteId, limit });
   }

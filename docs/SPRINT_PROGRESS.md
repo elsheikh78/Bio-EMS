@@ -6,7 +6,7 @@
 >
 > Use this ledger only to trace historical Sprint/BF/PVR/P-phase work and integration evidence. When any historical statement here conflicts with the current state, `PROJECT_STATE.md` controls.
 
-## Current handoff pointer — 3 September 2026
+## Current handoff pointer — 16 September 2026
 
 P0-P7 is **SOFTWARE PRODUCT COMPLETE** for the approved software scope. P7-03 through P7-08 closed through PR #145 / CI run #522 / merge `3798277bea14820632c8e1edd0b83df91f8f7084`.
 
@@ -24,8 +24,8 @@ The 3 September localization correction replaced the partial P8/SYSTEM_OWNER-onl
 
 For the authoritative continuation read, in order:
 
-1. `/PROJECT_STATE.md` — current-state authority and P7-03 start pointer.
-2. `/IMPLEMENTATION_PLAN.md` — controlled P0-P7 execution status and detailed P7-03 continuation instructions.
+1. `/PROJECT_STATE.md` — current-state authority and 16 September continuation pointer.
+2. `/IMPLEMENTATION_PLAN.md` — controlled next execution order for SEC-OWNER, COM-07, installer qualification, hardware and field Pilot.
 3. `/docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` — P7 work-package definition.
 4. `/docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md` — latest closed package evidence.
 5. `/docs/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md` — documentation reconciliation record.
@@ -62,3 +62,8 @@ P7 was created after the P0-P6 closure audit identified that source/domain capab
 - Detailed completion evidence goes to dedicated dated closure documents under `docs/project-management/`.
 - Historical Sprint/PR documents remain immutable evidence of their time and are not treated as current status.
 - Software completion must never be used to manufacture physical, provider, field, UAT, or customer-acceptance evidence.
+
+
+## 16 September 2026 continuation note
+
+Customer ADMIN provisioning during Setup is merged to main through PR #231 and was validated in a clean Pilot installation. SEC-OWNER-01 source is implemented on PR #233 but remains intentionally unmerged pending the real manufacturer Ed25519 key ceremony and end-to-end offline commissioning evidence. COM-01 through COM-06 source is implemented on draft PR #235 with passing CI/Windows Setup gates; COM-07 live provider/hardware acceptance remains open. BIO EGYPT remains NOT COMMISSIONED / NOT ACCEPTED.

@@ -1,11 +1,15 @@
 import type { AuthenticationContextValue } from "../auth/AuthenticationContext";
 import {
   auditEventsResponseSchema,
+  passwordRecoveryRequestsSchema,
+  passwordRecoveryResetResultSchema,
   userSchema,
   usersSchema,
   type AuditEvent,
   type CreateUserInput,
   type ManagedUser,
+  type PasswordRecoveryRequest,
+  type PasswordRecoveryResetResult,
   type UpdateUserInput,
 } from "./contracts";
 type ProtectedRequest = AuthenticationContextValue["protectedRequest"];
@@ -33,6 +37,26 @@ export function createAdministrationApi(request: ProtectedRequest) {
       mutateUser(`/users/${id}/status`, "PATCH", { status }),
     updateUserPassword: (id: number, password: string) =>
       mutateUser(`/users/${id}/password`, "PUT", { password }),
+    async listPasswordRecoveryRequests(): Promise<PasswordRecoveryRequest[]> {
+      return passwordRecoveryRequestsSchema.parse(
+        await request<unknown>("/users/password-recovery/requests"),
+      );
+    },
+    async resetPasswordRecoveryRequest(
+      requestId: string,
+      password: string,
+    ): Promise<PasswordRecoveryResetResult> {
+      return passwordRecoveryResetResultSchema.parse(
+        await request<unknown>(
+          `/users/password-recovery/requests/${requestId}/reset`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password }),
+          },
+        ),
+      );
+    },
     async listAuditEvents(siteId: number, limit = 100): Promise<AuditEvent[]> {
       return auditEventsResponseSchema.parse(
         await request<unknown>(

@@ -26,6 +26,10 @@ import { migration021 } from "./migrations/021_add_telegram_notification_channel
 import { migration022 } from "./migrations/022_create_site_bound_licensing_domain";
 import { migration023 } from "./migrations/023_create_licensing_activation_workflow";
 import { migration024 } from "./migrations/024_create_licensing_governance";
+import { migration025 } from "./migrations/025_create_owner_commissioning_receipts";
+import { migration026 } from "./migrations/026_harden_owner_access";
+import { migration027 } from "./migrations/027_create_communication_channel_configs";
+import { migration028 } from "./migrations/028_create_password_recovery_domain";
 
 export interface Migration {
   version: number;
@@ -60,6 +64,10 @@ const migrations: Migration[] = [
   migration022,
   migration023,
   migration024,
+  migration025,
+  migration026,
+  migration027,
+  migration028,
 ];
 
 export function runMigrations(

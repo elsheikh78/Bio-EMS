@@ -26,10 +26,15 @@ export class AuthenticationFailure extends Error {
 export interface AuthenticationContextValue {
   status: AuthenticationStatus;
   user?: AuthenticatedUser;
+  passwordChangeRequired?: boolean;
   loginPending: boolean;
   login: (credentials: LoginRequest) => Promise<AuthenticatedUser>;
   logout: () => Promise<void>;
   retryRestoration: () => Promise<void>;
+  completePasswordChange?: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<void>;
   protectedRequest: <T>(
     path: `/${string}`,
     options?: Omit<ApiRequestOptions, "auth">,

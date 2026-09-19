@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)][ValidateSet("PreUpdate", "PostUpdate", "Uninstall")][string]$Mode,
+    [Parameter(Mandatory = $true)][ValidateSet("PreUpdate", "PostUpdate", "Uninstall", "NewInstallCleanup")][string]$Mode,
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot
 )
@@ -26,6 +26,67 @@ function Get-Manifest([string]$root) {
     return @(Get-ChildItem -LiteralPath $root -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ relativePath = $_.FullName.Substring($root.Length).TrimStart('\'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     })
+}
+
+if ($Mode -eq "NewInstallCleanup") {
+    # Destructive cleanup is deliberately a separate, explicit mode. Never infer it
+    # from the presence of an old installation.
+    $ownedPersistent = [IO.Path]::GetFullPath($persistent)
+    $expectedPersistent = [IO.Path]::GetFullPath((Join-Path $env:ProgramData "BIO-EMS"))
+    if (-not $ownedPersistent.Equals($expectedPersistent, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "New Install cleanup refuses a persistent root that is not the BIO-EMS ProgramData root"
+    }
+
+    Stop-ControlledServices
+    foreach ($service in $services) {
+        $wrapper = Join-Path $application "services\$service.exe"
+        if (Test-Path -LiteralPath $wrapper) { & $wrapper uninstall 2>$null | Out-Null }
+        if (Get-Service -Name $service -ErrorAction SilentlyContinue) {
+            throw "New Install cleanup could not remove controlled service $service"
+        }
+    }
+
+    Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+
+    $certificateEvidence = Join-Path $persistent "config\tls-certificate.json"
+    if (Test-Path -LiteralPath $certificateEvidence -PathType Leaf) {
+        & icacls.exe $certificateEvidence /grant "*S-1-5-32-544:(R)" /C /Q | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Unable to read BIO-EMS TLS certificate evidence during New Install cleanup" }
+        $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
+        if ($thumbprint) {
+            foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
+                Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+            }
+        }
+    }
+
+    if (Test-Path -LiteralPath $persistent) {
+        $cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
+        try {
+            & takeown.exe /F $persistent /A /R /D Y | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "takeown failed with exit code $LASTEXITCODE" }
+
+            & icacls.exe $persistent /inheritance:e /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "ACL inheritance repair failed with exit code $LASTEXITCODE" }
+
+            & icacls.exe $persistent /grant:r "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Administrator ACL repair failed with exit code $LASTEXITCODE" }
+
+            Get-ChildItem -LiteralPath $persistent -Force -Recurse -ErrorAction SilentlyContinue |
+                ForEach-Object { $_.Attributes = $_.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }
+
+            Remove-Item -LiteralPath $persistent -Recurse -Force
+            if (Test-Path -LiteralPath $persistent) { throw "Persistent BIO-EMS directory still exists after controlled removal" }
+            Remove-Item -LiteralPath $cleanupDiagnostic -Force -ErrorAction SilentlyContinue
+        } catch {
+            $detail = "BIO-EMS New Install cleanup failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
+            [IO.File]::WriteAllText($cleanupDiagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
+            Write-Error "$detail Diagnostic: $cleanupDiagnostic"
+            exit 41
+        }
+    }
+    Write-Host "BIO-EMS controlled New Install cleanup: PASS"
+    exit 0
 }
 
 if ($Mode -eq "PreUpdate") {
@@ -82,9 +143,21 @@ foreach ($service in $services) {
 Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue | Remove-NetFirewallRule
 $certificateEvidence = Join-Path $persistent "config\tls-certificate.json"
 if (Test-Path -LiteralPath $certificateEvidence) {
-    $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
-    foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
-        Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+    try {
+        # BIO-EMS protects persistent configuration with restrictive ACLs. The
+        # uninstall lifecycle must be able to read its own TLS evidence before
+        # Inno removes the application payload.
+        & icacls.exe $certificateEvidence /grant "*S-1-5-32-544:(R)" /C /Q | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Unable to grant temporary administrator read access to TLS certificate evidence" }
+
+        $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
+        if ($thumbprint) {
+            foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
+                Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+            }
+        }
+    } catch {
+        throw "Unable to remove BIO-EMS TLS certificate: $($_.Exception.Message)"
     }
 }
 $evidence = [ordered]@{ schemaVersion = 1; state = "APPLICATION_REMOVED_DATA_RETAINED"; retainedRoot = $persistent; completedAt = (Get-Date).ToUniversalTime().ToString("o") }

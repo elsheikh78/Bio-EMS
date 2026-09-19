@@ -1,9 +1,18 @@
 # BIO-EMS Project State
 
-**State date:** 11 September 2026  
-**Authoritative main audited:** `af9a69963d091eda6a16bee17f69a94d912136d6`  
+**State date:** 19 September 2026  
+**Authoritative main audited:** `653a573584122a2fa72e4e762d8f0337ae0f6712`  
+**Current integration branch:** `feat/dep-br-backup-restore` / draft PR #239  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 19 September integration checkpoint
+
+- PR #239 is the current stacked integration line and contains the work carried forward from PRs #233, #235 and #237 plus DEP-BR.
+- Manufacturer owner key fingerprint is verified as `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`; the repository trust keyring matches it and an automated fingerprint test is present.
+- Physical New Install reached healthy services/HTTPS and ADMIN login. A stale cached customer login shell was reproduced at bare `/login`; cache-busted navigation loaded the current UI. A cache revalidation fix is under CI/Windows verification and requires physical retest without `?fresh` or hard refresh.
+- Physical SEC-OWNER commissioning, MFA enrollment/login, Repair preservation, and Backup/Restore historical telemetry acceptance remain open. PR #239 must remain unmerged until those gates pass.
+- PR #138 is stale/conflicted documentation and is not an authoritative merge candidate.
 
 ## Current phase
 
@@ -11,21 +20,21 @@
 
 Source software is mature and full CI is green, but the BIO EGYPT Pilot is still **NOT COMMISSIONED / NOT ACCEPTED**. The next controlled priority is not final commercial protection. The immediate sequence is:
 
-1. implement COM-01 -> COM-06;
-2. build a fresh Pilot Setup;
-3. qualify the installer on multiple clean Windows targets;
-4. execute hardware/bench qualification;
-5. close required live notification/failover evidence;
+1. retain SEC-OWNER-01 as implemented/verified Pilot source pending Production key ceremony and acceptance;
+2. retain COM-01 -> COM-06 as source implemented on PR #235;
+3. execute COM-07 live provider/hardware acceptance;
+4. continue multi-machine Windows installer qualification;
+5. execute hardware/bench qualification;
 6. perform BIO EGYPT field commissioning/UAT;
 7. stabilize defects;
-8. then implement/qualify deferred final Device Trust/commercial protection.
+8. then complete deferred final Device Trust/commercial protection.
 
 Master audit:
 `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
 
 ## Repository / CI baseline
 
-- Current authoritative `main`: `af9a69963d091eda6a16bee17f69a94d912136d6`.
+- Current authoritative `main`: `653a573584122a2fa72e4e762d8f0337ae0f6712` (PR #231 merged: customer ADMIN provisioning during Setup).
 - PR #205: Communication Channel Administration plan merged.
 - Latest full CI used in the audit:
   - Backend: typecheck/build/lint/format passed; 114 test files / 809 tests passed.
@@ -61,7 +70,8 @@ Historical closure remains historical evidence and must not be rewritten to impl
 
 ### Planned / open
 
-- COM-01 through COM-07: **APPROVED / PLANNED**.
+- COM-01 through COM-06: **SOURCE IMPLEMENTED / VERIFIED ON PR #235; NOT MERGED TO MAIN**.
+- COM-07: **LIVE ACCEPTANCE PENDING**.
 - Meta WhatsApp live acceptance: **OPEN / externally blocked**.
 - SMS/GSM live delivery: **OPEN**.
 - Telegram remains the approved interim online channel while WhatsApp is blocked.
@@ -81,34 +91,21 @@ Installer progress after PRs #199-#203:
 
 Therefore the installer is no longer “not implemented.”
 
-**Still open:**
+**Updated evidence / still open:**
 
-- post-PR-203 Fresh Install evidence on a clean machine;
-- three BIO-EMS services installed and running;
-- HTTPS/frontend/API health;
-- reboot recovery;
-- Repair/Upgrade/rollback;
-- retained-data Uninstall;
-- repeatability on more than one clean Windows PC;
-- final supported-Windows declaration;
-- public/commercial Authenticode decision;
-- Production Installer publication.
-
-The development workstation must not be used as a clean target when an unrelated Mosquitto service is present.
+- Clean Windows automated Pilot Setup/install health is verified on the current integration line (PR #235, Internal Windows Setup run #330).
+- A separate 16 September clean-install exercise from commit `e48bba4` verified the three BIO-EMS services Running, successful customer ADMIN login, and no automatic SYSTEM_OWNER creation.
+- Still open: reboot recovery evidence, Repair/Upgrade/rollback, retained-data Uninstall acceptance, repeatability on an additional clean physical PC, and final Production signing/publication.
 
 ## Communication Channel Administration
 
-Status: **COM-01 THROUGH COM-07 PLANNED / NOT YET IMPLEMENTED OR QUALIFIED**.
+Status: **COM-01 THROUGH COM-06 SOURCE IMPLEMENTED / COM-07 LIVE ACCEPTANCE PENDING**.
 
-Required sequence:
-
-- COM-01 secure provider configuration storage.
-- COM-02 RBAC-protected API.
-- COM-03 provider runtime integration.
-- COM-04 bilingual Communication Channels UI.
-- COM-05 safe test actions/diagnostics.
-- COM-06 channel priority/failover and regression.
-- COM-07 Pilot acceptance.
+Current evidence:
+- PR #235 carries COM-01 through COM-06 on top of SEC-OWNER integration work.
+- CI run #1021 passed.
+- Internal Windows Setup run #330 passed, including locked vendor acquisition, deterministic staging, signing/signature verification, installation and Pilot health.
+- COM-07 remains open for real Email/Telegram/WhatsApp/SMS and local modem/SIM evidence where applicable.
 
 ## Hardware / field position
 
@@ -167,3 +164,12 @@ This does not delete earlier licensing source work; it separates existing source
 Repository/CI success, installer qualification, provider acceptance, hardware validation, field commissioning, UAT and commercial-production readiness are separate gates.
 
 A source merge must never be represented as field acceptance, and an approved architecture must never be represented as implemented capability.
+
+
+## 16 September 2026 integration update
+
+- SEC-OWNER-01: implementation complete on PR #233; Pilot CI/Windows evidence exists; Production merge/acceptance remains gated by the real manufacturer Ed25519 public keyring, offline private-key commissioning exercise and Production security review.
+- Customer ADMIN bootstrap: merged to main in PR #231 and additionally validated in a clean Pilot installation.
+- COM-01 through COM-06: source implemented on draft PR #235; COM-07 external/live acceptance remains pending.
+- Documentation sync commit on the integration branch records the 16 September Pilot Admin/Installer validation without storing any credential secret.
+- BIO EGYPT remains NOT COMMISSIONED / NOT ACCEPTED.

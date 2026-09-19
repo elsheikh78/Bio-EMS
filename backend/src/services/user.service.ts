@@ -60,16 +60,7 @@ export class UserService {
     requestContext: AuditRequestContext
   ): Promise<User> {
     if (input.role === "ADMIN") throw adminManagedBySystemOwner();
-    let passwordHash: string;
-    try {
-      passwordHash = await hashPassword(input.password);
-    } catch (error) {
-      if (error instanceof PasswordPolicyError) {
-        throw new AppError(error.message, 400, "VALIDATION_ERROR");
-      }
-      throw error;
-    }
-
+    const passwordHash = await this.secureHash(input.password);
     return this.executeMutation(actor, USER_AUDIT_ACTION.CREATED, undefined, requestContext, () => {
       const id = this.repository.create({
         username: input.username,
@@ -160,30 +151,21 @@ export class UserService {
     input: UpdateUserPasswordInput,
     requestContext: AuditRequestContext
   ): Promise<User> {
-    let passwordHash: string;
-    try {
-      passwordHash = await hashPassword(input.password);
-    } catch (error) {
-      if (error instanceof PasswordPolicyError) {
-        throw new AppError(error.message, 400, "VALIDATION_ERROR");
-      }
-      throw error;
-    }
-
+    const passwordHash = await this.secureHash(input.password);
     return this.executeMutation(
       actor,
-      USER_AUDIT_ACTION.PASSWORD_UPDATED,
+      USER_AUDIT_ACTION.PASSWORD_RESET,
       userId,
       requestContext,
       () => {
         const previous = this.repository.findById(userId);
         if (!previous) throw notFound();
         if (previous.role === "ADMIN") throw adminManagedBySystemOwner();
-        const updated = this.repository.updatePasswordHash(userId, passwordHash);
+        const updated = this.repository.updatePasswordHash(userId, passwordHash, true);
         if (!updated) throw notFound();
         this.recordSuccess({
           actor,
-          action: USER_AUDIT_ACTION.PASSWORD_UPDATED,
+          action: USER_AUDIT_ACTION.PASSWORD_RESET,
           target: { type: "USER", id: String(userId) },
           result: "SUCCESS",
           requestContext,
@@ -191,6 +173,16 @@ export class UserService {
         return updated;
       }
     );
+  }
+
+  private async secureHash(password: string): Promise<string> {
+    try {
+      return await hashPassword(password);
+    } catch (error) {
+      if (error instanceof PasswordPolicyError)
+        throw new AppError(error.message, 400, "VALIDATION_ERROR");
+      throw error;
+    }
   }
 
   private executeMutation<T>(
@@ -231,16 +223,15 @@ export class UserService {
         reason,
       });
     } catch {
-      // Preserve the original mutation failure when best-effort failure evidence cannot persist.
+      /* preserve original failure */
     }
   }
 }
 
 function mapUserManagementError(error: unknown): unknown {
   if (error instanceof LastActiveAdminError) return lastAdmin();
-  if (error instanceof Database.SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+  if (error instanceof Database.SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE")
     return new AppError("Resource already exists", 409, "RESOURCE_ALREADY_EXISTS");
-  }
   return error;
 }
 

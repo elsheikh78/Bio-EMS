@@ -76,3 +76,10 @@ Never convert:
 - source CI into field evidence;
 - internal Pilot signing into commercial signing;
 - Pilot acceptance into Production readiness.
+
+
+## 16 September 2026 superseding handoff pointer
+
+Do not restart from COM-01. COM-01 through COM-06 source is already implemented on draft PR #235. Customer ADMIN Setup provisioning is merged to main through PR #231 and has passed a clean Pilot login exercise. SEC-OWNER-01 source is implemented on PR #233 but its Production acceptance/merge is deliberately blocked on the real manufacturer Ed25519 key ceremony and offline commissioning evidence.
+
+Next operator sequence: manufacturer key ceremony -> SEC-OWNER end-to-end commissioning/security evidence -> deliberate SEC-OWNER merge gate -> COM-07 live provider/hardware acceptance -> remaining Windows lifecycle/second-PC qualification -> hardware bench -> BIO EGYPT field commissioning/UAT.

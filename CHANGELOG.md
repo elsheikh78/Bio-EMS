@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### 16 September 2026 Pilot validation and integration reconciliation
+
+- Recorded successful clean Pilot Setup validation from the current integration line, including the three BIO-EMS Windows services and successful customer ADMIN login.
+- Recorded that Customer ADMIN provisioning is merged to main through PR #231.
+- Recorded SEC-OWNER-01 as source implemented on PR #233 while Production acceptance remains gated by the real manufacturer Ed25519 key ceremony and offline commissioning evidence.
+- Recorded COM-01 through COM-06 as source implemented on draft PR #235 with passing CI/Internal Windows Setup gates; COM-07 live acceptance remains open.
+- Preserved product version `0.20.0`; this documentation reconciliation does not publish a new release.
+
+
 ### 11 September 2026 audit reconciliation
 
 - Added the authoritative complete audit and Pilot-first execution order.

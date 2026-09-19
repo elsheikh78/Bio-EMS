@@ -11,6 +11,7 @@ export const windowsInstallerManifestSchema = z
     product: z.literal("BIO-EMS"),
     productVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
     architecture: z.literal("x64"),
+    releaseChannel: z.enum(["Pilot", "Production"]),
     installerTechnology: z.literal("Inno Setup 6"),
     generatedAt: z.string().datetime(),
     sourceCommit: z.string().regex(/^[a-f0-9]{40}$/),
@@ -18,7 +19,16 @@ export const windowsInstallerManifestSchema = z
       .array(
         z
           .object({
-            id: z.enum(["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"]),
+            id: z.enum([
+              "backend",
+              "frontend",
+              "node",
+              "mosquitto",
+              "influxdb",
+              "winsw",
+              "influx-cli",
+              "owner-commissioning-trust",
+            ]),
             version: z.string().min(1),
             relativePath: z.string().min(1),
             sha256: sha256Schema,
@@ -26,9 +36,27 @@ export const windowsInstallerManifestSchema = z
           })
           .strict()
       )
-      .length(6),
+      .min(7)
+      .max(8),
   })
-  .strict();
+  .strict()
+  .superRefine((manifest, context) => {
+    const ids = manifest.artifacts.map((artifact) => artifact.id);
+    const uniqueIds = new Set(ids);
+    const requiredIds = ["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"] as const;
+    const hasRequiredArtifacts = requiredIds.every((id) => uniqueIds.has(id));
+    const hasOwnerTrust = uniqueIds.has("owner-commissioning-trust");
+
+    if (uniqueIds.size !== ids.length || !hasRequiredArtifacts) {
+      context.addIssue({ code: "custom", message: "Invalid installer artifact inventory" });
+    }
+    if (manifest.releaseChannel === "Production" && !hasOwnerTrust) {
+      context.addIssue({ code: "custom", message: "Production requires owner trust artifact" });
+    }
+    if (manifest.releaseChannel === "Pilot" && hasOwnerTrust) {
+      context.addIssue({ code: "custom", message: "Pilot must not include owner trust artifact" });
+    }
+  });
 
 export type WindowsInstallerManifest = z.infer<typeof windowsInstallerManifestSchema>;
 
@@ -49,7 +77,7 @@ export const vendorInputLockSchema = z
       .array(
         z
           .object({
-            id: z.enum(["node", "mosquitto", "influxdb", "winsw"]),
+            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]),
             version: z.string().regex(/^\d+\.\d+\.\d+$/),
             fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
             sourceUrl: z
@@ -71,11 +99,11 @@ export const vendorInputLockSchema = z
           })
           .strict()
       )
-      .length(4),
+      .length(5),
   })
   .strict()
   .superRefine((value, context) => {
-    const expected = new Set(["node", "mosquitto", "influxdb", "winsw"]);
+    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]);
     const ids = value.inputs.map((input) => input.id);
     if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
       context.addIssue({ code: "custom", message: "Vendor input set must be exact" });
@@ -99,7 +127,15 @@ export type WindowsInstallerIssue = {
   artifactId?: string;
 };
 
-const expectedIds = ["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"];
+const runtimeArtifactIds = [
+  "backend",
+  "frontend",
+  "node",
+  "mosquitto",
+  "influxdb",
+  "winsw",
+  "influx-cli",
+];
 const forbiddenNames = [
   ".env",
   "identity.json",
@@ -121,6 +157,10 @@ export function validateWindowsInstallerPackage(
   const issues: WindowsInstallerIssue[] = [];
   const ids = manifest.artifacts.map((artifact) => artifact.id);
   const actualIds = new Set<string>(ids);
+  const expectedIds =
+    manifest.releaseChannel === "Production"
+      ? [...runtimeArtifactIds, "owner-commissioning-trust"]
+      : runtimeArtifactIds;
   if (actualIds.size !== expectedIds.length || expectedIds.some((id) => !actualIds.has(id))) {
     issues.push({ code: WINDOWS_INSTALLER_ISSUES.ARTIFACT_SET_INVALID });
   }

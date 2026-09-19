@@ -33,26 +33,22 @@ import {
 } from "./sessionStorage";
 
 const MAX_TIMER_DELAY_MS = 2_147_483_647;
-
 interface AuthenticationSnapshot {
   status: AuthenticationStatus;
   user?: AuthenticatedUser;
   expiresAt?: number;
+  passwordChangeRequired: boolean;
   loginPending: boolean;
 }
-
 interface OwnedRequest {
   controller: AbortController;
   release(): void;
 }
-
 interface InvalidationOperation {
   generation: number;
   promise: Promise<void>;
 }
-
 type ApiClientFactory = (configuration?: ApiClientConfiguration) => ApiClient;
-
 interface AuthenticationProviderProps extends PropsWithChildren {
   storageAdapter?: AuthenticationStorageAdapter;
   now?: () => number;
@@ -73,6 +69,7 @@ class AuthenticationController {
   private session?: StoredAuthenticationSession;
   private snapshot: AuthenticationSnapshot = {
     status: "bootstrapping",
+    passwordChangeRequired: false,
     loginPending: false,
   };
 
@@ -89,28 +86,26 @@ class AuthenticationController {
       getAccessToken: () => this.session?.accessToken,
     });
   }
-
   getSnapshot = () => this.snapshot;
-
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   };
-
   start = () => {
-    // React StrictMode intentionally replays Effects in development using the same
-    // component state. Re-activate this controller after the replay cleanup.
     this.disposed = false;
     window.addEventListener("focus", this.enforceExpiry);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
     const stored = this.storage.read();
-    if (!stored) {
-      this.update({ status: "unauthenticated", loginPending: false });
-    } else {
+    if (!stored)
+      this.update({
+        status: "unauthenticated",
+        passwordChangeRequired: false,
+        loginPending: false,
+      });
+    else {
       this.session = stored;
       void this.restore(stored);
     }
-
     return this.dispose;
   };
 
@@ -131,31 +126,27 @@ class AuthenticationController {
       const response = loginResponseSchema.parse(raw);
       const session = createStoredAuthenticationSession(response, this.now());
       this.requireCurrent(generation, request.controller.signal);
-      if (!this.storage.write(session)) {
+      if (!this.storage.write(session))
         throw new AuthenticationFailure("storage");
-      }
-      this.requireCurrent(generation, request.controller.signal);
       this.session = session;
       this.update({
         status: "authenticated",
         user: session.user,
         expiresAt: session.expiresAt,
+        passwordChangeRequired: session.passwordChangeRequired,
         loginPending: false,
       });
       return session.user;
     } catch (error) {
-      if (!this.isCurrent(generation) || isAbortError(error)) {
+      if (!this.isCurrent(generation) || isAbortError(error))
         throw createAbortError();
-      }
       this.update({ ...this.snapshot, loginPending: false });
       if (error instanceof AuthenticationFailure) throw error;
-      if (error instanceof ZodError) {
+      if (error instanceof ZodError)
         throw new AuthenticationFailure("validation");
-      }
       if (error instanceof ApiResponseError) {
-        if (error.status === 401) {
+        if (error.status === 401)
           throw new AuthenticationFailure("invalid-credentials");
-        }
         if (error.status >= 500) throw new AuthenticationFailure("server");
         throw new AuthenticationFailure("validation");
       }
@@ -167,8 +158,42 @@ class AuthenticationController {
     }
   };
 
-  logout = () => this.clearAuthentication();
+  completePasswordChange = async (
+    currentPassword: string,
+    newPassword: string,
+  ) => {
+    const session = this.session;
+    if (
+      !session ||
+      this.snapshot.status !== "authenticated" ||
+      !this.snapshot.passwordChangeRequired
+    )
+      throw new Error("Password change is not required");
+    const generation = this.generation;
+    const request = this.createOwnedRequest();
+    try {
+      await this.apiClient.request("/auth/change-password", {
+        method: "POST",
+        auth: "protected",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+        signal: request.controller.signal,
+      });
+      this.requireAuthenticatedCurrent(generation, request.controller.signal);
+      const refreshed = { ...session, passwordChangeRequired: false };
+      if (!this.storage.write(refreshed))
+        throw new AuthenticationFailure("storage");
+      this.session = refreshed;
+      this.update({ ...this.snapshot, passwordChangeRequired: false });
+    } finally {
+      request.release();
+    }
+  };
 
+  logout = () => this.clearAuthentication();
   retryRestoration = async () => {
     if (!this.session || this.session.expiresAt <= this.now()) {
       await this.clearAuthentication();
@@ -176,20 +201,22 @@ class AuthenticationController {
     }
     await this.restore(this.session);
   };
-
   protectedRequest = async <T,>(
     path: `/${string}`,
     options: Omit<ApiRequestOptions, "auth"> = {},
   ): Promise<T> => {
     const session = this.session;
-    if (this.disposed || this.snapshot.status !== "authenticated" || !session) {
+    if (this.disposed || this.snapshot.status !== "authenticated" || !session)
       throw createAbortError();
-    }
     if (session.expiresAt <= this.now()) {
       await this.clearAuthentication();
       throw createAbortError();
     }
-
+    if (
+      this.snapshot.passwordChangeRequired &&
+      path !== "/auth/change-password"
+    )
+      throw new ApiResponseError(403, "PASSWORD_CHANGE_REQUIRED");
     const generation = this.generation;
     const request = this.createOwnedRequest(options.signal);
     try {
@@ -201,9 +228,8 @@ class AuthenticationController {
       this.requireAuthenticatedCurrent(generation, request.controller.signal);
       return result;
     } catch (error) {
-      if (!this.isCurrent(generation) || isAbortError(error)) {
+      if (!this.isCurrent(generation) || isAbortError(error))
         throw createAbortError();
-      }
       if (error instanceof ApiResponseError && error.status === 401) {
         await this.clearAuthentication(generation);
         throw createAbortError();
@@ -219,27 +245,27 @@ class AuthenticationController {
     expectedGeneration?: number,
   ): Promise<void> => {
     const generation = expectedGeneration ?? this.generation;
-    if (generation !== this.generation) {
+    if (generation !== this.generation)
       return this.invalidation?.generation === generation
         ? this.invalidation.promise
         : Promise.resolve();
-    }
     if (
       !this.session &&
       this.snapshot.status === "unauthenticated" &&
       !this.snapshot.loginPending &&
       this.ownedControllers.size === 0
-    ) {
+    )
       return this.invalidation?.promise ?? Promise.resolve();
-    }
-
     this.generation += 1;
     const cleanupGeneration = this.generation;
     this.abortOwnedRequests();
     this.session = undefined;
     this.storage.clear();
-    this.update({ status: "unauthenticated", loginPending: false });
-
+    this.update({
+      status: "unauthenticated",
+      passwordChangeRequired: false,
+      loginPending: false,
+    });
     const invalidation = (async () => {
       let cancellation: Promise<void> | undefined;
       try {
@@ -251,11 +277,10 @@ class AuthenticationController {
       try {
         await cancellation;
       } catch {
-        // Authentication remains fail-closed even if query cancellation fails.
+        // Query cancellation failures must not block authentication cleanup.
       }
-      if (!this.disposed && this.generation === cleanupGeneration) {
+      if (!this.disposed && this.generation === cleanupGeneration)
         this.queryClient.clear();
-      }
     })();
     const operation = { generation, promise: invalidation };
     this.invalidation = operation;
@@ -269,7 +294,6 @@ class AuthenticationController {
     );
     return invalidation;
   };
-
   private readonly dispose = () => {
     if (this.disposed) return;
     this.disposed = true;
@@ -281,28 +305,36 @@ class AuthenticationController {
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.listeners.clear();
   };
-
   private readonly enforceExpiry = () => {
-    if (this.session && this.session.expiresAt <= this.now()) {
+    if (this.session && this.session.expiresAt <= this.now())
       void this.clearAuthentication();
-    } else {
-      this.scheduleExpiry();
-    }
+    else this.scheduleExpiry();
   };
-
   private readonly onVisibilityChange = () => {
     if (document.visibilityState === "visible") this.enforceExpiry();
   };
-
   private async restore(session: StoredAuthenticationSession) {
     const generation = this.beginAuthenticationOperation();
     const request = this.createOwnedRequest();
     this.update({
       status: "bootstrapping",
       expiresAt: session.expiresAt,
+      passwordChangeRequired: session.passwordChangeRequired,
       loginPending: false,
     });
     try {
+      if (session.passwordChangeRequired) {
+        this.requireCurrent(generation, request.controller.signal);
+        this.session = session;
+        this.update({
+          status: "authenticated",
+          user: session.user,
+          expiresAt: session.expiresAt,
+          passwordChangeRequired: true,
+          loginPending: false,
+        });
+        return;
+      }
       const raw = await this.apiClient.request<unknown>("/auth/me", {
         auth: "protected",
         signal: request.controller.signal,
@@ -310,17 +342,16 @@ class AuthenticationController {
       this.requireCurrent(generation, request.controller.signal);
       const response = currentUserResponseSchema.parse(raw);
       const refreshed = { ...session, user: response.user };
-      this.requireCurrent(generation, request.controller.signal);
       if (!this.storage.write(refreshed)) {
         await this.clearAuthentication(generation);
         return;
       }
-      this.requireCurrent(generation, request.controller.signal);
       this.session = refreshed;
       this.update({
         status: "authenticated",
         user: refreshed.user,
         expiresAt: refreshed.expiresAt,
+        passwordChangeRequired: false,
         loginPending: false,
       });
     } catch (error) {
@@ -336,19 +367,18 @@ class AuthenticationController {
       this.update({
         status: "restoration-error",
         expiresAt: session.expiresAt,
+        passwordChangeRequired: session.passwordChangeRequired,
         loginPending: false,
       });
     } finally {
       request.release();
     }
   }
-
   private beginAuthenticationOperation() {
     this.generation += 1;
     this.abortOwnedRequests();
     return this.generation;
   }
-
   private createOwnedRequest(
     externalSignal?: AbortSignal | null,
   ): OwnedRequest {
@@ -360,7 +390,6 @@ class AuthenticationController {
         once: true,
       });
     this.ownedControllers.add(controller);
-
     return {
       controller,
       release: () => {
@@ -369,20 +398,16 @@ class AuthenticationController {
       },
     };
   }
-
   private abortOwnedRequests() {
     for (const controller of this.ownedControllers) controller.abort();
     this.ownedControllers.clear();
   }
-
   private isCurrent(generation: number) {
     return !this.disposed && generation === this.generation;
   }
-
   private requireCurrent(generation: number, signal: AbortSignal) {
     if (!this.isCurrent(generation) || signal.aborted) throw createAbortError();
   }
-
   private isAuthenticatedCurrent(generation: number) {
     return (
       this.isCurrent(generation) &&
@@ -391,13 +416,10 @@ class AuthenticationController {
       this.session.expiresAt > this.now()
     );
   }
-
   private requireAuthenticatedCurrent(generation: number, signal: AbortSignal) {
-    if (!this.isAuthenticatedCurrent(generation) || signal.aborted) {
+    if (!this.isAuthenticatedCurrent(generation) || signal.aborted)
       throw createAbortError();
-    }
   }
-
   private scheduleExpiry() {
     if (this.expiryTimer !== undefined) window.clearTimeout(this.expiryTimer);
     this.expiryTimer = undefined;
@@ -408,7 +430,6 @@ class AuthenticationController {
       Math.min(Math.max(0, remaining), MAX_TIMER_DELAY_MS),
     );
   }
-
   private update(snapshot: AuthenticationSnapshot) {
     if (this.disposed) return;
     this.snapshot = snapshot;
@@ -416,11 +437,9 @@ class AuthenticationController {
     for (const listener of this.listeners) listener();
   }
 }
-
 function createAbortError() {
   return new DOMException("Authentication operation was aborted", "AbortError");
 }
-
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
@@ -446,18 +465,18 @@ export function AuthenticationProvider({
     controller.getSnapshot,
     controller.getSnapshot,
   );
-
   useEffect(() => controller.start(), [controller]);
-
   return (
     <AuthenticationContext.Provider
       value={{
         status: state.status,
         user: state.user,
+        passwordChangeRequired: state.passwordChangeRequired,
         loginPending: state.loginPending,
         login: controller.login,
         logout: controller.logout,
         retryRestoration: controller.retryRestoration,
+        completePasswordChange: controller.completePasswordChange,
         protectedRequest: controller.protectedRequest,
       }}
     >

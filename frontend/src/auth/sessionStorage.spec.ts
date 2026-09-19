@@ -11,9 +11,9 @@ const loginResponse: LoginResponse = {
   access_token: "opaque-token",
   token_type: "bearer",
   expires_in: 37,
+  password_change_required: false,
   user: { id: 1, username: "admin", role: "ADMIN" },
 };
-
 class MemoryStorage implements Storage {
   readonly values = new Map<string, string>();
   get length() {
@@ -37,16 +37,21 @@ class MemoryStorage implements Storage {
 }
 
 describe("versioned authentication session storage", () => {
-  it("derives expiry from the response instead of a fixed token lifetime", () => {
+  it("derives expiry and recovery state from the response", () => {
     expect(createStoredAuthenticationSession(loginResponse, 1_000)).toEqual({
       version: 1,
       accessToken: "opaque-token",
       tokenType: "bearer",
       expiresAt: 38_000,
+      passwordChangeRequired: false,
       user: { id: 1, username: "admin", role: "ADMIN" },
     });
+    const forced = createStoredAuthenticationSession(
+      { ...loginResponse, password_change_required: true },
+      1_000,
+    );
+    expect(forced.passwordChangeRequired).toBe(true);
   });
-
   it("writes and reads back the exact versioned record", () => {
     const storage = new MemoryStorage();
     const adapter = createAuthenticationStorageAdapter(
@@ -54,14 +59,12 @@ describe("versioned authentication session storage", () => {
       () => 1_000,
     );
     const session = createStoredAuthenticationSession(loginResponse, 1_000);
-
     expect(adapter.write(session)).toBe(true);
     expect(adapter.read()).toEqual(session);
     expect(JSON.parse(storage.getItem(AUTHENTICATION_SESSION_KEY)!)).toEqual(
       session,
     );
   });
-
   it.each([
     ["malformed", "{"],
     ["partial", JSON.stringify({ version: 1 })],
@@ -93,11 +96,21 @@ describe("versioned authentication session storage", () => {
       () => storage,
       () => 1_000,
     );
-
     expect(adapter.read()).toBeUndefined();
     expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
   });
-
+  it("accepts a legacy v1 session without the recovery flag as false", () => {
+    const storage = new MemoryStorage();
+    const session = createStoredAuthenticationSession(loginResponse, 1_000);
+    const legacy = { ...session } as Partial<StoredAuthenticationSession>;
+    delete legacy.passwordChangeRequired;
+    storage.setItem(AUTHENTICATION_SESSION_KEY, JSON.stringify(legacy));
+    const adapter = createAuthenticationStorageAdapter(
+      () => storage,
+      () => 1_000,
+    );
+    expect(adapter.read()?.passwordChangeRequired).toBe(false);
+  });
   it("fails closed when storage cannot be accessed", () => {
     const adapter = createAuthenticationStorageAdapter(() => {
       throw new DOMException("blocked", "SecurityError");
@@ -106,12 +119,10 @@ describe("versioned authentication session storage", () => {
       loginResponse,
       Date.now(),
     );
-
     expect(adapter.read()).toBeUndefined();
     expect(adapter.write(session)).toBe(false);
     expect(() => adapter.clear()).not.toThrow();
   });
-
   it("fails closed when storage does not return the value that was written", () => {
     const storage = new MemoryStorage();
     vi.spyOn(storage, "getItem").mockReturnValueOnce(null);
@@ -121,11 +132,9 @@ describe("versioned authentication session storage", () => {
     );
     const session: StoredAuthenticationSession =
       createStoredAuthenticationSession(loginResponse, 1_000);
-
     expect(adapter.write(session)).toBe(false);
     expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
   });
-
   it("removes a value when read-back verification returns a different session", () => {
     const storage = new MemoryStorage();
     const session = createStoredAuthenticationSession(loginResponse, 1_000);
@@ -137,11 +146,9 @@ describe("versioned authentication session storage", () => {
       () => storage,
       () => 1_000,
     );
-
     expect(adapter.write(session)).toBe(false);
     expect(storage.getItem(AUTHENTICATION_SESSION_KEY)).toBeNull();
   });
-
   it.each([
     [
       "invalid",
@@ -167,7 +174,6 @@ describe("versioned authentication session storage", () => {
         () => storage,
         () => 1_000,
       );
-
       expect(adapter.write(rejected as StoredAuthenticationSession)).toBe(
         false,
       );

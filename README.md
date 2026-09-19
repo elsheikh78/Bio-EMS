@@ -12,6 +12,7 @@ Enterprise Environmental Monitoring System for regulated and operational environ
 | --- | --- |
 | Where is the project now? | `PROJECT_STATE.md` |
 | What do we execute next? | `IMPLEMENTATION_PLAN.md` |
+| ماذا يجب على مالك المنصة أن يفعل بنفسه الآن؟ | `docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md` |
 | What did the 11 September complete audit conclude? | `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
 | What is the current Pilot scope? | `PILOT_SCOPE.md` |
 | What are the active project risks? | `RISK_REGISTER.md` |
@@ -34,10 +35,10 @@ BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## Current execution order
 
-1. COM-01 through COM-06 Communication Channel Administration.
-2. Build a fresh controlled internal Pilot Setup.
-3. Qualify installation on multiple clean Windows computers.
-4. Complete COM-07 Pilot acceptance.
+1. Preserve and close the SEC-OWNER-01 Production key/commissioning gate.
+2. COM-01 through COM-06 are source implemented on PR #235; complete COM-07 live acceptance.
+3. Continue qualification on multiple clean Windows computers.
+4. Close remaining installer lifecycle evidence.
 5. Execute hardware bench qualification.
 6. Close required SMS/GSM and notification failover evidence.
 7. Install and commission BIO EGYPT Pilot.
@@ -81,7 +82,7 @@ BIO-EMS currently includes:
 
 ## Communication Channels configuration
 
-Approved next source work adds:
+Implemented source work on PR #235 adds:
 
 `Configuration -> Communication Channels`
 
@@ -97,11 +98,11 @@ Installer source is materially advanced:
 - automatic install diagnostics;
 - partial-install/clean-device repair fix.
 
+Current PR #235 automated Windows evidence verifies deterministic staging, signed Setup compilation, clean installation and Pilot health. A separate 16 September clean-install exercise also verified all three BIO-EMS services and customer ADMIN login.
+
 Still required:
 
-- successful post-fix clean-machine install evidence;
-- all three BIO-EMS services;
-- HTTPS/API/frontend health;
+- HTTPS/API/frontend health regression where affected;
 - reboot recovery;
 - Repair/Upgrade/rollback;
 - retained-data Uninstall;
@@ -137,3 +138,20 @@ Separate evidence is still required for:
 - customer UAT/acceptance;
 - deferred production-grade security/protection;
 - commercial Production Installer release.
+
+
+## 19 September 2026 integration checkpoint
+
+- Active integration authority: draft PR #239 / `feat/dep-br-backup-restore`; it contains the stacked SEC-OWNER, COM, AUTH-RECOVERY and DEP-BR work carried forward from PRs #233, #235 and #237.
+- Manufacturer owner key `owner-primary-2026` was verified directly against the encrypted offline private key; approved SPKI DER SHA-256 is `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`.
+- Automated fingerprint pinning, CI and the prior Internal Windows Setup gate passed. Physical commissioning remains open.
+- Physical Windows acceptance on 19 September confirmed services and HTTPS health and exposed a stale browser/frontend shell at bare `/login`; cache-busted navigation loaded the current UI and ADMIN credentials succeeded. PR #239 now carries a cache revalidation fix which must pass CI/Windows and then be physically retested without cache-busting.
+- Do not merge PR #239 until physical SEC-OWNER commissioning/MFA, Repair preservation, Backup/Restore historical telemetry and remaining DEP-BR acceptance are complete.
+- Older stacked PRs #233/#235/#237 are historical integration layers; reconcile/close them only after confirming #239 remains a strict descendant and is the selected merge vehicle. PR #138 is obsolete/conflicted documentation and should not be merged as-is.
+
+## 16 September 2026 status note
+
+- `main`: `653a573` (customer ADMIN Setup provisioning merged via PR #231).
+- SEC-OWNER-01: implemented on PR #233; Production acceptance/merge remains gated by the real manufacturer key ceremony and offline commissioning evidence.
+- Active integration: draft PR #235 / `feat/com-01-06-communication-channels`; COM-01 through COM-06 source implemented and automated Windows Setup gate passed; COM-07 live acceptance remains open.
+- Product version remains `0.20.0`; this documentation sync does not create a new release.

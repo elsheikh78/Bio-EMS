@@ -23,6 +23,12 @@ export const userParamsSchema = z
   })
   .strict();
 
+export const passwordRecoveryRequestParamsSchema = z
+  .object({
+    request_id: z.string().uuid(),
+  })
+  .strict();
+
 export const createUserSchema = z
   .object({ username, email: email.optional(), password, role })
   .strict();

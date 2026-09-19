@@ -13,7 +13,7 @@
       "id": "node",
       "version": "22.22.0",
       "fileName": "node-v22.22.0-win-x64.zip",
-      "sourceUrl": "https://nodejs.org/dist/v22.22.0/node-v22.22.0-win-x64.zip",
+      "sourceUrl": "https://nodejs.org/download/release/v22.22.0/node-v22.22.0-win-x64.zip",
       "sha256": "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a",
       "checksumEvidenceUrl": "https://nodejs.org/dist/v22.22.0/SHASUMS256.txt",
       "licenseEvidenceUrl": "https://github.com/nodejs/node/blob/v22.22.0/LICENSE"
@@ -44,7 +44,15 @@
       "sha256": "05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da",
       "checksumEvidenceUrl": "CONTROLLED-CAPTURE-2026-09-07",
       "licenseEvidenceUrl": "https://github.com/winsw/winsw/blob/v2.12.0/LICENSE.txt"
+    },
+    {
+      "id": "influx-cli",
+      "version": "2.8.0",
+      "fileName": "influxdb2-client-2.8.0-windows-amd64.zip",
+      "sourceUrl": "https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.8.0-windows-amd64.zip",
+      "sha256": "28aab065fa81c965bfe16d0f0ed8dd509eedbe88f5fe6bc4a3d19b91ee01f87e",
+      "checksumEvidenceUrl": "https://www.influxdata.com/downloads-product/",
+      "licenseEvidenceUrl": "https://github.com/influxdata/influx-cli/blob/v2.8.0/LICENSE"
     }
   ]
 }
-

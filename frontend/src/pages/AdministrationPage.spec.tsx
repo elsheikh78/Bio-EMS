@@ -4,6 +4,7 @@ import {
   useAuditEvents,
   useCreateUser,
   useManagedUsers,
+  usePasswordRecoveryRequests,
   useUpdateUser,
   useUpdateUserPassword,
   useUpdateUserStatus,
@@ -15,6 +16,7 @@ vi.mock("../administration/queries", () => ({
   useAuditEvents: vi.fn(),
   useCreateUser: vi.fn(),
   useManagedUsers: vi.fn(),
+  usePasswordRecoveryRequests: vi.fn(),
   useUpdateUser: vi.fn(),
   useUpdateUserPassword: vi.fn(),
   useUpdateUserStatus: vi.fn(),
@@ -22,6 +24,7 @@ vi.mock("../administration/queries", () => ({
 vi.mock("../monitoredAreas/queries", () => ({ useSites: vi.fn() }));
 
 const managed = vi.mocked(useManagedUsers),
+  recoveryRequests = vi.mocked(usePasswordRecoveryRequests),
   createHook = vi.mocked(useCreateUser),
   updateHook = vi.mocked(useUpdateUser),
   passwordHook = vi.mocked(useUpdateUserPassword),
@@ -51,6 +54,12 @@ describe("Users & Audit Log", () => {
       isError: false,
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useManagedUsers>);
+    recoveryRequests.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof usePasswordRecoveryRequests>);
     createHook.mockReturnValue({
       mutateAsync: createUser,
       isPending: false,

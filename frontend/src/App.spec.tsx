@@ -52,6 +52,8 @@ function authenticationValue(
     logout: vi.fn(),
     retryRestoration: vi.fn(),
     protectedRequest: vi.fn(),
+    passwordChangeRequired: false,
+    completePasswordChange: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -145,6 +147,7 @@ function mockLogin() {
         token_type: "bearer",
         expires_in: 60,
         user: users.ADMIN,
+        password_change_required: false,
       }),
       {
         headers: { "Content-Type": "application/json" },

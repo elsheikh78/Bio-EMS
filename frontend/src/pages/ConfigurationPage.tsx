@@ -12,21 +12,25 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useContext, useMemo, useState } from "react";
 import {
   useUpdateSensorAlarmDelay,
   useUpdateSensorThresholds,
 } from "../configuration/queries";
 import type { Sensor } from "../monitoredAreas/contracts";
-import { useSensors } from "../monitoredAreas/queries";
+import { useSensors, useSites } from "../monitoredAreas/queries";
 import { NotificationRecipientsPanel } from "../configuration/NotificationRecipientsPanel";
 import { EscalationPoliciesPanel } from "../configuration/EscalationPoliciesPanel";
 import { useOptionalLocalization as useLocalization } from "../localization/useOptionalLocalization";
+import { CommunicationChannelsPanel } from "../communication-channels/CommunicationChannelsPanel";
+import { AuthenticationContext } from "../auth/AuthenticationContext";
 
 export function ConfigurationPage() {
+  const authentication = useContext(AuthenticationContext);
   const { language } = useLocalization();
   const ar = language === "ar";
   const sensorsQuery = useSensors();
+  const sitesQuery = useSites();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Sensor>();
   const sensors = useMemo(() => {
@@ -131,6 +135,13 @@ export function ConfigurationPage() {
       ) : null}
       <NotificationRecipientsPanel />
       <EscalationPoliciesPanel />
+      {authentication ? (
+        <CommunicationChannelsPanel
+          request={authentication.protectedRequest}
+          basePath="/communication-channels"
+          sites={sitesQuery.data ?? []}
+        />
+      ) : null}
     </Stack>
   );
 }

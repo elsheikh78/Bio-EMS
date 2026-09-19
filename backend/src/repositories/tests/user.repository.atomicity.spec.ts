@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { migration003 } from "../../../database/sqlite/migrations/003_create_users";
+import { migration028 } from "../../../database/sqlite/migrations/028_create_password_recovery";
 import type { ConcurrentAdminAttempt } from "./fixtures/user-repository.worker";
 
 const hash = `$2b$12$${"A".repeat(53)}`;
@@ -23,6 +24,7 @@ describe("last-active-ADMIN atomicity across SQLite connections", () => {
     const filename = join(directory, "users.sqlite");
     const setup = new Database(filename);
     migration003.up(setup);
+    migration028.up(setup);
     const insert = setup.prepare(
       "INSERT INTO users (username, password_hash, role, status) VALUES (?, ?, 'ADMIN', 'active')"
     );

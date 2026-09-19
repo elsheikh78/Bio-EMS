@@ -1,0 +1,54 @@
+name: AUTH recovery deterministic autofix
+
+on:
+  push:
+    branches:
+      - feat/auth-password-recovery
+
+permissions:
+  contents: write
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/auth-password-recovery
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Patch legacy authentication test fixtures
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path("frontend/src/auth/AuthenticationProvider.spec.tsx")
+          text = path.read_text()
+          text = text.replace("  expiresAt: 50_000,\n  user:", "  expiresAt: 50_000,\n  passwordChangeRequired: false,\n  user:", 1)
+          text = text.replace("      expiresAt: 39_000,\n      user:", "      expiresAt: 39_000,\n      passwordChangeRequired: false,\n      user:")
+          text = text.replace("      expires_in: 37,\n      user:", "      expires_in: 37,\n      password_change_required: false,\n      user:")
+          text = text.replace("          expires_in: 3_600,\n          user:", "          expires_in: 3_600,\n          password_change_required: false,\n          user:")
+          text = text.replace("      expires_in: 60,\n      user:", "      expires_in: 60,\n      password_change_required: false,\n      user:")
+          path.write_text(text)
+      - name: Install Backend dependencies and format
+        working-directory: backend
+        run: |
+          npm ci
+          npx prettier --write "{src,database}/**/*.ts" "*.{json,js}"
+      - name: Install Frontend dependencies and format
+        working-directory: frontend
+        run: |
+          npm ci
+          npx prettier --write "src/**/*.{ts,tsx}" "*.{json,js,ts}"
+      - name: Commit deterministic fixes
+        run: |
+          if git diff --quiet; then
+            echo "No fixes required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend frontend
+          git commit -m "style(auth): apply recovery contract and prettier fixes"
+          git push origin HEAD:feat/auth-password-recovery

@@ -78,13 +78,99 @@ export class PlatformPrincipalRepository {
         `
         SELECT
           ${PUBLIC_PLATFORM_PRINCIPAL_COLUMNS},
-          password_hash
+          password_hash,
+          failed_login_count,
+          locked_until,
+          last_failed_login_at,
+          mfa_secret_encrypted,
+          mfa_enabled_at,
+          mfa_recovery_hashes,
+          session_version
         FROM platform_principals
         WHERE username = ?
         LIMIT 1
       `
       )
       .get(normalizePlatformUsername(username)) as PlatformPrincipalCredentialRecord | undefined;
+  }
+
+  findMfaState(id: string):
+    | {
+        username: string;
+        mfa_secret_encrypted: string | null;
+        mfa_enabled_at: string | null;
+      }
+    | undefined {
+    return this.database
+      .prepare(
+        `SELECT username, mfa_secret_encrypted, mfa_enabled_at
+         FROM platform_principals WHERE id = ? LIMIT 1`
+      )
+      .get(id) as
+      | {
+          username: string;
+          mfa_secret_encrypted: string | null;
+          mfa_enabled_at: string | null;
+        }
+      | undefined;
+  }
+
+  beginMfaEnrollment(id: string, encryptedSecret: string, now = new Date()): boolean {
+    const result = this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET mfa_secret_encrypted = ?, mfa_enabled_at = NULL, updated_at = ?
+         WHERE id = ? AND mfa_secret_encrypted IS NULL`
+      )
+      .run(encryptedSecret, now.toISOString(), id);
+    return result.changes === 1;
+  }
+
+  enableMfa(id: string, now = new Date()): boolean {
+    const result = this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET mfa_enabled_at = ?, updated_at = ?
+         WHERE id = ? AND mfa_secret_encrypted IS NOT NULL AND mfa_enabled_at IS NULL`
+      )
+      .run(now.toISOString(), now.toISOString(), id);
+    return result.changes === 1;
+  }
+
+  recordFailedLogin(id: string, now = new Date(), threshold = 5, lockMinutes = 15): void {
+    const record = this.database
+      .prepare(
+        `SELECT failed_login_count, last_failed_login_at
+         FROM platform_principals WHERE id = ? LIMIT 1`
+      )
+      .get(id) as { failed_login_count: number; last_failed_login_at: string | null } | undefined;
+    if (!record) return;
+
+    const previousAt = record.last_failed_login_at
+      ? new Date(record.last_failed_login_at).getTime()
+      : 0;
+    const withinWindow = now.getTime() - previousAt <= lockMinutes * 60_000;
+    const nextCount = (withinWindow ? record.failed_login_count : 0) + 1;
+    const lockedUntil =
+      nextCount >= threshold ? new Date(now.getTime() + lockMinutes * 60_000).toISOString() : null;
+
+    this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET failed_login_count = ?, last_failed_login_at = ?, locked_until = ?, updated_at = ?
+         WHERE id = ?`
+      )
+      .run(nextCount, now.toISOString(), lockedUntil, now.toISOString(), id);
+  }
+
+  clearFailedLogins(id: string, now = new Date()): void {
+    this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET failed_login_count = 0, last_failed_login_at = NULL, locked_until = NULL, updated_at = ?
+         WHERE id = ?`
+      )
+      .run(now.toISOString(), id);
   }
 }
 

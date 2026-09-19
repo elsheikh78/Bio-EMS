@@ -1,0 +1,63 @@
+name: Auth recovery exact repair
+
+on:
+  push:
+    branches:
+      - feat/auth-password-recovery
+
+permissions:
+  contents: write
+
+jobs:
+  repair-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/auth-password-recovery
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Repair authorization fixture for recovery reset route
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'backend/src/routes/tests/route.authorization.spec.ts';
+          let source = fs.readFileSync(path, 'utf8');
+
+          const mockNeedle = '  listPendingPasswordRecoveryRequests: controller,\n  listUsers: controller,';
+          const mockReplacement = '  listPendingPasswordRecoveryRequests: controller,\n  listUsers: controller,\n  resetPasswordFromRecoveryRequest: controller,';
+          if (!source.includes(mockNeedle)) throw new Error('Expected recovery controller mock fixture not found');
+          source = source.replace(mockNeedle, mockReplacement);
+
+          const routeNeedle = '  userRoute("get", "/users/password-recovery/requests", "/password-recovery/requests"),';
+          const routeReplacement = `${routeNeedle}\n  userRoute(\n    "post",\n    "/users/password-recovery/requests/49db1d2a-95cc-4ad9-bdcb-823d8a29890f/reset",\n    "/password-recovery/requests/:request_id/reset",\n    { password: "Password1234" }\n  ),`;
+          if (!source.includes(routeNeedle)) throw new Error('Expected recovery request route inventory fixture not found');
+          source = source.replace(routeNeedle, routeReplacement);
+
+          fs.writeFileSync(path, source);
+          NODE
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+      - name: Apply project formatter
+        working-directory: backend
+        run: npx prettier --write src/routes/tests/route.authorization.spec.ts
+      - name: Validate backend
+        working-directory: backend
+        run: |
+          npm run typecheck
+          npm run build
+          npm run lint
+          npm run format:check
+          npm test -- --run
+      - name: Commit validated repair
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add backend/src/routes/tests/route.authorization.spec.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "test(auth): cover recovery reset route authorization"
+          git push origin HEAD:feat/auth-password-recovery

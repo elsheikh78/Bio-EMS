@@ -1,0 +1,73 @@
+name: Auth recovery migration test fix
+
+on:
+  push:
+    paths:
+      - .github/workflows/auth-recovery-migration-fix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/auth-password-recovery
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Patch SYSTEM_OWNER recovery test with the real migration026
+        shell: bash
+        run: |
+          set -euo pipefail
+          SPEC='backend/src/modules/platform-auth/owner-recovery.spec.ts'
+          MIGRATION_FILE="$(grep -RIl --include='*.ts' 'migration026' backend | head -n 1)"
+          test -n "$MIGRATION_FILE"
+          echo "Using migration file: $MIGRATION_FILE"
+          python3 - "$SPEC" "$MIGRATION_FILE" <<'PY'
+          import os, re, sys
+          spec, migration_file = sys.argv[1:]
+          text = open(spec, encoding='utf-8').read()
+          rel = os.path.relpath(migration_file[:-3], os.path.dirname(spec)).replace(os.sep, '/')
+          if not rel.startswith('.'):
+              rel = './' + rel
+          if 'migration026' not in text:
+              imports = list(re.finditer(r'^import .*migration009.*;$', text, re.M))
+              if len(imports) != 1:
+                  raise SystemExit(f'Expected exactly one migration009 import, found {len(imports)}')
+              pos = imports[0].end()
+              text = text[:pos] + f'\nimport {{ migration026 }} from "{rel}";' + text[pos:]
+          calls = list(re.finditer(r'^(\s*)migration009\.up\(([^;]+)\);$', text, re.M))
+          if not calls:
+              raise SystemExit('No migration009.up(...) call found')
+          offset = 0
+          for match in calls:
+              insertion = f'\n{match.group(1)}migration026.up({match.group(2)});'
+              end = match.end() + offset
+              current = text
+              if current[end:end + len(insertion)] != insertion:
+                  text = current[:end] + insertion + current[end:]
+                  offset += len(insertion)
+          open(spec, 'w', encoding='utf-8', newline='').write(text)
+          PY
+      - name: Format and test focused backend spec
+        working-directory: backend
+        run: |
+          npm ci
+          npm exec prettier -- --write src/modules/platform-auth/owner-recovery.spec.ts
+          npm test -- --run src/modules/platform-auth/owner-recovery.spec.ts
+      - name: Commit exact tested fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add backend/src/modules/platform-auth/owner-recovery.spec.ts
+          git diff --cached --quiet && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test(auth): run owner recovery against hardened platform schema'
+          git push origin HEAD:feat/auth-password-recovery
