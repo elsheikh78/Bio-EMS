@@ -86,11 +86,13 @@ if (config.frontendRoot) {
     response.set("Pragma", "no-cache");
     response.set("Expires", "0");
     response.set("Clear-Site-Data", '"cache"');
-    response.type("html").send(
-      '<!doctype html><meta charset="utf-8"><title>BIO-EMS</title>' +
-        '<script>location.replace("/login")</script>' +
-        '<noscript><meta http-equiv="refresh" content="0;url=/login"></noscript>'
-    );
+    response
+      .type("html")
+      .send(
+        '<!doctype html><meta charset="utf-8"><title>BIO-EMS</title>' +
+          '<script>location.replace("/login")</script>' +
+          '<noscript><meta http-equiv="refresh" content="0;url=/login"></noscript>'
+      );
   });
   app.use(
     express.static(frontendRoot, {
