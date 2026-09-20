@@ -64,7 +64,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated logoutput; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated logoutput; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"""; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
-Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
+Filename: "https://localhost/__bioems/start"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]
 ; Uninstall lifecycle is executed from InitializeUninstall below so a non-zero
@@ -72,8 +72,8 @@ Filename: "https://localhost/"; Description: "Open BIO-EMS"; Flags: postinstall 
 ; a false successful uninstall.
 
 [Icons]
-Name: "{group}\BIO-EMS"; Filename: "https://localhost/"
-Name: "{commondesktop}\BIO-EMS"; Filename: "https://localhost/"; Tasks: desktopicon
+Name: "{group}\BIO-EMS"; Filename: "https://localhost/__bioems/start"
+Name: "{commondesktop}\BIO-EMS"; Filename: "https://localhost/__bioems/start"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a BIO-EMS desktop shortcut"
