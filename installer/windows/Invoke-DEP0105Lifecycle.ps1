@@ -19,6 +19,15 @@ function Invoke-Robocopy([string]$source, [string]$destination) {
 function Stop-ControlledServices {
     foreach ($service in $services) { Stop-Service -Name $service -Force -ErrorAction SilentlyContinue }
 }
+function Grant-LifecycleAdministratorAccess([string]$path) {
+    if (-not (Test-Path -LiteralPath $path -PathType Container)) {
+        New-Item -ItemType Directory -Path $path -Force | Out-Null
+    }
+    & icacls.exe $path /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to prepare BIO-EMS lifecycle access for $path (icacls exit code $LASTEXITCODE)"
+    }
+}
 function Write-Utf8([string]$path, [object]$value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
@@ -92,7 +101,17 @@ if ($Mode -eq "NewInstallCleanup") {
 if ($Mode -eq "PreUpdate") {
     if (Test-Path -LiteralPath $pointer) { throw "A lifecycle operation is already pending" }
     Stop-ControlledServices
-    $backup = Join-Path $persistent ("backups\lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
+
+    # Older BIO-EMS releases protected ProgramData with ACLs that can deny an
+    # elevated installer from creating a lifecycle snapshot. Repair only the
+    # product-owned backup/log roots needed by the update transaction; do not
+    # relax customer data/config/licensing ACLs.
+    $backupRoot = Join-Path $persistent "backups"
+    $logsRoot = Join-Path $persistent "logs"
+    Grant-LifecycleAdministratorAccess $backupRoot
+    Grant-LifecycleAdministratorAccess $logsRoot
+
+    $backup = Join-Path $backupRoot ("lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
     Invoke-Robocopy $application (Join-Path $backup "application")
     foreach ($name in @("config", "data", "licensing")) {
         $source = Join-Path $persistent $name
