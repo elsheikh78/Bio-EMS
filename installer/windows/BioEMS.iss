@@ -197,6 +197,13 @@ function GetContactPhone(Param: String): String; begin Result := IdentityValue(7
 function IsNewInstallSelected(): Boolean; forward;
 function IsRepairSelected(): Boolean; forward;
 
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := IsRepairSelected() and
+    (((IdentityPage <> nil) and (PageID = IdentityPage.ID)) or
+     ((AdminPage <> nil) and (PageID = AdminPage.ID)));
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
@@ -217,7 +224,7 @@ begin
       MsgBox('Site code is required.', mbError, MB_OK); Result := False;
     end;
   end;
-  if Result and (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
+  if Result and IsNewInstallSelected() and (AdminPage <> nil) and (CurPageID = AdminPage.ID) then begin
     Password := AdminPage.Values[2];
     if Trim(AdminPage.Values[0]) = '' then begin
       MsgBox('Admin username is required.', mbError, MB_OK); Result := False;
