@@ -76,6 +76,22 @@ app.use(config.apiPrefix, commissioningRouter);
 
 if (config.frontendRoot) {
   const frontendRoot = resolve(config.frontendRoot);
+
+  // Setup and desktop shortcuts enter through this uncached bootstrap endpoint.
+  // Clear only this HTTPS origin's browser cache so an index.html cached by an
+  // older BIO-EMS release cannot resurrect the legacy login UI after upgrade
+  // or clean installation. The browser then lands on the canonical /login URL.
+  app.get("/__bioems/start", (_request, response) => {
+    response.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    response.set("Pragma", "no-cache");
+    response.set("Expires", "0");
+    response.set("Clear-Site-Data", '"cache"');
+    response.type("html").send(
+      '<!doctype html><meta charset="utf-8"><title>BIO-EMS</title>' +
+        '<script>location.replace("/login")</script>' +
+        '<noscript><meta http-equiv="refresh" content="0;url=/login"></noscript>'
+    );
+  });
   app.use(
     express.static(frontendRoot, {
       index: false,
