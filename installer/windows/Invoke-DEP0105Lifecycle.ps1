@@ -118,6 +118,18 @@ if ($Mode -eq "PreUpdate") {
         Grant-LifecycleAdministratorAccess $backupRoot
         Grant-LifecycleAdministratorAccess $logsRoot
 
+        # Legacy installs can leave service-owned child trees without an
+        # inheritable Administrators ACE even though the current installer ACL
+        # contract grants Administrators full control. Services are stopped at
+        # this point, so normalize read access only on the BIO-EMS-owned roots
+        # that must be captured by the verified lifecycle snapshot.
+        foreach ($snapshotRootName in @("config", "data", "licensing")) {
+            $snapshotRoot = Join-Path $persistent $snapshotRootName
+            if (Test-Path -LiteralPath $snapshotRoot -PathType Container) {
+                Grant-LifecycleAdministratorAccess $snapshotRoot
+            }
+        }
+
         $backup = Join-Path $backupRoot ("lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
         Invoke-Robocopy $application (Join-Path $backup "application")
         foreach ($name in @("config", "data", "licensing")) {
