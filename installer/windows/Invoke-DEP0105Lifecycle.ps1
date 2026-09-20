@@ -21,7 +21,35 @@ function Invoke-Robocopy([string]$source, [string]$destination) {
     }
 }
 function Stop-ControlledServices {
-    foreach ($service in $services) { Stop-Service -Name $service -Force -ErrorAction SilentlyContinue }
+    foreach ($service in $services) {
+        Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+        $deadline = (Get-Date).AddSeconds(30)
+        do {
+            $current = Get-Service -Name $service -ErrorAction SilentlyContinue
+            if (-not $current -or $current.Status -eq "Stopped") { break }
+            Start-Sleep -Milliseconds 250
+        } while ((Get-Date) -lt $deadline)
+        if ($current -and $current.Status -ne "Stopped") {
+            throw "BIO-EMS lifecycle could not quiesce service $service before snapshot"
+        }
+    }
+
+    # Mosquitto persists mosquitto.db during shutdown. A service can report
+    # Stopped before the child broker process has fully released its database
+    # handle, especially on legacy installations. Do not snapshot until the
+    # controlled runtime process has actually exited.
+    $mqttRuntime = Join-Path $application "runtime\mosquitto"
+    $processDeadline = (Get-Date).AddSeconds(30)
+    do {
+        $mqttProcesses = @(Get-Process -Name "mosquitto" -ErrorAction SilentlyContinue | Where-Object {
+            try { $_.Path -and $_.Path.StartsWith($mqttRuntime, [StringComparison]::OrdinalIgnoreCase) } catch { $false }
+        })
+        if ($mqttProcesses.Count -eq 0) { break }
+        Start-Sleep -Milliseconds 250
+    } while ((Get-Date) -lt $processDeadline)
+    if ($mqttProcesses.Count -gt 0) {
+        throw "BIO-EMS lifecycle could not quiesce the controlled Mosquitto process before snapshot"
+    }
 }
 function Grant-LifecycleAdministratorAccess([string]$path) {
     if (-not (Test-Path -LiteralPath $path -PathType Container)) {
@@ -127,6 +155,19 @@ if ($Mode -eq "PreUpdate") {
             $snapshotRoot = Join-Path $persistent $snapshotRootName
             if (Test-Path -LiteralPath $snapshotRoot -PathType Container) {
                 Grant-LifecycleAdministratorAccess $snapshotRoot
+            }
+        }
+        # Existing child files may carry protected explicit ACLs from older
+        # releases, so granting only on the root is insufficient. Normalize the
+        # existing snapshot tree to the same Administrators/SYSTEM access model
+        # used by current BIO-EMS installations.
+        foreach ($snapshotRootName in @("config", "data", "licensing")) {
+            $snapshotRoot = Join-Path $persistent $snapshotRootName
+            if (Test-Path -LiteralPath $snapshotRoot -PathType Container) {
+                & icacls.exe $snapshotRoot /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Unable to normalize legacy BIO-EMS snapshot ACLs for $snapshotRoot (icacls exit code $LASTEXITCODE)"
+                }
             }
         }
 
