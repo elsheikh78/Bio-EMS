@@ -60,6 +60,17 @@ function Grant-LifecycleAdministratorAccess([string]$path) {
         throw "Unable to prepare BIO-EMS lifecycle access for $path (icacls exit code $LASTEXITCODE)"
     }
 }
+function Grant-LifecycleFileReadAccess([string]$path) {
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return }
+    & takeown.exe /F $path /A | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to take ownership of legacy BIO-EMS lifecycle file $path (takeown exit code $LASTEXITCODE)"
+    }
+    & icacls.exe $path /grant:r "*S-1-5-18:F" "*S-1-5-32-544:F" /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to grant lifecycle read access to legacy BIO-EMS file $path (icacls exit code $LASTEXITCODE)"
+    }
+}
 function Write-Utf8([string]$path, [object]$value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
@@ -170,6 +181,12 @@ if ($Mode -eq "PreUpdate") {
                 }
             }
         }
+
+        # Mosquitto persistence files created by legacy service-SID installs can
+        # retain a protected owner/DACL that ignores parent grants. The broker is
+        # fully stopped above, so take ownership of this BIO-EMS-owned persistence
+        # file and grant SYSTEM/Administrators full access before snapshotting it.
+        Grant-LifecycleFileReadAccess (Join-Path $persistent "data\mqtt\mosquitto.db")
 
         $backup = Join-Path $backupRoot ("lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
         Invoke-Robocopy $application (Join-Path $backup "application")
