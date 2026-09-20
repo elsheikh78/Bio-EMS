@@ -13,8 +13,12 @@ $pointer = Join-Path $persistent "logs\pending-lifecycle.json"
 
 function Invoke-Robocopy([string]$source, [string]$destination) {
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
-    & robocopy.exe $source $destination /MIR /XJ /R:2 /W:1 /NFL /NDL /NP | Out-Null
-    if ($LASTEXITCODE -gt 7) { throw "Controlled lifecycle copy failed" }
+    $copyOutput = & robocopy.exe $source $destination /MIR /XJ /R:2 /W:1 /NFL /NDL /NP 2>&1
+    $copyExitCode = $LASTEXITCODE
+    if ($copyExitCode -gt 7) {
+        $detail = ($copyOutput | Out-String).Trim()
+        throw "Controlled lifecycle copy failed: source=$source destination=$destination robocopyExitCode=$copyExitCode detail=$detail"
+    }
 }
 function Stop-ControlledServices {
     foreach ($service in $services) { Stop-Service -Name $service -Force -ErrorAction SilentlyContinue }
@@ -100,28 +104,41 @@ if ($Mode -eq "NewInstallCleanup") {
 
 if ($Mode -eq "PreUpdate") {
     if (Test-Path -LiteralPath $pointer) { throw "A lifecycle operation is already pending" }
-    Stop-ControlledServices
+    $diagnostic = Join-Path $env:TEMP "BIO-EMS-PreUpdate.log"
+    $backup = $null
+    try {
+        Stop-ControlledServices
 
-    # Older BIO-EMS releases protected ProgramData with ACLs that can deny an
-    # elevated installer from creating a lifecycle snapshot. Repair only the
-    # product-owned backup/log roots needed by the update transaction; do not
-    # relax customer data/config/licensing ACLs.
-    $backupRoot = Join-Path $persistent "backups"
-    $logsRoot = Join-Path $persistent "logs"
-    Grant-LifecycleAdministratorAccess $backupRoot
-    Grant-LifecycleAdministratorAccess $logsRoot
+        # Older BIO-EMS releases protected ProgramData with ACLs that can deny an
+        # elevated installer from creating a lifecycle snapshot. Repair only the
+        # product-owned backup/log roots needed by the update transaction; do not
+        # relax customer data/config/licensing ACLs.
+        $backupRoot = Join-Path $persistent "backups"
+        $logsRoot = Join-Path $persistent "logs"
+        Grant-LifecycleAdministratorAccess $backupRoot
+        Grant-LifecycleAdministratorAccess $logsRoot
 
-    $backup = Join-Path $backupRoot ("lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
-    Invoke-Robocopy $application (Join-Path $backup "application")
-    foreach ($name in @("config", "data", "licensing")) {
-        $source = Join-Path $persistent $name
-        if (Test-Path -LiteralPath $source) { Invoke-Robocopy $source (Join-Path $backup "persistent\$name") }
+        $backup = Join-Path $backupRoot ("lifecycle-" + (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ"))
+        Invoke-Robocopy $application (Join-Path $backup "application")
+        foreach ($name in @("config", "data", "licensing")) {
+            $source = Join-Path $persistent $name
+            if (Test-Path -LiteralPath $source) { Invoke-Robocopy $source (Join-Path $backup "persistent\$name") }
+        }
+        $manifest = [ordered]@{ schemaVersion = 1; createdAt = (Get-Date).ToUniversalTime().ToString("o"); application = Get-Manifest (Join-Path $backup "application"); persistent = Get-Manifest (Join-Path $backup "persistent") }
+        Write-Utf8 (Join-Path $backup "backup-manifest.json") $manifest
+        Write-Utf8 $pointer ([ordered]@{ schemaVersion = 1; backupPath = $backup; state = "VERIFIED_BACKUP_READY" })
+        Remove-Item -LiteralPath $diagnostic -Force -ErrorAction SilentlyContinue
+        Write-Host "DEP-01-05 verified pre-update backup: PASS"
+        exit 0
+    } catch {
+        $detail = "BIO-EMS PreUpdate failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
+        [IO.File]::WriteAllText($diagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
+        $startOrder = @($services)
+        [array]::Reverse($startOrder)
+        foreach ($service in $startOrder) { Start-Service -Name $service -ErrorAction SilentlyContinue }
+        Write-Error "$detail Diagnostic: $diagnostic"
+        exit 42
     }
-    $manifest = [ordered]@{ schemaVersion = 1; createdAt = (Get-Date).ToUniversalTime().ToString("o"); application = Get-Manifest (Join-Path $backup "application"); persistent = Get-Manifest (Join-Path $backup "persistent") }
-    Write-Utf8 (Join-Path $backup "backup-manifest.json") $manifest
-    Write-Utf8 $pointer ([ordered]@{ schemaVersion = 1; backupPath = $backup; state = "VERIFIED_BACKUP_READY" })
-    Write-Host "DEP-01-05 verified pre-update backup: PASS"
-    exit 0
 }
 
 if ($Mode -eq "PostUpdate") {
