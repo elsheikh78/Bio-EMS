@@ -18,6 +18,7 @@ describe("permission-aware navigation registry", () => {
       ["/commissioning", "COMMISSIONING_READ"],
       ["/configuration", "CONFIGURATION_WRITE"],
       ["/users", "USER_MANAGE"],
+      ["/backup-restore", "PLATFORM_BACKUP_READ"],
     ]);
   });
 
