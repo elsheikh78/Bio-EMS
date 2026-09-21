@@ -40,9 +40,8 @@ function mapSchedule(row: ScheduleRow): PlatformBackupSchedule {
 }
 
 export function getPlatformBackupSchedule(): PlatformBackupSchedule {
-  const row = sqlite
-    .prepare("SELECT * FROM platform_backup_schedule WHERE id = 1")
-    .get() as ScheduleRow | undefined;
+  const row = sqlite.prepare("SELECT * FROM platform_backup_schedule WHERE id = 1").get() as
+    ScheduleRow | undefined;
   if (!row) throw new Error("Platform backup schedule is not initialized");
   return mapSchedule(row);
 }

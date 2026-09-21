@@ -1,7 +1,4 @@
-import {
-  createCompletePlatformBackup,
-  prunePlatformBackups,
-} from "./platform-backup.service";
+import { createCompletePlatformBackup, prunePlatformBackups } from "./platform-backup.service";
 import {
   claimDuePlatformBackup,
   completeScheduledPlatformBackup,
