@@ -86,6 +86,64 @@ function Grant-LifecycleTreeRestoreAccess([string]$path) {
 function Write-Utf8([string]$path, [object]$value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
+function Repair-BackendIdentityProvisioning {
+    $licensing = Join-Path $persistent "licensing"
+    $identityPath = Join-Path $licensing "installation-identity.json"
+    $receiptPath = Join-Path $licensing "installation-provisioning-receipt.json"
+    $identityExists = Test-Path -LiteralPath $identityPath -PathType Leaf
+    $receiptExists = Test-Path -LiteralPath $receiptPath -PathType Leaf
+
+    if ($identityExists -xor $receiptExists) {
+        throw "Incomplete installation identity state; Repair will not replace partial identity evidence"
+    }
+    if ($identityExists) { return }
+
+    Grant-LifecycleAdministratorAccess $licensing
+    & icacls.exe $licensing /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" "NT SERVICE\BIOEMS-Backend:(OI)(CI)M" /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Unable to prepare licensing ACL for legacy identity provisioning" }
+
+    $xmlPath = Join-Path $application "services\BIOEMS-Backend.xml"
+    if (-not (Test-Path -LiteralPath $xmlPath -PathType Leaf)) {
+        throw "BIOEMS-Backend service definition is missing during Repair"
+    }
+    & takeown.exe /F $xmlPath /A | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Unable to take ownership of the Backend service definition during Repair" }
+    & icacls.exe $xmlPath /grant:r "*S-1-5-18:F" "*S-1-5-32-544:F" /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Unable to update the Backend service definition during Repair" }
+
+    [xml]$definition = Get-Content -LiteralPath $xmlPath -Raw
+    $definition.service.executable = "powershell.exe"
+    $launcher = Join-Path $application "installer\Invoke-BackendPreStart.ps1"
+    $node = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\node") -Filter "node.exe" -File -Recurse)
+    if ($node.Count -ne 1) { throw "Repair expected exactly one controlled Node.js executable" }
+    $provisioner = Join-Path $application "backend\dist\src\scripts\provision-installation-identity.js"
+    $backend = Join-Path $application "backend\dist\src\scripts\start-windows-service.js"
+    $diagnostic = Join-Path $persistent "logs\lic11-prestart.log"
+    $definition.service.arguments = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$launcher`" -NodeExecutable `"$($node[0].FullName)`" -ProvisioningScript `"$provisioner`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$diagnostic`" -BackendScript `"$backend`""
+
+    foreach ($name in @("BIOEMS_INSTALLATION_IDENTITY_PATH", "BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH", "BIOEMS_PILOT_MODE")) {
+        @($definition.service.env | Where-Object { $_.name -eq $name }) | ForEach-Object {
+            [void]$definition.service.RemoveChild($_)
+        }
+    }
+    $environment = [ordered]@{
+        BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath
+        BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath
+    }
+    if ($PilotMode) { $environment.BIOEMS_PILOT_MODE = "true" }
+    foreach ($entry in $environment.GetEnumerator()) {
+        $nodeElement = $definition.CreateElement("env")
+        $nodeElement.SetAttribute("name", $entry.Key)
+        $nodeElement.SetAttribute("value", $entry.Value)
+        [void]$definition.service.AppendChild($nodeElement)
+    }
+
+    $settings = New-Object Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.Encoding = New-Object Text.UTF8Encoding($false)
+    $writer = [Xml.XmlWriter]::Create($xmlPath, $settings)
+    try { $definition.Save($writer) } finally { $writer.Dispose() }
+}
 function Get-Manifest([string]$root) {
     return @(Get-ChildItem -LiteralPath $root -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ relativePath = $_.FullName.Substring($root.Length).TrimStart('\'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
@@ -280,6 +338,7 @@ if ($Mode -eq "PostUpdate") {
     $backup = [IO.Path]::GetFullPath($state.backupPath)
     if (-not $backup.StartsWith((Join-Path $persistent "backups"), [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path (Join-Path $backup "backup-manifest.json"))) { throw "Lifecycle backup is invalid" }
     try {
+        Repair-BackendIdentityProvisioning
         $startOrder = @($services)
         [array]::Reverse($startOrder)
         foreach ($service in $startOrder) { Start-Service -Name $service -ErrorAction Stop }

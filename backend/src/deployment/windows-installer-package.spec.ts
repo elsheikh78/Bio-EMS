@@ -637,6 +637,15 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).toContain("previous application/data snapshot was restored");
   });
 
+  it("migrates legacy Repair installations that predate installation identity provisioning", () => {
+    expect(lifecycle).toContain("function Repair-BackendIdentityProvisioning");
+    expect(lifecycle).toContain("Repair-BackendIdentityProvisioning\n        $startOrder");
+    expect(lifecycle).toContain('"NT SERVICE\\BIOEMS-Backend:(OI)(CI)M"');
+    expect(lifecycle).toContain('Join-Path $application "installer\\Invoke-BackendPreStart.ps1"');
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH");
+    expect(lifecycle).toContain("Incomplete installation identity state");
+  });
+
   it("does not mistake successful robocopy exit codes for health failures", () => {
     expect(lifecycle).toContain(
       '& (Join-Path $application "installer\\Test-PostInstallHealth.ps1") @healthArgs'
