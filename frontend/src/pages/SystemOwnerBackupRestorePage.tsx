@@ -10,7 +10,7 @@ export function SystemOwnerBackupRestorePage() {
         ...options,
         auth: "protected",
       }),
-    [apiClient]
+    [apiClient],
   );
   return (
     <BackupRestorePanel
