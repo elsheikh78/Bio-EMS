@@ -31,6 +31,7 @@ const copy = {
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
       { key: "service", label: "Maintenance, calibration & support" },
+      { key: "backup-restore", label: "Backup & Restore" },
     ],
   },
   ar: {
@@ -48,6 +49,7 @@ const copy = {
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },
       { key: "service", label: "الصيانة والمعايرة والدعم" },
+      { key: "backup-restore", label: "النسخ الاحتياطي والاستعادة" },
     ],
   },
 } as const;
