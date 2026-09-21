@@ -8,10 +8,11 @@
 
 ## 21 September physical Repair checkpoint
 
-- Physical Repair using the current Pilot Setup failed closed before modifying the installation, preserving the existing BIO-EMS data and services.
-- The captured `BIO-EMS-PreUpdate.log` identified the exact failure: a verified pending lifecycle snapshot could not restore `persistent\data\mqtt\mosquitto.db` because both the backup copy and current destination can retain protected explicit legacy DACLs.
-- PR #239 now reclaims the exact verified backup and destination MQTT persistence files before pending-snapshot recovery and rollback restore, with regression coverage enforcing the ordering before `robocopy`.
-- CI and Internal Windows Setup must pass on the formatted repair fix, followed by a repeat physical Repair on the same host. PR #239 remains unmerged until Repair preservation and the remaining acceptance gates pass.
+- Physical Repair on the same legacy Pilot host now passes end to end while preserving the existing BIO-EMS state.
+- The repaired lifecycle handles protected legacy MQTT `mosquitto.db` ACLs and no longer mistakes successful non-zero `robocopy` result codes for health failures. The recovered health evidence passed every service, HTTPS, InfluxDB, MQTT, frontend and firewall check.
+- A clean machine can no longer continue through `Reinstall / Repair`: interactive and silent Repair require both the registered BIO-EMS installation and controlled services. Clean and partial-state hosts are directed to controlled `New Install` instead of producing a false-success incomplete installation.
+- Regression coverage enforces the Repair precondition. CI and Internal Windows Setup must pass on the formatted guard commit before a replacement Pilot artifact is accepted.
+- PR #239 remains unmerged until the remaining physical acceptance gates pass.
 
 ## 19 September integration checkpoint
 
