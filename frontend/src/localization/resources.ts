@@ -63,6 +63,7 @@ export interface TranslationResources {
     commissioning: string;
     configuration: string;
     users: string;
+    backupRestore: string;
   };
 
   workspace: {
@@ -345,6 +346,7 @@ export const englishResources = {
     commissioning: "Commissioning",
     configuration: "Configuration",
     users: "Users",
+    backupRestore: "Backup & Restore",
   },
 
   workspace: {
@@ -652,6 +654,7 @@ export const arabicResources = {
     commissioning: "التشغيل المبدئي",
     configuration: "الإعدادات",
     users: "المستخدمون",
+    backupRestore: "النسخ الاحتياطي والاستعادة",
   },
   workspace: {
     title: "مساحة العمل التشغيلية",
