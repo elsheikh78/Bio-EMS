@@ -366,7 +366,7 @@ begin
   if IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart then begin
     ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
     ScriptPath := ExpandConstant('{tmp}\Invoke-DEP0105Lifecycle.ps1');
-    if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode PreUpdate -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
+    if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode PreUpdate -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\BIO-EMS') + '" -PilotMode', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then
       Result := 'BIO-EMS verified pre-update backup failed.';
   end;
 end;
