@@ -199,8 +199,10 @@ if ($Mode -eq "PreUpdate") {
                 PersistentRoot = $persistent
             }
             if ($PilotMode) { $healthArgs.PilotMode = $true }
+            # Test-PostInstallHealth emits a terminating error on failure. Do not
+            # inspect $LASTEXITCODE here: successful robocopy values 1-7 remain in
+            # the session and would turn a PASS health result into a false failure.
             & (Join-Path $application "installer\Test-PostInstallHealth.ps1") @healthArgs
-            if ($LASTEXITCODE -ne 0) { throw "Recovered lifecycle snapshot health failed" }
 
             $pendingState.state = "PREVIOUS_SNAPSHOT_RECOVERED"
             Write-Utf8 (Join-Path $persistent "logs\last-lifecycle.json") $pendingState
@@ -286,8 +288,9 @@ if ($Mode -eq "PostUpdate") {
             PersistentRoot = $persistent
         }
         if ($PilotMode) { $healthArgs.PilotMode = $true }
+        # The health script uses terminating errors as its failure contract;
+        # $LASTEXITCODE may still contain a successful non-zero robocopy result.
         & (Join-Path $application "installer\Test-PostInstallHealth.ps1") @healthArgs
-        if ($LASTEXITCODE -ne 0) { throw "Post-update health failed" }
         $state.state = "UPDATE_HEALTH_VERIFIED"
         Write-Utf8 (Join-Path $persistent "logs\last-lifecycle.json") $state
         Remove-Item -LiteralPath $pointer -Force
