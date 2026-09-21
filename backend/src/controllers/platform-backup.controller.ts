@@ -13,6 +13,11 @@ import {
   recordPlatformRestoreTerminalAudit,
   restorePlatformBackup,
 } from "../modules/platform-backup/platform-backup.service";
+import {
+  getPlatformBackupSchedule,
+  updatePlatformBackupSchedule,
+} from "../modules/platform-backup/platform-backup-schedule.service";
+import type { PlatformBackupScheduleInput } from "../modules/platform-backup/platform-backup-schedule.schema";
 
 export async function listCustomerPlatformBackups(_req: Request, res: Response): Promise<void> {
   const backups = await listPlatformBackups();
@@ -22,6 +27,32 @@ export async function listCustomerPlatformBackups(_req: Request, res: Response):
 export async function listOwnerPlatformBackups(_req: Request, res: Response): Promise<void> {
   const backups = await listPlatformBackups();
   res.status(200).json({ backups });
+}
+
+export function getCustomerPlatformBackupSchedule(_req: Request, res: Response): void {
+  res.status(200).json({ schedule: getPlatformBackupSchedule() });
+}
+
+export function updateCustomerPlatformBackupSchedule(req: Request, res: Response): void {
+  const actor = customerAuditActor(req);
+  const schedule = updatePlatformBackupSchedule(
+    req.body as PlatformBackupScheduleInput,
+    actor.username
+  );
+  res.status(200).json({ schedule });
+}
+
+export function getOwnerPlatformBackupSchedule(_req: Request, res: Response): void {
+  res.status(200).json({ schedule: getPlatformBackupSchedule() });
+}
+
+export function updateOwnerPlatformBackupSchedule(req: Request, res: Response): void {
+  const actor = platformAuditActor(req);
+  const schedule = updatePlatformBackupSchedule(
+    req.body as PlatformBackupScheduleInput,
+    actor.username
+  );
+  res.status(200).json({ schedule });
 }
 
 export async function createCustomerPlatformBackup(_req: Request, res: Response): Promise<void> {
