@@ -2,7 +2,8 @@
 param(
     [Parameter(Mandatory = $true)][ValidateSet("PreUpdate", "PostUpdate", "Uninstall", "NewInstallCleanup")][string]$Mode,
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
-    [Parameter(Mandatory = $true)][string]$PersistentRoot
+    [Parameter(Mandatory = $true)][string]$PersistentRoot,
+    [switch]$PilotMode
 )
 
 $ErrorActionPreference = "Stop"
@@ -220,7 +221,12 @@ if ($Mode -eq "PostUpdate") {
         $startOrder = @($services)
         [array]::Reverse($startOrder)
         foreach ($service in $startOrder) { Start-Service -Name $service -ErrorAction Stop }
-        & (Join-Path $application "installer\Test-PostInstallHealth.ps1") -ApplicationRoot $application -PersistentRoot $persistent
+        $healthArgs = @{
+            ApplicationRoot = $application
+            PersistentRoot = $persistent
+        }
+        if ($PilotMode) { $healthArgs.PilotMode = $true }
+        & (Join-Path $application "installer\Test-PostInstallHealth.ps1") @healthArgs
         if ($LASTEXITCODE -ne 0) { throw "Post-update health failed" }
         $state.state = "UPDATE_HEALTH_VERIFIED"
         Write-Utf8 (Join-Path $persistent "logs\last-lifecycle.json") $state
