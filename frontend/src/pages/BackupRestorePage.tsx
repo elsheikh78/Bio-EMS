@@ -7,7 +7,7 @@ export function BackupRestorePage() {
   const request = useCallback(
     (path: string, options?: RequestInit) =>
       protectedRequest(path as `/${string}`, options),
-    [protectedRequest]
+    [protectedRequest],
   );
   return <BackupRestorePanel basePath="/platform-backups" request={request} />;
 }
