@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import {
+  appendFile,
   lstat,
   mkdir,
   readFile,
@@ -354,44 +355,79 @@ function resolveInfluxBackupCommand(environment: NodeJS.ProcessEnv): {
   };
 }
 
+function backupFailureMessage(error: unknown): string {
+  if (!(error instanceof Error)) return "Unknown platform backup failure";
+  const processError = error as Error & { code?: string | number; stderr?: string };
+  const details = [
+    error.message,
+    processError.code === undefined ? "" : `exitCode=${processError.code}`,
+    processError.stderr?.trim() ?? "",
+  ].filter(Boolean);
+  return details.join(" | ").replaceAll(/INFLUX_TOKEN=[^\s|]+/gi, "INFLUX_TOKEN=<redacted>");
+}
+
+async function recordPlatformBackupFailure(
+  directory: string,
+  error: unknown,
+  environment: NodeJS.ProcessEnv
+): Promise<void> {
+  const persistentRoot = environment.BIOEMS_PERSISTENT_ROOT?.trim();
+  if (!persistentRoot || !isAbsolute(persistentRoot)) return;
+  const logDirectory = join(resolve(persistentRoot), "logs");
+  await mkdir(logDirectory, { recursive: true });
+  const line = `${new Date().toISOString()} backup=${basename(directory)} failed: ${backupFailureMessage(error)}\n`;
+  await appendFile(join(logDirectory, "platform-backup.log"), line, "utf8");
+}
+
 export async function createCompletePlatformBackup(
   requestedDestination?: string,
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformBackupManifest> {
-  const { directory } = await createPlatformBackupFoundation(requestedDestination, environment);
-  const { executable, script } = resolveInfluxBackupCommand(environment);
-  const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
-  const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
-  const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
-  const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
-  const influxDirectory = join(directory, "influxdb");
+  let directory: string | undefined;
+  try {
+    ({ directory } = await createPlatformBackupFoundation(requestedDestination, environment));
+    const { executable, script } = resolveInfluxBackupCommand(environment);
+    const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
+    const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
+    const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
+    const token = requireValue(environment.INFLUX_TOKEN, "INFLUX_TOKEN");
+    const influxDirectory = join(directory, "influxdb");
 
-  await execFileAsync(
-    executable,
-    [
-      "-NoProfile",
-      "-NonInteractive",
-      "-ExecutionPolicy",
-      "Bypass",
-      "-File",
-      script,
-      "-InfluxCli",
-      influxCli,
-      "-BackupDirectory",
-      influxDirectory,
-      "-HostUrl",
-      hostUrl,
-      "-Org",
-      org,
-    ],
-    {
-      windowsHide: true,
-      maxBuffer: 1024 * 1024,
-      env: { ...environment, INFLUX_TOKEN: token },
+    await execFileAsync(
+      executable,
+      [
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        script,
+        "-InfluxCli",
+        influxCli,
+        "-BackupDirectory",
+        influxDirectory,
+        "-HostUrl",
+        hostUrl,
+        "-Org",
+        org,
+      ],
+      {
+        windowsHide: true,
+        maxBuffer: 1024 * 1024,
+        env: { ...environment, INFLUX_TOKEN: token },
+      }
+    );
+
+    return await sealPlatformBackup(directory, environment);
+  } catch (error) {
+    try {
+      if (directory) await recordPlatformBackupFailure(directory, error, environment);
+    } catch {
+      // Diagnostic logging must never mask the original backup failure.
     }
-  );
-
-  return sealPlatformBackup(directory, environment);
+    if (directory) await rm(directory, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 export interface PlatformBackupValidationResult {

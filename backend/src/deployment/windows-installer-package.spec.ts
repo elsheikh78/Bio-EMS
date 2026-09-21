@@ -446,6 +446,16 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(preStart).toContain("& $NodeExecutable $BackendScript");
   });
 
+  it("provisions an installation identity in pilot mode so backup and owner workflows remain usable", () => {
+    expect(lifecycle).toContain("if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath");
+    expect(lifecycle).toContain(
+      "BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath"
+    );
+    expect(lifecycle).not.toContain('New-ServiceXml "BIOEMS-Backend" $node');
+    expect(lifecycle).toContain("Installation identity provisioning evidence was not created");
+  });
+
   it("persists LIC-11 prestart diagnostics so rollback does not hide the root cause", () => {
     expect(lifecycle).toContain(
       '$licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"'

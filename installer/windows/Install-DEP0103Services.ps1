@@ -245,14 +245,13 @@ $provisioningScript = Join-Path $application "backend\dist\src\scripts\provision
 $backendServer = Join-Path $application "backend\dist\src\scripts\start-windows-service.js"
 $licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
 $backendLauncherArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$backendLauncher`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`" -BackendScript `"$backendServer`""
-if ($PilotMode) {
-    $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_PILOT_MODE = "true" }
-    Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" $node "`"$backendServer`"" (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
+$backendEnvironment = @{
+    BIOEMS_ENV_FILE = $backendEnv
+    BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath
+    BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath
 }
-else {
-    $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
-    Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
-}
+if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE = "true" }
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
 
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
@@ -267,13 +266,11 @@ Protect-Path $paths.Config "BIOEMS-Backend"
 Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"
 Add-PathAccess $mqttConfig "BIOEMS-MQTT" "R"
-if (-not $PilotMode) {
-    Protect-Path $paths.Licensing "BIOEMS-Backend"
-    # Verify the service SID ACL is present before the service is allowed to provision LIC-11.
-    $licensingAcl = (Invoke-Controlled "icacls.exe" @($paths.Licensing) | Out-String)
-    if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\BIOEMS-Backend")) {
-        throw "BIOEMS-Backend licensing ACL verification failed"
-    }
+Protect-Path $paths.Licensing "BIOEMS-Backend"
+# Verify the service SID ACL is present before the service is allowed to provision its identity.
+$licensingAcl = (Invoke-Controlled "icacls.exe" @($paths.Licensing) | Out-String)
+if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\BIOEMS-Backend")) {
+    throw "BIOEMS-Backend licensing ACL verification failed"
 }
 Protect-Path $paths.Data "BIOEMS-Backend"
 Protect-Path (Join-Path $paths.Data "mqtt") "BIOEMS-MQTT"
@@ -410,9 +407,7 @@ New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allo
 $firewallRuleCreated = $true
 Start-Service "BIOEMS-Backend"
 
-if (-not $PilotMode) {
-    $receiptDeadline = (Get-Date).AddSeconds(45)
-    while (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf) -and (Get-Date) -lt $receiptDeadline) { Start-Sleep -Seconds 1 }
-    if (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf)) { throw "LIC-11 service-identity provisioning evidence was not created" }
-}
+$receiptDeadline = (Get-Date).AddSeconds(45)
+while (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf) -and (Get-Date) -lt $receiptDeadline) { Start-Sleep -Seconds 1 }
+if (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf)) { throw "Installation identity provisioning evidence was not created" }
 Write-Host "DEP-01-03 Windows service lifecycle: PASS"
