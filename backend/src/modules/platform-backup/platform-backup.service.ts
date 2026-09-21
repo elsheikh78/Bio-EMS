@@ -8,6 +8,7 @@ import {
   readdir,
   realpath,
   rename,
+  rm,
   stat,
   writeFile,
 } from "node:fs/promises";
@@ -323,6 +324,24 @@ export async function listPlatformBackups(
     }
   }
   return backups.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
+export async function prunePlatformBackups(
+  retentionCount: number,
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<number> {
+  if (!Number.isInteger(retentionCount) || retentionCount < 1 || retentionCount > 30) {
+    throw new Error("Platform backup retention count must be between 1 and 30");
+  }
+  const root = resolveAllowedBackupDestination(undefined, environment);
+  const backups = await listPlatformBackups(environment);
+  const expired = backups.slice(retentionCount);
+  for (const backup of expired) {
+    const directory = join(root, `platform-${backup.backupId}`);
+    await assertSafeBackupDirectory(root, directory);
+    await rm(directory, { recursive: true, force: false });
+  }
+  return expired.length;
 }
 
 function resolveInfluxBackupCommand(environment: NodeJS.ProcessEnv): {
