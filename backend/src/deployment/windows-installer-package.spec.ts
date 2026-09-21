@@ -628,6 +628,19 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).toContain("previous application/data snapshot was restored");
   });
 
+  it("does not mistake successful robocopy exit codes for health failures", () => {
+    expect(lifecycle).toContain(
+      '& (Join-Path $application "installer\\Test-PostInstallHealth.ps1") @healthArgs'
+    );
+    expect(lifecycle).not.toContain(
+      'if ($LASTEXITCODE -ne 0) { throw "Recovered lifecycle snapshot health failed" }'
+    );
+    expect(lifecycle).not.toContain(
+      'if ($LASTEXITCODE -ne 0) { throw "Post-update health failed" }'
+    );
+    expect(lifecycle).toContain("successful robocopy values 1-7");
+  });
+
   it("reclaims verified backup ACLs before pending recovery and rollback restore", () => {
     expect(lifecycle).toContain("function Grant-LifecycleTreeRestoreAccess");
     expect(lifecycle).toContain("& takeown.exe /F $path /A /R /D Y");
