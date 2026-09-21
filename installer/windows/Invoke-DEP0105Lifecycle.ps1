@@ -143,10 +143,49 @@ if ($Mode -eq "NewInstallCleanup") {
 }
 
 if ($Mode -eq "PreUpdate") {
-    if (Test-Path -LiteralPath $pointer) { throw "A lifecycle operation is already pending" }
     $diagnostic = Join-Path $env:TEMP "BIO-EMS-PreUpdate.log"
     $backup = $null
     try {
+        # A previous update can leave a verified pointer behind when its
+        # post-update health gate fails after restoring the previous snapshot.
+        # Before starting another repair, deterministically restore and verify
+        # that snapshot instead of deadlocking every future PreUpdate.
+        if (Test-Path -LiteralPath $pointer -PathType Leaf) {
+            $pendingState = Get-Content -LiteralPath $pointer -Raw | ConvertFrom-Json
+            if ($pendingState.state -ne "VERIFIED_BACKUP_READY") {
+                throw "Unsupported pending lifecycle state: $($pendingState.state)"
+            }
+            $pendingBackup = [IO.Path]::GetFullPath($pendingState.backupPath)
+            $backupRootPath = [IO.Path]::GetFullPath((Join-Path $persistent "backups"))
+            if (-not $pendingBackup.StartsWith($backupRootPath, [StringComparison]::OrdinalIgnoreCase) -or
+                -not (Test-Path -LiteralPath (Join-Path $pendingBackup "backup-manifest.json") -PathType Leaf)) {
+                throw "Pending lifecycle backup is invalid"
+            }
+
+            Stop-ControlledServices
+            Invoke-Robocopy (Join-Path $pendingBackup "application") $application
+            foreach ($name in @("config", "data", "licensing")) {
+                $source = Join-Path $pendingBackup "persistent\$name"
+                if (Test-Path -LiteralPath $source) { Invoke-Robocopy $source (Join-Path $persistent $name) }
+            }
+
+            $recoveryStartOrder = @($services)
+            [array]::Reverse($recoveryStartOrder)
+            foreach ($service in $recoveryStartOrder) { Start-Service -Name $service -ErrorAction Stop }
+
+            $healthArgs = @{
+                ApplicationRoot = $application
+                PersistentRoot = $persistent
+            }
+            if ($PilotMode) { $healthArgs.PilotMode = $true }
+            & (Join-Path $application "installer\Test-PostInstallHealth.ps1") @healthArgs
+            if ($LASTEXITCODE -ne 0) { throw "Recovered lifecycle snapshot health failed" }
+
+            $pendingState.state = "PREVIOUS_SNAPSHOT_RECOVERED"
+            Write-Utf8 (Join-Path $persistent "logs\last-lifecycle.json") $pendingState
+            Remove-Item -LiteralPath $pointer -Force
+        }
+
         Stop-ControlledServices
 
         # Older BIO-EMS releases protected ProgramData with ACLs that can deny an
