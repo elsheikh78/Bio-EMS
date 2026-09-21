@@ -1,10 +1,17 @@
 # BIO-EMS Project State
 
-**State date:** 19 September 2026  
+**State date:** 21 September 2026  
 **Authoritative main audited:** `653a573584122a2fa72e4e762d8f0337ae0f6712`  
 **Current integration branch:** `feat/dep-br-backup-restore` / draft PR #239  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 21 September physical Repair checkpoint
+
+- Physical Repair using the current Pilot Setup failed closed before modifying the installation, preserving the existing BIO-EMS data and services.
+- The captured `BIO-EMS-PreUpdate.log` identified the exact failure: a verified pending lifecycle snapshot could not restore `persistent\data\mqtt\mosquitto.db` because both the backup copy and current destination can retain protected explicit legacy DACLs.
+- PR #239 now reclaims the exact verified backup and destination MQTT persistence files before pending-snapshot recovery and rollback restore, with regression coverage enforcing the ordering before `robocopy`.
+- CI and Internal Windows Setup must pass on the formatted repair fix, followed by a repeat physical Repair on the same host. PR #239 remains unmerged until Repair preservation and the remaining acceptance gates pass.
 
 ## 19 September integration checkpoint
 
