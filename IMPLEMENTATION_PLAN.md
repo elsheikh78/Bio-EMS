@@ -9,7 +9,7 @@
 2. Build/use only the resulting current artifact and physically retest bare `https://localhost/login` with no query-string cache bust and no hard refresh.
 3. Create the installation-bound SYSTEM_OWNER commissioning request on the customer host; sign it only on the manufacturer-controlled machine with the encrypted private key; import the signed package; enroll MFA via the locally rendered QR; confirm SYSTEM_OWNER login and audit evidence.
 4. Execute physical Repair and prove preservation of customer/site/installation identity, SQLite, Influx telemetry, configuration and commissioned owner state.
-5. Execute physical Platform Backup -> controlled mutation -> Restore and prove SQLite + historical Influx telemetry + identity restoration and negative rejection cases.
+5. The visible ADMIN/System Owner Backup & Restore UI and optional automatic schedule (6h/12h/daily/weekly, retention 1-30) are source implemented on PR #239. Execute physical manual backup -> controlled mutation -> Restore, scheduled execution/retention, historical Influx telemetry + identity restoration and negative rejection cases.
 6. Review stacked PRs: #239 is the current merge vehicle; #233/#235/#237 are ancestor integration layers to close as superseded only after final #239 acceptance; #138 is stale/conflicted documentation and should not be merged as-is.
 7. Only after all PR #239 acceptance gates are green, update final evidence/docs and decide the merge to `main`.
 
