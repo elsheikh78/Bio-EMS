@@ -30,6 +30,7 @@ import { migration025 } from "./migrations/025_create_owner_commissioning_receip
 import { migration026 } from "./migrations/026_harden_owner_access";
 import { migration027 } from "./migrations/027_create_communication_channel_configs";
 import { migration028 } from "./migrations/028_create_password_recovery_domain";
+import { migration029 } from "./migrations/029_create_platform_backup_schedule";
 
 export interface Migration {
   version: number;
@@ -68,6 +69,7 @@ const migrations: Migration[] = [
   migration026,
   migration027,
   migration028,
+  migration029,
 ];
 
 export function runMigrations(
