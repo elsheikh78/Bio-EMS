@@ -96,4 +96,11 @@ export const navigationItems = [
     labelKey: "users",
     permission: "USER_MANAGE",
   },
+  {
+    group: "administration",
+    id: "backup-restore",
+    path: "/backup-restore",
+    labelKey: "backupRestore",
+    permission: "PLATFORM_BACKUP_READ",
+  },
 ] as const satisfies readonly NavigationItemDefinition[];
