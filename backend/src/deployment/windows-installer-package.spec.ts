@@ -642,7 +642,11 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).toContain(
       'Grant-LifecycleFileReadAccess (Join-Path $backup "persistent\\data\\mqtt\\mosquitto.db")'
     );
-    expect(lifecycle.match(/Grant-LifecycleFileReadAccess \(Join-Path \$persistent "data\\mqtt\\mosquitto\.db"\)/g)).toHaveLength(3);
+    expect(
+      lifecycle.match(
+        /Grant-LifecycleFileReadAccess \(Join-Path \$persistent "data\\mqtt\\mosquitto\.db"\)/g
+      )
+    ).toHaveLength(3);
     expect(lifecycle.indexOf("Grant-LifecycleTreeRestoreAccess $pendingBackup")).toBeLessThan(
       lifecycle.indexOf('Invoke-Robocopy (Join-Path $pendingBackup "application") $application')
     );
