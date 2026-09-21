@@ -693,9 +693,7 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(setup).toContain(
       "if ExistingInstallAtStart and ServicesPresentAtStart then InstallModePage.SelectedValueIndex := 1"
     );
-    expect(setup).toContain(
-      "No existing BIO-EMS installation was detected. Select New Install."
-    );
+    expect(setup).toContain("No existing BIO-EMS installation was detected. Select New Install.");
     expect(setup).toContain(
       "BIO-EMS Repair requires a complete existing installation. Partial BIO-EMS state was detected."
     );
