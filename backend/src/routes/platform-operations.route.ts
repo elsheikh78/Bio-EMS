@@ -20,10 +20,12 @@ import {
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
 import {
   createOwnerPlatformBackup,
+  getOwnerPlatformBackupSchedule,
   getOwnerPlatformRestoreJob,
   listOwnerPlatformBackups,
   restoreOwnerPlatformBackup,
   restoreOwnerPlatformBackupForDisasterRecovery,
+  updateOwnerPlatformBackupSchedule,
 } from "../controllers/platform-backup.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
@@ -79,10 +81,17 @@ import {
   saveCommunicationChannelSchema,
   testCommunicationChannelSchema,
 } from "../modules/communication-channels/communication-channel.schema";
+import { platformBackupScheduleInputSchema } from "../modules/platform-backup/platform-backup-schedule.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
+router.get("/backups/schedule", getOwnerPlatformBackupSchedule);
+router.put(
+  "/backups/schedule",
+  validateBody(platformBackupScheduleInputSchema),
+  updateOwnerPlatformBackupSchedule
+);
 router.get("/backups", listOwnerPlatformBackups);
 router.post("/backups", createOwnerPlatformBackup);
 router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
