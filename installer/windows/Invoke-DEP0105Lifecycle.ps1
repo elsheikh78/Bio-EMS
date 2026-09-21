@@ -179,6 +179,11 @@ if ($Mode -eq "PreUpdate") {
             # preserved when the backup was created. Normalize only this already
             # validated BIO-EMS backup tree before reading it for recovery.
             Grant-LifecycleTreeRestoreAccess $pendingBackup
+            # Directory inheritance is insufficient for legacy Mosquitto files
+            # with a protected explicit DACL. Reclaim the exact source and
+            # destination persistence files before robocopy attempts replacement.
+            Grant-LifecycleFileReadAccess (Join-Path $pendingBackup "persistent\data\mqtt\mosquitto.db")
+            Grant-LifecycleFileReadAccess (Join-Path $persistent "data\mqtt\mosquitto.db")
             Invoke-Robocopy (Join-Path $pendingBackup "application") $application
             foreach ($name in @("config", "data", "licensing")) {
                 $source = Join-Path $pendingBackup "persistent\$name"
@@ -289,6 +294,8 @@ if ($Mode -eq "PostUpdate") {
     } catch {
         Stop-ControlledServices
         Grant-LifecycleTreeRestoreAccess $backup
+        Grant-LifecycleFileReadAccess (Join-Path $backup "persistent\data\mqtt\mosquitto.db")
+        Grant-LifecycleFileReadAccess (Join-Path $persistent "data\mqtt\mosquitto.db")
         Invoke-Robocopy (Join-Path $backup "application") $application
         foreach ($name in @("config", "data", "licensing")) {
             $source = Join-Path $backup "persistent\$name"
