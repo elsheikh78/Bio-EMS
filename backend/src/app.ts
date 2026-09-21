@@ -31,10 +31,12 @@ import communicationChannelRouter from "./routes/communication-channel.route";
 import platformBackupRouter from "./routes/platform-backup.route";
 import { resolve } from "node:path";
 import { reconcilePlatformRestoreAudits } from "./modules/platform-backup/platform-backup.service";
+import { startPlatformBackupScheduleRuntime } from "./modules/platform-backup/platform-backup-schedule.runtime";
 
 createTables();
 
 runMigrations();
+startPlatformBackupScheduleRuntime();
 
 void reconcilePlatformRestoreAudits().catch((error) => {
   console.error("Platform restore audit reconciliation failed", error);
