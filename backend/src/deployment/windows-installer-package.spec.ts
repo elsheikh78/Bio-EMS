@@ -689,6 +689,21 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(setup).toContain("BIOEMS_CI_INSTALL_MODE");
   });
 
+  it("rejects repair when no complete existing installation is detected", () => {
+    expect(setup).toContain(
+      "if ExistingInstallAtStart and ServicesPresentAtStart then InstallModePage.SelectedValueIndex := 1"
+    );
+    expect(setup).toContain(
+      "No existing BIO-EMS installation was detected. Select New Install."
+    );
+    expect(setup).toContain(
+      "BIO-EMS Repair requires a complete existing installation. Partial BIO-EMS state was detected."
+    );
+    expect(setup).toContain(
+      "BIO-EMS silent Repair rejected: a complete existing installation was not detected."
+    );
+  });
+
   it("requires explicit confirmation before destructive New Install cleanup", () => {
     expect(setup).toContain("Existing BIO-EMS state was detected");
     expect(setup).toContain("mbConfirmation, MB_YESNO");
