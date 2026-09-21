@@ -13,6 +13,9 @@
 - A clean machine can no longer continue through `Reinstall / Repair`: interactive and silent Repair require both the registered BIO-EMS installation and controlled services. Clean and partial-state hosts are directed to controlled `New Install` instead of producing a false-success incomplete installation.
 - Regression coverage enforces the Repair precondition. CI and Internal Windows Setup must pass on the formatted guard commit before a replacement Pilot artifact is accepted.
 - PR #239 remains unmerged until the remaining physical acceptance gates pass.
+- The application now exposes **Backup & Restore** to customer ADMIN users and a corresponding System Owner module. Both provide on-demand complete backup and controlled restore; System Owner additionally receives the disaster-recovery identity-transfer path.
+- Optional automatic complete backups are source implemented with durable settings for every 6 hours, 12 hours, 24 hours or 7 days, configurable retention from 1 to 30 backups, next/last-run evidence and recorded failure status. Manual backup remains independently available.
+- Backend and frontend quality gates passed for this source implementation. Physical browser exercise of manual backup, scheduled execution, retention and restore remains an open acceptance gate.
 
 ## 19 September integration checkpoint
 
