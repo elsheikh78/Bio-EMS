@@ -426,6 +426,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     );
     expect(keyProtection).toContain("WINDOWS-DPAPI/LOCAL-MACHINE");
     expect(keyProtection).toContain("[System.Security.Cryptography.ProtectedData]");
+    expect(keyProtection).toContain("Add-Type -AssemblyName System.Security");
     expect(keyProtection).toContain(
       "[System.Security.Cryptography.DataProtectionScope]::LocalMachine"
     );
