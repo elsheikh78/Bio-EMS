@@ -151,7 +151,7 @@ begin
       'New Install creates a new installation identity. Reinstall / Repair preserves the existing customer, site, readings, identity, and configuration.', True, False);
     InstallModePage.Add('New Install');
     InstallModePage.Add('Reinstall / Repair');
-    if ExistingInstallAtStart or ServicesPresentAtStart then InstallModePage.SelectedValueIndex := 1
+    if ExistingInstallAtStart and ServicesPresentAtStart then InstallModePage.SelectedValueIndex := 1
     else InstallModePage.SelectedValueIndex := 0;
 
     IdentityPage := CreateInputQueryPage(InstallModePage.ID, 'Customer and Site',
@@ -208,6 +208,16 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 var Password: String;
 begin
   Result := True;
+  if (InstallModePage <> nil) and (CurPageID = InstallModePage.ID) and IsRepairSelected() and
+     not (ExistingInstallAtStart and ServicesPresentAtStart) then begin
+    if ExistingInstallAtStart or ServicesPresentAtStart or
+       DirExists(ExpandConstant('{commonappdata}\\BIO-EMS')) then
+      MsgBox('BIO-EMS Repair requires a complete existing installation. Partial BIO-EMS state was detected. Select New Install to perform controlled cleanup and create a valid installation.', mbError, MB_OK)
+    else
+      MsgBox('No existing BIO-EMS installation was detected. Select New Install.', mbError, MB_OK);
+    Result := False;
+    Exit;
+  end;
   if (InstallModePage <> nil) and (CurPageID = InstallModePage.ID) and IsNewInstallSelected() and
      (ExistingInstallAtStart or ServicesPresentAtStart or DirExists(ExpandConstant('{commonappdata}\\BIO-EMS'))) then begin
     Result := MsgBox('Existing BIO-EMS state was detected. New Install will replace the existing BIO-EMS installation identity and customer data after controlled cleanup. Continue only when this is intentionally a fresh installation.', mbConfirmation, MB_YESNO) = IDYES;
@@ -292,6 +302,12 @@ begin
     SilentMode := Lowercase(Trim(GetEnv('BIOEMS_CI_INSTALL_MODE')));
     if (SilentMode <> 'new') and (SilentMode <> 'repair') then begin
       Log('BIO-EMS silent Setup rejected: BIOEMS_CI_INSTALL_MODE must be new or repair.');
+      Result := False;
+      Exit;
+    end;
+    if (SilentMode = 'repair') and
+       not (ExistingInstallAtStart and ServicesPresentAtStart) then begin
+      Log('BIO-EMS silent Repair rejected: a complete existing installation was not detected.');
       Result := False;
       Exit;
     end;
