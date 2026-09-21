@@ -60,7 +60,9 @@ describe("DEP-BR sealed backup contract", () => {
     expect(source).toContain("Platform backup identity changed before sealing");
     expect(source).toContain("platform-backup.log");
     expect(source).toContain("Diagnostic logging must never mask the original backup failure");
-    expect(source).toContain("if (directory) await rm(directory, { recursive: true, force: true })");
+    expect(source).toContain(
+      "if (directory) await rm(directory, { recursive: true, force: true })"
+    );
   });
 });
 
