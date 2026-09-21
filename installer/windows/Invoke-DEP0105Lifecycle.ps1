@@ -72,6 +72,17 @@ function Grant-LifecycleFileReadAccess([string]$path) {
         throw "Unable to grant lifecycle read access to legacy BIO-EMS file $path (icacls exit code $LASTEXITCODE)"
     }
 }
+function Grant-LifecycleTreeRestoreAccess([string]$path) {
+    if (-not (Test-Path -LiteralPath $path -PathType Container)) { return }
+    & takeown.exe /F $path /A /R /D Y | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to take ownership of verified BIO-EMS lifecycle backup $path (takeown exit code $LASTEXITCODE)"
+    }
+    & icacls.exe $path /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to grant restore access to verified BIO-EMS lifecycle backup $path (icacls exit code $LASTEXITCODE)"
+    }
+}
 function Write-Utf8([string]$path, [object]$value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
@@ -163,6 +174,11 @@ if ($Mode -eq "PreUpdate") {
             }
 
             Stop-ControlledServices
+            # The snapshot can contain service-owned files (notably
+            # persistent\data\mqtt\mosquitto.db) whose explicit legacy DACL was
+            # preserved when the backup was created. Normalize only this already
+            # validated BIO-EMS backup tree before reading it for recovery.
+            Grant-LifecycleTreeRestoreAccess $pendingBackup
             Invoke-Robocopy (Join-Path $pendingBackup "application") $application
             foreach ($name in @("config", "data", "licensing")) {
                 $source = Join-Path $pendingBackup "persistent\$name"
@@ -272,6 +288,7 @@ if ($Mode -eq "PostUpdate") {
         Remove-Item -LiteralPath $pointer -Force
     } catch {
         Stop-ControlledServices
+        Grant-LifecycleTreeRestoreAccess $backup
         Invoke-Robocopy (Join-Path $backup "application") $application
         foreach ($name in @("config", "data", "licensing")) {
             $source = Join-Path $backup "persistent\$name"
