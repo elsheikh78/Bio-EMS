@@ -628,6 +628,22 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     expect(lifecycle).toContain("previous application/data snapshot was restored");
   });
 
+  it("reclaims verified backup ACLs before pending recovery and rollback restore", () => {
+    expect(lifecycle).toContain("function Grant-LifecycleTreeRestoreAccess");
+    expect(lifecycle).toContain("& takeown.exe /F $path /A /R /D Y");
+    expect(lifecycle).toContain(
+      '& icacls.exe $path /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q'
+    );
+    expect(lifecycle).toContain("Grant-LifecycleTreeRestoreAccess $pendingBackup");
+    expect(lifecycle).toContain("Grant-LifecycleTreeRestoreAccess $backup");
+    expect(lifecycle.indexOf("Grant-LifecycleTreeRestoreAccess $pendingBackup")).toBeLessThan(
+      lifecycle.indexOf('Invoke-Robocopy (Join-Path $pendingBackup "application") $application')
+    );
+    expect(lifecycle.indexOf("Grant-LifecycleTreeRestoreAccess $backup")).toBeLessThan(
+      lifecycle.lastIndexOf('Invoke-Robocopy (Join-Path $backup "application") $application')
+    );
+  });
+
   it("preserves persistent customer and licensing state during uninstall", () => {
     expect(lifecycle).toContain("APPLICATION_REMOVED_DATA_RETAINED");
     expect(lifecycle).toContain("uninstall-retention.json");
