@@ -66,9 +66,12 @@ export function BackupRestorePanel({ request, basePath, disasterRecovery = false
   }, [ar, basePath, request]);
 
   useEffect(() => {
-    void load();
+    const initial = window.setTimeout(() => void load(), 0);
     const timer = window.setInterval(() => void load(), 15_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   const act = async (operation: () => Promise<unknown>, success: string) => {
