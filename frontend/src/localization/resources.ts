@@ -63,7 +63,7 @@ export interface TranslationResources {
     commissioning: string;
     configuration: string;
     users: string;
-    backupRestore: string;
+    backupRestore?: string;
   };
 
   workspace: {
