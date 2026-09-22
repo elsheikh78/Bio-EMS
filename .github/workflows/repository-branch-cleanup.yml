@@ -6,12 +6,16 @@ on:
       - main
     paths:
       - "docs/project-management/REPOSITORY-CLEANUP-2026-09-22.md"
+  issues:
+    types:
+      - opened
 
 permissions:
   contents: write
 
 jobs:
   cleanup:
+    if: github.event_name == 'push' || github.event.issue.title == '[repo-cleanup] execute audited branch deletion'
     name: Delete audited historical branches
     runs-on: ubuntu-latest
     timeout-minutes: 15
