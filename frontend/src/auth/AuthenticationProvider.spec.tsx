@@ -22,6 +22,7 @@ const storedSession: StoredAuthenticationSession = {
   accessToken: "opaque-token",
   tokenType: "bearer",
   expiresAt: 50_000,
+  passwordChangeRequired: false,
   user: { id: 1, username: "login-user", role: "ADMIN" },
 };
 
@@ -233,6 +234,7 @@ describe("authentication session lifecycle", () => {
       access_token: "login-token",
       token_type: "bearer",
       expires_in: 37,
+      password_change_required: false,
       user: { id: 4, username: "admin", role: "ADMIN" },
     };
     renderProvider({
@@ -250,6 +252,7 @@ describe("authentication session lifecycle", () => {
       accessToken: "login-token",
       tokenType: "bearer",
       expiresAt: 39_000,
+      passwordChangeRequired: false,
       user: { id: 4, username: "admin", role: "ADMIN" },
     });
   });
@@ -263,6 +266,7 @@ describe("authentication session lifecycle", () => {
           access_token: "strict-mode-token",
           token_type: "bearer",
           expires_in: 3_600,
+          password_change_required: false,
           user: { id: 1, username: "admin", role: "ADMIN" },
         } satisfies LoginResponse,
       ],
@@ -297,6 +301,7 @@ describe("authentication session lifecycle", () => {
       access_token: "login-token",
       token_type: "bearer",
       expires_in: 37,
+      password_change_required: false,
       user: { id: 4, username: "admin", role: "ADMIN" },
     };
     renderProvider({ storage: storage.adapter, responses: [response] });
@@ -429,6 +434,7 @@ describe("authentication session lifecycle", () => {
       access_token: "late-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 1, username: "late-admin", role: "ADMIN" },
     });
 
@@ -471,6 +477,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 2, username: "new-admin", role: "ADMIN" },
     };
     const { authentication, queryClient, request } = renderProvider({
@@ -507,6 +514,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 2, username: "new-admin", role: "ADMIN" },
     };
     const { authentication, request } = renderProvider({
@@ -533,6 +541,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 2, username: "new-admin", role: "ADMIN" },
     };
     const { authentication, queryClient } = renderProvider({
@@ -575,6 +584,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 2, username: "new-admin", role: "ADMIN" },
     };
     const { authentication, queryClient } = renderProvider({
@@ -841,6 +851,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: { id: 2, username: "new-admin", role: "ADMIN" },
     };
     const { authentication, request } = renderProvider({
@@ -901,6 +912,7 @@ describe("authentication session lifecycle", () => {
       access_token: "new-dashboard-token",
       token_type: "bearer",
       expires_in: 60,
+      password_change_required: false,
       user: {
         id: 2,
         username: "new-dashboard-admin",

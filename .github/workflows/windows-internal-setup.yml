@@ -183,6 +183,7 @@ jobs:
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
       - name: Install Setup and verify pilot health on Windows
+        timeout-minutes: 15
         shell: powershell
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
@@ -190,35 +191,35 @@ jobs:
           $setup = Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File
           if (@($setup).Count -ne 1) { throw "Expected exactly one Setup executable" }
           $setupLog = Join-Path $env:RUNNER_TEMP "bioems-clean-install.log"
+          $env:BIOEMS_CI_INSTALL_MODE = "new"
           $env:BIOEMS_CI_ADMIN_USERNAME = "ci-admin"
           $env:BIOEMS_CI_ADMIN_PASSWORD = "CiAdminPilot2026"
           $env:BIOEMS_CI_ADMIN_EMAIL = "ci-admin@example.invalid"
+          $env:BIOEMS_CI_CUSTOMER_NAME = "BIO-EMS CI Customer"
+          $env:BIOEMS_CI_CUSTOMER_CODE = "CI-CUSTOMER"
+          $env:BIOEMS_CI_SITE_NAME = "BIO-EMS CI Site"
+          $env:BIOEMS_CI_SITE_CODE = "CI-SITE"
+          $env:BIOEMS_CI_SITE_LOCATION = "CI"
           $process = Start-Process -FilePath $setup.FullName -ArgumentList @(
             "/VERYSILENT",
             "/SUPPRESSMSGBOXES",
             "/NORESTART",
             "/SP-",
             "/LOG=`"$setupLog`""
-          ) -Wait -PassThru
-          if ($process.ExitCode -eq 0) {
-            $credentialFile = Join-Path $env:RUNNER_TEMP "bioems-ci-admin-bootstrap.txt"
-            [IO.File]::WriteAllLines(
-              $credentialFile,
-              @(
-                $env:BIOEMS_CI_ADMIN_USERNAME,
-                $env:BIOEMS_CI_ADMIN_EMAIL,
-                $env:BIOEMS_CI_ADMIN_PASSWORD
-              ),
-              [Text.Encoding]::Unicode
-            )
-            & "C:\Program Files\BIO-EMS\installer\Initialize-PilotAdmin.ps1" `
-              -ApplicationRoot "C:\Program Files\BIO-EMS" `
-              -PersistentRoot "C:\ProgramData\BIO-EMS" `
-              -CredentialFile $credentialFile
-            if ($LASTEXITCODE -ne 0) {
-              throw "BIO-EMS customer administrator bootstrap command failed"
-            }
+          ) -PassThru
+          if (-not $process.WaitForExit(600000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            Write-Host "=== SETUP LOG AFTER TIMEOUT ==="
+            Get-Content -LiteralPath $setupLog -Tail 300 -ErrorAction SilentlyContinue
+            Write-Host "=== BIO-EMS RUNTIME LOGS AFTER TIMEOUT ==="
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -ErrorAction SilentlyContinue |
+              ForEach-Object {
+                Write-Host "--- $($_.FullName) ---"
+                Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
+              }
+            throw "BIO-EMS Setup exceeded the 10-minute installation timeout"
           }
+          $process.Refresh()
           $missingServices = @(
             "BIOEMS-MQTT",
             "BIOEMS-InfluxDB",
@@ -242,12 +243,46 @@ jobs:
           if ($setupLogText -notmatch '(?s)Test-PostInstallHealth\.ps1.*?Process exit code: 0') {
             throw "BIO-EMS elevated post-install health did not report exit code 0"
           }
-          Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
-            Where-Object Status -ne "Running" |
-            ForEach-Object { throw "BIO-EMS service is not running: $($_.Name)" }
-          $backendHealth = Invoke-RestMethod -Uri "https://localhost/api/v1/health" -TimeoutSec 15
-          if ($backendHealth.status -ne "UP") {
-            throw "BIO-EMS HTTPS backend health is not UP"
+          if ($setupLogText -notmatch '(?s)Initialize-PilotAdmin\.ps1.*?Process exit code: 0') {
+            throw "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
+          }
+          $stoppedServices = @(Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
+            Where-Object Status -ne "Running")
+          if ($stoppedServices.Count -gt 0) {
+            Write-Host "=== SETUP LOG AFTER SERVICE STOP ==="
+            Get-Content -LiteralPath $setupLog -Tail 300 -ErrorAction SilentlyContinue
+            Write-Host "=== BIO-EMS RUNTIME LOGS AFTER SERVICE STOP ==="
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -Recurse -ErrorAction SilentlyContinue |
+              ForEach-Object {
+                Write-Host "--- $($_.FullName) ---"
+                Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
+              }
+            throw "BIO-EMS service is not running: $($stoppedServices.Name -join ',')"
+          }
+          $backendHealth = $null
+          $backendHealthError = $null
+          for ($attempt = 1; $attempt -le 30; $attempt++) {
+            try {
+              $backendHealth = Invoke-RestMethod -Uri "https://localhost/api/v1/health" -TimeoutSec 15
+              if ($backendHealth.status -eq "UP") { break }
+              $backendHealthError = "Health status was '$($backendHealth.status)'"
+            } catch {
+              $backendHealthError = $_.Exception.Message
+            }
+            Write-Host "Waiting for BIO-EMS HTTPS backend health ($attempt/30): $backendHealthError"
+            Start-Sleep -Seconds 5
+          }
+          if (-not $backendHealth -or $backendHealth.status -ne "UP") {
+            Write-Host "=== BIO-EMS BACKEND SERVICE STATUS AFTER HEALTH TIMEOUT ==="
+            Get-Service "BIOEMS-Backend" -ErrorAction SilentlyContinue | Format-List *
+            & sc.exe queryex "BIOEMS-Backend"
+            Write-Host "=== BIO-EMS RUNTIME LOGS AFTER HEALTH TIMEOUT ==="
+            Get-ChildItem "C:\ProgramData\BIO-EMS\logs" -File -Recurse -ErrorAction SilentlyContinue |
+              ForEach-Object {
+                Write-Host "--- $($_.FullName) ---"
+                Get-Content -LiteralPath $_.FullName -Tail 120 -ErrorAction SilentlyContinue
+              }
+            throw "BIO-EMS HTTPS backend health did not become UP: $backendHealthError"
           }
           $loginBody = @{
             username = $env:BIOEMS_CI_ADMIN_USERNAME
@@ -257,9 +292,20 @@ jobs:
           if (-not $login.access_token -or $login.user.role -ne "ADMIN") {
             throw "BIO-EMS installed customer administrator login verification failed"
           }
+          $headers = @{ Authorization = "Bearer $($login.access_token)" }
+          $users = Invoke-RestMethod -Uri "https://localhost/api/v1/users" -Headers $headers -TimeoutSec 15
+          if (@($users).Count -ne 1 -or $users[0].username -ne $env:BIOEMS_CI_ADMIN_USERNAME) {
+            throw "BIO-EMS installed user-management API verification failed"
+          }
           Remove-Item Env:BIOEMS_CI_ADMIN_USERNAME -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
+
+      - name: Exercise installed InfluxDB backup and historical telemetry restore
+        timeout-minutes: 10
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-DEPBRInfluxRoundTrip.ps1" -ApplicationRoot "C:\Program Files\BIO-EMS" -PersistentRoot "C:\ProgramData\BIO-EMS"
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4

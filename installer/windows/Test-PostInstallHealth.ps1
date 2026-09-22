@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $checks = [ordered]@{}
-foreach ($serviceId in @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")) {
+foreach ($serviceId in @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")) {
     $checks["service:$serviceId"] = (Get-Service -Name $serviceId -ErrorAction Stop).Status -eq "Running"
 }
 try {

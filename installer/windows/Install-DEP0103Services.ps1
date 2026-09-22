@@ -3,6 +3,14 @@ param(
     [Parameter(Mandatory = $true)][string]$ApplicationRoot,
     [Parameter(Mandatory = $true)][string]$PersistentRoot,
     [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$ProductVersion,
+    [string]$CustomerName = "BIO-EMS Customer",
+    [string]$CustomerCode = "INSTALLATION-CUSTOMER",
+    [string]$SiteName = "BIO-EMS Site",
+    [string]$SiteCode = "INSTALLATION-SITE",
+    [string]$SiteLocation = "",
+    [string]$ContactName = "",
+    [string]$ContactEmail = "",
+    [string]$ContactPhone = "",
     [switch]$PilotMode
 )
 
@@ -13,7 +21,7 @@ $installerLogDirectory = Join-Path $persistent "logs"
 New-Item -ItemType Directory -Path $installerLogDirectory -Force | Out-Null
 $installerDiagnosticLog = Join-Path $installerLogDirectory "service-install.log"
 Add-Content -LiteralPath $installerDiagnosticLog -Value "$(Get-Date -Format o) installer entered pilotMode=$PilotMode"
-$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
+$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")
 $wrappers = @{}
 $firewallRuleCreated = $false
 
@@ -86,13 +94,13 @@ function Write-Utf8([string]$path, [string]$content) {
 function Remove-InstallerManagedFile([string]$path) {
     if (Test-Path -LiteralPath $path -PathType Leaf) {
         Invoke-Controlled "takeown.exe" @("/F", $path, "/A")
-        Invoke-Controlled "icacls.exe" @($path, "/grant:r", "Administrators:F")
+        Invoke-Controlled "icacls.exe" @($path, "/grant:r", "*S-1-5-32-544:F")
         Remove-Item -LiteralPath $path -Force
     }
 }
 function Protect-Path([string]$path, [string]$serviceId, [string]$rights = "(OI)(CI)M") {
     Invoke-Controlled "icacls.exe" @($path, "/inheritance:r")
-    Invoke-Controlled "icacls.exe" @($path, "/grant:r", "SYSTEM:F", "Administrators:F", "NT SERVICE\$serviceId`:$rights")
+    Invoke-Controlled "icacls.exe" @($path, "/grant:r", "*S-1-5-18:F", "*S-1-5-32-544:F", "*S-1-5-32-544:(OI)(CI)F", "NT SERVICE\$serviceId`:$rights")
 }
 function Add-PathAccess([string]$path, [string]$serviceId, [string]$rights) {
     Invoke-Controlled "icacls.exe" @($path, "/grant", "NT SERVICE\$serviceId`:$rights")
@@ -105,7 +113,7 @@ function New-MosquittoPasswordFile([string]$executable, [string]$path, [string]$
     try {
         New-Item -ItemType File -Path $temporary -Force | Out-Null
         Invoke-Controlled "icacls.exe" @($temporary, "/inheritance:r")
-        Invoke-Controlled "icacls.exe" @($temporary, "/grant:r", "SYSTEM:F", "Administrators:F")
+        Invoke-Controlled "icacls.exe" @($temporary, "/grant:r", "*S-1-5-18:F", "*S-1-5-32-544:F")
         Write-Utf8 $temporary "$username`:$password`r`n"
         Invoke-Controlled $executable @("-U", $temporary)
         Move-Item -LiteralPath $temporary -Destination $path -Force
@@ -190,6 +198,8 @@ $mqttPassword = New-Secret 36
 $influxPassword = New-Secret 36
 $jwtSecret = New-Secret 48
 $platformJwtSecret = New-Secret 48
+$ownerMfaEncryptionKey = New-Secret 32
+$communicationConfigEncryptionKey = New-Secret 32
 $tlsPassword = New-Secret 36
 $mqttPasswordFile = Join-Path $paths.Config "mosquitto.passwords"
 $mqttConfig = Join-Path $paths.Config "mosquitto.conf"
@@ -235,20 +245,23 @@ $provisioningScript = Join-Path $application "backend\dist\src\scripts\provision
 $backendServer = Join-Path $application "backend\dist\src\scripts\start-windows-service.js"
 $licensingDiagnosticLog = Join-Path $paths.Logs "lic11-prestart.log"
 $backendLauncherArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$backendLauncher`" -NodeExecutable `"$node`" -ProvisioningScript `"$provisioningScript`" -IdentityPath `"$identityPath`" -ReceiptPath `"$receiptPath`" -DiagnosticLogPath `"$licensingDiagnosticLog`" -BackendScript `"$backendServer`""
-if ($PilotMode) {
-    $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_PILOT_MODE = "true" }
-    Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" $node "`"$backendServer`"" (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
+$backendEnvironment = @{
+    BIOEMS_ENV_FILE = $backendEnv
+    BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath
+    BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath
 }
-else {
-    $backendEnvironment = @{ BIOEMS_ENV_FILE = $backendEnv; BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath; BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath }
-    Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
-}
+if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE = "true" }
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
+$restoreCoordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
+$restoreCoordinatorArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$restoreCoordinator`" -ApplicationRoot `"$application`" -PersistentRoot `"$persistent`""
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-RestoreWorker.xml") (New-ServiceXml "BIOEMS-RestoreWorker" "powershell.exe" $restoreCoordinatorArgs (Join-Path $paths.Logs "restore-worker-service") @() @{} "")
 
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
     Invoke-Controlled "sc.exe" @("sidtype", $serviceId, "unrestricted")
     Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\$serviceId")
 }
+Invoke-Controlled "sc.exe" @("config", "BIOEMS-RestoreWorker", "obj=", "LocalSystem")
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-InfluxDB" "(OI)(CI)RX"
@@ -257,14 +270,13 @@ Protect-Path $paths.Config "BIOEMS-Backend"
 Add-PathAccess $paths.Config "BIOEMS-MQTT" "RX"
 Add-PathAccess $mqttPasswordFile "BIOEMS-MQTT" "R"
 Add-PathAccess $mqttConfig "BIOEMS-MQTT" "R"
-if (-not $PilotMode) {
-    Protect-Path $paths.Licensing "BIOEMS-Backend"
-    # Verify the service SID ACL is present before the service is allowed to provision LIC-11.
-    $licensingAcl = (Invoke-Controlled "icacls.exe" @($paths.Licensing) | Out-String)
-    if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\BIOEMS-Backend")) {
-        throw "BIOEMS-Backend licensing ACL verification failed"
-    }
+Protect-Path $paths.Licensing "BIOEMS-Backend"
+# Verify the service SID ACL is present before the service is allowed to provision its identity.
+$licensingAcl = (Invoke-Controlled "icacls.exe" @($paths.Licensing) | Out-String)
+if ($licensingAcl -notmatch [regex]::Escape("NT SERVICE\BIOEMS-Backend")) {
+    throw "BIOEMS-Backend licensing ACL verification failed"
 }
+Protect-Path $paths.Data "BIOEMS-Backend"
 Protect-Path (Join-Path $paths.Data "mqtt") "BIOEMS-MQTT"
 Protect-Path $influxData "BIOEMS-InfluxDB"
 Protect-Path $paths.Logs "BIOEMS-Backend"
@@ -324,6 +336,26 @@ try {
 }
 Write-Utf8 $tlsMetadata (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json)
 
+$bootstrapAdminUsername = "admin"
+
+$bootstrapAdminPassword = (
+    [Guid]::NewGuid().ToString("N") +
+    [Guid]::NewGuid().ToString("N").Substring(0,8)
+)
+
+$bootstrapCustomerCode = $CustomerCode
+$bootstrapCustomerName = $CustomerName
+
+$bootstrapCredentialPath = Join-Path $paths.Config "bootstrap-credentials.txt"
+
+Write-Utf8 $bootstrapCredentialPath @"
+BIO-EMS Initial Administrator
+Username: $bootstrapAdminUsername
+Password: $bootstrapAdminPassword
+"@
+
+Protect-Path $bootstrapCredentialPath "BIOEMS-Backend" "R"
+
 Write-Utf8 $backendEnv @"
 NODE_ENV=production
 PORT=443
@@ -345,13 +377,32 @@ INFLUX_ORG=bioems
 INFLUX_BUCKET=telemetry
 BIOEMS_JWT_SECRET=$jwtSecret
 BIOEMS_PLATFORM_JWT_SECRET=$platformJwtSecret
+BIOEMS_OWNER_MFA_ENCRYPTION_KEY=$ownerMfaEncryptionKey
+BIOEMS_COMMUNICATION_CONFIG_ENCRYPTION_KEY=$communicationConfigEncryptionKey
 BIOEMS_CORS_ALLOWED_ORIGINS=https://localhost
 BIOEMS_SQLITE_PATH=$($paths.Data)\bioems.db
 BIOEMS_SQLITE_BACKUP_DIR=$($paths.Backups)
+BIOEMS_INFLUX_CLI_PATH=$application\runtime\influx-cli\influx.exe
+BIOEMS_INFLUX_BACKUP_SCRIPT=$application\installer\Invoke-PlatformInfluxBackup.ps1
+BIOEMS_PLATFORM_RESTORE_SCRIPT=$application\installer\Invoke-PlatformRestore.ps1
+BIOEMS_APPLICATION_ROOT=$application
+BIOEMS_PERSISTENT_ROOT=$persistent
 LOG_LEVEL=info
 BIOEMS_LOG_RETENTION_DAYS=90
 BIOEMS_SHUTDOWN_GRACE_SECONDS=30
 BIOEMS_NOTIFICATION_DELIVERY_ENABLED=false
+BIOEMS_BOOTSTRAP_ADMIN_USERNAME=$bootstrapAdminUsername
+BIOEMS_BOOTSTRAP_ADMIN_PASSWORD=$bootstrapAdminPassword
+BIOEMS_BOOTSTRAP_CUSTOMER_CODE=$bootstrapCustomerCode
+BIOEMS_BOOTSTRAP_CUSTOMER_NAME=$bootstrapCustomerName
+BIOEMS_INSTALLATION_CUSTOMER_NAME=$CustomerName
+BIOEMS_INSTALLATION_CUSTOMER_CODE=$CustomerCode
+BIOEMS_INSTALLATION_SITE_NAME=$SiteName
+BIOEMS_INSTALLATION_SITE_CODE=$SiteCode
+BIOEMS_INSTALLATION_SITE_LOCATION=$SiteLocation
+BIOEMS_INSTALLATION_CONTACT_NAME=$ContactName
+BIOEMS_INSTALLATION_CONTACT_EMAIL=$ContactEmail
+BIOEMS_INSTALLATION_CONTACT_PHONE=$ContactPhone
 "@
 Protect-Path $backendEnv "BIOEMS-Backend" "R"
 Add-PathAccess $tlsPfx "BIOEMS-Backend" "R"
@@ -359,10 +410,9 @@ Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinu
 New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet | Out-Null
 $firewallRuleCreated = $true
 Start-Service "BIOEMS-Backend"
+Start-Service "BIOEMS-RestoreWorker"
 
-if (-not $PilotMode) {
-    $receiptDeadline = (Get-Date).AddSeconds(45)
-    while (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf) -and (Get-Date) -lt $receiptDeadline) { Start-Sleep -Seconds 1 }
-    if (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf)) { throw "LIC-11 service-identity provisioning evidence was not created" }
-}
+$receiptDeadline = (Get-Date).AddSeconds(45)
+while (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf) -and (Get-Date) -lt $receiptDeadline) { Start-Sleep -Seconds 1 }
+if (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf)) { throw "Installation identity provisioning evidence was not created" }
 Write-Host "DEP-01-03 Windows service lifecycle: PASS"

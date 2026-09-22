@@ -31,6 +31,36 @@ describe("administration API", () => {
       request.mock.calls.map(([path]) => String(path)).join(" "),
     ).not.toContain("Secret");
   });
+  it("maps password recovery list and reset without putting the password in the path", async () => {
+    const requestId = "123e4567-e89b-42d3-a456-426614174000";
+    const password = "TemporaryRecovery1";
+    const request = vi.fn().mockResolvedValueOnce([]).mockResolvedValueOnce({
+      request_id: requestId,
+      principal_id: 7,
+      status: "CONSUMED",
+    });
+    const api = createAdministrationApi(request);
+
+    await api.listPasswordRecoveryRequests();
+    await api.resetPasswordRecoveryRequest(requestId, password);
+
+    expect(request).toHaveBeenNthCalledWith(
+      1,
+      "/users/password-recovery/requests",
+    );
+    expect(request).toHaveBeenNthCalledWith(
+      2,
+      `/users/password-recovery/requests/${requestId}/reset`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      },
+    );
+    expect(
+      request.mock.calls.map(([path]) => String(path)).join(" "),
+    ).not.toContain(password);
+  });
   it("requires explicit Site scope for Audit Log", async () => {
     const request = vi.fn().mockResolvedValue({ events: [] });
     await createAdministrationApi(request).listAuditEvents(7);

@@ -28,6 +28,8 @@ function renderLogin(
     logout: vi.fn(),
     retryRestoration: vi.fn(),
     protectedRequest: vi.fn(),
+    passwordChangeRequired: false,
+    completePasswordChange: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
   render(

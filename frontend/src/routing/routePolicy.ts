@@ -14,6 +14,7 @@ export const routePolicies = {
   "/commissioning": "COMMISSIONING_READ",
   "/configuration": "CONFIGURATION_WRITE",
   "/users": "USER_MANAGE",
+  "/backup-restore": "PLATFORM_BACKUP_READ",
 } as const satisfies Readonly<Record<string, Permission>>;
 
 export type AuthorizedRoutePath = keyof typeof routePolicies;

@@ -1,17 +1,34 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 11 September 2026  
+**Plan date:** 19 September 2026  
 **Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+
+## Immediate restart point — 20 September 2026
+
+1. Verify the latest PR #239 Prettier, CI and Internal Windows Setup results for the frontend cache revalidation fix.
+2. Build/use only the resulting current artifact and physically retest bare `https://localhost/login` with no query-string cache bust and no hard refresh.
+3. Create the installation-bound SYSTEM_OWNER commissioning request on the customer host; sign it only on the manufacturer-controlled machine with the encrypted private key; import the signed package; enroll MFA via the locally rendered QR; confirm SYSTEM_OWNER login and audit evidence.
+4. Execute physical Repair and prove preservation of customer/site/installation identity, SQLite, Influx telemetry, configuration and commissioned owner state.
+5. The visible ADMIN/System Owner Backup & Restore UI and optional automatic schedule (6h/12h/daily/weekly, retention 1-30) are source implemented on PR #239. Execute physical manual backup -> controlled mutation -> Restore, scheduled execution/retention, historical Influx telemetry + identity restoration and negative rejection cases.
+6. Review stacked PRs: #239 is the current merge vehicle; #233/#235/#237 are ancestor integration layers to close as superseded only after final #239 acceptance; #138 is stale/conflicted documentation and should not be merged as-is.
+7. Only after all PR #239 acceptance gates are green, update final evidence/docs and decide the merge to `main`.
 
 ## Objective
 
 Move BIO-EMS from mature source software to a repeatable, field-tested BIO EGYPT Pilot, then implement the final commercial protection layer only after the Pilot software/hardware path is stable.
 
+## Phase 0 — Current security / integration gates
+
+- SEC-OWNER-01 source is implemented on PR #233 but intentionally remains unmerged pending the real manufacturer Ed25519 key ceremony, Production keyring build, offline commissioning exercise and Production security review.
+- Customer ADMIN provisioning during Setup is merged to main via PR #231 and has been validated in a clean Pilot install.
+- The active integration line is PR #235 / `feat/com-01-06-communication-channels`, stacked on SEC-OWNER work.
+- Do not describe either SEC-OWNER Production acceptance or COM-07 as complete until their external evidence gates close.
+
 ## Phase A — Communication Channel Administration
 
 ### COM-01 — Secure configuration domain
 
-Status: **NEXT**
+Status: **SOURCE IMPLEMENTED ON PR #235 / COM-07 ACCEPTANCE PENDING**
 
 - define channel/provider configuration model;
 - protected/encrypted secret storage;
@@ -68,7 +85,7 @@ Executed only after the software is installed on the Pilot target and real provi
 
 ## Phase B — Fresh Pilot Setup build
 
-After COM-01 through COM-06 merge:
+Current automated Pilot Setup evidence exists on PR #235 (CI #1021 and Internal Windows Setup #330 passed). After the integration/security merge gates are deliberately closed:
 
 1. Build from authoritative `main`.
 2. Generate controlled internal signed Pilot Setup.
@@ -190,6 +207,16 @@ Existing LIC-01 through LIC-13 source work is retained. The deferred phase compl
 - Telegram remains the interim online Pilot channel.
 - Documentation/manual content can be prepared incrementally but final screenshots/instructions wait for stable Pilot UI/hardware.
 - Hardware procurement can proceed while COM source implementation is underway if BOM items are already approved.
+
+## Immediate execution order — 16 September 2026
+
+1. Preserve current PR #235 integration branch as the documentation/source authority for unmerged SEC-OWNER + COM work.
+2. Complete the manufacturer private-key ceremony outside GitHub/CI/customer machines and provide only the approved public keyring to the Production build process.
+3. Run end-to-end SEC-OWNER commissioning with the offline-held private key; record negative/security evidence.
+4. Close the intended SEC-OWNER merge gate without weakening the Pilot/Production boundary.
+5. Complete COM-07 with real provider credentials/endpoints and actual SMS/modem/SIM evidence where applicable.
+6. Complete remaining physical Windows qualification: reboot, Repair/Upgrade/rollback, retained-data Uninstall and a second clean PC.
+7. Proceed to hardware bench qualification and BIO EGYPT field commissioning/UAT.
 
 ## Definition of done
 

@@ -169,6 +169,7 @@ function NavigationIcon({ id }: { id: string }) {
       "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0-5v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4",
     users:
       "M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7-1a3 3 0 1 0 0-6M2 21v-3a6 6 0 0 1 12 0v3m2-8a5 5 0 0 1 5 5v3",
+    "backup-restore": "M4 7h16v12H4zM8 7V4h8v3M8 12h8M7 16h10",
   };
 
   return (

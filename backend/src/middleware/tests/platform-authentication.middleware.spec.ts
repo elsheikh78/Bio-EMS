@@ -3,25 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.hoisted(() => {
   process.env.BIOEMS_JWT_SECRET = "s".repeat(32);
-});
-
-import { createPlatformAuthenticationMiddleware } from "../platform-authentication.middleware";
-
-function request(authorization?: string): Request {
-  return {
-    headers: authorization ? { authorization } : {},
-    rawHeaders: authorization ? ["Authorization", authorization] : [],
-  } as Request;
-}
-
-const response = {} as Response;
-
-describe("platform authentication middleware", () => {
-  it("attaches an active SYSTEM_OWNER to a separate platform context", () => {
+  it("rejects a valid JWT when its persisted session is revoked", () => {
     const verifier = {
       verifyAccessToken: vi.fn(() => ({
         principalId: "system-owner",
         principalType: "SYSTEM_OWNER" as const,
+        sessionId: "revoked-session",
       })),
     };
     const repository = {
@@ -34,7 +21,58 @@ describe("platform authentication middleware", () => {
         updated_at: null,
       })),
     };
-    const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
+    const sessions = { isActive: vi.fn(() => false) };
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository, sessions);
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(request("Bearer platform-token"), response, next);
+
+    expect(sessions.isActive).toHaveBeenCalledWith(
+      "revoked-session",
+      "system-owner",
+      "platform-token"
+    );
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
+    );
+  });
+});
+
+import {
+  createOwnerSupportAuthenticationMiddleware,
+  createPlatformAuthenticationMiddleware,
+} from "../platform-authentication.middleware";
+
+function request(authorization?: string): Request {
+  return {
+    headers: authorization ? { authorization } : {},
+    rawHeaders: authorization ? ["Authorization", authorization] : [],
+  } as Request;
+}
+
+const response = {} as Response;
+const activeSessions = { isActive: vi.fn(() => true) };
+
+describe("platform authentication middleware", () => {
+  it("attaches an active SYSTEM_OWNER to a separate platform context", () => {
+    const verifier = {
+      verifyAccessToken: vi.fn(() => ({
+        principalId: "system-owner",
+        principalType: "SYSTEM_OWNER" as const,
+        sessionId: "session-id",
+      })),
+    };
+    const repository = {
+      findById: vi.fn(() => ({
+        id: "system-owner",
+        principal_type: "SYSTEM_OWNER" as const,
+        username: "platform-owner",
+        status: "active" as const,
+        created_at: "2026-08-24T00:00:00.000Z",
+        updated_at: null,
+      })),
+    };
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository, activeSessions);
     const req = request("Bearer platform-token");
     const next = vi.fn() as unknown as NextFunction;
 
@@ -56,7 +94,8 @@ describe("platform authentication middleware", () => {
   ])("rejects %s", (_case, authorization) => {
     const middleware = createPlatformAuthenticationMiddleware(
       { verifyAccessToken: vi.fn() },
-      { findById: vi.fn() }
+      { findById: vi.fn() },
+      activeSessions
     );
     const next = vi.fn() as unknown as NextFunction;
 
@@ -74,7 +113,7 @@ describe("platform authentication middleware", () => {
       }),
     };
     const repository = { findById: vi.fn() };
-    const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository, activeSessions);
     const next = vi.fn() as unknown as NextFunction;
 
     middleware(request("Bearer customer-token"), response, next);
@@ -88,7 +127,7 @@ describe("platform authentication middleware", () => {
   it("rejects duplicate Authorization headers before platform token verification", () => {
     const verifier = { verifyAccessToken: vi.fn() };
     const repository = { findById: vi.fn() };
-    const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository, activeSessions);
     const req = request("Bearer first");
     req.rawHeaders = ["Authorization", "Bearer first", "authorization", "Bearer second"];
     const next = vi.fn() as unknown as NextFunction;
@@ -107,6 +146,7 @@ describe("platform authentication middleware", () => {
       verifyAccessToken: vi.fn(() => ({
         principalId: "system-owner",
         principalType: "SYSTEM_OWNER" as const,
+        sessionId: "session-id",
       })),
     };
     const repository = {
@@ -119,13 +159,63 @@ describe("platform authentication middleware", () => {
         updated_at: null,
       })),
     };
-    const middleware = createPlatformAuthenticationMiddleware(verifier, repository);
+    const middleware = createPlatformAuthenticationMiddleware(verifier, repository, activeSessions);
     const next = vi.fn() as unknown as NextFunction;
 
     middleware(request("Bearer platform-token"), response, next);
 
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({ statusCode: 401, code: "PLATFORM_AUTHENTICATION_REQUIRED" })
+    );
+  });
+});
+
+describe("owner support authentication middleware", () => {
+  const verifier = {
+    verifySupportToken: vi.fn(() => ({
+      principalId: "system-owner",
+      principalType: "SYSTEM_OWNER" as const,
+      grantId: "grant-id",
+      siteId: 7,
+    })),
+  };
+  const repository = {
+    findById: vi.fn(() => ({
+      id: "system-owner",
+      principal_type: "SYSTEM_OWNER" as const,
+      username: "platform-owner",
+      status: "active" as const,
+      created_at: "2026-08-24T00:00:00.000Z",
+      updated_at: null,
+    })),
+  };
+
+  it("attaches only the exact active delegated support scope", () => {
+    const grants = { isGrantActive: vi.fn(() => true) };
+    const middleware = createOwnerSupportAuthenticationMiddleware(verifier, repository, grants);
+    const req = request("Bearer support-token");
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(req, response, next);
+
+    expect(grants.isGrantActive).toHaveBeenCalledWith("grant-id", "system-owner", 7);
+    expect(req.ownerSupportGrantId).toBe("grant-id");
+    expect(req.ownerSupportSiteId).toBe(7);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it("rejects an expired or revoked delegated support grant", () => {
+    const grants = { isGrantActive: vi.fn(() => false) };
+    const middleware = createOwnerSupportAuthenticationMiddleware(verifier, repository, grants);
+    const next = vi.fn() as unknown as NextFunction;
+
+    middleware(request("Bearer support-token"), response, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+        code: "PLATFORM_AUTHENTICATION_REQUIRED",
+      })
     );
   });
 });

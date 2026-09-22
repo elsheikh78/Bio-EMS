@@ -12,6 +12,7 @@ export interface User {
   email: string | null;
   role: UserRole;
   status: UserStatus;
+  password_change_required: number;
   created_at: string;
   updated_at: string | null;
 }

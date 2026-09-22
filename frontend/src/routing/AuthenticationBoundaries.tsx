@@ -5,35 +5,32 @@ import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
 import { NotAuthorizedPage } from "../pages/NotAuthorizedPage";
 import { RestorationErrorPage } from "../pages/RestorationErrorPage";
+import { ForcedPasswordChangePage } from "../pages/ForcedPasswordChangePage";
 import { routePolicies, type AuthorizedRoutePath } from "./routePolicy";
 import { hasPermission } from "../authorization/permissions";
 
 export function AuthenticationBoundary() {
   const authentication = useAuthentication();
   const location = useLocation();
-
   if (authentication.status === "bootstrapping") return <SessionLoading />;
-  if (authentication.status === "restoration-error") {
+  if (authentication.status === "restoration-error")
     return <RestorationErrorPage />;
-  }
-  if (authentication.status === "unauthenticated") {
+  if (authentication.status === "unauthenticated")
     return (
       <Navigate to="/login" replace state={{ returnTo: location.pathname }} />
     );
-  }
+  if (authentication.passwordChangeRequired)
+    return <ForcedPasswordChangePage />;
   return <Outlet />;
 }
 
 export function LoginBoundary({ children }: PropsWithChildren) {
   const authentication = useAuthentication();
-
   if (authentication.status === "bootstrapping") return <SessionLoading />;
-  if (authentication.status === "restoration-error") {
+  if (authentication.status === "restoration-error")
     return <RestorationErrorPage />;
-  }
-  if (authentication.status === "authenticated") {
+  if (authentication.status === "authenticated")
     return <Navigate to="/" replace />;
-  }
   return children;
 }
 
@@ -42,10 +39,8 @@ export function PermissionBoundary({
   path,
 }: PropsWithChildren<{ path: AuthorizedRoutePath }>) {
   const { user } = useAuthentication();
-
-  if (!user || !hasPermission(user.role, routePolicies[path])) {
+  if (!user || !hasPermission(user.role, routePolicies[path]))
     return <NotAuthorizedPage />;
-  }
   return children;
 }
 

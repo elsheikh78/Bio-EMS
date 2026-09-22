@@ -18,6 +18,15 @@ import {
   transferSiteBoundLicense,
 } from "../controllers/platform-operations.controller";
 import { platformAuthenticationMiddleware } from "../middleware/platform-authentication.middleware";
+import {
+  createOwnerPlatformBackup,
+  getOwnerPlatformBackupSchedule,
+  getOwnerPlatformRestoreJob,
+  listOwnerPlatformBackups,
+  restoreOwnerPlatformBackup,
+  restoreOwnerPlatformBackupForDisasterRecovery,
+  updateOwnerPlatformBackupSchedule,
+} from "../controllers/platform-backup.controller";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate-request";
 import {
   createPlatformCustomerSchema,
@@ -61,10 +70,33 @@ import {
   licenseTransferSchema,
   licenseValidationSchema,
 } from "../modules/licensing/licensing.schema";
+import {
+  listOwnerCommunicationChannels,
+  saveOwnerCommunicationChannel,
+  testOwnerCommunicationChannel,
+} from "../controllers/communication-channel.controller";
+import {
+  communicationChannelListQuerySchema,
+  platformCommunicationChannelParamsSchema,
+  saveCommunicationChannelSchema,
+  testCommunicationChannelSchema,
+} from "../modules/communication-channels/communication-channel.schema";
+import { platformBackupScheduleInputSchema } from "../modules/platform-backup/platform-backup-schedule.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
+router.get("/backups/schedule", getOwnerPlatformBackupSchedule);
+router.put(
+  "/backups/schedule",
+  validateBody(platformBackupScheduleInputSchema),
+  updateOwnerPlatformBackupSchedule
+);
+router.get("/backups", listOwnerPlatformBackups);
+router.post("/backups", createOwnerPlatformBackup);
+router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
+router.post("/backups/:backupId/dr-restore", restoreOwnerPlatformBackupForDisasterRecovery);
+router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
@@ -77,6 +109,24 @@ router.post(
   validateParams(platformCustomerParamsSchema),
   validateBody(createInstallationSchema),
   createInstallation
+);
+router.get(
+  "/customers/:customerId/communication-channels",
+  validateParams(platformCustomerParamsSchema),
+  validateQuery(communicationChannelListQuerySchema),
+  listOwnerCommunicationChannels
+);
+router.put(
+  "/customers/:customerId/communication-channels/:channel",
+  validateParams(platformCommunicationChannelParamsSchema),
+  validateBody(saveCommunicationChannelSchema),
+  saveOwnerCommunicationChannel
+);
+router.post(
+  "/customers/:customerId/communication-channels/:channel/test",
+  validateParams(platformCommunicationChannelParamsSchema),
+  validateBody(testCommunicationChannelSchema),
+  testOwnerCommunicationChannel
 );
 router.post(
   "/licensing/licenses/:licenseId/devices",

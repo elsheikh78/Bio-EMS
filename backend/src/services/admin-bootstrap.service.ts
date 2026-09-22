@@ -1,10 +1,22 @@
+import type Database from "better-sqlite3";
 import { UserRepository } from "../repositories/user.repository";
 import { hashPassword } from "./password.service";
+
+const DEFAULT_CUSTOMER_CODE = "INSTALLATION-CUSTOMER";
+const DEFAULT_CUSTOMER_NAME = "BIO-EMS Customer";
+const DEFAULT_SITE_CODE = "INSTALLATION-SITE";
+const DEFAULT_SITE_NAME = "BIO-EMS Site";
+const BOOTSTRAP_ACTOR = "INSTALLER_ADMIN_BOOTSTRAP";
 
 export interface BootstrapAdminInput {
   username: string;
   password: string;
   email?: string;
+  customerCode?: string;
+  customerName?: string;
+  siteCode?: string;
+  siteName?: string;
+  siteLocation?: string;
 }
 
 export interface BootstrapLogger {
@@ -12,6 +24,7 @@ export interface BootstrapLogger {
 }
 
 export interface BootstrapAdminDependencies {
+  database: Database.Database;
   userRepository: UserRepository;
   logger: BootstrapLogger;
 }
@@ -32,7 +45,22 @@ export function readBootstrapAdminEnvironment(environment: NodeJS.ProcessEnv): B
     throw new BootstrapAdminError();
   }
 
-  return { username, password, email: email || undefined };
+  return {
+    username,
+    password,
+    email: email || undefined,
+    customerCode: environment.BIOEMS_BOOTSTRAP_CUSTOMER_CODE || DEFAULT_CUSTOMER_CODE,
+    customerName: environment.BIOEMS_BOOTSTRAP_CUSTOMER_NAME || DEFAULT_CUSTOMER_NAME,
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_CODE
+      ? { siteCode: environment.BIOEMS_BOOTSTRAP_SITE_CODE }
+      : {}),
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_NAME
+      ? { siteName: environment.BIOEMS_BOOTSTRAP_SITE_NAME }
+      : {}),
+    ...(environment.BIOEMS_BOOTSTRAP_SITE_LOCATION
+      ? { siteLocation: environment.BIOEMS_BOOTSTRAP_SITE_LOCATION }
+      : {}),
+  };
 }
 
 export async function bootstrapAdmin(
@@ -41,15 +69,65 @@ export async function bootstrapAdmin(
 ): Promise<number> {
   try {
     const passwordHash = await hashPassword(input.password);
-    const id = dependencies.userRepository.createFirstUser({
-      username: input.username,
-      email: input.email,
-      passwordHash,
-      role: "ADMIN",
-      status: "active",
-    });
+    const now = new Date().toISOString();
+    const customerCode = (input.customerCode || DEFAULT_CUSTOMER_CODE).trim();
+    const customerName = (input.customerName || DEFAULT_CUSTOMER_NAME).trim();
+    const siteCode = (input.siteCode || DEFAULT_SITE_CODE).trim();
+    const siteName = (input.siteName || DEFAULT_SITE_NAME).trim();
+    const siteLocation = input.siteLocation?.trim() || null;
+    if (!customerCode || !customerName || !siteCode || !siteName) throw new BootstrapAdminError();
 
-    dependencies.logger.info("Bootstrap administrator created");
+    const id = dependencies.database.transaction(() => {
+      const customerId = Number(
+        dependencies.database
+          .prepare(
+            `INSERT INTO platform_customers (code,name,status,created_at,created_by)
+             VALUES (?,?, 'ACTIVE', ?, ?)`
+          )
+          .run(customerCode, customerName, now, BOOTSTRAP_ACTOR).lastInsertRowid
+      );
+
+      const siteId = Number(
+        dependencies.database
+          .prepare(`INSERT INTO sites (code,name,location,active) VALUES (?,?,?,1)`)
+          .run(siteCode, siteName, siteLocation).lastInsertRowid
+      );
+
+      dependencies.database
+        .prepare(
+          `INSERT INTO customer_site_bindings (customer_id,site_id,bound_at,bound_by)
+           VALUES (?,?,?,?)`
+        )
+        .run(customerId, siteId, now, BOOTSTRAP_ACTOR);
+
+      const userId = dependencies.userRepository.createFirstUser({
+        username: input.username,
+        email: input.email,
+        passwordHash,
+        role: "ADMIN",
+        status: "active",
+      });
+
+      dependencies.database
+        .prepare(
+          `INSERT INTO customer_user_bindings (customer_id,user_id,bound_at,bound_by)
+           VALUES (?,?,?,?)`
+        )
+        .run(customerId, userId, now, BOOTSTRAP_ACTOR);
+
+      const binding = dependencies.database
+        .prepare(
+          `SELECT 1 AS present
+           FROM customer_user_bindings
+           WHERE customer_id = ? AND user_id = ?`
+        )
+        .get(customerId, userId) as { present: number } | undefined;
+
+      if (!binding) throw new Error("Customer administrator binding was not created");
+      return userId;
+    })();
+
+    dependencies.logger.info("Bootstrap customer administrator created and bound");
     return id;
   } catch {
     throw new BootstrapAdminError();

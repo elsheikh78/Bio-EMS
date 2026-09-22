@@ -23,6 +23,10 @@ describe("frontend presentation permission matrix", () => {
       "ESCALATION_POLICY_MANAGE",
       "COMMISSIONING_READ",
       "COMMISSIONING_MANAGE",
+      "COMMUNICATION_CHANNEL_READ",
+      "COMMUNICATION_CHANNEL_MANAGE",
+      "PLATFORM_BACKUP_READ",
+      "PLATFORM_BACKUP_MANAGE",
     ]);
     expect(permissions).not.toContain("CONFIG_READ");
   });

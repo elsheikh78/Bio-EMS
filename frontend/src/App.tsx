@@ -19,6 +19,10 @@ import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPa
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
 import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPage";
+import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdminsPage";
+import { SystemOwnerCommunicationChannelsPage } from "./pages/SystemOwnerCommunicationChannelsPage";
+import { BackupRestorePage } from "./pages/BackupRestorePage";
+import { SystemOwnerBackupRestorePage } from "./pages/SystemOwnerBackupRestorePage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -63,8 +67,20 @@ export function App() {
           element={<SystemOwnerCustomerFleetPage />}
         />
         <Route
+          path="system-owner/admins"
+          element={<SystemOwnerCustomerAdminsPage />}
+        />
+        <Route
+          path="system-owner/communication-channels"
+          element={<SystemOwnerCommunicationChannelsPage />}
+        />
+        <Route
           path="system-owner/installations"
           element={<SystemOwnerInstallationsPage />}
+        />
+        <Route
+          path="system-owner/backup-restore"
+          element={<SystemOwnerBackupRestorePage />}
         />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>
@@ -184,6 +200,15 @@ export function App() {
             element={
               <PermissionBoundary path="/users">
                 <AdministrationPage />
+              </PermissionBoundary>
+            }
+          />
+
+          <Route
+            path="backup-restore"
+            element={
+              <PermissionBoundary path="/backup-restore">
+                <BackupRestorePage />
               </PermissionBoundary>
             }
           />

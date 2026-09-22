@@ -1,7 +1,7 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
 **Decision date:** 3 September 2026  
-**Status:** APPROVED REQUIREMENT / SOURCE + INTERNAL PILOT PACKAGING ADVANCED / CLEAN-MACHINE QUALIFICATION OPEN
+**Status:** PILOT SETUP CLEAN-INSTALL VERIFIED / FULL LIFECYCLE + MULTI-MACHINE QUALIFICATION OPEN
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package
 
 ## 1. Decision
@@ -137,9 +137,9 @@ A Full Offline Windows Installer source/build pipeline and internal Pilot packag
 - #202: automatic installation diagnostics;
 - #203: correction for clean-device/partial-install service setup failure.
 
-This is still **not** a final Production Installer. The current gate is successful post-#203 clean-machine execution, service/HTTPS/reboot/lifecycle evidence and repeatability on more than one target.
+This is still **not** a final Production Installer. Automated clean Windows installation/health has passed on PR #235, and a separate 16 September clean Pilot installation verified BIOEMS-Backend, BIOEMS-InfluxDB and BIOEMS-MQTT running plus successful customer ADMIN login. The remaining gate is reboot/Repair/Upgrade/rollback/retained-data Uninstall evidence and repeatability on another clean physical target.
 
-The next installer build should occur after COM-01 through COM-06 merge so the Pilot package contains the Admin-managed Communication Channels configuration.
+PR #235 already carries COM-01 through COM-06 source together with the current Pilot installer line. Do not infer COM-07 live provider acceptance or Production installer acceptance from the automated Setup result.
 
 Historical statement retained for evidence boundary: Until DEP-01 is implemented and its
 qualification evidence is recorded, the repository's existing deployment and

@@ -22,7 +22,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
-    "bootstrap:system-owner": "tsx src/scripts/bootstrap-system-owner.ts",
+    "recover:admin-password": "tsx src/scripts/recover-admin-password.ts",
     "licensing:provision-installation": "tsx src/scripts/provision-installation-identity.ts",
     "licensing:generate-signing-key": "tsx src/scripts/generate-license-signing-key.ts",
     "test:email-delivery": "tsx src/scripts/test-email-delivery.ts",
@@ -38,7 +38,13 @@
     "format:check": "prettier --check \"{src,database}/**/*.ts\" \"*.{json,js}\"",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "owner:commissioning-request": "tsx src/scripts/create-owner-commissioning-request.ts",
+    "owner:commissioning-issue": "tsx src/scripts/issue-owner-commissioning-package.ts",
+    "owner:commissioning-import": "tsx src/scripts/import-owner-commissioning-package.ts",
+    "owner:recovery-request": "tsx src/scripts/create-owner-recovery-request.ts",
+    "owner:recovery-issue": "tsx src/scripts/issue-owner-recovery-package.ts",
+    "owner:recovery-import": "tsx src/scripts/import-owner-recovery-package.ts"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",

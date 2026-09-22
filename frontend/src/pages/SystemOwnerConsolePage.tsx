@@ -25,10 +25,13 @@ const copy = {
     open: "Open",
     modules: [
       { key: "customers", label: "Customer fleet" },
+      { key: "admins", label: "Customer ADMIN accounts" },
+      { key: "communication-channels", label: "Communication channels" },
       { key: "installations", label: "Installation configuration" },
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
       { key: "service", label: "Maintenance, calibration & support" },
+      { key: "backup-restore", label: "Backup & Restore" },
     ],
   },
   ar: {
@@ -40,10 +43,13 @@ const copy = {
     open: "فتح",
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
+      { key: "admins", label: "إدارة حسابات Admin" },
+      { key: "communication-channels", label: "قنوات الاتصال" },
       { key: "installations", label: "تهيئة التركيبات" },
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },
       { key: "service", label: "الصيانة والمعايرة والدعم" },
+      { key: "backup-restore", label: "النسخ الاحتياطي والاستعادة" },
     ],
   },
 } as const;

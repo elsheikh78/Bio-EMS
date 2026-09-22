@@ -20,6 +20,12 @@ const mocks = vi.hoisted(() => ({
       | undefined,
   },
   login: vi.fn(),
+  revokeSession: vi.fn(),
+  revokeAllSessions: vi.fn(),
+  listSupportGrants: vi.fn(),
+  issueSupportGrant: vi.fn(),
+  revokeSupportGrant: vi.fn(),
+  recordSecurityAudit: vi.fn(),
 }));
 
 vi.mock("../../config/config", () => ({ config: mocks.config }));
@@ -29,7 +35,33 @@ vi.mock("../../repositories/platform-principal.repository", () => ({
 }));
 
 vi.mock("../../services/platform-token.service", () => ({
-  PlatformTokenService: class {},
+  PlatformTokenService: class {
+    issueSupportToken = vi.fn(() => ({
+      supportToken: "support-token",
+      expiresIn: 1800,
+    }));
+  },
+}));
+
+vi.mock("../../services/platform-session.service", () => ({
+  PlatformSessionService: class {
+    revoke = mocks.revokeSession;
+    revokeAll = mocks.revokeAllSessions;
+  },
+}));
+
+vi.mock("../../services/owner-support-grant.service", () => ({
+  OwnerSupportGrantService: class {
+    list = mocks.listSupportGrants;
+    issue = mocks.issueSupportGrant;
+    revoke = mocks.revokeSupportGrant;
+  },
+}));
+
+vi.mock("../../services/owner-security-audit.service", () => ({
+  OwnerSecurityAuditService: class {
+    record = mocks.recordSecurityAudit;
+  },
 }));
 
 vi.mock("../../services/platform-auth.service", () => ({
@@ -40,28 +72,34 @@ vi.mock("../../services/platform-auth.service", () => ({
 
 vi.mock("../../middleware/platform-authentication.middleware", async () => {
   const { AppError } = await import("../../errors/app-error");
+  const authenticate = (
+    req: express.Request,
+    _res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (
+      req.headers.authorization !== "Bearer platform-token" &&
+      req.headers.authorization !== "Bearer enrollment-token"
+    ) {
+      next(
+        new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED")
+      );
+      return;
+    }
+
+    req.platformSessionId = "session-id";
+    req.platformPrincipal = {
+      kind: "platform",
+      type: "SYSTEM_OWNER",
+      id: "system-owner",
+      username: "platform-owner",
+    };
+    next();
+  };
 
   return {
-    platformAuthenticationMiddleware: (
-      req: express.Request,
-      _res: express.Response,
-      next: express.NextFunction
-    ) => {
-      if (req.headers.authorization !== "Bearer platform-token") {
-        next(
-          new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED")
-        );
-        return;
-      }
-
-      req.platformPrincipal = {
-        kind: "platform",
-        type: "SYSTEM_OWNER",
-        id: "system-owner",
-        username: "platform-owner",
-      };
-      next();
-    },
+    platformAuthenticationMiddleware: authenticate,
+    ownerMfaEnrollmentAuthenticationMiddleware: authenticate,
   };
 });
 
@@ -101,10 +139,16 @@ describe("Platform Login REST API", () => {
       .send({ username: " Platform-Owner ", password: "owner-password" })
       .expect(200);
 
-    expect(mocks.login).toHaveBeenCalledWith({
-      username: "platform-owner",
-      password: "owner-password",
-    });
+    expect(mocks.login).toHaveBeenCalledWith(
+      {
+        username: "platform-owner",
+        password: "owner-password",
+      },
+      {
+        ipAddress: "::ffff:127.0.0.1",
+        userAgent: undefined,
+      }
+    );
     expect(response.body.principal.type).toBe("SYSTEM_OWNER");
     expect(JSON.stringify(response.body)).not.toMatch(/password_hash|owner-password|secret/i);
   });
@@ -139,6 +183,104 @@ describe("Platform Login REST API", () => {
       },
     });
     expect(mocks.login).not.toHaveBeenCalled();
+  });
+});
+
+it("revokes the current persisted session during logout", async () => {
+  mocks.revokeSession.mockReturnValue(true);
+
+  await request(app)
+    .post("/api/v1/platform-auth/logout")
+    .set("Authorization", "Bearer platform-token")
+    .expect(204);
+
+  expect(mocks.revokeSession).toHaveBeenCalledWith("session-id", "system-owner");
+});
+
+it("revokes every persisted owner session", async () => {
+  mocks.revokeAllSessions.mockReturnValue(3);
+
+  const response = await request(app)
+    .post("/api/v1/platform-auth/sessions/revoke-all")
+    .set("Authorization", "Bearer platform-token")
+    .expect(200);
+
+  expect(mocks.revokeAllSessions).toHaveBeenCalledWith("system-owner");
+  expect(response.body).toEqual({ revoked_sessions: 3 });
+});
+
+it.each(["/logout", "/sessions/revoke-all"])("protects POST /platform-auth%s", async (path) => {
+  await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
+});
+
+describe("Owner support grant REST API", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.config.platformJwt = {
+      secret: "p".repeat(32),
+      expireMinutes: 15,
+      issuer: "bio-ems-platform",
+      audience: "bio-ems-platform-api",
+    };
+  });
+
+  it("issues, lists, and revokes grants through the authenticated owner boundary", async () => {
+    const grant = {
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      principalId: "system-owner",
+      siteId: 7,
+      reason: "Investigate sensor outage",
+      issuedAt: "2026-09-15T10:00:00.000Z",
+      expiresAt: "2026-09-15T10:30:00.000Z",
+      revokedAt: null,
+    };
+    mocks.issueSupportGrant.mockReturnValue(grant);
+    mocks.listSupportGrants.mockReturnValue([grant]);
+    mocks.revokeSupportGrant.mockReturnValue(true);
+
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 30 })
+      .expect(201);
+    expect(mocks.issueSupportGrant).toHaveBeenCalledWith(
+      "system-owner",
+      7,
+      "Investigate sensor outage",
+      30
+    );
+
+    const listed = await request(app)
+      .get("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .expect(200);
+    expect(listed.body).toEqual({ grants: [grant] });
+
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants/123e4567-e89b-12d3-a456-426614174000/revoke")
+      .set("Authorization", "Bearer platform-token")
+      .send({ reason: "Customer ended support" })
+      .expect(204);
+    expect(mocks.revokeSupportGrant).toHaveBeenCalledWith(
+      "123e4567-e89b-12d3-a456-426614174000",
+      "system-owner",
+      "Customer ended support"
+    );
+  });
+
+  it("rejects unauthenticated and overlong support grants before service invocation", async () => {
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 30 })
+      .expect(401);
+
+    await request(app)
+      .post("/api/v1/platform-auth/support-grants")
+      .set("Authorization", "Bearer platform-token")
+      .send({ site_id: 7, reason: "Investigate sensor outage", duration_minutes: 481 })
+      .expect(400);
+
+    expect(mocks.issueSupportGrant).not.toHaveBeenCalled();
   });
 });
 
