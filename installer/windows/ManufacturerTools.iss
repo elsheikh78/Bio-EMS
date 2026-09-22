@@ -32,7 +32,7 @@ Source: "{#StageRoot}\payload\Invoke-ManufacturerOwnerSigner.ps1"; DestDir: "{ap
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\manufacturer-backend.zip' -DestinationPath '{app}\backend' -Force"""; StatusMsg: "Installing secure signing runtime..."; Flags: runhidden waituntilterminated
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\runtime\node' -Force"""; StatusMsg: "Installing private Node.js runtime..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\runtime' -Force"""; StatusMsg: "Installing private Node.js runtime..."; Flags: runhidden waituntilterminated
 
 [Icons]
 Name: "{group}\BIO-EMS Manufacturer Owner Signer"; Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Invoke-ManufacturerOwnerSigner.ps1"" -ToolRoot ""{app}"""; WorkingDir: "{app}"
