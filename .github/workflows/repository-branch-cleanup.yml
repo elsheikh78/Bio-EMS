@@ -283,6 +283,8 @@ jobs:
             ["tmp-ignore9"]="0a99f46b346c29df8f23c6e2f6cad24b6f3d52d5"
           )
 
+          declare -a targets=()
+
           while IFS= read -r remote_ref; do
             branch="${remote_ref#origin/}"
             [[ "$branch" == "HEAD" || "$branch" == "main" ]] && continue
@@ -297,16 +299,11 @@ jobs:
               echo "::error::Refusing to delete changed branch $branch: expected ${expected[$branch]}, found $actual_sha"
               exit 1
             fi
+
+            targets+=("$branch")
           done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
 
-          for branch in "${!expected[@]}"; do
-            if ! git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
-              echo "::error::Audited branch disappeared before controlled deletion: $branch"
-              exit 1
-            fi
-          done
-
-          mapfile -t targets < <(printf '%s\n' "${!expected[@]}" | sort)
+          mapfile -t targets < <(printf '%s\n' "${targets[@]}" | sort)
           echo "SHA-verified branches scheduled for deletion: ${#targets[@]}"
 
           for ((i=0; i<${#targets[@]}; i+=40)); do
