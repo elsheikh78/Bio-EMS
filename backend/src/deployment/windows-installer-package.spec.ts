@@ -647,7 +647,7 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   it("migrates legacy Repair installations that predate installation identity provisioning", () => {
     expect(lifecycle).toContain("function Repair-BackendIdentityProvisioning");
     expect(lifecycle).toMatch(
-      /Repair-BackendIdentityProvisioning\r?\n        Ensure-RestoreWorkerService\r?\n        \$startOrder/
+      /Repair-BackendIdentityProvisioning\r?\n[ ]{8}Ensure-RestoreWorkerService\r?\n[ ]{8}\$startOrder/
     );
     expect(lifecycle).toContain("function Ensure-RestoreWorkerService");
     expect(lifecycle).toContain('sc.exe config "BIOEMS-RestoreWorker" obj= "LocalSystem"');
