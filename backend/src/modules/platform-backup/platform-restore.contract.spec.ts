@@ -84,7 +84,9 @@ describe("DEP-BR controlled restore helper contract", () => {
       "utf8"
     );
     expect(panelSource).toContain("latestRestoreJob");
-    expect(panelSource).toContain("acceptStatus(result.latestRestoreJob)");
+    expect(panelSource).toContain("bioems:active-restore-job:");
+    expect(panelSource).toContain("setActiveRestoreJobId");
+    expect(panelSource).toContain("Restore completed successfully.");
     expect(panelSource).toContain("restoreJobsPath = basePath");
     expect(ownerPageSource).toContain('restoreJobsPath="/platform-operations"');
   });
