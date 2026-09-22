@@ -127,8 +127,23 @@ jobs:
           }
           $node = Get-ChildItem -LiteralPath (Join-Path $root "runtime") -Filter "node.exe" -File -Recurse | Select-Object -First 1
           if ($null -eq $node) { throw "Installed private Node.js runtime is missing" }
-          $leaks = Get-ChildItem -LiteralPath $root -File -Recurse | Where-Object { $_.Name -match '(private.*key|\.pem$|passphrase)' }
-          if (@($leaks).Count -gt 0) { throw "Package contains prohibited private-key material" }
+          $secretFiles = Get-ChildItem -LiteralPath $root -File -Recurse | Where-Object { $_.Extension -match '^\.(pem|key|pfx|p12)
+
+      - name: Upload Manufacturer Tools Setup
+        uses: actions/upload-artifact@v4
+        with:
+          name: BIO-EMS-Manufacturer-Tools-${{ github.sha }}-pilot-signed
+          path: |
+            ${{ runner.temp }}\bioems-manufacturer-tools\output\BIO-EMS-Manufacturer-Tools-Setup-*-x64.exe
+            ${{ runner.temp }}\bioems-manufacturer-tools\output\SHA256SUMS.txt
+            ${{ runner.temp }}\bioems-manufacturer-tools\output\CERTIFICATE-THUMBPRINT.txt
+            ${{ runner.temp }}\bioems-manufacturer-tools\output\BIO-EMS-Manufacturer-Tools-Pilot-Code-Signing.cer
+          if-no-files-found: error
+          retention-days: 14
+ }
+          if (@($secretFiles).Count -gt 0) { throw "Package contains prohibited key-container files" }
+          $privateKeyMarker = Get-ChildItem -LiteralPath $root -File -Recurse | Select-String -SimpleMatch "-----BEGIN PRIVATE KEY-----" -List
+          if (@($privateKeyMarker).Count -gt 0) { throw "Package contains prohibited private-key material" }
 
       - name: Upload Manufacturer Tools Setup
         uses: actions/upload-artifact@v4
