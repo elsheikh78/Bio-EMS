@@ -634,6 +634,31 @@ export async function getPlatformRestoreJob(
   return value as unknown as PlatformRestoreJobStatus;
 }
 
+export async function getLatestPlatformRestoreJob(
+  environment: NodeJS.ProcessEnv = process.env
+): Promise<PlatformRestoreJobStatus | null> {
+  const directory = restoreJobDirectory(environment);
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+  const jobs: PlatformRestoreJobStatus[] = [];
+  for (const entry of entries) {
+    if (!entry.isFile() || !/^[0-9a-f-]{36}\.json$/i.test(entry.name)) continue;
+    try {
+      jobs.push(await getPlatformRestoreJob(entry.name.slice(0, -5), environment));
+    } catch {
+      // Ignore malformed or transient status files; direct job lookup remains fail-closed.
+    }
+  }
+  return (
+    jobs.sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt))[0] ?? null
+  );
+}
+
 export function recordPlatformRestoreTerminalAudit(job: PlatformRestoreJobStatus): void {
   if (!job.audit || (job.state !== "SUCCEEDED" && job.state !== "FAILED")) return;
   auditEventService.recordOnce(job.audit.finalAuditEventId, {

@@ -15,6 +15,7 @@ export function SystemOwnerBackupRestorePage() {
   return (
     <BackupRestorePanel
       basePath="/platform-operations/backups"
+      restoreJobsPath="/platform-operations"
       disasterRecovery
       request={request}
     />

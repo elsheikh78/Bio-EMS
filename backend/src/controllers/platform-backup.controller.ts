@@ -7,6 +7,7 @@ import { auditEventService } from "../services/audit-event.service";
 import { customerAuditActor } from "../modules/audit/customer-audit-context";
 import {
   createCompletePlatformBackup,
+  getLatestPlatformRestoreJob,
   getPlatformRestoreJob,
   listPlatformBackups,
   readInstalledBackupIdentity,
@@ -21,12 +22,21 @@ import type { PlatformBackupScheduleInput } from "../modules/platform-backup/pla
 
 export async function listCustomerPlatformBackups(_req: Request, res: Response): Promise<void> {
   const backups = await listPlatformBackups();
-  res.status(200).json({ backups });
+  const installedIdentity = await readInstalledBackupIdentity();
+  const latest = await getLatestPlatformRestoreJob();
+  const latestRestoreJob =
+    latest &&
+    latest.identity.installationId === installedIdentity.installationId &&
+    latest.identity.customerCode === installedIdentity.customerCode &&
+    latest.identity.siteCode === installedIdentity.siteCode
+      ? latest
+      : null;
+  res.status(200).json({ backups, latestRestoreJob });
 }
 
 export async function listOwnerPlatformBackups(_req: Request, res: Response): Promise<void> {
   const backups = await listPlatformBackups();
-  res.status(200).json({ backups });
+  res.status(200).json({ backups, latestRestoreJob: await getLatestPlatformRestoreJob() });
 }
 
 export function getCustomerPlatformBackupSchedule(_req: Request, res: Response): void {

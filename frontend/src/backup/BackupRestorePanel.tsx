@@ -35,9 +35,16 @@ interface BackupSchedule {
   lastFailure: string | null;
 }
 
+interface RestoreJobStatus {
+  jobId: string;
+  state: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED";
+  error?: string;
+}
+
 interface Props {
   request: (path: string, options?: RequestInit) => Promise<unknown>;
   basePath: string;
+  restoreJobsPath?: string;
   disasterRecovery?: boolean;
 }
 
@@ -46,6 +53,7 @@ const intervalOptions = [6, 12, 24, 168] as const;
 export function BackupRestorePanel({
   request,
   basePath,
+  restoreJobsPath = basePath,
   disasterRecovery = false,
 }: Props) {
   const { language } = useLocalization();
@@ -151,19 +159,36 @@ export function BackupRestorePanel({
         )) as { restoreJob: { jobId: string } };
         let terminal: "SUCCEEDED" | "FAILED" | undefined;
         let failure: string | undefined;
+        const acceptStatus = (
+          restoreJob: RestoreJobStatus | null | undefined,
+        ) => {
+          if (!restoreJob || restoreJob.jobId !== response.restoreJob.jobId)
+            return;
+          if (restoreJob.state === "SUCCEEDED") terminal = "SUCCEEDED";
+          if (restoreJob.state === "FAILED") {
+            terminal = "FAILED";
+            failure = restoreJob.error;
+          }
+        };
         for (let attempt = 0; attempt < 180 && !terminal; attempt += 1) {
           await new Promise((resolve) => window.setTimeout(resolve, 2_000));
           try {
             const result = (await request(
-              `${basePath}/restore-jobs/${response.restoreJob.jobId}`,
-            )) as { restoreJob: { state: string; error?: string } };
-            if (result.restoreJob.state === "SUCCEEDED") terminal = "SUCCEEDED";
-            if (result.restoreJob.state === "FAILED") {
-              terminal = "FAILED";
-              failure = result.restoreJob.error;
-            }
+              `${restoreJobsPath}/restore-jobs/${response.restoreJob.jobId}`,
+            )) as { restoreJob: RestoreJobStatus };
+            acceptStatus(result.restoreJob);
           } catch {
-            // Backend is intentionally unavailable while controlled services restart.
+            // The dedicated endpoint can be briefly unavailable while the backend
+            // restarts. The list response carries the latest durable job status as
+            // a recovery path and also survives a page refresh.
+            try {
+              const result = (await request(basePath)) as {
+                latestRestoreJob?: RestoreJobStatus | null;
+              };
+              acceptStatus(result.latestRestoreJob);
+            } catch {
+              // Continue polling while controlled services restart.
+            }
           }
         }
         if (terminal === "SUCCEEDED") {

@@ -70,6 +70,23 @@ describe("DEP-BR controlled restore helper contract", () => {
     );
     expect(controllerSource).toContain("res.status(202)");
     expect(controllerSource).toContain("restoreQueued: true");
+    expect(controllerSource).toContain("latestRestoreJob");
+    expect(serviceSource).toContain("getLatestPlatformRestoreJob");
+  });
+
+  it("exposes durable restore status to recover UI polling after backend restart", async () => {
+    const panelSource = await readFile(
+      join(process.cwd(), "../frontend/src/backup/BackupRestorePanel.tsx"),
+      "utf8"
+    );
+    const ownerPageSource = await readFile(
+      join(process.cwd(), "../frontend/src/pages/SystemOwnerBackupRestorePage.tsx"),
+      "utf8"
+    );
+    expect(panelSource).toContain("latestRestoreJob");
+    expect(panelSource).toContain("acceptStatus(result.latestRestoreJob)");
+    expect(panelSource).toContain("restoreJobsPath = basePath");
+    expect(ownerPageSource).toContain('restoreJobsPath="/platform-operations"');
   });
 
   it("binds persisted restore jobs to installation identity and uses strict UUID validation", async () => {
