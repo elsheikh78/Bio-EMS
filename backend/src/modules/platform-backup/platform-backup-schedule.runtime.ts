@@ -17,7 +17,7 @@ export function startPlatformBackupScheduleRuntime(): () => void {
 
     running = true;
     try {
-      await createCompletePlatformBackup();
+      await createCompletePlatformBackup(undefined, process.env, "AUTOMATIC");
       await prunePlatformBackups(schedule.retentionCount);
       completeScheduledPlatformBackup();
     } catch (error) {

@@ -192,7 +192,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
   );
   const preStart = readFileSync(join(windowsRoot, "Invoke-BackendPreStart.ps1"), "utf8");
 
-  it("installs the exact services under separate virtual service identities", () => {
+  it("installs data services under virtual identities and restore coordination as LocalSystem", () => {
     const contract = JSON.parse(readFileSync(join(windowsRoot, "package-contract.json"), "utf8"));
     expect(contract.serviceAccounts).toEqual({
       "BIOEMS-Backend": "NT SERVICE\\BIOEMS-Backend",
@@ -200,11 +200,14 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       "BIOEMS-InfluxDB": "NT SERVICE\\BIOEMS-InfluxDB",
     });
     expect(lifecycle).toContain(
-      '$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")'
+      '$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")'
     );
     expect(lifecycle).toContain('"NT SERVICE\\$serviceId"');
     expect(lifecycle).toContain('sc.exe" @("sidtype"');
-    expect(lifecycle).not.toMatch(/<password>|LocalSystem/);
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "sc.exe" @("config", "BIOEMS-RestoreWorker", "obj=", "LocalSystem")'
+    );
+    expect(lifecycle).not.toContain("<password>");
   });
 
   it("keeps service rollback PowerShell 5.1 compatible", () => {
@@ -610,6 +613,10 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
     expect(health).toContain("post-install-health.json");
     expect(health).not.toMatch(/TOKEN|PASSWORD|PASSPHRASE/);
   });
+
+  it("includes the privileged restore coordinator in post-install health evidence", () => {
+    expect(health).toContain('"BIOEMS-RestoreWorker"');
+  });
 });
 
 describe("DEP-01-05 lifecycle recovery source", () => {
@@ -639,7 +646,11 @@ describe("DEP-01-05 lifecycle recovery source", () => {
 
   it("migrates legacy Repair installations that predate installation identity provisioning", () => {
     expect(lifecycle).toContain("function Repair-BackendIdentityProvisioning");
-    expect(lifecycle).toContain("Repair-BackendIdentityProvisioning\n        $startOrder");
+    expect(lifecycle).toContain(
+      "Repair-BackendIdentityProvisioning\n        Ensure-RestoreWorkerService\n        $startOrder"
+    );
+    expect(lifecycle).toContain("function Ensure-RestoreWorkerService");
+    expect(lifecycle).toContain('sc.exe config "BIOEMS-RestoreWorker" obj= "LocalSystem"');
     expect(lifecycle).toContain('"NT SERVICE\\BIOEMS-Backend:(OI)(CI)M"');
     expect(lifecycle).toContain('Join-Path $application "installer\\Invoke-BackendPreStart.ps1"');
     expect(lifecycle).toContain("BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH");
@@ -736,7 +747,7 @@ describe("DEP-BR explicit installer mode contract", () => {
 
   it("removes only product-owned services, firewall and evidenced TLS certificate", () => {
     expect(lifecycle).toContain(
-      '$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
+      '$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
     );
     expect(lifecycle).toContain('Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"');
     expect(lifecycle).toContain('"config\\tls-certificate.json"');

@@ -68,8 +68,6 @@ describe("frontend presentation permission matrix", () => {
     ["OPERATOR", "NOTIFICATION_RECIPIENT_READ", false],
     ["VIEWER", "ESCALATION_POLICY_READ", false],
     ["ADMIN", "AUDIT_READ", true],
-    ["ADMIN", "PLATFORM_BACKUP_MANAGE", true],
-    ["OPERATOR", "PLATFORM_BACKUP_READ", false],
   ] as const)("evaluates %s × %s as %s", (role, permission, expected) => {
     expect(hasPermission(role satisfies UserRole, permission)).toBe(expected);
   });

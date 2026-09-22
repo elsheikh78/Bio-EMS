@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 $application = [IO.Path]::GetFullPath($ApplicationRoot)
 $persistent = [IO.Path]::GetFullPath($PersistentRoot)
-$services = @("BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
+$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
 $pointer = Join-Path $persistent "logs\pending-lifecycle.json"
 
 function Invoke-Robocopy([string]$source, [string]$destination) {
@@ -143,6 +143,42 @@ function Repair-BackendIdentityProvisioning {
     $settings.Encoding = New-Object Text.UTF8Encoding($false)
     $writer = [Xml.XmlWriter]::Create($xmlPath, $settings)
     try { $definition.Save($writer) } finally { $writer.Dispose() }
+}
+function Ensure-RestoreWorkerService {
+    $servicesRoot = Join-Path $application "services"
+    Grant-LifecycleAdministratorAccess $servicesRoot
+    $wrapper = Join-Path $servicesRoot "BIOEMS-RestoreWorker.exe"
+    $definitionPath = Join-Path $servicesRoot "BIOEMS-RestoreWorker.xml"
+    $wrapperSources = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\service-wrapper") -Filter "WinSW-x64.exe" -File -Recurse)
+    if ($wrapperSources.Count -ne 1) { throw "Repair expected exactly one controlled WinSW executable" }
+    Copy-Item -LiteralPath $wrapperSources[0].FullName -Destination $wrapper -Force
+
+    $coordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
+    if (-not (Test-Path -LiteralPath $coordinator -PathType Leaf)) { throw "Platform restore coordinator is missing during Repair" }
+    $arguments = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$coordinator`" -ApplicationRoot `"$application`" -PersistentRoot `"$persistent`""
+    $settings = New-Object Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.OmitXmlDeclaration = $true
+    $builder = New-Object Text.StringBuilder
+    $writer = [Xml.XmlWriter]::Create($builder, $settings)
+    $writer.WriteStartElement("service")
+    foreach ($entry in @(
+        @("id", "BIOEMS-RestoreWorker"), @("name", "BIOEMS-RestoreWorker"),
+        @("description", "BIO-EMS privileged restore coordinator"), @("executable", "powershell.exe"),
+        @("arguments", $arguments), @("startmode", "Automatic"), @("delayedAutoStart", "true"),
+        @("stoptimeout", "30 sec"), @("logpath", (Join-Path $persistent "logs\restore-worker-service"))
+    )) { $writer.WriteElementString($entry[0], $entry[1]) }
+    $writer.WriteStartElement("log"); $writer.WriteAttributeString("mode", "roll"); $writer.WriteEndElement()
+    $writer.WriteStartElement("onfailure"); $writer.WriteAttributeString("action", "restart"); $writer.WriteAttributeString("delay", "10 sec"); $writer.WriteEndElement()
+    $writer.WriteEndElement(); $writer.Dispose()
+    [IO.File]::WriteAllText($definitionPath, $builder.ToString(), (New-Object Text.UTF8Encoding($false)))
+
+    if (-not (Get-Service -Name "BIOEMS-RestoreWorker" -ErrorAction SilentlyContinue)) {
+        & $wrapper install
+        if ($LASTEXITCODE -ne 0) { throw "Restore worker service installation failed during Repair" }
+    }
+    & sc.exe config "BIOEMS-RestoreWorker" obj= "LocalSystem" start= "delayed-auto" | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Restore worker service configuration failed during Repair" }
 }
 function Get-Manifest([string]$root) {
     return @(Get-ChildItem -LiteralPath $root -File -Recurse | Sort-Object FullName | ForEach-Object {
@@ -339,6 +375,7 @@ if ($Mode -eq "PostUpdate") {
     if (-not $backup.StartsWith((Join-Path $persistent "backups"), [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path (Join-Path $backup "backup-manifest.json"))) { throw "Lifecycle backup is invalid" }
     try {
         Repair-BackendIdentityProvisioning
+        Ensure-RestoreWorkerService
         $startOrder = @($services)
         [array]::Reverse($startOrder)
         foreach ($service in $startOrder) { Start-Service -Name $service -ErrorAction Stop }

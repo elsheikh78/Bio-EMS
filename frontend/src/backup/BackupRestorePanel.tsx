@@ -18,6 +18,7 @@ import { useLocalization } from "../localization/useLocalization";
 interface BackupItem {
   backupId: string;
   createdAt: string;
+  source: "MANUAL" | "AUTOMATIC";
   artifactCount: number;
   totalBytes: number;
   telemetryState: string;
@@ -133,15 +134,63 @@ export function BackupRestorePanel({
       (!dr && !confirmation)
     )
       return;
-    void act(
-      () =>
-        request(`${basePath}/${backupId}/${dr ? "dr-restore" : "restore"}`, {
-          method: "POST",
-          headers: dr ? { "Content-Type": "application/json" } : undefined,
-          body: dr ? JSON.stringify({ confirmation }) : undefined,
-        }),
-      ar ? "تم وضع الاستعادة في قائمة التنفيذ." : "Restore was queued.",
-    );
+    void (async () => {
+      setBusy(true);
+      setError(undefined);
+      setMessage(
+        ar ? "تم وضع الاستعادة في قائمة التنفيذ." : "Restore was queued.",
+      );
+      try {
+        const response = (await request(
+          `${basePath}/${backupId}/${dr ? "dr-restore" : "restore"}`,
+          {
+            method: "POST",
+            headers: dr ? { "Content-Type": "application/json" } : undefined,
+            body: dr ? JSON.stringify({ confirmation }) : undefined,
+          },
+        )) as { restoreJob: { jobId: string } };
+        let terminal: "SUCCEEDED" | "FAILED" | undefined;
+        let failure: string | undefined;
+        for (let attempt = 0; attempt < 180 && !terminal; attempt += 1) {
+          await new Promise((resolve) => window.setTimeout(resolve, 2_000));
+          try {
+            const result = (await request(
+              `${basePath}/restore-jobs/${response.restoreJob.jobId}`,
+            )) as { restoreJob: { state: string; error?: string } };
+            if (result.restoreJob.state === "SUCCEEDED") terminal = "SUCCEEDED";
+            if (result.restoreJob.state === "FAILED") {
+              terminal = "FAILED";
+              failure = result.restoreJob.error;
+            }
+          } catch {
+            // Backend is intentionally unavailable while controlled services restart.
+          }
+        }
+        if (terminal === "SUCCEEDED") {
+          setMessage(
+            ar ? "اكتملت الاستعادة بنجاح." : "Restore completed successfully.",
+          );
+          await load();
+        } else if (terminal === "FAILED") {
+          setError(
+            failure ??
+              (ar
+                ? "فشلت الاستعادة وتمت حماية الحالة السابقة."
+                : "Restore failed; the previous state was protected."),
+          );
+        } else {
+          setError(
+            ar
+              ? "انتهت مهلة متابعة الاستعادة. راجع حالة المهمة."
+              : "Restore status timed out. Check the restore job status.",
+          );
+        }
+      } catch {
+        setError(ar ? "تعذر بدء الاستعادة." : "Restore could not be started.");
+      } finally {
+        setBusy(false);
+      }
+    })();
   };
 
   const intervalLabel = (hours: number) => {
@@ -227,8 +276,16 @@ export function BackupRestorePanel({
               </Typography>
               <Typography variant="body2">
                 {ar ? "آخر نجاح:" : "Last success:"}{" "}
-                {schedule.lastCompletedAt
-                  ? new Date(schedule.lastCompletedAt).toLocaleString()
+                {backups[0]
+                  ? `${new Date(backups[0].createdAt).toLocaleString()} · ${
+                      backups[0].source === "AUTOMATIC"
+                        ? ar
+                          ? "تلقائي"
+                          : "Automatic"
+                        : ar
+                          ? "يدوي"
+                          : "Manual"
+                    }`
                   : ar
                     ? "لا يوجد"
                     : "None"}

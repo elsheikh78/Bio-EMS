@@ -56,12 +56,12 @@ export function updateOwnerPlatformBackupSchedule(req: Request, res: Response): 
 }
 
 export async function createCustomerPlatformBackup(_req: Request, res: Response): Promise<void> {
-  const manifest = await createCompletePlatformBackup();
+  const manifest = await createCompletePlatformBackup(undefined, process.env, "MANUAL");
   res.status(201).json({ backup: manifest });
 }
 
 export async function createOwnerPlatformBackup(_req: Request, res: Response): Promise<void> {
-  const manifest = await createCompletePlatformBackup();
+  const manifest = await createCompletePlatformBackup(undefined, process.env, "MANUAL");
   res.status(201).json({ backup: manifest });
 }
 

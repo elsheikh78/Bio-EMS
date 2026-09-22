@@ -40,9 +40,13 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).toContain("artifact reparse points are not allowed in restore worker");
   });
 
-  it("queues a detached worker before the backend service is quiesced", async () => {
+  it("queues a privileged coordinator request before the backend service is quiesced", async () => {
     const serviceSource = await readFile(
       join(process.cwd(), "src/modules/platform-backup/platform-backup.service.ts"),
+      "utf8"
+    );
+    const coordinatorSource = await readFile(
+      join(process.cwd(), "../installer/windows/Invoke-PlatformRestoreCoordinator.ps1"),
       "utf8"
     );
     const controllerSource = await readFile(
@@ -50,9 +54,15 @@ describe("DEP-BR controlled restore helper contract", () => {
       "utf8"
     );
     expect(serviceSource).toContain("restore-safety-");
-    expect(serviceSource).toContain("detached: true");
-    expect(serviceSource).toContain("child.unref()");
+    expect(serviceSource).toContain("`${jobId}.request.json`");
+    expect(serviceSource).not.toContain("detached: true");
+    expect(serviceSource).not.toContain("child.unref()");
     expect(serviceSource).toContain('await sqlite.backup(join(safetyDirectory, "bioems.sqlite"))');
+    expect(coordinatorSource).toContain('Filter "*.request.json"');
+    expect(coordinatorSource).toContain("Invoke-PlatformRestore.ps1");
+    expect(coordinatorSource).toContain(
+      "Restore request is missing or expired; no data was changed"
+    );
     expect(controllerSource).toContain("res.status(202)");
     expect(controllerSource).toContain("restoreQueued: true");
   });

@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import {
   appendFile,
@@ -38,6 +38,7 @@ export interface PlatformBackupManifest {
   formatVersion: 1;
   backupId: string;
   createdAt: string;
+  source?: "MANUAL" | "AUTOMATIC";
   identity: PlatformBackupIdentity;
   artifacts: PlatformBackupArtifact[];
   telemetry:
@@ -113,7 +114,8 @@ export async function readInstalledBackupIdentity(
  */
 export async function createPlatformBackupFoundation(
   requestedDestination?: string,
-  environment: NodeJS.ProcessEnv = process.env
+  environment: NodeJS.ProcessEnv = process.env,
+  source: "MANUAL" | "AUTOMATIC" = "MANUAL"
 ): Promise<{ directory: string; manifest: PlatformBackupManifest }> {
   const root = resolveAllowedBackupDestination(requestedDestination, environment);
   const backupId = randomUUID();
@@ -128,6 +130,7 @@ export async function createPlatformBackupFoundation(
     formatVersion: PLATFORM_BACKUP_FORMAT_VERSION,
     backupId,
     createdAt: new Date().toISOString(),
+    source,
     identity,
     artifacts: [
       {
@@ -281,6 +284,7 @@ async function assertSafeBackupDirectory(root: string, directory: string): Promi
 export interface PlatformBackupListItem {
   backupId: string;
   createdAt: string;
+  source: "MANUAL" | "AUTOMATIC";
   identity: PlatformBackupIdentity;
   artifactCount: number;
   totalBytes: number;
@@ -315,6 +319,7 @@ export async function listPlatformBackups(
       backups.push({
         backupId: manifest.backupId,
         createdAt: manifest.createdAt,
+        source: manifest.source === "AUTOMATIC" ? "AUTOMATIC" : "MANUAL",
         identity: manifest.identity,
         artifactCount: manifest.artifacts.length,
         totalBytes: manifest.artifacts.reduce((sum, artifact) => sum + artifact.bytes, 0),
@@ -381,11 +386,16 @@ async function recordPlatformBackupFailure(
 
 export async function createCompletePlatformBackup(
   requestedDestination?: string,
-  environment: NodeJS.ProcessEnv = process.env
+  environment: NodeJS.ProcessEnv = process.env,
+  source: "MANUAL" | "AUTOMATIC" = "MANUAL"
 ): Promise<PlatformBackupManifest> {
   let directory: string | undefined;
   try {
-    ({ directory } = await createPlatformBackupFoundation(requestedDestination, environment));
+    ({ directory } = await createPlatformBackupFoundation(
+      requestedDestination,
+      environment,
+      source
+    ));
     const { executable, script } = resolveInfluxBackupCommand(environment);
     const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
     const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
@@ -677,19 +687,7 @@ export async function restorePlatformBackup(
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformRestoreJob> {
   const validated = await validatePlatformBackupForRestore(backupId, options, environment);
-  const executable = requireValue(
-    environment.BIOEMS_POWERSHELL_PATH ?? "powershell.exe",
-    "PowerShell"
-  );
-  const script = requireValue(
-    environment.BIOEMS_PLATFORM_RESTORE_SCRIPT,
-    "BIOEMS_PLATFORM_RESTORE_SCRIPT"
-  );
-  const applicationRoot = requireValue(
-    environment.BIOEMS_APPLICATION_ROOT,
-    "BIOEMS_APPLICATION_ROOT"
-  );
-  const persistentRoot = requireValue(environment.BIOEMS_PERSISTENT_ROOT, "BIOEMS_PERSISTENT_ROOT");
+  requireValue(environment.BIOEMS_PLATFORM_RESTORE_SCRIPT, "BIOEMS_PLATFORM_RESTORE_SCRIPT");
   const influxCli = requireValue(environment.BIOEMS_INFLUX_CLI_PATH, "BIOEMS_INFLUX_CLI_PATH");
   const hostUrl = requireValue(environment.INFLUX_URL, "INFLUX_URL");
   const org = requireValue(environment.INFLUX_ORG, "INFLUX_ORG");
@@ -721,43 +719,27 @@ export async function restorePlatformBackup(
     resolveAllowedBackupDestination(undefined, environment),
     `restore-safety-${randomUUID()}`
   );
-  await mkdir(safetyDirectory, { recursive: false });
-  await sqlite.backup(join(safetyDirectory, "bioems.sqlite"));
-
-  const child = spawn(
-    executable,
-    [
-      "-NoProfile",
-      "-NonInteractive",
-      "-ExecutionPolicy",
-      "Bypass",
-      "-File",
-      script,
-      "-ApplicationRoot",
-      applicationRoot,
-      "-PersistentRoot",
-      persistentRoot,
-      "-BackupDirectory",
-      validated.directory,
-      "-SafetyDirectory",
-      safetyDirectory,
-      "-InfluxCli",
-      influxCli,
-      "-HostUrl",
-      hostUrl,
-      "-Org",
-      org,
-      "-JobStatusPath",
-      statusPath,
-    ],
-    {
-      windowsHide: true,
-      detached: true,
-      stdio: "ignore",
-      env: { ...environment, INFLUX_TOKEN: token },
-    }
-  );
-  child.unref();
+  const requestPath = join(jobsDirectory, `${jobId}.request.json`);
+  const temporaryRequestPath = `${requestPath}.tmp`;
+  try {
+    await mkdir(safetyDirectory, { recursive: false });
+    await sqlite.backup(join(safetyDirectory, "bioems.sqlite"));
+    void token;
+    await writeFile(
+      temporaryRequestPath,
+      `${JSON.stringify({ backupDirectory: validated.directory, safetyDirectory, influxCli, hostUrl, org }, null, 2)}\n`,
+      { encoding: "utf8", flag: "wx" }
+    );
+    await rename(temporaryRequestPath, requestPath);
+  } catch (error) {
+    status.state = "FAILED";
+    status.updatedAt = new Date().toISOString();
+    status.error = error instanceof Error ? error.message : "Restore request preparation failed";
+    await writeFile(statusPath, `${JSON.stringify(status, null, 2)}\n`, "utf8");
+    await rm(temporaryRequestPath, { force: true });
+    await rm(safetyDirectory, { recursive: true, force: true });
+    throw error;
+  }
 
   return { backup: validated.manifest, queued: true, safetyDirectory, status };
 }

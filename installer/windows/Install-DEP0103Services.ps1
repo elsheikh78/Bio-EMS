@@ -21,7 +21,7 @@ $installerLogDirectory = Join-Path $persistent "logs"
 New-Item -ItemType Directory -Path $installerLogDirectory -Force | Out-Null
 $installerDiagnosticLog = Join-Path $installerLogDirectory "service-install.log"
 Add-Content -LiteralPath $installerDiagnosticLog -Value "$(Get-Date -Format o) installer entered pilotMode=$PilotMode"
-$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")
+$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")
 $wrappers = @{}
 $firewallRuleCreated = $false
 
@@ -252,12 +252,16 @@ $backendEnvironment = @{
 }
 if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE = "true" }
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
+$restoreCoordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
+$restoreCoordinatorArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$restoreCoordinator`" -ApplicationRoot `"$application`" -PersistentRoot `"$persistent`""
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-RestoreWorker.xml") (New-ServiceXml "BIOEMS-RestoreWorker" "powershell.exe" $restoreCoordinatorArgs (Join-Path $paths.Logs "restore-worker-service") @() @{} "")
 
 foreach ($serviceId in $serviceIds) {
     Invoke-Controlled $wrappers[$serviceId] @("install")
     Invoke-Controlled "sc.exe" @("sidtype", $serviceId, "unrestricted")
     Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\$serviceId")
 }
+Invoke-Controlled "sc.exe" @("config", "BIOEMS-RestoreWorker", "obj=", "LocalSystem")
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-InfluxDB" "(OI)(CI)RX"
@@ -406,6 +410,7 @@ Remove-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinu
 New-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443 -Profile Domain,Private -RemoteAddress LocalSubnet | Out-Null
 $firewallRuleCreated = $true
 Start-Service "BIOEMS-Backend"
+Start-Service "BIOEMS-RestoreWorker"
 
 $receiptDeadline = (Get-Date).AddSeconds(45)
 while (-not (Test-Path -LiteralPath $receiptPath -PathType Leaf) -and (Get-Date) -lt $receiptDeadline) { Start-Sleep -Seconds 1 }
