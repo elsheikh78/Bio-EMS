@@ -53,7 +53,7 @@ end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
-  if CurPageID = wpReady then
+  if (CurPageID = wpReady) and (not WizardSilent) then
     Result := MsgBox(
       'Install only on an encrypted, company-controlled offline workstation. This package does not contain the manufacturer private key.',
       mbConfirmation,
