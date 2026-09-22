@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import { hasPermission } from "../../authorization/authorization.policy";
 import { PERMISSION } from "../../authorization/permissions";
 import {
+  getLatestPlatformRestoreJob,
+  getPlatformRestoreJob,
   resolveAllowedBackupDestination,
   validatePlatformBackupForRestore,
 } from "./platform-backup.service";
@@ -78,6 +80,39 @@ describe("DEP-BR restore validation contract", () => {
     expect(source).toContain("Platform backup is incomplete");
     expect(source).toContain("Platform backup identity does not match this installation");
     expect(source).toContain("Platform backup contains an unsafe artifact path");
+  });
+});
+
+describe("DEP-BR restore job status compatibility", () => {
+  it("reads terminal status written with the Windows PowerShell 5 UTF-8 BOM", async () => {
+    const root = await mkdtemp(join(tmpdir(), "bioems-restore-status-"));
+    const jobs = join(root, "restore-jobs");
+    const jobId = randomUUID();
+    await mkdir(jobs, { recursive: true });
+    const status = {
+      jobId,
+      backupId: randomUUID(),
+      state: "SUCCEEDED",
+      queuedAt: new Date(Date.now() - 1_000).toISOString(),
+      updatedAt: new Date().toISOString(),
+      allowIdentityTransfer: false,
+      identity: {
+        installationId: randomUUID(),
+        customerCode: "EMS-001",
+        siteCode: "S-001",
+      },
+    };
+    await writeFile(join(jobs, `${jobId}.json`), `\uFEFF${JSON.stringify(status)}`, "utf8");
+    const environment = { BIOEMS_PERSISTENT_ROOT: root } as NodeJS.ProcessEnv;
+
+    await expect(getPlatformRestoreJob(jobId, environment)).resolves.toMatchObject({
+      jobId,
+      state: "SUCCEEDED",
+    });
+    await expect(getLatestPlatformRestoreJob(environment)).resolves.toMatchObject({
+      jobId,
+      state: "SUCCEEDED",
+    });
   });
 });
 

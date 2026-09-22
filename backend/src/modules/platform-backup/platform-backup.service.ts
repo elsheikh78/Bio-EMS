@@ -597,7 +597,11 @@ export async function getPlatformRestoreJob(
   environment: NodeJS.ProcessEnv = process.env
 ): Promise<PlatformRestoreJobStatus> {
   const path = await assertSafeRestoreJobPath(jobId, environment);
-  const value = JSON.parse(await readFile(path, "utf8")) as unknown;
+  // Windows PowerShell 5 writes a UTF-8 BOM when `-Encoding UTF8` is used.
+  // Accept status files produced by older restore workers while keeping JSON
+  // validation fail-closed for every other malformed payload.
+  const serialized = await readFile(path, "utf8");
+  const value = JSON.parse(serialized.replace(/^\uFEFF/, "")) as unknown;
   if (
     !isRecord(value) ||
     value.jobId !== jobId ||

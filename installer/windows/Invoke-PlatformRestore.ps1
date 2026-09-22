@@ -32,7 +32,8 @@ function Set-RestoreJobState([string]$state, [string]$errorMessage = "") {
         $status | Add-Member -NotePropertyName error -NotePropertyValue $errorMessage -Force
     }
     $temporary = "$jobStatus.tmp"
-    $status | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $temporary -Encoding UTF8
+    $json = $status | ConvertTo-Json -Depth 8
+    [IO.File]::WriteAllText($temporary, "$json`r`n", (New-Object Text.UTF8Encoding($false)))
     Move-Item -LiteralPath $temporary -Destination $jobStatus -Force
 }
 

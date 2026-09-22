@@ -14,6 +14,11 @@ function Write-WorkerLog([string]$message) {
     "$(Get-Date -Format o) $message" | Out-File -LiteralPath $log -Append -Encoding utf8
 }
 
+function Write-JsonUtf8NoBom([object]$value, [string]$path) {
+    $json = $value | ConvertTo-Json -Depth 8
+    [IO.File]::WriteAllText($path, "$json`r`n", (New-Object Text.UTF8Encoding($false)))
+}
+
 function Read-BackendEnvironment {
     $values = @{}
     $path = Join-Path $persistent "config\backend.env"
@@ -39,7 +44,7 @@ while ($true) {
                 $stale.updatedAt = [DateTime]::UtcNow.ToString("o")
                 $stale | Add-Member -NotePropertyName error -NotePropertyValue "Restore request is missing or expired; no data was changed" -Force
                 $temporary = "$($statusFile.FullName).tmp"
-                $stale | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $temporary -Encoding UTF8
+                Write-JsonUtf8NoBom $stale $temporary
                 Move-Item -LiteralPath $temporary -Destination $statusFile.FullName -Force
                 Write-WorkerLog "expired orphaned restore job=$($stale.jobId)"
             }
@@ -87,7 +92,7 @@ while ($true) {
                         $failed.updatedAt = [DateTime]::UtcNow.ToString("o")
                         $failed | Add-Member -NotePropertyName error -NotePropertyValue $_.Exception.Message -Force
                         $temporary = "$statusPath.tmp"
-                        $failed | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $temporary -Encoding UTF8
+                        Write-JsonUtf8NoBom $failed $temporary
                         Move-Item -LiteralPath $temporary -Destination $statusPath -Force
                     }
                 }
