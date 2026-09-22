@@ -73,6 +73,29 @@ export function BackupRestorePanel({
     () => window.sessionStorage.getItem(restoreSessionKey),
   );
 
+  const finishRestore = useCallback(
+    (restoreJob: RestoreJobStatus) => {
+      window.sessionStorage.removeItem(restoreSessionKey);
+      setActiveRestoreJobId(null);
+      setBusy(false);
+      if (restoreJob.state === "SUCCEEDED") {
+        setError(undefined);
+        setMessage(
+          ar ? "اكتملت الاستعادة بنجاح." : "Restore completed successfully.",
+        );
+        return;
+      }
+      setMessage(undefined);
+      setError(
+        restoreJob.error ??
+          (ar
+            ? "فشلت الاستعادة وتمت حماية الحالة السابقة."
+            : "Restore failed; the previous state was protected."),
+      );
+    },
+    [ar, restoreSessionKey],
+  );
+
   const load = useCallback(async () => {
     try {
       const [backupResponse, scheduleResponse] = (await Promise.all([
@@ -92,23 +115,14 @@ export function BackupRestorePanel({
             ? "الاستعادة قيد التنفيذ؛ ستُحدّث الصفحة تلقائيًا."
             : "Restore is in progress; this page will update automatically.",
         );
-      } else if (latest?.jobId === activeRestoreJobId) {
-        window.sessionStorage.removeItem(restoreSessionKey);
-        setActiveRestoreJobId(null);
-        setBusy(false);
-        if (latest.state === "SUCCEEDED") {
-          setMessage(
-            ar ? "اكتملت الاستعادة بنجاح." : "Restore completed successfully.",
-          );
-        } else if (latest.state === "FAILED") {
-          setMessage(undefined);
-          setError(
-            latest.error ??
-              (ar
-                ? "فشلت الاستعادة وتمت حماية الحالة السابقة."
-                : "Restore failed; the previous state was protected."),
-          );
-        }
+      } else if (
+        activeRestoreJobId &&
+        latest &&
+        (latest.state === "SUCCEEDED" || latest.state === "FAILED")
+      ) {
+        // The durable latest status is authoritative after a backend/database
+        // restart. Reconcile it even when browser storage retained a stale job id.
+        finishRestore(latest);
       }
     } catch {
       if (!activeRestoreJobId) {
@@ -119,7 +133,14 @@ export function BackupRestorePanel({
         );
       }
     }
-  }, [activeRestoreJobId, ar, basePath, request, restoreSessionKey]);
+  }, [
+    activeRestoreJobId,
+    ar,
+    basePath,
+    finishRestore,
+    request,
+    restoreSessionKey,
+  ]);
 
   useEffect(() => {
     const initial = window.setTimeout(() => void load(), 0);
@@ -146,60 +167,32 @@ export function BackupRestorePanel({
         if (restoreJob.state === "QUEUED" || restoreJob.state === "RUNNING") {
           return;
         }
-        window.sessionStorage.removeItem(restoreSessionKey);
-        setActiveRestoreJobId(null);
-        setBusy(false);
+        finishRestore(restoreJob);
         if (restoreJob.state === "SUCCEEDED") {
-          setError(undefined);
-          setMessage(
-            ar ? "اكتملت الاستعادة بنجاح." : "Restore completed successfully.",
-          );
           await load();
-        } else {
-          setMessage(undefined);
-          setError(
-            restoreJob.error ??
-              (ar
-                ? "فشلت الاستعادة وتمت حماية الحالة السابقة."
-                : "Restore failed; the previous state was protected."),
-          );
         }
       } catch {
         try {
           const result = (await request(basePath)) as BackupListResponse;
           const latest = result.latestRestoreJob;
-          if (latest?.jobId === activeRestoreJobId) {
-            if (latest.state === "SUCCEEDED" || latest.state === "FAILED") {
-              window.sessionStorage.removeItem(restoreSessionKey);
-              setActiveRestoreJobId(null);
-              setBusy(false);
-              if (latest.state === "SUCCEEDED") {
-                setError(undefined);
-                setMessage(
-                  ar
-                    ? "اكتملت الاستعادة بنجاح."
-                    : "Restore completed successfully.",
-                );
-                await load();
-              } else {
-                setMessage(undefined);
-                setError(
-                  latest.error ??
-                    (ar
-                      ? "فشلت الاستعادة وتمت حماية الحالة السابقة."
-                      : "Restore failed; the previous state was protected."),
-                );
-              }
-            }
+          if (
+            latest &&
+            (latest.state === "SUCCEEDED" || latest.state === "FAILED")
+          ) {
+            finishRestore(latest);
+            if (latest.state === "SUCCEEDED") await load();
           }
         } catch {
           // Controlled services are expected to be unavailable during restore.
         }
       } finally {
-        if (!cancelled && attempts < 180) {
+        if (!cancelled && attempts < 30) {
           window.setTimeout(() => void poll(), 2_000);
         } else if (!cancelled) {
+          window.sessionStorage.removeItem(restoreSessionKey);
+          setActiveRestoreJobId(null);
           setBusy(false);
+          setMessage(undefined);
           setError(
             ar
               ? "انتهت مهلة متابعة الاستعادة. راجع حالة المهمة."
@@ -228,6 +221,7 @@ export function BackupRestorePanel({
     activeRestoreJobId,
     ar,
     basePath,
+    finishRestore,
     load,
     request,
     restoreJobsPath,
@@ -437,8 +431,14 @@ export function BackupRestorePanel({
         >
           {ar ? "إنشاء نسخة احتياطية الآن" : "Create backup now"}
         </Button>
-        <Button disabled={busy} onClick={() => void load()} variant="outlined">
-          {ar ? "تحديث القائمة" : "Refresh"}
+        <Button onClick={() => void load()} variant="outlined">
+          {activeRestoreJobId
+            ? ar
+              ? "فحص حالة الاستعادة"
+              : "Check restore status"
+            : ar
+              ? "تحديث القائمة"
+              : "Refresh"}
         </Button>
       </Stack>
 

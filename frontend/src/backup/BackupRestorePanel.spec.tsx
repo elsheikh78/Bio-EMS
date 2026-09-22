@@ -60,4 +60,43 @@ describe("BackupRestorePanel restore recovery", () => {
       screen.queryByText("Backup data could not be loaded."),
     ).not.toBeInTheDocument();
   });
+
+  it("accepts the latest durable terminal result when browser storage has a stale job id", async () => {
+    window.sessionStorage.setItem(
+      "bioems:active-restore-job:/platform-backups",
+      "stale-browser-job",
+    );
+    const request = vi.fn((path: string) => {
+      if (path === "/platform-backups/restore-jobs/stale-browser-job") {
+        return Promise.reject(new Error("Stale restore job"));
+      }
+      if (path === "/platform-backups/schedule")
+        return Promise.resolve({ schedule });
+      if (path === "/platform-backups") {
+        return Promise.resolve({
+          backups: [],
+          latestRestoreJob: { jobId: "actual-latest-job", state: "SUCCEEDED" },
+        });
+      }
+      return Promise.reject(new Error(`Unexpected path: ${path}`));
+    });
+
+    render(
+      <LocalizationProvider language="en">
+        <BackupRestorePanel basePath="/platform-backups" request={request} />
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Restore completed successfully."),
+      ).toBeInTheDocument();
+    });
+    expect(
+      window.sessionStorage.getItem(
+        "bioems:active-restore-job:/platform-backups",
+      ),
+    ).toBeNull();
+    expect(screen.getByRole("button", { name: "Refresh" })).toBeEnabled();
+  });
 });
