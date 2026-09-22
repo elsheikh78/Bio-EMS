@@ -17,8 +17,7 @@ export async function runIssueOwnerCommissioningPackage(
     const keyId = environment.BIOEMS_OWNER_COMMISSIONING_KEY_ID;
     const username = environment.BIOEMS_OWNER_COMMISSIONING_USERNAME;
     const password = environment.BIOEMS_OWNER_COMMISSIONING_PASSWORD;
-    const privateKeyPassphrase =
-      environment.BIOEMS_OWNER_COMMISSIONING_PRIVATE_KEY_PASSPHRASE;
+    const privateKeyPassphrase = environment.BIOEMS_OWNER_COMMISSIONING_PRIVATE_KEY_PASSPHRASE;
     const validityMinutes = Number(environment.BIOEMS_OWNER_COMMISSIONING_VALIDITY_MINUTES || "15");
     if (!requestPath || !privateKeyPath || !outputPath || !keyId || !username || !password) {
       throw new Error("Owner commissioning issuance inputs are required");
