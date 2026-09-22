@@ -42,6 +42,14 @@ Name: "{commondesktop}\BIO-EMS Manufacturer Owner Signer"; Filename: "powershell
 Name: "desktopicon"; Description: "Create a Manufacturer Owner Signer desktop shortcut"
 
 [Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then begin
+    ExtractTemporaryFile('manufacturer-backend.zip');
+    ExtractTemporaryFile('node-v22.22.0-win-x64.zip');
+  end;
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
