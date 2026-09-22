@@ -49,6 +49,7 @@ Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer";
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Initialize-PilotAdmin.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Invoke-SystemOwnerProvisioning.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-PlatformInfluxBackup.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-PlatformRestore.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
@@ -74,6 +75,7 @@ Filename: "https://localhost/__bioems/start"; Description: "Open BIO-EMS"; Flags
 
 [Icons]
 Name: "{group}\BIO-EMS"; Filename: "https://localhost/__bioems/start"
+Name: "{group}\BIO-EMS System Owner Provisioning"; Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-SystemOwnerProvisioning.ps1"""; WorkingDir: "{app}"; IconFilename: "powershell.exe"; Comment: "Local manufacturer-controlled System Owner activation"
 Name: "{commondesktop}\BIO-EMS"; Filename: "https://localhost/__bioems/start"; Tasks: desktopicon
 
 [Tasks]
