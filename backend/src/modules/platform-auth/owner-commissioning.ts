@@ -56,7 +56,8 @@ function canonicalize(value: unknown): string {
 export function signOwnerCommissioningPackage(
   claims: OwnerCommissioningClaims,
   keyId: string,
-  privateKeyPem: string
+  privateKeyPem: string,
+  privateKeyPassphrase?: string
 ): SignedOwnerCommissioningPackage {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,63}$/.test(keyId)) {
     throw new Error("Invalid commissioning signing key ID");
@@ -65,7 +66,15 @@ export function signOwnerCommissioningPackage(
   if (new Date(parsed.expiresAt).getTime() <= new Date(parsed.issuedAt).getTime()) {
     throw new Error("Commissioning expiry must follow issue time");
   }
-  const signature = sign(null, Buffer.from(canonicalize(parsed)), createPrivateKey(privateKeyPem));
+  const privateKey = createPrivateKey({
+    key: privateKeyPem,
+    format: "pem",
+    ...(privateKeyPassphrase ? { passphrase: privateKeyPassphrase } : {}),
+  });
+  if (privateKey.asymmetricKeyType !== "ed25519") {
+    throw new Error("Commissioning signing key must be Ed25519");
+  }
+  const signature = sign(null, Buffer.from(canonicalize(parsed)), privateKey);
   return { algorithm: "Ed25519", keyId, claims: parsed, signature: signature.toString("base64") };
 }
 

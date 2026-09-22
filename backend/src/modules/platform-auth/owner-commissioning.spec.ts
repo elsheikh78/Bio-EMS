@@ -19,6 +19,14 @@ describe("owner commissioning", () => {
   const pair = generateKeyPairSync("ed25519");
   const privateKey = pair.privateKey.export({ type: "pkcs8", format: "pem" }).toString();
   const publicKey = pair.publicKey.export({ type: "spki", format: "pem" }).toString();
+  const encryptedPrivateKey = pair.privateKey
+    .export({
+      type: "pkcs8",
+      format: "pem",
+      cipher: "aes-256-cbc",
+      passphrase: "OfflineKeyPassphrase2026!",
+    })
+    .toString();
 
   beforeEach(() => {
     database = new Database(":memory:");
@@ -62,6 +70,27 @@ describe("owner commissioning", () => {
     expect(() => database.prepare("DELETE FROM owner_commissioning_receipts").run()).toThrow(
       /immutable/
     );
+  });
+
+  it("signs with an encrypted Ed25519 private key", async () => {
+    const signed = signOwnerCommissioningPackage(
+      await claims(),
+      "owner-key-2026",
+      encryptedPrivateKey,
+      "OfflineKeyPassphrase2026!"
+    );
+
+    expect(verifyOwnerCommissioningPackage(signed, publicKey, installationId, now)).toEqual(
+      signed.claims
+    );
+    expect(() =>
+      signOwnerCommissioningPackage(
+        signed.claims,
+        "owner-key-2026",
+        encryptedPrivateKey,
+        "wrong-passphrase"
+      )
+    ).toThrow();
   });
 
   it("rejects tampering, wrong installation, expiry, and replay", async () => {
