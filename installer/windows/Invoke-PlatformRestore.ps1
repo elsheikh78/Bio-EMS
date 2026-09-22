@@ -47,10 +47,29 @@ function Invoke-Robocopy([string]$source, [string]$destination) {
     & robocopy.exe $source $destination /MIR /XJ /R:2 /W:1 /NFL /NDL /NP | Out-Null
     if ($LASTEXITCODE -gt 7) { throw "Controlled restore copy failed" }
 }
-function Start-ControlledServices {
-    foreach ($service in @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend")) {
-        Start-Service -Name $service -ErrorAction Stop
+function Wait-HttpReady([string]$uri, [string]$component, [int]$attempts = 45) {
+    $lastError = "not ready"
+    for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+        try {
+            $response = Invoke-RestMethod -Uri $uri -TimeoutSec 5
+            if (($component -eq "InfluxDB" -and $response.status -eq "pass") -or
+                ($component -eq "Backend" -and $response.status -eq "UP")) { return }
+            $lastError = "unexpected health status '$($response.status)'"
+        }
+        catch { $lastError = $_.Exception.Message }
+        Start-Sleep -Seconds 1
     }
+    throw "$component did not become ready at $uri after $attempts attempts: $lastError"
+}
+function Wait-InfluxReady {
+    Wait-HttpReady "$($HostUrl.TrimEnd('/'))/health" "InfluxDB"
+}
+function Start-ControlledServices {
+    Start-Service -Name "BIOEMS-MQTT" -ErrorAction Stop
+    Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
+    Wait-InfluxReady
+    Start-Service -Name "BIOEMS-Backend" -ErrorAction Stop
+    Wait-HttpReady "https://localhost/api/v1/health" "Backend"
 }
 function Stop-ControlledServices {
     foreach ($service in $services) {
@@ -170,6 +189,7 @@ try {
 
     # InfluxDB restore requires the database service to be available.
     Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
+    Wait-InfluxReady
     $env:INFLUX_HOST = $HostUrl
     $env:INFLUX_ORG = $Org
     Restore-InfluxSnapshot $influxSource
@@ -183,16 +203,31 @@ try {
 catch {
     $failure = $_
     Stop-ControlledServices
-    if (Test-Path -LiteralPath $safetySqlite -PathType Leaf) {
-        Copy-Item -LiteralPath $safetySqlite -Destination $liveSqlite -Force
+    $rollbackFailure = $null
+    $restartFailure = $null
+    try {
+        if (Test-Path -LiteralPath $safetySqlite -PathType Leaf) {
+            Copy-Item -LiteralPath $safetySqlite -Destination $liveSqlite -Force
+        }
+        Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
+        Wait-InfluxReady
+        Restore-InfluxSnapshot $safetyInflux
     }
-    Start-Service -Name "BIOEMS-InfluxDB" -ErrorAction Stop
-    try { Restore-InfluxSnapshot $safetyInflux }
     catch {
-        throw "Platform restore failed and InfluxDB safety rollback also failed. Original cause: $($failure.Exception.Message). Rollback cause: $($_.Exception.Message)"
+        $rollbackFailure = $_
     }
-    Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
-    Start-ControlledServices
+    finally {
+        Stop-Service -Name "BIOEMS-InfluxDB" -Force -ErrorAction SilentlyContinue
+        try { Start-ControlledServices }
+        catch { $restartFailure = $_ }
+    }
+    if ($rollbackFailure) {
+        throw "Platform restore failed and InfluxDB safety rollback also failed. Original cause: $($failure.Exception.Message). Rollback cause: $($rollbackFailure.Exception.Message). Service recovery: $(if ($restartFailure) { $restartFailure.Exception.Message } else { 'completed' })"
+    }
+    if ($restartFailure) {
+        throw "Platform restore failed; safety snapshot was restored, but service recovery failed. Original cause: $($failure.Exception.Message). Service recovery cause: $($restartFailure.Exception.Message)"
+    }
+    & (Join-Path $application "installer\Test-PostInstallHealth.ps1") -ApplicationRoot $application -PersistentRoot $persistent
     Set-RestoreJobState "FAILED" $failure.Exception.Message
     throw "Platform restore failed; safety snapshot was restored. Cause: $($failure.Exception.Message)"
 }

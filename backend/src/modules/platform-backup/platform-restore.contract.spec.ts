@@ -12,6 +12,11 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(source).toContain("Test-PostInstallHealth.ps1");
     expect(source).toContain("Platform restore failed; safety snapshot was restored");
     expect(source).toContain("InfluxDB snapshot restore failed");
+    expect(source).toContain("function Wait-HttpReady");
+    expect(source).toContain("Wait-InfluxReady");
+    expect(source).toContain("finally {");
+    expect(source).toContain("try { Start-ControlledServices }");
+    expect(source).toContain("safety snapshot was restored, but service recovery failed");
     expect(source).toContain("$env:INFLUX_BUCKET");
     expect(source).toContain("bucket list --name $bucketName");
     expect(source).not.toContain("$env:BIOEMS_RESTORE_INFLUX_BUCKET");
