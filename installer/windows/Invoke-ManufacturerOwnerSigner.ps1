@@ -14,10 +14,11 @@ $repository = [IO.Path]::GetFullPath($RepositoryRoot)
 $backend = Join-Path $repository "backend"
 $sourceIssuer = Join-Path $backend "src\scripts\issue-owner-commissioning-package.ts"
 $installedRoot = [IO.Path]::GetFullPath($ToolRoot)
-$installedNode = Join-Path $installedRoot "runtime\node\node.exe"
+$installedNode = Get-ChildItem -LiteralPath (Join-Path $installedRoot "runtime") -Filter "node.exe" -File -Recurse -ErrorAction SilentlyContinue |
+    Select-Object -First 1
 $installedIssuer = Join-Path $installedRoot "backend\dist\src\scripts\issue-owner-commissioning-package.js"
 $installedMode =
-    (Test-Path -LiteralPath $installedNode -PathType Leaf) -and
+    ($null -ne $installedNode) -and
     (Test-Path -LiteralPath $installedIssuer -PathType Leaf)
 if (-not $installedMode -and -not (Test-Path -LiteralPath $sourceIssuer -PathType Leaf)) {
     [System.Windows.Forms.MessageBox]::Show(
@@ -161,7 +162,7 @@ $issue.Add_Click({
         }
 
         if ($installedMode) {
-            & $installedNode $installedIssuer
+            & $installedNode.FullName $installedIssuer
             if ($LASTEXITCODE -ne 0) { throw "The signing operation was rejected." }
         }
         else {
