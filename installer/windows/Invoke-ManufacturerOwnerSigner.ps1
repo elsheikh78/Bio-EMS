@@ -1,7 +1,8 @@
 #Requires -Version 5.1
 [CmdletBinding()]
 param(
-    [string]$RepositoryRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+    [string]$RepositoryRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
+    [string]$ToolRoot = $PSScriptRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,10 +12,16 @@ Add-Type -AssemblyName System.Drawing
 
 $repository = [IO.Path]::GetFullPath($RepositoryRoot)
 $backend = Join-Path $repository "backend"
-$issuer = Join-Path $backend "src\scripts\issue-owner-commissioning-package.ts"
-if (-not (Test-Path -LiteralPath $issuer -PathType Leaf)) {
+$sourceIssuer = Join-Path $backend "src\scripts\issue-owner-commissioning-package.ts"
+$installedRoot = [IO.Path]::GetFullPath($ToolRoot)
+$installedNode = Join-Path $installedRoot "runtime\node\node.exe"
+$installedIssuer = Join-Path $installedRoot "backend\dist\src\scripts\issue-owner-commissioning-package.js"
+$installedMode =
+    (Test-Path -LiteralPath $installedNode -PathType Leaf) -and
+    (Test-Path -LiteralPath $installedIssuer -PathType Leaf)
+if (-not $installedMode -and -not (Test-Path -LiteralPath $sourceIssuer -PathType Leaf)) {
     [System.Windows.Forms.MessageBox]::Show(
-        "Run this utility from the controlled BIO-EMS source checkout.",
+        "Manufacturer signing runtime is incomplete.",
         "BIO-EMS Manufacturer Signer", "OK", "Error"
     ) | Out-Null
     exit 1
@@ -153,13 +160,19 @@ $issue.Add_Click({
             [Environment]::SetEnvironmentVariable($name, $values[$name], "Process")
         }
 
-        Push-Location $backend
-        try {
-            & npm run owner:commissioning-issue
+        if ($installedMode) {
+            & $installedNode $installedIssuer
             if ($LASTEXITCODE -ne 0) { throw "The signing operation was rejected." }
         }
-        finally {
-            Pop-Location
+        else {
+            Push-Location $backend
+            try {
+                & npm run owner:commissioning-issue
+                if ($LASTEXITCODE -ne 0) { throw "The signing operation was rejected." }
+            }
+            finally {
+                Pop-Location
+            }
         }
 
         $status.Text = "Signed package created. Transfer only the output JSON to the customer host."
