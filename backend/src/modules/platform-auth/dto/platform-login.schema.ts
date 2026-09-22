@@ -16,7 +16,7 @@ export const platformLoginSchema = z
     password,
     code: z
       .string()
-      .regex(/^\\d{6}$/)
+      .regex(/^\d{6}$/)
       .optional(),
   })
   .strict();
