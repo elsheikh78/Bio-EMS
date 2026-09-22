@@ -70,3 +70,19 @@ After this cleanup PR is merged:
 5. create short-lived task branches only when active work begins.
 
 Historical pull requests, merge commits, Actions runs and tags remain the audit trail after branch deletion.
+
+## Completion evidence
+
+Repository branch cleanup completed on 22 September 2026.
+
+- PR #241 merged the repository/workflow/documentation cleanup.
+- All surviving branch refs were rechecked against the audited, SHA-pinned branch inventory before deletion.
+- The final guarded cleanup execution deleted the last three verified non-main branches:
+  - `agent/p1-closure-p2-baseline`
+  - `agent/p2-01-controller-runtime-foundation`
+  - `fix/pilot-setup-without-lic11`
+- The cleanup job's final shell check reported a false failure because the local remote symbolic ref `origin` was not excluded by that check. This did not indicate a remaining GitHub branch.
+- A direct GitHub refs verification after the deletion returned exactly one branch ref: `refs/heads/main`.
+- The temporary branch-cleanup workflow and trigger issues are removed/closed after completion.
+
+Final repository branch policy target: keep `main` authoritative and use short-lived task branches that are removed after merge.
