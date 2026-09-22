@@ -71,7 +71,13 @@ jobs:
         shell: powershell
         run: |
           $vendor = Join-Path $env:RUNNER_TEMP "bioems-vendor-cache"
-          & .\installer\windows\Get-VendorInputs.ps1 -DestinationDirectory $vendor
+          New-Item -ItemType Directory -Path $vendor -Force | Out-Null
+          $archive = Join-Path $vendor "node-v22.22.0-win-x64.zip"
+          Invoke-WebRequest -Uri "https://nodejs.org/download/release/v22.22.0/node-v22.22.0-win-x64.zip" -OutFile $archive
+          $actual = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a") {
+            throw "Pinned Node.js runtime checksum mismatch"
+          }
 
       - name: Stage Manufacturer Tools
         shell: powershell
