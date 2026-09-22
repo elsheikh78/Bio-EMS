@@ -1,17 +1,17 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 19 September 2026  
+**Plan date:** 22 September 2026  
 **Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
-## Immediate restart point — 20 September 2026
+## Immediate restart point — 22 September 2026
 
-1. Verify the latest PR #239 Prettier, CI and Internal Windows Setup results for the frontend cache revalidation fix.
-2. Build/use only the resulting current artifact and physically retest bare `https://localhost/login` with no query-string cache bust and no hard refresh.
-3. Create the installation-bound SYSTEM_OWNER commissioning request on the customer host; sign it only on the manufacturer-controlled machine with the encrypted private key; import the signed package; enroll MFA via the locally rendered QR; confirm SYSTEM_OWNER login and audit evidence.
-4. Execute physical Repair and prove preservation of customer/site/installation identity, SQLite, Influx telemetry, configuration and commissioned owner state.
-5. The visible ADMIN/System Owner Backup & Restore UI and optional automatic schedule (6h/12h/daily/weekly, retention 1-30) are source implemented on PR #239. Execute physical manual backup -> controlled mutation -> Restore, scheduled execution/retention, historical Influx telemetry + identity restoration and negative rejection cases.
-6. Review stacked PRs: #239 is the current merge vehicle; #233/#235/#237 are ancestor integration layers to close as superseded only after final #239 acceptance; #138 is stale/conflicted documentation and should not be merged as-is.
-7. Only after all PR #239 acceptance gates are green, update final evidence/docs and decide the merge to `main`.
+1. Complete repository cleanup and preserve `main` as the single authoritative integration line.
+2. Verify the current merged SYSTEM_OWNER entry path, manufacturer-controlled commissioning flow, MFA enrollment and MFA login on the Pilot host.
+3. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER, including Site context and Email/Telegram/WhatsApp/SMS test actions without exposing secrets.
+4. Continue physical Windows qualification from current `main`: fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
+5. Execute COM-07 live provider/hardware acceptance where real credentials/SIM/provider access are available.
+6. Execute hardware bench qualification, then BIO EGYPT field commissioning/UAT.
+7. Keep final Device Trust/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
 
 ## Objective
 
@@ -19,16 +19,16 @@ Move BIO-EMS from mature source software to a repeatable, field-tested BIO EGYPT
 
 ## Phase 0 — Current security / integration gates
 
-- SEC-OWNER-01 source is implemented on PR #233 but intentionally remains unmerged pending the real manufacturer Ed25519 key ceremony, Production keyring build, offline commissioning exercise and Production security review.
-- Customer ADMIN provisioning during Setup is merged to main via PR #231 and has been validated in a clean Pilot install.
-- The active integration line is PR #235 / `feat/com-01-06-communication-channels`, stacked on SEC-OWNER work.
-- Do not describe either SEC-OWNER Production acceptance or COM-07 as complete until their external evidence gates close.
+- SEC-OWNER source is integrated into `main` through PR #239; Production key ceremony/security acceptance remains an external gate.
+- Customer ADMIN provisioning during Setup is merged and has been validated in a clean Pilot install.
+- COM-01 through COM-06 are integrated into `main`; COM-07 live provider/hardware acceptance remains open.
+- Do not describe SYSTEM_OWNER Production acceptance, COM-07, or BIO EGYPT commissioning as complete until their external evidence gates close.
 
 ## Phase A — Communication Channel Administration
 
 ### COM-01 — Secure configuration domain
 
-Status: **SOURCE IMPLEMENTED ON PR #235 / COM-07 ACCEPTANCE PENDING**
+Status: **MERGED TO MAIN / COM-07 ACCEPTANCE PENDING**
 
 - define channel/provider configuration model;
 - protected/encrypted secret storage;
@@ -85,7 +85,7 @@ Executed only after the software is installed on the Pilot target and real provi
 
 ## Phase B — Fresh Pilot Setup build
 
-Current automated Pilot Setup evidence exists on PR #235 (CI #1021 and Internal Windows Setup #330 passed). After the integration/security merge gates are deliberately closed:
+Current automated Pilot Setup evidence is integrated on `main`. PR #240 CI and Internal Windows Setup passed after the integration merge. For each controlled Pilot artifact:
 
 1. Build from authoritative `main`.
 2. Generate controlled internal signed Pilot Setup.
