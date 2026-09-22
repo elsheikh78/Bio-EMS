@@ -1,10 +1,19 @@
 # BIO-EMS Project State
 
-**State date:** 21 September 2026  
-**Authoritative main audited:** `653a573584122a2fa72e4e762d8f0337ae0f6712`  
-**Current integration branch:** `feat/dep-br-backup-restore` / draft PR #239  
+**State date:** 22 September 2026  
+**Authoritative main audited:** `992e26df5252bc533e8e4c10ddcbb1eb628047bd`  
+**Current integration branch:** none; `main` is authoritative  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 22 September integration and repository checkpoint
+
+- PR #239 is merged to `main`, integrating SYSTEM_OWNER security, managed communication channels, password recovery, installation lifecycle and verified platform backup/restore.
+- PR #240 is merged to `main`, correcting Windows/Linux portability assumptions in the backend test suite without changing production runtime behavior.
+- Current Windows verification passed the full Backend suite: 137 test files / 965 tests, plus typecheck, lint and format checks.
+- PR #240 CI and Internal Windows Setup both passed before merge.
+- Repository hygiene audit found 257 branches at audit start. Historical branch cleanup is tracked by `docs/project-management/REPOSITORY-CLEANUP-2026-09-22.md`.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**; source integration does not replace physical commissioning/UAT evidence.
 
 ## 21 September physical Repair checkpoint
 
@@ -31,10 +40,10 @@
 
 Source software is mature and full CI is green, but the BIO EGYPT Pilot is still **NOT COMMISSIONED / NOT ACCEPTED**. The next controlled priority is not final commercial protection. The immediate sequence is:
 
-1. retain SEC-OWNER-01 as implemented/verified Pilot source pending Production key ceremony and acceptance;
-2. retain COM-01 -> COM-06 as source implemented on PR #235;
+1. verify the merged SYSTEM_OWNER entry/commissioning/MFA path on the current Pilot build while Production key ceremony remains pending;
+2. verify the merged Communication Channels administration on current `main`;
 3. execute COM-07 live provider/hardware acceptance;
-4. continue multi-machine Windows installer qualification;
+4. continue multi-machine Windows installer and Backup/Restore qualification;
 5. execute hardware/bench qualification;
 6. perform BIO EGYPT field commissioning/UAT;
 7. stabilize defects;
@@ -45,11 +54,12 @@ Master audit:
 
 ## Repository / CI baseline
 
-- Current authoritative `main`: `653a573584122a2fa72e4e762d8f0337ae0f6712` (PR #231 merged: customer ADMIN provisioning during Setup).
-- PR #205: Communication Channel Administration plan merged.
-- Latest full CI used in the audit:
-  - Backend: typecheck/build/lint/format passed; 114 test files / 809 tests passed.
-  - Frontend: typecheck/lint/format/build passed; 52 test files / 299 tests passed.
+- Current authoritative `main`: `992e26df5252bc533e8e4c10ddcbb1eb628047bd` (PR #240 merged).
+- PR #239 merged the current security/communication/password-recovery/installation/backup-restore integration.
+- PR #240 CI and Internal Windows Setup passed before merge.
+- Latest verified quality baseline:
+  - Backend: typecheck/build/lint/format passed; 137 test files / 965 tests passed.
+  - Frontend: typecheck/lint/format/build passed; 56 test files / 311 tests passed.
 - No new product version/release is created by this audit.
 
 ## Established software baseline
@@ -81,7 +91,7 @@ Historical closure remains historical evidence and must not be rewritten to impl
 
 ### Planned / open
 
-- COM-01 through COM-06: **SOURCE IMPLEMENTED / VERIFIED ON PR #235; NOT MERGED TO MAIN**.
+- COM-01 through COM-06: **SOURCE MERGED TO MAIN / SOFTWARE VERIFICATION COMPLETE**.
 - COM-07: **LIVE ACCEPTANCE PENDING**.
 - Meta WhatsApp live acceptance: **OPEN / externally blocked**.
 - SMS/GSM live delivery: **OPEN**.
@@ -110,12 +120,11 @@ Therefore the installer is no longer “not implemented.”
 
 ## Communication Channel Administration
 
-Status: **COM-01 THROUGH COM-06 SOURCE IMPLEMENTED / COM-07 LIVE ACCEPTANCE PENDING**.
+Status: **COM-01 THROUGH COM-06 MERGED / COM-07 LIVE ACCEPTANCE PENDING**.
 
 Current evidence:
-- PR #235 carries COM-01 through COM-06 on top of SEC-OWNER integration work.
-- CI run #1021 passed.
-- Internal Windows Setup run #330 passed, including locked vendor acquisition, deterministic staging, signing/signature verification, installation and Pilot health.
+- PR #235 implemented COM-01 through COM-06 and the work is now integrated into `main` through PR #239.
+- The integrated source passed subsequent CI and Internal Windows Setup verification through PR #240.
 - COM-07 remains open for real Email/Telegram/WhatsApp/SMS and local modem/SIM evidence where applicable.
 
 ## Hardware / field position

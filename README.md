@@ -27,24 +27,23 @@ Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a histor
 The core source platform is mature. The latest audited CI baseline passed:
 
 - Backend typecheck/build/lint/format;
-- Backend 114 test files / 809 tests;
-- Frontend typecheck/lint/format/build;
-- Frontend 52 test files / 299 tests.
+- Backend typecheck/build/lint/format passed; 137 test files / 965 tests passed on the current Windows verification baseline;
+- Frontend typecheck/lint/format/build passed; 56 test files / 311 tests passed on the current verification baseline.
 
 BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## Current execution order
 
-1. Preserve and close the SEC-OWNER-01 Production key/commissioning gate.
-2. COM-01 through COM-06 are source implemented on PR #235; complete COM-07 live acceptance.
-3. Continue qualification on multiple clean Windows computers.
-4. Close remaining installer lifecycle evidence.
+1. Complete repository hygiene and keep `main` as the single authoritative integration line.
+2. Verify the merged SYSTEM_OWNER entry, commissioning and MFA workflow on the current Pilot build.
+3. Verify the merged Communication Channels configuration and live test actions; complete COM-07 provider/hardware acceptance.
+4. Continue qualification on multiple clean Windows computers, including Repair/Restore evidence.
 5. Execute hardware bench qualification.
 6. Close required SMS/GSM and notification failover evidence.
 7. Install and commission BIO EGYPT Pilot.
 8. Stabilize defects from real operation.
 9. Implement deferred production-grade Device Trust/commercial protection.
-10. Complete production signing, manuals, presentation and final Production Installer release.
+10. Complete Production key ceremony/signing, manuals, presentation and final Production Installer release.
 
 The production Device PKI/mTLS/Secure Boot/host-transfer architecture is approved, but final implementation is intentionally deferred until Pilot Setup and hardware are stable.
 
@@ -82,11 +81,11 @@ BIO-EMS currently includes:
 
 ## Communication Channels configuration
 
-Implemented source work on PR #235 adds:
+Merged source work (integrated through PR #239) provides:
 
 `Configuration -> Communication Channels`
 
-SYSTEM_OWNER and ADMIN will be able to manage Email, Telegram, WhatsApp and SMS/GSM provider connection settings, secure secrets, test actions and channel failover without rebuilding BIO-EMS or editing PowerShell/deployment files.
+SYSTEM_OWNER and ADMIN can manage Email, Telegram, WhatsApp and SMS/GSM provider connection settings, secure secrets, test actions and channel failover without rebuilding BIO-EMS or editing PowerShell/deployment files.
 
 ## Windows Setup status
 
@@ -98,7 +97,7 @@ Installer source is materially advanced:
 - automatic install diagnostics;
 - partial-install/clean-device repair fix.
 
-Current PR #235 automated Windows evidence verifies deterministic staging, signed Setup compilation, clean installation and Pilot health. A separate 16 September clean-install exercise also verified all three BIO-EMS services and customer ADMIN login.
+Current `main` includes the installer/security/backup integration merged through PR #239 plus the Windows portability correction from PR #240. PR #240 CI and Internal Windows Setup both passed, and a separate clean-install exercise verified all three BIO-EMS services and customer ADMIN login.
 
 Still required:
 

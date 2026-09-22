@@ -1,0 +1,101 @@
+name: One-time repository branch cleanup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/project-management/REPOSITORY-CLEANUP-2026-09-22.md"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    name: Delete audited historical branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out authoritative main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Delete only audited safe branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+
+          approved_diverged_p2='3c015a986555b5127d1d403a11648e2a872316c3'
+          approved_diverged_readme='798739e040399159c817856d1e63bd466d6c39c2'
+          approved_diverged_v018='c38ec299f0c7ee00cf88a01c31468a6ed85acba8'
+
+          declare -a safe=()
+
+          while IFS= read -r remote_ref; do
+            branch="${remote_ref#origin/}"
+            [[ "$branch" == "HEAD" || "$branch" == "main" ]] && continue
+
+            case "$branch" in
+              agent/p2-02-config-receipt-integrity|agent/update-readme-v0.13.0|agent/v0-18-current-docs-reconciliation)
+                continue
+                ;;
+            esac
+
+            if git merge-base --is-ancestor "refs/remotes/origin/$branch" HEAD; then
+              safe+=("$branch")
+            else
+              echo "::error::Unexpected non-ancestor branch found during cleanup: $branch"
+              exit 1
+            fi
+          done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
+
+          echo "Verified ancestor branches scheduled for deletion: ${#safe[@]}"
+
+          for ((i=0; i<${#safe[@]}; i+=40)); do
+            batch=("${safe[@]:i:40}")
+            git push origin --delete "${batch[@]}"
+          done
+
+          verify_and_delete_diverged() {
+            local branch="$1"
+            local expected_sha="$2"
+            local ref="refs/remotes/origin/$branch"
+
+            if ! git show-ref --verify --quiet "$ref"; then
+              echo "Already absent: $branch"
+              return
+            fi
+
+            local actual_sha
+            actual_sha="$(git rev-parse "$ref")"
+            if [[ "$actual_sha" != "$expected_sha" ]]; then
+              echo "::error::Refusing to delete $branch because its head changed: $actual_sha"
+              exit 1
+            fi
+
+            git push origin --delete "$branch"
+          }
+
+          verify_and_delete_diverged             "agent/p2-02-config-receipt-integrity"             "$approved_diverged_p2"
+          verify_and_delete_diverged             "agent/update-readme-v0.13.0"             "$approved_diverged_readme"
+          verify_and_delete_diverged             "agent/v0-18-current-docs-reconciliation"             "$approved_diverged_v018"
+
+          git fetch origin --prune
+
+          remaining="$(
+            git for-each-ref --format='%(refname:short)' refs/remotes/origin |
+              sed 's#^origin/##' |
+              grep -Ev '^(HEAD|main)$' || true
+          )"
+
+          if [[ -n "$remaining" ]]; then
+            echo "::error::Unexpected remote branches remain after cleanup:"
+            echo "$remaining"
+            exit 1
+          fi
+
+          echo "Repository branch cleanup complete: only main remains."
