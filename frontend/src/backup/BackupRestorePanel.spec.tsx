@@ -99,4 +99,41 @@ describe("BackupRestorePanel restore recovery", () => {
     ).toBeNull();
     expect(screen.getByRole("button", { name: "Refresh" })).toBeEnabled();
   });
+
+  it("unlocks controls when the authoritative list has no restore job", async () => {
+    window.sessionStorage.setItem(
+      "bioems:active-restore-job:/platform-backups",
+      "missing-after-restore",
+    );
+    const request = vi.fn((path: string) => {
+      if (path === "/platform-backups/schedule")
+        return Promise.resolve({ schedule });
+      if (path === "/platform-backups") {
+        return Promise.resolve({ backups: [], latestRestoreJob: null });
+      }
+      return Promise.reject(
+        new Error("Restore job is outside the restored identity scope"),
+      );
+    });
+
+    render(
+      <LocalizationProvider language="en">
+        <BackupRestorePanel basePath="/platform-backups" request={request} />
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "No active restore job was found; backup controls were unlocked.",
+        ),
+      ).toBeInTheDocument();
+    });
+    expect(
+      window.sessionStorage.getItem(
+        "bioems:active-restore-job:/platform-backups",
+      ),
+    ).toBeNull();
+    expect(screen.getByRole("button", { name: "Refresh" })).toBeEnabled();
+  });
 });

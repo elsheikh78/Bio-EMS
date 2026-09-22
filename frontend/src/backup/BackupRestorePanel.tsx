@@ -123,6 +123,20 @@ export function BackupRestorePanel({
         // The durable latest status is authoritative after a backend/database
         // restart. Reconcile it even when browser storage retained a stale job id.
         finishRestore(latest);
+      } else if (activeRestoreJobId && !latest) {
+        // A successfully loaded authoritative list with no visible restore job
+        // means the browser marker is stale (for example after the restored
+        // database changes the customer identity scope). Never leave controls
+        // locked solely because sessionStorage survived that transition.
+        window.sessionStorage.removeItem(restoreSessionKey);
+        setActiveRestoreJobId(null);
+        setBusy(false);
+        setError(undefined);
+        setMessage(
+          ar
+            ? "لا توجد مهمة استعادة نشطة؛ تم فتح أدوات النسخ الاحتياطي."
+            : "No active restore job was found; backup controls were unlocked.",
+        );
       }
     } catch {
       if (!activeRestoreJobId) {
@@ -157,7 +171,12 @@ export function BackupRestorePanel({
     let attempts = 0;
 
     const poll = async () => {
-      if (cancelled) return;
+      if (
+        cancelled ||
+        window.sessionStorage.getItem(restoreSessionKey) !== activeRestoreJobId
+      ) {
+        return;
+      }
       attempts += 1;
       try {
         const result = (await request(
@@ -186,9 +205,12 @@ export function BackupRestorePanel({
           // Controlled services are expected to be unavailable during restore.
         }
       } finally {
-        if (!cancelled && attempts < 30) {
+        const stillActive =
+          window.sessionStorage.getItem(restoreSessionKey) ===
+          activeRestoreJobId;
+        if (!cancelled && stillActive && attempts < 30) {
           window.setTimeout(() => void poll(), 2_000);
-        } else if (!cancelled) {
+        } else if (!cancelled && stillActive) {
           window.sessionStorage.removeItem(restoreSessionKey);
           setActiveRestoreJobId(null);
           setBusy(false);
@@ -203,7 +225,12 @@ export function BackupRestorePanel({
     };
 
     const initial = window.setTimeout(() => {
-      if (cancelled) return;
+      if (
+        cancelled ||
+        window.sessionStorage.getItem(restoreSessionKey) !== activeRestoreJobId
+      ) {
+        return;
+      }
       setBusy(true);
       setError(undefined);
       setMessage(
