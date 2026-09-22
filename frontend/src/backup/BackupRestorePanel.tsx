@@ -126,8 +126,8 @@ export function BackupRestorePanel({
       } else if (activeRestoreJobId && !latest) {
         // A successfully loaded authoritative list with no visible restore job
         // means the browser marker is stale (for example after the restored
-        // database changes the customer identity scope). Never leave controls
-        // locked solely because sessionStorage survived that transition.
+        // database changes the customer identity scope). A browser-only marker
+        // must never keep operational controls locked after that transition.
         window.sessionStorage.removeItem(restoreSessionKey);
         setActiveRestoreJobId(null);
         setBusy(false);
