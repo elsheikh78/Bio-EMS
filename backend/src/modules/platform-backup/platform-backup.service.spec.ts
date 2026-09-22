@@ -1,6 +1,6 @@
 import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { hasPermission } from "../../authorization/authorization.policy";
@@ -29,8 +29,8 @@ describe("DEP-BR backup destination boundary", () => {
   } as NodeJS.ProcessEnv;
 
   it("uses the configured backup root by default", () => {
-    expect(resolveAllowedBackupDestination(undefined, environment)).toMatch(
-      /\/var\/lib\/bioems\/backups$/
+    expect(resolveAllowedBackupDestination(undefined, environment)).toBe(
+      resolve(environment.BIOEMS_SQLITE_BACKUP_DIR!)
     );
   });
 
