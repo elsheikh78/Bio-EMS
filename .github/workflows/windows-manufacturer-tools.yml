@@ -116,9 +116,11 @@ jobs:
           $process = Start-Process -FilePath $setup.FullName -ArgumentList @("/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART","/SP-") -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "Manufacturer Tools installation failed" }
           $root = Join-Path $env:ProgramFiles "BIO-EMS Manufacturer Tools"
-          @((Join-Path $root "Invoke-ManufacturerOwnerSigner.ps1"),(Join-Path $root "runtime\node\node.exe"),(Join-Path $root "backend\dist\src\scripts\issue-owner-commissioning-package.js")) | ForEach-Object {
+          @((Join-Path $root "Invoke-ManufacturerOwnerSigner.ps1"),(Join-Path $root "backend\dist\src\scripts\issue-owner-commissioning-package.js")) | ForEach-Object {
             if (-not (Test-Path -LiteralPath $_ -PathType Leaf)) { throw "Installed file is missing: $_" }
           }
+          $node = Get-ChildItem -LiteralPath (Join-Path $root "runtime") -Filter "node.exe" -File -Recurse | Select-Object -First 1
+          if ($null -eq $node) { throw "Installed private Node.js runtime is missing" }
           $leaks = Get-ChildItem -LiteralPath $root -File -Recurse | Where-Object { $_.Name -match '(private.*key|\.pem$|passphrase)' }
           if (@($leaks).Count -gt 0) { throw "Package contains prohibited private-key material" }
 
