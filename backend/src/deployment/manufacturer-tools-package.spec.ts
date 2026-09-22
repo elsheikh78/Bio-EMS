@@ -15,9 +15,9 @@ describe("standalone Manufacturer Tools package", () => {
 
   it("runs without a source checkout after installation", () => {
     expect(signer).toContain("$installedMode");
-    expect(signer).toContain("runtime\\node\\node.exe");
+    expect(signer).toContain('-Filter "node.exe" -File -Recurse');
     expect(signer).toContain("issue-owner-commissioning-package.js");
-    expect(signer).toContain("& $installedNode $installedIssuer");
+    expect(signer).toContain("& $installedNode.FullName $installedIssuer");
   });
 
   it("packages only runtime code and never signing secrets", () => {
