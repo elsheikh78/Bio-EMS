@@ -8,7 +8,7 @@ describe("platform login schema", () => {
         username: "system-owner",
         password: "OwnerPassword2026",
         code: "123456",
-      }).success,
+      }).success
     ).toBe(true);
   });
 
@@ -20,8 +20,8 @@ describe("platform login schema", () => {
           username: "system-owner",
           password: "OwnerPassword2026",
           code,
-        }).success,
+        }).success
       ).toBe(false);
-    },
+    }
   );
 });
