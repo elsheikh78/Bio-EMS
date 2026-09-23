@@ -102,6 +102,37 @@ describe("API request headers", () => {
     },
   );
 
+  it("injects an explicit adapter-controlled Bearer token for public enrollment requests", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(successfulResponse());
+    const client = createApiClient();
+
+    await client.request("/platform-auth/mfa/enrollment", {
+      auth: "public",
+      bearerToken: "enrollment-token",
+      method: "POST",
+    });
+
+    const headers = fetchSpy.mock.calls[0]?.[1]?.headers as Headers;
+    expect(headers.get("Authorization")).toBe("Bearer enrollment-token");
+  });
+
+  it("rejects an explicit bearer token combined with protected session authentication", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    const client = createApiClient({ getAccessToken: () => "session-token" });
+
+    await expect(
+      client.request("/platform-auth/mfa/enrollment", {
+        auth: "protected",
+        bearerToken: "enrollment-token",
+      }),
+    ).rejects.toBeInstanceOf(ApiRequestConfigurationError);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it("sends Login in public mode without Authorization", async () => {
     vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
     const fetchSpy = vi
