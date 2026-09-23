@@ -297,6 +297,10 @@ jobs:
           if (@($users).Count -ne 1 -or $users[0].username -ne $env:BIOEMS_CI_ADMIN_USERNAME) {
             throw "BIO-EMS installed user-management API verification failed"
           }
+          & "C:\Program Files\BIO-EMS\Invoke-SystemOwnerProvisioning.ps1" -ValidateOnly
+          if ($LASTEXITCODE -ne 0) {
+            throw "Installed System Owner Provisioning preflight failed"
+          }
           Remove-Item Env:BIOEMS_CI_ADMIN_USERNAME -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
