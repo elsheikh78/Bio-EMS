@@ -69,6 +69,8 @@ export class HeartbeatService {
       activeBinding &&
       (payload.platform_binding_id !== activeBinding.platform_binding_id ||
         payload.hardware_uid !== activeBinding.hardware_uid ||
+        payload.firmware_version !== activeBinding.firmware_version ||
+        payload.protocol_version !== activeBinding.protocol_version ||
         activeBinding.site_code !== siteCode)
     ) {
       return this.reject(HEARTBEAT_REJECTION_REASONS.DEVICE_BINDING_MISMATCH, {
