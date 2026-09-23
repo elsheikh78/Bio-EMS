@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 import {
+  devicePairingCodeResponseSchema,
   installationCreateResponseSchema,
   installationListSchema,
 } from "./contracts";
@@ -86,5 +87,21 @@ export function useInstallationAction() {
       ),
     onSuccess: () =>
       cache.invalidateQueries({ queryKey: installationQueryKey }),
+  });
+}
+
+export function useIssueDevicePairingCode() {
+  const { apiClient } = usePlatformAuthentication();
+  return useMutation({
+    mutationFn: async (input: { installationId: string; deviceId: string }) =>
+      devicePairingCodeResponseSchema.parse(
+        await apiClient.request<unknown>(
+          `/platform-operations/installations/${input.installationId}/devices/${encodeURIComponent(input.deviceId)}/pairing-code`,
+          {
+            method: "POST",
+            auth: "protected",
+          },
+        ),
+      ),
   });
 }
