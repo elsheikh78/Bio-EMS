@@ -77,8 +77,18 @@ function Invoke-OwnerTool {
             $previous[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
             [Environment]::SetEnvironmentVariable($name, $Environment[$name], "Process")
         }
-        & $node $Script
-        if ($LASTEXITCODE -ne 0) { throw "BIO-EMS owner operation was rejected." }
+        $nativeOutput = @(& $node $Script 2>&1)
+        $exitCode = $LASTEXITCODE
+        if ($exitCode -ne 0) {
+            $detail = $nativeOutput |
+                ForEach-Object { $_.ToString().Trim() } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+                Select-Object -Last 1
+            if ([string]::IsNullOrWhiteSpace([string]$detail)) {
+                $detail = "BIO-EMS owner operation was rejected."
+            }
+            throw [string]$detail
+        }
     }
     finally {
         foreach ($name in $Environment.Keys) {
