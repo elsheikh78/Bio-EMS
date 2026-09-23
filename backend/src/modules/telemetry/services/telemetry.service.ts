@@ -117,6 +117,7 @@ export class TelemetryService {
       activeBinding &&
       (payload.platformBindingId !== activeBinding.platform_binding_id ||
         payload.hardwareUid !== activeBinding.hardware_uid ||
+        payload.protocolVersion !== activeBinding.protocol_version ||
         activeBinding.site_code !== siteCode)
     ) {
       this.reject(TELEMETRY_REJECTION_REASONS.DEVICE_BINDING_MISMATCH, {
