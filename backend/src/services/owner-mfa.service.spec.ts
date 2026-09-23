@@ -60,15 +60,23 @@ describe("OwnerMfaService", () => {
     expect(repository.enableMfa).toHaveBeenCalledTimes(1);
   });
 
-  it("prevents replacement or replay of enrollment after a secret exists", () => {
-    const { service } = fixture();
-    service.beginEnrollment("owner");
+  it("resumes a pending enrollment with the same secret and blocks replay after activation", () => {
+    const { state, key, secret, service } = fixture();
+    const first = service.beginEnrollment("owner");
+    const encryptedBeforeResume = state.mfa_secret_encrypted;
 
-    expect(() => service.beginEnrollment("owner")).toThrow(/unavailable/);
+    const resumed = service.beginEnrollment("owner");
+
+    expect(resumed.secret).toBe(secret);
+    expect(resumed.otpauthUri).toBe(first.otpauthUri);
+    expect(state.mfa_secret_encrypted).toBe(encryptedBeforeResume);
+    expect(decryptMfaSecret(state.mfa_secret_encrypted!, key)).toBe(secret);
+
     service.confirmEnrollment(
       "owner",
-      generateTotpCode("JBSWY3DPEHPK3PXP", new Date("2026-09-14T12:00:00.000Z"))
+      generateTotpCode(secret, new Date("2026-09-14T12:00:00.000Z"))
     );
+    expect(() => service.beginEnrollment("owner")).toThrow(/unavailable/);
     expect(() => service.confirmEnrollment("owner", "123456")).toThrow(/unavailable/);
   });
 

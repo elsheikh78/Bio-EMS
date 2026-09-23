@@ -28,9 +28,18 @@ export class OwnerMfaService {
 
   beginEnrollment(principalId: string): OwnerMfaEnrollment {
     const state = this.repository.findMfaState(principalId);
-    if (!state || state.mfa_secret_encrypted || state.mfa_enabled_at) {
+    if (!state || state.mfa_enabled_at) {
       throw new Error("MFA enrollment is unavailable");
     }
+
+    if (state.mfa_secret_encrypted) {
+      const secret = decryptMfaSecret(state.mfa_secret_encrypted, this.encryptionKey);
+      return {
+        secret,
+        otpauthUri: buildTotpUri(secret, state.username),
+      };
+    }
+
     const secret = this.generateSecret();
     const encrypted = encryptMfaSecret(secret, this.encryptionKey);
     if (!this.repository.beginMfaEnrollment(principalId, encrypted, this.now())) {
