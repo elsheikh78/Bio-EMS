@@ -133,6 +133,7 @@ describe("Telemetry trust-boundary policy", () => {
 
     await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", {
       ...payload,
+      protocolVersion: "1.3",
       platformBindingId: "11111111-1111-4111-8111-111111111111",
       hardwareUid: "AABBCCDDEEFF",
     });
