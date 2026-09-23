@@ -197,7 +197,7 @@ export function SystemOwnerInstallationsPage() {
   const [type, setType] = useState("TEMPERATURE");
   const [unit, setUnit] = useState("°C");
   const [device, setDevice] = useState("");
-  const [channel, setChannel] = useState("0");
+  const [channel, setChannel] = useState("1");
   const [editing, setEditing] = useState<{ uuid: string; json: string } | null>(
     null,
   );
@@ -240,6 +240,9 @@ export function SystemOwnerInstallationsPage() {
             siteCode: site,
             type: "zone-controller",
             protocol: "mqtt",
+            manufacturer: "BIO-EMS",
+            model: "BIO-EMS-SC-V1",
+            firmwareVersion: "0.1.0-pilot.1",
             mappings: [
               {
                 areaCode: area,
