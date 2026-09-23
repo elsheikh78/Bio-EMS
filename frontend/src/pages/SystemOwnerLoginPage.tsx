@@ -137,10 +137,8 @@ export function SystemOwnerLoginPage() {
         await apiClient.request("/platform-auth/mfa/enrollment/confirm", {
           method: "POST",
           auth: "public",
-          headers: {
-            Authorization: `Bearer ${enrollment.token}`,
-            "Content-Type": "application/json",
-          },
+          bearerToken: enrollment.token,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code }),
         });
         setEnrollment(undefined);
