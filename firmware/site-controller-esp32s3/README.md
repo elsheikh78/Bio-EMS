@@ -7,7 +7,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 One firmware build is used across the Pilot fleet:
 
 - firmware version: `0.1.0-pilot.1`;
-- MQTT protocol version: `1.2`;
+- MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
 The firmware version is **not** the device identity. Each physical controller derives a
@@ -54,8 +54,12 @@ idf.py -p COMx flash monitor
 ## Security boundary for this Pilot foundation
 
 The backend code hashes the short-lived pairing code, rate-limits public claim attempts,
-rejects replay, prevents one active hardware UID from binding to multiple devices, and creates
-an immutable platform binding identity.
+rejects replay, prevents one active hardware UID from binding to multiple devices, verifies the
+approved firmware/protocol version, and creates an immutable platform binding identity.
+
+Once a Device has an ACTIVE platform binding, telemetry/heartbeat messages must carry the same
+platform binding ID and hardware UID. Unpaired legacy devices remain accepted during the Pilot
+transition; after pairing, omission or mismatch is rejected.
 
 The current Pilot firmware intentionally does **not** claim the final commercial transport
 security. The current customer-local HTTPS certificate model is not yet the final
