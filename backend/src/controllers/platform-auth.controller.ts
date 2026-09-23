@@ -144,11 +144,7 @@ export const resetOwnerMfaController = asyncHandler(async (req: Request, res: Re
       username: req.platformPrincipal!.username,
       reason: "OWNER_REAUTHENTICATION_REQUIRED",
     });
-    throw new AppError(
-      "Owner reauthentication required",
-      401,
-      "OWNER_REAUTHENTICATION_REQUIRED"
-    );
+    throw new AppError("Owner reauthentication required", 401, "OWNER_REAUTHENTICATION_REQUIRED");
   }
 
   if (!repository.resetMfaEnrollment(credentials.id)) {

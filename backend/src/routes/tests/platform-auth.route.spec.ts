@@ -281,20 +281,14 @@ describe("Owner MFA rotation REST API", () => {
       .send({ current_password: "owner-password", current_code: "123456" })
       .expect(201);
 
-    expect(mocks.verifyPassword).toHaveBeenCalledWith(
-      "owner-password",
-      expect.any(String)
-    );
+    expect(mocks.verifyPassword).toHaveBeenCalledWith("owner-password", expect.any(String));
     expect(mocks.verifyMfaLoginCode).toHaveBeenCalledWith(
       expect.objectContaining({ id: "system-owner" }),
       "123456"
     );
     expect(mocks.resetMfaEnrollment).toHaveBeenCalledWith("system-owner");
     expect(mocks.beginMfaEnrollment).toHaveBeenCalledWith("system-owner");
-    expect(mocks.revokeAllSessions).toHaveBeenCalledWith(
-      "system-owner",
-      "OWNER_MFA_RESET"
-    );
+    expect(mocks.revokeAllSessions).toHaveBeenCalledWith("system-owner", "OWNER_MFA_RESET");
     expect(response.body).toMatchObject({
       mfa_enrollment_required: true,
       enrollment_token: "new-enrollment-token",

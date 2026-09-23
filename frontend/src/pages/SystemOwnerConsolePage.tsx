@@ -61,9 +61,12 @@ const copy = {
     newCode: "New authenticator code",
     activate: "Activate new MFA",
     activating: "Activating…",
-    failed: "MFA rotation failed. Verify the current password/code and try again.",
-    confirmFailed: "The new authenticator code was rejected. Use the current code from the new QR enrollment.",
-    success: "MFA was rotated. All previous owner sessions and the old MFA secret are no longer valid.",
+    failed:
+      "MFA rotation failed. Verify the current password/code and try again.",
+    confirmFailed:
+      "The new authenticator code was rejected. Use the current code from the new QR enrollment.",
+    success:
+      "MFA was rotated. All previous owner sessions and the old MFA secret are no longer valid.",
   },
   ar: {
     title: "لوحة مالك النظام",
@@ -101,8 +104,10 @@ const copy = {
     activate: "تفعيل MFA الجديد",
     activating: "جارٍ التفعيل…",
     failed: "فشل تغيير MFA. راجع كلمة المرور والرمز الحالي ثم حاول مرة أخرى.",
-    confirmFailed: "تم رفض الرمز الجديد. استخدم الرمز الحالي الناتج من تسجيل QR الجديد.",
-    success: "تم تغيير MFA. لم تعد جلسات المالك السابقة أو مفتاح MFA القديم صالحة.",
+    confirmFailed:
+      "تم رفض الرمز الجديد. استخدم الرمز الحالي الناتج من تسجيل QR الجديد.",
+    success:
+      "تم تغيير MFA. لم تعد جلسات المالك السابقة أو مفتاح MFA القديم صالحة.",
   },
 } as const;
 
@@ -341,7 +346,9 @@ export function SystemOwnerConsolePage() {
               sx={{ mt: 1 }}
             >
               <Alert severity="warning">{text.enrollmentHelp}</Alert>
-              {confirmFailed ? <Alert severity="error">{text.confirmFailed}</Alert> : null}
+              {confirmFailed ? (
+                <Alert severity="error">{text.confirmFailed}</Alert>
+              ) : null}
               {qrCode ? (
                 <Box
                   alt="New System Owner authenticator enrollment QR code"
@@ -385,7 +392,9 @@ export function SystemOwnerConsolePage() {
               sx={{ mt: 1 }}
             >
               <Alert severity="warning">{text.reauthHelp}</Alert>
-              {resetFailed ? <Alert severity="error">{text.failed}</Alert> : null}
+              {resetFailed ? (
+                <Alert severity="error">{text.failed}</Alert>
+              ) : null}
               <TextField
                 autoComplete="current-password"
                 label={text.currentPassword}
@@ -398,7 +407,9 @@ export function SystemOwnerConsolePage() {
                 autoComplete="one-time-code"
                 label={text.currentCode}
                 onChange={(event) =>
-                  setCurrentCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                  setCurrentCode(
+                    event.target.value.replace(/\D/g, "").slice(0, 6),
+                  )
                 }
                 required
                 slotProps={{
@@ -414,7 +425,10 @@ export function SystemOwnerConsolePage() {
           )}
         </DialogContent>
         <DialogActions>
-          <Button disabled={resetPending || confirmPending} onClick={closeReset}>
+          <Button
+            disabled={resetPending || confirmPending}
+            onClick={closeReset}
+          >
             {text.cancel}
           </Button>
           {!completed ? (
@@ -422,9 +436,13 @@ export function SystemOwnerConsolePage() {
               disabled={
                 enrollment
                   ? confirmPending || newCode.length !== 6
-                  : resetPending || currentCode.length !== 6 || currentPassword.length === 0
+                  : resetPending ||
+                    currentCode.length !== 6 ||
+                    currentPassword.length === 0
               }
-              form={enrollment ? "owner-mfa-confirm-form" : "owner-mfa-reset-form"}
+              form={
+                enrollment ? "owner-mfa-confirm-form" : "owner-mfa-reset-form"
+              }
               type="submit"
               variant="contained"
             >
