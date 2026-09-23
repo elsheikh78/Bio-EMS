@@ -61,7 +61,7 @@ describe("System Owner recovery package import boundary", () => {
     });
 
     expect(code).toBe(1);
-    expect(error).toHaveBeenCalledWith("System Owner recovery package rejected");
+    expect(error).toHaveBeenCalledWith(\n      "System Owner recovery package rejected: Recovery request belongs to a different installation"\n    );
   });
 
   it("rejects a tampered signed package and does not leak the recovery password or private key", async () => {
@@ -101,7 +101,7 @@ describe("System Owner recovery package import boundary", () => {
 
     expect(code).toBe(1);
     const errors = error.mock.calls.flat().join(" ");
-    expect(errors).toBe("System Owner recovery package rejected");
+    expect(errors).toBe("System Owner recovery package rejected: Invalid recovery signature");
     expect(errors).not.toContain(password);
     expect(errors).not.toContain(fixture.privateKey);
   });
