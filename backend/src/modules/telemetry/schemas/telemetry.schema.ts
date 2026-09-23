@@ -17,6 +17,15 @@ export const telemetrySchema = z.object({
 
   mode: z.enum(["LIVE", "REPLAY"]).optional(),
 
+  platformBindingId: z.string().uuid().optional(),
+
+  hardwareUid: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-F0-9]{12,32}$/)
+    .optional(),
+
   sensors: z.array(telemetrySensorSchema).min(1),
 });
 

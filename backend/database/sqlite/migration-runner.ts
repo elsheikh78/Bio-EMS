@@ -31,6 +31,7 @@ import { migration026 } from "./migrations/026_harden_owner_access";
 import { migration027 } from "./migrations/027_create_communication_channel_configs";
 import { migration028 } from "./migrations/028_create_password_recovery_domain";
 import { migration029 } from "./migrations/029_create_platform_backup_schedule";
+import { migration030 } from "./migrations/030_create_device_platform_pairing";
 
 export interface Migration {
   version: number;
@@ -70,6 +71,7 @@ const migrations: Migration[] = [
   migration027,
   migration028,
   migration029,
+  migration030,
 ];
 
 export function runMigrations(

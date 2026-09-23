@@ -2,6 +2,7 @@ import { TelemetryPayload } from "../schemas/telemetry.schema";
 import { DeviceRepository } from "../../../repositories/device.repository";
 import { SensorRepository } from "../../../repositories/sensor.repository";
 import { SiteRepository } from "../../../repositories/site.repository";
+import { DevicePlatformBindingRepository } from "../../../repositories/device-platform-binding.repository";
 import { writeTelemetryPoint } from "../../../../database/influx/writer";
 import { evaluateAlarm } from "../../../services/alarm.evaluator";
 import { realtimeEventBus } from "../../realtime/realtime-event.bus";
@@ -11,6 +12,7 @@ const deviceRepository = new DeviceRepository();
 const sensorRepository = new SensorRepository();
 
 const siteRepository = new SiteRepository();
+const bindingRepository = new DevicePlatformBindingRepository();
 
 export const TELEMETRY_REJECTION_REASONS = {
   INVALID_TOPIC: "INVALID_TOPIC",
@@ -19,6 +21,7 @@ export const TELEMETRY_REJECTION_REASONS = {
   DEVICE_NOT_OPERATIONAL: "DEVICE_NOT_OPERATIONAL",
   SITE_NOT_FOUND: "SITE_NOT_FOUND",
   SITE_MISMATCH: "SITE_MISMATCH",
+  DEVICE_BINDING_MISMATCH: "DEVICE_BINDING_MISMATCH",
   UNKNOWN_CHANNEL: "UNKNOWN_CHANNEL",
   SENSOR_DISABLED: "SENSOR_DISABLED",
 } as const;
@@ -36,6 +39,7 @@ type TelemetryDependencies = {
   deviceRepository: Pick<DeviceRepository, "findByDeviceId" | "recordCommunication">;
   siteRepository: Pick<SiteRepository, "findById">;
   sensorRepository: Pick<SensorRepository, "findByDeviceAndChannel">;
+  bindingRepository: Pick<DevicePlatformBindingRepository, "findActiveByDeviceIdentity">;
   evaluateAlarm: typeof evaluateAlarm;
   writeTelemetryPoint: typeof writeTelemetryPoint;
   logRejection: (reason: TelemetryRejectionReason, context: RejectionContext) => void;
@@ -47,6 +51,7 @@ const defaultDependencies: TelemetryDependencies = {
   deviceRepository,
   siteRepository,
   sensorRepository,
+  bindingRepository,
   evaluateAlarm,
   writeTelemetryPoint,
   logRejection: (reason, context) => console.warn("Telemetry rejected", { reason, ...context }),
@@ -103,6 +108,23 @@ export class TelemetryService {
     if (site.code !== siteCode) {
       this.reject(TELEMETRY_REJECTION_REASONS.SITE_MISMATCH, { deviceId, siteCode });
 
+      return;
+    }
+
+    const activeBinding = this.dependencies.bindingRepository.findActiveByDeviceIdentity(
+      device.device_id
+    );
+    if (
+      activeBinding &&
+      (payload.platformBindingId !== activeBinding.platform_binding_id ||
+        payload.hardwareUid !== activeBinding.hardware_uid ||
+        payload.protocolVersion !== activeBinding.protocol_version ||
+        activeBinding.site_code !== siteCode)
+    ) {
+      this.reject(TELEMETRY_REJECTION_REASONS.DEVICE_BINDING_MISMATCH, {
+        deviceId,
+        siteCode,
+      });
       return;
     }
 

@@ -54,6 +54,7 @@ describe("Telemetry trust-boundary policy", () => {
     deviceRepository: { findByDeviceId: vi.fn(), recordCommunication: vi.fn() },
     siteRepository: { findById: vi.fn() },
     sensorRepository: { findByDeviceAndChannel: vi.fn() },
+    bindingRepository: { findActiveByDeviceIdentity: vi.fn() },
     evaluateAlarm: vi.fn(),
     writeTelemetryPoint: vi.fn(),
     logRejection: vi.fn(),
@@ -72,6 +73,7 @@ describe("Telemetry trust-boundary policy", () => {
       name: "Cairo",
     });
     dependencies.sensorRepository.findByDeviceAndChannel.mockReturnValue(enabledSensor);
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue(undefined);
     dependencies.writeTelemetryPoint.mockResolvedValue(undefined);
   });
 
@@ -117,6 +119,47 @@ describe("Telemetry trust-boundary policy", () => {
       })
     );
     expect(dependencies.logRejection).not.toHaveBeenCalled();
+  });
+
+  it("requires matching binding evidence once the Device has an active platform binding", async () => {
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue({
+      platform_binding_id: "11111111-1111-4111-8111-111111111111",
+      device_identity: "ZC-FW-001",
+      hardware_uid: "AABBCCDDEEFF",
+      site_code: "CAIRO01",
+      firmware_version: "0.1.0-pilot.1",
+      protocol_version: "1.3",
+    });
+
+    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", {
+      ...payload,
+      protocolVersion: "1.3",
+      platformBindingId: "11111111-1111-4111-8111-111111111111",
+      hardwareUid: "AABBCCDDEEFF",
+    });
+
+    expect(dependencies.writeTelemetryPoint).toHaveBeenCalledOnce();
+    expect(dependencies.logRejection).not.toHaveBeenCalled();
+  });
+
+  it("rejects telemetry when a paired Device omits or mismatches binding evidence", async () => {
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue({
+      platform_binding_id: "11111111-1111-4111-8111-111111111111",
+      device_identity: "ZC-FW-001",
+      hardware_uid: "AABBCCDDEEFF",
+      site_code: "CAIRO01",
+      firmware_version: "0.1.0-pilot.1",
+      protocol_version: "1.3",
+    });
+
+    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload);
+
+    expect(dependencies.logRejection).toHaveBeenCalledWith(
+      TELEMETRY_REJECTION_REASONS.DEVICE_BINDING_MISMATCH,
+      { deviceId: "ZC-FW-001", siteCode: "CAIRO01" }
+    );
+    expect(dependencies.deviceRepository.recordCommunication).not.toHaveBeenCalled();
+    expect(dependencies.writeTelemetryPoint).not.toHaveBeenCalled();
   });
 
   it("stores replayed telemetry at its original timestamp without re-evaluating Alarms", async () => {

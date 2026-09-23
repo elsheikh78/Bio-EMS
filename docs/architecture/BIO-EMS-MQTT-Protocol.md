@@ -1,6 +1,6 @@
 # BIO-EMS MQTT Protocol
 
-Version: 1.2
+Version: 1.3
 Status: Implemented telemetry and heartbeat subset; other message types are future design
 Last Updated: 2026-08-17
 
@@ -151,7 +151,11 @@ Implemented payload:
 ```json
 {
   "sent_at": "2026-08-17T09:00:00Z",
-  "uptime_seconds": 600
+  "uptime_seconds": 600,
+  "platform_binding_id": "11111111-1111-4111-8111-111111111111",
+  "hardware_uid": "AABBCCDDEEFF",
+  "firmware_version": "0.1.0-pilot.1",
+  "protocol_version": "1.3"
 }
 ```
 
@@ -193,6 +197,8 @@ ESP32 → Backend
   "battery": 96,
   "signal": -63,
   "mode": "LIVE",
+  "platformBindingId": "11111111-1111-4111-8111-111111111111",
+  "hardwareUid": "AABBCCDDEEFF",
   "sensors": [
     { "channel": 1, "value": 4.82 },
     { "channel": 2, "value": 5.11 }
@@ -200,7 +206,10 @@ ESP32 → Backend
 }
 ```
 
-`mode` is optional and defaults operationally to live processing. `LIVE` readings
+`mode` is optional and defaults operationally to live processing. For an unpaired legacy
+Device, `platformBindingId` and `hardwareUid` remain optional during the Pilot transition. Once
+an ACTIVE platform binding exists for the Device, both fields are required in effect and must
+match that binding; otherwise the complete message is rejected. `LIVE` readings
 are written to history and evaluated by the Alarm Engine. `REPLAY` readings are
 written at their original payload timestamp but do not re-trigger historical Alarms.
 Device communication health still uses trusted server receipt time.
@@ -475,3 +484,12 @@ Version 1.2
 
 Documented the implemented heartbeat contract, production MQTT TLS configuration,
 payload quality-field persistence, and optional `LIVE`/`REPLAY` recovery semantics.
+
+
+Version 1.3
+
+Added the Pilot device-to-platform pairing extension. A paired controller receives one stable
+`platform_binding_id` bound to the logical installation, device identity and ESP32 hardware UID.
+Once a binding is ACTIVE, telemetry and heartbeat processing reject missing/mismatched binding
+evidence. The Pilot firmware identity is `0.1.0-pilot.1`; final commercial device authentication
+still requires the approved per-device certificate/mTLS work packages.

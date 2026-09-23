@@ -17,6 +17,7 @@ describe("Heartbeat trust boundary", () => {
   const dependencies = {
     deviceRepository: { findByDeviceId: vi.fn(), recordCommunication: vi.fn() },
     siteRepository: { findById: vi.fn() },
+    bindingRepository: { findActiveByDeviceIdentity: vi.fn() },
     now: () => new Date("2026-08-17T09:00:05.000Z"),
     logRejection: vi.fn(),
   };
@@ -27,6 +28,7 @@ describe("Heartbeat trust boundary", () => {
     dependencies.deviceRepository.findByDeviceId.mockReturnValue(device);
     dependencies.deviceRepository.recordCommunication.mockReturnValue(true);
     dependencies.siteRepository.findById.mockReturnValue({ id: 3, code: "CAIRO01" });
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue(undefined);
   });
 
   it("records server receipt time for a trusted heartbeat", () => {
@@ -37,6 +39,45 @@ describe("Heartbeat trust boundary", () => {
       "heartbeat"
     );
     expect(dependencies.logRejection).not.toHaveBeenCalled();
+  });
+
+  it("requires matching binding evidence for a paired heartbeat", () => {
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue({
+      platform_binding_id: "11111111-1111-4111-8111-111111111111",
+      device_identity: "ZC-FW-001",
+      hardware_uid: "AABBCCDDEEFF",
+      site_code: "CAIRO01",
+      firmware_version: "0.1.0-pilot.1",
+      protocol_version: "1.3",
+    });
+
+    expect(
+      service.process("bioems/CAIRO01/heartbeat/ZC-FW-001", {
+        ...payload,
+        platform_binding_id: "11111111-1111-4111-8111-111111111111",
+        hardware_uid: "AABBCCDDEEFF",
+        firmware_version: "0.1.0-pilot.1",
+        protocol_version: "1.3",
+      })
+    ).toBe(true);
+  });
+
+  it("rejects a paired heartbeat without matching binding evidence", () => {
+    dependencies.bindingRepository.findActiveByDeviceIdentity.mockReturnValue({
+      platform_binding_id: "11111111-1111-4111-8111-111111111111",
+      device_identity: "ZC-FW-001",
+      hardware_uid: "AABBCCDDEEFF",
+      site_code: "CAIRO01",
+      firmware_version: "0.1.0-pilot.1",
+      protocol_version: "1.3",
+    });
+
+    expect(service.process("bioems/CAIRO01/heartbeat/ZC-FW-001", payload)).toBe(false);
+    expect(dependencies.logRejection).toHaveBeenCalledWith(
+      HEARTBEAT_REJECTION_REASONS.DEVICE_BINDING_MISMATCH,
+      { deviceId: "ZC-FW-001", siteCode: "CAIRO01" }
+    );
+    expect(dependencies.deviceRepository.recordCommunication).not.toHaveBeenCalled();
   });
 
   it.each([

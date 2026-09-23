@@ -82,6 +82,11 @@ import {
   testCommunicationChannelSchema,
 } from "../modules/communication-channels/communication-channel.schema";
 import { platformBackupScheduleInputSchema } from "../modules/platform-backup/platform-backup-schedule.schema";
+import {
+  issueDevicePairingCodeController,
+  listDevicePlatformBindingsController,
+} from "../controllers/device-pairing.controller";
+import { devicePairingParamsSchema } from "../modules/device-pairing/device-pairing.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
@@ -103,6 +108,16 @@ router.get(
   "/installations/:installationId",
   validateParams(installationParamsSchema),
   getPlatformInstallation
+);
+router.get(
+  "/installations/:installationId/device-bindings",
+  validateParams(installationParamsSchema),
+  listDevicePlatformBindingsController
+);
+router.post(
+  "/installations/:installationId/devices/:deviceId/pairing-code",
+  validateParams(devicePairingParamsSchema),
+  issueDevicePairingCodeController
 );
 router.post(
   "/customers/:customerId/installations",

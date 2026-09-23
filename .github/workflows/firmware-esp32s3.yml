@@ -1,0 +1,50 @@
+name: ESP32-S3 Firmware
+
+on:
+  pull_request:
+    paths:
+      - "firmware/site-controller-esp32s3/**"
+      - ".github/workflows/firmware-esp32s3.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "firmware/site-controller-esp32s3/**"
+      - ".github/workflows/firmware-esp32s3.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build ESP32-S3 Site Controller
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.3.2
+          target: esp32s3
+          path: firmware/site-controller-esp32s3
+
+      - name: Verify flashable firmware outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f firmware/site-controller-esp32s3/build/bioems_site_controller.bin
+          test -f firmware/site-controller-esp32s3/build/bootloader/bootloader.bin
+          test -f firmware/site-controller-esp32s3/build/partition_table/partition-table.bin
+
+      - name: Upload ESP32-S3 firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: BIO-EMS-ESP32S3-Firmware-${{ github.sha }}
+          path: |
+            firmware/site-controller-esp32s3/build/bioems_site_controller.bin
+            firmware/site-controller-esp32s3/build/bootloader/bootloader.bin
+            firmware/site-controller-esp32s3/build/partition_table/partition-table.bin
+            firmware/site-controller-esp32s3/build/flash_args
+            firmware/site-controller-esp32s3/build/flasher_args.json
+            firmware/site-controller-esp32s3/README.md
+            firmware/site-controller-esp32s3/main/bioems_version.h
+          retention-days: 14
