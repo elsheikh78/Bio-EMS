@@ -163,15 +163,23 @@ describe("DevicePairingService", () => {
       "system-owner#owner"
     );
 
-    expect(() =>
+    let error: unknown;
+    try {
       service.claim({
         pairing_code: issued.pairing_code,
         hardware_uid: "AABBCCDDEEFF",
         firmware_version: "0.2.0",
         protocol_version: "1.3",
         binding_schema_version: 1,
-      })
-    ).toThrowError(/firmware/i);
+      });
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toMatchObject({
+      code: "DEVICE_FIRMWARE_VERSION_MISMATCH",
+      statusCode: 409,
+    });
   });
 
   it("expires the code after ten minutes", () => {
