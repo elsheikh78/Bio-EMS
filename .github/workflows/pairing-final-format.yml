@@ -1,0 +1,40 @@
+name: Pairing Final Format
+
+on:
+  push:
+    branches:
+      - feat/esp32-pilot-pairing-v1
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/esp32-pilot-pairing-v1
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm ci
+        working-directory: backend
+      - run: npm run format
+        working-directory: backend
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run format
+        working-directory: frontend
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend frontend
+          git commit -m "style(device): format final pairing changes"
+          git push origin HEAD:feat/esp32-pilot-pairing-v1
