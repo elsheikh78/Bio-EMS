@@ -61,7 +61,9 @@ describe("System Owner recovery package import boundary", () => {
     });
 
     expect(code).toBe(1);
-    expect(error).toHaveBeenCalledWith(\n      "System Owner recovery package rejected: Recovery request belongs to a different installation"\n    );
+    expect(error).toHaveBeenCalledWith(
+      "System Owner recovery package rejected: Recovery request belongs to a different installation"
+    );
   });
 
   it("rejects a tampered signed package and does not leak the recovery password or private key", async () => {
