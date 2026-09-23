@@ -7,6 +7,7 @@ import type { InstallationSnapshot } from "../installation/installation.schema";
 
 const PAIRING_TTL_MS = 10 * 60_000;
 const BINDING_SCHEMA_VERSION = 1;
+const PILOT_PROTOCOL_VERSION = "1.3";
 
 type InstallationRow = {
   id: number;
@@ -160,6 +161,12 @@ export class DevicePairingService {
     const snapshot = JSON.parse(revision.snapshot_json) as InstallationSnapshot;
     const device = snapshot.devices.find((item) => item.deviceId === session.device_identity);
     if (!device) throw conflict("PAIRING_DEVICE_REMOVED");
+    if (input.protocol_version !== PILOT_PROTOCOL_VERSION) {
+      throw conflict("DEVICE_PROTOCOL_VERSION_MISMATCH");
+    }
+    if (device.firmwareVersion && input.firmware_version !== device.firmwareVersion) {
+      throw conflict("DEVICE_FIRMWARE_VERSION_MISMATCH");
+    }
     const site = snapshot.sites.find((item) => item.code === device.siteCode);
     if (!site) throw conflict("PAIRING_SITE_REMOVED");
 
