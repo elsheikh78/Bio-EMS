@@ -10,6 +10,11 @@ vi.mock("../installations/queries", () => ({
   useCreateInstallation: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useInstallationAction: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useInstallations: () => ({ data: [] }),
+  useIssueDevicePairingCode: () => ({
+    isPending: false,
+    isError: false,
+    mutateAsync: vi.fn(),
+  }),
   useReviseInstallation: () => ({ isPending: false, mutateAsync: vi.fn() }),
 }));
 
