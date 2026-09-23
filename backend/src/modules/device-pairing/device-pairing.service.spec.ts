@@ -118,7 +118,7 @@ describe("DevicePairingService", () => {
       pairing_code: issued.pairing_code,
       hardware_uid: "AABBCCDDEEFF",
       firmware_version: "0.1.0-pilot.1",
-      protocol_version: "1.2",
+      protocol_version: "1.3",
       binding_schema_version: 1,
     });
 
@@ -150,10 +150,28 @@ describe("DevicePairingService", () => {
         pairing_code: issued.pairing_code,
         hardware_uid: "AABBCCDDEEFF",
         firmware_version: "0.1.0-pilot.1",
-        protocol_version: "1.2",
+        protocol_version: "1.3",
         binding_schema_version: 1,
       })
     ).toThrowError(AppError);
+  });
+
+  it("rejects a controller firmware or protocol that does not match the installation contract", () => {
+    const issued = service.issuePairingCode(
+      "11111111-1111-4111-8111-111111111111",
+      "CTRL-001",
+      "system-owner#owner"
+    );
+
+    expect(() =>
+      service.claim({
+        pairing_code: issued.pairing_code,
+        hardware_uid: "AABBCCDDEEFF",
+        firmware_version: "0.2.0",
+        protocol_version: "1.3",
+        binding_schema_version: 1,
+      })
+    ).toThrowError(/firmware/i);
   });
 
   it("expires the code after ten minutes", () => {
@@ -169,7 +187,7 @@ describe("DevicePairingService", () => {
         pairing_code: issued.pairing_code,
         hardware_uid: "AABBCCDDEEFF",
         firmware_version: "0.1.0-pilot.1",
-        protocol_version: "1.2",
+        protocol_version: "1.3",
         binding_schema_version: 1,
       })
     ).toThrowError(/expired/i);
@@ -190,7 +208,7 @@ describe("DevicePairingService", () => {
       pairing_code: issued.pairing_code,
       hardware_uid: "AABBCCDDEEFF",
       firmware_version: "0.1.0-pilot.1",
-      protocol_version: "1.2",
+      protocol_version: "1.3",
       binding_schema_version: 1,
     });
 
