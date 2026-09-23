@@ -1,17 +1,16 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 22 September 2026  
+**Plan date:** 23 September 2026  
 **Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
-## Immediate restart point — 22 September 2026
+## Immediate restart point — 23 September 2026
 
-1. Complete repository cleanup and preserve `main` as the single authoritative integration line.
-2. Verify the current merged SYSTEM_OWNER entry path, manufacturer-controlled commissioning flow, MFA enrollment and MFA login on the Pilot host.
-3. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER, including Site context and Email/Telegram/WhatsApp/SMS test actions without exposing secrets.
-4. Continue physical Windows qualification from current `main`: fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
-5. Execute COM-07 live provider/hardware acceptance where real credentials/SIM/provider access are available.
-6. Execute hardware bench qualification, then BIO EGYPT field commissioning/UAT.
-7. Keep final Device Trust/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
+1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**; evidence: `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
+2. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER, including Site context and Email/Telegram/WhatsApp/SMS test actions without exposing secrets.
+3. Continue physical Windows qualification from current `main`: additional-machine fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
+4. Execute COM-07 live provider/hardware acceptance where real credentials/SIM/provider access are available.
+5. Execute hardware bench qualification, then BIO EGYPT field commissioning/UAT.
+6. Keep final Device Trust/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
 
 ## Objective
 
@@ -19,7 +18,7 @@ Move BIO-EMS from mature source software to a repeatable, field-tested BIO EGYPT
 
 ## Phase 0 — Current security / integration gates
 
-- SEC-OWNER source is integrated into `main` through PR #239; Production key ceremony/security acceptance remains an external gate.
+- SEC-OWNER source is integrated into `main`; the physical Pilot-host commissioning -> MFA -> protected console path passed on 23 September 2026 after fixes through PR #251. Production key ceremony/security acceptance remains a separate external gate.
 - Customer ADMIN provisioning during Setup is merged and has been validated in a clean Pilot install.
 - COM-01 through COM-06 are integrated into `main`; COM-07 live provider/hardware acceptance remains open.
 - Do not describe SYSTEM_OWNER Production acceptance, COM-07, or BIO EGYPT commissioning as complete until their external evidence gates close.
