@@ -44,3 +44,17 @@ export const installationCreateResponseSchema = z
   .strict();
 
 export type InstallationSummary = z.infer<typeof installationSummarySchema>;
+
+export const devicePairingCodeResponseSchema = z
+  .object({
+    pairing_code: z.string().regex(/^\d{12}$/),
+    expires_at: z.string(),
+    device_id: z.string().min(1),
+    installation_id: z.string().uuid(),
+    binding_schema_version: z.literal(1),
+  })
+  .strict();
+
+export type DevicePairingCodeResponse = z.infer<
+  typeof devicePairingCodeResponseSchema
+>;
