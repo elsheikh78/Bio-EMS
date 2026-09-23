@@ -16,9 +16,11 @@ import {
   useCreateInstallation,
   useInstallationAction,
   useInstallations,
+  useIssueDevicePairingCode,
   useReviseInstallation,
 } from "../installations/queries";
 import { useLocalization } from "../localization/useLocalization";
+import type { DevicePairingCodeResponse } from "../installations/contracts";
 
 const copy = {
   en: {
@@ -45,6 +47,15 @@ const copy = {
     telemetries: "Telemetries",
     devices: "Devices",
     mappings: "Mappings",
+    pairing: "ESP32 platform pairing",
+    pairingHelp:
+      "Generate a one-time 12-digit code for the selected device. Enter it on the ESP32 within 10 minutes. The resulting platform binding ID remains stable across Repair/Upgrade.",
+    generatePairing: "Generate pairing code",
+    pairingCode: "Pairing code",
+    pairingExpires: "Expires",
+    pairingError: "Pairing code could not be generated.",
+    pairingWarning:
+      "Use this code once only. Do not store it in firmware or documentation.",
     modify: "Modify installation",
     validate: "Validate",
     queue: "Queue delivery",
@@ -107,6 +118,15 @@ const copy = {
     telemetries: "القياسات",
     devices: "الأجهزة",
     mappings: "الروابط",
+    pairing: "ربط ESP32 بالمنصة",
+    pairingHelp:
+      "أنشئ كود ربط مكوّنًا من 12 رقمًا للجهاز المطلوب. أدخله على ESP32 خلال 10 دقائق. يظل رقم ربط المنصة الناتج ثابتًا مع Repair/Upgrade.",
+    generatePairing: "إنشاء كود الربط",
+    pairingCode: "كود الربط",
+    pairingExpires: "تنتهي الصلاحية",
+    pairingError: "تعذر إنشاء كود الربط.",
+    pairingWarning:
+      "يستخدم هذا الكود مرة واحدة فقط. لا تحفظه داخل الـFirmware أو التوثيق.",
     modify: "تعديل التركيب",
     validate: "التحقق",
     queue: "إدراج للإرسال",
@@ -147,6 +167,16 @@ const copy = {
   },
 } as const;
 
+function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
+  const devices = snapshot.devices;
+  if (!Array.isArray(devices)) return [];
+  return devices.flatMap((device) => {
+    if (!device || typeof device !== "object") return [];
+    const deviceId = (device as Record<string, unknown>).deviceId;
+    return typeof deviceId === "string" && deviceId.length > 0 ? [deviceId] : [];
+  });
+}
+
 export function SystemOwnerInstallationsPage() {
   const { language } = useLocalization();
   const text = copy[language];
@@ -154,6 +184,8 @@ export function SystemOwnerInstallationsPage() {
   const create = useCreateInstallation();
   const revise = useReviseInstallation();
   const action = useInstallationAction();
+  const issuePairing = useIssueDevicePairingCode();
+  const [pairingResult, setPairingResult] = useState<DevicePairingCodeResponse | null>(null);
   const [customerId, setCustomerId] = useState("");
   const [company, setCompany] = useState("");
   const [site, setSite] = useState("");
@@ -449,6 +481,50 @@ export function SystemOwnerInstallationsPage() {
                 {item.summary.telemetries} · {text.devices}{" "}
                 {item.summary.devices} · {text.mappings} {item.summary.mappings}
               </Typography>
+              <Box sx={{ mt: 2 }}>
+                <Typography sx={{ fontWeight: 700 }}>{text.pairing}</Typography>
+                <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                  {text.pairingHelp}
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {installationDeviceIds(item.latestSnapshot).map((deviceId) => (
+                    <Button
+                      key={deviceId}
+                      variant="outlined"
+                      disabled={issuePairing.isPending}
+                      onClick={() => {
+                        setPairingResult(null);
+                        void issuePairing
+                          .mutateAsync({
+                            installationId: item.uuid,
+                            deviceId,
+                          })
+                          .then(setPairingResult);
+                      }}
+                    >
+                      {text.generatePairing}: {deviceId}
+                    </Button>
+                  ))}
+                </Box>
+                {issuePairing.isError ? (
+                  <Alert severity="error" sx={{ mt: 1 }}>
+                    {text.pairingError}
+                  </Alert>
+                ) : null}
+                {pairingResult?.installation_id === item.uuid ? (
+                  <Alert severity="warning" sx={{ mt: 1 }}>
+                    <Typography component="div" sx={{ fontWeight: 800 }}>
+                      {text.pairingCode}: {pairingResult.pairing_code}
+                    </Typography>
+                    <Typography component="div" variant="body2">
+                      {text.pairingExpires}: {new Date(pairingResult.expires_at).toLocaleString()}
+                    </Typography>
+                    <Typography component="div" variant="body2">
+                      {text.pairingWarning}
+                    </Typography>
+                  </Alert>
+                ) : null}
+              </Box>
               <Button
                 sx={{ mt: 1, mr: 1 }}
                 variant="outlined"
