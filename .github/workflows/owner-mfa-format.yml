@@ -1,0 +1,52 @@
+name: Owner MFA Format
+
+on:
+  push:
+    branches:
+      - feat/owner-mfa-rotation
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v7
+        with:
+          ref: feat/owner-mfa-rotation
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Format backend
+        run: npm run format
+        working-directory: backend
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Format frontend
+        run: npm run format
+        working-directory: frontend
+
+      - name: Commit formatting if needed
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/src frontend/src
+          git commit -m "style(owner): format MFA rotation"
+          git push origin HEAD:feat/owner-mfa-rotation
