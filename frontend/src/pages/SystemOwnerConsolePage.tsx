@@ -131,7 +131,6 @@ export function SystemOwnerConsolePage() {
   useEffect(() => {
     let active = true;
     if (!enrollment) {
-      setQrCode(undefined);
       return () => {
         active = false;
       };
@@ -164,6 +163,7 @@ export function SystemOwnerConsolePage() {
     setConfirmFailed(false);
     setCompleted(false);
     setEnrollment(undefined);
+    setQrCode(undefined);
   };
 
   const beginReset = async (event: FormEvent) => {
