@@ -159,7 +159,7 @@ export function SystemOwnerLoginPage() {
           {
             method: "POST",
             auth: "public",
-            headers: { Authorization: `Bearer ${response.enrollment_token}` },
+            bearerToken: response.enrollment_token,
           },
         );
         const setup = ownerMfaEnrollmentResponseSchema.parse(raw);
