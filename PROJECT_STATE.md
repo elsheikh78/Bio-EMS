@@ -1,10 +1,27 @@
 # BIO-EMS Project State
 
 **State date:** 23 September 2026  
-**Authoritative main audited:** `6d2b25ef35f48d5a87df0f2073e46cddd6deca48`  
+**Authoritative main audited:** `57ff5748f130e09994fd3aee804197a1cf3d8193`  
 **Current integration branch:** none; `main` is authoritative  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 23 September ESP32-S3 Pilot pairing v1 checkpoint
+
+- PR #254 is merged to `main` at `57ff5748f130e09994fd3aee804197a1cf3d8193`.
+- BIO-EMS now has a source-implemented ESP32-S3 Pilot pairing/bootstrap foundation using one common firmware build rather than a per-customer firmware image.
+- Current Pilot version contract: firmware `0.1.0-pilot.1`, protocol `1.3`, binding schema `1`, controller model `BIO-EMS-SC-V1`.
+- The implemented identity chain is logical installation -> configured Device ID -> ESP32 hardware UID -> stable `platform_binding_id`.
+- SYSTEM_OWNER Installation Configuration can generate a single-use 12-digit pairing code valid for 10 minutes. Only a derived hash is persisted by the platform.
+- Pairing claim is rate-limited and rejects replay, expiry, duplicate active hardware binding, wrong configured firmware version and wrong Pilot protocol version.
+- SQLite migration 030 persists pairing sessions and durable device-platform bindings with immutable/auditable identity fields.
+- Once a Device has an ACTIVE platform binding, backend telemetry/heartbeat processing requires matching binding/hardware evidence and rejects mismatches.
+- ESP32-S3 firmware source and CI build are present under `firmware/site-controller-esp32s3/`.
+- Final PR #254 evidence is green: CI run `35896866656`, firmware run `35896866666`, Internal Windows Setup run `35896866635`, Manufacturer Tools run `35896866580`.
+- Flashable firmware artifact ID `10767107823`, SHA-256 `437795554793189233f64e7cf3520c697118090d1a79df0843a1c5c05fe6ab88`.
+- Detailed implementation record: `docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md`.
+- This is source/CI evidence only. Physical board flashing, first real pairing, MQTT publishing, RS485 sensor acquisition, power/reconnect/endurance testing and commercial Device PKI/mTLS remain open.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## 23 September SYSTEM_OWNER physical Pilot checkpoint
 
@@ -52,20 +69,21 @@
 
 Source software is mature and full CI is green, but the BIO EGYPT Pilot is still **NOT COMMISSIONED / NOT ACCEPTED**. The next controlled priority is not final commercial protection. The immediate sequence is:
 
-1. verify the merged Communication Channels administration on current `main`;
-2. execute COM-07 live provider/hardware acceptance;
-3. continue multi-machine Windows installer and Backup/Restore qualification;
-4. execute hardware/bench qualification;
-5. perform BIO EGYPT field commissioning/UAT;
-6. stabilize defects;
-7. then complete deferred final Device Trust/commercial protection.
+1. identify/confirm the physical ESP32 target and execute the first real ESP32-S3 Pilot flash + platform pairing using the merged v1 pairing path;
+2. implement/exercise ESP32 MQTT heartbeat/telemetry publishing and RS485 sensor acquisition on the bench;
+3. verify the merged Communication Channels administration on current `main` and execute COM-07 live provider/hardware acceptance;
+4. continue multi-machine Windows installer and Backup/Restore qualification;
+5. complete hardware/bench qualification;
+6. perform BIO EGYPT field commissioning/UAT;
+7. stabilize defects;
+8. then complete deferred final Device PKI/mTLS/Secure Boot/Flash Encryption/commercial protection.
 
 Master audit:
 `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
 
 ## Repository / CI baseline
 
-- Current authoritative `main`: `6d2b25ef35f48d5a87df0f2073e46cddd6deca48` (SYSTEM_OWNER Pilot flow fixes through PR #251 merged).
+- Current authoritative `main`: `57ff5748f130e09994fd3aee804197a1cf3d8193` (ESP32-S3 Pilot pairing v1 through PR #254 merged).
 - PR #239 merged the current security/communication/password-recovery/installation/backup-restore integration.
 - PR #240 CI and Internal Windows Setup passed before merge.
 - Latest verified quality baseline:
@@ -163,9 +181,11 @@ Approved architecture remains authoritative:
 - `docs/security/device-registration.md`
 - `docs/security/activation-workflow.md`
 
-However, the latest product decision is to **defer final protection/device-trust implementation until Pilot Setup and hardware are stable**.
+However, the latest product decision is to **defer final commercial protection/device-trust implementation until Pilot Setup and hardware are stable**.
 
-In particular, DEV-TRUST-01 through DEV-TRUST-11 remain planned architecture/work packages, not current Pilot implementation evidence.
+PR #254 now provides a deliberately limited Pilot pairing/bootstrap bridge: short-lived pairing code, hardware UID, stable logical-installation/device binding and binding-aware backend checks. It does **not** implement the Production certificate hierarchy, per-device private keys, mTLS, secure-element/eFuse protection, Secure Boot, Flash Encryption, signed firmware, revocation lifecycle or clone detection.
+
+DEV-TRUST-01 through DEV-TRUST-11 therefore remain the Production-grade architecture/work packages; PR #254 is Pilot implementation evidence only for the pre-PKI pairing foundation.
 
 This does not delete earlier licensing source work; it separates existing source controls from the later production-grade device PKI, mTLS, Secure Boot/Flash Encryption, host-transfer and commercial qualification layer.
 

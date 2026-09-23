@@ -6,11 +6,13 @@
 ## Immediate restart point — 23 September 2026
 
 1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**; evidence: `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
-2. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER, including Site context and Email/Telegram/WhatsApp/SMS test actions without exposing secrets.
-3. Continue physical Windows qualification from current `main`: additional-machine fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
-4. Execute COM-07 live provider/hardware acceptance where real credentials/SIM/provider access are available.
-5. Execute hardware bench qualification, then BIO EGYPT field commissioning/UAT.
-6. Keep final Device Trust/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
+2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; evidence: `docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md`.
+3. Confirm the actual physical board target, flash `0.1.0-pilot.1`, generate a SYSTEM_OWNER pairing code and execute the first physical platform pairing.
+4. Implement/exercise the next firmware package: MQTT heartbeat/telemetry publishing, then RS485 sensor acquisition and buffering/reconnect behavior.
+5. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER and execute COM-07 live provider/hardware acceptance where real provider/SIM evidence is available.
+6. Continue physical Windows qualification from current `main`: additional-machine fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
+7. Complete hardware bench qualification, then BIO EGYPT field commissioning/UAT.
+8. Keep final Device PKI/mTLS/Secure Boot/Flash Encryption/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
 
 ## Objective
 
@@ -131,6 +133,33 @@ Verify:
 
 Repeat on at least one additional clean PC to detect machine-specific assumptions.
 
+## Phase D0 — ESP32-S3 Pilot pairing/bootstrap foundation
+
+Status: **MERGED TO MAIN / PHYSICAL PAIRING PENDING**
+
+Source baseline merged in PR #254:
+
+- common ESP32-S3 firmware `0.1.0-pilot.1`;
+- protocol `1.3`;
+- binding schema `1`;
+- hardware UID acquisition;
+- SYSTEM_OWNER 12-digit single-use pairing code;
+- 10-minute pairing expiry;
+- hash-only pairing-code persistence;
+- claim rate limiting and replay rejection;
+- stable `platform_binding_id`;
+- logical installation -> Device -> hardware UID binding;
+- firmware/protocol compatibility checks;
+- binding-aware backend telemetry/heartbeat rejection policy;
+- CI-built flashable ESP32-S3 artifact;
+- Windows Setup migration compatibility.
+
+This package is intentionally pre-PKI. It does not close DEV-TRUST, and the current firmware does
+not yet implement the complete MQTT publisher, RS485 sensor acquisition, offline replay, mTLS,
+per-device certificates, Secure Boot or Flash Encryption.
+
+Next gate: **physical board flash + first real pairing + reboot/NVS persistence evidence.**
+
 ## Phase D — Hardware bench qualification
 
 1. Freeze Pilot BOM.
@@ -171,7 +200,8 @@ Pilot remains **NOT COMMISSIONED / NOT ACCEPTED** until this evidence exists.
 
 ## Phase G — Deferred commercial protection
 
-Only after Phase F:
+Only after Phase F. The merged Pilot pairing/bootstrap foundation from PR #254 may be retained as
+the logical binding layer, but it does not replace the Production trust packages below:
 
 - DEV-TRUST-01 PKI/key-management hierarchy;
 - DEV-TRUST-02 device lifecycle registry;

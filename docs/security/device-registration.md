@@ -1,8 +1,41 @@
 # BIO-EMS Device Identity, Registration & Platform Trust
 
-**Status:** Approved security architecture; not yet implementation evidence  
+**Status:** Approved security architecture; Pilot pairing/bootstrap foundation implemented, Production Device Trust still pending  
 **Decision date:** 2026-09-11  
 **Applies to:** ESP32-based Site Controller v1 and any future BIO-EMS gateway/controller
+
+## 0. Pilot implementation checkpoint — 23 September 2026
+
+PR #254 implemented a deliberately limited pre-PKI Pilot bridge into this architecture.
+
+Implemented Pilot evidence:
+
+- common ESP32-S3 firmware `0.1.0-pilot.1`;
+- protocol `1.3`;
+- binding schema `1`;
+- hardware UID derived from the ESP32-S3 station MAC;
+- SYSTEM_OWNER-generated single-use 12-digit pairing code;
+- 10-minute pairing-code validity;
+- hash-only server persistence of the pairing code;
+- public claim rate limiting and replay rejection;
+- stable `platform_binding_id`;
+- logical installation -> Device ID -> hardware UID binding;
+- configured firmware/protocol compatibility enforcement;
+- binding-aware telemetry/heartbeat backend checks once a binding is ACTIVE;
+- ESP32-S3 CI compile and flashable firmware artifact.
+
+Detailed evidence:
+
+`docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md`
+
+This Pilot foundation does **not** implement or supersede the Production requirements in this
+document. Per-device key generation, X.509 certificates, BIO-EMS Device CA, MQTT mTLS, broker
+topic ACLs, secure-element/eFuse protection, certificate revocation/replacement, Secure Boot,
+Flash Encryption, signed firmware, anti-rollback and clone detection remain open Production
+work.
+
+Physical ESP32 flashing/pairing has not yet been accepted. Repository/CI evidence must not be
+reported as hardware or field acceptance.
 
 ## 1. Decision
 
