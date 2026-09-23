@@ -1,6 +1,7 @@
 import type { HeartbeatPayload } from "../dto/heartbeat.schema";
 import { DeviceRepository } from "../../../repositories/device.repository";
 import { SiteRepository } from "../../../repositories/site.repository";
+import { DevicePlatformBindingRepository } from "../../../repositories/device-platform-binding.repository";
 
 export const HEARTBEAT_REJECTION_REASONS = {
   INVALID_TOPIC: "INVALID_TOPIC",
@@ -8,6 +9,7 @@ export const HEARTBEAT_REJECTION_REASONS = {
   DEVICE_NOT_OPERATIONAL: "DEVICE_NOT_OPERATIONAL",
   SITE_NOT_FOUND: "SITE_NOT_FOUND",
   SITE_MISMATCH: "SITE_MISMATCH",
+  DEVICE_BINDING_MISMATCH: "DEVICE_BINDING_MISMATCH",
 } as const;
 
 type Reason = (typeof HEARTBEAT_REJECTION_REASONS)[keyof typeof HEARTBEAT_REJECTION_REASONS];
@@ -15,6 +17,7 @@ type Context = { deviceId?: string; siteCode?: string };
 type Dependencies = {
   deviceRepository: Pick<DeviceRepository, "findByDeviceId" | "recordCommunication">;
   siteRepository: Pick<SiteRepository, "findById">;
+  bindingRepository: Pick<DevicePlatformBindingRepository, "findActiveByDeviceIdentity">;
   now: () => Date;
   logRejection: (reason: Reason, context: Context) => void;
 };
@@ -22,6 +25,7 @@ type Dependencies = {
 const defaultDependencies: Dependencies = {
   deviceRepository: new DeviceRepository(),
   siteRepository: new SiteRepository(),
+  bindingRepository: new DevicePlatformBindingRepository(),
   now: () => new Date(),
   logRejection: (reason, context) => console.warn("Heartbeat rejected", { reason, ...context }),
 };
@@ -29,7 +33,7 @@ const defaultDependencies: Dependencies = {
 export class HeartbeatService {
   constructor(private readonly dependencies: Dependencies = defaultDependencies) {}
 
-  process(topic: string, _payload: HeartbeatPayload): boolean {
+  process(topic: string, payload: HeartbeatPayload): boolean {
     const parts = topic.split("/");
     if (parts.length !== 4 || parts[0] !== "bioems" || !parts[1] || !parts[3]) {
       this.dependencies.logRejection(HEARTBEAT_REJECTION_REASONS.INVALID_TOPIC, {});
@@ -57,6 +61,20 @@ export class HeartbeatService {
       return this.reject(HEARTBEAT_REJECTION_REASONS.SITE_NOT_FOUND, { deviceId, siteCode });
     if (site.code !== siteCode) {
       return this.reject(HEARTBEAT_REJECTION_REASONS.SITE_MISMATCH, { deviceId, siteCode });
+    }
+
+    const activeBinding =
+      this.dependencies.bindingRepository.findActiveByDeviceIdentity(device.device_id);
+    if (
+      activeBinding &&
+      (payload.platform_binding_id !== activeBinding.platform_binding_id ||
+        payload.hardware_uid !== activeBinding.hardware_uid ||
+        activeBinding.site_code !== siteCode)
+    ) {
+      return this.reject(HEARTBEAT_REJECTION_REASONS.DEVICE_BINDING_MISMATCH, {
+        deviceId,
+        siteCode,
+      });
     }
 
     return this.dependencies.deviceRepository.recordCommunication(
