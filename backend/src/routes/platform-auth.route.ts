@@ -3,6 +3,7 @@ import {
   beginOwnerMfaEnrollmentController,
   confirmOwnerMfaEnrollmentController,
   currentPlatformPrincipalController,
+  resetOwnerMfaController,
   issueOwnerSupportGrantController,
   listOwnerSupportGrantsController,
   platformLoginController,
@@ -17,7 +18,10 @@ import {
 import { platformLoginRateLimitMiddleware } from "../middleware/platform-login-rate-limit.middleware";
 import { validateBody, validateParams } from "../middleware/validate-request";
 import { platformLoginSchema } from "../modules/platform-auth/dto/platform-login.schema";
-import { confirmOwnerMfaSchema } from "../modules/platform-auth/dto/owner-mfa.schema";
+import {
+  confirmOwnerMfaSchema,
+  resetOwnerMfaSchema,
+} from "../modules/platform-auth/dto/owner-mfa.schema";
 import {
   issueOwnerSupportGrantSchema,
   ownerSupportGrantParamsSchema,
@@ -44,6 +48,12 @@ router.post(
   ownerMfaEnrollmentAuthenticationMiddleware,
   validateBody(confirmOwnerMfaSchema),
   confirmOwnerMfaEnrollmentController
+);
+router.post(
+  "/mfa/reset",
+  platformAuthenticationMiddleware,
+  validateBody(resetOwnerMfaSchema),
+  resetOwnerMfaController
 );
 router.get("/support-grants", platformAuthenticationMiddleware, listOwnerSupportGrantsController);
 router.post(
