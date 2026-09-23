@@ -50,6 +50,17 @@ export const ownerMfaEnrollmentResponseSchema = z
   })
   .strict();
 
+export const ownerMfaResetResponseSchema = z
+  .object({
+    mfa_enrollment_required: z.literal(true),
+    enrollment_token: z.string().min(1),
+    token_type: z.literal("bearer"),
+    expires_in: z.number().int().positive().max(300).finite(),
+    secret: z.string().min(16),
+    otpauth_uri: z.string().url(),
+  })
+  .strict();
+
 export const currentPlatformPrincipalResponseSchema = z
   .object({ principal: platformPrincipalSchema })
   .strict();
@@ -60,3 +71,4 @@ export type PlatformLoginResponse = z.infer<typeof platformLoginResponseSchema>;
 export type OwnerMfaEnrollmentResponse = z.infer<
   typeof ownerMfaEnrollmentResponseSchema
 >;
+export type OwnerMfaResetResponse = z.infer<typeof ownerMfaResetResponseSchema>;
