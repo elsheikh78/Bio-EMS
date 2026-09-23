@@ -13,10 +13,7 @@ import {
   parseOwnerCommissioningTrustedKeyring,
   resolveOwnerCommissioningPublicKey,
 } from "../modules/platform-auth/owner-commissioning-trust";
-import {
-  describeOwnerImportError,
-  loadOwnerImportEnvironment,
-} from "./owner-import-environment";
+import { describeOwnerImportError, loadOwnerImportEnvironment } from "./owner-import-environment";
 
 const identitySchema = z
   .object({ schemaVersion: z.literal(1), installationId: z.string().uuid() })

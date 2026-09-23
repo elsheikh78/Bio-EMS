@@ -37,6 +37,9 @@ export function loadOwnerImportEnvironment(
 
 export function describeOwnerImportError(error: unknown): string {
   if (!(error instanceof Error)) return "unknown failure";
-  const message = error.message.replace(/[\r\n\t]+/g, " ").replace(/\s{2,}/g, " ").trim();
+  const message = error.message
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
   return message ? message.slice(0, 512) : "unknown failure";
 }
