@@ -6,6 +6,7 @@ export type ApiRequestMode = "public" | "protected";
 export interface ApiRequestOptions extends Omit<RequestInit, "headers"> {
   headers?: HeadersInit;
   auth?: ApiRequestMode;
+  bearerToken?: string;
   responseMode?: "json" | "response";
 }
 
@@ -46,6 +47,19 @@ async function request<T>(
   }
 
   const mode = options.auth ?? "public";
+  const explicitBearerToken = options.bearerToken?.trim();
+
+  if (options.bearerToken !== undefined && !explicitBearerToken) {
+    throw new ApiRequestConfigurationError(
+      "An explicit bearer token cannot be empty",
+    );
+  }
+
+  if (mode === "protected" && explicitBearerToken) {
+    throw new ApiRequestConfigurationError(
+      "An explicit bearer token cannot be combined with protected session authentication",
+    );
+  }
 
   if (mode === "protected") {
     const token = configuration.getAccessToken?.();
@@ -57,6 +71,8 @@ async function request<T>(
     }
 
     headers.set("Authorization", `Bearer ${token}`);
+  } else if (explicitBearerToken) {
+    headers.set("Authorization", `Bearer ${explicitBearerToken}`);
   }
 
   if (!headers.has("Accept")) {
@@ -78,6 +94,12 @@ async function request<T>(
       auth?: ApiRequestMode;
     }
   ).auth;
+
+  delete (
+    requestOptions as {
+      bearerToken?: string;
+    }
+  ).bearerToken;
 
   delete (
     requestOptions as {
