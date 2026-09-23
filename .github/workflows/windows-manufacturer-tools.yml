@@ -9,6 +9,7 @@ on:
       - ".github/workflows/windows-manufacturer-tools.yml"
       - "backend/**"
       - "installer/windows/Invoke-ManufacturerOwnerSigner.ps1"
+      - "installer/windows/Start-ManufacturerOwnerSigner.ps1"
       - "installer/windows/New-ManufacturerToolsStaging.ps1"
       - "installer/windows/ManufacturerTools.iss"
       - "VERSION"
@@ -19,6 +20,7 @@ on:
       - ".github/workflows/windows-manufacturer-tools.yml"
       - "backend/**"
       - "installer/windows/Invoke-ManufacturerOwnerSigner.ps1"
+      - "installer/windows/Start-ManufacturerOwnerSigner.ps1"
       - "installer/windows/New-ManufacturerToolsStaging.ps1"
       - "installer/windows/ManufacturerTools.iss"
       - "VERSION"
@@ -59,7 +61,7 @@ jobs:
         shell: powershell
         run: |
           $failed = $false
-          @(".\installer\windows\Invoke-ManufacturerOwnerSigner.ps1",".\installer\windows\New-ManufacturerToolsStaging.ps1") | ForEach-Object {
+          @(".\installer\windows\Invoke-ManufacturerOwnerSigner.ps1",".\installer\windows\Start-ManufacturerOwnerSigner.ps1",".\installer\windows\New-ManufacturerToolsStaging.ps1") | ForEach-Object {
             $tokens = $null
             $errors = $null
             [Management.Automation.Language.Parser]::ParseFile($_,[ref]$tokens,[ref]$errors) | Out-Null
@@ -122,7 +124,7 @@ jobs:
           $process = Start-Process -FilePath $setup.FullName -ArgumentList @("/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART","/SP-") -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "Manufacturer Tools installation failed" }
           $root = Join-Path $env:ProgramFiles "BIO-EMS Manufacturer Tools"
-          @((Join-Path $root "Invoke-ManufacturerOwnerSigner.ps1"),(Join-Path $root "backend\dist\src\scripts\issue-owner-commissioning-package.js")) | ForEach-Object {
+          @((Join-Path $root "Invoke-ManufacturerOwnerSigner.ps1"),(Join-Path $root "Start-ManufacturerOwnerSigner.ps1"),(Join-Path $root "backend\dist\src\scripts\issue-owner-commissioning-package.js")) | ForEach-Object {
             if (-not (Test-Path -LiteralPath $_ -PathType Leaf)) { throw "Installed file is missing: $_" }
           }
           $node = Get-ChildItem -LiteralPath (Join-Path $root "runtime") -Filter "node.exe" -File -Recurse | Select-Object -First 1

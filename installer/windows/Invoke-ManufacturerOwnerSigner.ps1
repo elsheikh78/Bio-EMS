@@ -21,11 +21,7 @@ $installedMode =
     ($null -ne $installedNode) -and
     (Test-Path -LiteralPath $installedIssuer -PathType Leaf)
 if (-not $installedMode -and -not (Test-Path -LiteralPath $sourceIssuer -PathType Leaf)) {
-    [System.Windows.Forms.MessageBox]::Show(
-        "Manufacturer signing runtime is incomplete.",
-        "BIO-EMS Manufacturer Signer", "OK", "Error"
-    ) | Out-Null
-    exit 1
+    throw "Manufacturer signing runtime is incomplete."
 }
 
 function Add-Field {
