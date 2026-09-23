@@ -62,7 +62,7 @@ foreach ($required in @($node, $requestScript, $importScript, $identityPath, $en
 }
 
 if ($ValidateOnly) {
-    Write-Host "BIO-EMS System Owner Provisioning preflight: PASS"
+    Write-Output "BIO-EMS System Owner Provisioning preflight: PASS"
     return
 }
 
