@@ -18,8 +18,15 @@ const mocks = vi.hoisted(() => ({
           audience: string;
         }
       | undefined,
+    ownerMfaEncryptionKey: Buffer.alloc(32, 1),
   },
   login: vi.fn(),
+  findOwnerCredentials: vi.fn(),
+  resetMfaEnrollment: vi.fn(),
+  verifyPassword: vi.fn(),
+  verifyMfaLoginCode: vi.fn(),
+  beginMfaEnrollment: vi.fn(),
+  issueMfaEnrollmentToken: vi.fn(),
   revokeSession: vi.fn(),
   revokeAllSessions: vi.fn(),
   listSupportGrants: vi.fn(),
@@ -31,11 +38,15 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../config/config", () => ({ config: mocks.config }));
 
 vi.mock("../../repositories/platform-principal.repository", () => ({
-  PlatformPrincipalRepository: class {},
+  PlatformPrincipalRepository: class {
+    findCredentialsByUsername = mocks.findOwnerCredentials;
+    resetMfaEnrollment = mocks.resetMfaEnrollment;
+  },
 }));
 
 vi.mock("../../services/platform-token.service", () => ({
   PlatformTokenService: class {
+    issueMfaEnrollmentToken = mocks.issueMfaEnrollmentToken;
     issueSupportToken = vi.fn(() => ({
       supportToken: "support-token",
       expiresIn: 1800,
@@ -67,6 +78,17 @@ vi.mock("../../services/owner-security-audit.service", () => ({
 vi.mock("../../services/platform-auth.service", () => ({
   PlatformAuthService: class {
     login = mocks.login;
+  },
+}));
+
+vi.mock("../../services/password.service", () => ({
+  verifyPassword: mocks.verifyPassword,
+}));
+
+vi.mock("../../services/owner-mfa.service", () => ({
+  OwnerMfaService: class {
+    verifyLoginCode = mocks.verifyMfaLoginCode;
+    beginEnrollment = mocks.beginMfaEnrollment;
   },
 }));
 
@@ -211,6 +233,103 @@ it("revokes every persisted owner session", async () => {
 
 it.each(["/logout", "/sessions/revoke-all"])("protects POST /platform-auth%s", async (path) => {
   await request(app).post(`/api/v1/platform-auth${path}`).expect(401);
+});
+
+describe("Owner MFA rotation REST API", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.config.platformJwt = {
+      secret: "p".repeat(32),
+      expireMinutes: 15,
+      issuer: "bio-ems-platform",
+      audience: "bio-ems-platform-api",
+    };
+    mocks.findOwnerCredentials.mockReturnValue({
+      id: "system-owner",
+      principal_type: "SYSTEM_OWNER",
+      username: "platform-owner",
+      status: "active",
+      created_at: "2026-09-23T10:00:00.000Z",
+      updated_at: null,
+      password_hash: "$2b$12$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345",
+      failed_login_count: 0,
+      locked_until: null,
+      last_failed_login_at: null,
+      mfa_secret_encrypted: "v1.encrypted",
+      mfa_enabled_at: "2026-09-23T10:46:20.827Z",
+      mfa_recovery_hashes: null,
+      session_version: 1,
+    });
+    mocks.verifyPassword.mockResolvedValue(true);
+    mocks.verifyMfaLoginCode.mockReturnValue(true);
+    mocks.resetMfaEnrollment.mockReturnValue(true);
+    mocks.beginMfaEnrollment.mockReturnValue({
+      secret: "JBSWY3DPEHPK3PXP",
+      otpauthUri: "otpauth://totp/BIO-EMS%3Aplatform-owner?secret=JBSWY3DPEHPK3PXP",
+    });
+    mocks.issueMfaEnrollmentToken.mockReturnValue({
+      enrollmentToken: "new-enrollment-token",
+      expiresIn: 300,
+    });
+    mocks.revokeAllSessions.mockReturnValue(2);
+  });
+
+  it("rotates MFA only after password and current TOTP reauthentication", async () => {
+    const response = await request(app)
+      .post("/api/v1/platform-auth/mfa/reset")
+      .set("Authorization", "Bearer platform-token")
+      .send({ current_password: "owner-password", current_code: "123456" })
+      .expect(201);
+
+    expect(mocks.verifyPassword).toHaveBeenCalledWith(
+      "owner-password",
+      expect.any(String)
+    );
+    expect(mocks.verifyMfaLoginCode).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "system-owner" }),
+      "123456"
+    );
+    expect(mocks.resetMfaEnrollment).toHaveBeenCalledWith("system-owner");
+    expect(mocks.beginMfaEnrollment).toHaveBeenCalledWith("system-owner");
+    expect(mocks.revokeAllSessions).toHaveBeenCalledWith(
+      "system-owner",
+      "OWNER_MFA_RESET"
+    );
+    expect(response.body).toMatchObject({
+      mfa_enrollment_required: true,
+      enrollment_token: "new-enrollment-token",
+      token_type: "bearer",
+      expires_in: 300,
+      secret: "JBSWY3DPEHPK3PXP",
+    });
+  });
+
+  it("rejects MFA rotation when reauthentication fails", async () => {
+    mocks.verifyPassword.mockResolvedValue(false);
+
+    const response = await request(app)
+      .post("/api/v1/platform-auth/mfa/reset")
+      .set("Authorization", "Bearer platform-token")
+      .send({ current_password: "wrong-password", current_code: "123456" })
+      .expect(401);
+
+    expect(response.body.error.code).toBe("OWNER_REAUTHENTICATION_REQUIRED");
+    expect(mocks.resetMfaEnrollment).not.toHaveBeenCalled();
+    expect(mocks.revokeAllSessions).not.toHaveBeenCalled();
+  });
+
+  it("protects and validates MFA rotation", async () => {
+    await request(app)
+      .post("/api/v1/platform-auth/mfa/reset")
+      .send({ current_password: "owner-password", current_code: "123456" })
+      .expect(401);
+
+    await request(app)
+      .post("/api/v1/platform-auth/mfa/reset")
+      .set("Authorization", "Bearer platform-token")
+      .send({ current_password: "owner-password", current_code: "12345" })
+      .expect(400);
+  });
 });
 
 describe("Owner support grant REST API", () => {
