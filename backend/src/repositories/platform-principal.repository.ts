@@ -137,6 +137,24 @@ export class PlatformPrincipalRepository {
     return result.changes === 1;
   }
 
+  resetMfaEnrollment(id: string, now = new Date()): boolean {
+    const result = this.database
+      .prepare(
+        `UPDATE platform_principals
+         SET mfa_secret_encrypted = NULL,
+             mfa_enabled_at = NULL,
+             mfa_recovery_hashes = NULL,
+             failed_login_count = 0,
+             last_failed_login_at = NULL,
+             locked_until = NULL,
+             session_version = session_version + 1,
+             updated_at = ?
+         WHERE id = ? AND principal_type = 'SYSTEM_OWNER' AND status = 'active'`
+      )
+      .run(now.toISOString(), id);
+    return result.changes === 1;
+  }
+
   recordFailedLogin(id: string, now = new Date(), threshold = 5, lockMinutes = 15): void {
     const record = this.database
       .prepare(

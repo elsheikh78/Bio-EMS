@@ -5,6 +5,7 @@ import { AppError } from "../errors/app-error";
 import { asyncHandler } from "../middleware/async-handler";
 import { PlatformPrincipalRepository } from "../repositories/platform-principal.repository";
 import { PlatformAuthService } from "../services/platform-auth.service";
+import { verifyPassword } from "../services/password.service";
 import { OwnerMfaService } from "../services/owner-mfa.service";
 import { OwnerSecurityAuditService } from "../services/owner-security-audit.service";
 import { OwnerSupportGrantService } from "../services/owner-support-grant.service";
@@ -115,6 +116,64 @@ export const confirmOwnerMfaEnrollmentController = (req: Request, res: Response)
     throw new AppError("Owner MFA confirmation rejected", 400, "OWNER_MFA_CONFIRMATION_REJECTED");
   }
 };
+
+export const resetOwnerMfaController = asyncHandler(async (req: Request, res: Response) => {
+  if (!config.platformJwt) throw unavailable();
+
+  const repository = new PlatformPrincipalRepository();
+  const credentials = repository.findCredentialsByUsername(req.platformPrincipal!.username);
+  const mfa = ownerMfaService();
+
+  const passwordMatches = credentials
+    ? await verifyPassword(req.body.current_password, credentials.password_hash)
+    : false;
+  const codeMatches = (() => {
+    if (!credentials?.mfa_enabled_at) return false;
+    try {
+      return mfa.verifyLoginCode(credentials, req.body.current_code);
+    } catch {
+      return false;
+    }
+  })();
+
+  if (!credentials || !passwordMatches || !codeMatches) {
+    ownerSecurityAuditService().record({
+      action: "OWNER_MFA_RESET_DENIED",
+      result: "DENIED",
+      principalId: req.platformPrincipal!.id,
+      username: req.platformPrincipal!.username,
+      reason: "OWNER_REAUTHENTICATION_REQUIRED",
+    });
+    throw new AppError("Owner reauthentication required", 401, "OWNER_REAUTHENTICATION_REQUIRED");
+  }
+
+  if (!repository.resetMfaEnrollment(credentials.id)) {
+    throw new AppError("Owner MFA reset unavailable", 409, "OWNER_MFA_RESET_UNAVAILABLE");
+  }
+
+  const enrollment = mfa.beginEnrollment(credentials.id);
+  const issued = new PlatformTokenService(config.platformJwt).issueMfaEnrollmentToken(
+    req.platformPrincipal!
+  );
+  const revoked = new PlatformSessionService(sqlite).revokeAll(credentials.id, "OWNER_MFA_RESET");
+
+  ownerSecurityAuditService().record({
+    action: "OWNER_MFA_RESET",
+    result: "SUCCESS",
+    principalId: credentials.id,
+    username: credentials.username,
+    reason: `REVOKED_COUNT:${revoked}`,
+  });
+
+  res.status(201).json({
+    mfa_enrollment_required: true,
+    enrollment_token: issued.enrollmentToken,
+    token_type: "bearer",
+    expires_in: issued.expiresIn,
+    secret: enrollment.secret,
+    otpauth_uri: enrollment.otpauthUri,
+  });
+});
 
 const ownerSupportGrantService = () => new OwnerSupportGrantService(sqlite);
 
