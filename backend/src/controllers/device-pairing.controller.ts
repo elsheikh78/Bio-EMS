@@ -7,13 +7,15 @@ const platformActor = (req: Request) =>
 
 export const issueDevicePairingCodeController = asyncHandler(
   async (req: Request, res: Response) => {
-    res.status(201).json(
-      devicePairingService.issuePairingCode(
-        String(req.params.installationId),
-        String(req.params.deviceId),
-        platformActor(req)
-      )
-    );
+    res
+      .status(201)
+      .json(
+        devicePairingService.issuePairingCode(
+          String(req.params.installationId),
+          String(req.params.deviceId),
+          platformActor(req)
+        )
+      );
   }
 );
 
@@ -25,8 +27,6 @@ export const listDevicePlatformBindingsController = asyncHandler(
   }
 );
 
-export const claimDevicePairingController = asyncHandler(
-  async (req: Request, res: Response) => {
-    res.status(201).json(devicePairingService.claim(req.body));
-  }
-);
+export const claimDevicePairingController = asyncHandler(async (req: Request, res: Response) => {
+  res.status(201).json(devicePairingService.claim(req.body));
+});

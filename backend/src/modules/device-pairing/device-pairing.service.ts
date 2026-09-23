@@ -49,14 +49,24 @@ export class DevicePairingService {
 
   issuePairingCode(installationUuid: string, deviceIdentity: string, actor: string) {
     const installation = this.findInstallation(installationUuid);
-    if (!["VALIDATED", "PENDING_DELIVERY", "SENT", "CONFIG_ACTIVE", "CUSTOMER_ACCEPTANCE_PENDING", "COMMISSIONED"].includes(installation.status)) {
+    if (
+      ![
+        "VALIDATED",
+        "PENDING_DELIVERY",
+        "SENT",
+        "CONFIG_ACTIVE",
+        "CUSTOMER_ACCEPTANCE_PENDING",
+        "COMMISSIONED",
+      ].includes(installation.status)
+    ) {
       throw conflict("INSTALLATION_VALIDATION_REQUIRED");
     }
 
     const revision = this.latestRevision(installation.id);
     const snapshot = JSON.parse(revision.snapshot_json) as InstallationSnapshot;
     const device = snapshot.devices.find((item) => item.deviceId === deviceIdentity);
-    if (!device) throw new AppError("Device not found in installation", 404, "PAIRING_DEVICE_NOT_FOUND");
+    if (!device)
+      throw new AppError("Device not found in installation", 404, "PAIRING_DEVICE_NOT_FOUND");
 
     const existingBinding = this.database
       .prepare(
@@ -65,8 +75,7 @@ export class DevicePairingService {
          WHERE installation_id=? AND device_identity=? LIMIT 1`
       )
       .get(installation.id, deviceIdentity) as
-      | { platformBindingId: string; status: string }
-      | undefined;
+      { platformBindingId: string; status: string } | undefined;
 
     if (existingBinding?.status === "ACTIVE") {
       throw conflict("DEVICE_ALREADY_PAIRED");
@@ -135,7 +144,9 @@ export class DevicePairingService {
     const now = this.now();
     if (now.getTime() >= new Date(session.expires_at).getTime()) {
       this.database
-        .prepare("UPDATE device_pairing_sessions SET status='EXPIRED' WHERE id=? AND status='PENDING'")
+        .prepare(
+          "UPDATE device_pairing_sessions SET status='EXPIRED' WHERE id=? AND status='PENDING'"
+        )
         .run(session.id);
       throw new AppError("Pairing code expired", 401, "DEVICE_PAIRING_EXPIRED");
     }

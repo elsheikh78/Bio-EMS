@@ -174,9 +174,9 @@ describe("DevicePairingService", () => {
       })
     ).toThrowError(/expired/i);
 
-    const row = database
-      .prepare("SELECT status FROM device_pairing_sessions")
-      .get() as { status: string };
+    const row = database.prepare("SELECT status FROM device_pairing_sessions").get() as {
+      status: string;
+    };
     expect(row.status).toBe("EXPIRED");
   });
 

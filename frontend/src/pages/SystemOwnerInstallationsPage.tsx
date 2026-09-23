@@ -173,7 +173,9 @@ function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
   return devices.flatMap((device) => {
     if (!device || typeof device !== "object") return [];
     const deviceId = (device as Record<string, unknown>).deviceId;
-    return typeof deviceId === "string" && deviceId.length > 0 ? [deviceId] : [];
+    return typeof deviceId === "string" && deviceId.length > 0
+      ? [deviceId]
+      : [];
   });
 }
 
@@ -185,7 +187,8 @@ export function SystemOwnerInstallationsPage() {
   const revise = useReviseInstallation();
   const action = useInstallationAction();
   const issuePairing = useIssueDevicePairingCode();
-  const [pairingResult, setPairingResult] = useState<DevicePairingCodeResponse | null>(null);
+  const [pairingResult, setPairingResult] =
+    useState<DevicePairingCodeResponse | null>(null);
   const [customerId, setCustomerId] = useState("");
   const [company, setCompany] = useState("");
   const [site, setSite] = useState("");
@@ -483,28 +486,34 @@ export function SystemOwnerInstallationsPage() {
               </Typography>
               <Box sx={{ mt: 2 }}>
                 <Typography sx={{ fontWeight: 700 }}>{text.pairing}</Typography>
-                <Typography color="text.secondary" variant="body2" sx={{ mb: 1 }}>
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{ mb: 1 }}
+                >
                   {text.pairingHelp}
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {installationDeviceIds(item.latestSnapshot).map((deviceId) => (
-                    <Button
-                      key={deviceId}
-                      variant="outlined"
-                      disabled={issuePairing.isPending}
-                      onClick={() => {
-                        setPairingResult(null);
-                        void issuePairing
-                          .mutateAsync({
-                            installationId: item.uuid,
-                            deviceId,
-                          })
-                          .then(setPairingResult);
-                      }}
-                    >
-                      {text.generatePairing}: {deviceId}
-                    </Button>
-                  ))}
+                  {installationDeviceIds(item.latestSnapshot).map(
+                    (deviceId) => (
+                      <Button
+                        key={deviceId}
+                        variant="outlined"
+                        disabled={issuePairing.isPending}
+                        onClick={() => {
+                          setPairingResult(null);
+                          void issuePairing
+                            .mutateAsync({
+                              installationId: item.uuid,
+                              deviceId,
+                            })
+                            .then(setPairingResult);
+                        }}
+                      >
+                        {text.generatePairing}: {deviceId}
+                      </Button>
+                    ),
+                  )}
                 </Box>
                 {issuePairing.isError ? (
                   <Alert severity="error" sx={{ mt: 1 }}>
@@ -517,7 +526,8 @@ export function SystemOwnerInstallationsPage() {
                       {text.pairingCode}: {pairingResult.pairing_code}
                     </Typography>
                     <Typography component="div" variant="body2">
-                      {text.pairingExpires}: {new Date(pairingResult.expires_at).toLocaleString()}
+                      {text.pairingExpires}:{" "}
+                      {new Date(pairingResult.expires_at).toLocaleString()}
                     </Typography>
                     <Typography component="div" variant="body2">
                       {text.pairingWarning}
