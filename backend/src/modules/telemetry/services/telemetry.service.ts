@@ -111,8 +111,9 @@ export class TelemetryService {
       return;
     }
 
-    const activeBinding =
-      this.dependencies.bindingRepository.findActiveByDeviceIdentity(device.device_id);
+    const activeBinding = this.dependencies.bindingRepository.findActiveByDeviceIdentity(
+      device.device_id
+    );
     if (
       activeBinding &&
       (payload.platformBindingId !== activeBinding.platform_binding_id ||

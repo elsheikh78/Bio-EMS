@@ -63,8 +63,9 @@ export class HeartbeatService {
       return this.reject(HEARTBEAT_REJECTION_REASONS.SITE_MISMATCH, { deviceId, siteCode });
     }
 
-    const activeBinding =
-      this.dependencies.bindingRepository.findActiveByDeviceIdentity(device.device_id);
+    const activeBinding = this.dependencies.bindingRepository.findActiveByDeviceIdentity(
+      device.device_id
+    );
     if (
       activeBinding &&
       (payload.platform_binding_id !== activeBinding.platform_binding_id ||
