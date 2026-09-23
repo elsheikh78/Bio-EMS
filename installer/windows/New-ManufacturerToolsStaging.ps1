@@ -38,7 +38,12 @@ if (-not (Test-Path -LiteralPath $nodeArchive -PathType Leaf)) {
 }
 Copy-Item -LiteralPath $nodeArchive -Destination (Join-Path $staging "payload")
 
-$script = Join-Path $repository "installer\windows\Invoke-ManufacturerOwnerSigner.ps1"
-Copy-Item -LiteralPath $script -Destination (Join-Path $staging "payload")
+@(
+    "Invoke-ManufacturerOwnerSigner.ps1",
+    "Start-ManufacturerOwnerSigner.ps1"
+) | ForEach-Object {
+    $script = Join-Path $repository "installer\windows\$_"
+    Copy-Item -LiteralPath $script -Destination (Join-Path $staging "payload")
+}
 Remove-Item -LiteralPath (Join-Path $staging "work") -Recurse -Force
 Write-Host "BIO-EMS Manufacturer Tools staging: PASS"
