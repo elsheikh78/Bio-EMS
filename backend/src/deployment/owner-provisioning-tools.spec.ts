@@ -38,6 +38,12 @@ describe("System Owner provisioning Windows tools", () => {
     );
   });
 
+  it("surfaces the final native owner-tool diagnostic instead of masking the failure", () => {
+    expect(provisioning).toContain("& $node $Script 2>&1");
+    expect(provisioning).toContain("Select-Object -Last 1");
+    expect(provisioning).toContain("throw [string]$detail");
+  });
+
   it("keeps manufacturer signing material off the customer utility", () => {
     expect(provisioning).not.toContain("PRIVATE_KEY");
     expect(provisioning).not.toContain("PASSPHRASE");

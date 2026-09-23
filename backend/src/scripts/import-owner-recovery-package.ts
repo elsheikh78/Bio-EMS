@@ -13,6 +13,7 @@ import {
   parseOwnerCommissioningTrustedKeyring,
   resolveOwnerCommissioningPublicKey,
 } from "../modules/platform-auth/owner-commissioning-trust";
+import { describeOwnerImportError, loadOwnerImportEnvironment } from "./owner-import-environment";
 
 const identitySchema = z
   .object({ schemaVersion: z.literal(1), installationId: z.string().uuid() })
@@ -40,6 +41,9 @@ export async function runImportOwnerRecoveryPackage(
     );
     const publicKeyPem = resolveOwnerCommissioningPublicKey(keyring, candidate.keyId);
     const claims = verifyOwnerRecoveryPackage(candidate, publicKeyPem, request, now);
+
+    loadOwnerImportEnvironment(environment);
+
     const [{ sqlite }, { createTables }, { runMigrations }] = await Promise.all([
       import("../../database/sqlite/client"),
       import("../../database/sqlite/schema"),
@@ -51,8 +55,8 @@ export async function runImportOwnerRecoveryPackage(
     applyOwnerRecovery(database, claims, candidate.keyId, now);
     console.log("System Owner password recovered from a valid manufacturer-signed package");
     return 0;
-  } catch {
-    console.error("System Owner recovery package rejected");
+  } catch (error) {
+    console.error(`System Owner recovery package rejected: ${describeOwnerImportError(error)}`);
     return 1;
   } finally {
     database?.close();
