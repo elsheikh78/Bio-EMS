@@ -1,10 +1,22 @@
 # BIO-EMS Project State
 
-**State date:** 22 September 2026  
-**Authoritative main audited:** `992e26df5252bc533e8e4c10ddcbb1eb628047bd`  
+**State date:** 23 September 2026  
+**Authoritative main audited:** `6d2b25ef35f48d5a87df0f2073e46cddd6deca48`  
 **Current integration branch:** none; `main` is authoritative  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 23 September SYSTEM_OWNER physical Pilot checkpoint
+
+- The manufacturer-controlled SYSTEM_OWNER path has now been exercised end to end on the installed Windows Pilot host: commissioning request -> company-side signing -> signed package import -> isolated owner creation -> MFA enrollment -> MFA activation -> MFA-protected login -> protected System Owner console.
+- The final browser session reached `https://localhost/system-owner` and was signed in as `system-owner`.
+- Read-only database evidence after activation confirmed an active owner principal, an enabled MFA timestamp, stored encrypted MFA state and no lockout.
+- Physical troubleshooting exposed and closed four concrete defects through PRs #248-#251: installed Node runtime discovery, protected `backend.env` loading for owner-package import, controlled MFA enrollment-token handoff, and safe resume of pending MFA enrollment after short-lived token expiry.
+- Final merged fixes are represented by main commit `6d2b25ef35f48d5a87df0f2073e46cddd6deca48`.
+- PR #251 CI passed and Internal Windows Setup run `35855353686` passed the signed Pilot Setup/build/install/health workflow.
+- Evidence record: `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
+- This closes the immediate Pilot-host SYSTEM_OWNER commissioning/MFA/login verification item only. COM-07, multi-machine qualification, hardware validation, BIO EGYPT field commissioning/UAT, Production security acceptance and final commercial protection remain open.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## 22 September integration and repository checkpoint
 
@@ -40,21 +52,20 @@
 
 Source software is mature and full CI is green, but the BIO EGYPT Pilot is still **NOT COMMISSIONED / NOT ACCEPTED**. The next controlled priority is not final commercial protection. The immediate sequence is:
 
-1. verify the merged SYSTEM_OWNER entry/commissioning/MFA path on the current Pilot build while Production key ceremony remains pending;
-2. verify the merged Communication Channels administration on current `main`;
-3. execute COM-07 live provider/hardware acceptance;
-4. continue multi-machine Windows installer and Backup/Restore qualification;
-5. execute hardware/bench qualification;
-6. perform BIO EGYPT field commissioning/UAT;
-7. stabilize defects;
-8. then complete deferred final Device Trust/commercial protection.
+1. verify the merged Communication Channels administration on current `main`;
+2. execute COM-07 live provider/hardware acceptance;
+3. continue multi-machine Windows installer and Backup/Restore qualification;
+4. execute hardware/bench qualification;
+5. perform BIO EGYPT field commissioning/UAT;
+6. stabilize defects;
+7. then complete deferred final Device Trust/commercial protection.
 
 Master audit:
 `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
 
 ## Repository / CI baseline
 
-- Current authoritative `main`: `992e26df5252bc533e8e4c10ddcbb1eb628047bd` (PR #240 merged).
+- Current authoritative `main`: `6d2b25ef35f48d5a87df0f2073e46cddd6deca48` (SYSTEM_OWNER Pilot flow fixes through PR #251 merged).
 - PR #239 merged the current security/communication/password-recovery/installation/backup-restore integration.
 - PR #240 CI and Internal Windows Setup passed before merge.
 - Latest verified quality baseline:
