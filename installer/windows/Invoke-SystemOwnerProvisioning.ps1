@@ -2,7 +2,8 @@
 [CmdletBinding()]
 param(
     [string]$ApplicationRoot = (Join-Path $env:ProgramFiles "BIO-EMS"),
-    [string]$PersistentRoot = (Join-Path $env:ProgramData "BIO-EMS")
+    [string]$PersistentRoot = (Join-Path $env:ProgramData "BIO-EMS"),
+    [switch]$ValidateOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +14,7 @@ function Test-Administrator {
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-if (-not (Test-Administrator)) {
+if (-not $ValidateOnly -and -not (Test-Administrator)) {
     $arguments = @(
         "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ('"{0}"' -f $PSCommandPath),
         "-ApplicationRoot", ('"{0}"' -f $ApplicationRoot),
@@ -35,7 +36,14 @@ if ($application -ne $expectedApplication -or $persistent -ne $expectedPersisten
     throw "System Owner Provisioning only operates on the installed BIO-EMS paths."
 }
 
-$node = Join-Path $application "runtime\node\node.exe"
+$nodeFile = Get-ChildItem -LiteralPath (Join-Path $application "runtime") -Filter "node.exe" -File -Recurse -ErrorAction SilentlyContinue |
+    Select-Object -First 1
+$node = if ($null -ne $nodeFile) {
+    $nodeFile.FullName
+}
+else {
+    Join-Path $application "runtime\node.exe"
+}
 $requestScript = Join-Path $application "backend\dist\src\scripts\create-owner-commissioning-request.js"
 $importScript = Join-Path $application "backend\dist\src\scripts\import-owner-commissioning-package.js"
 $identityPath = Join-Path $persistent "licensing\installation-identity.json"
@@ -51,6 +59,11 @@ foreach ($required in @($node, $requestScript, $importScript, $identityPath, $en
         ) | Out-Null
         exit 1
     }
+}
+
+if ($ValidateOnly) {
+    Write-Host "BIO-EMS System Owner Provisioning preflight: PASS"
+    return
 }
 
 function Invoke-OwnerTool {
