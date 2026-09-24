@@ -10,7 +10,7 @@
 3. Modular Pilot hardware architecture is **APPROVED FOR DETAILED DESIGN**: SC + SIM-T2 + SIM-T4 + independent COM-CELL + PDU-24; 24 VDC field backbone; RS485 Sensor Interface bus; PT100 3-wire measurement baseline.
 4. El Manial is the first detailed hardware/procurement target: 1 × SC, 2 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. The two Pilot Sites use no custom PCB; qualified ready-made modules are assembled into serviceable field enclosures.
 5. HW-PWR-01 architecture is established around the standard PDU-24-S5 and upstream customer/site UPS; complete the executable PDU Rev.A component/terminal design while HW-SIM-01 proceeds.
-6. Then execute HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
+6. Execute HW-SIM-01 now: qualify one integrated 4-channel PT100/RS485 Modbus module as the preferred no-custom-PCB SIM-T4 core; only fall back to MCU + 4 × MAX31865 if it fails. Then continue HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
 7. In parallel, continue physical Windows qualification and COM-07 where real provider/SIM evidence is available.
 8. BIO EGYPT installation/UAT remains after bench qualification; final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred until Pilot hardware/software stability.
 

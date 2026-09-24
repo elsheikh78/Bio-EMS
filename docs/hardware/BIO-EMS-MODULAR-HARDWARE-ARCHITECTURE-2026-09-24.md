@@ -108,23 +108,11 @@ The Site Controller does not contain the cellular modem in the approved modular 
 
 ## 5. BIO-EMS SIM-T2 / SIM-T4
 
-Each SIM contains:
+For the no-custom-PCB Pilot, the preferred SIM-T4 implementation is a qualified integrated 4-channel PT100 acquisition module that accepts 24 VDC and exposes RS485/Modbus RTU directly. This removes the need for a separate SIM MCU, four breakout MAX31865 boards, a standalone RS485 board and a separate low-voltage DC/DC module when the selected acquisition module already contains those functions.
 
-- PT100 terminal block(s);
-- independent MAX31865-class front end per populated channel;
-- small low-cost MCU;
-- shared SPI bus with independent chip-select per RTD front end;
-- RS485 transceiver;
-- 24 V input protection and local conversion;
-- hardware watchdog;
-- module serial/UID;
-- logical field-bus address;
-- status/diagnostic indicator;
-- field connector and enclosure suited to the installation environment.
+The MAX31865-per-channel architecture remains the controlled fallback if no integrated module passes the required accuracy, repeatability and 3-wire compensation qualification.
 
-The selected MCU shall be deliberately smaller/lower-cost than the Site Controller and need not
-provide Wi-Fi/Bluetooth. Final MCU selection is a detailed-design step based on cost, availability,
-temperature rating, required SPI/UART/GPIO, watchdog, unique ID, flash and production tooling.
+For Pilot SIM-T4, no internal MCU is required if the selected integrated acquisition module already provides Modbus RTU. A future custom production SIM may use a deliberately small, low-cost MCU and independent RTD front ends after the Pilot architecture is proven.
 
 ## 6. Field-bus baseline
 
@@ -290,14 +278,13 @@ Detailed hardware design shall proceed in this order:
    - protection;
    - DC-UPS/autonomy decision.
 
-2. **HW-SIM-01 — SIM-T2/T4 Pilot module design**
-   - PT100 input;
-   - MAX31865/reference network;
-   - MCU module;
-   - RS485 module;
-   - power/protection;
+2. **HW-SIM-01 — SIM-T4 Pilot module design**
+   - first choice: integrated 4-channel PT100 -> RS485/Modbus acquisition module;
+   - bench qualification of accuracy/repeatability/3-wire compensation;
+   - 24 V compatibility;
    - enclosure/terminal/internal-wiring layout;
-   - no custom PCB for El Manial and October Pilot hardware.
+   - versioned SC driver/profile for the selected Modbus register map;
+   - fallback: no-custom-PCB MCU + 4 × MAX31865 + RS485 assembly if the integrated module fails qualification.
 
 3. **HW-SC-01 — Site Controller**
    - ESP32-S3 implementation;
