@@ -58,8 +58,7 @@ Spare channels: **1**
 
 ## 4. Preliminary procurement classes
 
-The following quantities are approved for engineering/BOM development. Exact manufacturer part
-numbers are intentionally deferred until the relevant design work package is frozen.
+The following quantities are approved for engineering/BOM development. Exact manufacturer part numbers are intentionally deferred until the relevant design work package is frozen. For the current Pilot, every purchased item must be obtainable from Egyptian local stock; direct import/cross-border marketplaces are excluded from the Pilot BOM.
 
 ### A. Site Controller assembly — 1 production unit + prototype/spares as approved
 
@@ -276,11 +275,10 @@ Cost reduction shall prioritize architectural savings first:
 - appropriately sized MCU in SIM modules;
 - centralized 24 V power;
 - standardized connectors/enclosures;
-- approved alternate components.
+- approved alternate components;
+- Egypt-local stock as a hard procurement gate; no direct-import dependency for Pilot hardware.
 
-Exact target EGP prices are intentionally not frozen until real supplier quotations are collected
-for the first complete prototype BOM. Competitive cost is a release gate, not a later procurement
-optimization.
+Exact target EGP prices are intentionally not frozen until real Egyptian supplier quotations are collected for the first complete prototype BOM. Competitive cost and local availability are release gates, not later procurement optimizations.
 
 ## 8. Immediate next calculation
 
