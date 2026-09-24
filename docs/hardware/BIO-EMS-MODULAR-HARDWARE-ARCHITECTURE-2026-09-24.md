@@ -337,6 +337,40 @@ The first calculation shall define the El Manial power budget for:
 
 That calculation drives the final PSU, branch protection, cable gauge and battery/UPS purchase.
 
+## 13. Design-to-cost principle
+
+Competitive cost is a first-class engineering requirement for BIO-EMS hardware, alongside
+measurement quality, reliability, maintainability and security.
+
+The hardware team shall apply the following rules during detailed design and BOM freeze:
+
+- prefer common PCBs and population variants instead of separate boards where practical;
+- keep SIM-T2 and SIM-T4 on one common four-channel PCB using DNP population;
+- avoid ESP32-class compute capability inside simple SIM modules when a lower-cost MCU is sufficient;
+- use one independent COM-CELL gateway per Site where one shared cellular path meets the reliability requirement, rather than duplicating a modem/SIM in every Site Controller;
+- use centralized 24 V field power and local low-voltage conversion instead of multiple distributed adapters;
+- use certified industrial mains PSU/DC-UPS modules for the Pilot rather than designing a low-volume custom mains PSU;
+- select protection, connectors, enclosures and isolation according to the verified environment; do not over-specify every Site as the harshest industrial case;
+- qualify at least one approved alternate for cost-sensitive or supply-risk components where practical;
+- prefer components with reliable Egyptian/regional availability when performance and lifecycle are acceptable;
+- evaluate total installed cost, not PCB BOM alone: enclosure, terminals, glands, cable, installation labor, calibration, spares and service time are part of product cost;
+- avoid saving small BOM cost if it materially increases field failure risk, calibration drift, service visits or downtime;
+- freeze exact cost targets only after the first complete El Manial prototype BOM is priced from real suppliers.
+
+Every detailed work package shall therefore record:
+
+1. functional requirement;
+2. preferred component/design;
+3. lower-cost acceptable alternative where one exists;
+4. technical reason if the higher-cost option is retained;
+5. estimated unit BOM impact;
+6. field-installation/service impact;
+7. decision at BOM freeze.
+
+The objective is not the lowest possible component cost. The objective is the lowest repeatable
+total product cost that still meets BIO-EMS accuracy, reliability, field-service and compliance
+requirements.
+
 ## 13. Evidence boundary
 
 This document records an approved architecture and an El Manial design baseline.
