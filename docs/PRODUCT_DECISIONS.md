@@ -9,29 +9,58 @@ This document records the agreed product decisions for BIO-EMS Pilot readiness.
 ### BIO-EMS Standard
 
 - Target: cold rooms, warehouses, general environmental monitoring.
-- Temperature sensor: Industrial DS18B20.
-- Controller: BIO-EMS Site Controller v1.
-- Primary communication: Internet (Ethernet/WiFi).
-- Backup communication: 4G/SMS failover.
+- Current new-hardware measurement baseline: PT100 3-wire through BIO-EMS SIM-T2/SIM-T4.
+- Controller: BIO-EMS Site Controller.
+- Primary communication: wired Ethernet; Wi-Fi retained as service/fallback capability.
+- Backup communication: independent BIO-EMS COM-CELL LTE/SMS gateway.
 
 ### BIO-EMS Advanced
 
 - Target: GMP critical applications and validation-focused customers.
-- Temperature sensor: PT100 Class A.
+- Uses the same modular hardware family; final differentiation is to be defined by released measurement accuracy, calibration/validation evidence, redundancy, environmental/mechanical rating and security/qualification profile rather than by assuming a different direct-wired Sensor bus.
 - Same BIO-EMS platform and backend.
-- Different measurement layer only.
+
+## Modular Hardware Architecture (Approved 2026-09-24)
+
+The previous direct-DS18B20 / all-in-one Site Controller hardware direction is superseded for new
+BIO-EMS Pilot hardware by the approved modular architecture documented in:
+
+`docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`
+
+Approved product blocks:
+
+- `BIO-EMS SC` — Site Controller;
+- `BIO-EMS SIM-T2` — two-channel RTD interface;
+- `BIO-EMS SIM-T4` — four-channel RTD interface;
+- `BIO-EMS COM-CELL` — independent LTE/SMS gateway;
+- `BIO-EMS PDU-24` — 24 VDC protected power/distribution unit.
+
+Current Pilot temperature measurement baseline is PT100, 3-wire, with an independent MAX31865-class
+front end per populated channel. SIM-T2 and SIM-T4 should share one four-channel PCB/DNP strategy
+where practical.
+
+24 VDC is the approved field-power backbone; field devices target an 18–30 VDC input design range
+and create local 5 V / 3.3 V rails.
+
+RS485 is the approved field-bus physical layer. Ethernet is the preferred fixed-site Platform
+network path from the Site Controller. Cellular is separated from the Site Controller so one
+COM-CELL can serve the Site and remain independently replaceable.
+
+For El Manial, the approved design baseline is:
+
+- 1 × SC;
+- 2 × SIM-T2;
+- 1 × SIM-T4;
+- 1 × COM-CELL;
+- 1 × PDU-24;
+- 7 × PT100 3-wire probes.
+
+Exact electronic manufacturer part numbers, cable lengths, PSU/UPS selection and released PCB
+design remain open engineering outputs and are not implied by this architecture approval.
 
 ## Site Controller v1 Direction
 
-The selected architecture is All-in-One Site Controller:
-
-- Sensor acquisition.
-- MQTT communication.
-- Internet primary path.
-- 4G backup path.
-- SMS emergency alerts.
-- Local buffering capability.
-- Device health reporting.
+Historical note: the earlier All-in-One Site Controller direction is superseded by the modular 24 V / RS485 architecture approved on 24 September 2026. The Site Controller retains local processing, buffering, MQTT/platform communication and health reporting, while RTD acquisition is delegated to SIM-T2/T4 and LTE/SMS is delegated to COM-CELL.
 
 ## Communication Strategy
 
