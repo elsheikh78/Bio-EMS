@@ -17,10 +17,9 @@ with the following fixed product envelope:
 - 230 VAC nominal input;
 - industrial 24 VDC / 5 A power stage;
 - 24 V field-power backbone;
-- integrated DC-UPS/charger function or a standard compatible DIN-rail UPS module;
-- external 24 V battery connection;
 - eight protected 24 V output branches;
-- AC/DC/UPS health monitoring;
+- AC/DC power-health monitoring;
+- designed to be supplied from a customer/site UPS-backed 230 VAC source where backup power is required;
 - DIN-rail/serviceable construction;
 - common terminal/label scheme across Sites.
 
@@ -28,7 +27,7 @@ Project-specific work is limited to:
 
 - which standard outputs are used;
 - field cable length/gauge;
-- battery capacity/autonomy selection;
+- required upstream UPS autonomy/capacity selection;
 - optional surge/environment accessories;
 - enclosure size only if the physical installation requires a larger standard cabinet.
 
@@ -89,8 +88,6 @@ limits the total available output and the branch ratings protect individual wiri
                  |
         Industrial 24 V / 5 A PSU
                  |
-        Standard DC-UPS/charger
-                 |
               24 V BUS
                  |
         PDU low-voltage distribution
@@ -113,38 +110,52 @@ Minimum logical states:
 
 - AC present;
 - DC output healthy;
-- UPS on battery;
-- battery low/fault;
-- charger/UPS fault where supported.
+- upstream UPS/generator state where a suitable dry contact or isolated status signal is available.
 
 Preferred physical implementation:
 
-- dry-contact outputs from industrial PSU/DC-UPS modules;
-- isolated digital input path into the Site Controller or a small PDU monitoring interface.
+- dry-contact outputs from the site UPS/ATS/generator system where available;
+- isolated digital input path into the Site Controller or a small PDU monitoring interface;
+- optional pre-UPS mains-present sensing where the site UPS does not expose status contacts.
 
 Power failure shall not be inferred only from a Site Controller reboot or network loss.
 
-## 6. Battery interface
+## 6. Backup-power policy
 
-The PDU output architecture remains fixed; the battery is a replaceable external energy-storage
-component.
+Backup power is **site infrastructure**, not an intrinsic PDU-24-S5 function.
 
-Standard battery connection:
+Standard arrangement where the customer requires backup operation:
 
-- nominal 24 V battery bank;
-- keyed/covered field-service connector or protected terminal;
-- dedicated battery protection according to the selected UPS/charger datasheet;
-- no exposed unprotected battery wiring.
+```text
+Utility / Generator / ATS
+        |
+     Site UPS
+        |
+   +----+-------------------+
+   |                        |
+BIO-EMS Platform PC      PDU-24-S5
+                            |
+                       24 V BIO-EMS loads
+```
 
-For the El Manial four-hour autonomy target, the current preferred SLA/AGM starting point is:
+The customer/site selects and provides the UPS capacity and autonomy required by its operational
+policy. Many cold-room and pharmaceutical facilities also have a standby generator; where that is
+the case, the UPS primarily bridges the transfer/start interval and any short outages. The actual
+generator start/transfer time is a Site acceptance parameter and must be verified during survey;
+BIO-EMS must not hard-code an assumed one-minute transfer time.
 
-**2 × 12 V / 18 Ah in series = 24 V / 18 Ah nominal**
+The standard PDU shall therefore **not** contain an internal battery bank or mandatory DC-UPS
+charger. This avoids duplicating infrastructure already present at many customer Sites and keeps
+the BIO-EMS hardware cost competitive.
 
-This battery set is not an intrinsic part of the PDU electronics. A different Site may use another
-approved battery capacity while using the same PDU-24-S5.
+For Sites without a suitable customer UPS, BIO-EMS may specify or supply a separate, standard
+upstream AC UPS option sized for:
 
-Battery chemistry must match the charger/UPS profile. SLA/AGM and LiFePO4 are not interchangeable
-without an explicitly compatible charger/BMS design.
+- Platform PC where included in the backup scope;
+- PDU-24-S5 input;
+- required network equipment if continued LAN/Internet operation is part of the requirement.
+
+COM-CELL remains the independent cellular fallback if the normal network path is unavailable.
 
 ## 7. Standard field-power interface
 
@@ -170,13 +181,12 @@ multi-pair field cable only when the released cable design permits it.
 To keep cost competitive and serviceable:
 
 - use one PDU product architecture for both current Pilot Sites;
-- use standard DIN-rail PSU and UPS modules;
+- use a standard DIN-rail 24 V PSU; use the customer/site UPS as the upstream backup source where available;
 - use one low-voltage distribution board/terminal scheme;
 - use replaceable branch fuses or standardized electronic protection;
 - use common terminal numbers and labels;
 - use one service manual;
-- qualify approved alternate PSU/UPS brands without changing the customer wiring;
-- keep batteries external/replaceable;
+- qualify approved alternate PSU brands without changing the customer wiring;
 - do not over-specify redundant dual PSU hardware in the standard S5 model.
 
 A future high-availability variant may be introduced separately if a customer requires redundant
@@ -193,21 +203,17 @@ X1  AC INPUT
     X1.2  N
     X1.3  PE
 
-X2  BATTERY
-    X2.1  BAT+
-    X2.2  BAT-
-
-X3  OUTPUT O1
+X2  OUTPUT O1
     X3.1  +24V
     X3.2  0V
 
 ...
 
-X10 OUTPUT O8
+X9  OUTPUT O8
     X10.1 +24V
     X10.2 0V
 
-X11 STATUS
+X10 STATUS
     AC_OK
     DC_OK
     ON_BATTERY
@@ -224,7 +230,7 @@ For every new Site, engineering shall perform only a load/application check:
 
 1. sum the released continuous and peak load of required BIO-EMS devices;
 2. verify the total remains inside the PDU-24-S5 released envelope;
-3. calculate the required battery autonomy;
+3. verify the upstream UPS capacity/autonomy selected by the Site is adequate for the loads included in backup scope;
 4. verify cable voltage drop;
 5. assign the fixed standard outputs;
 6. record unused branches.
@@ -264,13 +270,12 @@ one standard eight-output PDU architecture can serve both current Pilot Sites.
 PDU-24-S5 becomes a released hardware product only after:
 
 - exact schematic;
-- exact PSU/UPS and alternate MPNs;
+- exact 24 V PSU and approved alternate MPNs;
 - low-voltage distribution/protection design;
 - enclosure/panel layout;
 - thermal check;
 - branch short-circuit tests;
-- UPS transfer/recharge tests;
-- four-hour Manial autonomy test;
+- transfer test from utility loss through the approved upstream UPS/generator arrangement;
 - maximum released load test;
 - cable-voltage-drop validation;
 - AC-fail/status integration;

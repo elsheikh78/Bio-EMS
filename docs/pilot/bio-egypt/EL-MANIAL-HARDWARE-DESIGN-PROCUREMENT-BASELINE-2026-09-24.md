@@ -167,9 +167,10 @@ Required design/procurement classes:
 - earthing/chassis hardware;
 - surge/transient protection;
 - branch fuses/PTC/electronic protection as selected;
-- DC-UPS/battery stage sized for the approved **4-hour field-hardware autonomy**.
+- standard upstream customer/site UPS supply where backup power is required;
+- no mandatory internal PDU battery bank or DC-UPS charger.
 
-Current sizing starting point: **24 V / 5 A**. For an SLA/AGM Pilot implementation, the current preferred battery starting point is **2 × 12 V / 18 Ah in series** (24 V / 18 Ah nominal), subject to final industrial DC-UPS/charger compatibility and datasheet review.
+Current PDU sizing starting point remains **24 V / 5 A**. UPS capacity and autonomy are Site/customer infrastructure requirements and are verified against the actual Platform PC + PDU + required network load.
 
 ### G. Field infrastructure
 
@@ -239,7 +240,7 @@ Requires:
 - cellular signal/antenna position;
 - enclosure/IP requirements.
 
-The DC-UPS autonomy target is now **APPROVED: 4 hours** for SC + SIMs + COM-CELL + PDU monitoring. The Platform PC remains on a separate AC-UPS path.
+The earlier four-hour internal PDU battery target is superseded. The Site/customer now selects the UPS autonomy according to operational requirements. Where standby generation exists, the UPS primarily bridges utility loss and generator/ATS transfer; the actual transfer time and backed-up loads must be verified during Site survey/commissioning. Platform PC and PDU may share the same appropriately sized upstream UPS.
 
 ## 6. Design/procurement principle
 
@@ -301,6 +302,6 @@ It must calculate:
 - cable voltage drop;
 - PSU derating;
 - expansion reserve;
-- DC-UPS battery autonomy.
+- upstream UPS capacity/autonomy and generator/ATS transfer behavior.
 
-Only after that calculation should the 24 V PSU, UPS and battery part numbers be purchased.
+Only after that calculation should the PDU 24 V PSU/protection part numbers be purchased. The upstream UPS is selected separately from Site/customer requirements.

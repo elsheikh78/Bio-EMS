@@ -7,8 +7,7 @@
 
 ## 1. Objective
 
-Define the El Manial Pilot 24 VDC field-power architecture before selecting exact power-supply,
-UPS, battery, branch-protection and field-cable part numbers.
+Define the El Manial Pilot 24 VDC field-power architecture before selecting the exact 24 V power-supply, branch-protection and field-cable part numbers. Backup autonomy is provided by upstream Site/customer UPS infrastructure rather than an internal PDU battery system.
 
 The first-site load set is:
 
@@ -26,7 +25,7 @@ BIO-EMS should **not** design a custom 230 VAC power-supply PCB for the first Pi
 
 Field distribution:
 
-`230 VAC -> industrial 24 VDC PSU / DC-UPS path -> protected 24 V branches -> BIO-EMS devices`
+`UPS-backed 230 VAC -> industrial 24 VDC PSU -> protected 24 V branches -> BIO-EMS devices`
 
 Nominal bus:
 
@@ -53,7 +52,6 @@ The PDU-24 Pilot implementation should therefore use:
 
 - industrial DIN-rail 230 VAC / 24 VDC PSU;
 - DIN-rail AC protection/isolation;
-- DIN-rail DC-UPS/charger if backup is fitted;
 - protected/fused 24 V branch terminals;
 - PE/earth bar;
 - segregated mains and SELV sections;
@@ -91,7 +89,6 @@ Add:
 
 - minimum 25% continuous engineering reserve;
 - allowance for DC/DC conversion losses;
-- battery charging current when the DC-UPS is recovering;
 - startup/inrush behavior;
 - future service accessory / second-controller expansion where practical.
 
@@ -106,7 +103,7 @@ Nominal output capacity:
 This is intentionally generous for El Manial and allows the PSU to operate well below maximum
 continuous rating during normal service.
 
-The exact PSU MPN remains open until the DC-UPS topology and battery charge current are selected.
+The exact PSU MPN remains open until the released PDU schematic, efficiency/thermal review and supplier comparison are complete.
 
 ## 6. Proposed branch structure
 
@@ -116,8 +113,6 @@ The exact PSU MPN remains open until the DC-UPS topology and battery charge curr
 [AC isolator / protection]
    |
 [24 V industrial PSU]
-   |
-[DC-UPS / charger if fitted]
    |
 [PDU-24 DC distribution]
    |
@@ -220,68 +215,61 @@ This is one reason COM-CELL has a dedicated branch.
 
 ## 10. AC-failure / power-health monitoring
 
-Environmental monitoring should distinguish:
+Environmental monitoring should distinguish, where Site signals are available:
 
-- field DC still available;
-- mains AC has failed;
-- battery/UPS is supporting the load;
-- battery is low/faulted;
-- PSU/charger fault.
+- field 24 V DC healthy;
+- utility mains failed;
+- upstream UPS is carrying the load;
+- generator/ATS state;
+- PSU fault.
 
 PDU-24 therefore needs a dry-contact or isolated status interface available to SC and/or COM-CELL.
 
 Preferred Pilot approach:
 
-- use industrial PSU/DC-UPS diagnostic relay contacts where available;
-- otherwise use a dedicated isolated AC-present / DC-OK monitoring module.
+- use dry contacts from the customer UPS/ATS/generator where available;
+- otherwise use a dedicated isolated pre-UPS mains-present sensor plus DC-OK monitoring.
 
 The Pilot firmware/platform shall later map these into explicit power-health telemetry rather than
 infer AC status only from controller uptime.
 
-## 11. DC-UPS / battery design
+## 11. Upstream UPS / generator design
 
-**Approved field-hardware autonomy target: 4 hours.**
+The previously recorded four-hour internal field-battery target is **superseded**.
 
-This target applies to the BIO-EMS 24 V field hardware (SC + SIMs + COM-CELL + PDU monitoring) during loss of mains power. The Platform PC remains a separate AC-UPS design item.
+BIO-EMS PDU-24-S5 no longer includes an internal DC-UPS charger or battery bank as a standard
+product requirement.
 
-The battery bank must be sized from the conservative continuous design load, not the typical measured load expected later.
+Backup power is supplied upstream by the customer/site according to its required autonomy. The
+standard topology is:
 
-Using the conservative 27.6 W continuous design load:
+```text
+Utility / Generator / ATS
+        |
+     Site UPS
+        |
+   +----+-------------------+
+   |                        |
+Platform PC             PDU-24-S5
+                            |
+                       SC / SIMs / COM-CELL
+```
 
-| Required field autonomy | Ideal energy | Practical design energy target before battery technology detail |
-| --- | ---: | ---: |
-| 1 hour | 27.6 Wh | ~40–50 Wh |
-| 2 hours | 55.2 Wh | ~80–100 Wh |
-| 4 hours | 110.4 Wh | ~160–200 Wh |
+This is intentionally suited to cold-room/pharmaceutical Sites where standby generation commonly
+exists. The UPS bridges short utility interruptions and generator transfer/startup, while the
+customer chooses a larger UPS if longer standalone autonomy is required.
 
-For the approved 4-hour target, the ideal energy requirement is therefore **110.4 Wh**, while the engineering usable-energy target remains **at least 160 Wh** after allowing for conversion loss, aging, temperature and operating reserve.
+For El Manial and every future Site, engineering shall verify rather than assume:
 
-If a conventional sealed lead-acid/AGM 24 V battery bank is used and the design limits routine discharge to about 50% depth of discharge, the nominal battery-bank energy should be at least about **320 Wh**. At 24 V this corresponds to approximately **13.3 Ah** nominal capacity before additional practical margin.
+- UPS continuous watt/VA capacity;
+- battery/autonomy requirement;
+- generator availability;
+- actual ATS/generator transfer/start time;
+- whether Platform PC, Ethernet switch/router and PDU are all on the backed-up circuit;
+- available dry contacts/status outputs.
 
-Accordingly, the current preferred Pilot starting point for an SLA/AGM implementation is:
-
-- **2 × 12 V / 18 Ah batteries in series** -> nominal 24 V / 18 Ah -> 432 Wh nominal.
-
-A 2 × 12 V / 12 Ah bank is considered borderline for a guaranteed 4-hour design once aging, conversion loss and conservative depth-of-discharge policy are included, and is therefore not the preferred baseline.
-
-If LiFePO4 is selected instead, the battery and DC-UPS/charger must be explicitly compatible with that chemistry and BMS; its Ah requirement can be lower for the same usable energy, but it is not to be mixed with an SLA charger profile.
-
-Practical capacity must include:
-
-- DC-UPS conversion losses;
-- battery aging;
-- allowed depth of discharge;
-- low-temperature/high-temperature derating;
-- recharge time;
-- required cellular alarm transmission during outage.
-
-A common 24 V lead-acid arrangement using two 12 V batteries in series may be suitable for the
-Pilot because components are readily available and easy to service, but battery chemistry and Ah
-rating remain an explicit procurement decision.
-
-The Platform PC itself is outside the PDU-24 DC load unless deliberately converted to a compatible
-DC architecture. The customer PC should normally have its own suitable AC UPS. SC/SIM/COM-CELL
-field operation must not assume the PC remains powered during every mains failure.
+A working assumption such as “generator available within one minute” may be captured from the
+customer but is not a BIO-EMS product constant until verified at that Site.
 
 ## 12. Earthing and separation
 
@@ -302,8 +290,6 @@ PE at multiple field points.
 Before the exact released BOM, engineering may procure one prototype set in these classes:
 
 - 1 × reputable industrial 24 V / 5 A DIN-rail PSU;
-- 1 × compatible 24 V DC-UPS/charger module or equivalent bench solution;
-- battery set sized to the autonomy trial;
 - 1 × two-pole AC protective/isolation device appropriate to the panel;
 - DIN-rail fuse/terminal blocks for at least five DC branches;
 - PE terminal/bar;
@@ -317,7 +303,6 @@ Exact brands/MPNs should be selected only after checking:
 - technical datasheets;
 - operating temperature;
 - certification;
-- DC-UPS compatibility;
 - replacement availability.
 
 ## 14. Acceptance tests for HW-PWR-01 prototype
@@ -332,14 +317,13 @@ Bench tests must include:
 4. SC + SIM + COM-CELL simultaneous startup;
 5. branch short/fault isolation;
 6. removal of one branch without resetting others;
-7. AC loss -> UPS transfer;
-8. AC restoration -> recharge;
-9. low-battery indication;
-10. DC-OK / AC-fail status path;
-11. power-cycle recovery;
-12. voltage at the furthest SIM under peak field-bus load;
-13. enclosure/terminal thermal check;
-14. endurance run with logged voltage/current.
+7. utility AC loss while PDU is supplied from the approved upstream UPS;
+8. generator/ATS transfer test where available;
+9. DC-OK / mains-fail / UPS-generator status path;
+10. power-cycle recovery;
+11. voltage at the furthest SIM under peak field-bus load;
+12. enclosure/terminal thermal check;
+13. endurance run with logged voltage/current.
 
 ## 15. Current engineering conclusion
 
@@ -350,10 +334,8 @@ For El Manial, the approved starting power architecture is:
 - certified industrial DIN-rail mains PSU;
 - 24 V / 5 A engineering starting capacity;
 - separate SC, SIM, COM-CELL and spare branches;
-- DC-UPS/battery support;
+- compatibility with upstream customer/site UPS backup;
 - explicit AC-fail/power-health monitoring;
 - no custom 230 VAC PCB for the Pilot.
 
-The backup-autonomy decision is now closed at **4 hours** for the El Manial field-hardware bus.
-
-The remaining battery procurement decision is the chemistry/UPS combination. The current engineering preference is an industrial 24 V DC-UPS compatible with **2 × 12 V / 18 Ah SLA/AGM batteries in series**, unless a technically and commercially superior LiFePO4-compatible industrial UPS solution is selected after datasheet and local-availability review.
+The earlier four-hour internal battery-bank decision is superseded. Backup duration is now a Site/customer UPS requirement. BIO-EMS verifies that the supplied UPS/generator arrangement covers the Platform/PDU/network loads selected for backup and records the measured transfer/autonomy evidence during commissioning.
