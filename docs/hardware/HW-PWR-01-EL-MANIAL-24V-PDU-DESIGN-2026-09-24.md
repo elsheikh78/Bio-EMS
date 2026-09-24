@@ -240,7 +240,11 @@ infer AC status only from controller uptime.
 
 ## 11. DC-UPS / battery design
 
-The final battery capacity cannot be frozen until the required autonomy is approved.
+**Approved field-hardware autonomy target: 4 hours.**
+
+This target applies to the BIO-EMS 24 V field hardware (SC + SIMs + COM-CELL + PDU monitoring) during loss of mains power. The Platform PC remains a separate AC-UPS design item.
+
+The battery bank must be sized from the conservative continuous design load, not the typical measured load expected later.
 
 Using the conservative 27.6 W continuous design load:
 
@@ -249,6 +253,18 @@ Using the conservative 27.6 W continuous design load:
 | 1 hour | 27.6 Wh | ~40–50 Wh |
 | 2 hours | 55.2 Wh | ~80–100 Wh |
 | 4 hours | 110.4 Wh | ~160–200 Wh |
+
+For the approved 4-hour target, the ideal energy requirement is therefore **110.4 Wh**, while the engineering usable-energy target remains **at least 160 Wh** after allowing for conversion loss, aging, temperature and operating reserve.
+
+If a conventional sealed lead-acid/AGM 24 V battery bank is used and the design limits routine discharge to about 50% depth of discharge, the nominal battery-bank energy should be at least about **320 Wh**. At 24 V this corresponds to approximately **13.3 Ah** nominal capacity before additional practical margin.
+
+Accordingly, the current preferred Pilot starting point for an SLA/AGM implementation is:
+
+- **2 × 12 V / 18 Ah batteries in series** -> nominal 24 V / 18 Ah -> 432 Wh nominal.
+
+A 2 × 12 V / 12 Ah bank is considered borderline for a guaranteed 4-hour design once aging, conversion loss and conservative depth-of-discharge policy are included, and is therefore not the preferred baseline.
+
+If LiFePO4 is selected instead, the battery and DC-UPS/charger must be explicitly compatible with that chemistry and BMS; its Ah requirement can be lower for the same usable energy, but it is not to be mixed with an SLA charger profile.
 
 Practical capacity must include:
 
@@ -338,5 +354,6 @@ For El Manial, the approved starting power architecture is:
 - explicit AC-fail/power-health monitoring;
 - no custom 230 VAC PCB for the Pilot.
 
-The only major PDU parameter still requiring a product decision before exact battery procurement is
-the required **backup autonomy**.
+The backup-autonomy decision is now closed at **4 hours** for the El Manial field-hardware bus.
+
+The remaining battery procurement decision is the chemistry/UPS combination. The current engineering preference is an industrial 24 V DC-UPS compatible with **2 × 12 V / 18 Ah SLA/AGM batteries in series**, unless a technically and commercially superior LiFePO4-compatible industrial UPS solution is selected after datasheet and local-availability review.
