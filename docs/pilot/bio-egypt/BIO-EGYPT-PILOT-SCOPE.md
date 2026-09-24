@@ -8,9 +8,7 @@
 | CPC / 6th of October |          3 |             1 |              1 |     5 |      13 |
 | **Pilot total**      |      **4** |         **2** |          **2** | **8** |  **20** |
 
-Temperature is the only Phase 1 measurement. The selected product direction is
-BIO-EMS Standard using industrial DS18B20 temperature Sensors and BIO-EMS Site
-Controller v1.
+Temperature is the only Phase 1 measurement. As of 24 September 2026, the current Pilot hardware direction is the approved modular BIO-EMS architecture using PT100 3-wire probes through SIM-T2/SIM-T4 modules, BIO-EMS Site Controller(s), independent COM-CELL cellular backup, and 24 VDC protected power distribution. The previous direct industrial DS18B20/all-in-one controller direction is superseded for new Pilot hardware.
 
 ## Included capabilities
 
