@@ -1,7 +1,7 @@
 # HW-SIM-01 — BIO-EMS SIM-T4 Pilot Design (No Custom PCB)
 
 **Date:** 24 September 2026  
-**Status:** APPROVED PILOT DESIGN DIRECTION / BENCH QUALIFICATION REQUIRED  
+**Status:** APPROVED PILOT DESIGN DIRECTION / LOCAL-EGYPT SOURCING GATE OPEN / BENCH QUALIFICATION REQUIRED  
 **Sites:** El Manial and CPC / 6th of October  
 **Architecture:** 24 VDC + RS485 / Modbus RTU  
 **Construction:** No BIO-EMS custom PCB for Pilot
@@ -275,133 +275,116 @@ acquisition core with a custom production PCB if doing so materially improves:
 
 The Pilot does not wait for that production optimization.
 
-## 14. First prototype candidate — selected
+## 14. Mandatory local-market sourcing rule
 
-The first bench prototype candidate is:
+For El Manial and CPC / 6th of October Pilot hardware, **BIO-EMS shall not import hardware
+components directly**.
 
-**PTA8C04 — 4-channel PT100 / RS485 Modbus RTU, 24 V variant**
+Every Pilot BOM item must be purchasable from the Egyptian local market at the time of procurement.
+An imported-origin component is acceptable only when it is already held/supplied locally by an
+Egyptian seller/distributor and BIO-EMS can buy it as a normal local purchase.
 
-Preferred range for BIO-EMS cold-room qualification:
+The following are **not acceptable procurement sources** for the Pilot BOM:
 
-**A range: -40 °C to +220 °C**, if the supplier confirms the exact 24 V/A-range ordering option.
+- Ubuy cross-border listings;
+- Fruugo cross-border listings;
+- Desertcart international procurement;
+- AliExpress / Alibaba direct import;
+- direct overseas manufacturer checkout;
+- any item whose checkout explicitly makes BIO-EMS the importer of record.
 
-Reason for selecting the A range first: the supplier explicitly recommends the smaller range that
-still covers the application. The B range (-40 °C to +500 °C) is acceptable only if the A-range
-24 V variant is unavailable.
+This requirement applies to SC, SIM, COM-CELL, PDU electronics, probes, enclosures, connectors and
+field accessories.
 
-Current supplier material for the family reports:
+## 15. Effect on the previously selected PTA8C04
 
-- 12/24 VDC operation;
-- 14–18 mA consumption;
+The PTA8C04 24 V candidate selected in PR #264 is **superseded as a purchase candidate** because the
+verified sources found for it require cross-border/import procurement.
+
+Its technical information may remain useful as a reference architecture, but BIO-EMS shall not
+purchase it for the current Pilot unless an Egyptian local seller later confirms physical/local
+stock and local sale.
+
+Therefore the first SIM-T4 acquisition-core candidate is now:
+
+**OPEN — LOCAL EGYPT STOCK REQUIRED**
+
+No full Pilot quantity shall be purchased until the local-market candidate is identified and bench
+qualified.
+
+## 16. Local-market survey snapshot — 24 September 2026
+
+Current web-verified Egyptian local-market examples include:
+
+| Function | Locally listed example | Observed local price / status | Pilot use |
+| --- | --- | --- | --- |
+| Site/bench MCU | ESP32-S3-N16R8 development board — Makers Electronics | ~EGP 550, listed In Stock | acceptable for SC/bench work |
+| RS485 interface | HW-519 TTL-RS485 — Makers Electronics | ~EGP 80, listed In Stock | candidate |
+| 24 V -> 5 V DC/DC | HW-788ABCD fixed-output buck — Makers Electronics | ~EGP 120, listed In Stock | candidate |
+| 24 V -> 5 V DC/DC | RAM DC301 7.5–28 V -> 5 V | ~EGP 50, locally listed | candidate after load/noise test |
+| PT100 3-wire probe | RAM PT100 M6-3Q-U | ~EGP 300, 3-wire, Class-A claim | candidate probe |
+| General ADC | ADS1115 16-bit module — Makers Electronics | ~EGP 275, listed In Stock | **not yet approved as PT100 front end** |
+
+The survey also found RTD-capable precision ADC products such as ADS1220 and AD7793 at Egyptian
+electronics shops, but their current online listings showed sold-out/unavailable status. They are
+therefore not treated as purchasable Pilot BOM items until stock is reconfirmed.
+
+The survey did **not** identify a web-verifiable, in-stock Egyptian retail listing for a low-cost
+four-channel PT100 -> RS485/Modbus module equivalent to PTA8C04. This is not proof that none exists
+in the offline industrial market; local automation distributors may still have suitable stock.
+
+## 17. Local-only SIM-T4 decision path
+
+Engineering shall now evaluate two local-only paths in this order:
+
+### Path A — locally stocked integrated 4-RTD Modbus module
+
+Preferred if an Egyptian supplier can provide, from local stock:
+
 - four PT100 inputs;
-- 2-wire / 3-wire PT100 support;
-- Modbus RTU;
-- default 9600, N, 8, 1;
-- configurable RS485 address;
-- temperature and PT100 resistance registers;
-- stated 1% measurement accuracy.
+- 3-wire support;
+- 24 V-compatible supply;
+- RS485 / Modbus RTU;
+- documented accuracy compatible with the qualification target;
+- replaceable/local repeat supply;
+- acceptable total cost.
 
-The current public supplier listing observed during selection shows the 24 V B-range version at
-approximately USD 13.99 before shipping/import charges. This price is a sourcing reference only,
-not a frozen BIO-EMS BOM price.
+The supplier and local-stock evidence must be recorded before approval.
 
-Because the stated 1% accuracy is ambiguous for a pharmaceutical monitoring application, the
-PTA8C04 is **PROTOTYPE-SELECTED, NOT FIELD-APPROVED** until it passes HW-SIM-01 qualification.
+### Path B — locally stocked modular acquisition build
 
-Supplier/reference family:
-- Eletechsup / 485io PTA8C04 family.
-- Public protocol references are available for register verification.
+If Path A cannot be sourced locally at acceptable cost, build SIM-T4 from modules/components that
+are all available from Egyptian stock.
 
-## 15. Prototype wiring baseline
+The exact RTD acquisition front end remains an engineering selection item. BIO-EMS shall **not**
+assume MAX31865 is available locally; it may only be used if local Egyptian stock is confirmed.
 
-The exact terminal markings printed on the received unit take precedence over this text and must be
-photographed/recorded before energizing.
+A locally stocked general-purpose ADC such as ADS1115 is not automatically an RTD front end. Any
+alternative circuit must prove:
 
-### Power and bus
+- excitation/reference stability;
+- 3-wire lead compensation or a controlled equivalent;
+- channel accuracy;
+- temperature drift;
+- sensor open/short detection strategy;
+- repeatable calibration.
 
-```text
-PDU-24 +24V  --------------------> PTA8C04 V+
-PDU-24 0V    --------------------> PTA8C04 GND
+No loose-resistor experimental bridge is approved for field installation without a documented,
+repeatable assembly and bench evidence.
 
-BIO-EMS SC RS485-A  -------------> PTA8C04 A / A+
-BIO-EMS SC RS485-B  -------------> PTA8C04 B / B-
-```
+## 18. Procurement gate
 
-For the first bench test, use one module only. Add the second module only after address configuration
-and single-device communications are confirmed.
+The immediate action is **local supplier discovery, not overseas ordering**.
 
-### 3-wire PT100 channel
+Before buying the SIM acquisition core:
 
-Supplier documentation describes the 3-wire connection as:
+1. search/phone Egyptian automation/electronics suppliers for a locally stocked 4-channel
+   PT100/RS485 Modbus module;
+2. record exact model, seller, Egyptian stock status and EGP price;
+3. compare that option with a local-module SIM build;
+4. buy one prototype only;
+5. execute the existing accuracy/repeatability/RS485 qualification;
+6. only then freeze the two El Manial SIM-T4 units.
 
-```text
-PT100 wire #1 (different colour) ---> P+
-PT100 wire #2 (same colour pair) ---> P-
-PT100 wire #3 (same colour pair) ---> G
-```
-
-The two same-colour wires may be interchanged between P- and G according to the supplier
-documentation.
-
-Repeat this wiring independently for CH1 through CH4.
-
-Do not treat the PT100 G terminal as the PDU/system 0 V terminal; it is part of the RTD measurement
-input and must follow the acquisition-module terminal labelling.
-
-## 16. Provisional PTA8C04 Modbus map
-
-The following register map is the current bench-integration starting point and must be verified
-against the received module/protocol document before firmware release:
-
-| Function | Register | Quantity / scaling |
-| --- | --- | --- |
-| CH1–CH4 temperature | 0x0000–0x0003 | signed/returned value, 0.1 °C scale |
-| CH1–CH4 PT100 resistance | 0x0020–0x0023 | 0.1 ohm scale |
-| CH1–CH4 temperature correction | 0x0040–0x0043 | 0.1 °C correction |
-| CH1–CH4 resistance correction | 0x0060–0x0063 | 0.1 ohm correction |
-| RS485 address | 0x00FD | configurable |
-| baud rate | 0x00FE | vendor enumerated value |
-| parity | 0x00FF | vendor enumerated value |
-
-Bench default:
-
-- Modbus address: 1;
-- baud: 9600;
-- parity: none;
-- data bits: 8;
-- stop bits: 1.
-
-After one module is proven:
-
-- SIM-T4-A -> address 1;
-- SIM-T4-B -> address 2.
-
-BIO-EMS should poll the four temperature registers in one contiguous read where supported rather
-than issuing four separate transactions.
-
-## 17. Prototype pass/fail sequence
-
-Purchase/obtain **one PTA8C04 24 V module only** for the first bench cycle.
-
-Do not buy the full El Manial/October quantity until this unit passes:
-
-- RS485 integration;
-- multi-channel accuracy;
-- 3-wire PT100;
-- power-cycle;
-- address persistence;
-- two-device bus simulation;
-- calibration comparison.
-
-Only after the first candidate passes should BIO-EMS buy the second El Manial unit and the later
-October quantity.
-
-If the PTA8C04 fails accuracy, repeatability, drift, open-sensor handling or RS485 stability, the
-next candidate to evaluate is the **Juying DAM0404PT RS485** class. Its manufacturer publishes
-7–30 VDC operation, four PT100 inputs, Modbus RTU and a claimed 0.1 °C measurement accuracy, but its
-extra relay outputs and larger enclosure may increase cost/size. It is therefore the first fallback,
-not the first purchase.
-
-The MR2-AR4G class remains a further industrial fallback if required; it supports four PT100 inputs,
-2/3/4-wire sensors, RS485 Modbus RTU and 0.1 °C resolution, but is materially more expensive than
-the PTA8C04 class.
+The local-market rule is a hard procurement constraint and has priority over the earlier PTA8C04
+candidate selection.
