@@ -16,6 +16,7 @@
 - El Manial and CPC / 6th of October Pilot hardware will use qualified ready-made modules with no BIO-EMS custom PCB; a common production PCB remains a post-Pilot optimization after field validation.
 - El Manial cost-optimized baseline is now 1 × SC, 2 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. SIM-T4-A serves the two Cold Room probes plus the Anti-chamber probe (one spare channel); SIM-T4-B serves the four Dry Warehouse probes. This remains subject to field-route verification.
 - HW-SIM-01 now prefers one integrated 4-channel PT100 -> RS485/Modbus acquisition module per SIM-T4 for the no-custom-PCB Pilot, eliminating separate SIM MCU/MAX31865/RS485/DC-DC boards where the qualified module provides those functions.
+- First SIM-T4 bench candidate is PTA8C04 24 V, preferably the -40 to +220 °C range if supplier-confirmed. It is prototype-selected only; field approval requires measured accuracy/repeatability/RS485 qualification. Juying DAM0404PT is the first fallback if the low-cost candidate fails.
 - The first low-cost candidate must pass bench accuracy, repeatability, 3-wire compensation, RS485 addressing and power-cycle persistence before field purchase is expanded. MAX31865-per-channel remains the fallback.
 - Detailed authority: `docs/hardware/HW-SIM-01-PILOT-SIM-T4-NO-CUSTOM-PCB-2026-09-24.md`.
 - Detailed design proceeds HW-PWR-01 -> HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
