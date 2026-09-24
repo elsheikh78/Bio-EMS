@@ -175,6 +175,28 @@ preferred direction for a new product design.
 
 ## 8. BIO-EMS PDU-24
 
+BIO-EMS adopts a **standard product**, not a project-specific PDU redesign:
+
+**BIO-EMS PDU-24-S5**
+
+Standard product authority:
+
+`docs/hardware/BIO-EMS-PDU-24-S5-STANDARD-2026-09-24.md`
+
+Baseline:
+
+- 230 VAC nominal input;
+- industrial 24 VDC / 5 A power stage;
+- standard DC-UPS/charger path;
+- external 24 V battery;
+- eight protected 24 V outputs;
+- explicit AC/DC/UPS health status;
+- fixed terminal/branch numbering across Sites.
+
+Per-project engineering shall only verify that the Site load and cable/autonomy requirements fit the
+released S5 envelope. If they fit, the PDU internal design must not change. Larger future loads use
+a defined expansion/higher-power product rather than an ad-hoc project modification.
+
 The PDU-24 is a protected distribution assembly, not merely a power supply.
 
 Baseline structure:
