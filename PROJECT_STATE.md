@@ -1,10 +1,26 @@
 # BIO-EMS Project State
 
-**State date:** 23 September 2026  
+**State date:** 24 September 2026  
 **Authoritative main audited:** `57ff5748f130e09994fd3aee804197a1cf3d8193`  
 **Current integration branch:** none; `main` is authoritative  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 24 September modular hardware architecture checkpoint
+
+- BIO-EMS hardware is now approved for detailed design as five modular blocks: `SC`, `SIM-T2`, `SIM-T4`, independent `COM-CELL`, and `PDU-24`.
+- The previous direct-DS18B20/all-in-one Site Controller direction is superseded for new Pilot hardware.
+- New temperature hardware baseline: PT100 3-wire probes, independent MAX31865-class front end per populated channel, local SIM conversion, and RS485 field-bus transport.
+- 24 VDC is the approved field-power backbone. Target device input design range is 18–30 VDC; low-voltage rails are generated locally inside each module.
+- Wired Ethernet is the preferred fixed-site Platform path from Site Controller; cellular/SMS is separated into COM-CELL.
+- SIM-T2 and SIM-T4 should share a common four-channel PCB with DNP population for the two-channel variant where practical.
+- El Manial is the first detailed-design/procurement target: 1 × SC, 2 × SIM-T2, 1 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. This yields 8 RTD channels / 7 used / 1 spare.
+- Detailed design proceeds HW-PWR-01 -> HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
+- Immediate next gate: calculate El Manial 24 V load budget, branch protection, PSU/DC-UPS sizing and backup autonomy before freezing power purchases.
+- Architecture authority: `docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`.
+- El Manial baseline: `docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md`.
+- This is architecture/design approval only. PCB release, exact MPN BOM, field cable lengths, calibration, installation, commissioning and acceptance remain open.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## 23 September ESP32-S3 Pilot pairing v1 checkpoint
 
@@ -69,12 +85,12 @@
 
 Source software is mature and full CI is green, but the BIO EGYPT Pilot is still **NOT COMMISSIONED / NOT ACCEPTED**. The next controlled priority is not final commercial protection. The immediate sequence is:
 
-1. identify/confirm the physical ESP32 target and execute the first real ESP32-S3 Pilot flash + platform pairing using the merged v1 pairing path;
-2. implement/exercise ESP32 MQTT heartbeat/telemetry publishing and RS485 sensor acquisition on the bench;
-3. verify the merged Communication Channels administration on current `main` and execute COM-07 live provider/hardware acceptance;
-4. continue multi-machine Windows installer and Backup/Restore qualification;
-5. complete hardware/bench qualification;
-6. perform BIO EGYPT field commissioning/UAT;
+1. execute HW-PWR-01 for El Manial and freeze the 24 V/PDU power design;
+2. design/bench SIM-T2/T4, then SC, COM-CELL and mechanical/cabling layers;
+3. complete the exact El Manial BOM and integrated seven-channel bench simulation;
+4. execute the first real ESP32-S3 platform pairing and MQTT/RS485 integration on the resulting hardware path;
+5. verify Communication Channels/COM-07 and continue Windows installer/Backup-Restore qualification in parallel;
+6. complete hardware qualification, then BIO EGYPT field commissioning/UAT;
 7. stabilize defects;
 8. then complete deferred final Device PKI/mTLS/Secure Boot/Flash Encryption/commercial protection.
 

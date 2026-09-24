@@ -41,17 +41,42 @@ The following decisions have been captured from Pilot planning. They reduce unce
 - The room previously labelled `Freezer` at CPC / 6th of October is operationally a Cold Room for this Pilot.
 - Final physical positions on the drawings remain field/documentation evidence and are not inferred from the logical allocation.
 
-### BE-003 — Controller working baseline
+### BE-003 — Controller / modular-hardware working baseline
 
-- One Site Controller at El Manial and one Site Controller at CPC / 6th of October.
-- Each Site Controller is planned inside the corresponding Antechamber.
-- Planned channel capacity: 16 channels per Site Controller.
-- The Pilot direction is direct Sensor connection to the ESP32-based Site Controller; this Pilot statement does not redefine the authoritative Standard/Advanced product tiers in `docs/PRODUCT_DECISIONS.md`.
-- Final released hardware design remains required before procurement/installation.
+The earlier direct-Sensor/all-in-one Controller assumption is superseded by the approved modular
+hardware decision of 24 September 2026.
 
-### BE-004 — Cable constraint
+El Manial detailed-design baseline:
 
-- Planning constraint: each Sensor-to-Controller run is expected not to exceed 20 m.
+- 1 × BIO-EMS SC;
+- 2 × SIM-T2;
+- 1 × SIM-T4;
+- 1 × independent COM-CELL;
+- 1 × PDU-24;
+- 7 × PT100 3-wire probes;
+- 8 available RTD channels / 7 used / 1 spare.
+
+CPC / 6th of October will use the same product blocks, with multiple Site Controllers where
+justified by fault-domain separation and verified layout. Its final controller/SIM count remains
+a later design output.
+
+24 VDC is the field-power backbone and RS485 is the Sensor Interface field bus. Wired Ethernet is
+the preferred fixed-site Platform path.
+
+Detailed architecture authority:
+`docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`
+
+El Manial design/procurement baseline:
+`EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md`
+
+BE-003 remains BLOCKING until released electrical design/BOM and physical mounting evidence are
+approved.
+
+### BE-004 — Cable / field-bus constraint
+
+- The new modular baseline minimizes long analog RTD runs by placing SIM-T2/T4 locally and carrying digital RS485 plus 24 V field power toward the Site Controller.
+- Final PT100-to-SIM lengths, RS485 trunk/stub lengths, conductor sizes, shield policy, containment and termination remain detailed electrical/field-survey outputs.
+- The earlier generic 20 m Sensor-to-Controller planning limit is not a released electrical limit for the modular design and must not be copied into installation instructions as a verified maximum.
 - Actual routes and measured lengths remain survey evidence and must be recorded before BE-004 closure.
 
 ### BE-005 — Logical mapping prepared; physical identity pending
@@ -60,17 +85,17 @@ Logical mapping prepared for customer approval:
 
 | Site | Controller | Channel(s) | Logical Sensor ID(s) | Area |
 | --- | --- | --- | --- | --- |
-| El Manial | `MNL-CTRL-01` | CH01–CH02 | `MNL-CR-01`, `MNL-CR-02` | Cold Room |
-| El Manial | `MNL-CTRL-01` | CH03 | `MNL-AT-01` | Antechamber |
-| El Manial | `MNL-CTRL-01` | CH04–CH07 | `MNL-DS-01` … `MNL-DS-04` | Dry Storage / Corridor |
+| El Manial | `MNL-SIM-T2-CR01` | CH01–CH02 | `MNL-CR-01`, `MNL-CR-02` | Cold Room |
+| El Manial | `MNL-SIM-T2-AC01` | CH01 | `MNL-AT-01` | Antechamber |
+| El Manial | `MNL-SIM-T4-DW01` | CH01–CH04 | `MNL-DS-01` … `MNL-DS-04` | Dry Storage / Corridor |
 | CPC / 6th of October | `OCT-CTRL-01` | CH01–CH02 | `OCT-CR1-01`, `OCT-CR1-02` | Cold Room 1 |
 | CPC / 6th of October | `OCT-CTRL-01` | CH03–CH04 | `OCT-CR2-01`, `OCT-CR2-02` | Cold Room 2 |
 | CPC / 6th of October | `OCT-CTRL-01` | CH05–CH06 | `OCT-CR3-01`, `OCT-CR3-02` | Cold Room 3 (former Freezer) |
 | CPC / 6th of October | `OCT-CTRL-01` | CH07 | `OCT-AT-01` | Antechamber |
 | CPC / 6th of October | `OCT-CTRL-01` | CH08–CH13 | `OCT-DS-01` … `OCT-DS-06` | Dry Storage |
 
-- El Manial uses 7/16 planned channels; CPC / 6th of October uses 13/16 planned channels.
-- Physical Sensor serial, DS18B20 ROM ID where applicable, calibration certificate reference, final marked-up position, and measured cable length remain TBD until procurement/commissioning.
+- El Manial now uses 7/8 planned SIM RTD channels with one spare. CPC / 6th of October logical Sensor IDs remain valid, but its physical Controller/SIM channel allocation must be revised after the modular layout is designed.
+- Physical Sensor serial, PT100 probe identity, SIM hardware UID/address, calibration certificate reference, final marked-up position, and measured cable length remain TBD until procurement/commissioning.
 - Signed logical mapping evidence `BE005-EV-001` was approved on 24 August 2026. Logical mapping
   is closed; physical Sensor/ROM/certificate/position/cable fields remain open for commissioning.
 
