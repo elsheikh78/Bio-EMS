@@ -43,13 +43,15 @@ The first released SIM family targets:
 Each RTD channel has an independent measurement front end. The design shall not multiplex several
 PT100 probes through one MAX31865 in Revision 1.
 
-SIM-T2 and SIM-T4 should use one common four-channel PCB where practical:
+For the **El Manial and CPC / 6th of October Pilot installations**, BIO-EMS will use a
+**no-custom-PCB build strategy**: qualified ready-made electronic modules mounted in serviceable
+enclosures with screw terminals, ferrules and controlled internal wiring. Breadboards and Dupont
+jumpers are bench-only and are not permitted in the field installation.
 
-- SIM-T4: channels 1–4 populated;
-- SIM-T2: channels 1–2 populated, channels 3–4 DNP.
-
-The common-board objective is to reduce PCB variants, firmware variants, inventory, test fixtures,
-and spare-parts complexity.
+SIM-T2 and SIM-T4 remain logical BIO-EMS product types. A future production revision may consolidate
+the validated Pilot electronics onto one common four-channel PCB, with SIM-T4 fully populated and
+SIM-T2 using a two-channel population/DNP variant. Custom PCB work is intentionally deferred until
+the two Pilot Sites validate the architecture, power, noise, thermal and service assumptions.
 
 The exact PT100 class, probe construction, reference resistor tolerance/TCR, terminal technology,
 and environmental enclosure are detailed-design/BOM decisions and must pass bench/calibration
@@ -185,12 +187,11 @@ Standard product authority:
 
 Baseline:
 
-- 230 VAC nominal input;
+- 230 VAC nominal input, preferably supplied from the customer's backed-up AC source where required;
 - industrial 24 VDC / 5 A power stage;
-- standard DC-UPS/charger path;
-- external 24 V battery;
 - eight protected 24 V outputs;
-- explicit AC/DC/UPS health status;
+- explicit AC/DC power-health status, with upstream UPS/ATS/generator status accepted where available;
+- no mandatory internal battery bank or DC-UPS charger;
 - fixed terminal/branch numbering across Sites.
 
 Per-project engineering shall only verify that the Site load and cable/autonomy requirements fit the
@@ -204,7 +205,7 @@ Baseline structure:
 ```text
 230 VAC
    |
-Industrial 24 VDC PSU / future DC-UPS stage
+Industrial 24 VDC PSU
    |
 PDU-24
    +-- protected branch -> Site Controller(s)
@@ -226,11 +227,10 @@ Detailed design shall define:
 - power-good / AC-fail monitoring;
 - enclosure/DIN-rail arrangement;
 - earthing/chassis treatment;
-- DC-UPS/battery interface and autonomy options.
+- upstream UPS/ATS/generator status interface where available.
 
-A nominal **24 V / 5 A** supply is the current engineering starting point for Pilot sizing, not a
-released procurement value. The final rating must follow the measured load budget and approved
-backup-autonomy target.
+A nominal **24 V / 5 A** supply is the standard S5 engineering target. Backup duration is a
+customer/Site UPS requirement rather than an internal PDU battery design parameter.
 
 ## 9. El Manial first-site hardware allocation
 
@@ -244,16 +244,14 @@ The approved modular allocation for detailed design is:
 
 | Area | Interface module | Channels used | Spare |
 | --- | --- | ---: | ---: |
-| Cold Room 01 | 1 × SIM-T2 | 2 | 0 |
-| Anti-chamber 01 | 1 × SIM-T2 | 1 | 1 |
+| Cold Room 01 + Anti-chamber 01 | 1 × SIM-T4 | 3 | 1 |
 | Dry Warehouse 01 | 1 × SIM-T4 | 4 | 0 |
-| **Total** | **2 × SIM-T2 + 1 × SIM-T4** | **7** | **1** |
+| **Total** | **2 × SIM-T4** | **7** | **1** |
 
 Site-level equipment baseline:
 
 - 1 × BIO-EMS SC;
-- 2 × BIO-EMS SIM-T2;
-- 1 × BIO-EMS SIM-T4;
+- 2 × BIO-EMS SIM-T4;
 - 1 × BIO-EMS COM-CELL;
 - 1 × BIO-EMS PDU-24;
 - 7 × PT100 3-wire temperature probe assemblies;
@@ -262,7 +260,10 @@ Site-level equipment baseline:
   after the route survey.
 
 El Manial uses one Site Controller in the first Pilot design because seven channels are spread
-across three local SIM modules and do not justify a second controller solely for channel capacity.
+across two local SIM-T4 modules and do not justify a second controller solely for channel capacity.
+The Cold Room + Anti-chamber sharing of one SIM-T4 is subject to field-route verification; if the
+actual PT100 routing makes that grouping electrically or mechanically unsuitable, engineering must
+raise a controlled layout revision rather than silently extend the analog runs.
 The architecture permits a second controller later if reliability/risk assessment or field
 layout requires a separate failure domain.
 
@@ -289,13 +290,14 @@ Detailed hardware design shall proceed in this order:
    - protection;
    - DC-UPS/autonomy decision.
 
-2. **HW-SIM-01 — SIM-T2/T4 electrical design**
+2. **HW-SIM-01 — SIM-T2/T4 Pilot module design**
    - PT100 input;
    - MAX31865/reference network;
-   - MCU;
-   - RS485;
+   - MCU module;
+   - RS485 module;
    - power/protection;
-   - common PCB/DNP plan.
+   - enclosure/terminal/internal-wiring layout;
+   - no custom PCB for El Manial and October Pilot hardware.
 
 3. **HW-SC-01 — Site Controller**
    - ESP32-S3 implementation;
@@ -366,8 +368,8 @@ measurement quality, reliability, maintainability and security.
 
 The hardware team shall apply the following rules during detailed design and BOM freeze:
 
-- prefer common PCBs and population variants instead of separate boards where practical;
-- keep SIM-T2 and SIM-T4 on one common four-channel PCB using DNP population;
+- for the current two Pilot Sites, avoid custom-PCB NRE and revision risk by using qualified ready-made modules;
+- after Pilot validation, prefer one common production PCB and population variants instead of separate boards where practical;
 - avoid ESP32-class compute capability inside simple SIM modules when a lower-cost MCU is sufficient;
 - use one independent COM-CELL gateway per Site where one shared cellular path meets the reliability requirement, rather than duplicating a modem/SIM in every Site Controller;
 - use centralized 24 V field power and local low-voltage conversion instead of multiple distributed adapters;
