@@ -275,9 +275,113 @@ acquisition core with a custom production PCB if doing so materially improves:
 
 The Pilot does not wait for that production optimization.
 
-## 14. Immediate procurement/bench action
+## 14. First prototype candidate — selected
 
-Purchase/obtain **one** low-cost integrated 4-channel PT100 RS485 Modbus module first.
+The first bench prototype candidate is:
+
+**PTA8C04 — 4-channel PT100 / RS485 Modbus RTU, 24 V variant**
+
+Preferred range for BIO-EMS cold-room qualification:
+
+**A range: -40 °C to +220 °C**, if the supplier confirms the exact 24 V/A-range ordering option.
+
+Reason for selecting the A range first: the supplier explicitly recommends the smaller range that
+still covers the application. The B range (-40 °C to +500 °C) is acceptable only if the A-range
+24 V variant is unavailable.
+
+Current supplier material for the family reports:
+
+- 12/24 VDC operation;
+- 14–18 mA consumption;
+- four PT100 inputs;
+- 2-wire / 3-wire PT100 support;
+- Modbus RTU;
+- default 9600, N, 8, 1;
+- configurable RS485 address;
+- temperature and PT100 resistance registers;
+- stated 1% measurement accuracy.
+
+The current public supplier listing observed during selection shows the 24 V B-range version at
+approximately USD 13.99 before shipping/import charges. This price is a sourcing reference only,
+not a frozen BIO-EMS BOM price.
+
+Because the stated 1% accuracy is ambiguous for a pharmaceutical monitoring application, the
+PTA8C04 is **PROTOTYPE-SELECTED, NOT FIELD-APPROVED** until it passes HW-SIM-01 qualification.
+
+Supplier/reference family:
+- Eletechsup / 485io PTA8C04 family.
+- Public protocol references are available for register verification.
+
+## 15. Prototype wiring baseline
+
+The exact terminal markings printed on the received unit take precedence over this text and must be
+photographed/recorded before energizing.
+
+### Power and bus
+
+```text
+PDU-24 +24V  --------------------> PTA8C04 V+
+PDU-24 0V    --------------------> PTA8C04 GND
+
+BIO-EMS SC RS485-A  -------------> PTA8C04 A / A+
+BIO-EMS SC RS485-B  -------------> PTA8C04 B / B-
+```
+
+For the first bench test, use one module only. Add the second module only after address configuration
+and single-device communications are confirmed.
+
+### 3-wire PT100 channel
+
+Supplier documentation describes the 3-wire connection as:
+
+```text
+PT100 wire #1 (different colour) ---> P+
+PT100 wire #2 (same colour pair) ---> P-
+PT100 wire #3 (same colour pair) ---> G
+```
+
+The two same-colour wires may be interchanged between P- and G according to the supplier
+documentation.
+
+Repeat this wiring independently for CH1 through CH4.
+
+Do not treat the PT100 G terminal as the PDU/system 0 V terminal; it is part of the RTD measurement
+input and must follow the acquisition-module terminal labelling.
+
+## 16. Provisional PTA8C04 Modbus map
+
+The following register map is the current bench-integration starting point and must be verified
+against the received module/protocol document before firmware release:
+
+| Function | Register | Quantity / scaling |
+| --- | --- | --- |
+| CH1–CH4 temperature | 0x0000–0x0003 | signed/returned value, 0.1 °C scale |
+| CH1–CH4 PT100 resistance | 0x0020–0x0023 | 0.1 ohm scale |
+| CH1–CH4 temperature correction | 0x0040–0x0043 | 0.1 °C correction |
+| CH1–CH4 resistance correction | 0x0060–0x0063 | 0.1 ohm correction |
+| RS485 address | 0x00FD | configurable |
+| baud rate | 0x00FE | vendor enumerated value |
+| parity | 0x00FF | vendor enumerated value |
+
+Bench default:
+
+- Modbus address: 1;
+- baud: 9600;
+- parity: none;
+- data bits: 8;
+- stop bits: 1.
+
+After one module is proven:
+
+- SIM-T4-A -> address 1;
+- SIM-T4-B -> address 2.
+
+BIO-EMS should poll the four temperature registers in one contiguous read where supported rather
+than issuing four separate transactions.
+
+## 17. Prototype pass/fail sequence
+
+Purchase/obtain **one PTA8C04 24 V module only** for the first bench cycle.
 
 Do not buy the full El Manial/October quantity until this unit passes:
 
@@ -291,3 +395,13 @@ Do not buy the full El Manial/October quantity until this unit passes:
 
 Only after the first candidate passes should BIO-EMS buy the second El Manial unit and the later
 October quantity.
+
+If the PTA8C04 fails accuracy, repeatability, drift, open-sensor handling or RS485 stability, the
+next candidate to evaluate is the **Juying DAM0404PT RS485** class. Its manufacturer publishes
+7–30 VDC operation, four PT100 inputs, Modbus RTU and a claimed 0.1 °C measurement accuracy, but its
+extra relay outputs and larger enclosure may increase cost/size. It is therefore the first fallback,
+not the first purchase.
+
+The MR2-AR4G class remains a further industrial fallback if required; it supports four PT100 inputs,
+2/3/4-wire sensors, RS485 Modbus RTU and 0.1 °C resolution, but is materially more expensive than
+the PTA8C04 class.
