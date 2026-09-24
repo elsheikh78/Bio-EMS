@@ -167,9 +167,9 @@ Required design/procurement classes:
 - earthing/chassis hardware;
 - surge/transient protection;
 - branch fuses/PTC/electronic protection as selected;
-- DC-UPS/battery stage after autonomy target is approved.
+- DC-UPS/battery stage sized for the approved **4-hour field-hardware autonomy**.
 
-Current sizing starting point: **24 V / 5 A**, subject to HW-PWR-01 calculation.
+Current sizing starting point: **24 V / 5 A**. For an SLA/AGM Pilot implementation, the current preferred battery starting point is **2 × 12 V / 18 Ah in series** (24 V / 18 Ah nominal), subject to final industrial DC-UPS/charger compatibility and datasheet review.
 
 ### G. Field infrastructure
 
@@ -237,8 +237,9 @@ Requires:
 - earthing;
 - Ethernet point;
 - cellular signal/antenna position;
-- DC-UPS autonomy target;
 - enclosure/IP requirements.
+
+The DC-UPS autonomy target is now **APPROVED: 4 hours** for SC + SIMs + COM-CELL + PDU monitoring. The Platform PC remains on a separate AC-UPS path.
 
 ## 6. Design/procurement principle
 
