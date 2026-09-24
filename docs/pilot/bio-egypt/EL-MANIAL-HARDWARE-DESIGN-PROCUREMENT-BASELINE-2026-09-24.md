@@ -25,13 +25,13 @@ The final physical positions, cable routes and measured lengths remain field-sur
                                BIO-EMS SC-01
                                       |
                          RS485-A + 24 V field system
-                    +-----------------+------------------+
-                    |                 |                  |
-                 SIM-T2-A          SIM-T2-B           SIM-T4-A
-                 Cold Room        Anti-chamber       Dry Warehouse
-                  CH1 CH2           CH1               CH1 CH2 CH3 CH4
-                   |   |             |                 |   |   |   |
-                  PT100s            PT100              PT100 x4
+                    +-----------------------+----------------------+
+                    |                                              |
+                 SIM-T4-A                                      SIM-T4-B
+          Cold Room + Anti-chamber                           Dry Warehouse
+            CH1 CH2 CH3 (CH4 spare)                         CH1 CH2 CH3 CH4
+             |   |   |                                       |   |   |   |
+           PT100 PT100 PT100                                PT100 x4
 
                       Independent site communications
                                 BIO-EMS COM-CELL
@@ -47,8 +47,7 @@ The final physical positions, cable routes and measured lengths remain field-sur
 | Item | Quantity | Role |
 | --- | ---: | --- |
 | BIO-EMS SC | 1 | Site Controller |
-| BIO-EMS SIM-T2 | 2 | Cold Room + Anti-chamber RTD interfaces |
-| BIO-EMS SIM-T4 | 1 | Dry Warehouse RTD interface |
+| BIO-EMS SIM-T4 | 2 | Cold Room + Anti-chamber group, and Dry Warehouse group |
 | BIO-EMS COM-CELL | 1 | Independent cellular/SMS gateway |
 | BIO-EMS PDU-24 | 1 | 24 V power/protected distribution |
 | PT100 3-wire probe assembly | 7 | Temperature measurement |
@@ -81,37 +80,32 @@ Required design classes:
 - status LEDs and service controls;
 - future secure-element footprint/components where appropriate.
 
-### B. SIM-T2 — 2 field units
+### B. SIM-T4 — 2 field units
 
-Per unit:
+Pilot construction is **no custom PCB**. Each field unit is assembled from qualified ready-made
+modules inside a serviceable enclosure; breadboard and Dupont wiring are not permitted in the field.
 
-- common SIM four-channel PCB;
-- 2 × populated MAX31865-class RTD front end;
-- 2 × precision RTD reference networks;
-- low-cost MCU;
-- RS485 transceiver;
-- 24 V protection and DC/DC;
-- channel terminal blocks;
-- bus/power terminal blocks;
-- watchdog/status parts;
-- enclosure and cable glands.
+Per SIM-T4:
 
-Channels 3 and 4 remain DNP on the common PCB.
+- 4 × MAX31865 RTD interface modules;
+- 4 × precision PT100 reference networks as provided/verified by the selected module design;
+- 1 × low-cost MCU module;
+- 1 × RS485 module;
+- 1 × 24 V-to-local-rail DC/DC module;
+- input/bus protection as selected in HW-SIM-01;
+- four RTD screw-terminal channels;
+- bus/power screw terminals;
+- status/service indication;
+- enclosure, mounting plate/DIN adapter and cable glands;
+- ferruled, labelled internal wiring.
 
-### C. SIM-T4 — 1 field unit
+Field allocation:
 
-Per unit:
+- SIM-T4-A: Cold Room sensors 1–2 + Anti-chamber sensor on CH1–CH3, CH4 spare;
+- SIM-T4-B: Dry Warehouse sensors on CH1–CH4.
 
-- same common SIM PCB;
-- 4 × populated MAX31865-class RTD front end;
-- 4 × precision RTD reference networks;
-- low-cost MCU;
-- RS485 transceiver;
-- 24 V protection and DC/DC;
-- four RTD terminal channels;
-- bus/power terminal blocks;
-- watchdog/status parts;
-- enclosure and glands.
+The Cold Room + Anti-chamber grouping is approved as the cost-optimized baseline but remains
+subject to field-route verification before installation.
 
 ### D. Temperature probes — 7 field probes plus engineering spare policy
 
@@ -199,8 +193,7 @@ The El Manial purchase list is frozen in three stages.
 **APPROVED**
 
 - 1 SC;
-- 2 SIM-T2;
-- 1 SIM-T4;
+- 2 SIM-T4;
 - 1 COM-CELL;
 - 1 PDU-24;
 - 7 PT100 probes;
@@ -251,11 +244,11 @@ Recommended sequence:
 
 1. buy components/modules for one bench prototype set;
 2. validate PDU/power;
-3. validate one SIM-T4 fully populated;
-4. validate T2 DNP variant;
+3. validate one no-custom-PCB SIM-T4 module;
+4. duplicate the validated SIM-T4 module and verify address/RS485 coexistence;
 5. validate SC field bus + Ethernet;
 6. validate COM-CELL;
-7. run integrated 7-channel El Manial bench simulation;
+7. run integrated 7-channel El Manial bench simulation with both SIM-T4 units;
 8. freeze exact BOM;
 9. purchase field quantity + approved spares.
 
@@ -277,7 +270,8 @@ cost. The comparison must include:
 
 Cost reduction shall prioritize architectural savings first:
 
-- common SIM-T2/T4 PCB;
+- two SIM-T4 modules instead of three separate SIM enclosures at El Manial;
+- no custom PCB for El Manial/October Pilot hardware;
 - shared Site COM-CELL instead of modem duplication;
 - appropriately sized MCU in SIM modules;
 - centralized 24 V power;

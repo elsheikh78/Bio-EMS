@@ -13,10 +13,10 @@
 - New temperature hardware baseline: PT100 3-wire probes, independent MAX31865-class front end per populated channel, local SIM conversion, and RS485 field-bus transport.
 - 24 VDC is the approved field-power backbone. Target device input design range is 18–30 VDC; low-voltage rails are generated locally inside each module.
 - Wired Ethernet is the preferred fixed-site Platform path from Site Controller; cellular/SMS is separated into COM-CELL.
-- SIM-T2 and SIM-T4 should share a common four-channel PCB with DNP population for the two-channel variant where practical.
-- El Manial is the first detailed-design/procurement target: 1 × SC, 2 × SIM-T2, 1 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. This yields 8 RTD channels / 7 used / 1 spare.
+- El Manial and CPC / 6th of October Pilot hardware will use qualified ready-made modules with no BIO-EMS custom PCB; a common production PCB remains a post-Pilot optimization after field validation.
+- El Manial cost-optimized baseline is now 1 × SC, 2 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. SIM-T4-A serves the two Cold Room probes plus the Anti-chamber probe (one spare channel); SIM-T4-B serves the four Dry Warehouse probes. This remains subject to field-route verification.
 - Detailed design proceeds HW-PWR-01 -> HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
-- Immediate next gate: calculate El Manial 24 V load budget, branch protection, PSU/DC-UPS sizing and backup autonomy before freezing power purchases.
+- PDU-24-S5 is standardized around 24 V / 5 A with upstream customer/site UPS when backup is required; internal battery/DC-UPS duplication is superseded. Immediate hardware work is executable PDU Rev.A plus HW-SIM-01 module selection/bench design.
 - Architecture authority: `docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`.
 - El Manial baseline: `docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md`.
 - This is architecture/design approval only. PCB release, exact MPN BOM, field cable lengths, calibration, installation, commissioning and acceptance remain open.

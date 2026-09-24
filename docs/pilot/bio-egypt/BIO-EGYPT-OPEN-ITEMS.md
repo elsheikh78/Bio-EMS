@@ -49,8 +49,7 @@ hardware decision of 24 September 2026.
 El Manial detailed-design baseline:
 
 - 1 × BIO-EMS SC;
-- 2 × SIM-T2;
-- 1 × SIM-T4;
+- 2 × SIM-T4;
 - 1 × independent COM-CELL;
 - 1 × PDU-24;
 - 7 × PT100 3-wire probes;
@@ -85,16 +84,16 @@ Logical mapping prepared for customer approval:
 
 | Site | Controller | Channel(s) | Logical Sensor ID(s) | Area |
 | --- | --- | --- | --- | --- |
-| El Manial | `MNL-SIM-T2-CR01` | CH01–CH02 | `MNL-CR-01`, `MNL-CR-02` | Cold Room |
-| El Manial | `MNL-SIM-T2-AC01` | CH01 | `MNL-AT-01` | Antechamber |
-| El Manial | `MNL-SIM-T4-DW01` | CH01–CH04 | `MNL-DS-01` … `MNL-DS-04` | Dry Storage / Corridor |
+| El Manial | `MNL-SIM-T4-A` | CH01–CH02 | `MNL-CR-01`, `MNL-CR-02` | Cold Room |
+| El Manial | `MNL-SIM-T4-A` | CH03 | `MNL-AT-01` | Antechamber |
+| El Manial | `MNL-SIM-T4-B` | CH01–CH04 | `MNL-DS-01` … `MNL-DS-04` | Dry Storage / Corridor |
 | CPC / 6th of October | `OCT-CTRL-01` | CH01–CH02 | `OCT-CR1-01`, `OCT-CR1-02` | Cold Room 1 |
 | CPC / 6th of October | `OCT-CTRL-01` | CH03–CH04 | `OCT-CR2-01`, `OCT-CR2-02` | Cold Room 2 |
 | CPC / 6th of October | `OCT-CTRL-01` | CH05–CH06 | `OCT-CR3-01`, `OCT-CR3-02` | Cold Room 3 (former Freezer) |
 | CPC / 6th of October | `OCT-CTRL-01` | CH07 | `OCT-AT-01` | Antechamber |
 | CPC / 6th of October | `OCT-CTRL-01` | CH08–CH13 | `OCT-DS-01` … `OCT-DS-06` | Dry Storage |
 
-- El Manial now uses 7/8 planned SIM RTD channels with one spare. CPC / 6th of October logical Sensor IDs remain valid, but its physical Controller/SIM channel allocation must be revised after the modular layout is designed.
+- El Manial now uses 7/8 planned SIM RTD channels across two SIM-T4 modules with one spare channel. The Cold Room + Antechamber grouping on SIM-T4-A is subject to field-route verification before installation. CPC / 6th of October logical Sensor IDs remain valid, but its physical Controller/SIM channel allocation must be revised after the modular layout is designed.
 - Physical Sensor serial, PT100 probe identity, SIM hardware UID/address, calibration certificate reference, final marked-up position, and measured cable length remain TBD until procurement/commissioning.
 - Signed logical mapping evidence `BE005-EV-001` was approved on 24 August 2026. Logical mapping
   is closed; physical Sensor/ROM/certificate/position/cable fields remain open for commissioning.

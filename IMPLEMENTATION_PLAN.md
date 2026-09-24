@@ -8,8 +8,8 @@
 1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**.
 2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; physical pairing remains pending.
 3. Modular Pilot hardware architecture is **APPROVED FOR DETAILED DESIGN**: SC + SIM-T2 + SIM-T4 + independent COM-CELL + PDU-24; 24 VDC field backbone; RS485 Sensor Interface bus; PT100 3-wire measurement baseline.
-4. El Manial is the first detailed hardware/procurement target: 1 × SC, 2 × SIM-T2, 1 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes.
-5. Execute **HW-PWR-01** first: El Manial 24 V load budget, branch protection, PSU/DC-UPS and autonomy.
+4. El Manial is the first detailed hardware/procurement target: 1 × SC, 2 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. The two Pilot Sites use no custom PCB; qualified ready-made modules are assembled into serviceable field enclosures.
+5. HW-PWR-01 architecture is established around the standard PDU-24-S5 and upstream customer/site UPS; complete the executable PDU Rev.A component/terminal design while HW-SIM-01 proceeds.
 6. Then execute HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
 7. In parallel, continue physical Windows qualification and COM-07 where real provider/SIM evidence is available.
 8. BIO EGYPT installation/UAT remains after bench qualification; final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred until Pilot hardware/software stability.
