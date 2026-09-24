@@ -258,7 +258,36 @@ Recommended sequence:
 8. freeze exact BOM;
 9. purchase field quantity + approved spares.
 
-## 7. Immediate next calculation
+## 7. Cost-control gate
+
+Before the El Manial BOM is frozen, every hardware block shall be reviewed for total installed
+cost. The comparison must include:
+
+- electronics BOM;
+- PCB assembly;
+- enclosure;
+- terminals/connectors/glands;
+- 24 V power/protection share;
+- field cable;
+- installation labor;
+- calibration;
+- spare units;
+- expected service/replacement effort.
+
+Cost reduction shall prioritize architectural savings first:
+
+- common SIM-T2/T4 PCB;
+- shared Site COM-CELL instead of modem duplication;
+- appropriately sized MCU in SIM modules;
+- centralized 24 V power;
+- standardized connectors/enclosures;
+- approved alternate components.
+
+Exact target EGP prices are intentionally not frozen until real supplier quotations are collected
+for the first complete prototype BOM. Competitive cost is a release gate, not a later procurement
+optimization.
+
+## 8. Immediate next calculation
 
 The next engineering record is **HW-PWR-01 — El Manial 24 V Power Budget and PDU-24 design**.
 
