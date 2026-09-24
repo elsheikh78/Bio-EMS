@@ -16,11 +16,7 @@ Record and approve for each Site:
 
 ## Controller-placement baseline
 
-The planning assumption is one BIO-EMS Site Controller v1 per Site. This is not a
-confirmed mounting design. The survey must verify channel capacity, electrical load,
-cable limitations, network coverage, serviceability, environmental rating, and route
-feasibility. If one controller cannot meet the verified constraints, raise a scope
-change before installation.
+As of 24 September 2026 the planning baseline is modular. El Manial uses one BIO-EMS Site Controller for the first Pilot design; CPC / 6th of October may use multiple Site Controllers for fault-domain separation after its detailed layout is completed. RTD channels terminate at local SIM-T2/SIM-T4 modules rather than directly at the Site Controller. Final controller/SIM mounting locations remain survey/design evidence.
 
 The controller must be accessible to authorized maintenance personnel, protected
 from condensation and unauthorized operation, and outside controlled cold space
@@ -28,10 +24,10 @@ unless its approved enclosure and hardware specification explicitly permit other
 
 ## Sensor and cable installation
 
-- Use the approved industrial DS18B20 assembly and its released hardware datasheet.
-- Do not approve conductor size, topology, maximum length, termination, shielding, or
-  power arrangement from this document; record them from the released controller and
-  Sensor electrical design before work starts.
+- Current new-hardware baseline: PT100 3-wire probe assemblies connected to local SIM-T2/SIM-T4 RTD interface modules.
+- 24 VDC is the field-power backbone; each SC/SIM/COM-CELL device performs local low-voltage conversion.
+- RS485 is the field-bus physical layer between Site Controller and SIM modules. Trunk/daisy-chain routing is the baseline; uncontrolled star wiring is not approved by default.
+- Do not freeze conductor size, cable part number, maximum run, termination/shielding detail, or enclosure/IP rating from this document; record them from the released electrical design and field survey before work starts.
 - Segregate extra-low-voltage Sensor wiring from mains and interference sources in
   accordance with the approved electrical design and local rules.
 - Use suitable containment, glands, strain relief, drip loops, and sealed penetrations
@@ -46,12 +42,11 @@ unless its approved enclosure and hardware specification explicitly permit other
 
 ## Network and time
 
-- Primary communication is Internet over the approved Ethernet/Wi-Fi path.
+- Primary fixed-site communication is wired Ethernet where available. Wi-Fi is retained as service/fallback capability rather than the preferred permanent path.
 - MQTT endpoint, TLS/security settings, DNS, outbound firewall rules, and credentials
   are deployment-controlled values and must not be committed to the repository.
 - Confirm authoritative time synchronization before timestamp acceptance testing.
-- 4G/SMS is emergency failover only under the S15-05 contract; SIM/provider selection,
-  recipients, credit, signal level, and regulatory ownership are commissioning gates.
+- 4G/SMS is provided through the independent BIO-EMS COM-CELL gateway for the modular hardware direction. Provider/SIM selection, recipients, credit, signal level, antenna position, carrier bands and regulatory ownership remain commissioning/design gates.
 
 ## Installation evidence
 
