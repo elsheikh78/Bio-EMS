@@ -1,18 +1,24 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 23 September 2026  
+**Plan date:** 24 September 2026  
 **Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
-## Immediate restart point — 23 September 2026
+## Immediate restart point — 24 September 2026
 
-1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**; evidence: `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
-2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; evidence: `docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md`.
-3. Confirm the actual physical board target, flash `0.1.0-pilot.1`, generate a SYSTEM_OWNER pairing code and execute the first physical platform pairing.
-4. Implement/exercise the next firmware package: MQTT heartbeat/telemetry publishing, then RS485 sensor acquisition and buffering/reconnect behavior.
-5. Review and exercise Communication Channels configuration for ADMIN/SYSTEM_OWNER and execute COM-07 live provider/hardware acceptance where real provider/SIM evidence is available.
-6. Continue physical Windows qualification from current `main`: additional-machine fresh install, Repair, reboot, Backup/Restore, scheduled backup retention and historical Influx restoration.
-7. Complete hardware bench qualification, then BIO EGYPT field commissioning/UAT.
-8. Keep final Device PKI/mTLS/Secure Boot/Flash Encryption/commercial protection and Production key ceremony/signing deferred until the Pilot software/hardware path is stable.
+1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**.
+2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; physical pairing remains pending.
+3. Modular Pilot hardware architecture is **APPROVED FOR DETAILED DESIGN**: SC + SIM-T2 + SIM-T4 + independent COM-CELL + PDU-24; 24 VDC field backbone; RS485 Sensor Interface bus; PT100 3-wire measurement baseline.
+4. El Manial is the first detailed hardware/procurement target: 1 × SC, 2 × SIM-T2, 1 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes.
+5. Execute **HW-PWR-01** first: El Manial 24 V load budget, branch protection, PSU/DC-UPS and autonomy.
+6. Then execute HW-SIM-01 -> HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
+7. In parallel, continue physical Windows qualification and COM-07 where real provider/SIM evidence is available.
+8. BIO EGYPT installation/UAT remains after bench qualification; final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred until Pilot hardware/software stability.
+
+Detailed hardware authority:
+`docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`
+
+El Manial procurement/design authority:
+`docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md`
 
 ## Objective
 
@@ -159,6 +165,49 @@ not yet implement the complete MQTT publisher, RS485 sensor acquisition, offline
 per-device certificates, Secure Boot or Flash Encryption.
 
 Next gate: **physical board flash + first real pairing + reboot/NVS persistence evidence.**
+
+## Phase D1 — Modular hardware detailed design
+
+Status: **ARCHITECTURE APPROVED / DETAILED DESIGN OPEN**
+
+Approved blocks:
+
+- `BIO-EMS SC` — ESP32-S3 Site Controller, Ethernet primary, dual RS485;
+- `BIO-EMS SIM-T2` — 2 × PT100 RTD channels;
+- `BIO-EMS SIM-T4` — 4 × PT100 RTD channels;
+- `BIO-EMS COM-CELL` — independent LTE/SMS gateway;
+- `BIO-EMS PDU-24` — protected 24 VDC power/distribution.
+
+Power/field baseline:
+
+- 24 VDC field backbone;
+- target device input range 18–30 VDC;
+- local 5 V/3.3 V conversion;
+- RS485 field bus;
+- wired Ethernet primary Site network;
+- future DC-UPS/battery support.
+
+Execution order:
+
+1. HW-PWR-01 — El Manial 24 V budget/PDU;
+2. HW-SIM-01 — common T2/T4 electronics/PCB;
+3. HW-SC-01 — Site Controller electronics;
+4. HW-CELL-01 — cellular gateway;
+5. HW-MECH-01 — enclosures/connectors/cabling/earthing;
+6. HW-MNL-BOM-01 — exact El Manial procurement BOM;
+7. HW-BENCH-01 — integrated bench qualification.
+
+El Manial first-site allocation:
+
+- 1 × SC;
+- 2 × SIM-T2;
+- 1 × SIM-T4;
+- 1 × COM-CELL;
+- 1 × PDU-24;
+- 7 × PT100 probes.
+
+No electronic part number or field quantity beyond the approved architecture quantities is frozen
+until the relevant detailed-design gate closes.
 
 ## Phase D — Hardware bench qualification
 
