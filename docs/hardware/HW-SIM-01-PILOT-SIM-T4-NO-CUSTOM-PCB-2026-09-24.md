@@ -667,3 +667,120 @@ Do not buy four AD7793 boards until the first channel demonstrates:
 7. open-sensor fault behavior;
 8. power-cycle recovery.
 
+
+## 27. Egypt-local RREF sourcing result
+
+As of 25 September 2026, the web-verified Egyptian retail market does **not** show a confirmed
+in-stock 4.7 kohm precision resistor meeting the preferred field requirement of approximately
+0.1% tolerance and <=25 ppm/degC TCR.
+
+Verified local online availability currently includes general-purpose 4.7 kohm resistors at
+approximately 1% / 100 ppm/degC, but these are not acceptable as the released field RREF.
+
+Therefore the sourcing rule is split into two gates:
+
+### Functional bring-up resistor
+
+For SPI/register/RTD-chain bring-up only, a locally stocked 4.7 kohm, 1%, 100 ppm/degC resistor may
+be used temporarily.
+
+Its actual resistance shall be measured with the best available DMM and recorded in the bench log.
+The measured value, not the nominal 4700 ohm label, shall be used in temporary conversion software.
+
+This component is **not** evidence of final temperature accuracy.
+
+### Qualification / field resistor
+
+Before the BIO-EMS temperature-accuracy gate is claimed, RREF must be replaced with a locally
+purchased precision resistor meeting the approved specification, preferably:
+
+- 4.7 kohm nominal;
+- <=0.1% tolerance;
+- <=25 ppm/degC TCR, with <=10 ppm/degC preferred;
+- thin-film / precision metal-film;
+- repeat local supply.
+
+An RS Egypt Panasonic 4.7 kohm thin-film 0.1% / 10 ppm/degC part exists as a technical match, but
+current web stock is unconfirmed, so it is not yet a released local purchase.
+
+If 4.7 kohm is unavailable locally, engineering may select another locally available precision
+reference value and recalculate gain/full-scale rather than violate the local-sourcing rule.
+
+## 28. CJMCU-7793 breakout pin-mapping rule
+
+The MOKWN product image shows a CJMCU-style AD7793 breakout with 16 unlabeled through-holes on the
+visible side. The public product page does not publish a trustworthy board-level pin legend.
+
+BIO-EMS shall therefore **not assign breakout-hole positions by photograph**.
+
+When the board is received, continuity mode shall be used to map each through-hole to the AD7793
+TSSOP pin before power is applied. Record the result with a clear photo and hole numbering in the
+bench evidence.
+
+Authoritative AD7793 IC pin functions are:
+
+| IC pin | Function |
+| ---: | --- |
+| 1 | SCLK |
+| 2 | CLK |
+| 3 | CS |
+| 4 | IOUT1 |
+| 5 | AIN1(+) |
+| 6 | AIN1(-) |
+| 7 | AIN2(+) |
+| 8 | AIN2(-) |
+| 9 | REFIN(+)/AIN3(+) |
+| 10 | REFIN(-)/AIN3(-) |
+| 11 | IOUT2 |
+| 12 | GND |
+| 13 | AVDD |
+| 14 | DVDD |
+| 15 | DOUT/RDY |
+| 16 | DIN |
+
+The first-channel prototype uses pins 1, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15 and 16.
+
+## 29. First-channel physical connection after hole mapping
+
+Once the breakout holes are positively mapped:
+
+```text
+5 V bench rail  -> AVDD (pin 13)
+5 V bench rail  -> DVDD (pin 14)
+0 V             -> GND  (pin 12)
+
+Nano SCK        -> SCLK (pin 1)
+Nano CS GPIO    -> CS   (pin 3)
+Nano MISO       <- DOUT/RDY (pin 15)
+Nano MOSI       -> DIN  (pin 16)
+
+IOUT1 (pin 4)   -> PT100 lead A
+AIN1+ (pin 5)   -> PT100 lead A sense node
+
+IOUT2 (pin 11)  -> PT100 lead B
+AIN1- (pin 6)   -> PT100 lead B sense node
+
+PT100 lead C    -> RREF high/common node
+REFIN+ (pin 9)  -> RREF high/common node
+REFIN- (pin 10) -> RREF low
+RREF low        -> GND
+```
+
+The two same-colour leads of a normal 3-wire PT100 belong on the two compensated lead paths; the
+odd-colour lead is the common return. Exact probe colour convention must be verified on the actual
+probe with an ohmmeter before connection.
+
+No 24 V is permitted on the AD7793 breakout. Its supply range is 2.7-5.25 V.
+
+## 30. Immediate buy list for one-channel bring-up
+
+The first purchase is deliberately limited to:
+
+1. 1 x MOKWN AD7793 breakout, provided the supplied variant is the assembled CJMCU-style board;
+2. 1 x locally stocked PT100 3-wire probe;
+3. 1 x local 4.7 kohm 1%/100 ppm resistor **for bring-up only** if the precision RREF is still
+   unavailable;
+4. existing Nano/ESP32 and 5 V bench supply where available.
+
+Before temperature qualification, obtain the precision local RREF and repeat the accuracy test.
+
