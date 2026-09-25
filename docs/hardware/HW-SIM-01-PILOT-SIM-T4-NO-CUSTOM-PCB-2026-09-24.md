@@ -522,3 +522,148 @@ Before buying the SIM acquisition core:
 
 The local-market rule is a hard procurement constraint and has priority over the earlier PTA8C04
 candidate selection.
+
+## 23. Rev.A first-channel electrical operating point
+
+The first PT100 channel shall follow the AD7793 3-wire ratiometric topology from the Analog Devices
+datasheet rather than an arbitrary bridge.
+
+### ADC operating point
+
+- AVDD = 5 V;
+- DVDD = 5 V for the first Nano-based bench;
+- PT100 = IEC-60751 style 100 ohm RTD, 3-wire;
+- IEXC1 = 210 uA -> IOUT1;
+- IEXC2 = 210 uA -> IOUT2;
+- external ratiometric reference;
+- nominal RREF = **4.7 kohm**;
+- PGA gain = **64**;
+- unipolar measurement mode;
+- input channel = AIN1(+)-AIN1(-);
+- initial output data rate = **16.7 Hz** for simultaneous 50/60 Hz rejection;
+- burnout currents disabled during normal acquisition.
+
+The AD7793 IO-register direction setting for the 3-wire topology is IEXC1->IOUT1 and
+IEXC2->IOUT2. Both excitation sources are set to 210 uA.
+
+### Why 4.7 kohm / gain 64
+
+In the 3-wire topology the two 210 uA currents flow through the common return/reference path, so
+the nominal external reference is approximately:
+
+`VREF = 2 x 210 uA x 4.7 kohm = 1.974 V`.
+
+At gain 64, the nominal full-scale RTD resistance is approximately:
+
+`RFS = 2 x RREF / Gain = 146.875 ohm`.
+
+This comfortably covers the intended cold-room / warehouse temperature region while using a large
+fraction of the ADC range. Gain 128 would not provide enough resistance headroom for a PT100 around
+0 degC and is therefore rejected.
+
+Representative ideal PT100 points:
+
+| Temperature | PT100 resistance | RTD differential voltage at 210 uA | Fraction of nominal gain-64 full scale |
+| ---: | ---: | ---: | ---: |
+| 0 degC | 100.000 ohm | 21.000 mV | ~68.1% |
+| 5 degC | ~101.953 ohm | ~21.410 mV | ~69.4% |
+| 10 degC | ~103.903 ohm | ~21.820 mV | ~70.7% |
+| 50 degC | ~119.397 ohm | ~25.073 mV | ~81.3% |
+| 100 degC | ~138.506 ohm | ~29.086 mV | ~94.3% |
+
+The excitation self-heating power in a 100 ohm PT100 at 210 uA is only about 4.4 uW before
+probe/environment thermal effects, which is intentionally small.
+
+### Common-mode / compliance check
+
+With 5 V AVDD and 210 uA excitation, the AD7793 current-source compliance ceiling is AVDD-0.65 V.
+The ~1.974 V reference/common-return level plus the small RTD voltage is comfortably below that
+ceiling.
+
+The in-amp is active at gain 64. AD7793 requires the analog inputs to remain between approximately
+GND+0.3 V and AVDD-1.1 V and requires common-mode voltage of at least 0.5 V. The ratiometric
+3-wire topology biases the AIN pins around the ~2 V reference/common-return region, so the selected
+operating point has comfortable headroom for the intended PT100 range. This must still be verified
+on the physical breakout.
+
+## 24. RREF procurement specification
+
+RREF is a measurement component, not a generic pull-up resistor.
+
+Target procurement specification:
+
+- nominal 4.7 kohm;
+- tolerance <=0.1%;
+- thin-film / precision metal-film preferred;
+- TCR target <=10 ppm/degC; <=25 ppm/degC may be accepted only after the temperature-error budget
+  is reviewed and bench results remain inside the BIO-EMS acceptance target;
+- one dedicated RREF per AD7793 channel/front end in Rev.A.
+
+Analog Devices support guidance recommends at least 0.1% accuracy and approximately +/-10 ppm/degC
+TCR for a reference resistor in this class of application.
+
+An RS Egypt listing exists for Panasonic ERA8ARB472V, 4.7 kohm, 0.1%, +/-10 ppm/degC, but the
+current listing shows stock information temporarily unavailable. It is therefore a **technical
+reference candidate, not yet purchase-approved under the local-stock rule**.
+
+Do not substitute the locally common 4.7 kohm 1%, 100 ppm/degC resistor for the field RREF.
+
+## 25. First-channel wiring logic
+
+The exact breakout silkscreen/pin numbering shall be verified from the received MOKWN board before
+power is applied.
+
+Electrical function follows the AD7793 datasheet Figure 21:
+
+```text
+AD7793 IOUT1 ---- RTD lead 1 (current/sense side)
+AD7793 AIN1+  ---- sense at RTD lead 1 node
+
+AD7793 IOUT2 ---- RTD lead 2 (second matched-current lead)
+AD7793 AIN1-  ---- sense at RTD lead 2 / compensation node
+
+RTD lead 3 ----- common return ---- RREF ---- GND
+
+RREF top -------- REFIN+
+RREF bottom ----- REFIN- / GND
+```
+
+This text is functional wiring guidance only. The actual board pin labels must be confirmed from the
+breakout before assembly.
+
+### SPI bench connection
+
+For the first channel:
+
+- Nano 5 V -> AD7793 AVDD/DVDD as supported by the breakout;
+- common GND;
+- Nano SCK -> AD7793 SCLK;
+- Nano MOSI -> AD7793 DIN;
+- Nano MISO <- AD7793 DOUT/RDY;
+- one Nano GPIO -> AD7793 CS.
+
+For a later four-AD7793 SIM-T4, SCLK/DIN/DOUT may share one SPI bus if the breakout correctly
+tri-states DOUT when CS is inactive; each AD7793 gets a dedicated CS line. This is a bench item to
+verify before the four-channel assembly is frozen.
+
+## 26. First purchase / bench gate
+
+The first hardware purchase remains deliberately small:
+
+- 1 x locally stocked AD7793 breakout;
+- 1 x locally stocked 3-wire PT100 probe;
+- 1 x locally sourced 4.7 kohm precision RREF meeting the specification above;
+- use an existing Nano/ESP32 for the first SPI test where possible;
+- bench 5 V supply.
+
+Do not buy four AD7793 boards until the first channel demonstrates:
+
+1. stable SPI ID/register access;
+2. correct 210 uA excitation configuration;
+3. measured VREF near the expected ratiometric value;
+4. sensible PT100 resistance at room temperature;
+5. stable readings at 0/5/10 degC comparison points;
+6. repeatability within the qualification target;
+7. open-sensor fault behavior;
+8. power-cycle recovery.
+
