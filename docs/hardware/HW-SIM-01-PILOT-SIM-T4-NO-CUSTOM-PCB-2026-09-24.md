@@ -1,7 +1,7 @@
 # HW-SIM-01 — BIO-EMS SIM-T4 Pilot Design (No Custom PCB)
 
 **Date:** 24 September 2026  
-**Status:** APPROVED PILOT DESIGN DIRECTION / LOCAL-EGYPT SOURCING GATE OPEN / BENCH QUALIFICATION REQUIRED  
+**Status:** LOCAL-EGYPT REV.A BENCH CANDIDATE DEFINED / SUPPLIER VARIANT CONFIRMATION + BENCH QUALIFICATION REQUIRED  
 **Sites:** El Manial and CPC / 6th of October  
 **Architecture:** 24 VDC + RS485 / Modbus RTU  
 **Construction:** No BIO-EMS custom PCB for Pilot
@@ -372,19 +372,153 @@ alternative circuit must prove:
 No loose-resistor experimental bridge is approved for field installation without a documented,
 repeatable assembly and bench evidence.
 
+## 18. Local Rev.A bench candidate — independent AD7793 front end per channel
+
+After the local-market survey, the preferred Rev.A Pilot bench architecture is:
+
+**one locally stocked AD7793 RTD-capable precision ADC front end per PT100 channel.**
+
+For SIM-T4 this means four independent AD7793 front ends. This deliberately keeps the Pilot
+architecture simple and avoids adding an analog multiplexer into the RTD lead-compensation path.
+
+```text
+                         +--> AD7793 #1 --> PT100 CH1
+24 V -> 5 V -> MCU/SPI --+--> AD7793 #2 --> PT100 CH2
+                         +--> AD7793 #3 --> PT100 CH3
+                         +--> AD7793 #4 --> PT100 CH4
+                                  |
+MCU UART ----------------------> RS485 --> BIO-EMS SC
+```
+
+The AD7793 is suitable in principle because the manufacturer provides:
+
+- 24-bit sigma-delta conversion;
+- low-noise instrumentation amplifier/PGA;
+- programmable excitation current sources;
+- three differential analog inputs;
+- an explicit 3-wire RTD application using two matched current sources and a precision
+  ratiometric reference resistor.
+
+Rev.A does **not** claim accuracy from the ADC datasheet alone. The complete probe + reference
+resistor + wiring + ADC + firmware path must pass the existing BIO-EMS temperature qualification.
+
+### Why Rev.A does not use a cheap analog multiplexer
+
+A low-cost 74HC4052-class analog multiplexer is locally available, but it is not approved for the
+Rev.A RTD measurement path. Its switch resistance and channel-to-channel resistance mismatch are
+large compared with the resistance changes BIO-EMS is trying to resolve.
+
+Analog Devices' guidance for multiplexed 3-wire RTDs specifically warns that switch/lead resistance
+mismatch is a major error source and requires carefully matched low-drift analog switches.
+
+Therefore:
+
+- 74HC4052/4053-class switches may be used for lab experiments only;
+- they are not part of the field Pilot BOM;
+- the Rev.A design accepts the modest extra ADC cost to remove this error source.
+
+## 19. Local Rev.A provisional BOM — one SIM-T4
+
+Current locally listed components:
+
+| Function | Candidate | Qty | Current local reference price | Extended |
+| --- | --- | ---: | ---: | ---: |
+| RTD ADC/front end | AD7793 from MOKWN | 4 | EGP 470 | EGP 1,880 |
+| MCU | Arduino Nano ATmega328P/CH340 class, local stock | 1 | ~EGP 235 | ~EGP 235 |
+| RS485 | HW-519 TTL/RS485, local stock | 1 | EGP 80 | EGP 80 |
+| 24 V -> 5 V | 9–120 VDC -> 5 VDC/3 A module, local stock | 1 | EGP 195 | EGP 195 |
+| Precision RREF | fixed low-TCR reference resistor | 4 | **OPEN** | **OPEN** |
+| 3-wire PT100 terminals | screw-terminal set | 4 | **OPEN** | **OPEN** |
+| Internal carrier / mounting | perfboard/terminal carrier or rigid mounting | 1 | **OPEN** | **OPEN** |
+| Enclosure / glands / ferrules / labels | field mechanical set | 1 | **OPEN** | **OPEN** |
+| Input/RS485 protection | as released by HW-SIM-01 bench design | 1 set | **OPEN** | **OPEN** |
+
+Known electronics subtotal before the open precision/mechanical/protection items:
+
+**approximately EGP 2,390 per SIM-T4.**
+
+The realistic complete Rev.A SIM-T4 Pilot target is therefore provisionally:
+
+**approximately EGP 2,600–3,100 per unit before calibration-service cost**, subject to the exact
+AD7793 supplied form factor and the locally sourced precision-reference/mechanical parts.
+
+This is higher than the earlier integrated-module target, but it is locally purchasable, avoids
+direct import, and removes the analog-switch accuracy risk.
+
+## 20. Critical supplier confirmation before purchase
+
+The MOKWN AD7793 listing is currently shown as **EGP 470 / In stock**, but the product description
+indicates the supplied item may be a breakout board or IC depending on variant.
+
+BIO-EMS shall therefore **not order four units blindly**.
+
+First procurement action:
+
+1. confirm with the Egyptian supplier that the EGP 470 option is an **assembled usable module /
+   breakout board**, not only a bare TSSOP-16 IC;
+2. confirm at least four pieces are physically in Egyptian stock;
+3. request a clear product photo/pinout if the listing is ambiguous;
+4. buy **one** piece first;
+5. perform a one-channel electrical/firmware bench check;
+6. only then buy the remaining three for the first complete SIM-T4 prototype.
+
+If the locally supplied item is only a bare TSSOP IC, this Rev.A implementation is placed on hold
+until a locally available adapter/carrier solution is confirmed.
+
+## 21. Precision reference resistor — mandatory open item
+
+The AD7793 3-wire RTD topology is ratiometric and depends on a precision reference resistor.
+This part must not be replaced by an arbitrary 1% resistor solely to save cost.
+
+The field BOM target is a fixed resistor with:
+
+- tolerance preferably 0.1% or better;
+- low temperature coefficient, target <=25 ppm/°C where locally available;
+- adequate power/voltage rating;
+- repeat local availability.
+
+A multi-turn potentiometer may be useful during bench characterization, but it is **not** the
+preferred permanent field reference because the wiper adds another long-term stability variable.
+
+The exact RREF value follows the chosen AD7793 excitation current, gain and full-scale range and
+will be frozen only after the first-channel calculation/bench setup.
+
+## 22. Rev.B cost-down option — only after Rev.A qualification
+
+If the Rev.A four-ADC SIM-T4 passes but its cost is unacceptable, engineering may evaluate a
+cost-down Rev.B using:
+
+- 2 × AD7793;
+- 4 × low-signal DPDT relays such as locally stocked Omron G6A-234P-ST-US 24 VDC;
+- two RTD channels switched to each ADC;
+- relay-driver transistors/MOSFETs and flyback diodes.
+
+The locally listed Omron G6A candidate is a sealed low-signal DPDT relay and is materially more
+appropriate for low-level RTD switching than a cheap CMOS analog multiplexer.
+
+Approximate acquisition-cost comparison before drivers/mechanics:
+
+- Rev.A: 4 × AD7793 = EGP 1,880;
+- Rev.B: 2 × AD7793 + 4 × G6A = about EGP 1,320;
+- nominal saving: about EGP 560 per SIM-T4 before the added relay-drive/assembly cost.
+
+For only two El Manial SIMs, this saving is not large enough to justify adding switching complexity
+before Rev.A accuracy and stability are proven. Rev.B is therefore a later value-engineering option,
+not the first Pilot build.
+
 ## 18. Procurement gate
 
 The immediate action is **local supplier discovery, not overseas ordering**.
 
 Before buying the SIM acquisition core:
 
-1. search/phone Egyptian automation/electronics suppliers for a locally stocked 4-channel
-   PT100/RS485 Modbus module;
-2. record exact model, seller, Egyptian stock status and EGP price;
-3. compare that option with a local-module SIM build;
-4. buy one prototype only;
-5. execute the existing accuracy/repeatability/RS485 qualification;
-6. only then freeze the two El Manial SIM-T4 units.
+1. continue checking Egyptian automation suppliers for any credible locally stocked integrated 4-channel PT100/RS485 Modbus module that could beat Rev.A on cost without sacrificing measurement quality;
+2. in parallel, confirm the locally listed AD7793 form factor/stock with MOKWN;
+3. purchase one assembled AD7793 module only after that confirmation;
+4. build and qualify one 3-wire PT100 channel using the proper precision-reference topology;
+5. if the channel passes, complete the four-independent-channel Rev.A SIM-T4 prototype;
+6. execute multi-channel accuracy/repeatability/RS485/endurance qualification;
+7. only then freeze the two El Manial SIM-T4 units.
 
 The local-market rule is a hard procurement constraint and has priority over the earlier PTA8C04
 candidate selection.
