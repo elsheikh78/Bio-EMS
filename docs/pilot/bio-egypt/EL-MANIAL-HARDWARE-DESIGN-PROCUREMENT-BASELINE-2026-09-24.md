@@ -81,30 +81,37 @@ Required design classes:
 
 ### B. SIM-T4 — 2 field units
 
-Pilot construction is **no custom PCB**. Each field unit is assembled from qualified ready-made
-modules inside a serviceable enclosure; breadboard and Dupont wiring are not permitted in the field.
+Pilot construction is **no custom PCB** and **Egypt-local stock only**.
 
-Per SIM-T4:
+Current preferred Rev.A bench candidate per SIM-T4:
 
-- 4 × MAX31865 RTD interface modules;
-- 4 × precision PT100 reference networks as provided/verified by the selected module design;
-- 1 × low-cost MCU module;
-- 1 × RS485 module;
-- 1 × 24 V-to-local-rail DC/DC module;
-- input/bus protection as selected in HW-SIM-01;
-- four RTD screw-terminal channels;
-- bus/power screw terminals;
-- status/service indication;
-- enclosure, mounting plate/DIN adapter and cable glands;
-- ferruled, labelled internal wiring.
+- 4 × independent AD7793 RTD-capable precision ADC front ends, one per PT100 channel;
+- 1 × low-cost local MCU module;
+- 1 × local TTL/RS485 module;
+- 1 × 24 V-to-5 V local DC/DC module covering the BIO-EMS 18–30 V input envelope;
+- 4 × fixed precision low-TCR reference resistors, exact value/MPN still open;
+- four 3-wire RTD screw-terminal groups;
+- input/bus protection as released by HW-SIM-01;
+- enclosure, rigid mounting/carrier, glands, ferrules and labelled internal wiring.
+
+The AD7793 is a **bench candidate, not yet a frozen procurement item**. Before buying a four-channel
+set, engineering must confirm that the current Egyptian seller's EGP 470 listing is an assembled
+module/breakout rather than only a bare TSSOP IC and must confirm physical local stock.
+
+Rev.A intentionally avoids cheap CMOS analog multiplexers in the RTD path. Each channel gets its own
+front end to simplify accuracy qualification and avoid switch-resistance mismatch error.
 
 Field allocation:
 
 - SIM-T4-A: Cold Room sensors 1–2 + Anti-chamber sensor on CH1–CH3, CH4 spare;
 - SIM-T4-B: Dry Warehouse sensors on CH1–CH4.
 
-The Cold Room + Anti-chamber grouping is approved as the cost-optimized baseline but remains
-subject to field-route verification before installation.
+The Cold Room + Anti-chamber grouping remains subject to field-route verification before
+installation.
+
+A later Rev.B cost-down option may multiplex two RTDs per AD7793 using qualified low-signal relays,
+but only after Rev.A is physically qualified and only if the saving justifies the additional
+switching/driver complexity.
 
 ### D. Temperature probes — 7 field probes plus engineering spare policy
 
