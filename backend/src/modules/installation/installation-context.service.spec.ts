@@ -95,8 +95,6 @@ describe("installation context", () => {
       service.current({
         BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH: receiptPath,
       })
-    ).toThrow(
-      expect.objectContaining({ code: "INSTALLATION_IDENTITY_CONTEXT_MISMATCH" })
-    );
+    ).toThrow(expect.objectContaining({ code: "INSTALLATION_IDENTITY_CONTEXT_MISMATCH" }));
   });
 });
