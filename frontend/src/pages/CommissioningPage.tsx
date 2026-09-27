@@ -356,7 +356,7 @@ export function CommissioningPage() {
             <Typography component="h2" variant="h6" sx={{ mb: 1 }}>
               {text.deviceEvidence}
             </Typography>
-            <Stack direction="row" gap={1} sx={{ flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {readiness.data.devices.map((device) => (
                 <Chip
                   key={device.deviceId}
@@ -368,7 +368,7 @@ export function CommissioningPage() {
                   }`}
                 />
               ))}
-            </Stack>
+            </Box>
           </Paper>
 
           <TableContainer component={Paper} variant="outlined">
