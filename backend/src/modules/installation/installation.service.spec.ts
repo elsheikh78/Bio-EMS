@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
 import { migration019 } from "../../../database/sqlite/migrations/019_create_customer_ownership";
 import { migration020 } from "../../../database/sqlite/migrations/020_create_installation_lifecycle";
+import { migration030 } from "../../../database/sqlite/migrations/030_create_device_platform_pairing";
 import { createTables } from "../../../database/sqlite/schema";
 import { InstallationService } from "./installation.service";
 import type { InstallationSnapshot } from "./installation.schema";
@@ -63,6 +64,7 @@ describe("controlled installation lifecycle", () => {
     migration018.up(database);
     migration019.up(database);
     migration020.up(database);
+    migration030.up(database);
     customerId = Number(
       database
         .prepare(
@@ -127,6 +129,53 @@ describe("controlled installation lifecycle", () => {
     expect(database.prepare("SELECT device_id FROM devices").all()).toEqual([
       { device_id: "CTRL1" },
     ]);
+  });
+
+  it("activates the governed revision automatically after all logical devices are bound", () => {
+    const draft = service.create(customerId, snapshot, "owner#1");
+    service.validate(draft.uuid, "owner#1");
+    service.queue(draft.uuid, "owner#1");
+    const installationId = Number(
+      database.prepare("SELECT id FROM platform_installations WHERE uuid=?").pluck().get(draft.uuid)
+    );
+    const now = new Date().toISOString();
+    database
+      .prepare(
+        `INSERT INTO device_pairing_sessions(
+           id,installation_id,device_identity,code_hash,status,expires_at,created_at,created_by,
+           claimed_at,hardware_uid,firmware_version,protocol_version
+         ) VALUES('session-1',?,'CTRL1',?,'CLAIMED',?,?, 'owner#1',?,'AABBCCDDEEFF','0.1.0-pilot.1','1.3')`
+      )
+      .run(installationId, "a".repeat(64), now, now, now);
+    database
+      .prepare(
+        `INSERT INTO device_platform_bindings(
+           platform_binding_id,binding_schema_version,installation_id,pairing_session_id,
+           device_identity,hardware_uid,site_code,firmware_version,protocol_version,status,paired_at
+         ) VALUES('11111111-1111-4111-8111-111111111111',1,?,'session-1','CTRL1',
+                  'AABBCCDDEEFF','SITE1','0.1.0-pilot.1','1.3','ACTIVE',?)`
+      )
+      .run(installationId, now);
+
+    expect(service.activateProvisionedInstallation(draft.uuid, "owner#1")).toMatchObject({
+      status: "CONFIG_ACTIVE",
+      latestRevision: 1,
+    });
+    expect(
+      database
+        .prepare(
+          "SELECT device_identity AS deviceIdentity,matched FROM platform_installation_receipts"
+        )
+        .all()
+    ).toEqual([{ deviceIdentity: "CTRL1", matched: 1 }]);
+    expect(database.prepare("SELECT code FROM sensors").all()).toEqual([{ code: "TEMP1" }]);
+    expect(
+      database
+        .prepare(
+          "SELECT event_type FROM platform_installation_events WHERE event_type='INSTALLATION_PROVISIONING_ACTIVATED'"
+        )
+        .all()
+    ).toHaveLength(1);
   });
 
   it("rejects incomplete or duplicate topology before persisting a draft", () => {

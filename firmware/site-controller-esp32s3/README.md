@@ -24,21 +24,29 @@ platform installation transfer/restore workflow, not by copying a controller ide
 
 ## Pilot pairing flow
 
-1. In System Owner -> Installation configuration, create/validate the installation and device.
-2. Press **Generate pairing code** for the target device.
-3. The platform displays one 12-digit code valid for 10 minutes.
-4. Flash the same firmware image to the ESP32-S3.
-5. Open the ESP32 serial console at 115200 baud.
-6. Configure Wi-Fi:
-   `setwifi <ssid> <password>`
-7. Configure the local BIO-EMS URL:
-   `setplatform https://<customer-platform-host>:<port>`
-8. Pair:
-   `pair <12-digit-code>`
-9. Run `status`.
+The normal Pilot workflow is now orchestrated by BIO-EMS:
 
-On success the ESP32 stores only the resulting installation/device/binding state in NVS.
-The one-time pairing code is never stored.
+1. Create and validate the logical installation in System Owner -> Installation configuration.
+2. Queue the validated revision for Device Provisioning.
+3. Open System Owner -> Device provisioning and connect the ESP32-S3 by USB.
+4. Detect the controlled COM port and supported ESP32-S3.
+5. Select the already-defined logical Device.
+6. Enter the Pilot Wi-Fi credentials and the LAN-reachable BIO-EMS HTTPS origin.
+7. Press **Flash & Bind Device**.
+8. BIO-EMS flashes the governed common firmware, issues the short-lived pairing credential
+   server-side, sends the bootstrap commands over the local serial connection, verifies the
+   returned hardware UID and `platform_binding_id`, and records audit evidence.
+9. The 12-digit pairing credential is not displayed to the operator and is never persisted on
+   the controller.
+10. When all logical Devices in the revision are bound, BIO-EMS materializes the runtime
+    Device/Sensor inventory and transitions the installation to `CONFIG_ACTIVE`.
+
+The serial commands `status`, `setwifi`, `setplatform`, `pair` and `clearbinding`
+remain available for controlled engineering diagnostics only; they are not the normal
+commissioning UX.
+
+Current Pilot CLI parsing requires a Wi-Fi SSID without whitespace. This constraint is validated
+before provisioning so an unsupported SSID cannot be silently misconfigured.
 
 ## Build
 
@@ -62,8 +70,15 @@ platform binding ID and hardware UID. Unpaired legacy devices remain accepted du
 transition; after pairing, omission or mismatch is rejected.
 
 The current Pilot firmware intentionally does **not** claim the final commercial transport
-security. The current customer-local HTTPS certificate model is not yet the final
-BIO-EMS Root CA / Device CA / mTLS architecture. Before Production:
+security. The customer-local Windows HTTPS endpoint uses an installer-generated self-signed
+certificate, so the Pilot build enables ESP-TLS insecure server-certificate verification only
+for the short-lived bootstrap/pairing phase. This is explicitly testing-only behavior and must
+not be carried into Production. The governed firmware manifest still records the exact source
+commit so Pilot binaries remain traceable even while the Pilot firmware version remains
+`0.1.0-pilot.1`.
+
+The current customer-local HTTPS certificate model is not yet the final BIO-EMS Root CA /
+Device CA / mTLS architecture. Before Production:
 
 - validate the BIO-EMS server certificate against the controlled BIO-EMS CA;
 - generate a per-device private key on the controller/secure element;

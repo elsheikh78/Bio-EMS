@@ -1,9 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
+import { installationQueryKey } from "../installations/queries";
 import {
   detectedDeviceSchema,
   deviceProvisionerHealthSchema,
   deviceProvisioningPortsSchema,
+  deviceProvisioningTargetsSchema,
+  flashBindResultSchema,
 } from "./contracts";
 
 export const deviceProvisioningHealthKey = [
@@ -15,6 +18,11 @@ export const deviceProvisioningPortsKey = [
   "platform",
   "device-provisioning",
   "ports",
+] as const;
+export const deviceProvisioningTargetsKey = [
+  "platform",
+  "device-provisioning",
+  "targets",
 ] as const;
 
 export function useDeviceProvisionerHealth() {
@@ -47,6 +55,21 @@ export function useDeviceProvisioningPorts() {
   });
 }
 
+export function useDeviceProvisioningTargets() {
+  const { apiClient, status } = usePlatformAuthentication();
+  return useQuery({
+    queryKey: deviceProvisioningTargetsKey,
+    enabled: status === "authenticated",
+    queryFn: async () =>
+      deviceProvisioningTargetsSchema.parse(
+        await apiClient.request<unknown>(
+          "/platform-operations/device-provisioning/targets",
+          { auth: "protected" },
+        ),
+      ),
+  });
+}
+
 export function useDetectProvisioningBoard() {
   const { apiClient } = usePlatformAuthentication();
   return useMutation({
@@ -62,5 +85,37 @@ export function useDetectProvisioningBoard() {
           },
         ),
       ),
+  });
+}
+
+export function useFlashAndBindProvisioningDevice() {
+  const { apiClient } = usePlatformAuthentication();
+  const cache = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      installationId: string;
+      deviceId: string;
+      port: string;
+      wifiSsid: string;
+      wifiPassword: string;
+      platformUrl: string;
+    }) =>
+      flashBindResultSchema.parse(
+        await apiClient.request<unknown>(
+          "/platform-operations/device-provisioning/flash-bind",
+          {
+            method: "POST",
+            auth: "protected",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+          },
+        ),
+      ),
+    onSuccess: async () => {
+      await Promise.all([
+        cache.invalidateQueries({ queryKey: deviceProvisioningTargetsKey }),
+        cache.invalidateQueries({ queryKey: installationQueryKey }),
+      ]);
+    },
   });
 }

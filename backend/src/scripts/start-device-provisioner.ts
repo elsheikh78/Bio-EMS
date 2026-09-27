@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   deviceProvisioningDetectSchema,
   localProvisionerFlashSchema,
+  localProvisionerProvisionSchema,
 } from "../modules/device-provisioning/device-provisioning.schema";
 import { LocalProvisioningRunner } from "../modules/device-provisioning/device-provisioning.runner";
 
@@ -53,6 +54,21 @@ export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, toke
     try {
       const input = localProvisionerFlashSchema.parse(request.body);
       response.json(await runner.flash(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post("/provision", async (request, response, next) => {
+    try {
+      const input = localProvisionerProvisionSchema.parse(request.body);
+      response.json(
+        await runner.provision(input.port, {
+          wifiSsid: input.wifiSsid,
+          wifiPassword: input.wifiPassword,
+          platformUrl: input.platformUrl,
+          pairingCode: input.pairingCode,
+        })
+      );
     } catch (error) {
       next(error);
     }

@@ -50,6 +50,8 @@ const copy = {
     loadError: "Unable to load commissioning readiness.",
     ready: "Site evidence is ready for customer acceptance.",
     blocked: (count: number) => `${count} commissioning blocker(s) remain.`,
+    inventoryPending:
+      "Runtime inventory is not active yet. Complete Device Provisioning / Flash & Bind before commissioning readiness can be evaluated.",
     tableLabel: "Commissioning readiness",
     sensor: "Sensor",
     area: "Area",
@@ -93,6 +95,8 @@ const copy = {
     loadError: "تعذر تحميل جاهزية التشغيل والاستلام.",
     ready: "أدلة الموقع جاهزة لاستلام العميل.",
     blocked: (count: number) => `ما زال هناك ${count} عائق تشغيل.`,
+    inventoryPending:
+      "مخزون التشغيل غير مفعّل بعد. أكمل Device Provisioning / Flash & Bind قبل تقييم جاهزية التشغيل والاستلام.",
     tableLabel: "جاهزية التشغيل والاستلام",
     sensor: "الحساس",
     area: "المنطقة",
@@ -200,6 +204,9 @@ export function CommissioningPage() {
   const blockerCount =
     (readiness.data?.summary.blockedSensors ?? 0) +
     (readiness.data?.summary.blockedDevices ?? 0);
+  const runtimeInventoryMaterialized =
+    (readiness.data?.summary.totalSensors ?? 0) > 0 &&
+    (readiness.data?.summary.totalDevices ?? 0) > 0;
 
   const decide = async (decision: "ACCEPT" | "REJECT") => {
     if (!installation) return;
@@ -349,7 +356,11 @@ export function CommissioningPage() {
           </Box>
 
           <Alert severity={readiness.data.ready ? "success" : "warning"}>
-            {readiness.data.ready ? text.ready : text.blocked(blockerCount)}
+            {readiness.data.ready
+              ? text.ready
+              : runtimeInventoryMaterialized
+                ? text.blocked(blockerCount)
+                : text.inventoryPending}
           </Alert>
 
           <Paper variant="outlined" sx={{ p: 2 }}>

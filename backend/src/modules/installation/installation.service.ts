@@ -29,6 +29,18 @@ type InstallationRow = {
   status: InstallationStatus;
   active_revision_id: number | null;
 };
+type InstallationListRow = {
+  id: number;
+  uuid: string;
+  customerId: number;
+  customerName: string;
+  status: InstallationStatus;
+  activeRevisionId: number | null;
+  createdAt: string;
+  updatedAt: string;
+  latestRevision: number;
+  snapshotJson: string;
+};
 
 export class InstallationService {
   constructor(private readonly database: Database.Database = sqlite) {}
@@ -43,9 +55,7 @@ export class InstallationService {
       (SELECT snapshot_json FROM platform_installation_revisions r WHERE r.installation_id=i.id ORDER BY revision DESC LIMIT 1) AS snapshotJson
       FROM platform_installations i JOIN platform_customers c ON c.id=i.customer_id ${where} ORDER BY i.id DESC`
       )
-      .all(...(customerId ? [customerId] : [])) as Array<
-      Record<string, unknown> & { snapshotJson: string }
-    >;
+      .all(...(customerId ? [customerId] : [])) as InstallationListRow[];
     return rows.map(({ snapshotJson, ...row }) => {
       const latestSnapshot = JSON.parse(snapshotJson) as InstallationSnapshot;
       return { ...row, latestSnapshot, summary: summarize(latestSnapshot) };
@@ -271,6 +281,81 @@ export class InstallationService {
     })();
     if (!result) throw conflict("DEVICE_RECEIPT_MISMATCH");
     return result;
+  }
+
+  activateProvisionedInstallation(uuid: string, actor: string) {
+    const installation = this.find(uuid);
+    if (installation.status !== "PENDING_DELIVERY") {
+      throw conflict("INSTALLATION_PENDING_DELIVERY_REQUIRED");
+    }
+
+    const latest = this.latest(installation.id);
+    const snapshot = JSON.parse(latest.snapshot_json) as InstallationSnapshot;
+    const expectedDevices = snapshot.devices.map((device) => device.deviceId);
+    const bindings = this.database
+      .prepare(
+        `SELECT device_identity AS deviceIdentity,platform_binding_id AS platformBindingId,
+                hardware_uid AS hardwareUid
+         FROM device_platform_bindings
+         WHERE installation_id=? AND status='ACTIVE'`
+      )
+      .all(installation.id) as Array<{
+      deviceIdentity: string;
+      platformBindingId: string;
+      hardwareUid: string;
+    }>;
+    const activeByDevice = new Map(bindings.map((binding) => [binding.deviceIdentity, binding]));
+    if (
+      expectedDevices.length === 0 ||
+      expectedDevices.some((deviceId) => !activeByDevice.has(deviceId))
+    ) {
+      throw conflict("DEVICE_BINDINGS_INCOMPLETE");
+    }
+
+    return this.database.transaction(() => {
+      const now = new Date().toISOString();
+      this.database
+        .prepare("UPDATE platform_installation_revisions SET status='SENT' WHERE id=?")
+        .run(latest.id);
+      this.setStatus(installation.id, "SENT");
+      this.event(installation.id, latest.id, "INSTALLATION_SENT", actor, {
+        revision: latest.revision,
+        checksum: latest.checksum,
+        reason: "AUTOMATED_DEVICE_PROVISIONING",
+      });
+
+      for (const deviceIdentity of expectedDevices) {
+        const binding = activeByDevice.get(deviceIdentity)!;
+        this.database
+          .prepare(
+            `INSERT INTO platform_installation_receipts(
+               installation_id,revision_id,device_identity,received_checksum,matched,received_at
+             ) VALUES(?,?,?,?,1,?)`
+          )
+          .run(installation.id, latest.id, deviceIdentity, latest.checksum, now);
+        this.event(installation.id, latest.id, "DEVICE_RECEIPT_MATCHED", binding.hardwareUid, {
+          revision: latest.revision,
+          device_identity: deviceIdentity,
+          platform_binding_id: binding.platformBindingId,
+          automated: true,
+        });
+      }
+
+      this.materialize(installation);
+      this.database
+        .prepare("UPDATE platform_installation_revisions SET status='ACTIVE' WHERE id=?")
+        .run(latest.id);
+      this.database
+        .prepare("UPDATE platform_installations SET active_revision_id=? WHERE id=?")
+        .run(latest.id, installation.id);
+      this.setStatus(installation.id, "CONFIG_ACTIVE");
+      this.event(installation.id, latest.id, "INSTALLATION_PROVISIONING_ACTIVATED", actor, {
+        revision: latest.revision,
+        checksum: latest.checksum,
+        devices: expectedDevices,
+      });
+      return this.get(uuid);
+    })();
   }
 
   technicalDecision(

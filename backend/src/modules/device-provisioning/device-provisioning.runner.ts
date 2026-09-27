@@ -31,6 +31,13 @@ export interface SerialPortInventoryItem {
   manufacturer: string | null;
 }
 
+export interface SerialProvisioningInput {
+  wifiSsid: string;
+  wifiPassword: string;
+  platformUrl: string;
+  pairingCode: string;
+}
+
 function normalizedInside(root: string, candidate: string): string {
   const canonicalRoot = realpathSync(root);
   const canonicalCandidate = realpathSync(candidate);
@@ -76,6 +83,21 @@ function inferChip(output: string): string | null {
   if (/ESP32-S3/i.test(output)) return "ESP32-S3";
   const match = output.match(/Chip is\s+([^\r\n(]+)/i);
   return match?.[1]?.trim() ?? null;
+}
+
+function provisioningField(output: string, label: string, pattern: string): string {
+  const expression = new RegExp("^\\s*" + label + ":\\s*(" + pattern + ")\\s*$", "im");
+  const match = output.match(expression);
+  if (!match?.[1]) throw new Error("Provisioned controller did not report " + label);
+  return match[1];
+}
+
+function redactProvisioningOutput(output: string, secrets: string[]): string {
+  let redacted = output;
+  for (const secret of secrets) {
+    if (secret) redacted = redacted.split(secret).join("[REDACTED]");
+  }
+  return sanitizeToolOutput(redacted);
 }
 
 export class LocalProvisioningRunner {
@@ -220,6 +242,94 @@ export class LocalProvisioningRunner {
       protocolVersion: manifest.protocolVersion,
       bindingSchemaVersion: manifest.bindingSchemaVersion,
       toolOutput: sanitizeToolOutput(`${result.stdout}\n${result.stderr}`),
+    };
+  }
+
+  async provision(portInput: string, input: SerialProvisioningInput) {
+    const port = windowsSerialPortSchema.parse(portInput);
+    const script = [
+      "$ErrorActionPreference='Stop'",
+      "$portName=$env:BIOEMS_SERIAL_PORT",
+      "$ssid=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_WIFI_SSID_B64))",
+      "$password=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_WIFI_PASSWORD_B64))",
+      "$platformUrl=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_PLATFORM_URL_B64))",
+      "$pairingCode=$env:BIOEMS_PAIRING_CODE",
+      "$serial=[System.IO.Ports.SerialPort]::new($portName,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
+      "$serial.NewLine=[Environment]::NewLine",
+      "$serial.ReadTimeout=250",
+      "$serial.WriteTimeout=3000",
+      "function Read-Window([int]$milliseconds) {",
+      "  $deadline=[DateTime]::UtcNow.AddMilliseconds($milliseconds)",
+      "  $builder=New-Object Text.StringBuilder",
+      "  while([DateTime]::UtcNow -lt $deadline) {",
+      "    Start-Sleep -Milliseconds 100",
+      "    $chunk=$serial.ReadExisting()",
+      "    if($chunk){ [void]$builder.Append($chunk) }",
+      "  }",
+      "  return $builder.ToString()",
+      "}",
+      "$serial.Open()",
+      "try {",
+      "  Start-Sleep -Milliseconds 1800",
+      "  $serial.DiscardInBuffer()",
+      "  $serial.WriteLine('status')",
+      "  $initial=Read-Window 2500",
+      "  Write-Output $initial",
+      "  if($initial -notmatch 'hardware-uid:\\s*[A-Fa-f0-9]{12,32}') { throw 'Hardware UID was not reported' }",
+      "  $serial.WriteLine(('setwifi {0} {1}' -f $ssid,$password))",
+      "  $wifi=Read-Window 2500",
+      "  Write-Output $wifi",
+      "  if($wifi -notmatch 'wifi configuration saved') { throw 'Wi-Fi configuration was not acknowledged' }",
+      "  $serial.WriteLine(('setplatform {0}' -f $platformUrl))",
+      "  $platform=Read-Window 2000",
+      "  Write-Output $platform",
+      "  if($platform -notmatch 'platform url saved') { throw 'Platform URL was not acknowledged' }",
+      "  $serial.WriteLine(('pair {0}' -f $pairingCode))",
+      "  $pairing=Read-Window 60000",
+      "  Write-Output $pairing",
+      "  if($pairing -notmatch 'pairing successful') { throw 'Controller pairing did not complete successfully' }",
+      "  $serial.WriteLine('status')",
+      "  $final=Read-Window 3000",
+      "  Write-Output $final",
+      "  if($final -notmatch 'state:\\s*PAIRED') { throw 'Controller did not enter PAIRED state' }",
+      "}",
+      "finally { if($serial.IsOpen){ $serial.Close() }; $serial.Dispose() }",
+    ].join("\n");
+
+    const result = await this.execute(
+      "powershell.exe",
+      ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script],
+      {
+        timeout: 80_000,
+        maxBuffer: 1_000_000,
+        windowsHide: true,
+        env: {
+          ...process.env,
+          BIOEMS_SERIAL_PORT: port,
+          BIOEMS_WIFI_SSID_B64: Buffer.from(input.wifiSsid, "utf8").toString("base64"),
+          BIOEMS_WIFI_PASSWORD_B64: Buffer.from(input.wifiPassword, "utf8").toString("base64"),
+          BIOEMS_PLATFORM_URL_B64: Buffer.from(input.platformUrl, "utf8").toString("base64"),
+          BIOEMS_PAIRING_CODE: input.pairingCode,
+        },
+      }
+    );
+    const output = `${result.stdout}\n${result.stderr}`;
+    return {
+      port,
+      hardwareUid: provisioningField(output, "hardware-uid", "[A-Fa-f0-9]{12,32}").toUpperCase(),
+      platformBindingId: provisioningField(
+        output,
+        "platform-binding-id",
+        "[0-9a-fA-F-]{36}"
+      ).toLowerCase(),
+      installationId: provisioningField(
+        output,
+        "installation-id",
+        "[0-9a-fA-F-]{36}"
+      ).toLowerCase(),
+      deviceId: provisioningField(output, "device-id", "[A-Za-z0-9_-]{1,80}"),
+      siteCode: provisioningField(output, "site-code", "[A-Za-z0-9_-]{1,80}"),
+      toolOutput: redactProvisioningOutput(output, [input.wifiPassword, input.pairingCode]),
     };
   }
 }

@@ -196,4 +196,52 @@ describe("LocalProvisioningRunner", () => {
     await expect(runner.flash("COM9")).rejects.toThrow("checksum mismatch");
     expect(invoked).toBe(false);
   });
+
+  it("provisions over the fixed serial helper without exposing bootstrap secrets in arguments or evidence", async () => {
+    const { root, esptoolPath } = workspace();
+    let captured:
+      { executable: string; args: string[]; env: NodeJS.ProcessEnv | undefined } | undefined;
+    const runner = new LocalProvisioningRunner(
+      { applicationRoot: root, esptoolPath },
+      async (executable, args, options) => {
+        captured = { executable, args, env: options.env };
+        return {
+          stdout: [
+            "hardware-uid: AABBCCDDEEFF",
+            "wifi configuration saved secret-pass",
+            "platform url saved",
+            "pairing successful 123456789012",
+            "state: PAIRED",
+            "platform-binding-id: 11111111-1111-4111-8111-111111111111",
+            "installation-id: 22222222-2222-4222-8222-222222222222",
+            "device-id: D001",
+            "site-code: SITE1",
+          ].join("\n"),
+          stderr: "",
+        };
+      }
+    );
+
+    const result = await runner.provision("com7", {
+      wifiSsid: "PilotNet",
+      wifiPassword: "secret-pass",
+      platformUrl: "https://192.168.1.20",
+      pairingCode: "123456789012",
+    });
+
+    expect(captured?.executable).toBe("powershell.exe");
+    expect(captured?.args.join(" ")).not.toContain("secret-pass");
+    expect(captured?.args.join(" ")).not.toContain("123456789012");
+    expect(captured?.env?.BIOEMS_PAIRING_CODE).toBe("123456789012");
+    expect(result).toMatchObject({
+      port: "COM7",
+      hardwareUid: "AABBCCDDEEFF",
+      platformBindingId: "11111111-1111-4111-8111-111111111111",
+      installationId: "22222222-2222-4222-8222-222222222222",
+      deviceId: "D001",
+      siteCode: "SITE1",
+    });
+    expect(result.toolOutput).not.toContain("secret-pass");
+    expect(result.toolOutput).not.toContain("123456789012");
+  });
 });
