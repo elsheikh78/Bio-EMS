@@ -126,9 +126,12 @@ describe("LocalProvisioningRunner", () => {
       JSON.stringify({
         schemaVersion: 1,
         target: "esp32s3",
+        model: "BIO-EMS-SC-V1",
         firmwareVersion: "0.1.0-pilot.1",
         protocolVersion: "1.3",
         bindingSchemaVersion: 1,
+        sourceCommit: "a".repeat(40),
+        buildSystem: "ESP-IDF 5.5.5",
         flash: {
           baud: 460800,
           mode: "dio",
@@ -173,9 +176,12 @@ describe("LocalProvisioningRunner", () => {
       JSON.stringify({
         schemaVersion: 1,
         target: "esp32s3",
+        model: "BIO-EMS-SC-V1",
         firmwareVersion: "0.1.0-pilot.1",
         protocolVersion: "1.3",
         bindingSchemaVersion: 1,
+        sourceCommit: "a".repeat(40),
+        buildSystem: "ESP-IDF 5.5.5",
         flash: { baud: 460800, mode: "dio", frequency: "40m", size: "detect" },
         segments: [{ offset: "0x10000", file: "app.bin", sha256: "a".repeat(64) }],
       })
