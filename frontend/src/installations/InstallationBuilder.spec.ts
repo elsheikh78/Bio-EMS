@@ -89,9 +89,7 @@ describe("InstallationBuilder identifiers and snapshot", () => {
         {
           deviceId: "D001",
           siteCode: "elmanial-001",
-          mappings: [
-            { areaCode: "A01", telemetryCode: "S1", channel: 1 },
-          ],
+          mappings: [{ areaCode: "A01", telemetryCode: "S1", channel: 1 }],
         },
       ],
     });
