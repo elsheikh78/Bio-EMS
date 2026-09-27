@@ -184,6 +184,15 @@ function Repair-BackendIdentityProvisioning {
     $writer = [Xml.XmlWriter]::Create($xmlPath, $settings)
     try { $definition.Save($writer) } finally { $writer.Dispose() }
 }
+function Remove-DeviceProvisionerWhenAbsentFromSnapshot([string]$snapshotRoot) {
+    $snapshotWrapper = Join-Path $snapshotRoot "application\services\BIOEMS-Provisioner.exe"
+    if (Test-Path -LiteralPath $snapshotWrapper -PathType Leaf) { return }
+    Stop-Service -Name "BIOEMS-Provisioner" -Force -ErrorAction SilentlyContinue
+    if (Get-Service -Name "BIOEMS-Provisioner" -ErrorAction SilentlyContinue) {
+        & sc.exe delete "BIOEMS-Provisioner" | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Unable to remove Device Provisioner introduced by failed update" }
+    }
+}
 function New-DeviceProvisionerToken {
     $bytes = New-Object byte[] 32
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
@@ -417,6 +426,7 @@ if ($Mode -eq "PreUpdate") {
             # persistent\data\mqtt\mosquitto.db) whose explicit legacy DACL was
             # preserved when the backup was created. Normalize only this already
             # validated BIO-EMS backup tree before reading it for recovery.
+            Remove-DeviceProvisionerWhenAbsentFromSnapshot $pendingBackup
             Grant-LifecycleTreeRestoreAccess $pendingBackup
             # Directory inheritance is insufficient for legacy Mosquitto files
             # with a protected explicit DACL. Reclaim the exact source and
@@ -538,6 +548,7 @@ if ($Mode -eq "PostUpdate") {
         Remove-Item -LiteralPath $pointer -Force
     } catch {
         Stop-ControlledServices
+        Remove-DeviceProvisionerWhenAbsentFromSnapshot $backup
         Grant-LifecycleTreeRestoreAccess $backup
         Grant-LifecycleFileReadAccess (Join-Path $backup "persistent\data\mqtt\mosquitto.db")
         Grant-LifecycleFileReadAccess (Join-Path $persistent "data\mqtt\mosquitto.db")
