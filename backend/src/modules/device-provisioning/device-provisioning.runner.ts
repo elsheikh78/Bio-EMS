@@ -254,7 +254,7 @@ export class LocalProvisioningRunner {
       "$password=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_WIFI_PASSWORD_B64))",
       "$platformUrl=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_PLATFORM_URL_B64))",
       "$pairingCode=$env:BIOEMS_PAIRING_CODE",
-      "$serial=New-Object System.IO.Ports.SerialPort($portName,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
+      "$serial=[System.IO.Ports.SerialPort]::new($portName,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
       "$serial.NewLine=[Environment]::NewLine",
       "$serial.ReadTimeout=250",
       "$serial.WriteTimeout=3000",
@@ -294,7 +294,7 @@ export class LocalProvisioningRunner {
       "  if($final -notmatch 'state:\\s*PAIRED') { throw 'Controller did not enter PAIRED state' }",
       "}",
       "finally { if($serial.IsOpen){ $serial.Close() }; $serial.Dispose() }",
-    ].join("; ");
+    ].join("\n");
 
     const result = await this.execute(
       "powershell.exe",
