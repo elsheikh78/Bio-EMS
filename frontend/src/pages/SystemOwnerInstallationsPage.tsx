@@ -286,7 +286,7 @@ export function SystemOwnerInstallationsPage() {
               submitting={create.isPending}
               onSubmit={async (snapshot) => {
                 await create.mutateAsync({
-                  customerId: installationContext.data.customer.id,
+                  customerId: installationContext.data!.customer.id,
                   snapshot,
                 });
               }}
