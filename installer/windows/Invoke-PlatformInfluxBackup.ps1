@@ -4,8 +4,8 @@ param(
     [Parameter(Mandatory = $true)][string]$BackupDirectory,
     [Parameter(Mandatory = $true)][string]$HostUrl,
     [Parameter(Mandatory = $true)][string]$Org,
-    [ValidateRange(1, 5)][int]$MaxAttempts = 3,
-    [ValidateRange(1, 30)][int]$RetryDelaySeconds = 2
+    [ValidateRange(1, 10)][int]$MaxAttempts = 5,
+    [ValidateRange(1, 30)][int]$RetryDelaySeconds = 3
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,17 +31,27 @@ try {
                 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
         }
         & $InfluxCli backup $BackupDirectory
-        if ($LASTEXITCODE -eq 0) {
+        $exitCode = $LASTEXITCODE
+        if ($exitCode -eq 0) {
             $backupSucceeded = $true
             break
         }
+
         if ($attempt -lt $MaxAttempts) {
-            Write-Warning "InfluxDB backup attempt $attempt/$MaxAttempts failed with exit code $LASTEXITCODE; retrying after $RetryDelaySeconds second(s)."
-            Start-Sleep -Seconds $RetryDelaySeconds
+            $retryDelay = [Math]::Min(30, $RetryDelaySeconds * $attempt)
+            $healthState = "unknown"
+            try {
+                $health = Invoke-RestMethod -Uri "$HostUrl/health" -TimeoutSec 10
+                if ($health -and $health.status) { $healthState = [string]$health.status }
+            } catch {
+                $healthState = "unavailable"
+            }
+            Write-Warning "InfluxDB backup attempt $attempt/$MaxAttempts failed with exit code $exitCode (health=$healthState); retrying after $retryDelay second(s)."
+            Start-Sleep -Seconds $retryDelay
         }
     }
     if (-not $backupSucceeded) {
-        throw "InfluxDB backup failed after $MaxAttempts attempt(s)"
+        throw "InfluxDB backup failed after $MaxAttempts attempt(s); last exit code $exitCode"
     }
 }
 finally {
