@@ -87,6 +87,30 @@ export class DeviceProvisioningLocalClient {
       toolOutput: string;
     }>("/flash", { method: "POST", body: { port }, timeoutMs: 210_000 });
   }
+
+  provision(
+    port: string,
+    input: {
+      wifiSsid: string;
+      wifiPassword: string;
+      platformUrl: string;
+      pairingCode: string;
+    }
+  ) {
+    return this.request<{
+      port: string;
+      hardwareUid: string;
+      platformBindingId: string;
+      installationId: string;
+      deviceId: string;
+      siteCode: string;
+      toolOutput: string;
+    }>("/provision", {
+      method: "POST",
+      body: { port, ...input },
+      timeoutMs: 90_000,
+    });
+  }
 }
 
 export const deviceProvisioningLocalClient = new DeviceProvisioningLocalClient();
