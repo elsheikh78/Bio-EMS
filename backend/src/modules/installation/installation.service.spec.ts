@@ -117,6 +117,7 @@ describe("controlled installation lifecycle", () => {
       { matched: 0 },
     ]);
     service.receipt(draft.uuid, { revision: 1, checksum: draft.checksum, deviceIdentity: "CTRL1" });
+    markMaterializedSiteReady();
     service.technicalDecision(draft.uuid, "ACCEPT", "Bench and live checks passed", "owner#1");
     const active = service.customerDecision(draft.uuid, adminId, "ACCEPT", "Customer accepted");
     expect(active).toMatchObject({ status: "COMMISSIONED", latestRevision: 1 });
@@ -164,10 +165,71 @@ describe("controlled installation lifecycle", () => {
     );
   });
 
+  it("resolves the customer installation automatically from the selected Site", () => {
+    const draft = service.create(customerId, snapshot, "owner#1");
+    const siteId = Number(database.prepare("SELECT id FROM sites WHERE code='SITE1'").pluck().get());
+
+    expect(service.getAcceptanceStateForCustomerSite(siteId, adminId)).toMatchObject({
+      siteId,
+      siteCode: "SITE1",
+      siteName: "Main Site",
+      installation: {
+        uuid: draft.uuid,
+        status: "DRAFT",
+        latestRevision: 1,
+        acceptanceEnabled: false,
+        technicalCommissioning: null,
+        customerAcceptance: null,
+      },
+    });
+  });
+
+  it("blocks technical acceptance until sensors are valid and devices are online", () => {
+    const draft = service.create(customerId, snapshot, "owner#1");
+    service.validate(draft.uuid, "owner#1");
+    service.queue(draft.uuid, "owner#1");
+    service.send(draft.uuid, "owner#1");
+    service.receipt(draft.uuid, {
+      revision: 1,
+      checksum: draft.checksum,
+      deviceIdentity: "CTRL1",
+    });
+
+    expect(() =>
+      service.technicalDecision(draft.uuid, "ACCEPT", "premature", "owner#1")
+    ).toThrow(expect.objectContaining({ code: "COMMISSIONING_READINESS_REQUIRED" }));
+
+    markMaterializedSiteReady();
+    expect(
+      service.technicalDecision(draft.uuid, "ACCEPT", "ready", "owner#1")
+    ).toMatchObject({ status: "CUSTOMER_ACCEPTANCE_PENDING" });
+  });
+
   it("isolates customer reads and acceptance", () => {
     const draft = service.create(customerId, snapshot, "owner#1");
     expect(() => service.getForCustomerUser(draft.uuid, 999)).toThrow(
       expect.objectContaining({ code: "INSTALLATION_NOT_FOUND" })
     );
   });
+  function markMaterializedSiteReady() {
+    const now = new Date().toISOString();
+    database
+      .prepare(
+        `UPDATE devices
+         SET status='active',activated=1,last_seen_at=?,last_heartbeat_at=?
+         WHERE device_id='CTRL1'`
+      )
+      .run(now, now);
+    database
+      .prepare(
+        `UPDATE sensors
+         SET calibration_status='VALID',
+             calibration_due_at='2027-12-31T23:59:59.000Z',
+             certificate_reference='CAL-CTRL1-TEMP1',
+             enabled=1
+         WHERE code='TEMP1'`
+      )
+      .run();
+  }
+
 });
