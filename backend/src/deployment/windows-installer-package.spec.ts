@@ -18,6 +18,8 @@ const ids = [
   "influxdb",
   "winsw",
   "influx-cli",
+  "esptool",
+  "site-controller-firmware",
 ] as const;
 const content = (id: string) => Buffer.from(`controlled-${id}`);
 const checksum = (value: Buffer) => createHash("sha256").update(value).digest("hex");
@@ -54,7 +56,7 @@ function stage(input = manifest()) {
 }
 
 describe("DEP-01 controlled Windows installer package", () => {
-  it("accepts exactly the seven controlled, checksummed runtime/application inputs", () => {
+  it("accepts exactly the nine controlled, checksummed runtime/application inputs", () => {
     expect(readAndValidateWindowsInstallerPackage(stage())).toMatchObject({
       ready: true,
       issues: [],
@@ -132,6 +134,7 @@ describe("DEP-01-02 frozen inputs and build source", () => {
       "influxdb",
       "winsw",
       "influx-cli",
+      "esptool",
     ]);
   });
 
@@ -200,13 +203,18 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
       "BIOEMS-InfluxDB": "NT SERVICE\\BIOEMS-InfluxDB",
     });
     expect(lifecycle).toContain(
-      '$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")'
+      '$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Provisioner", "BIOEMS-Backend", "BIOEMS-RestoreWorker")'
     );
     expect(lifecycle).toContain('"NT SERVICE\\$serviceId"');
     expect(lifecycle).toContain('sc.exe" @("sidtype"');
     expect(lifecycle).toContain(
       'Invoke-Controlled "sc.exe" @("config", "BIOEMS-RestoreWorker", "obj=", "LocalSystem")'
     );
+    expect(lifecycle).toContain(
+      'Invoke-Controlled "sc.exe" @("config", "BIOEMS-Provisioner", "obj=", "LocalSystem")'
+    );
+    expect(lifecycle).toContain('BIOEMS_PROVISIONER_URL=http://127.0.0.1:9444');
+    expect(lifecycle).toContain("BIOEMS_PROVISIONER_TOKEN=$provisionerToken");
     expect(lifecycle).not.toContain("<password>");
   });
 
@@ -611,6 +619,7 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
       "licensing:identity",
       "licensing:receipt",
       "firewall:https-only",
+      "provisioner:loopback",
     ]) {
       expect(health).toContain(check);
     }
@@ -618,8 +627,11 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
     expect(health).not.toMatch(/TOKEN|PASSWORD|PASSPHRASE/);
   });
 
-  it("includes the privileged restore coordinator in post-install health evidence", () => {
+  it("includes the privileged restore coordinator and Device Provisioner in post-install health evidence", () => {
     expect(health).toContain('"BIOEMS-RestoreWorker"');
+    expect(health).toContain('"BIOEMS-Provisioner"');
+    expect(health).toContain("BIOEMS_PROVISIONER_TOKEN=");
+    expect(health).toContain("http://127.0.0.1:9444/health");
   });
 });
 
@@ -658,8 +670,10 @@ describe("DEP-01-05 lifecycle recovery source", () => {
     );
     expect(lifecycle).toContain("function Repair-BackendIdentityProvisioning");
     expect(lifecycle).toMatch(
-      /Repair-BackendIdentityProvisioning\r?\n[ ]{8}Ensure-RestoreWorkerService\r?\n[ ]{8}\$startOrder/
+      /Repair-BackendIdentityProvisioning\r?\n[ ]{8}Ensure-DeviceProvisionerService\r?\n[ ]{8}Ensure-RestoreWorkerService\r?\n[ ]{8}\$startOrder/
     );
+    expect(lifecycle).toContain("function Ensure-DeviceProvisionerService");
+    expect(lifecycle).toContain('sc.exe config "BIOEMS-Provisioner" obj= "LocalSystem"');
     expect(lifecycle).toContain("function Ensure-RestoreWorkerService");
     expect(lifecycle).toContain('sc.exe config "BIOEMS-RestoreWorker" obj= "LocalSystem"');
     expect(lifecycle).toContain('"NT SERVICE\\BIOEMS-Backend:(OI)(CI)M"');
@@ -758,7 +772,7 @@ describe("DEP-BR explicit installer mode contract", () => {
 
   it("removes only product-owned services, firewall and evidenced TLS certificate", () => {
     expect(lifecycle).toContain(
-      '$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
+      '$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-Provisioner", "BIOEMS-InfluxDB", "BIOEMS-MQTT")'
     );
     expect(lifecycle).toContain('Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS"');
     expect(lifecycle).toContain('"config\\tls-certificate.json"');
@@ -797,6 +811,10 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence");
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
+    expect(workflow).toContain("espressif/idf:v5.5.5");
+    expect(workflow).toContain("package_firmware.py");
+    expect(workflow).toContain("BIO-EMS-ESP32S3-");
+    expect(workflow).toContain("FirmwarePackageDirectory");
     expect(workflow).toContain("Build-Setup.ps1");
     expect(workflow).toContain("New-SelfSignedCertificate");
     expect(workflow).toContain('Filter "signtool.exe"');
