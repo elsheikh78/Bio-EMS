@@ -167,7 +167,9 @@ describe("controlled installation lifecycle", () => {
 
   it("resolves the customer installation automatically from the selected Site", () => {
     const draft = service.create(customerId, snapshot, "owner#1");
-    const siteId = Number(database.prepare("SELECT id FROM sites WHERE code='SITE1'").pluck().get());
+    const siteId = Number(
+      database.prepare("SELECT id FROM sites WHERE code='SITE1'").pluck().get()
+    );
 
     expect(service.getAcceptanceStateForCustomerSite(siteId, adminId)).toMatchObject({
       siteId,
@@ -195,14 +197,14 @@ describe("controlled installation lifecycle", () => {
       deviceIdentity: "CTRL1",
     });
 
-    expect(() =>
-      service.technicalDecision(draft.uuid, "ACCEPT", "premature", "owner#1")
-    ).toThrow(expect.objectContaining({ code: "COMMISSIONING_READINESS_REQUIRED" }));
+    expect(() => service.technicalDecision(draft.uuid, "ACCEPT", "premature", "owner#1")).toThrow(
+      expect.objectContaining({ code: "COMMISSIONING_READINESS_REQUIRED" })
+    );
 
     markMaterializedSiteReady();
-    expect(
-      service.technicalDecision(draft.uuid, "ACCEPT", "ready", "owner#1")
-    ).toMatchObject({ status: "CUSTOMER_ACCEPTANCE_PENDING" });
+    expect(service.technicalDecision(draft.uuid, "ACCEPT", "ready", "owner#1")).toMatchObject({
+      status: "CUSTOMER_ACCEPTANCE_PENDING",
+    });
   });
 
   it("isolates customer reads and acceptance", () => {
@@ -231,5 +233,4 @@ describe("controlled installation lifecycle", () => {
       )
       .run();
   }
-
 });

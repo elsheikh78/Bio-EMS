@@ -109,8 +109,7 @@ export class InstallationService {
          WHERE s.id=? AND u.user_id=?`
       )
       .get(siteId, userId) as
-      | { siteId: number; siteCode: string; siteName: string; customerId: number }
-      | undefined;
+      { siteId: number; siteCode: string; siteName: string; customerId: number } | undefined;
     if (!binding) throw new AppError("Site not found", 404, "SITE_NOT_FOUND");
 
     const rows = this.database
@@ -158,8 +157,7 @@ export class InstallationService {
       decidedAt: string;
     }>;
     const technical = decisions.find((decision) => decision.stage === "TECHNICAL") ?? null;
-    const customer =
-      decisions.find((decision) => decision.stage === "CUSTOMER_ACCEPTANCE") ?? null;
+    const customer = decisions.find((decision) => decision.stage === "CUSTOMER_ACCEPTANCE") ?? null;
 
     return {
       siteId: binding.siteId,
