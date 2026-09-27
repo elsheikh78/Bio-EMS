@@ -16,7 +16,8 @@ describe("CommissioningService", () => {
       CREATE TABLE sites (id INTEGER PRIMARY KEY);
       CREATE TABLE devices (
         id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, device_id TEXT NOT NULL,
-        activated INTEGER NOT NULL DEFAULT 0
+        status TEXT NOT NULL DEFAULT 'active', activated INTEGER NOT NULL DEFAULT 0,
+        last_seen_at TEXT, last_heartbeat_at TEXT
       );
       CREATE TABLE rooms (id INTEGER PRIMARY KEY, site_id INTEGER NOT NULL, code TEXT NOT NULL);
       CREATE TABLE sensors (
@@ -160,7 +161,12 @@ describe("CommissioningService", () => {
 
   it("summarizes configuration and calibration blockers from authoritative records", () => {
     database.exec(`
-      INSERT INTO devices (id, site_id, device_id, activated) VALUES (10, 1, 'BIO-CTRL-01', 1);
+      INSERT INTO devices (
+        id, site_id, device_id, status, activated, last_seen_at, last_heartbeat_at
+      ) VALUES (
+        10, 1, 'BIO-CTRL-01', 'active', 1,
+        '2026-09-01T11:59:30.000Z', '2026-09-01T11:59:30.000Z'
+      );
       INSERT INTO rooms (id, site_id, code) VALUES (10, 1, 'CR-01');
       INSERT INTO sensors (
         id, uuid, code, room_id, device_id, channel, enabled, calibration_status,
@@ -172,7 +178,22 @@ describe("CommissioningService", () => {
 
     expect(service.getConfigurationReadiness(1, "2026-09-01T12:00:00.000Z")).toMatchObject({
       ready: false,
-      summary: { totalSensors: 2, readySensors: 1, blockedSensors: 1 },
+      summary: {
+        totalSensors: 2,
+        readySensors: 1,
+        blockedSensors: 1,
+        totalDevices: 1,
+        onlineDevices: 1,
+        blockedDevices: 0,
+      },
+      devices: [
+        {
+          deviceId: "BIO-CTRL-01",
+          communicationStatus: "ONLINE",
+          ready: true,
+          blockers: [],
+        },
+      ],
       items: [
         { sensorCode: "TEMP-01", ready: true, blockers: [] },
         {
@@ -183,6 +204,44 @@ describe("CommissioningService", () => {
             "CALIBRATION_CERTIFICATE_MISSING",
             "CALIBRATION_EXPIRED_OR_DUE",
           ],
+        },
+      ],
+    });
+  });
+
+  it("blocks readiness when a configured device is not currently online", () => {
+    database.exec(`
+      INSERT INTO devices (
+        id, site_id, device_id, status, activated, last_seen_at
+      ) VALUES (
+        30, 1, 'BIO-CTRL-OFFLINE', 'active', 1, '2026-09-01T11:40:00.000Z'
+      );
+      INSERT INTO rooms (id, site_id, code) VALUES (30, 1, 'CR-OFFLINE');
+      INSERT INTO sensors (
+        id, uuid, code, room_id, device_id, channel, enabled, calibration_status,
+        calibration_due_at, certificate_reference
+      ) VALUES (
+        30, 'sensor-offline', 'TEMP-OFFLINE', 30, 30, 1, 1, 'VALID',
+        '2027-01-01T00:00:00.000Z', 'CAL-OFFLINE'
+      );
+    `);
+
+    expect(service.getConfigurationReadiness(1, "2026-09-01T12:00:00.000Z")).toMatchObject({
+      ready: false,
+      summary: {
+        totalSensors: 1,
+        readySensors: 1,
+        blockedSensors: 0,
+        totalDevices: 1,
+        onlineDevices: 0,
+        blockedDevices: 1,
+      },
+      devices: [
+        {
+          deviceId: "BIO-CTRL-OFFLINE",
+          communicationStatus: "OFFLINE",
+          ready: false,
+          blockers: ["DEVICE_OFFLINE"],
         },
       ],
     });
