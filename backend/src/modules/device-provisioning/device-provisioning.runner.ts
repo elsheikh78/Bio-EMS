@@ -47,7 +47,6 @@ function normalizedInside(root: string, candidate: string): string {
 
 function sanitizeToolOutput(value: string): string {
   return value
-    .replace(/\x1b\[[0-9;]*m/g, "")
     .split(/\r?\n/)
     .filter(Boolean)
     .slice(-40)
