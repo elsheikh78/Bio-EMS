@@ -59,7 +59,7 @@ const copy = {
     modify: "Modify installation",
     validate: "Validate",
     queue: "Queue delivery",
-    send: "Mark sent",
+    provision: "Open device provisioning",
     technicalDecision: "Record technical decision",
     reviewTitle: "Review changes",
     configurationJson: "Configuration JSON",
@@ -131,7 +131,7 @@ const copy = {
     modify: "تعديل التركيب",
     validate: "التحقق",
     queue: "إدراج للإرسال",
-    send: "تسجيل الإرسال",
+    provision: "فتح تهيئة وربط الأجهزة",
     technicalDecision: "تسجيل القرار الفني",
     reviewTitle: "مراجعة التغييرات",
     configurationJson: "تهيئة JSON",
@@ -250,16 +250,13 @@ export function SystemOwnerInstallationsPage() {
       ? "validate"
       : status === "VALIDATED"
         ? "queue"
-        : status === "PENDING_DELIVERY"
-          ? "send"
-          : status === "CONFIG_ACTIVE"
-            ? "technical-decision"
-            : undefined;
+        : status === "CONFIG_ACTIVE"
+          ? "technical-decision"
+          : undefined;
   const actionLabel = (actionName: string) =>
     ({
       validate: text.validate,
       queue: text.queue,
-      send: text.send,
       "technical-decision": text.technicalDecision,
     })[actionName] ?? actionName;
   const statusLabel = (status: string) =>
@@ -463,6 +460,16 @@ export function SystemOwnerInstallationsPage() {
               >
                 {text.modify}
               </Button>
+              {item.status === "PENDING_DELIVERY" ? (
+                <Button
+                  component={Link}
+                  to="/system-owner/device-provisioning"
+                  sx={{ mt: 1 }}
+                  variant="contained"
+                >
+                  {text.provision}
+                </Button>
+              ) : null}
               {next ? (
                 <Button
                   sx={{ mt: 1 }}
