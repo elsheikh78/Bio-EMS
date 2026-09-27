@@ -27,6 +27,8 @@ export const windowsInstallerManifestSchema = z
               "influxdb",
               "winsw",
               "influx-cli",
+              "esptool",
+              "site-controller-firmware",
               "owner-commissioning-trust",
             ]),
             version: z.string().min(1),
@@ -36,14 +38,24 @@ export const windowsInstallerManifestSchema = z
           })
           .strict()
       )
-      .min(7)
-      .max(8),
+      .min(9)
+      .max(10),
   })
   .strict()
   .superRefine((manifest, context) => {
     const ids = manifest.artifacts.map((artifact) => artifact.id);
     const uniqueIds = new Set(ids);
-    const requiredIds = ["backend", "frontend", "node", "mosquitto", "influxdb", "winsw"] as const;
+    const requiredIds = [
+      "backend",
+      "frontend",
+      "node",
+      "mosquitto",
+      "influxdb",
+      "winsw",
+      "influx-cli",
+      "esptool",
+      "site-controller-firmware",
+    ] as const;
     const hasRequiredArtifacts = requiredIds.every((id) => uniqueIds.has(id));
     const hasOwnerTrust = uniqueIds.has("owner-commissioning-trust");
 
@@ -77,7 +89,7 @@ export const vendorInputLockSchema = z
       .array(
         z
           .object({
-            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]),
+            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool"]),
             version: z.string().regex(/^\d+\.\d+\.\d+$/),
             fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
             sourceUrl: z
@@ -99,11 +111,11 @@ export const vendorInputLockSchema = z
           })
           .strict()
       )
-      .length(5),
+      .length(6),
   })
   .strict()
   .superRefine((value, context) => {
-    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli"]);
+    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool"]);
     const ids = value.inputs.map((input) => input.id);
     if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
       context.addIssue({ code: "custom", message: "Vendor input set must be exact" });
@@ -135,6 +147,8 @@ const runtimeArtifactIds = [
   "influxdb",
   "winsw",
   "influx-cli",
+  "esptool",
+  "site-controller-firmware",
 ];
 const forbiddenNames = [
   ".env",
