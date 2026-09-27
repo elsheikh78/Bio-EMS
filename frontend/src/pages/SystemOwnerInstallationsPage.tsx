@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import {
   useCreateInstallation,
   useInstallationAction,
+  useInstallationContext,
   useInstallations,
   useIssueDevicePairingCode,
   useReviseInstallation,
@@ -28,9 +29,12 @@ const copy = {
     title: "Installation configuration",
     info: "Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",
     draft: "New installation draft",
-    customer: "Customer ID",
+    installedIdentity: "Installed customer / site identity",
+    identityHelp: "Loaded from Windows Setup and locked for this installation. Customer and Site identity are not re-entered here.",
+    identityError: "Installed customer/site identity could not be resolved. Check the Setup provisioning identity before creating an installation.",
+    customer: "Customer",
     company: "Company name",
-    site: "Site code/name",
+    site: "Site",
     area: "Monitored area",
     telemetry: "Telemetry code/name",
     type: "Telemetry type",
@@ -99,9 +103,12 @@ const copy = {
     title: "تهيئة التركيب",
     info: "عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",
     draft: "مسودة تركيب جديدة",
-    customer: "رقم العميل",
+    installedIdentity: "هوية العميل والموقع المثبتة",
+    identityHelp: "تم تحميلها من Windows Setup وهي ثابتة لهذا التثبيت. لا تتم إعادة إدخال هوية العميل أو الموقع هنا.",
+    identityError: "تعذر تحديد هوية العميل والموقع المثبتة. راجع بيانات Setup قبل إنشاء التركيب.",
+    customer: "العميل",
     company: "اسم الشركة",
-    site: "كود واسم الموقع",
+    site: "الموقع",
     area: "المنطقة المراقبة",
     telemetry: "كود واسم القياس",
     type: "نوع القياس",
@@ -183,15 +190,13 @@ export function SystemOwnerInstallationsPage() {
   const { language } = useLocalization();
   const text = copy[language];
   const installations = useInstallations();
+  const installationContext = useInstallationContext();
   const create = useCreateInstallation();
   const revise = useReviseInstallation();
   const action = useInstallationAction();
   const issuePairing = useIssueDevicePairingCode();
   const [pairingResult, setPairingResult] =
     useState<DevicePairingCodeResponse | null>(null);
-  const [customerId, setCustomerId] = useState("");
-  const [company, setCompany] = useState("");
-  const [site, setSite] = useState("");
   const [area, setArea] = useState("");
   const [telemetry, setTelemetry] = useState("");
   const [type, setType] = useState("TEMPERATURE");
@@ -206,15 +211,18 @@ export function SystemOwnerInstallationsPage() {
   const [revisionError, setRevisionError] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!installationContext.data) return;
+    const installed = installationContext.data;
     await create.mutateAsync({
-      customerId: Number(customerId),
+      customerId: installed.customer.id,
       snapshot: {
-        companyName: company,
+        companyName: installed.customer.name,
         sites: [
           {
-            code: site,
-            name: site,
-            timezone: "Africa/Cairo",
+            code: installed.site.code,
+            name: installed.site.name,
+            ...(installed.site.location ? { location: installed.site.location } : {}),
+            timezone: installed.site.timezone ?? "Africa/Cairo",
             areas: [
               {
                 code: area,
@@ -237,7 +245,7 @@ export function SystemOwnerInstallationsPage() {
         devices: [
           {
             deviceId: device,
-            siteCode: site,
+            siteCode: installed.site.code,
             type: "zone-controller",
             protocol: "mqtt",
             manufacturer: "BIO-EMS",
@@ -319,6 +327,17 @@ export function SystemOwnerInstallationsPage() {
           <Typography component="h2" variant="h6">
             {text.draft}
           </Typography>
+          <Typography sx={{ fontWeight: 700, mt: 2 }}>
+            {text.installedIdentity}
+          </Typography>
+          <Typography color="text.secondary" variant="body2" sx={{ mb: 2 }}>
+            {text.identityHelp}
+          </Typography>
+          {installationContext.isError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {text.identityError}
+            </Alert>
+          ) : null}
           <Box
             component="form"
             onSubmit={(e) => void submit(e)}
@@ -330,23 +349,27 @@ export function SystemOwnerInstallationsPage() {
             }}
           >
             <TextField
-              required
               label={text.customer}
-              type="number"
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
+              value={
+                installationContext.data
+                  ? `${installationContext.data.customer.name} (${installationContext.data.customer.code})`
+                  : ""
+              }
+              InputProps={{ readOnly: true }}
             />
             <TextField
-              required
               label={text.company}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              value={installationContext.data?.customer.name ?? ""}
+              InputProps={{ readOnly: true }}
             />
             <TextField
-              required
               label={text.site}
-              value={site}
-              onChange={(e) => setSite(e.target.value)}
+              value={
+                installationContext.data
+                  ? `${installationContext.data.site.name} (${installationContext.data.site.code})`
+                  : ""
+              }
+              InputProps={{ readOnly: true }}
             />
             <TextField
               required
@@ -403,7 +426,7 @@ export function SystemOwnerInstallationsPage() {
             <Button
               type="submit"
               variant="contained"
-              disabled={create.isPending}
+              disabled={create.isPending || installationContext.isPending || !installationContext.data}
             >
               {text.create}
             </Button>
