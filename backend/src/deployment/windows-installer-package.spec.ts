@@ -454,6 +454,10 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain("if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE");
     expect(lifecycle).toContain("BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath");
     expect(lifecycle).toContain("BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_CUSTOMER_NAME = $CustomerName");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_CUSTOMER_CODE = $CustomerCode");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_SITE_NAME = $SiteName");
+    expect(lifecycle).toContain("BIOEMS_INSTALLATION_SITE_CODE = $SiteCode");
     expect(lifecycle).not.toContain('New-ServiceXml "BIOEMS-Backend" $node');
     expect(lifecycle).toContain("Installation identity provisioning evidence was not created");
   });
@@ -645,6 +649,13 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   });
 
   it("migrates legacy Repair installations that predate installation identity provisioning", () => {
+    expect(lifecycle).toContain("function Repair-InstallationProvisioningReceiptMetadata");
+    expect(lifecycle).toContain(
+      'backend\\dist\\src\\scripts\\repair-installation-provisioning-receipt.js'
+    );
+    expect(lifecycle).toContain(
+      "Repair-InstallationProvisioningReceiptMetadata $identityPath $receiptPath"
+    );
     expect(lifecycle).toContain("function Repair-BackendIdentityProvisioning");
     expect(lifecycle).toMatch(
       /Repair-BackendIdentityProvisioning\r?\n[ ]{8}Ensure-RestoreWorkerService\r?\n[ ]{8}\$startOrder/
