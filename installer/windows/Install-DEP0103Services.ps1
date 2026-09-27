@@ -249,7 +249,15 @@ $backendEnvironment = @{
     BIOEMS_ENV_FILE = $backendEnv
     BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath
     BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath
+    BIOEMS_INSTALLATION_CUSTOMER_NAME = $CustomerName
+    BIOEMS_INSTALLATION_CUSTOMER_CODE = $CustomerCode
+    BIOEMS_INSTALLATION_SITE_NAME = $SiteName
+    BIOEMS_INSTALLATION_SITE_CODE = $SiteCode
 }
+if ($SiteLocation) { $backendEnvironment.BIOEMS_INSTALLATION_SITE_LOCATION = $SiteLocation }
+if ($ContactName) { $backendEnvironment.BIOEMS_INSTALLATION_CONTACT_NAME = $ContactName }
+if ($ContactEmail) { $backendEnvironment.BIOEMS_INSTALLATION_CONTACT_EMAIL = $ContactEmail }
+if ($ContactPhone) { $backendEnvironment.BIOEMS_INSTALLATION_CONTACT_PHONE = $ContactPhone }
 if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE = "true" }
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
 $restoreCoordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
