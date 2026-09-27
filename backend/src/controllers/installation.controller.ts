@@ -63,6 +63,16 @@ export const technicalInstallationDecision = asyncHandler(async (req: Request, r
     )
   )
 );
+export const getCustomerSiteInstallationAcceptance = asyncHandler(
+  async (req: Request, res: Response) =>
+    res.json(
+      installationService.getAcceptanceStateForCustomerSite(
+        Number(req.params.siteId),
+        req.user!.id
+      )
+    )
+);
+
 export const getCustomerInstallation = asyncHandler(async (req: Request, res: Response) =>
   res.json(installationService.getForCustomerUser(installationId(req), req.user!.id))
 );
