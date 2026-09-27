@@ -8,7 +8,10 @@ import {
 } from "./contracts";
 
 export const installationQueryKey = ["platform", "installations"] as const;
-export const installationContextQueryKey = ["platform", "installation-context"] as const;
+export const installationContextQueryKey = [
+  "platform",
+  "installation-context",
+] as const;
 
 export function useInstallationContext() {
   const { apiClient, status } = usePlatformAuthentication();
@@ -17,9 +20,12 @@ export function useInstallationContext() {
     enabled: status === "authenticated",
     queryFn: async () =>
       installationContextSchema.parse(
-        await apiClient.request<unknown>("/platform-operations/installation-context", {
-          auth: "protected",
-        }),
+        await apiClient.request<unknown>(
+          "/platform-operations/installation-context",
+          {
+            auth: "protected",
+          },
+        ),
       ),
   });
 }
