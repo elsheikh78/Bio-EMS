@@ -1,4 +1,5 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
+import { asyncHandler } from "../middleware/async-handler";
 import { sqlite } from "../../database/sqlite/client";
 import { AppError } from "../errors/app-error";
 import type { InstallationSnapshot } from "../modules/installation/installation.schema";
@@ -60,68 +61,36 @@ function requireProvisioningTarget(installationUuid: string, deviceId: string) {
   return { installation, revision, device };
 }
 
-export async function getDeviceProvisioningHealth(
-  _request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  try {
-    response.json(await deviceProvisioningLocalClient.health());
-  } catch (error) {
-    next(error);
-  }
-}
+export const getDeviceProvisioningHealth = asyncHandler(async (_request: Request, response: Response) =>
+  response.json(await deviceProvisioningLocalClient.health())
+);
 
-export async function listDeviceProvisioningPorts(
-  _request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  try {
-    response.json(await deviceProvisioningLocalClient.ports());
-  } catch (error) {
-    next(error);
-  }
-}
+export const listDeviceProvisioningPorts = asyncHandler(async (_request: Request, response: Response) =>
+  response.json(await deviceProvisioningLocalClient.ports())
+);
 
-export async function detectDeviceProvisioningBoard(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  try {
-    response.json(await deviceProvisioningLocalClient.detect(String(request.body.port)));
-  } catch (error) {
-    next(error);
-  }
-}
+export const detectDeviceProvisioningBoard = asyncHandler(async (request: Request, response: Response) =>
+  response.json(await deviceProvisioningLocalClient.detect(String(request.body.port)))
+);
 
-export async function flashInstallationDevice(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
-  try {
-    const installationId = String(request.body.installationId);
-    const deviceId = String(request.body.deviceId);
-    const target = requireProvisioningTarget(installationId, deviceId);
-    const result = await deviceProvisioningLocalClient.flash(String(request.body.port));
-    recordEvent(
-      target.installation.id,
-      target.revision.id,
-      "DEVICE_FIRMWARE_FLASHED",
-      `system-owner#${request.platformPrincipal!.username}`,
-      {
-        revision: target.revision.revision,
-        device_identity: deviceId,
-        port: result.port,
-        firmware_version: result.firmwareVersion,
-        protocol_version: result.protocolVersion,
-        binding_schema_version: result.bindingSchemaVersion,
-      }
-    );
-    response.json(result);
-  } catch (error) {
-    next(error);
-  }
-}
+export const flashInstallationDevice = asyncHandler(async (request: Request, response: Response) => {
+  const installationId = String(request.body.installationId);
+  const deviceId = String(request.body.deviceId);
+  const target = requireProvisioningTarget(installationId, deviceId);
+  const result = await deviceProvisioningLocalClient.flash(String(request.body.port));
+  recordEvent(
+    target.installation.id,
+    target.revision.id,
+    "DEVICE_FIRMWARE_FLASHED",
+    `${request.platformPrincipal!.username}#${request.platformPrincipal!.id}`,
+    {
+      revision: target.revision.revision,
+      device_identity: deviceId,
+      port: result.port,
+      firmware_version: result.firmwareVersion,
+      protocol_version: result.protocolVersion,
+      binding_schema_version: result.bindingSchemaVersion,
+    }
+  );
+  response.json(result);
+});
