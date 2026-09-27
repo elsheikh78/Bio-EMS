@@ -13,6 +13,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import type { InstallationContext } from "./contracts";
 import {
   buildSnapshot,
+  builderStateFromSnapshot,
   defaultUnit,
   nextAreaCode,
   nextChannel,
@@ -109,16 +110,21 @@ export function InstallationBuilder({
   context,
   language,
   submitting,
+  initialSnapshot,
+  submitLabel,
   onSubmit,
 }: {
   context: InstallationContext;
   language: "en" | "ar";
   submitting: boolean;
+  initialSnapshot?: Record<string, unknown>;
+  submitLabel?: string;
   onSubmit: (snapshot: InstallationBuilderSnapshot) => Promise<void>;
 }) {
   const text = copy[language];
-  const [areas, setAreas] = useState<DraftArea[]>([]);
-  const [devices, setDevices] = useState<DraftDevice[]>([{ deviceId: "D001" }]);
+  const initial = builderStateFromSnapshot(initialSnapshot, context.site.code);
+  const [areas, setAreas] = useState<DraftArea[]>(() => initial.areas);
+  const [devices, setDevices] = useState<DraftDevice[]>(() => initial.devices);
   const [areaName, setAreaName] = useState("");
   const [attempted, setAttempted] = useState(false);
   const valid = useMemo(() => validBuilder(areas, devices), [areas, devices]);
@@ -151,6 +157,9 @@ export function InstallationBuilder({
                   unit: "°C",
                   deviceId,
                   channel,
+                  warningDelaySeconds: 0,
+                  criticalDelaySeconds: 0,
+                  calibrationOffset: 0,
                 },
               ],
             }
@@ -480,7 +489,7 @@ export function InstallationBuilder({
       ) : null}
 
       <Button type="submit" variant="contained" disabled={submitting || !valid}>
-        {text.create}
+        {submitLabel ?? text.create}
       </Button>
     </Box>
   );

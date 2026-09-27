@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildSnapshot,
+  builderStateFromSnapshot,
   nextAreaCode,
   nextDeviceCode,
   nextTelemetryCode,
@@ -34,6 +35,9 @@ describe("InstallationBuilder identifiers and snapshot", () => {
             unit: "°C",
             deviceId: "D001",
             channel: 1,
+            warningDelaySeconds: 0,
+            criticalDelaySeconds: 0,
+            calibrationOffset: 0,
           },
           {
             code: "S2",
@@ -42,6 +46,9 @@ describe("InstallationBuilder identifiers and snapshot", () => {
             unit: "°C",
             deviceId: "D001",
             channel: 2,
+            warningDelaySeconds: 0,
+            criticalDelaySeconds: 0,
+            calibrationOffset: 0,
           },
         ],
       },
@@ -50,6 +57,59 @@ describe("InstallationBuilder identifiers and snapshot", () => {
     expect(nextAreaCode(areas)).toBe("A02");
     expect(nextTelemetryCode(areas)).toBe("S3");
     expect(nextDeviceCode([{ deviceId: "D001" }])).toBe("D002");
+  });
+
+  it("loads an existing partial installation without losing its identity", () => {
+    const state = builderStateFromSnapshot(
+      {
+        sites: [
+          {
+            code: "elmanial-001",
+            name: "El Manial",
+            areas: [
+              {
+                code: "cold-room",
+                name: "Cold Room",
+                telemetries: [
+                  {
+                    code: "S1",
+                    name: "Temperature 1",
+                    type: "TEMPERATURE",
+                    unit: "°C",
+                    warningDelaySeconds: 0,
+                    criticalDelaySeconds: 0,
+                    calibrationOffset: 0,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        devices: [
+          {
+            deviceId: "D001",
+            siteCode: "elmanial-001",
+            mappings: [
+              {
+                areaCode: "cold-room",
+                telemetryCode: "S1",
+                channel: 1,
+              },
+            ],
+          },
+        ],
+      },
+      "elmanial-001",
+    );
+
+    expect(state.devices).toEqual([{ deviceId: "D001" }]);
+    expect(state.areas[0]).toMatchObject({
+      code: "cold-room",
+      telemetries: [
+        { code: "S1", deviceId: "D001", channel: 1 },
+      ],
+    });
+    expect(nextTelemetryCode(state.areas)).toBe("S2");
   });
 
   it("builds one governed logical snapshot before device provisioning", () => {
@@ -65,6 +125,9 @@ describe("InstallationBuilder identifiers and snapshot", () => {
             unit: "°C",
             deviceId: "D001",
             channel: 1,
+            warningDelaySeconds: 0,
+            criticalDelaySeconds: 0,
+            calibrationOffset: 0,
           },
         ],
       },

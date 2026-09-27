@@ -18,6 +18,13 @@ export type DraftTelemetry = {
   unit: string;
   deviceId: string;
   channel: number;
+  warningLow?: number;
+  alarmLow?: number;
+  warningHigh?: number;
+  alarmHigh?: number;
+  warningDelaySeconds: number;
+  criticalDelaySeconds: number;
+  calibrationOffset: number;
 };
 
 export type DraftArea = {
@@ -48,6 +55,10 @@ export type InstallationBuilderSnapshot = {
         warningDelaySeconds: number;
         criticalDelaySeconds: number;
         calibrationOffset: number;
+        warningLow?: number;
+        alarmLow?: number;
+        warningHigh?: number;
+        alarmHigh?: number;
       }>;
     }>;
   }>;
@@ -161,6 +172,139 @@ export function validBuilder(areas: DraftArea[], devices: DraftDevice[]) {
   );
 }
 
+
+export function builderStateFromSnapshot(
+  snapshot: Record<string, unknown> | undefined,
+  siteCode: string,
+): { areas: DraftArea[]; devices: DraftDevice[] } {
+  if (!snapshot) return { areas: [], devices: [{ deviceId: "D001" }] };
+
+  const rawDevices = Array.isArray(snapshot.devices) ? snapshot.devices : [];
+  const deviceRecords = rawDevices.filter(
+    (value): value is Record<string, unknown> =>
+      Boolean(value) && typeof value === "object",
+  );
+  const devices = deviceRecords
+    .filter((device) => device.siteCode === siteCode)
+    .flatMap((device) =>
+      typeof device.deviceId === "string" && device.deviceId.length > 0
+        ? [{ deviceId: device.deviceId }]
+        : [],
+    );
+
+  const mappingByTelemetry = new Map<
+    string,
+    { deviceId: string; channel: number }
+  >();
+  for (const device of deviceRecords) {
+    if (
+      device.siteCode !== siteCode ||
+      typeof device.deviceId !== "string" ||
+      !Array.isArray(device.mappings)
+    ) {
+      continue;
+    }
+    for (const mapping of device.mappings) {
+      if (!mapping || typeof mapping !== "object") continue;
+      const row = mapping as Record<string, unknown>;
+      if (
+        typeof row.areaCode === "string" &&
+        typeof row.telemetryCode === "string" &&
+        typeof row.channel === "number"
+      ) {
+        mappingByTelemetry.set(
+          `${row.areaCode}/${row.telemetryCode}`,
+          { deviceId: device.deviceId, channel: row.channel },
+        );
+      }
+    }
+  }
+
+  const rawSites = Array.isArray(snapshot.sites) ? snapshot.sites : [];
+  const site = rawSites.find(
+    (value): value is Record<string, unknown> =>
+      Boolean(value) &&
+      typeof value === "object" &&
+      (value as Record<string, unknown>).code === siteCode,
+  );
+  const rawAreas = site && Array.isArray(site.areas) ? site.areas : [];
+  const fallbackDevice = devices[0]?.deviceId ?? "";
+
+  const areas: DraftArea[] = rawAreas.flatMap((value) => {
+    if (!value || typeof value !== "object") return [];
+    const area = value as Record<string, unknown>;
+    if (typeof area.code !== "string" || typeof area.name !== "string") {
+      return [];
+    }
+    const rawTelemetries = Array.isArray(area.telemetries)
+      ? area.telemetries
+      : [];
+    const telemetries: DraftTelemetry[] = rawTelemetries.flatMap(
+      (telemetryValue) => {
+        if (!telemetryValue || typeof telemetryValue !== "object") return [];
+        const telemetry = telemetryValue as Record<string, unknown>;
+        if (
+          typeof telemetry.code !== "string" ||
+          typeof telemetry.name !== "string"
+        ) {
+          return [];
+        }
+        const mapping = mappingByTelemetry.get(
+          `${area.code}/${telemetry.code}`,
+        );
+        const rawType =
+          typeof telemetry.type === "string" ? telemetry.type : "OTHER";
+        const type = telemetryTypes.includes(rawType as TelemetryType)
+          ? (rawType as TelemetryType)
+          : "OTHER";
+        return [
+          {
+            code: telemetry.code,
+            name: telemetry.name,
+            type,
+            unit:
+              typeof telemetry.unit === "string"
+                ? telemetry.unit
+                : defaultUnit(type),
+            deviceId: mapping?.deviceId ?? fallbackDevice,
+            channel: mapping?.channel ?? 1,
+            ...(typeof telemetry.warningLow === "number"
+              ? { warningLow: telemetry.warningLow }
+              : {}),
+            ...(typeof telemetry.alarmLow === "number"
+              ? { alarmLow: telemetry.alarmLow }
+              : {}),
+            ...(typeof telemetry.warningHigh === "number"
+              ? { warningHigh: telemetry.warningHigh }
+              : {}),
+            ...(typeof telemetry.alarmHigh === "number"
+              ? { alarmHigh: telemetry.alarmHigh }
+              : {}),
+            warningDelaySeconds:
+              typeof telemetry.warningDelaySeconds === "number"
+                ? telemetry.warningDelaySeconds
+                : 0,
+            criticalDelaySeconds:
+              typeof telemetry.criticalDelaySeconds === "number"
+                ? telemetry.criticalDelaySeconds
+                : 0,
+            calibrationOffset:
+              typeof telemetry.calibrationOffset === "number"
+                ? telemetry.calibrationOffset
+                : 0,
+          },
+        ];
+      },
+    );
+    return [{ code: area.code, name: area.name, telemetries }];
+  });
+
+  return {
+    areas,
+    devices: devices.length > 0 ? devices : [{ deviceId: "D001" }],
+  };
+}
+
 export function buildSnapshot(
   context: InstallationContext,
   areas: DraftArea[],
@@ -182,9 +326,21 @@ export function buildSnapshot(
             name: telemetry.name.trim(),
             type: telemetry.type,
             unit: telemetry.unit.trim(),
-            warningDelaySeconds: 0,
-            criticalDelaySeconds: 0,
-            calibrationOffset: 0,
+            ...(telemetry.warningLow !== undefined
+              ? { warningLow: telemetry.warningLow }
+              : {}),
+            ...(telemetry.alarmLow !== undefined
+              ? { alarmLow: telemetry.alarmLow }
+              : {}),
+            ...(telemetry.warningHigh !== undefined
+              ? { warningHigh: telemetry.warningHigh }
+              : {}),
+            ...(telemetry.alarmHigh !== undefined
+              ? { alarmHigh: telemetry.alarmHigh }
+              : {}),
+            warningDelaySeconds: telemetry.warningDelaySeconds,
+            criticalDelaySeconds: telemetry.criticalDelaySeconds,
+            calibrationOffset: telemetry.calibrationOffset,
           })),
         })),
       },

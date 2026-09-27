@@ -29,6 +29,8 @@ const copy = {
     title: "Installation configuration",
     info: "Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",
     draft: "New installation draft",
+    editDraft: "Edit current installation",
+    updateDraft: "Apply builder as new revision",
     installedIdentity: "Installed customer / site identity",
     identityHelp:
       "Loaded from Windows Setup and locked for this installation. Customer and Site identity are not re-entered here.",
@@ -108,6 +110,8 @@ const copy = {
     title: "تهيئة التركيب",
     info: "عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",
     draft: "مسودة تركيب جديدة",
+    editDraft: "تعديل التركيب الحالي",
+    updateDraft: "تطبيق التعديل كمراجعة جديدة",
     installedIdentity: "هوية العميل والموقع المثبتة",
     identityHelp:
       "تم تحميلها من Windows Setup وهي ثابتة لهذا التثبيت. لا تتم إعادة إدخال هوية العميل أو الموقع هنا.",
@@ -194,6 +198,21 @@ function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
       ? [deviceId]
       : [];
   });
+}
+
+
+function snapshotHasSite(
+  snapshot: Record<string, unknown>,
+  siteCode: string,
+): boolean {
+  const sites = snapshot.sites;
+  if (!Array.isArray(sites)) return false;
+  return sites.some(
+    (site) =>
+      Boolean(site) &&
+      typeof site === "object" &&
+      (site as Record<string, unknown>).code === siteCode,
+  );
 }
 
 function installationInventory(snapshot: Record<string, unknown>) {
@@ -288,6 +307,16 @@ export function SystemOwnerInstallationsPage() {
   const commissionedCount = records.filter(
     (item) => item.status === "COMMISSIONED",
   ).length;
+  const currentInstallation = installationContext.data
+    ? records.find(
+        (item) =>
+          item.customerId === installationContext.data.customer.id &&
+          snapshotHasSite(
+            item.latestSnapshot,
+            installationContext.data.site.code,
+          ),
+      )
+    : undefined;
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
       <Button component={Link} to="/system-owner">
@@ -324,7 +353,7 @@ export function SystemOwnerInstallationsPage() {
       <Card variant="outlined" sx={{ mb: 3 }}>
         <CardContent>
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-            {text.draft}
+            {currentInstallation ? text.editDraft : text.draft}
           </Typography>
           {installationContext.isPending ? (
             <Box
@@ -338,12 +367,25 @@ export function SystemOwnerInstallationsPage() {
           {installationContext.isError ? (
             <Alert severity="error">{text.identityError}</Alert>
           ) : null}
-          {installationContext.data ? (
+          {installationContext.data && !installations.isPending ? (
             <InstallationBuilder
+              key={currentInstallation?.uuid ?? "new-installation"}
               context={installationContext.data}
               language={language}
-              submitting={create.isPending}
+              submitting={create.isPending || revise.isPending}
+              initialSnapshot={currentInstallation?.latestSnapshot}
+              submitLabel={
+                currentInstallation ? text.updateDraft : undefined
+              }
               onSubmit={async (snapshot) => {
+                if (currentInstallation) {
+                  await revise.mutateAsync({
+                    uuid: currentInstallation.uuid,
+                    snapshot,
+                    reason: "Structured Installation Builder update",
+                  });
+                  return;
+                }
                 await create.mutateAsync({
                   customerId: installationContext.data.customer.id,
                   snapshot,
@@ -351,7 +393,7 @@ export function SystemOwnerInstallationsPage() {
               }}
             />
           ) : null}
-          {create.isError ? (
+          {create.isError || revise.isError ? (
             <Alert severity="error" sx={{ mt: 2 }}>
               {text.error}
             </Alert>
