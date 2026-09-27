@@ -2,11 +2,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 import {
   devicePairingCodeResponseSchema,
+  installationContextSchema,
   installationCreateResponseSchema,
   installationListSchema,
 } from "./contracts";
 
 export const installationQueryKey = ["platform", "installations"] as const;
+export const installationContextQueryKey = ["platform", "installation-context"] as const;
+
+export function useInstallationContext() {
+  const { apiClient, status } = usePlatformAuthentication();
+  return useQuery({
+    queryKey: installationContextQueryKey,
+    enabled: status === "authenticated",
+    queryFn: async () =>
+      installationContextSchema.parse(
+        await apiClient.request<unknown>("/platform-operations/installation-context", {
+          auth: "protected",
+        }),
+      ),
+  });
+}
+
 export function useInstallations() {
   const { apiClient, status } = usePlatformAuthentication();
   return useQuery({
