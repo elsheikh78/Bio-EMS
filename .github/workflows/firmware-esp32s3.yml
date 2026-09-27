@@ -23,7 +23,7 @@ jobs:
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:
-          esp_idf_version: v5.3.2
+          esp_idf_version: v5.5.5
           target: esp32s3
           path: firmware/site-controller-esp32s3
 
@@ -35,15 +35,22 @@ jobs:
           test -f firmware/site-controller-esp32s3/build/bootloader/bootloader.bin
           test -f firmware/site-controller-esp32s3/build/partition_table/partition-table.bin
 
+      - name: Package governed ESP32-S3 firmware
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 firmware/site-controller-esp32s3/package_firmware.py \
+            --build-dir firmware/site-controller-esp32s3/build \
+            --output-dir bioems-firmware-package \
+            --source-commit "$GITHUB_SHA" \
+            --version-header firmware/site-controller-esp32s3/main/bioems_version.h
+
       - name: Upload ESP32-S3 firmware
         uses: actions/upload-artifact@v4
         with:
           name: BIO-EMS-ESP32S3-Firmware-${{ github.sha }}
           path: |
-            firmware/site-controller-esp32s3/build/bioems_site_controller.bin
-            firmware/site-controller-esp32s3/build/bootloader/bootloader.bin
-            firmware/site-controller-esp32s3/build/partition_table/partition-table.bin
-            firmware/site-controller-esp32s3/build/flash_args
+            bioems-firmware-package/**
             firmware/site-controller-esp32s3/build/flasher_args.json
             firmware/site-controller-esp32s3/README.md
             firmware/site-controller-esp32s3/main/bioems_version.h
