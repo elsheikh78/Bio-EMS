@@ -74,8 +74,7 @@ const copy = {
     site: "الموقع",
     installationId: "رقم التثبيت",
     devices: "سجل الأجهزة",
-    deviceHelp:
-      "ينشئ BIO-EMS أرقام الأجهزة المنطقية قبل ربط أي ESP32 فعلي.",
+    deviceHelp: "ينشئ BIO-EMS أرقام الأجهزة المنطقية قبل ربط أي ESP32 فعلي.",
     addDevice: "إضافة جهاز",
     remove: "حذف",
     areas: "المناطق المراقبة والقياسات",
@@ -249,14 +248,18 @@ export function InstallationBuilder({
         {devices.map((device) => (
           <Card key={device.deviceId} variant="outlined">
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
-              <Typography sx={{ fontWeight: 800 }}>{device.deviceId}</Typography>
+              <Typography sx={{ fontWeight: 800 }}>
+                {device.deviceId}
+              </Typography>
               <Typography variant="caption">BIO-EMS-SC-V1</Typography>
               {devices.length > 1 ? (
                 <Button
                   size="small"
                   onClick={() => {
                     setDevices((current) =>
-                      current.filter((item) => item.deviceId !== device.deviceId),
+                      current.filter(
+                        (item) => item.deviceId !== device.deviceId,
+                      ),
                     );
                     setAreas((current) =>
                       current.map((area) => ({
@@ -300,7 +303,11 @@ export function InstallationBuilder({
           value={areaName}
           onChange={(event) => setAreaName(event.target.value)}
         />
-        <Button variant="outlined" onClick={addArea} disabled={!areaName.trim()}>
+        <Button
+          variant="outlined"
+          onClick={addArea}
+          disabled={!areaName.trim()}
+        >
           {text.addArea}
         </Button>
       </Box>
