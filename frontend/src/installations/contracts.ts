@@ -1,5 +1,31 @@
 import { z } from "zod";
 
+
+export const installationContextSchema = z
+  .object({
+    installationId: z.string().uuid(),
+    source: z.literal("INSTALLER_PROVISIONING_RECEIPT"),
+    customer: z
+      .object({
+        id: z.number().int().positive(),
+        code: z.string().min(1),
+        name: z.string().min(1),
+      })
+      .strict(),
+    site: z
+      .object({
+        id: z.number().int().positive(),
+        code: z.string().min(1),
+        name: z.string().min(1),
+        location: z.string().nullable(),
+        timezone: z.string().nullable(),
+      })
+      .strict(),
+  })
+  .strict();
+
+export type InstallationContext = z.infer<typeof installationContextSchema>;
+
 export const installationStatusSchema = z.enum([
   "DRAFT",
   "VALIDATED",
