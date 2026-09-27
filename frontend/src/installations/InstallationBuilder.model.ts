@@ -236,6 +236,8 @@ export function builderStateFromSnapshot(
     if (typeof area.code !== "string" || typeof area.name !== "string") {
       return [];
     }
+    const areaCode = area.code;
+    const areaName = area.name;
     const rawTelemetries = Array.isArray(area.telemetries)
       ? area.telemetries
       : [];
@@ -250,7 +252,7 @@ export function builderStateFromSnapshot(
           return [];
         }
         const mapping = mappingByTelemetry.get(
-          `${area.code}/${telemetry.code}`,
+          `${areaCode}/${telemetry.code}`,
         );
         const rawType =
           typeof telemetry.type === "string" ? telemetry.type : "OTHER";
@@ -296,7 +298,7 @@ export function builderStateFromSnapshot(
         ];
       },
     );
-    return [{ code: area.code, name: area.name, telemetries }];
+    return [{ code: areaCode, name: areaName, telemetries }];
   });
 
   return {
