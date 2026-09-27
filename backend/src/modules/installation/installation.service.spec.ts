@@ -136,10 +136,7 @@ describe("controlled installation lifecycle", () => {
     service.validate(draft.uuid, "owner#1");
     service.queue(draft.uuid, "owner#1");
     const installationId = Number(
-      database
-        .prepare("SELECT id FROM platform_installations WHERE uuid=?")
-        .pluck()
-        .get(draft.uuid)
+      database.prepare("SELECT id FROM platform_installations WHERE uuid=?").pluck().get(draft.uuid)
     );
     const now = new Date().toISOString();
     database
@@ -164,9 +161,13 @@ describe("controlled installation lifecycle", () => {
       status: "CONFIG_ACTIVE",
       latestRevision: 1,
     });
-    expect(database.prepare("SELECT device_identity AS deviceIdentity,matched FROM platform_installation_receipts").all()).toEqual([
-      { deviceIdentity: "CTRL1", matched: 1 },
-    ]);
+    expect(
+      database
+        .prepare(
+          "SELECT device_identity AS deviceIdentity,matched FROM platform_installation_receipts"
+        )
+        .all()
+    ).toEqual([{ deviceIdentity: "CTRL1", matched: 1 }]);
     expect(database.prepare("SELECT code FROM sensors").all()).toEqual([{ code: "TEMP1" }]);
     expect(
       database

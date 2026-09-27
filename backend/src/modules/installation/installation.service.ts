@@ -333,18 +333,12 @@ export class InstallationService {
              ) VALUES(?,?,?,?,1,?)`
           )
           .run(installation.id, latest.id, deviceIdentity, latest.checksum, now);
-        this.event(
-          installation.id,
-          latest.id,
-          "DEVICE_RECEIPT_MATCHED",
-          binding.hardwareUid,
-          {
-            revision: latest.revision,
-            device_identity: deviceIdentity,
-            platform_binding_id: binding.platformBindingId,
-            automated: true,
-          }
-        );
+        this.event(installation.id, latest.id, "DEVICE_RECEIPT_MATCHED", binding.hardwareUid, {
+          revision: latest.revision,
+          device_identity: deviceIdentity,
+          platform_binding_id: binding.platformBindingId,
+          automated: true,
+        });
       }
 
       this.materialize(installation);
@@ -355,17 +349,11 @@ export class InstallationService {
         .prepare("UPDATE platform_installations SET active_revision_id=? WHERE id=?")
         .run(latest.id, installation.id);
       this.setStatus(installation.id, "CONFIG_ACTIVE");
-      this.event(
-        installation.id,
-        latest.id,
-        "INSTALLATION_PROVISIONING_ACTIVATED",
-        actor,
-        {
-          revision: latest.revision,
-          checksum: latest.checksum,
-          devices: expectedDevices,
-        }
-      );
+      this.event(installation.id, latest.id, "INSTALLATION_PROVISIONING_ACTIVATED", actor, {
+        revision: latest.revision,
+        checksum: latest.checksum,
+        devices: expectedDevices,
+      });
       return this.get(uuid);
     })();
   }

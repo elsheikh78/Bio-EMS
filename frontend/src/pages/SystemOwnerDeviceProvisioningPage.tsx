@@ -146,8 +146,9 @@ export function SystemOwnerDeviceProvisioningPage() {
       ...device,
     })),
   );
-  const effectiveTarget = targetOptions.find((item) => item.key === selectedTarget)
-    ?? (targetOptions.length === 1 ? targetOptions[0] : undefined);
+  const effectiveTarget =
+    targetOptions.find((item) => item.key === selectedTarget) ??
+    (targetOptions.length === 1 ? targetOptions[0] : undefined);
 
   const serviceReady =
     health.data?.status === "UP" &&

@@ -65,8 +65,7 @@ function requireProvisioningTarget(installationUuid: string, deviceId: string) {
        ORDER BY revision DESC LIMIT 1`
     )
     .get(installation.id) as
-    | { id: number; revision: number; checksum: string; snapshotJson: string }
-    | undefined;
+    { id: number; revision: number; checksum: string; snapshotJson: string } | undefined;
   if (!revision)
     throw new AppError("Installation revision not found", 409, "INSTALLATION_REVISION_REQUIRED");
 
@@ -228,26 +227,16 @@ export const flashAndBindInstallationDevice = asyncHandler(
       );
     }
 
-    recordEvent(
-      target.installation.id,
-      target.revision.id,
-      "DEVICE_FIRMWARE_FLASHED",
-      actor,
-      {
-        revision: target.revision.revision,
-        device_identity: deviceId,
-        port: flashed.port,
-        firmware_version: flashed.firmwareVersion,
-        protocol_version: flashed.protocolVersion,
-        binding_schema_version: flashed.bindingSchemaVersion,
-      }
-    );
+    recordEvent(target.installation.id, target.revision.id, "DEVICE_FIRMWARE_FLASHED", actor, {
+      revision: target.revision.revision,
+      device_identity: deviceId,
+      port: flashed.port,
+      firmware_version: flashed.firmwareVersion,
+      protocol_version: flashed.protocolVersion,
+      binding_schema_version: flashed.bindingSchemaVersion,
+    });
 
-    const bootstrap = devicePairingService.issuePairingCode(
-      installationId,
-      deviceId,
-      actor
-    );
+    const bootstrap = devicePairingService.issuePairingCode(installationId, deviceId, actor);
     const provisioned = await deviceProvisioningLocalClient.provision(port, {
       wifiSsid: String(request.body.wifiSsid),
       wifiPassword: String(request.body.wifiPassword),
@@ -271,8 +260,7 @@ export const flashAndBindInstallationDevice = asyncHandler(
     const verified = bindings.find(
       (binding) =>
         binding.deviceId === deviceId &&
-        binding.platformBindingId.toLowerCase() ===
-          provisioned.platformBindingId.toLowerCase() &&
+        binding.platformBindingId.toLowerCase() === provisioned.platformBindingId.toLowerCase() &&
         binding.hardwareUid === provisioned.hardwareUid
     );
     if (!verified) {

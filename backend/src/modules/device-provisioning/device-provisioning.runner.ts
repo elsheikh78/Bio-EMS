@@ -332,5 +332,4 @@ export class LocalProvisioningRunner {
       toolOutput: redactProvisioningOutput(output, [input.wifiPassword, input.pairingCode]),
     };
   }
-
 }

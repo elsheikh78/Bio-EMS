@@ -200,8 +200,7 @@ describe("LocalProvisioningRunner", () => {
   it("provisions over the fixed serial helper without exposing bootstrap secrets in arguments or evidence", async () => {
     const { root, esptoolPath } = workspace();
     let captured:
-      | { executable: string; args: string[]; env: NodeJS.ProcessEnv | undefined }
-      | undefined;
+      { executable: string; args: string[]; env: NodeJS.ProcessEnv | undefined } | undefined;
     const runner = new LocalProvisioningRunner(
       { applicationRoot: root, esptoolPath },
       async (executable, args, options) => {
@@ -245,5 +244,4 @@ describe("LocalProvisioningRunner", () => {
     expect(result.toolOutput).not.toContain("secret-pass");
     expect(result.toolOutput).not.toContain("123456789012");
   });
-
 });

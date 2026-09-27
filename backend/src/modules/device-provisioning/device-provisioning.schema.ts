@@ -27,24 +27,27 @@ const platformUrlSchema = z
   .trim()
   .min(1)
   .max(191)
-  .refine((value) => {
-    try {
-      const url = new URL(value);
-      return (
-        url.protocol === "https:" &&
-        !url.username &&
-        !url.password &&
-        !url.search &&
-        !url.hash &&
-        (url.pathname === "/" || url.pathname === "") &&
-        !["localhost", "127.0.0.1", "::1"].includes(url.hostname.toLowerCase())
-      );
-    } catch {
-      return false;
+  .refine(
+    (value) => {
+      try {
+        const url = new URL(value);
+        return (
+          url.protocol === "https:" &&
+          !url.username &&
+          !url.password &&
+          !url.search &&
+          !url.hash &&
+          (url.pathname === "/" || url.pathname === "") &&
+          !["localhost", "127.0.0.1", "::1"].includes(url.hostname.toLowerCase())
+        );
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: "Platform URL must be a LAN-reachable HTTPS origin",
     }
-  }, {
-    message: "Platform URL must be a LAN-reachable HTTPS origin",
-  });
+  );
 
 export const deviceProvisioningDetectSchema = z
   .object({
