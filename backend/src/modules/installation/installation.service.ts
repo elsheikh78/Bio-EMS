@@ -29,6 +29,18 @@ type InstallationRow = {
   status: InstallationStatus;
   active_revision_id: number | null;
 };
+type InstallationListRow = {
+  id: number;
+  uuid: string;
+  customerId: number;
+  customerName: string;
+  status: InstallationStatus;
+  activeRevisionId: number | null;
+  createdAt: string;
+  updatedAt: string;
+  latestRevision: number;
+  snapshotJson: string;
+};
 
 export class InstallationService {
   constructor(private readonly database: Database.Database = sqlite) {}
@@ -43,9 +55,7 @@ export class InstallationService {
       (SELECT snapshot_json FROM platform_installation_revisions r WHERE r.installation_id=i.id ORDER BY revision DESC LIMIT 1) AS snapshotJson
       FROM platform_installations i JOIN platform_customers c ON c.id=i.customer_id ${where} ORDER BY i.id DESC`
       )
-      .all(...(customerId ? [customerId] : [])) as Array<
-      Record<string, unknown> & { snapshotJson: string }
-    >;
+      .all(...(customerId ? [customerId] : [])) as InstallationListRow[];
     return rows.map(({ snapshotJson, ...row }) => {
       const latestSnapshot = JSON.parse(snapshotJson) as InstallationSnapshot;
       return { ...row, latestSnapshot, summary: summarize(latestSnapshot) };
