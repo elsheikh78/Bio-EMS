@@ -6,11 +6,10 @@ import {
   CardContent,
   CircularProgress,
   Container,
-  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   useCreateInstallation,
@@ -22,6 +21,7 @@ import {
 } from "../installations/queries";
 import { useLocalization } from "../localization/useLocalization";
 import type { DevicePairingCodeResponse } from "../installations/contracts";
+import { InstallationBuilder } from "../installations/InstallationBuilder";
 
 const copy = {
   en: {
@@ -197,72 +197,12 @@ export function SystemOwnerInstallationsPage() {
   const issuePairing = useIssueDevicePairingCode();
   const [pairingResult, setPairingResult] =
     useState<DevicePairingCodeResponse | null>(null);
-  const [area, setArea] = useState("");
-  const [telemetry, setTelemetry] = useState("");
-  const [type, setType] = useState("TEMPERATURE");
-  const [unit, setUnit] = useState("°C");
-  const [device, setDevice] = useState("");
-  const [channel, setChannel] = useState("1");
   const [editing, setEditing] = useState<{ uuid: string; json: string } | null>(
     null,
   );
   const [reason, setReason] = useState("");
   const [review, setReview] = useState(false);
   const [revisionError, setRevisionError] = useState(false);
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!installationContext.data) return;
-    const installed = installationContext.data;
-    await create.mutateAsync({
-      customerId: installed.customer.id,
-      snapshot: {
-        companyName: installed.customer.name,
-        sites: [
-          {
-            code: installed.site.code,
-            name: installed.site.name,
-            ...(installed.site.location ? { location: installed.site.location } : {}),
-            timezone: installed.site.timezone ?? "Africa/Cairo",
-            areas: [
-              {
-                code: area,
-                name: area,
-                telemetries: [
-                  {
-                    code: telemetry,
-                    name: telemetry,
-                    type,
-                    unit,
-                    warningDelaySeconds: 0,
-                    criticalDelaySeconds: 0,
-                    calibrationOffset: 0,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        devices: [
-          {
-            deviceId: device,
-            siteCode: installed.site.code,
-            type: "zone-controller",
-            protocol: "mqtt",
-            manufacturer: "BIO-EMS",
-            model: "BIO-EMS-SC-V1",
-            firmwareVersion: "0.1.0-pilot.1",
-            mappings: [
-              {
-                areaCode: area,
-                telemetryCode: telemetry,
-                channel: Number(channel),
-              },
-            ],
-          },
-        ],
-      },
-    });
-  };
   const nextAction = (status: string) =>
     status === "DRAFT"
       ? "validate"
@@ -324,113 +264,34 @@ export function SystemOwnerInstallationsPage() {
       ) : null}
       <Card variant="outlined" sx={{ mb: 3 }}>
         <CardContent>
-          <Typography component="h2" variant="h6">
+          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             {text.draft}
           </Typography>
-          <Typography sx={{ fontWeight: 700, mt: 2 }}>
-            {text.installedIdentity}
-          </Typography>
-          <Typography color="text.secondary" variant="body2" sx={{ mb: 2 }}>
-            {text.identityHelp}
-          </Typography>
-          {installationContext.isError ? (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {text.identityError}
-            </Alert>
+          {installationContext.isPending ? (
+            <Box
+              role="status"
+              sx={{ alignItems: "center", display: "flex", gap: 2 }}
+            >
+              <CircularProgress size={24} />
+              <Typography>{text.loading}</Typography>
+            </Box>
           ) : null}
-          <Box
-            component="form"
-            onSubmit={(e) => void submit(e)}
-            sx={{
-              display: "grid",
-              gap: 2,
-              mt: 2,
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3,1fr)" },
-            }}
-          >
-            <TextField
-              label={text.customer}
-              value={
-                installationContext.data
-                  ? `${installationContext.data.customer.name} (${installationContext.data.customer.code})`
-                  : ""
-              }
-              InputProps={{ readOnly: true }}
+          {installationContext.isError ? (
+            <Alert severity="error">{text.identityError}</Alert>
+          ) : null}
+          {installationContext.data ? (
+            <InstallationBuilder
+              context={installationContext.data}
+              language={language}
+              submitting={create.isPending}
+              onSubmit={async (snapshot) => {
+                await create.mutateAsync({
+                  customerId: installationContext.data.customer.id,
+                  snapshot,
+                });
+              }}
             />
-            <TextField
-              label={text.company}
-              value={installationContext.data?.customer.name ?? ""}
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              label={text.site}
-              value={
-                installationContext.data
-                  ? `${installationContext.data.site.name} (${installationContext.data.site.code})`
-                  : ""
-              }
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              required
-              label={text.area}
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.telemetry}
-              value={telemetry}
-              onChange={(e) => setTelemetry(e.target.value)}
-            />
-            <TextField
-              select
-              label={text.type}
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-            >
-              {(
-                [
-                  "TEMPERATURE",
-                  "HUMIDITY",
-                  "PRESSURE",
-                  "CO2",
-                  "DOOR",
-                  "OTHER",
-                ] as const
-              ).map((x) => (
-                <MenuItem key={x} value={x}>
-                  {text.telemetryTypes[x]}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              required
-              label={text.unit}
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.device}
-              value={device}
-              onChange={(e) => setDevice(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.channel}
-              type="number"
-              value={channel}
-              onChange={(e) => setChannel(e.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={create.isPending || installationContext.isPending || !installationContext.data}
-            >
-              {text.create}
-            </Button>
-          </Box>
+          ) : null}
           {create.isError ? (
             <Alert severity="error" sx={{ mt: 2 }}>
               {text.error}
