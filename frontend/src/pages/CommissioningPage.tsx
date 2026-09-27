@@ -16,7 +16,6 @@ import {
   TableHead,
   TableRow,
   TableContainer,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -27,26 +26,30 @@ import { useSites } from "../monitoredAreas/queries";
 
 const copy = {
   en: {
-    eyebrow: "Pilot evidence",
-    title: "Commissioning",
+    eyebrow: "Site acceptance",
+    title: "Commissioning & Acceptance",
     description:
-      "Review authoritative configuration and calibration blockers before controlled field execution.",
-    acceptanceTitle: "Customer installation acceptance",
+      "Review the installed site, live device status and sensor blockers before final customer acceptance.",
+    acceptanceTitle: "Customer site acceptance",
     acceptanceDescription:
-      "This independent customer decision is enabled after SYSTEM_OWNER technical commissioning.",
-    installationId: "Installation UUID",
-    accept: "Accept",
-    reject: "Reject",
+      "BIO-EMS resolves the installation automatically from the selected Site. No installation identifier needs to be entered.",
+    noInstallation: "No installation is currently associated with this Site.",
+    lifecycle: "Installation status",
+    technical: "Technical commissioning",
+    technicalPassed: "Completed by BIO-EMS",
+    technicalPending: "Not completed yet",
+    accept: "Accept installation",
+    reject: "Reject / report issue",
     accepted: "Installation accepted.",
-    rejected: "Installation rejected.",
+    rejected: "Installation rejected and correction is required.",
     acceptanceError: "The installation decision could not be recorded.",
+    acceptanceLocked:
+      "Customer acceptance opens after technical commissioning. Acceptance also requires all current commissioning blockers to be cleared.",
     site: "Site",
     refresh: "Refresh",
     loadError: "Unable to load commissioning readiness.",
-    ready:
-      "Software configuration prerequisites are ready. Physical evidence is still required.",
-    blocked: (count: number) =>
-      `${count} Sensor(s) have blocking prerequisites.`,
+    ready: "Site evidence is ready for customer acceptance.",
+    blocked: (count: number) => `${count} commissioning blocker(s) remain.`,
     tableLabel: "Commissioning readiness",
     sensor: "Sensor",
     area: "Area",
@@ -58,30 +61,39 @@ const copy = {
     loading: "Loading commissioning readiness",
     noSites: "No Sites are available for commissioning review.",
     totalSensors: "Total Sensors",
-    readySensors: "Ready",
-    blockedSensors: "Blocked",
+    readySensors: "Ready Sensors",
+    blockedSensors: "Blocked Sensors",
+    devicesOnline: "Devices Online",
+    deviceEvidence: "Device communication evidence",
+    lastSeen: "Last seen",
+    never: "Never",
   },
   ar: {
-    eyebrow: "أدلة المشروع التجريبي",
-    title: "التشغيل المبدئي",
+    eyebrow: "استلام الموقع",
+    title: "التشغيل والاستلام",
     description:
-      "راجع التهيئة المعتمدة وعوائق المعايرة قبل التنفيذ الميداني المحكوم.",
-    acceptanceTitle: "قبول العميل للتركيب",
+      "راجع حالة الموقع والأجهزة والحساسات والعوائق الفعلية قبل الاستلام النهائي من العميل.",
+    acceptanceTitle: "استلام العميل للموقع",
     acceptanceDescription:
-      "يصبح قرار العميل المستقل متاحاً بعد اعتماد التشغيل الفني من مالك النظام.",
-    installationId: "المعرّف الفريد للتركيب",
-    accept: "قبول",
-    reject: "رفض",
+      "يحدد BIO-EMS التركيب تلقائياً من الموقع المختار، ولا يحتاج العميل إلى إدخال أي Installation UUID.",
+    noInstallation: "لا يوجد تركيب مرتبط بهذا الموقع حالياً.",
+    lifecycle: "حالة التركيب",
+    technical: "التشغيل الفني",
+    technicalPassed: "تم اعتماده بواسطة BIO-EMS",
+    technicalPending: "لم يكتمل بعد",
+    accept: "قبول التركيب",
+    reject: "رفض / تسجيل مشكلة",
     accepted: "تم قبول التركيب.",
-    rejected: "تم رفض التركيب.",
-    acceptanceError: "تعذر تسجيل قرار التركيب.",
+    rejected: "تم رفض التركيب ويجب تنفيذ التصحيح.",
+    acceptanceError: "تعذر تسجيل قرار الاستلام.",
+    acceptanceLocked:
+      "يتاح استلام العميل بعد إتمام التشغيل الفني. كما يتطلب القبول عدم وجود أي عوائق تشغيل حالية.",
     site: "الموقع",
     refresh: "تحديث",
-    loadError: "تعذر تحميل جاهزية التشغيل المبدئي.",
-    ready:
-      "متطلبات تهيئة البرنامج جاهزة، وما زالت الأدلة المادية الفعلية مطلوبة.",
-    blocked: (count: number) => `يوجد ${count} حساساً لديه متطلبات مانعة.`,
-    tableLabel: "جاهزية التشغيل المبدئي",
+    loadError: "تعذر تحميل جاهزية التشغيل والاستلام.",
+    ready: "أدلة الموقع جاهزة لاستلام العميل.",
+    blocked: (count: number) => `ما زال هناك ${count} عائق تشغيل.`,
+    tableLabel: "جاهزية التشغيل والاستلام",
     sensor: "الحساس",
     area: "المنطقة",
     deviceChannel: "الجهاز / القناة",
@@ -89,11 +101,15 @@ const copy = {
     blockers: "العوائق",
     readyStatus: "جاهز",
     blockedStatus: "محجوب",
-    loading: "جارٍ تحميل جاهزية التشغيل المبدئي",
-    noSites: "لا توجد مواقع متاحة لمراجعة التشغيل المبدئي.",
+    loading: "جارٍ تحميل جاهزية التشغيل والاستلام",
+    noSites: "لا توجد مواقع متاحة لمراجعة التشغيل والاستلام.",
     totalSensors: "إجمالي الحساسات",
-    readySensors: "الجاهزة",
-    blockedSensors: "المحجوبة",
+    readySensors: "الحساسات الجاهزة",
+    blockedSensors: "الحساسات المحجوبة",
+    devicesOnline: "الأجهزة المتصلة",
+    deviceEvidence: "أدلة اتصال الأجهزة",
+    lastSeen: "آخر اتصال",
+    never: "لم يتصل",
   },
 } as const;
 
@@ -103,7 +119,17 @@ type Readiness = {
     totalSensors: number;
     readySensors: number;
     blockedSensors: number;
+    totalDevices: number;
+    onlineDevices: number;
+    blockedDevices: number;
   };
+  devices: Array<{
+    deviceId: string;
+    communicationStatus: string;
+    lastSeenAt: string | null;
+    ready: boolean;
+    blockers: string[];
+  }>;
   items: Array<{
     sensorId: number;
     sensorCode: string;
@@ -115,23 +141,87 @@ type Readiness = {
   }>;
 };
 
+type AcceptanceState = {
+  siteId: number;
+  siteCode: string;
+  siteName: string;
+  installation: null | {
+    uuid: string;
+    status: string;
+    latestRevision: number;
+    acceptanceEnabled: boolean;
+    technicalCommissioning: null | {
+      decision: string;
+      decidedAt: string;
+    };
+    customerAcceptance: null | {
+      decision: string;
+      decidedAt: string;
+    };
+  };
+};
+
 export function CommissioningPage() {
   const { language } = useLocalization();
   const text = copy[language];
   const { protectedRequest, user } = useAuthentication();
   const sites = useSites();
   const [selectedSiteId, setSelectedSiteId] = useState<number>();
-  const [installationId, setInstallationId] = useState("");
   const [acceptanceResult, setAcceptanceResult] = useState<
     "accepted" | "rejected" | "error"
   >();
   const siteId = selectedSiteId ?? sites.data?.[0]?.id;
+
   const readiness = useQuery({
     queryKey: ["commissioning", "readiness", siteId],
     queryFn: () =>
       protectedRequest<Readiness>(`/sites/${siteId}/commissioning-readiness`),
     enabled: Boolean(siteId),
   });
+
+  const acceptance = useQuery({
+    queryKey: ["commissioning", "acceptance-state", siteId],
+    queryFn: () =>
+      protectedRequest<AcceptanceState>(
+        `/installations/site/${siteId}/acceptance-state`,
+      ),
+    enabled: Boolean(siteId),
+  });
+
+  const installation = acceptance.data?.installation ?? null;
+  const technicalPassed =
+    installation?.technicalCommissioning?.decision === "ACCEPT";
+  const acceptanceStageOpen =
+    installation?.status === "CUSTOMER_ACCEPTANCE_PENDING" && technicalPassed;
+  const canAccept = Boolean(
+    user?.role === "ADMIN" && acceptanceStageOpen && readiness.data?.ready,
+  );
+  const canReject = Boolean(user?.role === "ADMIN" && acceptanceStageOpen);
+  const blockerCount =
+    (readiness.data?.summary.blockedSensors ?? 0) +
+    (readiness.data?.summary.blockedDevices ?? 0);
+
+  const decide = async (decision: "ACCEPT" | "REJECT") => {
+    if (!installation) return;
+    setAcceptanceResult(undefined);
+    try {
+      await protectedRequest(`/installations/${installation.uuid}/acceptance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          decision,
+          note:
+            decision === "ACCEPT"
+              ? "Customer ADMIN site acceptance"
+              : "Customer ADMIN rejected site acceptance",
+        }),
+      });
+      setAcceptanceResult(decision === "ACCEPT" ? "accepted" : "rejected");
+      await Promise.all([acceptance.refetch(), readiness.refetch()]);
+    } catch {
+      setAcceptanceResult("error");
+    }
+  };
 
   return (
     <Stack spacing={3}>
@@ -144,68 +234,7 @@ export function CommissioningPage() {
         </Typography>
         <Typography color="text.secondary">{text.description}</Typography>
       </Box>
-      {user?.role === "ADMIN" ? (
-        <Paper variant="outlined" sx={{ p: 2 }}>
-          <Typography component="h2" variant="h6">
-            {text.acceptanceTitle}
-          </Typography>
-          <Typography color="text.secondary">
-            {text.acceptanceDescription}
-          </Typography>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            sx={{ mt: 2 }}
-          >
-            <TextField
-              label={text.installationId}
-              value={installationId}
-              onChange={(event) => setInstallationId(event.target.value)}
-              fullWidth
-            />
-            {(["ACCEPT", "REJECT"] as const).map((decision) => (
-              <Button
-                key={decision}
-                variant={decision === "ACCEPT" ? "contained" : "outlined"}
-                disabled={!installationId}
-                onClick={() =>
-                  void protectedRequest(
-                    `/installations/${installationId}/acceptance`,
-                    {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        decision,
-                        note: "Customer ADMIN decision",
-                      }),
-                    },
-                  )
-                    .then(() =>
-                      setAcceptanceResult(
-                        decision === "ACCEPT" ? "accepted" : "rejected",
-                      ),
-                    )
-                    .catch(() => setAcceptanceResult("error"))
-                }
-              >
-                {decision === "ACCEPT" ? text.accept : text.reject}
-              </Button>
-            ))}
-          </Stack>
-          {acceptanceResult ? (
-            <Alert
-              severity={acceptanceResult === "error" ? "error" : "success"}
-              sx={{ mt: 2 }}
-            >
-              {acceptanceResult === "accepted"
-                ? text.accepted
-                : acceptanceResult === "rejected"
-                  ? text.rejected
-                  : text.acceptanceError}
-            </Alert>
-          ) : null}
-        </Paper>
-      ) : null}
+
       <Paper variant="outlined" sx={{ bgcolor: "action.hover", p: 2 }}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <FormControl sx={{ minWidth: 240 }}>
@@ -214,9 +243,10 @@ export function CommissioningPage() {
               labelId="commissioning-site-label"
               label={text.site}
               value={siteId ?? ""}
-              onChange={(event) =>
-                setSelectedSiteId(Number(event.target.value))
-              }
+              onChange={(event) => {
+                setSelectedSiteId(Number(event.target.value));
+                setAcceptanceResult(undefined);
+              }}
             >
               {(sites.data ?? []).map((site) => (
                 <MenuItem key={site.id} value={site.id}>
@@ -227,14 +257,18 @@ export function CommissioningPage() {
           </FormControl>
           <Button
             variant="outlined"
-            onClick={() => void readiness.refetch()}
-            disabled={!siteId || readiness.isFetching}
+            onClick={() => {
+              void readiness.refetch();
+              void acceptance.refetch();
+            }}
+            disabled={!siteId || readiness.isFetching || acceptance.isFetching}
           >
             {text.refresh}
           </Button>
         </Stack>
       </Paper>
-      {sites.isPending || readiness.isPending ? (
+
+      {sites.isPending || readiness.isPending || acceptance.isPending ? (
         <Box
           role="status"
           sx={{ alignItems: "center", display: "flex", gap: 2 }}
@@ -243,12 +277,14 @@ export function CommissioningPage() {
           <Typography>{text.loading}</Typography>
         </Box>
       ) : null}
+
       {!sites.isPending && !sites.isError && (sites.data?.length ?? 0) === 0 ? (
         <Alert severity="info">{text.noSites}</Alert>
       ) : null}
-      {readiness.isError ? (
+      {readiness.isError || acceptance.isError ? (
         <Alert severity="error">{text.loadError}</Alert>
       ) : null}
+
       {readiness.data ? (
         <>
           <Box
@@ -257,7 +293,8 @@ export function CommissioningPage() {
               gap: 2,
               gridTemplateColumns: {
                 xs: "1fr",
-                sm: "repeat(3, minmax(0, 1fr))",
+                sm: "repeat(2, minmax(0, 1fr))",
+                lg: "repeat(4, minmax(0, 1fr))",
               },
             }}
           >
@@ -276,6 +313,13 @@ export function CommissioningPage() {
                 text.blockedSensors,
                 readiness.data.summary.blockedSensors,
                 "warning.main",
+              ],
+              [
+                text.devicesOnline,
+                `${readiness.data.summary.onlineDevices}/${readiness.data.summary.totalDevices}`,
+                readiness.data.summary.blockedDevices === 0
+                  ? "success.main"
+                  : "warning.main",
               ],
             ].map(([label, value, color]) => (
               <Paper
@@ -303,11 +347,30 @@ export function CommissioningPage() {
               </Paper>
             ))}
           </Box>
+
           <Alert severity={readiness.data.ready ? "success" : "warning"}>
-            {readiness.data.ready
-              ? text.ready
-              : text.blocked(readiness.data.summary.blockedSensors)}
+            {readiness.data.ready ? text.ready : text.blocked(blockerCount)}
           </Alert>
+
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography component="h2" variant="h6" sx={{ mb: 1 }}>
+              {text.deviceEvidence}
+            </Typography>
+            <Stack direction="row" flexWrap="wrap" gap={1}>
+              {readiness.data.devices.map((device) => (
+                <Chip
+                  key={device.deviceId}
+                  color={device.ready ? "success" : "warning"}
+                  label={`${device.deviceId}: ${device.communicationStatus} · ${text.lastSeen}: ${
+                    device.lastSeenAt
+                      ? new Date(device.lastSeenAt).toLocaleString()
+                      : text.never
+                  }`}
+                />
+              ))}
+            </Stack>
+          </Paper>
+
           <TableContainer component={Paper} variant="outlined">
             <Table size="small" aria-label={text.tableLabel}>
               <TableHead>
@@ -343,6 +406,83 @@ export function CommissioningPage() {
             </Table>
           </TableContainer>
         </>
+      ) : null}
+
+      {user?.role === "ADMIN" ? (
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography component="h2" variant="h6">
+            {text.acceptanceTitle}
+          </Typography>
+          <Typography color="text.secondary">
+            {text.acceptanceDescription}
+          </Typography>
+
+          {!installation ? (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {text.noInstallation}
+            </Alert>
+          ) : (
+            <Stack spacing={2} sx={{ mt: 2 }}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Chip
+                  label={`${text.lifecycle}: ${installation.status}`}
+                  color={
+                    installation.status === "COMMISSIONED"
+                      ? "success"
+                      : installation.status === "CORRECTION_REQUIRED"
+                        ? "warning"
+                        : "default"
+                  }
+                />
+                <Chip
+                  label={`${text.technical}: ${
+                    technicalPassed
+                      ? text.technicalPassed
+                      : text.technicalPending
+                  }`}
+                  color={technicalPassed ? "success" : "default"}
+                />
+              </Stack>
+
+              {!acceptanceStageOpen &&
+              installation.status !== "COMMISSIONED" &&
+              installation.status !== "CORRECTION_REQUIRED" ? (
+                <Alert severity="info">{text.acceptanceLocked}</Alert>
+              ) : null}
+
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Button
+                  variant="contained"
+                  disabled={!canAccept}
+                  onClick={() => void decide("ACCEPT")}
+                >
+                  {text.accept}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  disabled={!canReject}
+                  onClick={() => void decide("REJECT")}
+                >
+                  {text.reject}
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+
+          {acceptanceResult ? (
+            <Alert
+              severity={acceptanceResult === "error" ? "error" : "success"}
+              sx={{ mt: 2 }}
+            >
+              {acceptanceResult === "accepted"
+                ? text.accepted
+                : acceptanceResult === "rejected"
+                  ? text.rejected
+                  : text.acceptanceError}
+            </Alert>
+          ) : null}
+        </Paper>
       ) : null}
     </Stack>
   );
