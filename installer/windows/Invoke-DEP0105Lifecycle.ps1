@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 $application = [IO.Path]::GetFullPath($ApplicationRoot)
 $persistent = [IO.Path]::GetFullPath($PersistentRoot)
-$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
+$services = @("BIOEMS-RestoreWorker", "BIOEMS-Backend", "BIOEMS-Provisioner", "BIOEMS-InfluxDB", "BIOEMS-MQTT")
 $pointer = Join-Path $persistent "logs\pending-lifecycle.json"
 
 function Invoke-Robocopy([string]$source, [string]$destination) {
@@ -183,6 +183,111 @@ function Repair-BackendIdentityProvisioning {
     $settings.Encoding = New-Object Text.UTF8Encoding($false)
     $writer = [Xml.XmlWriter]::Create($xmlPath, $settings)
     try { $definition.Save($writer) } finally { $writer.Dispose() }
+}
+function New-DeviceProvisionerToken {
+    $bytes = New-Object byte[] 32
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }
+    return ([BitConverter]::ToString($bytes) -replace "-", "").ToLowerInvariant()
+}
+function Get-BackendEnvironmentValue([string]$path, [string]$name) {
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $null }
+    $prefix = "$name="
+    foreach ($line in [IO.File]::ReadAllLines($path)) {
+        if ($line.StartsWith($prefix, [StringComparison]::Ordinal)) {
+            return $line.Substring($prefix.Length)
+        }
+    }
+    return $null
+}
+function Ensure-BackendEnvironmentValue([string]$path, [string]$name, [string]$value) {
+    $current = Get-BackendEnvironmentValue $path $name
+    if ($null -ne $current) {
+        if ($current -ne $value) { throw "Existing $name conflicts with the controlled Device Provisioner value" }
+        return
+    }
+    [IO.File]::AppendAllText($path, "`r`n$name=$value", (New-Object Text.UTF8Encoding($false)))
+}
+function Ensure-DeviceProvisionerService {
+    $servicesRoot = Join-Path $application "services"
+    $configRoot = Join-Path $persistent "config"
+    $backendEnv = Join-Path $configRoot "backend.env"
+    Grant-LifecycleAdministratorAccess $servicesRoot
+    Grant-LifecycleAdministratorAccess $configRoot
+    if (-not (Test-Path -LiteralPath $backendEnv -PathType Leaf)) {
+        throw "Backend environment file is missing during Device Provisioner repair"
+    }
+    Grant-LifecycleFileReadAccess $backendEnv
+
+    $provisionerUrl = "http://127.0.0.1:9444"
+    $existingUrl = Get-BackendEnvironmentValue $backendEnv "BIOEMS_PROVISIONER_URL"
+    if ($existingUrl -and $existingUrl -ne $provisionerUrl) {
+        throw "Existing Device Provisioner URL is not the controlled loopback endpoint"
+    }
+    if (-not $existingUrl) {
+        [IO.File]::AppendAllText($backendEnv, "`r`nBIOEMS_PROVISIONER_URL=$provisionerUrl", (New-Object Text.UTF8Encoding($false)))
+    }
+
+    $token = Get-BackendEnvironmentValue $backendEnv "BIOEMS_PROVISIONER_TOKEN"
+    if (-not $token) {
+        $token = New-DeviceProvisionerToken
+        [IO.File]::AppendAllText($backendEnv, "`r`nBIOEMS_PROVISIONER_TOKEN=$token", (New-Object Text.UTF8Encoding($false)))
+    }
+    if ($token.Length -lt 32 -or $token -notmatch "^[a-f0-9]+$") {
+        throw "Existing Device Provisioner token does not satisfy the controlled contract"
+    }
+
+    $wrapper = Join-Path $servicesRoot "BIOEMS-Provisioner.exe"
+    $definitionPath = Join-Path $servicesRoot "BIOEMS-Provisioner.xml"
+    $wrapperSources = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\service-wrapper") -Filter "WinSW-x64.exe" -File -Recurse)
+    if ($wrapperSources.Count -ne 1) { throw "Repair expected exactly one controlled WinSW executable for Device Provisioner" }
+    Copy-Item -LiteralPath $wrapperSources[0].FullName -Destination $wrapper -Force
+
+    $node = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\node") -Filter "node.exe" -File -Recurse)
+    if ($node.Count -ne 1) { throw "Repair expected exactly one controlled Node.js executable for Device Provisioner" }
+    $esptools = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\esptool") -Filter "esptool.exe" -File -Recurse)
+    if ($esptools.Count -ne 1) { throw "Repair expected exactly one controlled esptool executable" }
+    $firmwareManifest = Join-Path $application "firmware\site-controller\manifest.json"
+    if (-not (Test-Path -LiteralPath $firmwareManifest -PathType Leaf)) { throw "Governed ESP32-S3 firmware manifest is missing during Repair" }
+    $provisionerScript = Join-Path $application "backend\dist\src\scripts\start-device-provisioner.js"
+    if (-not (Test-Path -LiteralPath $provisionerScript -PathType Leaf)) { throw "Device Provisioner service script is missing during Repair" }
+
+    $settings = New-Object Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.OmitXmlDeclaration = $true
+    $builder = New-Object Text.StringBuilder
+    $writer = [Xml.XmlWriter]::Create($builder, $settings)
+    $writer.WriteStartElement("service")
+    foreach ($entry in @(
+        @("id", "BIOEMS-Provisioner"), @("name", "BIOEMS-Provisioner"),
+        @("description", "BIO-EMS controlled ESP32-S3 device provisioner"),
+        @("executable", $node[0].FullName), @("arguments", "`"$provisionerScript`""),
+        @("startmode", "Automatic"), @("delayedAutoStart", "true"),
+        @("stoptimeout", "30 sec"), @("logpath", (Join-Path $persistent "logs\provisioner-service"))
+    )) { $writer.WriteElementString($entry[0], $entry[1]) }
+    foreach ($entry in [ordered]@{
+        BIOEMS_PROVISIONER_TOKEN = $token
+        BIOEMS_APPLICATION_ROOT = $application
+        BIOEMS_PROVISIONER_ESPTOOL_PATH = $esptools[0].FullName
+        BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
+        BIOEMS_PROVISIONER_PORT = "9444"
+    }.GetEnumerator()) {
+        $writer.WriteStartElement("env")
+        $writer.WriteAttributeString("name", $entry.Key)
+        $writer.WriteAttributeString("value", $entry.Value)
+        $writer.WriteEndElement()
+    }
+    $writer.WriteStartElement("log"); $writer.WriteAttributeString("mode", "roll"); $writer.WriteEndElement()
+    $writer.WriteStartElement("onfailure"); $writer.WriteAttributeString("action", "restart"); $writer.WriteAttributeString("delay", "10 sec"); $writer.WriteEndElement()
+    $writer.WriteEndElement(); $writer.Dispose()
+    [IO.File]::WriteAllText($definitionPath, $builder.ToString(), (New-Object Text.UTF8Encoding($false)))
+
+    if (-not (Get-Service -Name "BIOEMS-Provisioner" -ErrorAction SilentlyContinue)) {
+        & $wrapper install
+        if ($LASTEXITCODE -ne 0) { throw "Device Provisioner service installation failed during Repair" }
+    }
+    & sc.exe config "BIOEMS-Provisioner" obj= "LocalSystem" start= "delayed-auto" | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Device Provisioner service configuration failed during Repair" }
 }
 function Ensure-RestoreWorkerService {
     $servicesRoot = Join-Path $application "services"
@@ -415,6 +520,7 @@ if ($Mode -eq "PostUpdate") {
     if (-not $backup.StartsWith((Join-Path $persistent "backups"), [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path (Join-Path $backup "backup-manifest.json"))) { throw "Lifecycle backup is invalid" }
     try {
         Repair-BackendIdentityProvisioning
+        Ensure-DeviceProvisionerService
         Ensure-RestoreWorkerService
         $startOrder = @($services)
         [array]::Reverse($startOrder)
