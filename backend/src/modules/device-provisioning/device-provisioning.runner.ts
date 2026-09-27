@@ -86,89 +86,9 @@ function inferChip(output: string): string | null {
 }
 
 function provisioningField(output: string, label: string, pattern: string): string {
-  const match = output.match(new RegExp(`^\\s*${label}:\\s*(${pattern})\\s*import { createHash } from "node:crypto";
-import { execFile } from "node:child_process";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
-import { promisify } from "node:util";
-import {
-  firmwareManifestSchema,
-  windowsSerialPortSchema,
-  type FirmwareManifest,
-} from "./device-provisioning.schema";
-
-const execFileAsync = promisify(execFile);
-
-type ProcessResult = { stdout: string; stderr: string };
-type ProcessExecutor = (
-  executable: string,
-  args: string[],
-  options: { timeout: number; maxBuffer: number; windowsHide: boolean; env?: NodeJS.ProcessEnv }
-) => Promise<ProcessResult>;
-
-export interface LocalProvisioningRunnerConfig {
-  applicationRoot: string;
-  esptoolPath: string;
-  firmwareManifestPath?: string;
-}
-
-export interface SerialPortInventoryItem {
-  port: string;
-  name: string | null;
-  pnpDeviceId: string | null;
-  manufacturer: string | null;
-}
-
-export interface SerialProvisioningInput {
-  wifiSsid: string;
-  wifiPassword: string;
-  platformUrl: string;
-  pairingCode: string;
-}
-
-function normalizedInside(root: string, candidate: string): string {
-  const canonicalRoot = realpathSync(root);
-  const canonicalCandidate = realpathSync(candidate);
-  const rel = relative(canonicalRoot, canonicalCandidate);
-  if (rel === "" || (!rel.startsWith(`..${sep}`) && rel !== ".." && !isAbsolute(rel))) {
-    return canonicalCandidate;
-  }
-  throw new Error("Controlled provisioning path escaped the BIO-EMS application root");
-}
-
-function sanitizeToolOutput(value: string): string {
-  return value.split(/\r?\n/).filter(Boolean).slice(-40).join("\n").slice(0, 8_000);
-}
-
-function sha256(path: string): string {
-  return createHash("sha256").update(readFileSync(path)).digest("hex");
-}
-
-function parsePortInventory(stdout: string): SerialPortInventoryItem[] {
-  const trimmed = stdout.trim();
-  if (!trimmed) return [];
-  const decoded = JSON.parse(trimmed) as unknown;
-  const rows = Array.isArray(decoded) ? decoded : [decoded];
-  return rows.flatMap((value) => {
-    if (!value || typeof value !== "object") return [];
-    const row = value as Record<string, unknown>;
-    const parsed = windowsSerialPortSchema.safeParse(row.port);
-    if (!parsed.success) return [];
-    const optional = (key: string) =>
-      typeof row[key] === "string" && row[key] ? String(row[key]) : null;
-    return [
-      {
-        port: parsed.data,
-        name: optional("name"),
-        pnpDeviceId: optional("pnpDeviceId"),
-        manufacturer: optional("manufacturer"),
-      },
-    ];
-  });
-}
-
-, "im"));
-  if (!match?.[1]) throw new Error(`Provisioned controller did not report ${label}`);
+  const expression = new RegExp("^\\s*" + label + ":\\s*(" + pattern + ")\\s*$", "im");
+  const match = output.match(expression);
+  if (!match?.[1]) throw new Error("Provisioned controller did not report " + label);
   return match[1];
 }
 
@@ -402,7 +322,11 @@ export class LocalProvisioningRunner {
         "platform-binding-id",
         "[0-9a-fA-F-]{36}"
       ).toLowerCase(),
-      installationId: provisioningField(output, "installation-id", "[0-9a-fA-F-]{36}").toLowerCase(),
+      installationId: provisioningField(
+        output,
+        "installation-id",
+        "[0-9a-fA-F-]{36}"
+      ).toLowerCase(),
       deviceId: provisioningField(output, "device-id", "[A-Za-z0-9_-]{1,80}"),
       siteCode: provisioningField(output, "site-code", "[A-Za-z0-9_-]{1,80}"),
       toolOutput: redactProvisioningOutput(output, [input.wifiPassword, input.pairingCode]),
