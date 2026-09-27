@@ -5,6 +5,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$VendorCache,
     [Parameter(Mandatory = $true)]
+    [string]$FirmwarePackageDirectory,
+    [Parameter(Mandatory = $true)]
     [string]$StagingDirectory,
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^[a-f0-9]{40}$')]
@@ -22,7 +24,41 @@ $fixedTimestamp = [DateTimeOffset]::Parse("2000-01-01T00:00:00Z")
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repository = [System.IO.Path]::GetFullPath($RepositoryRoot)
 $vendor = [System.IO.Path]::GetFullPath($VendorCache)
+$firmwarePackage = [System.IO.Path]::GetFullPath($FirmwarePackageDirectory)
 $staging = [System.IO.Path]::GetFullPath($StagingDirectory)
+
+$firmwareManifestPath = Join-Path $firmwarePackage "manifest.json"
+if (-not (Test-Path -LiteralPath $firmwareManifestPath -PathType Leaf)) {
+    throw "ESP32-S3 firmware package manifest is missing"
+}
+$firmwareManifest = Get-Content -LiteralPath $firmwareManifestPath -Raw | ConvertFrom-Json
+if (
+    $firmwareManifest.schemaVersion -ne 1 -or
+    $firmwareManifest.target -ne "esp32s3" -or
+    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.1" -or
+    $firmwareManifest.protocolVersion -ne "1.3" -or
+    $firmwareManifest.bindingSchemaVersion -ne 1 -or
+    -not $firmwareManifest.segments -or
+    $firmwareManifest.segments.Count -lt 1
+) {
+    throw "ESP32-S3 firmware package manifest does not match the Pilot contract"
+}
+foreach ($segment in $firmwareManifest.segments) {
+    if (
+        $segment.file -notmatch '^[a-zA-Z0-9._-]+$' -or
+        $segment.sha256 -notmatch '^[a-f0-9]{64}$'
+    ) {
+        throw "ESP32-S3 firmware package contains an invalid segment entry"
+    }
+    $segmentPath = Join-Path $firmwarePackage $segment.file
+    if (-not (Test-Path -LiteralPath $segmentPath -PathType Leaf)) {
+        throw "ESP32-S3 firmware package segment is missing"
+    }
+    $segmentHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $segmentPath).Hash.ToLowerInvariant()
+    if ($segmentHash -ne $segment.sha256) {
+        throw "ESP32-S3 firmware package segment checksum mismatch"
+    }
+}
 
 if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
     $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
@@ -129,11 +165,13 @@ $frontendStage = Join-Path $staging "work\frontend"
 Copy-Item (Join-Path $repository "frontend\dist") $frontendStage -Recurse
 New-DeterministicZip $backendStage (Join-Path $staging "payload\backend.zip")
 New-DeterministicZip $frontendStage (Join-Path $staging "payload\frontend.zip")
+New-DeterministicZip $firmwarePackage (Join-Path $staging "payload\firmware-site-controller.zip")
 
 $lock = Get-Content (Join-Path $scriptRoot "vendor-input-lock.json") -Raw | ConvertFrom-Json
 $artifacts = @(
     [ordered]@{ id = "backend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/backend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
-    [ordered]@{ id = "frontend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/frontend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" }
+    [ordered]@{ id = "frontend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/frontend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
+    [ordered]@{ id = "site-controller-firmware"; version = $firmwareManifest.firmwareVersion; relativePath = "payload/firmware-site-controller.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" }
 )
 if ($null -ne $ownerTrustArtifact) {
     $artifacts += $ownerTrustArtifact
