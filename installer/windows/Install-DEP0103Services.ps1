@@ -21,7 +21,7 @@ $installerLogDirectory = Join-Path $persistent "logs"
 New-Item -ItemType Directory -Path $installerLogDirectory -Force | Out-Null
 $installerDiagnosticLog = Join-Path $installerLogDirectory "service-install.log"
 Add-Content -LiteralPath $installerDiagnosticLog -Value "$(Get-Date -Format o) installer entered pilotMode=$PilotMode"
-$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")
+$serviceIds = @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Provisioner", "BIOEMS-Backend", "BIOEMS-RestoreWorker")
 $wrappers = @{}
 $firewallRuleCreated = $false
 
@@ -182,6 +182,9 @@ Invoke-Controlled "icacls.exe" @($paths.Services, "/grant:r", "BUILTIN\Administr
 $node = Find-One (Join-Path $application "runtime\node") "node.exe"
 $influxd = Find-One (Join-Path $application "runtime\influxdb") "influxd.exe"
 $winswSource = Find-One (Join-Path $application "runtime\service-wrapper") "WinSW-x64.exe"
+$esptool = Find-One (Join-Path $application "runtime\esptool") "esptool.exe"
+$firmwareManifest = Join-Path $application "firmware\site-controller\manifest.json"
+if (-not (Test-Path -LiteralPath $firmwareManifest -PathType Leaf)) { throw "Governed ESP32-S3 firmware manifest is missing" }
 $mosquittoRuntime = Join-Path $application "runtime\mosquitto"
 $mosquittoInstaller = Find-One (Join-Path $application "vendor") "mosquitto-*-install-windows-x64.exe"
 
@@ -200,6 +203,7 @@ $jwtSecret = New-Secret 48
 $platformJwtSecret = New-Secret 48
 $ownerMfaEncryptionKey = New-Secret 32
 $communicationConfigEncryptionKey = New-Secret 32
+$provisionerToken = New-Secret 48
 $tlsPassword = New-Secret 36
 $mqttPasswordFile = Join-Path $paths.Config "mosquitto.passwords"
 $mqttConfig = Join-Path $paths.Config "mosquitto.conf"
@@ -260,6 +264,16 @@ if ($ContactEmail) { $backendEnvironment.BIOEMS_INSTALLATION_CONTACT_EMAIL = $Co
 if ($ContactPhone) { $backendEnvironment.BIOEMS_INSTALLATION_CONTACT_PHONE = $ContactPhone }
 if ($PilotMode) { $backendEnvironment.BIOEMS_PILOT_MODE = "true" }
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-Backend.xml") (New-ServiceXml "BIOEMS-Backend" "powershell.exe" $backendLauncherArgs (Join-Path $paths.Logs "backend-service") @("BIOEMS-MQTT", "BIOEMS-InfluxDB") $backendEnvironment "")
+$provisionerScript = Join-Path $application "backend\dist\src\scripts\start-device-provisioner.js"
+if (-not (Test-Path -LiteralPath $provisionerScript -PathType Leaf)) { throw "Device provisioner service script is missing" }
+$provisionerEnvironment = @{
+    BIOEMS_PROVISIONER_TOKEN = $provisionerToken
+    BIOEMS_APPLICATION_ROOT = $application
+    BIOEMS_PROVISIONER_ESPTOOL_PATH = $esptool
+    BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
+    BIOEMS_PROVISIONER_PORT = "9444"
+}
+Write-Utf8 (Join-Path $paths.Services "BIOEMS-Provisioner.xml") (New-ServiceXml "BIOEMS-Provisioner" $node "`"$provisionerScript`"" (Join-Path $paths.Logs "provisioner-service") @() $provisionerEnvironment "")
 $restoreCoordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
 $restoreCoordinatorArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$restoreCoordinator`" -ApplicationRoot `"$application`" -PersistentRoot `"$persistent`""
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-RestoreWorker.xml") (New-ServiceXml "BIOEMS-RestoreWorker" "powershell.exe" $restoreCoordinatorArgs (Join-Path $paths.Logs "restore-worker-service") @() @{} "")
@@ -269,6 +283,7 @@ foreach ($serviceId in $serviceIds) {
     Invoke-Controlled "sc.exe" @("sidtype", $serviceId, "unrestricted")
     Invoke-Controlled "sc.exe" @("config", $serviceId, "obj=", "NT SERVICE\$serviceId")
 }
+Invoke-Controlled "sc.exe" @("config", "BIOEMS-Provisioner", "obj=", "LocalSystem")
 Invoke-Controlled "sc.exe" @("config", "BIOEMS-RestoreWorker", "obj=", "LocalSystem")
 Protect-Path $paths.Services "BIOEMS-Backend" "(OI)(CI)RX"
 Add-PathAccess $paths.Services "BIOEMS-MQTT" "(OI)(CI)RX"
@@ -294,6 +309,7 @@ Protect-Path $paths.Backups "BIOEMS-Backend"
 
 Start-Service "BIOEMS-MQTT"
 Start-Service "BIOEMS-InfluxDB"
+Start-Service "BIOEMS-Provisioner"
 $deadline = (Get-Date).AddSeconds(60)
 do {
     try { $health = Invoke-RestMethod -Uri "http://127.0.0.1:8086/health" -TimeoutSec 2 } catch { $health = $null }
@@ -387,6 +403,8 @@ BIOEMS_JWT_SECRET=$jwtSecret
 BIOEMS_PLATFORM_JWT_SECRET=$platformJwtSecret
 BIOEMS_OWNER_MFA_ENCRYPTION_KEY=$ownerMfaEncryptionKey
 BIOEMS_COMMUNICATION_CONFIG_ENCRYPTION_KEY=$communicationConfigEncryptionKey
+BIOEMS_PROVISIONER_URL=http://127.0.0.1:9444
+BIOEMS_PROVISIONER_TOKEN=$provisionerToken
 BIOEMS_CORS_ALLOWED_ORIGINS=https://localhost
 BIOEMS_SQLITE_PATH=$($paths.Data)\bioems.db
 BIOEMS_SQLITE_BACKUP_DIR=$($paths.Backups)
