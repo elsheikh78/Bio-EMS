@@ -30,9 +30,12 @@ export const firmwareManifestSchema = z
   .object({
     schemaVersion: z.literal(1),
     target: z.literal("esp32s3"),
+    model: z.literal("BIO-EMS-SC-V1"),
     firmwareVersion: z.string().min(1),
     protocolVersion: z.string().min(1),
     bindingSchemaVersion: z.literal(1),
+    sourceCommit: z.string().regex(/^[a-f0-9]{40}$/),
+    buildSystem: z.literal("ESP-IDF 5.5.5"),
     flash: z
       .object({
         baud: z.number().int().min(115200).max(921600).default(460800),
