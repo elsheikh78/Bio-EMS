@@ -2,3 +2,7 @@ CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 CONFIG_ESP_CONSOLE_UART_DEFAULT=y
 CONFIG_ESP_CONSOLE_UART_BAUDRATE=115200
 CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
+# Pilot-only bootstrap compatibility with the customer-local self-signed HTTPS endpoint.
+# Production Device Trust must remove these and use BIO-EMS CA validation + mTLS.
+CONFIG_ESP_TLS_INSECURE=y
+CONFIG_ESP_TLS_SKIP_SERVER_CERT_VERIFY=y
