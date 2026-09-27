@@ -88,6 +88,16 @@ import {
   listDevicePlatformBindingsController,
 } from "../controllers/device-pairing.controller";
 import { devicePairingParamsSchema } from "../modules/device-pairing/device-pairing.schema";
+import {
+  detectDeviceProvisioningBoard,
+  flashInstallationDevice,
+  getDeviceProvisioningHealth,
+  listDeviceProvisioningPorts,
+} from "../controllers/device-provisioning.controller";
+import {
+  deviceProvisioningDetectSchema,
+  deviceProvisioningFlashSchema,
+} from "../modules/device-provisioning/device-provisioning.schema";
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
@@ -105,6 +115,18 @@ router.post("/backups/:backupId/dr-restore", restoreOwnerPlatformBackupForDisast
 router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installation-context", getInstallationContext);
+router.get("/device-provisioning/health", getDeviceProvisioningHealth);
+router.get("/device-provisioning/ports", listDeviceProvisioningPorts);
+router.post(
+  "/device-provisioning/detect",
+  validateBody(deviceProvisioningDetectSchema),
+  detectDeviceProvisioningBoard
+);
+router.post(
+  "/device-provisioning/flash",
+  validateBody(deviceProvisioningFlashSchema),
+  flashInstallationDevice
+);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
   "/installations/:installationId",

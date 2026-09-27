@@ -53,6 +53,15 @@
       "sha256": "28aab065fa81c965bfe16d0f0ed8dd509eedbe88f5fe6bc4a3d19b91ee01f87e",
       "checksumEvidenceUrl": "https://www.influxdata.com/downloads-product/",
       "licenseEvidenceUrl": "https://github.com/influxdata/influx-cli/blob/v2.8.0/LICENSE"
+    },
+    {
+      "id": "esptool",
+      "version": "5.4.0",
+      "fileName": "esptool-v5.4.0-windows-amd64.zip",
+      "sourceUrl": "https://github.com/espressif/esptool/releases/download/v5.4.0/esptool-v5.4.0-windows-amd64.zip",
+      "sha256": "b7f6b9dd301a210b31f4829118c909c84aae23107f9ca1fdc14ccf4d7384be2e",
+      "checksumEvidenceUrl": "https://github.com/espressif/esptool/releases/tag/v5.4.0",
+      "licenseEvidenceUrl": "https://github.com/espressif/esptool/blob/v5.4.0/LICENSE"
     }
   ]
 }

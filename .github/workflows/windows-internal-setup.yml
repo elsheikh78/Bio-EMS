@@ -10,6 +10,7 @@ on:
       - "backend/**"
       - "frontend/**"
       - "installer/windows/**"
+      - "firmware/**"
       - "VERSION"
   push:
     branches:
@@ -19,16 +20,76 @@ on:
       - "backend/**"
       - "frontend/**"
       - "installer/windows/**"
+      - "firmware/**"
       - "VERSION"
 
 permissions:
   contents: read
 
 jobs:
+  firmware:
+    name: Build governed ESP32-S3 Pilot firmware
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build ESP32-S3 firmware with pinned ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.5
+          target: esp32s3
+          path: firmware/site-controller-esp32s3
+
+      - name: Package governed firmware
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 firmware/site-controller-esp32s3/package_firmware.py \
+            --build-dir firmware/site-controller-esp32s3/build \
+            --output-dir bioems-firmware-package \
+            --source-commit "$GITHUB_SHA" \
+            --version-header firmware/site-controller-esp32s3/main/bioems_version.h
+
+      - name: Verify packaged firmware manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path("bioems-firmware-package")
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          assert manifest["schemaVersion"] == 1
+          assert manifest["target"] == "esp32s3"
+          assert manifest["firmwareVersion"] == "0.1.0-pilot.1"
+          assert manifest["protocolVersion"] == "1.3"
+          assert manifest["bindingSchemaVersion"] == 1
+          assert manifest["segments"]
+          for segment in manifest["segments"]:
+              path = root / segment["file"]
+              assert path.is_file()
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == segment["sha256"]
+          print("BIO-EMS firmware package verification: PASS")
+          PY
+
+      - name: Upload governed firmware package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BIO-EMS-ESP32S3-${{ github.sha }}-pilot
+          path: bioems-firmware-package/**
+          if-no-files-found: error
+          retention-days: 14
+
   build:
     name: Build signed BIO EGYPT pilot Setup
+    needs: firmware
     runs-on: windows-2022
-    timeout-minutes: 45
+    timeout-minutes: 50
 
     steps:
       - name: Check out repository
@@ -42,6 +103,12 @@ jobs:
           cache-dependency-path: |
             backend/package-lock.json
             frontend/package-lock.json
+
+      - name: Download governed ESP32-S3 firmware package
+        uses: actions/download-artifact@v4
+        with:
+          name: BIO-EMS-ESP32S3-${{ github.sha }}-pilot
+          path: ${{ runner.temp }}\bioems-firmware-package
 
       - name: Install and verify pinned Inno Setup compiler
         shell: powershell
@@ -113,6 +180,7 @@ jobs:
           & .\installer\windows\New-InstallerStaging.ps1 `
             -RepositoryRoot $env:GITHUB_WORKSPACE `
             -VendorCache $vendor `
+            -FirmwarePackageDirectory (Join-Path $env:RUNNER_TEMP "bioems-firmware-package") `
             -StagingDirectory $stage `
             -SourceCommit $env:GITHUB_SHA `
             -BuildTimestamp $timestamp
@@ -223,6 +291,7 @@ jobs:
           $missingServices = @(
             "BIOEMS-MQTT",
             "BIOEMS-InfluxDB",
+            "BIOEMS-Provisioner",
             "BIOEMS-Backend"
           ) | Where-Object { -not (Get-Service -Name $_ -ErrorAction SilentlyContinue) }
           if ($process.ExitCode -ne 0 -or @($missingServices).Count -gt 0) {
@@ -246,7 +315,7 @@ jobs:
           if ($setupLogText -notmatch '(?s)Initialize-PilotAdmin\.ps1.*?Process exit code: 0') {
             throw "BIO-EMS elevated customer administrator bootstrap did not report exit code 0"
           }
-          $stoppedServices = @(Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Backend |
+          $stoppedServices = @(Get-Service BIOEMS-MQTT,BIOEMS-InfluxDB,BIOEMS-Provisioner,BIOEMS-Backend |
             Where-Object Status -ne "Running")
           if ($stoppedServices.Count -gt 0) {
             Write-Host "=== SETUP LOG AFTER SERVICE STOP ==="
