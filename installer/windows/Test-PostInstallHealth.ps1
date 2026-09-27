@@ -7,13 +7,37 @@ param(
 
 $ErrorActionPreference = "Stop"
 $checks = [ordered]@{}
-foreach ($serviceId in @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Backend", "BIOEMS-RestoreWorker")) {
+foreach ($serviceId in @("BIOEMS-MQTT", "BIOEMS-InfluxDB", "BIOEMS-Provisioner", "BIOEMS-Backend", "BIOEMS-RestoreWorker")) {
     $checks["service:$serviceId"] = (Get-Service -Name $serviceId -ErrorAction Stop).Status -eq "Running"
 }
 try {
     $backend = Invoke-RestMethod -Uri "https://localhost/api/v1/health" -TimeoutSec 10
     $checks["backend:https"] = $backend.status -eq "UP"
 } catch { $checks["backend:https"] = $false }
+
+$backendEnv = Join-Path $PersistentRoot "config\backend.env"
+$provisionerToken = $null
+if (Test-Path -LiteralPath $backendEnv -PathType Leaf) {
+    foreach ($line in [IO.File]::ReadAllLines($backendEnv)) {
+        if ($line.StartsWith("BIOEMS_PROVISIONER_TOKEN=", [StringComparison]::Ordinal)) {
+            $provisionerToken = $line.Substring("BIOEMS_PROVISIONER_TOKEN=".Length)
+            break
+        }
+    }
+}
+if ($provisionerToken) {
+    try {
+        $provisioner = Invoke-RestMethod -Uri "http://127.0.0.1:9444/health" -Headers @{ Authorization = "Bearer $provisionerToken" } -TimeoutSec 10
+        $checks["provisioner:loopback"] = (
+            $provisioner.status -eq "UP" -and
+            $provisioner.target -eq "ESP32-S3" -and
+            $provisioner.esptoolReady -eq $true -and
+            $provisioner.firmwareReady -eq $true
+        )
+    } catch { $checks["provisioner:loopback"] = $false }
+} else {
+    $checks["provisioner:loopback"] = $false
+}
 try {
     $influx = Invoke-RestMethod -Uri "http://127.0.0.1:8086/health" -TimeoutSec 5
     $checks["influxdb:health"] = $influx.status -eq "pass"
