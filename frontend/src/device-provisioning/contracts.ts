@@ -19,7 +19,7 @@ export const deviceProvisioningPortsSchema = z
           pnpDeviceId: z.string().nullable(),
           manufacturer: z.string().nullable(),
         })
-        .strict()
+        .strict(),
     ),
   })
   .strict();

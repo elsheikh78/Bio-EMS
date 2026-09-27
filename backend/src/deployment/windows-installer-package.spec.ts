@@ -213,7 +213,7 @@ describe("DEP-01-03 protected configuration and service lifecycle source", () =>
     expect(lifecycle).toContain(
       'Invoke-Controlled "sc.exe" @("config", "BIOEMS-Provisioner", "obj=", "LocalSystem")'
     );
-    expect(lifecycle).toContain('BIOEMS_PROVISIONER_URL=http://127.0.0.1:9444');
+    expect(lifecycle).toContain("BIOEMS_PROVISIONER_URL=http://127.0.0.1:9444");
     expect(lifecycle).toContain("BIOEMS_PROVISIONER_TOKEN=$provisionerToken");
     expect(lifecycle).not.toContain("<password>");
   });

@@ -26,8 +26,8 @@ export function useDeviceProvisionerHealth() {
       deviceProvisionerHealthSchema.parse(
         await apiClient.request<unknown>(
           "/platform-operations/device-provisioning/health",
-          { auth: "protected" }
-        )
+          { auth: "protected" },
+        ),
       ),
   });
 }
@@ -41,8 +41,8 @@ export function useDeviceProvisioningPorts() {
       deviceProvisioningPortsSchema.parse(
         await apiClient.request<unknown>(
           "/platform-operations/device-provisioning/ports",
-          { auth: "protected" }
-        )
+          { auth: "protected" },
+        ),
       ),
   });
 }
@@ -59,8 +59,8 @@ export function useDetectProvisioningBoard() {
             auth: "protected",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ port }),
-          }
-        )
+          },
+        ),
       ),
   });
 }

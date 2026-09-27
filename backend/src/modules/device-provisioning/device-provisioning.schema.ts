@@ -40,7 +40,10 @@ export const firmwareManifestSchema = z
       .object({
         baud: z.number().int().min(115200).max(921600).default(460800),
         mode: z.enum(["dio", "qio", "dout", "qout"]).default("dio"),
-        frequency: z.string().regex(/^\d+m$/i).default("40m"),
+        frequency: z
+          .string()
+          .regex(/^\d+m$/i)
+          .default("40m"),
         size: z.string().min(1).default("detect"),
       })
       .strict(),

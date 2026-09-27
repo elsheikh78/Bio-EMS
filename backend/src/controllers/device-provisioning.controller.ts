@@ -48,10 +48,9 @@ function requireProvisioningTarget(installationUuid: string, deviceId: string) {
        WHERE installation_id=?
        ORDER BY revision DESC LIMIT 1`
     )
-    .get(installation.id) as
-    | { id: number; revision: number; snapshotJson: string }
-    | undefined;
-  if (!revision) throw new AppError("Installation revision not found", 409, "INSTALLATION_REVISION_REQUIRED");
+    .get(installation.id) as { id: number; revision: number; snapshotJson: string } | undefined;
+  if (!revision)
+    throw new AppError("Installation revision not found", 409, "INSTALLATION_REVISION_REQUIRED");
 
   const snapshot = JSON.parse(revision.snapshotJson) as InstallationSnapshot;
   const device = snapshot.devices.find((item) => item.deviceId === deviceId);
@@ -61,36 +60,41 @@ function requireProvisioningTarget(installationUuid: string, deviceId: string) {
   return { installation, revision, device };
 }
 
-export const getDeviceProvisioningHealth = asyncHandler(async (_request: Request, response: Response) =>
-  response.json(await deviceProvisioningLocalClient.health())
+export const getDeviceProvisioningHealth = asyncHandler(
+  async (_request: Request, response: Response) =>
+    response.json(await deviceProvisioningLocalClient.health())
 );
 
-export const listDeviceProvisioningPorts = asyncHandler(async (_request: Request, response: Response) =>
-  response.json(await deviceProvisioningLocalClient.ports())
+export const listDeviceProvisioningPorts = asyncHandler(
+  async (_request: Request, response: Response) =>
+    response.json(await deviceProvisioningLocalClient.ports())
 );
 
-export const detectDeviceProvisioningBoard = asyncHandler(async (request: Request, response: Response) =>
-  response.json(await deviceProvisioningLocalClient.detect(String(request.body.port)))
+export const detectDeviceProvisioningBoard = asyncHandler(
+  async (request: Request, response: Response) =>
+    response.json(await deviceProvisioningLocalClient.detect(String(request.body.port)))
 );
 
-export const flashInstallationDevice = asyncHandler(async (request: Request, response: Response) => {
-  const installationId = String(request.body.installationId);
-  const deviceId = String(request.body.deviceId);
-  const target = requireProvisioningTarget(installationId, deviceId);
-  const result = await deviceProvisioningLocalClient.flash(String(request.body.port));
-  recordEvent(
-    target.installation.id,
-    target.revision.id,
-    "DEVICE_FIRMWARE_FLASHED",
-    `${request.platformPrincipal!.username}#${request.platformPrincipal!.id}`,
-    {
-      revision: target.revision.revision,
-      device_identity: deviceId,
-      port: result.port,
-      firmware_version: result.firmwareVersion,
-      protocol_version: result.protocolVersion,
-      binding_schema_version: result.bindingSchemaVersion,
-    }
-  );
-  response.json(result);
-});
+export const flashInstallationDevice = asyncHandler(
+  async (request: Request, response: Response) => {
+    const installationId = String(request.body.installationId);
+    const deviceId = String(request.body.deviceId);
+    const target = requireProvisioningTarget(installationId, deviceId);
+    const result = await deviceProvisioningLocalClient.flash(String(request.body.port));
+    recordEvent(
+      target.installation.id,
+      target.revision.id,
+      "DEVICE_FIRMWARE_FLASHED",
+      `${request.platformPrincipal!.username}#${request.platformPrincipal!.id}`,
+      {
+        revision: target.revision.revision,
+        device_identity: deviceId,
+        port: result.port,
+        firmware_version: result.firmwareVersion,
+        protocol_version: result.protocolVersion,
+        binding_schema_version: result.bindingSchemaVersion,
+      }
+    );
+    response.json(result);
+  }
+);

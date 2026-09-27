@@ -1,10 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
-import {
-  existsSync,
-  readFileSync,
-  realpathSync,
-} from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
 import {
@@ -46,12 +42,7 @@ function normalizedInside(root: string, candidate: string): string {
 }
 
 function sanitizeToolOutput(value: string): string {
-  return value
-    .split(/\r?\n/)
-    .filter(Boolean)
-    .slice(-40)
-    .join("\n")
-    .slice(0, 8_000);
+  return value.split(/\r?\n/).filter(Boolean).slice(-40).join("\n").slice(0, 8_000);
 }
 
 function sha256(path: string): string {
@@ -140,7 +131,17 @@ export class LocalProvisioningRunner {
     const esptool = normalizedInside(this.config.applicationRoot, this.config.esptoolPath);
     const result = await this.execute(
       esptool,
-      ["--chip", "esp32s3", "--port", port, "--before", "default-reset", "--after", "hard-reset", "chip-id"],
+      [
+        "--chip",
+        "esp32s3",
+        "--port",
+        port,
+        "--before",
+        "default-reset",
+        "--after",
+        "hard-reset",
+        "chip-id",
+      ],
       {
         timeout: 20_000,
         maxBuffer: 512_000,
@@ -177,7 +178,10 @@ export class LocalProvisioningRunner {
       if (isAbsolute(segment.file) || segment.file.includes("..")) {
         throw new Error("Firmware manifest contains an unsafe segment path");
       }
-      const path = normalizedInside(this.config.applicationRoot, resolve(firmwareRoot, segment.file));
+      const path = normalizedInside(
+        this.config.applicationRoot,
+        resolve(firmwareRoot, segment.file)
+      );
       if (sha256(path) !== segment.sha256) {
         throw new Error(`Firmware segment checksum mismatch: ${segment.file}`);
       }

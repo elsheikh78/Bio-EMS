@@ -40,8 +40,7 @@ const copy = {
     supported: "Supported ESP32-S3 detected",
     unsupported: "The selected port is not a supported ESP32-S3.",
     output: "Detection evidence",
-    dp02:
-      "Next gate: Flash & Provision will automate firmware flashing, hardware UID capture and short-lived platform binding without asking the operator to copy the 12-digit pairing code.",
+    dp02: "Next gate: Flash & Provision will automate firmware flashing, hardware UID capture and short-lived platform binding without asking the operator to copy the 12-digit pairing code.",
   },
   ar: {
     back: "العودة إلى لوحة مالك النظام",
@@ -62,8 +61,7 @@ const copy = {
     supported: "تم اكتشاف ESP32-S3 مدعومة",
     unsupported: "المنفذ المحدد لا يحتوي على ESP32-S3 مدعومة.",
     output: "دليل الاكتشاف",
-    dp02:
-      "البوابة التالية: Flash & Provision ستنفذ تفليش الـFirmware وقراءة Hardware UID والربط المؤقت بالمنصة تلقائياً بدون نسخ كود الـ12 رقماً يدوياً.",
+    dp02: "البوابة التالية: Flash & Provision ستنفذ تفليش الـFirmware وقراءة Hardware UID والربط المؤقت بالمنصة تلقائياً بدون نسخ كود الـ12 رقماً يدوياً.",
   },
 } as const;
 
@@ -118,10 +116,12 @@ export function SystemOwnerDeviceProvisioningPage() {
                 {text.status}: {serviceReady ? text.ready : text.unavailable}
               </Typography>
               <Typography>
-                {text.tool}: {health.data.esptoolReady ? text.ready : text.unavailable}
+                {text.tool}:{" "}
+                {health.data.esptoolReady ? text.ready : text.unavailable}
               </Typography>
               <Typography>
-                {text.firmware}: {health.data.firmwareReady ? text.ready : text.unavailable}
+                {text.firmware}:{" "}
+                {health.data.firmwareReady ? text.ready : text.unavailable}
               </Typography>
             </Stack>
           ) : null}
@@ -150,7 +150,9 @@ export function SystemOwnerDeviceProvisioningPage() {
           </Box>
 
           {ports.isPending ? <CircularProgress size={24} /> : null}
-          {ports.isError ? <Alert severity="error">{text.unavailable}</Alert> : null}
+          {ports.isError ? (
+            <Alert severity="error">{text.unavailable}</Alert>
+          ) : null}
 
           {ports.data ? (
             <Stack spacing={2}>
@@ -190,11 +192,15 @@ export function SystemOwnerDeviceProvisioningPage() {
               ) : null}
               {detect.data ? (
                 <>
-                  <Alert severity={detect.data.supported ? "success" : "warning"}>
+                  <Alert
+                    severity={detect.data.supported ? "success" : "warning"}
+                  >
                     {detect.data.supported ? text.supported : text.unsupported}
                   </Alert>
                   <Box>
-                    <Typography sx={{ fontWeight: 700 }}>{text.output}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>
+                      {text.output}
+                    </Typography>
                     <Typography
                       component="pre"
                       sx={{

@@ -99,13 +99,10 @@ describe("LocalProvisioningRunner", () => {
   it("rejects unsafe serial-port input before invoking a tool", async () => {
     const { root, esptoolPath } = workspace();
     let invoked = false;
-    const runner = new LocalProvisioningRunner(
-      { applicationRoot: root, esptoolPath },
-      async () => {
-        invoked = true;
-        return { stdout: "", stderr: "" };
-      }
-    );
+    const runner = new LocalProvisioningRunner({ applicationRoot: root, esptoolPath }, async () => {
+      invoked = true;
+      return { stdout: "", stderr: "" };
+    });
 
     await expect(runner.detect("COM4 & calc.exe")).rejects.toThrow();
     expect(invoked).toBe(false);

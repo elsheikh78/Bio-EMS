@@ -58,33 +58,28 @@ export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, toke
     }
   });
 
-  app.use(
-    (
-      error: unknown,
-      _request: Request,
-      response: Response,
-      _next: NextFunction
-    ) => {
-      if (error instanceof z.ZodError) {
-        response.status(400).json({ code: "PROVISIONER_REQUEST_INVALID" });
-        return;
-      }
-      const message = error instanceof Error ? error.message : "Provisioning operation failed";
-      response.status(503).json({
-        code: "PROVISIONER_OPERATION_FAILED",
-        message,
-      });
+  app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
+    if (error instanceof z.ZodError) {
+      response.status(400).json({ code: "PROVISIONER_REQUEST_INVALID" });
+      return;
     }
-  );
+    const message = error instanceof Error ? error.message : "Provisioning operation failed";
+    response.status(503).json({
+      code: "PROVISIONER_OPERATION_FAILED",
+      message,
+    });
+  });
   return app;
 }
 
 if (require.main === module) {
   const token = required("BIOEMS_PROVISIONER_TOKEN");
-  if (token.length < 32) throw new Error("BIOEMS_PROVISIONER_TOKEN must contain at least 32 characters");
+  if (token.length < 32)
+    throw new Error("BIOEMS_PROVISIONER_TOKEN must contain at least 32 characters");
   const applicationRoot = required("BIOEMS_APPLICATION_ROOT");
   const esptoolPath = required("BIOEMS_PROVISIONER_ESPTOOL_PATH");
-  const firmwareManifestPath = process.env.BIOEMS_PROVISIONER_FIRMWARE_MANIFEST?.trim() || undefined;
+  const firmwareManifestPath =
+    process.env.BIOEMS_PROVISIONER_FIRMWARE_MANIFEST?.trim() || undefined;
   const port = Number(process.env.BIOEMS_PROVISIONER_PORT ?? "9444");
   if (!Number.isInteger(port) || port < 1024 || port > 65535) {
     throw new Error("BIOEMS_PROVISIONER_PORT is invalid");
