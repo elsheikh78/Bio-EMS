@@ -41,22 +41,22 @@ describe("installation provisioning receipt repair", () => {
     `);
     database
       .prepare(
-        "INSERT INTO platform_customers(id,code,name,status,created_by) VALUES(1,'EMS-001','Bio Egypt','ACTIVE','INSTALLER_ADMIN_BOOTSTRAP')",
+        "INSERT INTO platform_customers(id,code,name,status,created_by) VALUES(1,'EMS-001','Bio Egypt','ACTIVE','INSTALLER_ADMIN_BOOTSTRAP')"
       )
       .run();
     database
       .prepare(
-        "INSERT INTO sites(id,code,name,location,active) VALUES(1,'manial01','Elmanial Warehouse',NULL,1)",
+        "INSERT INTO sites(id,code,name,location,active) VALUES(1,'manial01','Elmanial Warehouse',NULL,1)"
       )
       .run();
     database
       .prepare(
-        "INSERT INTO customer_site_bindings(customer_id,site_id,bound_by) VALUES(1,1,'INSTALLER_ADMIN_BOOTSTRAP')",
+        "INSERT INTO customer_site_bindings(customer_id,site_id,bound_by) VALUES(1,1,'INSTALLER_ADMIN_BOOTSTRAP')"
       )
       .run();
     writeFileSync(
       identityPath,
-      JSON.stringify({ schemaVersion: 1, installationId: INSTALLATION_ID }),
+      JSON.stringify({ schemaVersion: 1, installationId: INSTALLATION_ID })
     );
     writeFileSync(
       receiptPath,
@@ -64,7 +64,7 @@ describe("installation provisioning receipt repair", () => {
         schemaVersion: 1,
         installationId: INSTALLATION_ID,
         state: "NEW_UNACTIVATED_IDENTITY",
-      }),
+      })
     );
   });
 
@@ -79,7 +79,7 @@ describe("installation provisioning receipt repair", () => {
         receiptPath,
         identityPath,
         database,
-      }),
+      })
     ).toEqual({ installationId: INSTALLATION_ID, state: "REPAIRED" });
 
     expect(JSON.parse(readFileSync(receiptPath, "utf8"))).toMatchObject({
@@ -105,7 +105,7 @@ describe("installation provisioning receipt repair", () => {
           siteName: "Elmanial Warehouse",
           siteCode: "manial01",
         },
-      }),
+      })
     );
 
     expect(
@@ -113,24 +113,24 @@ describe("installation provisioning receipt repair", () => {
         receiptPath,
         identityPath,
         database,
-      }),
+      })
     ).toEqual({ installationId: INSTALLATION_ID, state: "ALREADY_COMPLETE" });
   });
 
   it("fails closed when installer-bootstrap provenance is ambiguous", () => {
     database
       .prepare(
-        "INSERT INTO platform_customers(id,code,name,status,created_by) VALUES(2,'OTHER','Other','ACTIVE','INSTALLER_ADMIN_BOOTSTRAP')",
+        "INSERT INTO platform_customers(id,code,name,status,created_by) VALUES(2,'OTHER','Other','ACTIVE','INSTALLER_ADMIN_BOOTSTRAP')"
       )
       .run();
     database
       .prepare(
-        "INSERT INTO sites(id,code,name,location,active) VALUES(2,'other-site','Other Site',NULL,1)",
+        "INSERT INTO sites(id,code,name,location,active) VALUES(2,'other-site','Other Site',NULL,1)"
       )
       .run();
     database
       .prepare(
-        "INSERT INTO customer_site_bindings(customer_id,site_id,bound_by) VALUES(2,2,'INSTALLER_ADMIN_BOOTSTRAP')",
+        "INSERT INTO customer_site_bindings(customer_id,site_id,bound_by) VALUES(2,2,'INSTALLER_ADMIN_BOOTSTRAP')"
       )
       .run();
 
@@ -139,7 +139,7 @@ describe("installation provisioning receipt repair", () => {
         receiptPath,
         identityPath,
         database,
-      }),
+      })
     ).toThrow("Expected exactly one installer-bootstrap customer/site binding");
   });
 
@@ -149,7 +149,7 @@ describe("installation provisioning receipt repair", () => {
       JSON.stringify({
         schemaVersion: 1,
         installationId: "11111111-1111-4111-8111-111111111111",
-      }),
+      })
     );
 
     expect(() =>
@@ -157,9 +157,7 @@ describe("installation provisioning receipt repair", () => {
         receiptPath,
         identityPath,
         database,
-      }),
-    ).toThrow(
-      "Installation identity and provisioning receipt installation IDs do not match",
-    );
+      })
+    ).toThrow("Installation identity and provisioning receipt installation IDs do not match");
   });
 });

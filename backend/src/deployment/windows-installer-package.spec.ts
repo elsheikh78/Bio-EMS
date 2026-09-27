@@ -651,7 +651,7 @@ describe("DEP-01-05 lifecycle recovery source", () => {
   it("migrates legacy Repair installations that predate installation identity provisioning", () => {
     expect(lifecycle).toContain("function Repair-InstallationProvisioningReceiptMetadata");
     expect(lifecycle).toContain(
-      'backend\\dist\\src\\scripts\\repair-installation-provisioning-receipt.js'
+      "backend\\dist\\src\\scripts\\repair-installation-provisioning-receipt.js"
     );
     expect(lifecycle).toContain(
       "Repair-InstallationProvisioningReceiptMetadata $identityPath $receiptPath"

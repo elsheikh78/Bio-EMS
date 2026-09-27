@@ -1,11 +1,5 @@
 import Database from "better-sqlite3";
-import {
-  chmodSync,
-  readFileSync,
-  renameSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { chmodSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { z } from "zod";
 
 const customerSiteSchema = z
@@ -54,19 +48,13 @@ export type RepairInstallationProvisioningReceiptResult = {
 };
 
 export function repairInstallationProvisioningReceipt(
-  input: RepairInstallationProvisioningReceiptInput,
+  input: RepairInstallationProvisioningReceiptInput
 ): RepairInstallationProvisioningReceiptResult {
-  const receipt = receiptSchema.parse(
-    JSON.parse(readFileSync(input.receiptPath, "utf8")),
-  );
-  const identity = identitySchema.parse(
-    JSON.parse(readFileSync(input.identityPath, "utf8")),
-  );
+  const receipt = receiptSchema.parse(JSON.parse(readFileSync(input.receiptPath, "utf8")));
+  const identity = identitySchema.parse(JSON.parse(readFileSync(input.identityPath, "utf8")));
 
   if (receipt.installationId !== identity.installationId) {
-    throw new Error(
-      "Installation identity and provisioning receipt installation IDs do not match",
-    );
+    throw new Error("Installation identity and provisioning receipt installation IDs do not match");
   }
 
   if (!input.database && !input.sqlitePath) {
@@ -97,13 +85,13 @@ export function repairInstallationProvisioningReceipt(
            AND c.created_by = 'INSTALLER_ADMIN_BOOTSTRAP'
            AND c.status = 'ACTIVE'
            AND s.active = 1
-         ORDER BY b.customer_id, b.site_id`,
+         ORDER BY b.customer_id, b.site_id`
       )
       .all() as BootstrapBindingRow[];
 
     if (rows.length !== 1) {
       throw new Error(
-        `Expected exactly one installer-bootstrap customer/site binding, found ${rows.length}`,
+        `Expected exactly one installer-bootstrap customer/site binding, found ${rows.length}`
       );
     }
 
@@ -128,7 +116,7 @@ export function repairInstallationProvisioningReceipt(
         currentLocation !== expectedLocation
       ) {
         throw new Error(
-          "Existing provisioning receipt customer/site identity does not match installer-bootstrap registry identity",
+          "Existing provisioning receipt customer/site identity does not match installer-bootstrap registry identity"
         );
       }
       return {
@@ -144,15 +132,11 @@ export function repairInstallationProvisioningReceipt(
     const temporaryPath = `${input.receiptPath}.repair-${process.pid}`;
 
     try {
-      writeFileSync(
-        temporaryPath,
-        `${JSON.stringify(repaired, null, 2)}\n`,
-        {
-          encoding: "utf8",
-          flag: "wx",
-          mode: 0o600,
-        },
-      );
+      writeFileSync(temporaryPath, `${JSON.stringify(repaired, null, 2)}\n`, {
+        encoding: "utf8",
+        flag: "wx",
+        mode: 0o600,
+      });
       receiptSchema.parse(JSON.parse(readFileSync(temporaryPath, "utf8")));
       renameSync(temporaryPath, input.receiptPath);
       chmodSync(input.receiptPath, 0o600);
