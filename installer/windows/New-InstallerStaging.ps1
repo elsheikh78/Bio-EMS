@@ -44,8 +44,8 @@ if (
     throw "ESP32-S3 firmware package manifest does not match the Pilot contract"
 }
 foreach ($segment in $firmwareManifest.segments) {
-    if ($segment.file -notmatch '^[a-zA-Z0-9._-]+
-if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
+    if (
+        $segment.file -notmatch '^[a-zA-Z0-9._-]+ -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
     $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
 }
 
@@ -197,8 +197,8 @@ Remove-Item -LiteralPath (Join-Path $staging "work") -Recurse -Force
 $env:BIOEMS_INSTALLER_STAGING_DIR = $staging
 Invoke-Npm (Join-Path $repository "backend") @("run", "validate:windows-installer")
 Write-Host "BIO-EMS deterministic staging: PASS"
- -or $segment.sha256 -notmatch '^[a-f0-9]{64}
-if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
+ -or
+        $segment.sha256 -notmatch '^[a-f0-9]{64} -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
     $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
 }
 
@@ -348,7 +348,8 @@ Remove-Item -LiteralPath (Join-Path $staging "work") -Recurse -Force
 $env:BIOEMS_INSTALLER_STAGING_DIR = $staging
 Invoke-Npm (Join-Path $repository "backend") @("run", "validate:windows-installer")
 Write-Host "BIO-EMS deterministic staging: PASS"
-) {
+
+    ) {
         throw "ESP32-S3 firmware package contains an invalid segment entry"
     }
     $segmentPath = Join-Path $firmwarePackage $segment.file
