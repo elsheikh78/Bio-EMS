@@ -51,6 +51,9 @@ const copy = {
     telemetries: "Telemetries",
     devices: "Devices",
     mappings: "Mappings",
+    telemetryCodes: "Telemetry codes",
+    deviceCodes: "Device IDs",
+    mappingInventory: "Channel mappings",
     pairing: "ESP32 platform pairing",
     pairingHelp:
       "Generate a one-time 12-digit code for the selected device. Enter it on the ESP32 within 10 minutes. The resulting platform binding ID remains stable across Repair/Upgrade.",
@@ -125,6 +128,9 @@ const copy = {
     telemetries: "القياسات",
     devices: "الأجهزة",
     mappings: "الروابط",
+    telemetryCodes: "أكواد التليمتري",
+    deviceCodes: "أكواد الأجهزة",
+    mappingInventory: "ربط القنوات",
     pairing: "ربط ESP32 بالمنصة",
     pairingHelp:
       "أنشئ كود ربط مكوّنًا من 12 رقمًا للجهاز المطلوب. أدخله على ESP32 خلال 10 دقائق. يظل رقم ربط المنصة الناتج ثابتًا مع Repair/Upgrade.",
@@ -184,6 +190,57 @@ function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
       ? [deviceId]
       : [];
   });
+}
+
+function installationInventory(snapshot: Record<string, unknown>) {
+  const telemetryCodes: string[] = [];
+  const deviceCodes: string[] = [];
+  const mappings: string[] = [];
+  const sites = snapshot.sites;
+  if (Array.isArray(sites)) {
+    for (const site of sites) {
+      if (!site || typeof site !== "object") continue;
+      const areas = (site as Record<string, unknown>).areas;
+      if (!Array.isArray(areas)) continue;
+      for (const area of areas) {
+        if (!area || typeof area !== "object") continue;
+        const telemetries = (area as Record<string, unknown>).telemetries;
+        if (!Array.isArray(telemetries)) continue;
+        for (const telemetry of telemetries) {
+          if (!telemetry || typeof telemetry !== "object") continue;
+          const code = (telemetry as Record<string, unknown>).code;
+          if (typeof code === "string" && code.length > 0) {
+            telemetryCodes.push(code);
+          }
+        }
+      }
+    }
+  }
+  const devices = snapshot.devices;
+  if (Array.isArray(devices)) {
+    for (const device of devices) {
+      if (!device || typeof device !== "object") continue;
+      const record = device as Record<string, unknown>;
+      const deviceId = record.deviceId;
+      if (typeof deviceId !== "string" || deviceId.length === 0) continue;
+      deviceCodes.push(deviceId);
+      const deviceMappings = record.mappings;
+      if (!Array.isArray(deviceMappings)) continue;
+      for (const mapping of deviceMappings) {
+        if (!mapping || typeof mapping !== "object") continue;
+        const row = mapping as Record<string, unknown>;
+        if (
+          typeof row.telemetryCode === "string" &&
+          typeof row.channel === "number"
+        ) {
+          mappings.push(
+            `${deviceId}/CH${row.channel} → ${row.telemetryCode}`,
+          );
+        }
+      }
+    }
+  }
+  return { telemetryCodes, deviceCodes, mappings };
 }
 
 export function SystemOwnerInstallationsPage() {
@@ -342,6 +399,7 @@ export function SystemOwnerInstallationsPage() {
       ) : null}
       {records.map((item) => {
         const next = nextAction(item.status);
+        const inventory = installationInventory(item.latestSnapshot);
         return (
           <Card
             key={item.uuid}
@@ -371,6 +429,20 @@ export function SystemOwnerInstallationsPage() {
                 {item.summary.telemetries} · {text.devices}{" "}
                 {item.summary.devices} · {text.mappings} {item.summary.mappings}
               </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  <strong>{text.telemetryCodes}:</strong>{" "}
+                  {inventory.telemetryCodes.join(", ") || "—"}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>{text.deviceCodes}:</strong>{" "}
+                  {inventory.deviceCodes.join(", ") || "—"}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>{text.mappingInventory}:</strong>{" "}
+                  {inventory.mappings.join(" · ") || "—"}
+                </Typography>
+              </Box>
               <Box sx={{ mt: 2 }}>
                 <Typography sx={{ fontWeight: 700 }}>{text.pairing}</Typography>
                 <Typography
