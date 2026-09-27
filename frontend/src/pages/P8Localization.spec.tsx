@@ -62,7 +62,7 @@ describe("P8 Arabic localization", () => {
       screen.getByRole("heading", { name: "تهيئة التركيب" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "إنشاء مسودة محكومة" }),
+      screen.getByRole("button", { name: "إنشاء مسودة التركيب" }),
     ).toBeInTheDocument();
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
