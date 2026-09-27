@@ -17,6 +17,8 @@ import {
   useDetectProvisioningBoard,
   useDeviceProvisionerHealth,
   useDeviceProvisioningPorts,
+  useDeviceProvisioningTargets,
+  useFlashAndBindProvisioningDevice,
 } from "../device-provisioning/queries";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -24,7 +26,7 @@ const copy = {
   en: {
     back: "Back to owner console",
     title: "Device provisioning",
-    info: "Connect the ESP32-S3 by USB. BIO-EMS detects the controlled COM port and board before any firmware write. Flash & Bind remains gated until the one-click provisioning transaction is complete.",
+    info: "Connect the ESP32-S3 by USB, detect the controlled COM port, then bind it to an already validated logical Device. BIO-EMS generates and consumes the short-lived pairing credential internally.",
     service: "Local provisioning service",
     status: "Status",
     ready: "Ready",
@@ -40,12 +42,34 @@ const copy = {
     supported: "Supported ESP32-S3 detected",
     unsupported: "The selected port is not a supported ESP32-S3.",
     output: "Detection evidence",
-    dp02: "Next gate: Flash & Provision will automate firmware flashing, hardware UID capture and short-lived platform binding without asking the operator to copy the 12-digit pairing code.",
+    targetTitle: "Flash & Bind",
+    target: "Logical Device",
+    noTargets: "No installation is waiting for device provisioning.",
+    wifiSsid: "Wi-Fi SSID",
+    wifiSsidHelp: "Pilot limitation: the SSID must not contain spaces.",
+    wifiPassword: "Wi-Fi password",
+    platformUrl: "BIO-EMS LAN URL",
+    platformUrlHelp:
+      "Use the HTTPS LAN address of this BIO-EMS PC, for example https://192.168.1.20. Do not use localhost.",
+    credentials:
+      "Wi-Fi credentials are used only for this local provisioning transaction and are not written to BIO-EMS audit evidence.",
+    flashBind: "Flash & Bind Device",
+    flashBinding: "Flashing and binding…",
+    success: "Device firmware and platform binding verified.",
+    recovered: "Existing active binding recovered and verified.",
+    hardwareUid: "Hardware UID",
+    bindingId: "Platform binding ID",
+    installationActivated:
+      "All logical devices are bound. The installation revision is now CONFIG_ACTIVE and its runtime sensor/device inventory has been materialized.",
+    moreDevices:
+      "This device is bound. Provision the remaining logical Devices before configuration activation.",
+    provisionError:
+      "Flash & Bind failed. The existing audit/binding state is preserved; retry after correcting the reported condition.",
   },
   ar: {
     back: "العودة إلى لوحة مالك النظام",
     title: "تهيئة وربط الأجهزة",
-    info: "وصّل ESP32-S3 عبر USB. يقوم BIO-EMS باكتشاف منفذ COM واللوحة قبل أي كتابة للـFirmware. يظل Flash & Bind محجوباً حتى يكتمل مسار التهيئة والربط بضغطة واحدة.",
+    info: "وصّل ESP32-S3 عبر USB، واكتشف منفذ COM المعتمد، ثم اربطه بالجهاز المنطقي المحدد مسبقاً. يقوم BIO-EMS بإنشاء واستهلاك كود الربط المؤقت داخلياً بدون نسخه يدوياً.",
     service: "خدمة تهيئة الأجهزة المحلية",
     status: "الحالة",
     ready: "جاهزة",
@@ -61,7 +85,29 @@ const copy = {
     supported: "تم اكتشاف ESP32-S3 مدعومة",
     unsupported: "المنفذ المحدد لا يحتوي على ESP32-S3 مدعومة.",
     output: "دليل الاكتشاف",
-    dp02: "البوابة التالية: Flash & Provision ستنفذ تفليش الـFirmware وقراءة Hardware UID والربط المؤقت بالمنصة تلقائياً بدون نسخ كود الـ12 رقماً يدوياً.",
+    targetTitle: "Flash & Bind",
+    target: "الجهاز المنطقي",
+    noTargets: "لا يوجد تركيب ينتظر تهيئة الأجهزة حالياً.",
+    wifiSsid: "اسم شبكة Wi-Fi",
+    wifiSsidHelp: "قيد البيلوت الحالي: اسم الشبكة لا يحتوي على مسافات.",
+    wifiPassword: "كلمة مرور Wi-Fi",
+    platformUrl: "عنوان BIO-EMS على الشبكة المحلية",
+    platformUrlHelp:
+      "استخدم عنوان HTTPS لهذا الكمبيوتر على الشبكة المحلية، مثال https://192.168.1.20، ولا تستخدم localhost.",
+    credentials:
+      "بيانات Wi-Fi تُستخدم فقط أثناء عملية التهيئة المحلية الحالية ولا تُكتب في سجل التدقيق الخاص بـBIO-EMS.",
+    flashBind: "Flash & Bind للجهاز",
+    flashBinding: "جارٍ التفليش والربط…",
+    success: "تم التحقق من Firmware وربط الجهاز بالمنصة.",
+    recovered: "تم استعادة الربط النشط الموجود والتحقق منه.",
+    hardwareUid: "Hardware UID",
+    bindingId: "Platform binding ID",
+    installationActivated:
+      "تم ربط جميع الأجهزة المنطقية. أصبحت مراجعة التركيب CONFIG_ACTIVE وتم إنشاء مخزون الأجهزة والحساسات التشغيلي.",
+    moreDevices:
+      "تم ربط هذا الجهاز. أكمل تهيئة باقي الأجهزة المنطقية قبل تفعيل التهيئة.",
+    provisionError:
+      "فشلت عملية Flash & Bind. تم الحفاظ على حالة الربط وسجل التدقيق الحالية؛ صحح السبب ثم أعد المحاولة.",
   },
 } as const;
 
@@ -70,8 +116,19 @@ export function SystemOwnerDeviceProvisioningPage() {
   const text = copy[language];
   const health = useDeviceProvisionerHealth();
   const ports = useDeviceProvisioningPorts();
+  const targets = useDeviceProvisioningTargets();
   const detect = useDetectProvisioningBoard();
+  const flashBind = useFlashAndBindProvisioningDevice();
   const [selectedPort, setSelectedPort] = useState("");
+  const [selectedTarget, setSelectedTarget] = useState("");
+  const [wifiSsid, setWifiSsid] = useState("");
+  const [wifiPassword, setWifiPassword] = useState("");
+  const [platformUrl, setPlatformUrl] = useState(() => {
+    const host = window.location.hostname.toLowerCase();
+    return host && !["localhost", "127.0.0.1", "::1"].includes(host)
+      ? window.location.origin
+      : "";
+  });
 
   const inventory = ports.data?.ports ?? [];
   const effectivePort = inventory.some((item) => item.port === selectedPort)
@@ -80,10 +137,30 @@ export function SystemOwnerDeviceProvisioningPage() {
       ? inventory[0].port
       : "";
 
+  const targetOptions = (targets.data?.targets ?? []).flatMap((installation) =>
+    installation.devices.map((device) => ({
+      key: `${installation.installationId}::${device.deviceId}`,
+      installationId: installation.installationId,
+      customerName: installation.customerName,
+      revision: installation.revision,
+      ...device,
+    })),
+  );
+  const effectiveTarget = targetOptions.find((item) => item.key === selectedTarget)
+    ?? (targetOptions.length === 1 ? targetOptions[0] : undefined);
+
   const serviceReady =
     health.data?.status === "UP" &&
     health.data.esptoolReady &&
     health.data.firmwareReady;
+  const boardReady =
+    detect.data?.port === effectivePort && detect.data.supported;
+  const formReady =
+    Boolean(effectiveTarget) &&
+    wifiSsid.length > 0 &&
+    !/\s/.test(wifiSsid) &&
+    wifiPassword.length >= 8 &&
+    platformUrl.length > 0;
 
   return (
     <Container component="main" maxWidth="md" sx={{ py: 4 }}>
@@ -124,7 +201,7 @@ export function SystemOwnerDeviceProvisioningPage() {
         </CardContent>
       </Card>
 
-      <Card variant="outlined">
+      <Card variant="outlined" sx={{ mb: 3 }}>
         <CardContent>
           <Box
             sx={{
@@ -158,6 +235,7 @@ export function SystemOwnerDeviceProvisioningPage() {
                 onChange={(event) => {
                   setSelectedPort(event.target.value);
                   detect.reset();
+                  flashBind.reset();
                 }}
                 select
                 value={effectivePort}
@@ -177,7 +255,10 @@ export function SystemOwnerDeviceProvisioningPage() {
 
               <Button
                 disabled={!serviceReady || !effectivePort || detect.isPending}
-                onClick={() => detect.mutate(effectivePort)}
+                onClick={() => {
+                  flashBind.reset();
+                  detect.mutate(effectivePort);
+                }}
                 variant="contained"
               >
                 {detect.isPending ? text.detecting : text.detect}
@@ -214,8 +295,110 @@ export function SystemOwnerDeviceProvisioningPage() {
                   </Box>
                 </>
               ) : null}
+            </Stack>
+          ) : null}
+        </CardContent>
+      </Card>
 
-              <Alert severity="warning">{text.dp02}</Alert>
+      <Card variant="outlined">
+        <CardContent>
+          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+            {text.targetTitle}
+          </Typography>
+          {targets.isPending ? <CircularProgress size={24} /> : null}
+          {targets.isError ? (
+            <Alert severity="error">{text.unavailable}</Alert>
+          ) : null}
+          {targets.data && targetOptions.length === 0 ? (
+            <Alert severity="info">{text.noTargets}</Alert>
+          ) : null}
+          {targetOptions.length > 0 ? (
+            <Stack spacing={2}>
+              <TextField
+                label={text.target}
+                select
+                value={effectiveTarget?.key ?? ""}
+                onChange={(event) => {
+                  setSelectedTarget(event.target.value);
+                  flashBind.reset();
+                }}
+              >
+                {targetOptions.map((item) => (
+                  <MenuItem key={item.key} value={item.key}>
+                    {item.customerName} — {item.siteName} — {item.deviceId}
+                    {item.bound ? " — BOUND" : ""}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                label={text.wifiSsid}
+                value={wifiSsid}
+                onChange={(event) => setWifiSsid(event.target.value)}
+                helperText={text.wifiSsidHelp}
+                error={wifiSsid.length > 0 && /\s/.test(wifiSsid)}
+              />
+              <TextField
+                label={text.wifiPassword}
+                type="password"
+                value={wifiPassword}
+                onChange={(event) => setWifiPassword(event.target.value)}
+              />
+              <TextField
+                label={text.platformUrl}
+                value={platformUrl}
+                onChange={(event) => setPlatformUrl(event.target.value)}
+                helperText={text.platformUrlHelp}
+              />
+              <Alert severity="info">{text.credentials}</Alert>
+              <Button
+                variant="contained"
+                disabled={
+                  !serviceReady ||
+                  !boardReady ||
+                  !formReady ||
+                  flashBind.isPending
+                }
+                onClick={() => {
+                  if (!effectiveTarget) return;
+                  flashBind.mutate({
+                    installationId: effectiveTarget.installationId,
+                    deviceId: effectiveTarget.deviceId,
+                    port: effectivePort,
+                    wifiSsid,
+                    wifiPassword,
+                    platformUrl,
+                  });
+                }}
+              >
+                {flashBind.isPending ? text.flashBinding : text.flashBind}
+              </Button>
+              {flashBind.isError ? (
+                <Alert severity="error">{text.provisionError}</Alert>
+              ) : null}
+              {flashBind.data ? (
+                <Stack spacing={1}>
+                  <Alert severity="success">
+                    {flashBind.data.recoveredExistingBinding
+                      ? text.recovered
+                      : text.success}
+                  </Alert>
+                  <Typography>
+                    {text.hardwareUid}: {flashBind.data.hardwareUid}
+                  </Typography>
+                  <Typography>
+                    {text.bindingId}: {flashBind.data.platformBindingId}
+                  </Typography>
+                  <Alert
+                    severity={
+                      flashBind.data.allDevicesBound ? "success" : "info"
+                    }
+                  >
+                    {flashBind.data.allDevicesBound
+                      ? text.installationActivated
+                      : text.moreDevices}
+                  </Alert>
+                </Stack>
+              ) : null}
             </Stack>
           ) : null}
         </CardContent>
