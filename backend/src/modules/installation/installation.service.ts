@@ -524,23 +524,14 @@ export class InstallationService {
            JOIN customer_site_bindings b ON b.site_id=s.id
            WHERE b.customer_id=? AND s.code=?`
         )
-        .get(customerId, site.code) as
-        | { name: string; active: number }
-        | undefined;
-      if (
-        !registered ||
-        registered.active !== 1 ||
-        registered.name !== site.name
-      ) {
+        .get(customerId, site.code) as { name: string; active: number } | undefined;
+      if (!registered || registered.active !== 1 || registered.name !== site.name) {
         throw conflict("INSTALLATION_SITE_IDENTITY_MISMATCH");
       }
     }
   }
 
-  private assertSitesUnconfigured(
-    customerId: number,
-    snapshot: InstallationSnapshot
-  ) {
+  private assertSitesUnconfigured(customerId: number, snapshot: InstallationSnapshot) {
     const requested = new Set(snapshot.sites.map((site) => site.code));
     const rows = this.database
       .prepare(

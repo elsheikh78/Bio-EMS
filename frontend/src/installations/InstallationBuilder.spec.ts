@@ -105,9 +105,7 @@ describe("InstallationBuilder identifiers and snapshot", () => {
     expect(state.devices).toEqual([{ deviceId: "D001" }]);
     expect(state.areas[0]).toMatchObject({
       code: "cold-room",
-      telemetries: [
-        { code: "S1", deviceId: "D001", channel: 1 },
-      ],
+      telemetries: [{ code: "S1", deviceId: "D001", channel: 1 }],
     });
     expect(nextTelemetryCode(state.areas)).toBe("S2");
   });

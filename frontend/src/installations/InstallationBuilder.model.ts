@@ -172,7 +172,6 @@ export function validBuilder(areas: DraftArea[], devices: DraftDevice[]) {
   );
 }
 
-
 export function builderStateFromSnapshot(
   snapshot: Record<string, unknown> | undefined,
   siteCode: string,
@@ -212,10 +211,10 @@ export function builderStateFromSnapshot(
         typeof row.telemetryCode === "string" &&
         typeof row.channel === "number"
       ) {
-        mappingByTelemetry.set(
-          `${row.areaCode}/${row.telemetryCode}`,
-          { deviceId: device.deviceId, channel: row.channel },
-        );
+        mappingByTelemetry.set(`${row.areaCode}/${row.telemetryCode}`, {
+          deviceId: device.deviceId,
+          channel: row.channel,
+        });
       }
     }
   }
@@ -251,9 +250,7 @@ export function builderStateFromSnapshot(
         ) {
           return [];
         }
-        const mapping = mappingByTelemetry.get(
-          `${areaCode}/${telemetry.code}`,
-        );
+        const mapping = mappingByTelemetry.get(`${areaCode}/${telemetry.code}`);
         const rawType =
           typeof telemetry.type === "string" ? telemetry.type : "OTHER";
         const type = telemetryTypes.includes(rawType as TelemetryType)

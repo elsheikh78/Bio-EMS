@@ -200,7 +200,6 @@ function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
   });
 }
 
-
 function snapshotHasSite(
   snapshot: Record<string, unknown>,
   siteCode: string,
@@ -374,9 +373,7 @@ export function SystemOwnerInstallationsPage() {
               language={language}
               submitting={create.isPending || revise.isPending}
               initialSnapshot={currentInstallation?.latestSnapshot}
-              submitLabel={
-                currentInstallation ? text.updateDraft : undefined
-              }
+              submitLabel={currentInstallation ? text.updateDraft : undefined}
               onSubmit={async (snapshot) => {
                 if (currentInstallation) {
                   await revise.mutateAsync({

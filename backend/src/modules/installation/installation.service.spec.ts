@@ -136,14 +136,9 @@ describe("controlled installation lifecycle", () => {
     expect(service.list()).toEqual([]);
   });
 
-
   it("rejects customer or Site identity that contradicts the Setup registry", () => {
     expect(() =>
-      service.create(
-        customerId,
-        { ...snapshot, companyName: "Different customer" },
-        "owner#1"
-      )
+      service.create(customerId, { ...snapshot, companyName: "Different customer" }, "owner#1")
     ).toThrow(
       expect.objectContaining({
         code: "INSTALLATION_CUSTOMER_IDENTITY_MISMATCH",
@@ -157,9 +152,7 @@ describe("controlled installation lifecycle", () => {
         name: "Different Site",
       })),
     };
-    expect(() =>
-      service.create(customerId, wrongSite, "owner#1")
-    ).toThrow(
+    expect(() => service.create(customerId, wrongSite, "owner#1")).toThrow(
       expect.objectContaining({ code: "INSTALLATION_SITE_IDENTITY_MISMATCH" })
     );
   });
