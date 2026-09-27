@@ -30,8 +30,10 @@ const copy = {
     info: "Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",
     draft: "New installation draft",
     installedIdentity: "Installed customer / site identity",
-    identityHelp: "Loaded from Windows Setup and locked for this installation. Customer and Site identity are not re-entered here.",
-    identityError: "Installed customer/site identity could not be resolved. Check the Setup provisioning identity before creating an installation.",
+    identityHelp:
+      "Loaded from Windows Setup and locked for this installation. Customer and Site identity are not re-entered here.",
+    identityError:
+      "Installed customer/site identity could not be resolved. Check the Setup provisioning identity before creating an installation.",
     customer: "Customer",
     company: "Company name",
     site: "Site",
@@ -107,8 +109,10 @@ const copy = {
     info: "عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",
     draft: "مسودة تركيب جديدة",
     installedIdentity: "هوية العميل والموقع المثبتة",
-    identityHelp: "تم تحميلها من Windows Setup وهي ثابتة لهذا التثبيت. لا تتم إعادة إدخال هوية العميل أو الموقع هنا.",
-    identityError: "تعذر تحديد هوية العميل والموقع المثبتة. راجع بيانات Setup قبل إنشاء التركيب.",
+    identityHelp:
+      "تم تحميلها من Windows Setup وهي ثابتة لهذا التثبيت. لا تتم إعادة إدخال هوية العميل أو الموقع هنا.",
+    identityError:
+      "تعذر تحديد هوية العميل والموقع المثبتة. راجع بيانات Setup قبل إنشاء التركيب.",
     customer: "العميل",
     company: "اسم الشركة",
     site: "الموقع",
@@ -233,9 +237,7 @@ function installationInventory(snapshot: Record<string, unknown>) {
           typeof row.telemetryCode === "string" &&
           typeof row.channel === "number"
         ) {
-          mappings.push(
-            `${deviceId}/CH${row.channel} → ${row.telemetryCode}`,
-          );
+          mappings.push(`${deviceId}/CH${row.channel} → ${row.telemetryCode}`);
         }
       }
     }
