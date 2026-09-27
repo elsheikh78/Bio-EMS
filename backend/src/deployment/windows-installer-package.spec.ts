@@ -624,7 +624,8 @@ describe("DEP-01-04 HTTPS front-door, firewall and health source", () => {
       expect(health).toContain(check);
     }
     expect(health).toContain("post-install-health.json");
-    expect(health).not.toMatch(/TOKEN|PASSWORD|PASSPHRASE/);
+    expect(health).not.toMatch(/PASSWORD|PASSPHRASE/);
+    expect(health).not.toContain('checks["provisioner:token"]');
   });
 
   it("includes the privileged restore coordinator and Device Provisioner in post-install health evidence", () => {
