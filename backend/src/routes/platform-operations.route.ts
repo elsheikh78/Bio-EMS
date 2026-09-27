@@ -90,12 +90,15 @@ import {
 import { devicePairingParamsSchema } from "../modules/device-pairing/device-pairing.schema";
 import {
   detectDeviceProvisioningBoard,
+  flashAndBindInstallationDevice,
   flashInstallationDevice,
   getDeviceProvisioningHealth,
   listDeviceProvisioningPorts,
+  listDeviceProvisioningTargets,
 } from "../controllers/device-provisioning.controller";
 import {
   deviceProvisioningDetectSchema,
+  deviceProvisioningFlashBindSchema,
   deviceProvisioningFlashSchema,
 } from "../modules/device-provisioning/device-provisioning.schema";
 
@@ -117,6 +120,7 @@ router.post("/customers", validateBody(createPlatformCustomerSchema), createPlat
 router.get("/installation-context", getInstallationContext);
 router.get("/device-provisioning/health", getDeviceProvisioningHealth);
 router.get("/device-provisioning/ports", listDeviceProvisioningPorts);
+router.get("/device-provisioning/targets", listDeviceProvisioningTargets);
 router.post(
   "/device-provisioning/detect",
   validateBody(deviceProvisioningDetectSchema),
@@ -126,6 +130,11 @@ router.post(
   "/device-provisioning/flash",
   validateBody(deviceProvisioningFlashSchema),
   flashInstallationDevice
+);
+router.post(
+  "/device-provisioning/flash-bind",
+  validateBody(deviceProvisioningFlashBindSchema),
+  flashAndBindInstallationDevice
 );
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
