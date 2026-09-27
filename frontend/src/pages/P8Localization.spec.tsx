@@ -9,6 +9,16 @@ import { SystemOwnerInstallationsPage } from "./SystemOwnerInstallationsPage";
 vi.mock("../installations/queries", () => ({
   useCreateInstallation: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useInstallationAction: () => ({ isPending: false, mutateAsync: vi.fn() }),
+  useInstallationContext: () => ({
+    data: {
+      installationId: "11111111-1111-4111-8111-111111111111",
+      source: "INSTALLER_PROVISIONING_RECEIPT",
+      customer: { id: 1, code: "BIO-EGYPT", name: "Bio Egypt" },
+      site: { id: 1, code: "elmanial-001", name: "El Manial", location: null, timezone: "Africa/Cairo" },
+    },
+    isPending: false,
+    isError: false,
+  }),
   useInstallations: () => ({ data: [] }),
   useIssueDevicePairingCode: () => ({
     isPending: false,
