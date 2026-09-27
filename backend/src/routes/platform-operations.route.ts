@@ -43,6 +43,7 @@ import {
 } from "../modules/platform-operations/platform-operations.schema";
 import {
   createInstallation,
+  getInstallationContext,
   getPlatformInstallation,
   listInstallations,
   queueInstallation,
@@ -103,6 +104,7 @@ router.post("/backups/:backupId/restore", restoreOwnerPlatformBackup);
 router.post("/backups/:backupId/dr-restore", restoreOwnerPlatformBackupForDisasterRecovery);
 router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
+router.get("/installation-context", getInstallationContext);
 router.get("/installations", validateQuery(installationListQuerySchema), listInstallations);
 router.get(
   "/installations/:installationId",
