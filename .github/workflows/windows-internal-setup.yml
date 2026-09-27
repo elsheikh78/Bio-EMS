@@ -29,27 +29,29 @@ permissions:
 jobs:
   firmware:
     name: Build governed ESP32-S3 Pilot firmware
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 45
-    container:
-      image: espressif/idf:v5.5.5
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
 
       - name: Build ESP32-S3 firmware with pinned ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.5
+          target: esp32s3
+          path: firmware/site-controller-esp32s3
+
+      - name: Package governed firmware
         shell: bash
         run: |
           set -euo pipefail
-          cd firmware/site-controller-esp32s3
-          idf.py set-target esp32s3
-          idf.py build
-          python3 package_firmware.py \
-            --build-dir build \
-            --output-dir "$GITHUB_WORKSPACE/bioems-firmware-package" \
+          python3 firmware/site-controller-esp32s3/package_firmware.py \
+            --build-dir firmware/site-controller-esp32s3/build \
+            --output-dir bioems-firmware-package \
             --source-commit "$GITHUB_SHA" \
-            --version-header main/bioems_version.h
+            --version-header firmware/site-controller-esp32s3/main/bioems_version.h
 
       - name: Verify packaged firmware manifest
         shell: bash
