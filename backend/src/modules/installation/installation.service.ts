@@ -99,6 +99,8 @@ export class InstallationService {
 
   create(customerId: number, snapshot: InstallationSnapshot, actor: string) {
     this.assertCustomer(customerId);
+    this.assertSnapshotRegistry(customerId, snapshot);
+    this.assertSitesUnconfigured(customerId, snapshot);
     this.validateSnapshot(snapshot);
     return this.database.transaction(() => {
       const now = new Date().toISOString();
@@ -118,8 +120,9 @@ export class InstallationService {
   }
 
   revise(uuid: string, snapshot: InstallationSnapshot, reason: string, actor: string) {
-    this.validateSnapshot(snapshot);
     const installation = this.find(uuid);
+    this.assertSnapshotRegistry(installation.customer_id, snapshot);
+    this.validateSnapshot(snapshot);
     return this.database.transaction(() => {
       const latest = this.latest(installation.id);
       const revision = latest.revision + 1;
@@ -504,6 +507,62 @@ export class InstallationService {
     )
       throw new AppError("Customer not found or closed", 404, "CUSTOMER_NOT_FOUND");
   }
+
+  private assertSnapshotRegistry(customerId: number, snapshot: InstallationSnapshot) {
+    const customer = this.database
+      .prepare("SELECT name FROM platform_customers WHERE id=? AND status<>'CLOSED'")
+      .get(customerId) as { name: string } | undefined;
+    if (!customer || customer.name !== snapshot.companyName) {
+      throw conflict("INSTALLATION_CUSTOMER_IDENTITY_MISMATCH");
+    }
+
+    for (const site of snapshot.sites) {
+      const registered = this.database
+        .prepare(
+          `SELECT s.name,s.active
+           FROM sites s
+           JOIN customer_site_bindings b ON b.site_id=s.id
+           WHERE b.customer_id=? AND s.code=?`
+        )
+        .get(customerId, site.code) as
+        | { name: string; active: number }
+        | undefined;
+      if (
+        !registered ||
+        registered.active !== 1 ||
+        registered.name !== site.name
+      ) {
+        throw conflict("INSTALLATION_SITE_IDENTITY_MISMATCH");
+      }
+    }
+  }
+
+  private assertSitesUnconfigured(
+    customerId: number,
+    snapshot: InstallationSnapshot
+  ) {
+    const requested = new Set(snapshot.sites.map((site) => site.code));
+    const rows = this.database
+      .prepare(
+        `SELECT
+           (SELECT snapshot_json
+            FROM platform_installation_revisions r
+            WHERE r.installation_id=i.id
+            ORDER BY revision DESC LIMIT 1) AS snapshotJson
+         FROM platform_installations i
+         WHERE i.customer_id=?`
+      )
+      .all(customerId) as Array<{ snapshotJson: string | null }>;
+
+    for (const row of rows) {
+      if (!row.snapshotJson) continue;
+      const existing = JSON.parse(row.snapshotJson) as InstallationSnapshot;
+      if (existing.sites.some((site) => requested.has(site.code))) {
+        throw conflict("INSTALLATION_SITE_ALREADY_CONFIGURED");
+      }
+    }
+  }
+
   private assertUserBinding(customerId: number, userId: number) {
     if (
       !this.database

@@ -66,10 +66,25 @@ describe("controlled installation lifecycle", () => {
     customerId = Number(
       database
         .prepare(
-          `INSERT INTO platform_customers(code,name,status,created_at,created_by) VALUES('C1','Customer','ACTIVE',?,'owner')`
+          `INSERT INTO platform_customers(code,name,status,created_at,created_by) VALUES('C1','BIO Customer','ACTIVE',?,'owner')`
         )
         .run(new Date().toISOString()).lastInsertRowid
     );
+
+    const siteId = Number(
+      database
+        .prepare(
+          `INSERT INTO sites(code,name,location,timezone,active)
+           VALUES('SITE1','Main Site',NULL,'Africa/Cairo',1)`
+        )
+        .run().lastInsertRowid
+    );
+    database
+      .prepare(
+        `INSERT INTO customer_site_bindings(customer_id,site_id,bound_at,bound_by)
+         VALUES(?,?,?,'owner')`
+      )
+      .run(customerId, siteId, new Date().toISOString());
     adminId = Number(
       database
         .prepare(
@@ -119,6 +134,41 @@ describe("controlled installation lifecycle", () => {
       expect.objectContaining({ code: "TELEMETRY_MAPPING_REQUIRED" })
     );
     expect(service.list()).toEqual([]);
+  });
+
+
+  it("rejects customer or Site identity that contradicts the Setup registry", () => {
+    expect(() =>
+      service.create(
+        customerId,
+        { ...snapshot, companyName: "Different customer" },
+        "owner#1"
+      )
+    ).toThrow(
+      expect.objectContaining({
+        code: "INSTALLATION_CUSTOMER_IDENTITY_MISMATCH",
+      })
+    );
+
+    const wrongSite = {
+      ...snapshot,
+      sites: snapshot.sites.map((site) => ({
+        ...site,
+        name: "Different Site",
+      })),
+    };
+    expect(() =>
+      service.create(customerId, wrongSite, "owner#1")
+    ).toThrow(
+      expect.objectContaining({ code: "INSTALLATION_SITE_IDENTITY_MISMATCH" })
+    );
+  });
+
+  it("prevents a second logical installation for the same registered Site", () => {
+    service.create(customerId, snapshot, "owner#1");
+    expect(() => service.create(customerId, snapshot, "owner#1")).toThrow(
+      expect.objectContaining({ code: "INSTALLATION_SITE_ALREADY_CONFIGURED" })
+    );
   });
 
   it("isolates customer reads and acceptance", () => {
