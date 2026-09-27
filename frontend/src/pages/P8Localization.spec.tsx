@@ -48,10 +48,49 @@ vi.mock("../monitoredAreas/queries", () => ({
 
 describe("P8 Arabic localization", () => {
   beforeEach(() => {
-    protectedRequest.mockResolvedValue({
-      ready: true,
-      summary: { blockedSensors: 0, readySensors: 1, totalSensors: 1 },
-      items: [],
+    protectedRequest.mockImplementation((path: string) => {
+      if (path === "/sites/1/commissioning-readiness") {
+        return Promise.resolve({
+          ready: true,
+          summary: {
+            blockedSensors: 0,
+            readySensors: 1,
+            totalSensors: 1,
+            totalDevices: 1,
+            onlineDevices: 1,
+            blockedDevices: 0,
+          },
+          devices: [
+            {
+              deviceId: "D001",
+              communicationStatus: "ONLINE",
+              lastSeenAt: "2026-09-27T16:50:00.000Z",
+              ready: true,
+              blockers: [],
+            },
+          ],
+          items: [],
+        });
+      }
+      if (path === "/installations/site/1/acceptance-state") {
+        return Promise.resolve({
+          siteId: 1,
+          siteCode: "elmanial-001",
+          siteName: "Cairo",
+          installation: {
+            uuid: "11111111-1111-4111-8111-111111111111",
+            status: "CUSTOMER_ACCEPTANCE_PENDING",
+            latestRevision: 1,
+            acceptanceEnabled: true,
+            technicalCommissioning: {
+              decision: "ACCEPT",
+              decidedAt: "2026-09-27T16:45:00.000Z",
+            },
+            customerAcceptance: null,
+          },
+        });
+      }
+      return Promise.resolve({});
     });
   });
 
@@ -86,11 +125,16 @@ describe("P8 Arabic localization", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "قبول العميل للتركيب" }),
+      screen.getByRole("heading", { name: "استلام العميل للموقع" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "قبول" })).toBeInTheDocument();
     expect(
-      await screen.findByText(/متطلبات تهيئة البرنامج جاهزة/),
+      await screen.findByRole("button", { name: "قبول التركيب" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "رفض / تسجيل مشكلة" }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("أدلة الموقع جاهزة لاستلام العميل."),
     ).toBeInTheDocument();
   });
 });
