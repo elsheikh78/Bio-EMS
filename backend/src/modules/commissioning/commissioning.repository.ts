@@ -42,6 +42,15 @@ export type AppendCommissioningEvidence = {
   note?: string | null;
 };
 
+export type CommissioningDeviceItem = {
+  id: number;
+  deviceId: string;
+  status: string;
+  activated: number;
+  lastSeenAt: string | null;
+  lastHeartbeatAt: string | null;
+};
+
 export type CommissioningConfigurationItem = {
   sensorId: number;
   sensorUuid: string;
@@ -107,6 +116,18 @@ export class CommissioningRepository {
         )
         .get(sensorId, siteId, deviceId ?? null, deviceId ?? null)
     );
+  }
+
+  listSiteDevices(siteId: number): CommissioningDeviceItem[] {
+    return this.database
+      .prepare(
+        `SELECT id,device_id AS deviceId,status,activated,
+                last_seen_at AS lastSeenAt,last_heartbeat_at AS lastHeartbeatAt
+         FROM devices
+         WHERE site_id=?
+         ORDER BY device_id,id`
+      )
+      .all(siteId) as CommissioningDeviceItem[];
   }
 
   getConfigurationReadiness(siteId: number, asOf: string): CommissioningConfigurationItem[] {
