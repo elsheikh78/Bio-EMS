@@ -4,7 +4,7 @@ import {
   nextAreaCode,
   nextDeviceCode,
   nextTelemetryCode,
-} from "./InstallationBuilder";
+} from "./InstallationBuilder.model";
 import type { InstallationContext } from "./contracts";
 
 const context: InstallationContext = {
