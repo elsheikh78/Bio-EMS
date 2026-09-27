@@ -1,10 +1,23 @@
 # BIO-EMS Project State
 
-**State date:** 24 September 2026  
-**Authoritative main audited:** `57ff5748f130e09994fd3aee804197a1cf3d8193`  
-**Current integration branch:** none; `main` is authoritative  
+**State date:** 27 September 2026  
+**Authoritative main audited:** `80bb5ca3985ecc515f4f3072d804edc6932d1968`  
+**Current integration branch:** `feat/installation-builder-provisioning-flow`  
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
+
+## 27 September Installation Builder & Device Provisioning product decision checkpoint
+
+- Approved product sequence: Setup / Installation Identity -> Installation Builder -> Validate -> Device Provisioning -> Flash & Bind -> Hardware Test -> Commission.
+- Customer and Site identity collected during Windows Setup are authoritative inputs and must not be manually re-entered in normal SYSTEM_OWNER installation authoring.
+- The current single-row Installation Configuration create flow is superseded as the target UX: the product requires a full Builder for multiple Areas, Telemetries, Devices and channel mappings before physical provisioning.
+- Normal authoring must expose a complete code/mapping inventory and generate collision-checked Telemetry/Device identifiers; editable JSON remains an advanced diagnostic/review surface only.
+- Installation Configuration and Device Provisioning are now explicitly separate concepts: the logical installation is validated first, then a physical ESP32 is attached to an existing logical Device.
+- The current 12-digit code + serial-console flow remains a Pilot bootstrap mechanism, but the approved normal provisioning UX is one-click **Flash & Provision Device** from BIO-EMS with the short-lived bootstrap credential orchestrated internally.
+- Preferred Windows architecture is Frontend -> Backend -> local Device Provisioning Service -> USB/COM flashing tool -> ESP32, with deterministic logs, board detection, recovery and post-flash verification.
+- El Manial will be entered as a complete logical installation through the new Builder before the first physical controller is provisioned.
+- Detailed authority: `docs/project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md`.
+- This decision does not change BIO EGYPT acceptance status: **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## 24 September modular hardware architecture checkpoint
 

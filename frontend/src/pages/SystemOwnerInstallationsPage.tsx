@@ -6,21 +6,22 @@ import {
   CardContent,
   CircularProgress,
   Container,
-  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   useCreateInstallation,
   useInstallationAction,
+  useInstallationContext,
   useInstallations,
   useIssueDevicePairingCode,
   useReviseInstallation,
 } from "../installations/queries";
 import { useLocalization } from "../localization/useLocalization";
 import type { DevicePairingCodeResponse } from "../installations/contracts";
+import { InstallationBuilder } from "../installations/InstallationBuilder";
 
 const copy = {
   en: {
@@ -28,9 +29,16 @@ const copy = {
     title: "Installation configuration",
     info: "Define customer, Sites, monitored areas, telemetries, devices and channel mappings. Activation requires exact device receipt, technical commissioning and customer ADMIN acceptance.",
     draft: "New installation draft",
-    customer: "Customer ID",
+    editDraft: "Edit current installation",
+    updateDraft: "Apply builder as new revision",
+    installedIdentity: "Installed customer / site identity",
+    identityHelp:
+      "Loaded from Windows Setup and locked for this installation. Customer and Site identity are not re-entered here.",
+    identityError:
+      "Installed customer/site identity could not be resolved. Check the Setup provisioning identity before creating an installation.",
+    customer: "Customer",
     company: "Company name",
-    site: "Site code/name",
+    site: "Site",
     area: "Monitored area",
     telemetry: "Telemetry code/name",
     type: "Telemetry type",
@@ -47,6 +55,9 @@ const copy = {
     telemetries: "Telemetries",
     devices: "Devices",
     mappings: "Mappings",
+    telemetryCodes: "Telemetry codes",
+    deviceCodes: "Device IDs",
+    mappingInventory: "Channel mappings",
     pairing: "ESP32 platform pairing",
     pairingHelp:
       "Generate a one-time 12-digit code for the selected device. Enter it on the ESP32 within 10 minutes. The resulting platform binding ID remains stable across Repair/Upgrade.",
@@ -99,9 +110,16 @@ const copy = {
     title: "تهيئة التركيب",
     info: "عرّف العميل والمواقع والمناطق المراقبة والقياسات والأجهزة وربط القنوات. يتطلب التفعيل إيصال جهاز مطابقاً واعتماداً فنياً وقبول مدير العميل.",
     draft: "مسودة تركيب جديدة",
-    customer: "رقم العميل",
+    editDraft: "تعديل التركيب الحالي",
+    updateDraft: "تطبيق التعديل كمراجعة جديدة",
+    installedIdentity: "هوية العميل والموقع المثبتة",
+    identityHelp:
+      "تم تحميلها من Windows Setup وهي ثابتة لهذا التثبيت. لا تتم إعادة إدخال هوية العميل أو الموقع هنا.",
+    identityError:
+      "تعذر تحديد هوية العميل والموقع المثبتة. راجع بيانات Setup قبل إنشاء التركيب.",
+    customer: "العميل",
     company: "اسم الشركة",
-    site: "كود واسم الموقع",
+    site: "الموقع",
     area: "المنطقة المراقبة",
     telemetry: "كود واسم القياس",
     type: "نوع القياس",
@@ -118,6 +136,9 @@ const copy = {
     telemetries: "القياسات",
     devices: "الأجهزة",
     mappings: "الروابط",
+    telemetryCodes: "أكواد التليمتري",
+    deviceCodes: "أكواد الأجهزة",
+    mappingInventory: "ربط القنوات",
     pairing: "ربط ESP32 بالمنصة",
     pairingHelp:
       "أنشئ كود ربط مكوّنًا من 12 رقمًا للجهاز المطلوب. أدخله على ESP32 خلال 10 دقائق. يظل رقم ربط المنصة الناتج ثابتًا مع Repair/Upgrade.",
@@ -179,82 +200,86 @@ function installationDeviceIds(snapshot: Record<string, unknown>): string[] {
   });
 }
 
+function snapshotHasSite(
+  snapshot: Record<string, unknown>,
+  siteCode: string,
+): boolean {
+  const sites = snapshot.sites;
+  if (!Array.isArray(sites)) return false;
+  return sites.some(
+    (site) =>
+      Boolean(site) &&
+      typeof site === "object" &&
+      (site as Record<string, unknown>).code === siteCode,
+  );
+}
+
+function installationInventory(snapshot: Record<string, unknown>) {
+  const telemetryCodes: string[] = [];
+  const deviceCodes: string[] = [];
+  const mappings: string[] = [];
+  const sites = snapshot.sites;
+  if (Array.isArray(sites)) {
+    for (const site of sites) {
+      if (!site || typeof site !== "object") continue;
+      const areas = (site as Record<string, unknown>).areas;
+      if (!Array.isArray(areas)) continue;
+      for (const area of areas) {
+        if (!area || typeof area !== "object") continue;
+        const telemetries = (area as Record<string, unknown>).telemetries;
+        if (!Array.isArray(telemetries)) continue;
+        for (const telemetry of telemetries) {
+          if (!telemetry || typeof telemetry !== "object") continue;
+          const code = (telemetry as Record<string, unknown>).code;
+          if (typeof code === "string" && code.length > 0) {
+            telemetryCodes.push(code);
+          }
+        }
+      }
+    }
+  }
+  const devices = snapshot.devices;
+  if (Array.isArray(devices)) {
+    for (const device of devices) {
+      if (!device || typeof device !== "object") continue;
+      const record = device as Record<string, unknown>;
+      const deviceId = record.deviceId;
+      if (typeof deviceId !== "string" || deviceId.length === 0) continue;
+      deviceCodes.push(deviceId);
+      const deviceMappings = record.mappings;
+      if (!Array.isArray(deviceMappings)) continue;
+      for (const mapping of deviceMappings) {
+        if (!mapping || typeof mapping !== "object") continue;
+        const row = mapping as Record<string, unknown>;
+        if (
+          typeof row.telemetryCode === "string" &&
+          typeof row.channel === "number"
+        ) {
+          mappings.push(`${deviceId}/CH${row.channel} → ${row.telemetryCode}`);
+        }
+      }
+    }
+  }
+  return { telemetryCodes, deviceCodes, mappings };
+}
+
 export function SystemOwnerInstallationsPage() {
   const { language } = useLocalization();
   const text = copy[language];
   const installations = useInstallations();
+  const installationContext = useInstallationContext();
   const create = useCreateInstallation();
   const revise = useReviseInstallation();
   const action = useInstallationAction();
   const issuePairing = useIssueDevicePairingCode();
   const [pairingResult, setPairingResult] =
     useState<DevicePairingCodeResponse | null>(null);
-  const [customerId, setCustomerId] = useState("");
-  const [company, setCompany] = useState("");
-  const [site, setSite] = useState("");
-  const [area, setArea] = useState("");
-  const [telemetry, setTelemetry] = useState("");
-  const [type, setType] = useState("TEMPERATURE");
-  const [unit, setUnit] = useState("°C");
-  const [device, setDevice] = useState("");
-  const [channel, setChannel] = useState("1");
   const [editing, setEditing] = useState<{ uuid: string; json: string } | null>(
     null,
   );
   const [reason, setReason] = useState("");
   const [review, setReview] = useState(false);
   const [revisionError, setRevisionError] = useState(false);
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    await create.mutateAsync({
-      customerId: Number(customerId),
-      snapshot: {
-        companyName: company,
-        sites: [
-          {
-            code: site,
-            name: site,
-            timezone: "Africa/Cairo",
-            areas: [
-              {
-                code: area,
-                name: area,
-                telemetries: [
-                  {
-                    code: telemetry,
-                    name: telemetry,
-                    type,
-                    unit,
-                    warningDelaySeconds: 0,
-                    criticalDelaySeconds: 0,
-                    calibrationOffset: 0,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        devices: [
-          {
-            deviceId: device,
-            siteCode: site,
-            type: "zone-controller",
-            protocol: "mqtt",
-            manufacturer: "BIO-EMS",
-            model: "BIO-EMS-SC-V1",
-            firmwareVersion: "0.1.0-pilot.1",
-            mappings: [
-              {
-                areaCode: area,
-                telemetryCode: telemetry,
-                channel: Number(channel),
-              },
-            ],
-          },
-        ],
-      },
-    });
-  };
   const nextAction = (status: string) =>
     status === "DRAFT"
       ? "validate"
@@ -281,6 +306,16 @@ export function SystemOwnerInstallationsPage() {
   const commissionedCount = records.filter(
     (item) => item.status === "COMMISSIONED",
   ).length;
+  const currentInstallation = installationContext.data
+    ? records.find(
+        (item) =>
+          item.customerId === installationContext.data.customer.id &&
+          snapshotHasSite(
+            item.latestSnapshot,
+            installationContext.data.site.code,
+          ),
+      )
+    : undefined;
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
       <Button component={Link} to="/system-owner">
@@ -316,99 +351,46 @@ export function SystemOwnerInstallationsPage() {
       ) : null}
       <Card variant="outlined" sx={{ mb: 3 }}>
         <CardContent>
-          <Typography component="h2" variant="h6">
-            {text.draft}
+          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+            {currentInstallation ? text.editDraft : text.draft}
           </Typography>
-          <Box
-            component="form"
-            onSubmit={(e) => void submit(e)}
-            sx={{
-              display: "grid",
-              gap: 2,
-              mt: 2,
-              gridTemplateColumns: { xs: "1fr", md: "repeat(3,1fr)" },
-            }}
-          >
-            <TextField
-              required
-              label={text.customer}
-              type="number"
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.company}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.site}
-              value={site}
-              onChange={(e) => setSite(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.area}
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.telemetry}
-              value={telemetry}
-              onChange={(e) => setTelemetry(e.target.value)}
-            />
-            <TextField
-              select
-              label={text.type}
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+          {installationContext.isPending ? (
+            <Box
+              role="status"
+              sx={{ alignItems: "center", display: "flex", gap: 2 }}
             >
-              {(
-                [
-                  "TEMPERATURE",
-                  "HUMIDITY",
-                  "PRESSURE",
-                  "CO2",
-                  "DOOR",
-                  "OTHER",
-                ] as const
-              ).map((x) => (
-                <MenuItem key={x} value={x}>
-                  {text.telemetryTypes[x]}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              required
-              label={text.unit}
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
+              <CircularProgress size={24} />
+              <Typography>{text.loading}</Typography>
+            </Box>
+          ) : null}
+          {installationContext.isError ? (
+            <Alert severity="error">{text.identityError}</Alert>
+          ) : null}
+          {installationContext.data && !installations.isPending ? (
+            <InstallationBuilder
+              key={currentInstallation?.uuid ?? "new-installation"}
+              context={installationContext.data}
+              language={language}
+              submitting={create.isPending || revise.isPending}
+              initialSnapshot={currentInstallation?.latestSnapshot}
+              submitLabel={currentInstallation ? text.updateDraft : undefined}
+              onSubmit={async (snapshot) => {
+                if (currentInstallation) {
+                  await revise.mutateAsync({
+                    uuid: currentInstallation.uuid,
+                    snapshot,
+                    reason: "Structured Installation Builder update",
+                  });
+                  return;
+                }
+                await create.mutateAsync({
+                  customerId: installationContext.data.customer.id,
+                  snapshot,
+                });
+              }}
             />
-            <TextField
-              required
-              label={text.device}
-              value={device}
-              onChange={(e) => setDevice(e.target.value)}
-            />
-            <TextField
-              required
-              label={text.channel}
-              type="number"
-              value={channel}
-              onChange={(e) => setChannel(e.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={create.isPending}
-            >
-              {text.create}
-            </Button>
-          </Box>
-          {create.isError ? (
+          ) : null}
+          {create.isError || revise.isError ? (
             <Alert severity="error" sx={{ mt: 2 }}>
               {text.error}
             </Alert>
@@ -458,6 +440,7 @@ export function SystemOwnerInstallationsPage() {
       ) : null}
       {records.map((item) => {
         const next = nextAction(item.status);
+        const inventory = installationInventory(item.latestSnapshot);
         return (
           <Card
             key={item.uuid}
@@ -487,6 +470,20 @@ export function SystemOwnerInstallationsPage() {
                 {item.summary.telemetries} · {text.devices}{" "}
                 {item.summary.devices} · {text.mappings} {item.summary.mappings}
               </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  <strong>{text.telemetryCodes}:</strong>{" "}
+                  {inventory.telemetryCodes.join(", ") || "—"}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>{text.deviceCodes}:</strong>{" "}
+                  {inventory.deviceCodes.join(", ") || "—"}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>{text.mappingInventory}:</strong>{" "}
+                  {inventory.mappings.join(" · ") || "—"}
+                </Typography>
+              </Box>
               <Box sx={{ mt: 2 }}>
                 <Typography sx={{ fontWeight: 700 }}>{text.pairing}</Typography>
                 <Typography

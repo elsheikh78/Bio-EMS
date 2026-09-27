@@ -1,10 +1,15 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../middleware/async-handler";
 import { installationService } from "../modules/installation/installation.service";
+import { installationContextService } from "../modules/installation/installation-context.service";
 
 const platformActor = (req: Request) =>
   `${req.platformPrincipal!.username}#${req.platformPrincipal!.id}`;
 const installationId = (req: Request) => String(req.params.installationId);
+export const getInstallationContext = asyncHandler(async (_req: Request, res: Response) =>
+  res.json(installationContextService.current())
+);
+
 export const listInstallations = asyncHandler(async (req: Request, res: Response) =>
   res.json(
     installationService.list(req.query.customerId ? Number(req.query.customerId) : undefined)
