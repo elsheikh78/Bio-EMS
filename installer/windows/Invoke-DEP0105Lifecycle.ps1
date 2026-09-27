@@ -274,13 +274,13 @@ function Ensure-DeviceProvisionerService {
         @("startmode", "Automatic"), @("delayedAutoStart", "true"),
         @("stoptimeout", "30 sec"), @("logpath", (Join-Path $persistent "logs\provisioner-service"))
     )) { $writer.WriteElementString($entry[0], $entry[1]) }
-    foreach ($entry in [ordered]@{
+    foreach ($entry in ([ordered]@{
         BIOEMS_PROVISIONER_TOKEN = $token
         BIOEMS_APPLICATION_ROOT = $application
         BIOEMS_PROVISIONER_ESPTOOL_PATH = $esptools[0].FullName
         BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
         BIOEMS_PROVISIONER_PORT = "9444"
-    }.GetEnumerator()) {
+    }).GetEnumerator()) {
         $writer.WriteStartElement("env")
         $writer.WriteAttributeString("name", $entry.Key)
         $writer.WriteAttributeString("value", $entry.Value)
