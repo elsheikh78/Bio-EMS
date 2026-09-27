@@ -417,17 +417,17 @@ export function InstallationBuilder({
         <TextField
           label={text.customer}
           value={`${context.customer.name} (${context.customer.code})`}
-          InputProps={{ readOnly: true }}
+          slotProps={{ htmlInput: { readOnly: true } }}
         />
         <TextField
           label={text.site}
           value={`${context.site.name} (${context.site.code})`}
-          InputProps={{ readOnly: true }}
+          slotProps={{ htmlInput: { readOnly: true } }}
         />
         <TextField
           label={text.installationId}
           value={context.installationId}
-          InputProps={{ readOnly: true }}
+          slotProps={{ htmlInput: { readOnly: true } }}
         />
       </Box>
 
@@ -560,7 +560,7 @@ export function InstallationBuilder({
                 <TextField
                   label={text.telemetryCode}
                   value={telemetry.code}
-                  InputProps={{ readOnly: true }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
                 />
                 <TextField
                   required
@@ -624,7 +624,7 @@ export function InstallationBuilder({
                   type="number"
                   label={text.channel}
                   value={telemetry.channel}
-                  inputProps={{ min: 1, step: 1 }}
+                  slotProps={{ htmlInput: { min: 1, step: 1 } }}
                   onChange={(event) =>
                     updateTelemetry(area.code, telemetry.code, {
                       channel: Number(event.target.value),
