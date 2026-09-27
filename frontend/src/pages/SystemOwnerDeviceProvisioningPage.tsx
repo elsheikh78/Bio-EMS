@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   useDetectProvisioningBoard,
@@ -73,16 +73,12 @@ export function SystemOwnerDeviceProvisioningPage() {
   const detect = useDetectProvisioningBoard();
   const [selectedPort, setSelectedPort] = useState("");
 
-  useEffect(() => {
-    const inventory = ports.data?.ports ?? [];
-    if (inventory.length === 1 && !selectedPort) {
-      setSelectedPort(inventory[0].port);
-    }
-    if (selectedPort && !inventory.some((item) => item.port === selectedPort)) {
-      setSelectedPort("");
-      detect.reset();
-    }
-  }, [ports.data, selectedPort, detect]);
+  const inventory = ports.data?.ports ?? [];
+  const effectivePort = inventory.some((item) => item.port === selectedPort)
+    ? selectedPort
+    : inventory.length === 1
+      ? inventory[0].port
+      : "";
 
   const serviceReady =
     health.data?.status === "UP" &&
@@ -164,7 +160,7 @@ export function SystemOwnerDeviceProvisioningPage() {
                   detect.reset();
                 }}
                 select
-                value={selectedPort}
+                value={effectivePort}
               >
                 {ports.data.ports.length === 0 ? (
                   <MenuItem disabled value="">
@@ -180,8 +176,8 @@ export function SystemOwnerDeviceProvisioningPage() {
               </TextField>
 
               <Button
-                disabled={!serviceReady || !selectedPort || detect.isPending}
-                onClick={() => detect.mutate(selectedPort)}
+                disabled={!serviceReady || !effectivePort || detect.isPending}
+                onClick={() => detect.mutate(effectivePort)}
                 variant="contained"
               >
                 {detect.isPending ? text.detecting : text.detect}
