@@ -122,6 +122,10 @@ async function request<T>(
     return response as T;
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return (await response.json()) as T;
 }
 

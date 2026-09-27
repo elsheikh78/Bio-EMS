@@ -67,6 +67,19 @@ describe("API request headers", () => {
     expect(await response.text()).toContain("RPT-1");
   });
 
+  it("accepts successful 204 responses without parsing an empty JSON body", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, { status: 204 }),
+    );
+
+    await expect(
+      apiRequest<void>("/platform-auth/mfa/enrollment/confirm", {
+        method: "POST",
+      }),
+    ).resolves.toBeUndefined();
+  });
+
   it("injects exactly one adapter-controlled Bearer header in protected mode", async () => {
     vi.stubEnv("VITE_API_BASE_URL", apiBaseUrl);
     const fetchSpy = vi
