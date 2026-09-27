@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const installationContextSchema = z
   .object({
     installationId: z.string().uuid(),
