@@ -255,7 +255,7 @@ export class LocalProvisioningRunner {
       "$platformUrl=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_PLATFORM_URL_B64))",
       "$pairingCode=$env:BIOEMS_PAIRING_CODE",
       "$serial=New-Object System.IO.Ports.SerialPort($portName,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
-      "$serial.NewLine=\"\\n\"",
+      "$serial.NewLine=[Environment]::NewLine",
       "$serial.ReadTimeout=250",
       "$serial.WriteTimeout=3000",
       "function Read-Window([int]$milliseconds) {",
