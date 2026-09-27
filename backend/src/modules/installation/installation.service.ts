@@ -3,6 +3,8 @@ import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
 import { AppError } from "../../errors/app-error";
 import type { InstallationSnapshot } from "./installation.schema";
+import { CommissioningRepository } from "../commissioning/commissioning.repository";
+import { CommissioningService } from "../commissioning/commissioning.service";
 
 type InstallationStatus =
   | "DRAFT"
@@ -95,6 +97,83 @@ export class InstallationService {
     const installation = this.find(uuid);
     this.assertUserBinding(installation.customer_id, userId);
     return this.get(uuid);
+  }
+
+  getAcceptanceStateForCustomerSite(siteId: number, userId: number) {
+    const binding = this.database
+      .prepare(
+        `SELECT s.id AS siteId,s.code AS siteCode,s.name AS siteName,b.customer_id AS customerId
+         FROM sites s
+         JOIN customer_site_bindings b ON b.site_id=s.id
+         JOIN customer_user_bindings u ON u.customer_id=b.customer_id
+         WHERE s.id=? AND u.user_id=?`
+      )
+      .get(siteId, userId) as
+      | { siteId: number; siteCode: string; siteName: string; customerId: number }
+      | undefined;
+    if (!binding) throw new AppError("Site not found", 404, "SITE_NOT_FOUND");
+
+    const rows = this.database
+      .prepare(
+        `SELECT i.id,i.uuid,i.status,
+           (SELECT MAX(revision) FROM platform_installation_revisions r WHERE r.installation_id=i.id) AS latestRevision,
+           (SELECT snapshot_json FROM platform_installation_revisions r WHERE r.installation_id=i.id ORDER BY revision DESC LIMIT 1) AS snapshotJson
+         FROM platform_installations i
+         WHERE i.customer_id=?
+         ORDER BY i.id DESC`
+      )
+      .all(binding.customerId) as Array<{
+      id: number;
+      uuid: string;
+      status: InstallationStatus;
+      latestRevision: number;
+      snapshotJson: string;
+    }>;
+
+    const installation = rows.find((row) => {
+      const snapshot = JSON.parse(row.snapshotJson) as InstallationSnapshot;
+      return snapshot.sites.some((site) => site.code === binding.siteCode);
+    });
+    if (!installation) {
+      return {
+        siteId: binding.siteId,
+        siteCode: binding.siteCode,
+        siteName: binding.siteName,
+        installation: null,
+      };
+    }
+
+    const decisions = this.database
+      .prepare(
+        `SELECT stage,decision,actor_identity AS actorIdentity,note,decided_at AS decidedAt
+         FROM platform_installation_decisions
+         WHERE installation_id=?
+         ORDER BY id DESC`
+      )
+      .all(installation.id) as Array<{
+      stage: string;
+      decision: string;
+      actorIdentity: string;
+      note: string | null;
+      decidedAt: string;
+    }>;
+    const technical = decisions.find((decision) => decision.stage === "TECHNICAL") ?? null;
+    const customer =
+      decisions.find((decision) => decision.stage === "CUSTOMER_ACCEPTANCE") ?? null;
+
+    return {
+      siteId: binding.siteId,
+      siteCode: binding.siteCode,
+      siteName: binding.siteName,
+      installation: {
+        uuid: installation.uuid,
+        status: installation.status,
+        latestRevision: installation.latestRevision,
+        acceptanceEnabled: installation.status === "CUSTOMER_ACCEPTANCE_PENDING",
+        technicalCommissioning: technical,
+        customerAcceptance: customer,
+      },
+    };
   }
 
   create(customerId: number, snapshot: InstallationSnapshot, actor: string) {
@@ -204,6 +283,7 @@ export class InstallationService {
   ) {
     const installation = this.find(uuid);
     if (installation.status !== "CONFIG_ACTIVE") throw conflict("ACTIVE_CONFIGURATION_REQUIRED");
+    if (decision === "ACCEPT") this.assertCommissioningReady(installation);
     return this.database.transaction(() =>
       this.decide(
         installation,
@@ -232,6 +312,7 @@ export class InstallationService {
     if (binding?.role !== "ADMIN") throw new AppError("Forbidden", 403, "FORBIDDEN");
     if (installation.status !== "CUSTOMER_ACCEPTANCE_PENDING")
       throw conflict("TECHNICAL_COMMISSIONING_REQUIRED");
+    if (decision === "ACCEPT") this.assertCommissioningReady(installation);
     return this.database.transaction(() => {
       return this.decide(
         installation,
@@ -242,6 +323,25 @@ export class InstallationService {
         decision === "ACCEPT" ? "COMMISSIONED" : "CORRECTION_REQUIRED"
       );
     })();
+  }
+
+  private assertCommissioningReady(installation: InstallationRow) {
+    const snapshot = JSON.parse(this.latest(installation.id).snapshot_json) as InstallationSnapshot;
+    const commissioning = new CommissioningService(new CommissioningRepository(this.database));
+    const asOf = new Date().toISOString();
+    for (const site of snapshot.sites) {
+      const row = this.database
+        .prepare(
+          `SELECT s.id
+           FROM sites s
+           JOIN customer_site_bindings b ON b.site_id=s.id
+           WHERE b.customer_id=? AND s.code=? AND s.active=1`
+        )
+        .get(installation.customer_id, site.code) as { id: number } | undefined;
+      if (!row || !commissioning.getConfigurationReadiness(row.id, asOf).ready) {
+        throw conflict("COMMISSIONING_READINESS_REQUIRED");
+      }
+    }
   }
 
   private transition(
