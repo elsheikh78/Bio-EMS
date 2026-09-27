@@ -812,7 +812,8 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("BIOEMS_INNO_COMPILER_EVIDENCE=$compilerEvidence");
     expect(workflow).toContain("Get-VendorInputs.ps1");
     expect(workflow).toContain("New-InstallerStaging.ps1");
-    expect(workflow).toContain("espressif/idf:v5.5.5");
+    expect(workflow).toContain("espressif/esp-idf-ci-action@v1");
+    expect(workflow).toContain("esp_idf_version: v5.5.5");
     expect(workflow).toContain("package_firmware.py");
     expect(workflow).toContain("BIO-EMS-ESP32S3-");
     expect(workflow).toContain("FirmwarePackageDirectory");
