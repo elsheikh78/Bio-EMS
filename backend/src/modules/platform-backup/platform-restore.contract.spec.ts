@@ -135,18 +135,21 @@ describe("DEP-BR controlled restore helper contract", () => {
     expect(appSource).toContain("reconcilePlatformRestoreAudits()");
   });
 
-
   it("hardens transient InfluxDB snapshot failures with bounded retry backoff", async () => {
     const backupSource = await readFile(
       join(process.cwd(), "../installer/windows/Invoke-PlatformInfluxBackup.ps1"),
-      "utf8"
+      "utf8",
     );
     expect(backupSource).toContain("[ValidateRange(1, 10)][int]$MaxAttempts = 5");
-    expect(backupSource).toContain("[ValidateRange(1, 30)][int]$RetryDelaySeconds = 3");
     expect(backupSource).toContain(
-      "$retryDelay = [Math]::Min(30, $RetryDelaySeconds * $attempt)"
+      "[ValidateRange(1, 30)][int]$RetryDelaySeconds = 3",
     );
-    expect(backupSource).toContain('Invoke-RestMethod -Uri "$HostUrl/health" -TimeoutSec 10');
+    expect(backupSource).toContain(
+      "$retryDelay = [Math]::Min(30, $RetryDelaySeconds * $attempt)",
+    );
+    expect(backupSource).toContain(
+      'Invoke-RestMethod -Uri "$HostUrl/health" -TimeoutSec 10',
+    );
     expect(backupSource).toContain("last exit code $exitCode");
   });
 
