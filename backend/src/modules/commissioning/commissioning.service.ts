@@ -9,6 +9,7 @@ import {
   CreateCommissioningCheck,
   CreateCommissioningSession,
 } from "./commissioning.repository";
+import { deriveCommunicationStatus } from "../../services/device-health.service";
 
 const siteNotFound = () => new AppError("Site not found", 404, "SITE_NOT_FOUND");
 const sessionNotFound = () =>
@@ -43,15 +44,45 @@ export class CommissioningService {
   getConfigurationReadiness(siteId: number, asOf: string) {
     if (!this.repository.siteExists(siteId)) throw siteNotFound();
     const items = this.repository.getConfigurationReadiness(siteId, asOf);
+    const now = new Date(asOf);
+    const devices = this.repository.listSiteDevices(siteId).map((device) => {
+      const communicationStatus = deriveCommunicationStatus(
+        {
+          uuid: "",
+          device_id: device.deviceId,
+          site_id: siteId,
+          device_type: "",
+          protocol: "",
+          status: device.status,
+          activated: device.activated,
+          last_seen_at: device.lastSeenAt,
+          last_heartbeat_at: device.lastHeartbeatAt,
+        },
+        now
+      );
+      return {
+        deviceId: device.deviceId,
+        communicationStatus,
+        lastSeenAt: device.lastSeenAt,
+        ready: communicationStatus === "ONLINE",
+        blockers: communicationStatus === "ONLINE" ? [] : [`DEVICE_${communicationStatus}`],
+      };
+    });
+    const sensorsReady = items.length > 0 && items.every((item) => item.ready);
+    const devicesReady = devices.length > 0 && devices.every((device) => device.ready);
     return {
       siteId,
       asOf,
-      ready: items.length > 0 && items.every((item) => item.ready),
+      ready: sensorsReady && devicesReady,
       summary: {
         totalSensors: items.length,
         readySensors: items.filter((item) => item.ready).length,
         blockedSensors: items.filter((item) => !item.ready).length,
+        totalDevices: devices.length,
+        onlineDevices: devices.filter((device) => device.ready).length,
+        blockedDevices: devices.filter((device) => !device.ready).length,
       },
+      devices,
       items,
     };
   }
