@@ -6,6 +6,46 @@ export const windowsSerialPortSchema = z
   .toUpperCase()
   .regex(/^COM[1-9]\d{0,2}$/);
 
+const wifiSsidSchema = z
+  .string()
+  .min(1)
+  .max(32)
+  .refine((value) => !/[\r\n\t ]/.test(value), {
+    message: "Pilot Wi-Fi SSID must not contain whitespace",
+  });
+
+const wifiPasswordSchema = z
+  .string()
+  .min(8)
+  .max(63)
+  .refine((value) => !/[\r\n]/.test(value), {
+    message: "Wi-Fi password must not contain line breaks",
+  });
+
+const platformUrlSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(191)
+  .refine((value) => {
+    try {
+      const url = new URL(value);
+      return (
+        url.protocol === "https:" &&
+        !url.username &&
+        !url.password &&
+        !url.search &&
+        !url.hash &&
+        (url.pathname === "/" || url.pathname === "") &&
+        !["localhost", "127.0.0.1", "::1"].includes(url.hostname.toLowerCase())
+      );
+    } catch {
+      return false;
+    }
+  }, {
+    message: "Platform URL must be a LAN-reachable HTTPS origin",
+  });
+
 export const deviceProvisioningDetectSchema = z
   .object({
     port: windowsSerialPortSchema,
@@ -20,9 +60,30 @@ export const deviceProvisioningFlashSchema = z
   })
   .strict();
 
+export const deviceProvisioningFlashBindSchema = z
+  .object({
+    installationId: z.string().uuid(),
+    deviceId: z.string().trim().min(1).max(80),
+    port: windowsSerialPortSchema,
+    wifiSsid: wifiSsidSchema,
+    wifiPassword: wifiPasswordSchema,
+    platformUrl: platformUrlSchema,
+  })
+  .strict();
+
 export const localProvisionerFlashSchema = z
   .object({
     port: windowsSerialPortSchema,
+  })
+  .strict();
+
+export const localProvisionerProvisionSchema = z
+  .object({
+    port: windowsSerialPortSchema,
+    wifiSsid: wifiSsidSchema,
+    wifiPassword: wifiPasswordSchema,
+    platformUrl: platformUrlSchema,
+    pairingCode: z.string().regex(/^\d{12}$/),
   })
   .strict();
 
