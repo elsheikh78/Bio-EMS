@@ -86,6 +86,42 @@ function Grant-LifecycleTreeRestoreAccess([string]$path) {
 function Write-Utf8([string]$path, [object]$value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
+function Repair-InstallationProvisioningReceiptMetadata(
+    [string]$identityPath,
+    [string]$receiptPath
+) {
+    $repairScript = Join-Path $application "backend\dist\src\scripts\repair-installation-provisioning-receipt.js"
+    if (-not (Test-Path -LiteralPath $repairScript -PathType Leaf)) {
+        throw "Installation provisioning receipt repair command is missing"
+    }
+
+    $node = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\node") -Filter "node.exe" -File -Recurse)
+    if ($node.Count -ne 1) { throw "Receipt repair expected exactly one controlled Node.js executable" }
+
+    $previousSqlitePath = $env:BIOEMS_SQLITE_PATH
+    $previousIdentityPath = $env:BIOEMS_INSTALLATION_IDENTITY_PATH
+    $previousReceiptPath = $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH
+    try {
+        $env:BIOEMS_SQLITE_PATH = Join-Path $persistent "data\bioems.db"
+        $env:BIOEMS_INSTALLATION_IDENTITY_PATH = $identityPath
+        $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $receiptPath
+
+        $repairOutput = @(& $node[0].FullName $repairScript 2>&1)
+        $repairExitCode = $LASTEXITCODE
+        if ($repairExitCode -ne 0) {
+            $detail = ($repairOutput | Out-String).Trim()
+            throw "Installation provisioning receipt metadata repair failed with exit code $repairExitCode detail=$detail"
+        }
+    }
+    finally {
+        if ($null -eq $previousSqlitePath) { Remove-Item Env:BIOEMS_SQLITE_PATH -ErrorAction SilentlyContinue }
+        else { $env:BIOEMS_SQLITE_PATH = $previousSqlitePath }
+        if ($null -eq $previousIdentityPath) { Remove-Item Env:BIOEMS_INSTALLATION_IDENTITY_PATH -ErrorAction SilentlyContinue }
+        else { $env:BIOEMS_INSTALLATION_IDENTITY_PATH = $previousIdentityPath }
+        if ($null -eq $previousReceiptPath) { Remove-Item Env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH -ErrorAction SilentlyContinue }
+        else { $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH = $previousReceiptPath }
+    }
+}
 function Repair-BackendIdentityProvisioning {
     $licensing = Join-Path $persistent "licensing"
     $identityPath = Join-Path $licensing "installation-identity.json"
@@ -96,7 +132,11 @@ function Repair-BackendIdentityProvisioning {
     if ($identityExists -xor $receiptExists) {
         throw "Incomplete installation identity state; Repair will not replace partial identity evidence"
     }
-    if ($identityExists) { return }
+    if ($identityExists) {
+        Grant-LifecycleAdministratorAccess $licensing
+        Repair-InstallationProvisioningReceiptMetadata $identityPath $receiptPath
+        return
+    }
 
     Grant-LifecycleAdministratorAccess $licensing
     & icacls.exe $licensing /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" "NT SERVICE\BIOEMS-Backend:(OI)(CI)M" /C /Q | Out-Null
