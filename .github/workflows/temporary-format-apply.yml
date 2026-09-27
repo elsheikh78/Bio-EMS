@@ -1,0 +1,43 @@
+name: Temporary Format Apply
+
+on:
+  push:
+    branches:
+      - feat/device-provisioning-local-service
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Format backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --prefix backend
+          npm run format --prefix backend
+      - name: Format frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --prefix frontend
+          npm run format --prefix frontend
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- backend frontend; then
+            echo "No formatter changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend frontend
+          git commit -m "style: format device provisioning changes"
+          git push origin HEAD:feat/device-provisioning-local-service
