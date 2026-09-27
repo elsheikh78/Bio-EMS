@@ -62,11 +62,7 @@ export class InstallationContextService {
       )
       .get(identity.customerCode) as CustomerRow | undefined;
 
-    if (
-      !customer ||
-      customer.status === "CLOSED" ||
-      customer.name !== identity.customerName
-    ) {
+    if (!customer || customer.status === "CLOSED" || customer.name !== identity.customerName) {
       throw mismatch();
     }
 
