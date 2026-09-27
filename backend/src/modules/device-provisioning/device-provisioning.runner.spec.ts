@@ -216,7 +216,7 @@ describe("LocalProvisioningRunner", () => {
             "installation-id: 22222222-2222-4222-8222-222222222222",
             "device-id: D001",
             "site-code: SITE1",
-          ].join("\\n"),
+          ].join("\n"),
           stderr: "",
         };
       }
