@@ -151,6 +151,16 @@ export class LicenseGovernanceService {
           "SELECT id,license_id AS licenseDatabaseId,device_id AS deviceDatabaseId,device_identity AS deviceIdentity,status,bound_at AS boundAt FROM licensed_device_bindings ORDER BY id DESC"
         )
         .all(),
+      activationRequests: this.database
+        .prepare(
+          "SELECT ar.id,ar.request_uuid AS requestId,ar.licensing_installation_id AS installationDatabaseId,ar.status,ar.requested_at AS requestedAt,ar.decided_at AS decidedAt,ar.decided_by AS decidedBy,ar.decision_note AS decisionNote FROM license_activation_requests ar ORDER BY ar.id DESC"
+        )
+        .all(),
+      certificates: this.database
+        .prepare(
+          "SELECT c.id,c.license_id AS licenseDatabaseId,c.activation_request_id AS activationRequestDatabaseId,c.key_id AS keyId,c.algorithm,c.certificate_sha256 AS certificateSha256,c.issued_at AS issuedAt FROM signed_license_certificates c ORDER BY c.id DESC"
+        )
+        .all(),
       events: this.database
         .prepare(
           "SELECT id,license_id AS licenseDatabaseId,event_type AS eventType,actor_identity AS actorIdentity,occurred_at AS occurredAt FROM license_events ORDER BY id DESC LIMIT 200"
