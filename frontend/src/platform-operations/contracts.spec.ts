@@ -53,6 +53,8 @@ const overview = {
     installations: [],
     licenses: [],
     devices: [],
+    activationRequests: [],
+    certificates: [],
     events: [],
   },
 };
@@ -60,6 +62,39 @@ const overview = {
 describe("platform fleet contracts", () => {
   it("accepts customer, Site linkage and immutable provenance projections", () => {
     expect(platformOperationsOverviewSchema.parse(overview)).toEqual(overview);
+  });
+
+  it("accepts controlled activation and signed-certificate evidence", () => {
+    const withEvidence = {
+      ...overview,
+      siteBoundLicensing: {
+        ...overview.siteBoundLicensing,
+        activationRequests: [
+          {
+            id: 4,
+            requestId: "11111111-1111-4111-8111-111111111111",
+            installationDatabaseId: 5,
+            status: "PENDING",
+            requestedAt: "2026-09-28T06:00:00Z",
+            decidedAt: null,
+            decidedBy: null,
+            decisionNote: null,
+          },
+        ],
+        certificates: [
+          {
+            id: 6,
+            licenseDatabaseId: 7,
+            activationRequestDatabaseId: 4,
+            keyId: "pilot-key-1",
+            algorithm: "Ed25519",
+            certificateSha256: "a".repeat(64),
+            issuedAt: "2026-09-28T06:05:00Z",
+          },
+        ],
+      },
+    };
+    expect(platformOperationsOverviewSchema.parse(withEvidence)).toEqual(withEvidence);
   });
 
   it("rejects non-platform customer lifecycle values", () => {
