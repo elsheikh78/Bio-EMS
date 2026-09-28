@@ -19,6 +19,7 @@ Enterprise Environmental Monitoring System for regulated and operational environ
 | What controls Communication Channel Administration? | `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md` |
 | What controls the Windows installer? | `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md` |
 | What controls future device trust? | `docs/security/device-registration.md` and `docs/security/activation-workflow.md` |
+| What is the current 2G hardware bench candidate and its open decision? | `docs/hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md` |
 
 Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a historical document conflicts with current status, `PROJECT_STATE.md` and `IMPLEMENTATION_PLAN.md` control.
 
