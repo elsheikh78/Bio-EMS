@@ -40,8 +40,20 @@ const copy = {
     error: "Commercial operations could not be loaded.",
     retry: "Retry",
     empty: "No records have been recorded yet.",
-    addLicense: "Record license",
+    addLicense: "Record commercial license",
     addService: "Record service obligation",
+    commercialRecordHelp:
+      "Commercial license records describe customer/Site entitlement. Signed Site-bound licenses are issued separately through the controlled activation workflow.",
+    signedEvidenceTitle: "Signed Site-bound licensing evidence",
+    activationRequestsTitle: "Activation requests",
+    certificatesTitle: "Signed certificates",
+    noActivationRequests: "No activation requests have been recorded.",
+    noCertificates: "No signed certificates have been issued.",
+    signingBoundary:
+      "Activation approval and Ed25519 signing remain manufacturer-controlled. This customer-host screen displays evidence only and never receives the private signing key.",
+    saveChanges: "Save changes",
+    never: "No expiry",
+    commercialAuditTitle: "Recent commercial license audit",
     customer: "Customer",
     site: "Recorded Site binding",
     unbound: "Not bound",
@@ -77,8 +89,20 @@ const copy = {
     error: "تعذر تحميل العمليات التجارية.",
     retry: "إعادة المحاولة",
     empty: "لا توجد سجلات حتى الآن.",
-    addLicense: "تسجيل ترخيص",
+    addLicense: "تسجيل ترخيص تجاري",
     addService: "تسجيل التزام خدمة",
+    commercialRecordHelp:
+      "سجل الترخيص التجاري يحدد استحقاق العميل/الموقع. أما الترخيص الموقّع المرتبط بالموقع فيصدر منفصلاً من خلال مسار التفعيل المحكوم.",
+    signedEvidenceTitle: "أدلة الترخيص الموقّع المرتبط بالموقع",
+    activationRequestsTitle: "طلبات التفعيل",
+    certificatesTitle: "الشهادات الموقعة",
+    noActivationRequests: "لا توجد طلبات تفعيل مسجلة.",
+    noCertificates: "لم يتم إصدار شهادات موقعة.",
+    signingBoundary:
+      "تظل الموافقة على التفعيل وتوقيع Ed25519 تحت سيطرة الشركة/المصنع. تعرض هذه الشاشة على جهاز العميل الأدلة فقط ولا تستقبل المفتاح الخاص بالتوقيع.",
+    saveChanges: "حفظ التغييرات",
+    never: "بدون تاريخ انتهاء",
+    commercialAuditTitle: "أحدث تدقيق للترخيص التجاري",
     customer: "العميل",
     site: "ربط الموقع المسجل",
     unbound: "غير مرتبط",
@@ -110,6 +134,17 @@ const copy = {
 const isoOrNull = (value: string) =>
   value ? new Date(value).toISOString() : null;
 
+type LicenseStatus = "ACTIVE" | "SUSPENDED" | "EXPIRED" | "REVOKED";
+type UpdateEntitlement = "NONE" | "FREE" | "PAID";
+type LicenseDraft = {
+  status: LicenseStatus;
+  updateEntitlement: UpdateEntitlement;
+  expiresAt: string;
+};
+
+const localDateTimeValue = (value: string | null) =>
+  value ? new Date(value).toISOString().slice(0, 16) : "";
+
 export function SystemOwnerCommercialOperationsPage() {
   const { language } = useLocalization();
   const text = copy[language];
@@ -124,8 +159,10 @@ export function SystemOwnerCommercialOperationsPage() {
   const [siteId, setSiteId] = useState("");
   const [reference, setReference] = useState("");
   const [edition, setEdition] = useState("STANDARD");
-  const [status, setStatus] = useState("ACTIVE");
-  const [entitlement, setEntitlement] = useState("NONE");
+  const [status, setStatus] = useState<LicenseStatus>("ACTIVE");
+  const [entitlement, setEntitlement] = useState<UpdateEntitlement>("NONE");
+  const [expiresAt, setExpiresAt] = useState("");
+  const [licenseDrafts, setLicenseDrafts] = useState<Record<number, LicenseDraft>>({});
   const [eventType, setEventType] = useState("MAINTENANCE");
   const [dueAt, setDueAt] = useState("");
   const [note, setNote] = useState("");
@@ -158,6 +195,17 @@ export function SystemOwnerCommercialOperationsPage() {
     data.customers.find((x) => x.id === id)?.name ?? `#${id}`;
   const siteName = (id: number | null) =>
     id ? (data.sites.find((x) => x.id === id)?.name ?? `#${id}`) : text.unbound;
+  const licenseDraft = (license: (typeof data.licenses)[number]): LicenseDraft =>
+    licenseDrafts[license.id] ?? {
+      status: license.status,
+      updateEntitlement: license.updateEntitlement,
+      expiresAt: localDateTimeValue(license.expiresAt),
+    };
+  const patchLicenseDraft = (license: (typeof data.licenses)[number], patch: Partial<LicenseDraft>) =>
+    setLicenseDrafts((current) => ({
+      ...current,
+      [license.id]: { ...licenseDraft(license), ...patch },
+    }));
   const submitLicense = async (event: FormEvent) => {
     event.preventDefault();
     await createLicense.mutateAsync({
@@ -165,13 +213,14 @@ export function SystemOwnerCommercialOperationsPage() {
       siteId: siteId ? Number(siteId) : null,
       licenseKeyReference: reference,
       edition,
-      status: status as "ACTIVE",
+      status,
       startsAt: new Date().toISOString(),
-      expiresAt: null,
-      updateEntitlement: entitlement as "NONE",
+      expiresAt: isoOrNull(expiresAt),
+      updateEntitlement: entitlement,
       recordedAt: new Date().toISOString(),
     });
     setReference("");
+    setExpiresAt("");
   };
   const submitService = async (event: FormEvent) => {
     event.preventDefault();
@@ -237,6 +286,36 @@ export function SystemOwnerCommercialOperationsPage() {
                 </strong>
               </Typography>
             </Box>
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {text.signingBoundary}
+            </Alert>
+            <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
+              {text.activationRequestsTitle}
+            </Typography>
+            {data.siteBoundLicensing.activationRequests.length === 0 ? (
+              <Typography variant="body2">{text.noActivationRequests}</Typography>
+            ) : (
+              data.siteBoundLicensing.activationRequests.slice(0, 5).map((request) => (
+                <Typography key={request.id} variant="body2">
+                  {request.requestId} · {request.status} ·{" "}
+                  {new Date(request.requestedAt).toLocaleString(language)}
+                </Typography>
+              ))
+            )}
+            <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
+              {text.certificatesTitle}
+            </Typography>
+            {data.siteBoundLicensing.certificates.length === 0 ? (
+              <Typography variant="body2">{text.noCertificates}</Typography>
+            ) : (
+              data.siteBoundLicensing.certificates.slice(0, 5).map((certificate) => (
+                <Typography key={certificate.id} variant="body2">
+                  License #{certificate.licenseDatabaseId} · {certificate.algorithm} ·{" "}
+                  {certificate.keyId} · SHA-256 {certificate.certificateSha256.slice(0, 16)}… ·{" "}
+                  {new Date(certificate.issuedAt).toLocaleString(language)}
+                </Typography>
+              ))
+            )}
             <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
               {text.auditTitle}
             </Typography>
@@ -257,6 +336,9 @@ export function SystemOwnerCommercialOperationsPage() {
                 <Typography component="h2" variant="h6">
                   {text.addLicense}
                 </Typography>
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  {text.commercialRecordHelp}
+                </Alert>
                 <Box
                   component="form"
                   onSubmit={(e) => void submitLicense(e)}
@@ -313,7 +395,7 @@ export function SystemOwnerCommercialOperationsPage() {
                     <Select
                       label={text.status}
                       value={status}
-                      onChange={(e) => setStatus(e.target.value)}
+                      onChange={(e) => setStatus(e.target.value as LicenseStatus)}
                     >
                       {["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"].map(
                         (x) => (
@@ -329,7 +411,7 @@ export function SystemOwnerCommercialOperationsPage() {
                     <Select
                       label={text.entitlement}
                       value={entitlement}
-                      onChange={(e) => setEntitlement(e.target.value)}
+                      onChange={(e) => setEntitlement(e.target.value as UpdateEntitlement)}
                     >
                       {["NONE", "FREE", "PAID"].map((x) => (
                         <MenuItem key={x} value={x}>
@@ -338,6 +420,13 @@ export function SystemOwnerCommercialOperationsPage() {
                       ))}
                     </Select>
                   </FormControl>
+                  <TextField
+                    label={text.expires}
+                    type="datetime-local"
+                    value={expiresAt}
+                    onChange={(e) => setExpiresAt(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
                   <Button type="submit" variant="contained">
                     {text.save}
                   </Button>
@@ -348,51 +437,126 @@ export function SystemOwnerCommercialOperationsPage() {
           {data.licenses.length === 0 ? (
             <Typography>{text.empty}</Typography>
           ) : (
-            <TableContainer component={Card} variant="outlined">
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{text.reference}</TableCell>
-                    <TableCell>{text.customer}</TableCell>
-                    <TableCell>{text.site}</TableCell>
-                    <TableCell>{text.status}</TableCell>
-                    <TableCell>{text.entitlement}</TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.licenses.map((x) => (
-                    <TableRow key={x.id}>
-                      <TableCell>{x.licenseKeyReference}</TableCell>
-                      <TableCell>{customerName(x.customerId)}</TableCell>
-                      <TableCell>{siteName(x.siteId)}</TableCell>
-                      <TableCell>{x.status}</TableCell>
-                      <TableCell>{x.updateEntitlement}</TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() =>
-                            void updateLicense.mutateAsync({
-                              id: x.id,
-                              siteId: x.siteId,
-                              status: x.status,
-                              expiresAt: x.expiresAt,
-                              updateEntitlement:
-                                section === "updates"
-                                  ? x.updateEntitlement === "NONE"
-                                    ? "FREE"
-                                    : "NONE"
-                                  : x.updateEntitlement,
-                            })
-                          }
-                        >
-                          {text.update}
-                        </Button>
-                      </TableCell>
+            <>
+              <TableContainer component={Card} variant="outlined">
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{text.reference}</TableCell>
+                      <TableCell>{text.customer}</TableCell>
+                      <TableCell>{text.site}</TableCell>
+                      <TableCell>{text.status}</TableCell>
+                      <TableCell>{text.expires}</TableCell>
+                      <TableCell>{text.entitlement}</TableCell>
+                      <TableCell />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {data.licenses.map((x) => {
+                      const draft = licenseDraft(x);
+                      return (
+                        <TableRow key={x.id}>
+                          <TableCell>{x.licenseKeyReference}</TableCell>
+                          <TableCell>{customerName(x.customerId)}</TableCell>
+                          <TableCell>{siteName(x.siteId)}</TableCell>
+                          <TableCell>
+                            {section === "licenses" ? (
+                              <Select
+                                size="small"
+                                value={draft.status}
+                                onChange={(event) =>
+                                  patchLicenseDraft(x, {
+                                    status: event.target.value as LicenseStatus,
+                                  })
+                                }
+                              >
+                                {["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"].map((value) => (
+                                  <MenuItem key={value} value={value}>
+                                    {value}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            ) : (
+                              x.status
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {section === "licenses" ? (
+                              <TextField
+                                size="small"
+                                type="datetime-local"
+                                value={draft.expiresAt}
+                                onChange={(event) =>
+                                  patchLicenseDraft(x, { expiresAt: event.target.value })
+                                }
+                                slotProps={{ inputLabel: { shrink: true } }}
+                              />
+                            ) : x.expiresAt ? (
+                              new Date(x.expiresAt).toLocaleString(language)
+                            ) : (
+                              text.never
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              size="small"
+                              value={draft.updateEntitlement}
+                              onChange={(event) =>
+                                patchLicenseDraft(x, {
+                                  updateEntitlement: event.target.value as UpdateEntitlement,
+                                })
+                              }
+                            >
+                              {["NONE", "FREE", "PAID"].map((value) => (
+                                <MenuItem key={value} value={value}>
+                                  {value}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              disabled={updateLicense.isPending}
+                              onClick={() =>
+                                void updateLicense
+                                  .mutateAsync({
+                                    id: x.id,
+                                    siteId: x.siteId,
+                                    status: draft.status,
+                                    expiresAt: isoOrNull(draft.expiresAt),
+                                    updateEntitlement: draft.updateEntitlement,
+                                  })
+                                  .then(() =>
+                                    setLicenseDrafts((current) => {
+                                      const next = { ...current };
+                                      delete next[x.id];
+                                      return next;
+                                    }),
+                                  )
+                              }
+                            >
+                              {text.saveChanges}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Typography component="h2" variant="h6" sx={{ mt: 3 }}>
+                {text.commercialAuditTitle}
+              </Typography>
+              {data.commercialEvents
+                .filter((event) => event.entityType === "LICENSE")
+                .slice(0, 5)
+                .map((event) => (
+                  <Typography key={event.id} variant="body2">
+                    {event.eventType} · {event.actorIdentity} ·{" "}
+                    {new Date(event.occurredAt).toLocaleString(language)}
+                  </Typography>
+                ))}
+            </>
           )}
         </>
       ) : (
