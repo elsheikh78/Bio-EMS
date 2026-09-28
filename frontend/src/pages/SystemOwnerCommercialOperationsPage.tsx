@@ -408,7 +408,7 @@ export function SystemOwnerCommercialOperationsPage() {
                     <Select
                       label={text.status}
                       value={status}
-                      onChange={(e) => setStatus(e.target.value as LicenseStatus)}
+                      onChange={(e) => setStatus(e.target.value)}
                     >
                       {["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"].map(
                         (x) => (
@@ -424,7 +424,7 @@ export function SystemOwnerCommercialOperationsPage() {
                     <Select
                       label={text.entitlement}
                       value={entitlement}
-                      onChange={(e) => setEntitlement(e.target.value as UpdateEntitlement)}
+                      onChange={(e) => setEntitlement(e.target.value)}
                     >
                       {["NONE", "FREE", "PAID"].map((x) => (
                         <MenuItem key={x} value={x}>
@@ -479,7 +479,7 @@ export function SystemOwnerCommercialOperationsPage() {
                                 value={draft.status}
                                 onChange={(event) =>
                                   patchLicenseDraft(x, {
-                                    status: event.target.value as LicenseStatus,
+                                    status: event.target.value,
                                   })
                                 }
                               >
@@ -516,7 +516,7 @@ export function SystemOwnerCommercialOperationsPage() {
                               value={draft.updateEntitlement}
                               onChange={(event) =>
                                 patchLicenseDraft(x, {
-                                  updateEntitlement: event.target.value as UpdateEntitlement,
+                                  updateEntitlement: event.target.value,
                                 })
                               }
                             >
