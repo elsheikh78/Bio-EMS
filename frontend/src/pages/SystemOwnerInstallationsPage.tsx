@@ -46,6 +46,7 @@ const copy = {
     create: "Create controlled draft",
     error: "Draft could not be created.",
     register: "Lifecycle register",
+    lifecycleId: "Configuration lifecycle ID",
     status: "Status",
     revision: "revision",
     sites: "Sites",
@@ -118,6 +119,7 @@ const copy = {
     create: "إنشاء مسودة محكومة",
     error: "تعذر إنشاء المسودة.",
     register: "سجل دورة الحياة",
+    lifecycleId: "معرّف دورة حياة التهيئة",
     status: "الحالة",
     revision: "المراجعة",
     sites: "المواقع",
@@ -422,7 +424,9 @@ export function SystemOwnerInstallationsPage() {
               <Typography variant="h6">
                 {item.customerName} — {text.revision} {item.latestRevision}
               </Typography>
-              <Typography color="text.secondary">{item.uuid}</Typography>
+              <Typography color="text.secondary">
+                {text.lifecycleId}: {item.uuid}
+              </Typography>
               <Typography>
                 {text.status}: {statusLabel(item.status)}
               </Typography>
