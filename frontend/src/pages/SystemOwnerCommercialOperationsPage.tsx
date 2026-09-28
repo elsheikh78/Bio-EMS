@@ -76,7 +76,7 @@ const copy = {
     licenseBoundary:
       "A recorded Site binding is not evidence of physical installation or commissioning. License state does not represent billing or payment settlement.",
     updateBoundary:
-      "Eligibility records authorize access only; they do not execute or prove a remote update.",
+      "Eligibility records authorize access only; they do not execute or prove a remote update. Changing this commercial record never rewrites an immutable signed Site-bound certificate; changed signed entitlement requires controlled re-issuance.",
     serviceBoundary:
       "These are platform obligations. Completion must be backed by genuine field/service evidence; this screen does not fabricate it.",
   },
@@ -125,7 +125,7 @@ const copy = {
     licenseBoundary:
       "ربط الموقع المسجل ليس دليلاً على التركيب الفعلي أو التكليف. حالة الترخيص لا تمثل الفوترة أو سداد المدفوعات.",
     updateBoundary:
-      "سجل الاستحقاق يحدد الأهلية فقط؛ ولا ينفذ أو يثبت تحديثاً عن بُعد.",
+      "سجل الاستحقاق يحدد الأهلية فقط؛ ولا ينفذ أو يثبت تحديثاً عن بُعد. تغيير هذا السجل التجاري لا يعيد كتابة شهادة الترخيص الموقعة غير القابلة للتعديل؛ تغيير الاستحقاق الموقّع يحتاج إعادة إصدار محكومة.",
     serviceBoundary:
       "هذه التزامات على مستوى المنصة. الإكمال يحتاج دليلاً ميدانياً/خدمياً حقيقياً ولا تنشئ هذه الشاشة دليلاً مصطنعاً.",
   },
