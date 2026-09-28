@@ -162,7 +162,9 @@ export function SystemOwnerCommercialOperationsPage() {
   const [status, setStatus] = useState<LicenseStatus>("ACTIVE");
   const [entitlement, setEntitlement] = useState<UpdateEntitlement>("NONE");
   const [expiresAt, setExpiresAt] = useState("");
-  const [licenseDrafts, setLicenseDrafts] = useState<Record<number, LicenseDraft>>({});
+  const [licenseDrafts, setLicenseDrafts] = useState<
+    Record<number, LicenseDraft>
+  >({});
   const [eventType, setEventType] = useState("MAINTENANCE");
   const [dueAt, setDueAt] = useState("");
   const [note, setNote] = useState("");
@@ -195,7 +197,9 @@ export function SystemOwnerCommercialOperationsPage() {
     data.customers.find((x) => x.id === id)?.name ?? `#${id}`;
   const siteName = (id: number | null) =>
     id ? (data.sites.find((x) => x.id === id)?.name ?? `#${id}`) : text.unbound;
-  const licenseDraft = (license: (typeof data.licenses)[number]): LicenseDraft =>
+  const licenseDraft = (
+    license: (typeof data.licenses)[number],
+  ): LicenseDraft =>
     licenseDrafts[license.id] ?? {
       status: license.status,
       updateEntitlement: license.updateEntitlement,
@@ -306,14 +310,18 @@ export function SystemOwnerCommercialOperationsPage() {
               {text.activationRequestsTitle}
             </Typography>
             {data.siteBoundLicensing.activationRequests.length === 0 ? (
-              <Typography variant="body2">{text.noActivationRequests}</Typography>
+              <Typography variant="body2">
+                {text.noActivationRequests}
+              </Typography>
             ) : (
-              data.siteBoundLicensing.activationRequests.slice(0, 5).map((request) => (
-                <Typography key={request.id} variant="body2">
-                  {request.requestId} · {request.status} ·{" "}
-                  {new Date(request.requestedAt).toLocaleString(language)}
-                </Typography>
-              ))
+              data.siteBoundLicensing.activationRequests
+                .slice(0, 5)
+                .map((request) => (
+                  <Typography key={request.id} variant="body2">
+                    {request.requestId} · {request.status} ·{" "}
+                    {new Date(request.requestedAt).toLocaleString(language)}
+                  </Typography>
+                ))
             )}
             <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
               {text.certificatesTitle}
@@ -321,13 +329,16 @@ export function SystemOwnerCommercialOperationsPage() {
             {data.siteBoundLicensing.certificates.length === 0 ? (
               <Typography variant="body2">{text.noCertificates}</Typography>
             ) : (
-              data.siteBoundLicensing.certificates.slice(0, 5).map((certificate) => (
-                <Typography key={certificate.id} variant="body2">
-                  License #{certificate.licenseDatabaseId} · {certificate.algorithm} ·{" "}
-                  {certificate.keyId} · SHA-256 {certificate.certificateSha256.slice(0, 16)}… ·{" "}
-                  {new Date(certificate.issuedAt).toLocaleString(language)}
-                </Typography>
-              ))
+              data.siteBoundLicensing.certificates
+                .slice(0, 5)
+                .map((certificate) => (
+                  <Typography key={certificate.id} variant="body2">
+                    License #{certificate.licenseDatabaseId} ·{" "}
+                    {certificate.algorithm} · {certificate.keyId} · SHA-256{" "}
+                    {certificate.certificateSha256.slice(0, 16)}… ·{" "}
+                    {new Date(certificate.issuedAt).toLocaleString(language)}
+                  </Typography>
+                ))
             )}
             <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
               {text.auditTitle}
@@ -483,7 +494,12 @@ export function SystemOwnerCommercialOperationsPage() {
                                   })
                                 }
                               >
-                                {["ACTIVE", "SUSPENDED", "EXPIRED", "REVOKED"].map((value) => (
+                                {[
+                                  "ACTIVE",
+                                  "SUSPENDED",
+                                  "EXPIRED",
+                                  "REVOKED",
+                                ].map((value) => (
                                   <MenuItem key={value} value={value}>
                                     {value}
                                   </MenuItem>
@@ -500,7 +516,9 @@ export function SystemOwnerCommercialOperationsPage() {
                                 type="datetime-local"
                                 value={draft.expiresAt}
                                 onChange={(event) =>
-                                  patchLicenseDraft(x, { expiresAt: event.target.value })
+                                  patchLicenseDraft(x, {
+                                    expiresAt: event.target.value,
+                                  })
                                 }
                                 slotProps={{ inputLabel: { shrink: true } }}
                               />
