@@ -4,6 +4,7 @@ import { createTables } from "../../../database/sqlite/schema";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
 import { migration020 } from "../../../database/sqlite/migrations/020_create_installation_lifecycle";
 import { migration022 } from "../../../database/sqlite/migrations/022_create_site_bound_licensing_domain";
+import { migration023 } from "../../../database/sqlite/migrations/023_create_licensing_activation_workflow";
 import { migration024 } from "../../../database/sqlite/migrations/024_create_licensing_governance";
 import { evaluateOfflineWindow, LicenseGovernanceService } from "./license-governance.service";
 
@@ -18,6 +19,7 @@ describe("LIC-07 through LIC-10 governance", () => {
     migration018.up(database);
     migration020.up(database);
     migration022.up(database);
+    migration023.up(database);
     migration024.up(database);
     database
       .prepare(
@@ -45,6 +47,37 @@ describe("LIC-07 through LIC-10 governance", () => {
     service = new LicenseGovernanceService(database);
   });
   afterEach(() => database.close());
+
+  it("exposes activation requests and immutable signed-certificate evidence", () => {
+    database
+      .prepare(
+        "INSERT INTO licensing_identities (licensing_installation_id,public_key_pem,hardware_fingerprint_json,fingerprint_schema_version,registered_at) VALUES (1,'PUBLIC KEY','{}',1,'2026-09-07T00:00:00.000Z')"
+      )
+      .run();
+    database
+      .prepare(
+        "INSERT INTO license_activation_requests (id,request_uuid,licensing_installation_id,status,requested_at,decided_at,decided_by) VALUES (1,'REQ-1',1,'APPROVED','2026-09-07T00:00:00.000Z','2026-09-07T00:01:00.000Z','owner')"
+      )
+      .run();
+    database
+      .prepare(
+        "INSERT INTO signed_license_certificates (id,license_id,activation_request_id,key_id,algorithm,certificate_json,certificate_sha256,issued_at) VALUES (1,1,1,'key-1','Ed25519','{}','sha-1','2026-09-07T00:01:00.000Z')"
+      )
+      .run();
+
+    expect(service.overview()).toMatchObject({
+      activationRequests: [{ requestId: "REQ-1", status: "APPROVED", decidedBy: "owner" }],
+      certificates: [
+        {
+          licenseDatabaseId: 1,
+          activationRequestDatabaseId: 1,
+          keyId: "key-1",
+          algorithm: "Ed25519",
+          certificateSha256: "sha-1",
+        },
+      ],
+    });
+  });
 
   it("authorizes only a device from the licensed Site", () => {
     service.bindDevice(1, 1, "owner");

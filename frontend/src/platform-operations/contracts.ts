@@ -109,6 +109,33 @@ export const platformOperationsOverviewSchema = z
             })
             .strict(),
         ),
+        activationRequests: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              requestId: z.string(),
+              installationDatabaseId: databaseIdSchema,
+              status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUPERSEDED"]),
+              requestedAt: z.string(),
+              decidedAt: z.string().nullable(),
+              decidedBy: z.string().nullable(),
+              decisionNote: z.string().nullable(),
+            })
+            .strict(),
+        ),
+        certificates: z.array(
+          z
+            .object({
+              id: databaseIdSchema,
+              licenseDatabaseId: databaseIdSchema,
+              activationRequestDatabaseId: databaseIdSchema,
+              keyId: z.string(),
+              algorithm: z.literal("Ed25519"),
+              certificateSha256: z.string(),
+              issuedAt: z.string(),
+            })
+            .strict(),
+        ),
         events: z.array(
           z
             .object({
@@ -122,7 +149,14 @@ export const platformOperationsOverviewSchema = z
         ),
       })
       .strict()
-      .default({ installations: [], licenses: [], devices: [], events: [] }),
+      .default({
+        installations: [],
+        licenses: [],
+        devices: [],
+        activationRequests: [],
+        certificates: [],
+        events: [],
+      }),
   })
   .strict();
 
