@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
 import { migration020 } from "../../../database/sqlite/migrations/020_create_installation_lifecycle";
 import { migration022 } from "../../../database/sqlite/migrations/022_create_site_bound_licensing_domain";
+import { migration023 } from "../../../database/sqlite/migrations/023_create_licensing_activation_workflow";
 import { migration024 } from "../../../database/sqlite/migrations/024_create_licensing_governance";
 import { PlatformOperationsRepository } from "./platform-operations.repository";
 
@@ -29,6 +30,7 @@ describe("isolated platform commercial operations", () => {
     migration018.up(db);
     migration020.up(db);
     migration022.up(db);
+    migration023.up(db);
     migration024.up(db);
     repository = new PlatformOperationsRepository(db);
   });
@@ -80,6 +82,10 @@ describe("isolated platform commercial operations", () => {
         { eventType: "LICENSE_RECORDED", actorIdentity: "owner#1" },
         { eventType: "CUSTOMER_CREATED", actorIdentity: "owner#1" },
       ],
+    });
+    expect(repository.overview().siteBoundLicensing).toMatchObject({
+      activationRequests: [],
+      certificates: [],
     });
     expect(
       db.prepare("SELECT DISTINCT actor_identity FROM platform_commercial_events").all()
