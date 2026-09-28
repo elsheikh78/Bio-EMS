@@ -201,10 +201,20 @@ export function SystemOwnerCommercialOperationsPage() {
       updateEntitlement: license.updateEntitlement,
       expiresAt: localDateTimeValue(license.expiresAt),
     };
-  const patchLicenseDraft = (license: (typeof data.licenses)[number], patch: Partial<LicenseDraft>) =>
+  const patchLicenseDraft = (
+    license: (typeof data.licenses)[number],
+    patch: Partial<LicenseDraft>,
+  ) =>
     setLicenseDrafts((current) => ({
       ...current,
-      [license.id]: { ...licenseDraft(license), ...patch },
+      [license.id]: {
+        ...(current[license.id] ?? {
+          status: license.status,
+          updateEntitlement: license.updateEntitlement,
+          expiresAt: localDateTimeValue(license.expiresAt),
+        }),
+        ...patch,
+      },
     }));
   const submitLicense = async (event: FormEvent) => {
     event.preventDefault();
@@ -259,6 +269,9 @@ export function SystemOwnerCommercialOperationsPage() {
           <CardContent>
             <Typography component="h2" variant="h6" gutterBottom>
               {text.siteBoundTitle}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              {text.signedEvidenceTitle}
             </Typography>
             <Box
               sx={{
