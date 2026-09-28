@@ -315,8 +315,8 @@ export function SystemOwnerCommercialOperationsPage() {
             ) : (
               data.siteBoundLicensing.licenses.slice(0, 10).map((license) => (
                 <Typography key={license.id} variant="body2">
-                  {license.licenseId} · {license.licenseType} · {license.status} ·{" "}
-                  {license.updateEntitlement} ·{" "}
+                  {license.licenseId} · {license.licenseType} · {license.status}{" "}
+                  · {license.updateEntitlement} ·{" "}
                   {license.expiresAt
                     ? new Date(license.expiresAt).toLocaleString(language)
                     : text.never}
