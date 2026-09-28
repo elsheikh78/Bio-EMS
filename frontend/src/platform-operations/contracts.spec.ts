@@ -94,7 +94,9 @@ describe("platform fleet contracts", () => {
         ],
       },
     };
-    expect(platformOperationsOverviewSchema.parse(withEvidence)).toEqual(withEvidence);
+    expect(platformOperationsOverviewSchema.parse(withEvidence)).toEqual(
+      withEvidence,
+    );
   });
 
   it("rejects non-platform customer lifecycle values", () => {
