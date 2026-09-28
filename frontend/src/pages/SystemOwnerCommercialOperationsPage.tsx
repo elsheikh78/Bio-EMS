@@ -29,6 +29,7 @@ import {
   useUpdatePlatformLicense,
   useUpdatePlatformService,
 } from "../platform-operations/queries";
+import { localDateTimeValue } from "../platform-operations/date-time";
 
 const copy = {
   en: {
@@ -145,9 +146,6 @@ type LicenseDraft = {
   updateEntitlement: UpdateEntitlement;
   expiresAt: string;
 };
-
-const localDateTimeValue = (value: string | null) =>
-  value ? new Date(value).toISOString().slice(0, 16) : "";
 
 export function SystemOwnerCommercialOperationsPage() {
   const { language } = useLocalization();
