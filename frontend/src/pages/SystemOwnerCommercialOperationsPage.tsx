@@ -45,6 +45,8 @@ const copy = {
     commercialRecordHelp:
       "Commercial license records describe customer/Site entitlement. Signed Site-bound licenses are issued separately through the controlled activation workflow.",
     signedEvidenceTitle: "Signed Site-bound licensing evidence",
+    signedLicensesTitle: "Effective signed licenses",
+    noSignedLicenses: "No signed Site-bound licenses have been activated.",
     activationRequestsTitle: "Activation requests",
     certificatesTitle: "Signed certificates",
     noActivationRequests: "No activation requests have been recorded.",
@@ -94,6 +96,8 @@ const copy = {
     commercialRecordHelp:
       "سجل الترخيص التجاري يحدد استحقاق العميل/الموقع. أما الترخيص الموقّع المرتبط بالموقع فيصدر منفصلاً من خلال مسار التفعيل المحكوم.",
     signedEvidenceTitle: "أدلة الترخيص الموقّع المرتبط بالموقع",
+    signedLicensesTitle: "التراخيص الموقعة الفعالة",
+    noSignedLicenses: "لا توجد تراخيص موقعة مرتبطة بالموقع تم تفعيلها.",
     activationRequestsTitle: "طلبات التفعيل",
     certificatesTitle: "الشهادات الموقعة",
     noActivationRequests: "لا توجد طلبات تفعيل مسجلة.",
@@ -268,7 +272,7 @@ export function SystemOwnerCommercialOperationsPage() {
       <Alert severity="info" sx={{ my: 2 }}>
         {boundary}
       </Alert>
-      {section === "licenses" && (
+      {(section === "licenses" || section === "updates") && (
         <Card variant="outlined" sx={{ mb: 3 }}>
           <CardContent>
             <Typography component="h2" variant="h6" gutterBottom>
@@ -303,6 +307,22 @@ export function SystemOwnerCommercialOperationsPage() {
                 </strong>
               </Typography>
             </Box>
+            <Typography component="h3" variant="subtitle1" sx={{ mt: 2 }}>
+              {text.signedLicensesTitle}
+            </Typography>
+            {data.siteBoundLicensing.licenses.length === 0 ? (
+              <Typography variant="body2">{text.noSignedLicenses}</Typography>
+            ) : (
+              data.siteBoundLicensing.licenses.slice(0, 10).map((license) => (
+                <Typography key={license.id} variant="body2">
+                  {license.licenseId} · {license.licenseType} · {license.status} ·{" "}
+                  {license.updateEntitlement} ·{" "}
+                  {license.expiresAt
+                    ? new Date(license.expiresAt).toLocaleString(language)
+                    : text.never}
+                </Typography>
+              ))
+            )}
             <Alert severity="info" sx={{ mt: 2 }}>
               {text.signingBoundary}
             </Alert>
@@ -469,6 +489,7 @@ export function SystemOwnerCommercialOperationsPage() {
                       <TableCell>{text.reference}</TableCell>
                       <TableCell>{text.customer}</TableCell>
                       <TableCell>{text.site}</TableCell>
+                      <TableCell>{text.starts}</TableCell>
                       <TableCell>{text.status}</TableCell>
                       <TableCell>{text.expires}</TableCell>
                       <TableCell>{text.entitlement}</TableCell>
@@ -483,6 +504,9 @@ export function SystemOwnerCommercialOperationsPage() {
                           <TableCell>{x.licenseKeyReference}</TableCell>
                           <TableCell>{customerName(x.customerId)}</TableCell>
                           <TableCell>{siteName(x.siteId)}</TableCell>
+                          <TableCell>
+                            {new Date(x.startsAt).toLocaleString(language)}
+                          </TableCell>
                           <TableCell>
                             {section === "licenses" ? (
                               <Select
