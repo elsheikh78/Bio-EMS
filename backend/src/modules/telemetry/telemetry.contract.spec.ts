@@ -26,7 +26,12 @@ describe("Telemetry contracts", () => {
     };
 
     expect(telemetrySchema.parse(valid)).toEqual(valid);
-    const { battery: _battery, ...externallyPowered } = valid;
+    const externallyPowered = {
+      protocolVersion: valid.protocolVersion,
+      timestamp: valid.timestamp,
+      signal: valid.signal,
+      sensors: valid.sensors,
+    };
     expect(telemetrySchema.parse(externallyPowered)).not.toHaveProperty("battery");
     expect(() => telemetrySchema.parse({ ...valid, sensors: [] })).toThrow();
     expect(() =>
