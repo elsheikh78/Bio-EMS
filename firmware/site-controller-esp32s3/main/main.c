@@ -16,6 +16,7 @@
 #include "nvs_flash.h"
 
 #include "bioems_version.h"
+#include "sim_modbus.h"
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAILED_BIT BIT1
@@ -182,15 +183,25 @@ static bool persist_pairing_response(const char *body) {
       configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "revision") : NULL;
   const cJSON *checksum =
       configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "checksum") : NULL;
+  const cJSON *configured_device =
+      configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "device") : NULL;
+  const cJSON *sim_modules = configured_device
+      ? cJSON_GetObjectItemCaseSensitive(configured_device, "simModules") : NULL;
 
   bool valid =
       cJSON_IsString(binding) && cJSON_IsString(installation) && cJSON_IsString(device) &&
       cJSON_IsString(site) && cJSON_IsString(telemetry) && cJSON_IsString(heartbeat) &&
       cJSON_IsNumber(revision) && cJSON_IsString(checksum);
+  if (sim_modules && (!cJSON_IsNumber(sim_modules) ||
+                      sim_modules->valuedouble != sim_modules->valueint ||
+                      sim_modules->valueint < 1 ||
+                      sim_modules->valueint > SIM_MAX_MODULES)) valid = false;
 
   if (valid) {
     char revision_text[16];
     snprintf(revision_text, sizeof(revision_text), "%d", revision->valueint);
+    char module_count[2];
+    snprintf(module_count, sizeof(module_count), "%d", sim_modules ? sim_modules->valueint : 0);
     valid =
         nvs_set_text("binding_id", binding->valuestring) == ESP_OK &&
         nvs_set_text("install_id", installation->valuestring) == ESP_OK &&
@@ -200,6 +211,7 @@ static bool persist_pairing_response(const char *body) {
         nvs_set_text("heart_topic", heartbeat->valuestring) == ESP_OK &&
         nvs_set_text("config_rev", revision_text) == ESP_OK &&
         nvs_set_text("config_sha", checksum->valuestring) == ESP_OK &&
+        nvs_set_text("sim_count", module_count) == ESP_OK &&
         nvs_set_text("bind_schema", "1") == ESP_OK;
   }
 
@@ -323,6 +335,7 @@ static void clear_binding(void) {
       "config_rev",
       "config_sha",
       "bind_schema",
+      "sim_count",
   };
   for (size_t i = 0; i < sizeof(keys) / sizeof(keys[0]); i++) {
     nvs_erase_key(handle, keys[i]);
@@ -330,6 +343,37 @@ static void clear_binding(void) {
   nvs_commit(handle);
   nvs_close(handle);
   printf("local binding cleared; backend binding must be revoked separately by System Owner\n");
+}
+
+static void sim_poll_task(void *argument) {
+  (void)argument;
+  if (!sim_modbus_init()) {
+    ESP_LOGE(TAG, "SIM-D4 RS485 UART initialization failed");
+    vTaskDelete(NULL);
+    return;
+  }
+  while (true) {
+    char count_text[2] = {0};
+    int count = nvs_get_text("sim_count", count_text, sizeof(count_text))
+        ? atoi(count_text) : 0;
+    for (int address = 1; address <= count && address <= SIM_MAX_MODULES; ++address) {
+      sim_modbus_sample_t sample = {0};
+      if (!sim_modbus_read(address, &sample)) {
+        ESP_LOGW(TAG, "SIM-D4 address %d did not return a valid Modbus frame", address);
+        continue;
+      }
+      for (int probe = 0; probe < SIM_CHANNELS_PER_MODULE; ++probe) {
+        int channel = (address - 1) * SIM_CHANNELS_PER_MODULE + probe + 1;
+        if (sample.status[probe] == 0 && sample.tenths_celsius[probe] != INT16_MIN) {
+          ESP_LOGI(TAG, "SIM channel %d = %.1f C", channel,
+                   (double)sample.tenths_celsius[probe] / 10.0);
+        } else {
+          ESP_LOGW(TAG, "SIM channel %d sensor status %u", channel, sample.status[probe]);
+        }
+      }
+    }
+    vTaskDelay(pdMS_TO_TICKS(5000));
+  }
 }
 
 static void command_loop(void) {
@@ -398,5 +442,6 @@ void app_main(void) {
 
   ESP_LOGI(TAG, "BIO-EMS Site Controller boot");
   print_status();
+  xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
   command_loop();
 }
