@@ -6,7 +6,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.1`;
+- firmware version: `0.1.0-pilot.2`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -69,13 +69,11 @@ Once a Device has an ACTIVE platform binding, telemetry/heartbeat messages must 
 platform binding ID and hardware UID. Unpaired legacy devices remain accepted during the Pilot
 transition; after pairing, omission or mismatch is rejected.
 
-The current Pilot firmware intentionally does **not** claim the final commercial transport
-security. The customer-local Windows HTTPS endpoint uses an installer-generated self-signed
-certificate, so the Pilot build enables ESP-TLS insecure server-certificate verification only
-for the short-lived bootstrap/pairing phase. This is explicitly testing-only behavior and must
-not be carried into Production. The governed firmware manifest still records the exact source
-commit so Pilot binaries remain traceable even while the Pilot firmware version remains
-`0.1.0-pilot.1`.
+The Windows installer generates a customer-local HTTPS certificate. During USB provisioning,
+the provisioner transfers its public certificate to the ESP32, which verifies the HTTPS peer
+against that certificate for pairing and telemetry. The Pilot still skips hostname matching
+because the certificate does not contain the LAN IP address; this is not a final commercial
+identity model. The governed firmware manifest records the exact source commit.
 
 The current customer-local HTTPS certificate model is not yet the final BIO-EMS Root CA /
 Device CA / mTLS architecture. Before Production:
@@ -105,8 +103,8 @@ isolation, termination and bias before connecting. Pins can be overridden at
 build time with `SIM_RS485_TX_GPIO`, `SIM_RS485_RX_GPIO`, and
 `SIM_RS485_DE_GPIO`.
 
-This change polls the Nano and logs valid temperatures/faults on the ESP32
-serial console. It **does not transmit readings to BIO-EMS**. The client
-installer's MQTT listener is bound to loopback with backend credentials.
-Complete an authenticated device transport and its end-to-end tests before
-deploying this branch or claiming that the dashboard receives SIM readings.
+The controller posts only valid, mapped temperature readings to the BIO-EMS HTTPS endpoint.
+The server verifies a per-binding token and resolves the site/device identity from the binding,
+then uses the existing telemetry processing path. The installer MQTT listener remains bound to
+loopback with backend credentials. The HTTPS delivery is not yet validated on physical hardware;
+fault reporting, controller power monitoring, retries and buffering need field qualification.

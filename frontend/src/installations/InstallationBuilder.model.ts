@@ -380,7 +380,7 @@ export function buildSnapshot(
       protocol: "mqtt",
       manufacturer: "BIO-EMS",
       model: "BIO-EMS-SC-V1",
-      firmwareVersion: "0.1.0-pilot.1",
+      firmwareVersion: "0.1.0-pilot.2",
       ...(device.simModules !== undefined
         ? { simModules: device.simModules }
         : {}),

@@ -271,6 +271,7 @@ $provisionerEnvironment = @{
     BIOEMS_APPLICATION_ROOT = $application
     BIOEMS_PROVISIONER_ESPTOOL_PATH = $esptool
     BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
+    BIOEMS_PROVISIONER_TLS_CERT = $publicCertificate
     BIOEMS_PROVISIONER_PORT = "9444"
 }
 $simAvrdude = Find-One (Join-Path $application "runtime\avrdude") "avrdude.exe"

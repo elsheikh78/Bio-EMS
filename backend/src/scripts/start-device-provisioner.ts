@@ -127,6 +127,7 @@ if (require.main === module) {
     applicationRoot,
     esptoolPath,
     firmwareManifestPath,
+    tlsCertificatePath: process.env.BIOEMS_PROVISIONER_TLS_CERT?.trim() || undefined,
   });
   const sim = new SimFlashingRunner({
     applicationRoot,

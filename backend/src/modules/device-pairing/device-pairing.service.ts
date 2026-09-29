@@ -1,4 +1,4 @@
-import { createHash, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
 import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
 import { AppError } from "../../errors/app-error";
@@ -187,6 +187,9 @@ export class DevicePairingService {
     if (activeForDevice) throw conflict("DEVICE_ALREADY_PAIRED");
 
     const platformBindingId = randomUUID();
+    // Returned only in this one pairing response. Persist a digest, never the token.
+    const telemetryToken = randomBytes(32).toString("hex");
+    const telemetryTokenHash = createHash("sha256").update(telemetryToken).digest("hex");
 
     this.database.transaction(() => {
       const claimed = this.database
@@ -208,8 +211,9 @@ export class DevicePairingService {
         .prepare(
           `INSERT INTO device_platform_bindings(
              platform_binding_id,binding_schema_version,installation_id,pairing_session_id,
-             device_identity,hardware_uid,site_code,firmware_version,protocol_version,status,paired_at
-           ) VALUES(?,?,?,?,?,?,?,?,?,'ACTIVE',?)`
+             device_identity,hardware_uid,site_code,firmware_version,protocol_version,status,paired_at,
+             telemetry_token_hash
+           ) VALUES(?,?,?,?,?,?,?,?,?,'ACTIVE',?,?)`
         )
         .run(
           platformBindingId,
@@ -221,7 +225,8 @@ export class DevicePairingService {
           site.code,
           input.firmware_version,
           input.protocol_version,
-          now.toISOString()
+          now.toISOString(),
+          telemetryTokenHash
         );
 
       this.recordEvent(installation.id, revision.id, "DEVICE_PLATFORM_PAIRED", input.hardware_uid, {
@@ -243,6 +248,7 @@ export class DevicePairingService {
       firmware_version: input.firmware_version,
       protocol_version: input.protocol_version,
       paired_at: now.toISOString(),
+      telemetry_token: telemetryToken,
       configuration: {
         revision: revision.revision,
         checksum: revision.checksum,

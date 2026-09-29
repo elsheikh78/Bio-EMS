@@ -22,6 +22,7 @@ export interface LocalProvisioningRunnerConfig {
   applicationRoot: string;
   esptoolPath: string;
   firmwareManifestPath?: string;
+  tlsCertificatePath?: string;
 }
 
 export interface SerialPortInventoryItem {
@@ -247,6 +248,12 @@ export class LocalProvisioningRunner {
 
   async provision(portInput: string, input: SerialProvisioningInput) {
     const port = windowsSerialPortSchema.parse(portInput);
+    const certificatePath = this.config.tlsCertificatePath;
+    if (!certificatePath || !existsSync(certificatePath))
+      throw new Error("BIO-EMS TLS certificate is not installed for device provisioning");
+    const certificate = readFileSync(certificatePath);
+    if (certificate.length < 100 || certificate.length > 2500)
+      throw new Error("BIO-EMS TLS certificate has invalid length");
     const script = [
       "$ErrorActionPreference='Stop'",
       "$portName=$env:BIOEMS_SERIAL_PORT",
@@ -254,6 +261,7 @@ export class LocalProvisioningRunner {
       "$password=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_WIFI_PASSWORD_B64))",
       "$platformUrl=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:BIOEMS_PLATFORM_URL_B64))",
       "$pairingCode=$env:BIOEMS_PAIRING_CODE",
+      "$certificate=$env:BIOEMS_CA_DER_B64",
       "$serial=[System.IO.Ports.SerialPort]::new($portName,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
       "$serial.NewLine=[Environment]::NewLine",
       "$serial.ReadTimeout=250",
@@ -276,6 +284,15 @@ export class LocalProvisioningRunner {
       "  $initial=Read-Window 2500",
       "  Write-Output $initial",
       "  if($initial -notmatch 'hardware-uid:\\s*[A-Fa-f0-9]{12,32}') { throw 'Hardware UID was not reported' }",
+      "  $serial.WriteLine('cabegin')",
+      "  if((Read-Window 300) -notmatch 'certificate transfer started') { throw 'Certificate transfer not acknowledged' }",
+      "  for($offset=0; $offset -lt $certificate.Length; $offset+=160) {",
+      "    $size=[Math]::Min(160,$certificate.Length-$offset)",
+      "    $serial.WriteLine('cachunk ' + $certificate.Substring($offset,$size))",
+      "    if((Read-Window 300) -notmatch 'certificate chunk saved') { throw 'Certificate chunk rejected' }",
+      "  }",
+      "  $serial.WriteLine('caend')",
+      "  if((Read-Window 750) -notmatch 'platform certificate saved') { throw 'Certificate was not saved' }",
       "  $serial.WriteLine(('setwifi {0} {1}' -f $ssid,$password))",
       "  $wifi=Read-Window 2500",
       "  Write-Output $wifi",
@@ -310,6 +327,7 @@ export class LocalProvisioningRunner {
           BIOEMS_WIFI_PASSWORD_B64: Buffer.from(input.wifiPassword, "utf8").toString("base64"),
           BIOEMS_PLATFORM_URL_B64: Buffer.from(input.platformUrl, "utf8").toString("base64"),
           BIOEMS_PAIRING_CODE: input.pairingCode,
+          BIOEMS_CA_DER_B64: certificate.toString("base64"),
         },
       }
     );
