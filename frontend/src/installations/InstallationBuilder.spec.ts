@@ -5,6 +5,7 @@ import {
   nextAreaCode,
   nextDeviceCode,
   nextTelemetryCode,
+  validBuilder,
 } from "./InstallationBuilder.model";
 import type { InstallationContext } from "./contracts";
 
@@ -152,6 +153,52 @@ describe("InstallationBuilder identifiers and snapshot", () => {
           siteCode: "elmanial-001",
           mappings: [{ areaCode: "A01", telemetryCode: "S1", channel: 1 }],
         },
+      ],
+    });
+  });
+
+  it("maps only fitted SIM-D4 channels while allowing partially populated modules", () => {
+    const sensor = (channel: number) => ({
+      code: `S${channel}`,
+      name: `Probe ${channel}`,
+      type: "TEMPERATURE" as const,
+      unit: "°C",
+      deviceId: "D001",
+      channel,
+      warningDelaySeconds: 0,
+      criticalDelaySeconds: 0,
+      calibrationOffset: 0,
+    });
+    const areas = [
+      { code: "A01", name: "Cold Room", telemetries: [sensor(1), sensor(4)] },
+    ];
+    expect(validBuilder(areas, [{ deviceId: "D001", simModules: 1 }])).toBe(
+      true,
+    );
+    areas[0].telemetries.push(sensor(5));
+    expect(validBuilder(areas, [{ deviceId: "D001", simModules: 1 }])).toBe(
+      false,
+    );
+    expect(validBuilder(areas, [{ deviceId: "D001", simModules: 2 }])).toBe(
+      true,
+    );
+    areas[0].telemetries.push(sensor(16));
+    expect(validBuilder(areas, [{ deviceId: "D001", simModules: 3 }])).toBe(
+      false,
+    );
+    expect(validBuilder(areas, [{ deviceId: "D001", simModules: 4 }])).toBe(
+      true,
+    );
+    expect(
+      buildSnapshot(context, areas, [{ deviceId: "D001", simModules: 4 }])
+        .devices[0],
+    ).toMatchObject({
+      simModules: 4,
+      mappings: [
+        { channel: 1 },
+        { channel: 4 },
+        { channel: 5 },
+        { channel: 16 },
       ],
     });
   });

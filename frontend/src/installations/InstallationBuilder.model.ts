@@ -35,6 +35,7 @@ export type DraftArea = {
 
 export type DraftDevice = {
   deviceId: string;
+  simModules?: number;
 };
 
 export type InstallationBuilderSnapshot = {
@@ -70,6 +71,7 @@ export type InstallationBuilderSnapshot = {
     manufacturer: string;
     model: string;
     firmwareVersion: string;
+    simModules?: number;
     mappings: Array<{
       areaCode: string;
       telemetryCode: string;
@@ -150,7 +152,11 @@ export function validBuilder(areas: DraftArea[], devices: DraftDevice[]) {
         !telemetry.unit.trim() ||
         !devices.some((device) => device.deviceId === telemetry.deviceId) ||
         !Number.isInteger(telemetry.channel) ||
-        telemetry.channel < 1
+        telemetry.channel < 1 ||
+        telemetry.channel >
+          (devices.find((device) => device.deviceId === telemetry.deviceId)
+            ?.simModules ?? 4) *
+            4
       ) {
         return false;
       }
@@ -187,7 +193,14 @@ export function builderStateFromSnapshot(
     .filter((device) => device.siteCode === siteCode)
     .flatMap((device) =>
       typeof device.deviceId === "string" && device.deviceId.length > 0
-        ? [{ deviceId: device.deviceId }]
+        ? [
+            {
+              deviceId: device.deviceId,
+              ...(typeof device.simModules === "number"
+                ? { simModules: device.simModules }
+                : {}),
+            },
+          ]
         : [],
     );
 
@@ -352,6 +365,9 @@ export function buildSnapshot(
       manufacturer: "BIO-EMS",
       model: "BIO-EMS-SC-V1",
       firmwareVersion: "0.1.0-pilot.1",
+      ...(device.simModules !== undefined
+        ? { simModules: device.simModules }
+        : {}),
       mappings: areas.flatMap((area) =>
         area.telemetries
           .filter((telemetry) => telemetry.deviceId === device.deviceId)

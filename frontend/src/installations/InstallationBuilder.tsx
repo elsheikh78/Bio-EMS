@@ -261,6 +261,33 @@ export function InstallationBuilder({
                 {device.deviceId}
               </Typography>
               <Typography variant="caption">BIO-EMS-SC-V1</Typography>
+              <TextField
+                select
+                size="small"
+                sx={{ display: "block", mt: 1, minWidth: 190 }}
+                label={
+                  language === "ar"
+                    ? "وحدات SIM-D4 المركبة"
+                    : "Fitted SIM-D4 modules"
+                }
+                value={device.simModules ?? 1}
+                onChange={(event) =>
+                  setDevices((current) =>
+                    current.map((item) =>
+                      item.deviceId === device.deviceId
+                        ? { ...item, simModules: Number(event.target.value) }
+                        : item,
+                    ),
+                  )
+                }
+              >
+                {[1, 2, 3, 4].map((count) => (
+                  <MenuItem key={count} value={count}>
+                    {count} SIM · {count * 4}{" "}
+                    {language === "ar" ? "قنوات" : "channels"}
+                  </MenuItem>
+                ))}
+              </TextField>
               {devices.length > 1 ? (
                 <Button
                   size="small"
@@ -293,7 +320,7 @@ export function InstallationBuilder({
           onClick={() =>
             setDevices((current) => [
               ...current,
-              { deviceId: nextDeviceCode(current) },
+              { deviceId: nextDeviceCode(current), simModules: 1 },
             ])
           }
         >
@@ -447,7 +474,21 @@ export function InstallationBuilder({
                   type="number"
                   label={text.channel}
                   value={telemetry.channel}
-                  slotProps={{ htmlInput: { min: 1, step: 1 } }}
+                  helperText={
+                    language === "ar"
+                      ? "1–4: SIM1، 5–8: SIM2، 9–12: SIM3، 13–16: SIM4"
+                      : "1–4: SIM1; 5–8: SIM2; 9–12: SIM3; 13–16: SIM4"
+                  }
+                  slotProps={{
+                    htmlInput: {
+                      min: 1,
+                      max:
+                        (devices.find(
+                          (device) => device.deviceId === telemetry.deviceId,
+                        )?.simModules ?? 4) * 4,
+                      step: 1,
+                    },
+                  }}
                   onChange={(event) =>
                     updateTelemetry(area.code, telemetry.code, {
                       channel: Number(event.target.value),
