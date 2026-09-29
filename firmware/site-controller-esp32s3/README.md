@@ -88,3 +88,25 @@ Device CA / mTLS architecture. Before Production:
 - add revocation/replacement and clone-detection tests.
 
 Do not burn irreversible security eFuses on development boards during this Pilot stage.
+# SIM-D4 bench acquisition (draft)
+
+An installation may declare `simModules` from 1 through 4. The ESP32 polls
+Modbus addresses `1..simModules` at 9600 8N1 every five seconds. Address 1
+contributes channels 1–4, address 2 channels 5–8, address 3 channels 9–12,
+and address 4 channels 13–16. Any channel without an installed probe returns
+an invalid status and is not a usable temperature reading. Only declare
+modules that are physically present; assign consecutive addresses starting at
+1 using the Nano D7/D8 jumpers.
+
+Bench UART pins: ESP32-S3 GPIO17 TX to transceiver DI, GPIO18 RX from RO,
+GPIO16 to tied DE and /RE. Both boards must share signal ground. Check the
+pinout of the purchased ESP32-S3 board, RS485 transceiver logic voltage,
+isolation, termination and bias before connecting. Pins can be overridden at
+build time with `SIM_RS485_TX_GPIO`, `SIM_RS485_RX_GPIO`, and
+`SIM_RS485_DE_GPIO`.
+
+This change polls the Nano and logs valid temperatures/faults on the ESP32
+serial console. It **does not transmit readings to BIO-EMS**. The client
+installer's MQTT listener is bound to loopback with backend credentials.
+Complete an authenticated device transport and its end-to-end tests before
+deploying this branch or claiming that the dashboard receives SIM readings.
