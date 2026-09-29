@@ -160,6 +160,22 @@ export function validBuilder(areas: DraftArea[], devices: DraftDevice[]) {
       ) {
         return false;
       }
+      const limits = [
+        telemetry.alarmLow,
+        telemetry.warningLow,
+        telemetry.warningHigh,
+        telemetry.alarmHigh,
+      ];
+      if (
+        limits.some((value) => value !== undefined && !Number.isFinite(value))
+      )
+        return false;
+      for (let i = 0; i < limits.length; i += 1) {
+        if (limits[i] === undefined) continue;
+        for (let j = i + 1; j < limits.length; j += 1) {
+          if (limits[j] !== undefined && limits[i]! > limits[j]!) return false;
+        }
+      }
 
       mappedByDevice.set(
         telemetry.deviceId,

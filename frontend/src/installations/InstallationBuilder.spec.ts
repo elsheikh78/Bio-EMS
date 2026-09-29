@@ -202,4 +202,37 @@ describe("InstallationBuilder identifiers and snapshot", () => {
       ],
     });
   });
+
+  it("keeps temperature alarm limits ordered in the installation draft", () => {
+    const telemetry = {
+      code: "T1",
+      name: "Cold room",
+      type: "TEMPERATURE" as const,
+      unit: "°C",
+      deviceId: "D001",
+      channel: 1,
+      warningDelaySeconds: 0,
+      criticalDelaySeconds: 0,
+      calibrationOffset: 0,
+      alarmLow: 0,
+      warningLow: 2,
+      warningHigh: 7,
+      alarmHigh: 8,
+    };
+    const areas = [
+      { code: "A01", name: "Cold room", telemetries: [telemetry] },
+    ];
+    const devices = [{ deviceId: "D001", simModules: 1 }];
+    expect(validBuilder(areas, devices)).toBe(true);
+    expect(
+      buildSnapshot(context, areas, devices).sites[0].areas[0].telemetries[0],
+    ).toMatchObject({
+      alarmLow: 0,
+      warningLow: 2,
+      warningHigh: 7,
+      alarmHigh: 8,
+    });
+    telemetry.warningHigh = 9;
+    expect(validBuilder(areas, devices)).toBe(false);
+  });
 });

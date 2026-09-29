@@ -495,6 +495,62 @@ export function InstallationBuilder({
                     })
                   }
                 />
+                {telemetry.type === "TEMPERATURE" ? (
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      display: "grid",
+                      gap: 1,
+                      gridTemplateColumns: {
+                        xs: "1fr 1fr",
+                        md: "repeat(4, 1fr)",
+                      },
+                    }}
+                  >
+                    {(
+                      [
+                        [
+                          "alarmLow",
+                          language === "ar" ? "إنذار منخفض °C" : "Low alarm °C",
+                        ],
+                        [
+                          "warningLow",
+                          language === "ar"
+                            ? "تحذير منخفض °C"
+                            : "Low warning °C",
+                        ],
+                        [
+                          "warningHigh",
+                          language === "ar"
+                            ? "تحذير مرتفع °C"
+                            : "High warning °C",
+                        ],
+                        [
+                          "alarmHigh",
+                          language === "ar"
+                            ? "إنذار مرتفع °C"
+                            : "High alarm °C",
+                        ],
+                      ] as const
+                    ).map(([field, label]) => (
+                      <TextField
+                        key={field}
+                        type="number"
+                        label={label}
+                        value={telemetry[field] ?? ""}
+                        slotProps={{ htmlInput: { step: "any" } }}
+                        onChange={(event) =>
+                          updateTelemetry(area.code, telemetry.code, {
+                            [field]:
+                              event.target.value === ""
+                                ? undefined
+                                : Number(event.target.value),
+                          })
+                        }
+                      />
+                    ))}
+                  </Box>
+                ) : null}
                 <Button
                   onClick={() => removeTelemetry(area.code, telemetry.code)}
                 >
