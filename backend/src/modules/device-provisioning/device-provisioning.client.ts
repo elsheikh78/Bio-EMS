@@ -59,7 +59,7 @@ export class DeviceProvisioningLocalClient {
   }
 
   simHealth() {
-    return this.request<{ toolReady: boolean; firmwareReady: boolean }>("/sim/health");
+    return this.request<{ toolReady: boolean; firmwareReady: boolean; firmwareVersion: string | null }>("/sim/health");
   }
 
   simFlash(port: string, firmwareVersion: string) {

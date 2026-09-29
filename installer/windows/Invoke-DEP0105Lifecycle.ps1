@@ -258,6 +258,11 @@ function Ensure-DeviceProvisionerService {
     if ($esptools.Count -ne 1) { throw "Repair expected exactly one controlled esptool executable" }
     $firmwareManifest = Join-Path $application "firmware\site-controller\manifest.json"
     if (-not (Test-Path -LiteralPath $firmwareManifest -PathType Leaf)) { throw "Governed ESP32-S3 firmware manifest is missing during Repair" }
+    $simAvrdude = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\avrdude") -Filter "avrdude.exe" -File -Recurse)
+    $simAvrdudeConfig = @(Get-ChildItem -LiteralPath (Join-Path $application "runtime\avrdude") -Filter "avrdude.conf" -File -Recurse)
+    if ($simAvrdude.Count -ne 1 -or $simAvrdudeConfig.Count -ne 1) { throw "Repair expected one controlled AVRDUDE executable and configuration" }
+    $simManifest = Join-Path $application "firmware\sim-d4-nano\manifest.json"
+    if (-not (Test-Path -LiteralPath $simManifest -PathType Leaf)) { throw "SIM-D4 Nano firmware manifest is missing during Repair" }
     $provisionerScript = Join-Path $application "backend\dist\src\scripts\start-device-provisioner.js"
     if (-not (Test-Path -LiteralPath $provisionerScript -PathType Leaf)) { throw "Device Provisioner service script is missing during Repair" }
 
@@ -279,6 +284,9 @@ function Ensure-DeviceProvisionerService {
         BIOEMS_APPLICATION_ROOT = $application
         BIOEMS_PROVISIONER_ESPTOOL_PATH = $esptools[0].FullName
         BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
+        BIOEMS_SIM_AVRDUDE_PATH = $simAvrdude[0].FullName
+        BIOEMS_SIM_AVRDUDE_CONFIG = $simAvrdudeConfig[0].FullName
+        BIOEMS_SIM_FIRMWARE_MANIFEST = $simManifest
         BIOEMS_PROVISIONER_PORT = "9444"
     }).GetEnumerator()) {
         $writer.WriteStartElement("env")

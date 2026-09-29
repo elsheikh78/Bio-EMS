@@ -28,7 +28,9 @@ export const windowsInstallerManifestSchema = z
               "winsw",
               "influx-cli",
               "esptool",
+              "avrdude",
               "site-controller-firmware",
+              "sim-d4-firmware",
               "owner-commissioning-trust",
             ]),
             version: z.string().min(1),
@@ -38,8 +40,8 @@ export const windowsInstallerManifestSchema = z
           })
           .strict()
       )
-      .min(9)
-      .max(10),
+      .min(11)
+      .max(12),
   })
   .strict()
   .superRefine((manifest, context) => {
@@ -54,7 +56,9 @@ export const windowsInstallerManifestSchema = z
       "winsw",
       "influx-cli",
       "esptool",
+      "avrdude",
       "site-controller-firmware",
+      "sim-d4-firmware",
     ] as const;
     const hasRequiredArtifacts = requiredIds.every((id) => uniqueIds.has(id));
     const hasOwnerTrust = uniqueIds.has("owner-commissioning-trust");
@@ -89,7 +93,7 @@ export const vendorInputLockSchema = z
       .array(
         z
           .object({
-            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool"]),
+            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool", "avrdude"]),
             version: z.string().regex(/^\d+\.\d+\.\d+$/),
             fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
             sourceUrl: z
@@ -111,11 +115,11 @@ export const vendorInputLockSchema = z
           })
           .strict()
       )
-      .length(6),
+      .length(7),
   })
   .strict()
   .superRefine((value, context) => {
-    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool"]);
+    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool", "avrdude"]);
     const ids = value.inputs.map((input) => input.id);
     if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
       context.addIssue({ code: "custom", message: "Vendor input set must be exact" });
@@ -148,7 +152,9 @@ const runtimeArtifactIds = [
   "winsw",
   "influx-cli",
   "esptool",
+  "avrdude",
   "site-controller-firmware",
+  "sim-d4-firmware",
 ];
 const forbiddenNames = [
   ".env",

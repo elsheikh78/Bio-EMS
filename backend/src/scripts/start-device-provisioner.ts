@@ -36,7 +36,7 @@ export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, toke
   });
 
   app.get("/health", (_request, response) => response.json(runner.health()));
-  app.get("/sim/health", (_request, response) => response.json(sim?.health() ?? { toolReady: false, firmwareReady: false }));
+  app.get("/sim/health", (_request, response) => response.json(sim?.health() ?? { toolReady: false, firmwareReady: false, firmwareVersion: null }));
   app.post("/sim/flash", async (request, response, next) => {
     try {
       const input = z.object({ port: z.string(), firmwareVersion: z.string().min(1).max(80) }).strict().parse(request.body);

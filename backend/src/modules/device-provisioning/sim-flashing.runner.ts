@@ -36,10 +36,23 @@ export class SimFlashingRunner {
   }, private readonly execute: FlashExecutor = execFileAsync) {}
 
   health() {
+    let firmwareVersion: string | null = null;
+    try {
+      if (this.config.firmwareManifestPath) {
+        const manifestPath = controlledPath(this.config.applicationRoot, this.config.firmwareManifestPath);
+        const manifest = manifestSchema.parse(JSON.parse(readFileSync(manifestPath, "utf8")));
+        if (isAbsolute(manifest.hexFile) || manifest.hexFile.includes("..") || !manifest.hexFile.endsWith(".hex"))
+          throw new Error("Unsafe firmware path");
+        const hexPath = controlledPath(this.config.applicationRoot, resolve(dirname(manifestPath), manifest.hexFile));
+        if (createHash("sha256").update(readFileSync(hexPath)).digest("hex") === manifest.sha256)
+          firmwareVersion = manifest.firmwareVersion;
+      }
+    } catch { /* No validated firmware is available. */ }
     return {
       toolReady: Boolean(this.config.avrdudePath && existsSync(this.config.avrdudePath) &&
         this.config.avrdudeConfigPath && existsSync(this.config.avrdudeConfigPath)),
-      firmwareReady: Boolean(this.config.firmwareManifestPath && existsSync(this.config.firmwareManifestPath)),
+      firmwareReady: firmwareVersion !== null,
+      firmwareVersion,
     };
   }
 

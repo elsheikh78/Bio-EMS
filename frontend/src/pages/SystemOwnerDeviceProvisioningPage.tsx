@@ -137,7 +137,6 @@ export function SystemOwnerDeviceProvisioningPage() {
   const flashBind = useFlashAndBindProvisioningDevice();
   const simHealth = useSimFlashingHealth();
   const simFlash = useFlashSimFirmware();
-  const [simVersion, setSimVersion] = useState("");
   const [selectedPort, setSelectedPort] = useState("");
   const [selectedTarget, setSelectedTarget] = useState("");
   const [wifiSsid, setWifiSsid] = useState("");
@@ -328,9 +327,11 @@ export function SystemOwnerDeviceProvisioningPage() {
             <Alert severity="warning" sx={{ mb: 2 }}>{text.simUnavailable}</Alert>
           ) : null}
           <Stack spacing={2}>
-            <TextField label={text.simVersion} value={simVersion} onChange={(event) => setSimVersion(event.target.value)} />
-            <Button variant="contained" disabled={!effectivePort || !simVersion || !simHealth.data?.toolReady || !simHealth.data.firmwareReady || simFlash.isPending}
-              onClick={() => simFlash.mutate({ port: effectivePort, firmwareVersion: simVersion })}>
+            <Typography>{text.simVersion}: {simHealth.data?.firmwareVersion ?? "—"}</Typography>
+            <Button variant="contained" disabled={!effectivePort || !simHealth.data?.firmwareVersion || !simHealth.data.toolReady || !simHealth.data.firmwareReady || simFlash.isPending}
+              onClick={() => {
+                if (simHealth.data?.firmwareVersion) simFlash.mutate({ port: effectivePort, firmwareVersion: simHealth.data.firmwareVersion });
+              }}>
               {simFlash.isPending ? text.simBusy : text.simFlash}
             </Button>
             {simFlash.isSuccess ? <Alert severity="success">{text.simSuccess} {simFlash.data.firmwareVersion}</Alert> : null}

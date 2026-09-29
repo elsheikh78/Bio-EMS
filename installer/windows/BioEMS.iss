@@ -44,7 +44,9 @@ Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencr
 Source: "{#StageRoot}\payload\influxdb2-2.9.1-windows_amd64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\influxdb2-client-2.8.0-windows-amd64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\esptool-v5.4.0-windows-amd64.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\avrdude-v8.3-windows-x64.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\firmware-site-controller.zip"; Flags: dontcopy noencryption
+Source: "{#StageRoot}\payload\firmware-sim-d4-nano.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
@@ -65,7 +67,9 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-2.9.1-windows_amd64.zip' -DestinationPath '{app}\\runtime\\influxdb' -Force"""; StatusMsg: "Extracting InfluxDB runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\influxdb2-client-2.8.0-windows-amd64.zip' -DestinationPath '{app}\\runtime\\influx-cli' -Force"""; StatusMsg: "Extracting InfluxDB backup CLI..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\esptool-v5.4.0-windows-amd64.zip' -DestinationPath '{app}\\runtime\\esptool' -Force"""; StatusMsg: "Extracting ESP32 provisioning tool..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\avrdude-v8.3-windows-x64.zip' -DestinationPath '{app}\\runtime\\avrdude' -Force"""; StatusMsg: "Extracting SIM flashing tool..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\firmware-site-controller.zip' -DestinationPath '{app}\\firmware\\site-controller' -Force"""; StatusMsg: "Installing governed ESP32-S3 firmware..."; Flags: runhidden waituntilterminated
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\\firmware-sim-d4-nano.zip' -DestinationPath '{app}\\firmware\\sim-d4-nano' -Force"""; StatusMsg: "Installing SIM-D4 Nano bench firmware..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"" -ContactName ""{code:GetContactName}"" -ContactEmail ""{code:GetContactEmail}"" -ContactPhone ""{code:GetContactPhone}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated logoutput; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated logoutput; Check: IsFreshInstall
@@ -340,7 +344,9 @@ begin
     ExtractTemporaryFile('influxdb2-2.9.1-windows_amd64.zip');
     ExtractTemporaryFile('influxdb2-client-2.8.0-windows-amd64.zip');
     ExtractTemporaryFile('esptool-v5.4.0-windows-amd64.zip');
+    ExtractTemporaryFile('avrdude-v8.3-windows-x64.zip');
     ExtractTemporaryFile('firmware-site-controller.zip');
+    ExtractTemporaryFile('firmware-sim-d4-nano.zip');
   end;
 end;
 

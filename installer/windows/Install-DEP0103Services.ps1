@@ -273,16 +273,13 @@ $provisionerEnvironment = @{
     BIOEMS_PROVISIONER_FIRMWARE_MANIFEST = $firmwareManifest
     BIOEMS_PROVISIONER_PORT = "9444"
 }
-$simAvrdude = Join-Path $application "runtime\avrdude\avrdude.exe"
-$simAvrdudeConfig = Join-Path $application "runtime\avrdude\avrdude.conf"
+$simAvrdude = Find-One (Join-Path $application "runtime\avrdude") "avrdude.exe"
+$simAvrdudeConfig = Find-One (Join-Path $application "runtime\avrdude") "avrdude.conf"
 $simManifest = Join-Path $application "firmware\sim-d4-nano\manifest.json"
-if ((Test-Path -LiteralPath $simAvrdude -PathType Leaf) -and
-    (Test-Path -LiteralPath $simAvrdudeConfig -PathType Leaf) -and
-    (Test-Path -LiteralPath $simManifest -PathType Leaf)) {
-    $provisionerEnvironment.BIOEMS_SIM_AVRDUDE_PATH = $simAvrdude
-    $provisionerEnvironment.BIOEMS_SIM_AVRDUDE_CONFIG = $simAvrdudeConfig
-    $provisionerEnvironment.BIOEMS_SIM_FIRMWARE_MANIFEST = $simManifest
-}
+if (-not (Test-Path -LiteralPath $simManifest -PathType Leaf)) { throw "SIM-D4 Nano firmware manifest is missing" }
+$provisionerEnvironment.BIOEMS_SIM_AVRDUDE_PATH = $simAvrdude
+$provisionerEnvironment.BIOEMS_SIM_AVRDUDE_CONFIG = $simAvrdudeConfig
+$provisionerEnvironment.BIOEMS_SIM_FIRMWARE_MANIFEST = $simManifest
 Write-Utf8 (Join-Path $paths.Services "BIOEMS-Provisioner.xml") (New-ServiceXml "BIOEMS-Provisioner" $node "`"$provisionerScript`"" (Join-Path $paths.Logs "provisioner-service") @() $provisionerEnvironment "")
 $restoreCoordinator = Join-Path $application "installer\Invoke-PlatformRestoreCoordinator.ps1"
 $restoreCoordinatorArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$restoreCoordinator`" -ApplicationRoot `"$application`" -PersistentRoot `"$persistent`""

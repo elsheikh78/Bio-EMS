@@ -29,7 +29,8 @@ describe("SIM USB flashing", () => {
     expect(execute.mock.calls[0]?.[1]).not.toContain("-V");
     await expect(runner.flash("COM7", "0.2.0")).rejects.toThrow("version");
     writeFileSync(join(firmware, "sim.hex"), "changed");
-    await expect(runner.flash("COM7", "0.1.0")).rejects.toThrow("checksum");
+    expect(runner.health().firmwareReady).toBe(false);
+    await expect(runner.flash("COM7", "0.1.0")).rejects.toThrow("not installed");
     expect(execute).toHaveBeenCalledTimes(1);
   });
 });
