@@ -73,7 +73,10 @@ The Windows installer generates a customer-local HTTPS certificate. During USB p
 the provisioner transfers its public certificate to the ESP32, which verifies the HTTPS peer
 against that certificate for pairing and telemetry. The Pilot still skips hostname matching
 because the certificate does not contain the LAN IP address; this is not a final commercial
-identity model. The governed firmware manifest records the exact source commit.
+identity model. USB provisioning also sets and stores the PC's UTC time so certificate
+validation works after controller reboot. This bench clock can drift; the production design
+needs trusted time synchronization or an RTC. The governed firmware manifest records the
+exact source commit.
 
 The current customer-local HTTPS certificate model is not yet the final BIO-EMS Root CA /
 Device CA / mTLS architecture. Before Production:

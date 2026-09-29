@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "cJSON.h"
 #include "esp_event.h"
@@ -539,6 +541,23 @@ static void command_loop(void) {
         printf("platform certificate saved\n");
       continue;
     }
+    if (strncmp(line, "settime ", 8) == 0) {
+      char *end = NULL;
+      long long epoch = strtoll(line + 8, &end, 10);
+      if (!end || *end != '\0' || epoch < 1760000000LL ||
+          epoch > 4102444800LL) {
+        printf("invalid UTC epoch\n");
+        continue;
+      }
+      struct timeval utc = {.tv_sec = (time_t)epoch, .tv_usec = 0};
+      if (settimeofday(&utc, NULL) != 0 ||
+          nvs_set_text("utc_epoch", line + 8) != ESP_OK) {
+        printf("UTC time could not be saved\n");
+      } else {
+        printf("UTC time saved\n");
+      }
+      continue;
+    }
     if (strncmp(line, "pair ", 5) == 0) {
       claim_pairing(line + 5);
       continue;
@@ -556,6 +575,15 @@ void app_main(void) {
     ESP_ERROR_CHECK(nvs_flash_init());
   } else {
     ESP_ERROR_CHECK(nvs_result);
+  }
+
+  // Bench bootstrap: restore the last trusted USB-provisioned epoch before TLS.
+  // The server timestamps accepted readings. Production needs NTP/RTC time policy.
+  char saved_epoch[24] = {0};
+  if (nvs_get_text("utc_epoch", saved_epoch, sizeof(saved_epoch))) {
+    time_t epoch = (time_t)strtoll(saved_epoch, NULL, 10);
+    struct timeval utc = {.tv_sec = epoch, .tv_usec = 0};
+    settimeofday(&utc, NULL);
   }
 
   ESP_LOGI(TAG, "BIO-EMS Site Controller boot");
