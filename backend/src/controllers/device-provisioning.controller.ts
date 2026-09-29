@@ -109,6 +109,17 @@ export const getDeviceProvisioningHealth = asyncHandler(
     response.json(await deviceProvisioningLocalClient.health())
 );
 
+export const getSimFlashingHealth = asyncHandler(async (_request: Request, response: Response) =>
+  response.json(await deviceProvisioningLocalClient.simHealth())
+);
+
+export const flashSimFirmware = asyncHandler(async (request: Request, response: Response) => {
+  const result = await deviceProvisioningLocalClient.simFlash(
+    String(request.body.port), String(request.body.firmwareVersion)
+  );
+  response.json(result);
+});
+
 export const listDeviceProvisioningPorts = asyncHandler(
   async (_request: Request, response: Response) =>
     response.json(await deviceProvisioningLocalClient.ports())

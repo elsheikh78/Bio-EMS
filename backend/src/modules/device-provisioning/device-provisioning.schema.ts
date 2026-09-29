@@ -80,6 +80,11 @@ export const localProvisionerFlashSchema = z
   })
   .strict();
 
+export const deviceProvisioningSimFlashSchema = z.object({
+  port: windowsSerialPortSchema,
+  firmwareVersion: z.string().trim().min(1).max(80),
+}).strict();
+
 export const localProvisionerProvisionSchema = z
   .object({
     port: windowsSerialPortSchema,

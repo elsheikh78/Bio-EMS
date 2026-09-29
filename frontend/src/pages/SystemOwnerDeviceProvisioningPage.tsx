@@ -19,6 +19,8 @@ import {
   useDeviceProvisioningPorts,
   useDeviceProvisioningTargets,
   useFlashAndBindProvisioningDevice,
+  useFlashSimFirmware,
+  useSimFlashingHealth,
 } from "../device-provisioning/queries";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -65,6 +67,13 @@ const copy = {
       "This device is bound. Provision the remaining logical Devices before configuration activation.",
     provisionError:
       "Flash & Bind failed. The existing audit/binding state is preserved; retry after correcting the reported condition.",
+    simTitle: "SIM-D4 Nano firmware (USB)",
+    simInfo: "Connect the Nano by USB, select its COM port, and enter the approved firmware version. AVRDUDE writes and verifies it. Disconnect RS485 power while flashing.",
+    simUnavailable: "SIM firmware or AVR flashing tool is not installed on this station.",
+    simVersion: "Approved SIM firmware version",
+    simFlash: "Flash and verify SIM",
+    simBusy: "Flashing SIM…",
+    simSuccess: "Firmware written and verified. Test RS485 and sensors separately.",
   },
   ar: {
     back: "العودة إلى لوحة مالك النظام",
@@ -108,6 +117,13 @@ const copy = {
       "تم ربط هذا الجهاز. أكمل تهيئة باقي الأجهزة المنطقية قبل تفعيل التهيئة.",
     provisionError:
       "فشلت عملية Flash & Bind. تم الحفاظ على حالة الربط وسجل التدقيق الحالية؛ صحح السبب ثم أعد المحاولة.",
+    simTitle: "فيرموير Nano لوحدة SIM-D4 عبر USB",
+    simInfo: "وصّل Nano عبر USB واختر منفذ COM وأدخل إصدار الفيرموير المعتمد. ستكتب أداة AVRDUDE البرنامج وتتحقق منه. افصل تغذية RS485 أثناء التفليش.",
+    simUnavailable: "فيرموير SIM أو أداة AVR غير مثبتين على هذه المحطة.",
+    simVersion: "إصدار فيرموير SIM المعتمد",
+    simFlash: "تفليش SIM والتحقق",
+    simBusy: "جارٍ تفليش SIM…",
+    simSuccess: "تمت الكتابة والتحقق. اختبر RS485 والحساسات بشكل مستقل.",
   },
 } as const;
 
@@ -119,6 +135,9 @@ export function SystemOwnerDeviceProvisioningPage() {
   const targets = useDeviceProvisioningTargets();
   const detect = useDetectProvisioningBoard();
   const flashBind = useFlashAndBindProvisioningDevice();
+  const simHealth = useSimFlashingHealth();
+  const simFlash = useFlashSimFirmware();
+  const [simVersion, setSimVersion] = useState("");
   const [selectedPort, setSelectedPort] = useState("");
   const [selectedTarget, setSelectedTarget] = useState("");
   const [wifiSsid, setWifiSsid] = useState("");
@@ -298,6 +317,25 @@ export function SystemOwnerDeviceProvisioningPage() {
               ) : null}
             </Stack>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card variant="outlined" sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography component="h2" variant="h6" sx={{ mb: 1 }}>{text.simTitle}</Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>{text.simInfo}</Alert>
+          {!simHealth.data?.toolReady || !simHealth.data.firmwareReady ? (
+            <Alert severity="warning" sx={{ mb: 2 }}>{text.simUnavailable}</Alert>
+          ) : null}
+          <Stack spacing={2}>
+            <TextField label={text.simVersion} value={simVersion} onChange={(event) => setSimVersion(event.target.value)} />
+            <Button variant="contained" disabled={!effectivePort || !simVersion || !simHealth.data?.toolReady || !simHealth.data.firmwareReady || simFlash.isPending}
+              onClick={() => simFlash.mutate({ port: effectivePort, firmwareVersion: simVersion })}>
+              {simFlash.isPending ? text.simBusy : text.simFlash}
+            </Button>
+            {simFlash.isSuccess ? <Alert severity="success">{text.simSuccess} {simFlash.data.firmwareVersion}</Alert> : null}
+            {simFlash.isError ? <Alert severity="error">{simFlash.error.message}</Alert> : null}
+          </Stack>
         </CardContent>
       </Card>
 
