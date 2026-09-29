@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
 import { z } from "zod";
-import { TelemetryService } from "../telemetry/services/telemetry.service";
+import type { TelemetryService } from "../telemetry/services/telemetry.service";
 
 const readingSchema = z
   .object({
@@ -36,7 +36,7 @@ const readingSchema = z
 export class DeviceTelemetryService {
   constructor(
     private readonly database: Database.Database = sqlite,
-    private readonly telemetry = new TelemetryService(),
+    private readonly telemetry: Pick<TelemetryService, "process"> | null = null,
     private readonly now: () => Date = () => new Date()
   ) {}
 
@@ -66,7 +66,10 @@ export class DeviceTelemetryService {
     const expected = Buffer.from(row.tokenHash, "hex");
     if (expected.length !== digest.length || !timingSafeEqual(expected, digest)) return false;
     const parsed = readingSchema.parse(body);
-    await this.telemetry.process(`bioems/${row.siteCode}/telemetry/${row.deviceId}`, {
+    const telemetry =
+      this.telemetry ??
+      new (await import("../telemetry/services/telemetry.service")).TelemetryService();
+    await telemetry.process(`bioems/${row.siteCode}/telemetry/${row.deviceId}`, {
       protocolVersion: row.protocolVersion,
       timestamp: this.now().toISOString(),
       signal: parsed.signal ?? 0,
