@@ -59,13 +59,22 @@ export class DeviceProvisioningLocalClient {
   }
 
   simHealth() {
-    return this.request<{ toolReady: boolean; firmwareReady: boolean; firmwareVersion: string | null }>("/sim/health");
+    return this.request<{
+      toolReady: boolean;
+      firmwareReady: boolean;
+      firmwareVersion: string | null;
+    }>("/sim/health");
   }
 
   simFlash(port: string, firmwareVersion: string) {
-    return this.request<{ port: string; firmwareVersion: string; toolOutput: string }>("/sim/flash", {
-      method: "POST", body: { port, firmwareVersion }, timeoutMs: 150_000,
-    });
+    return this.request<{ port: string; firmwareVersion: string; toolOutput: string }>(
+      "/sim/flash",
+      {
+        method: "POST",
+        body: { port, firmwareVersion },
+        timeoutMs: 150_000,
+      }
+    );
   }
 
   ports() {

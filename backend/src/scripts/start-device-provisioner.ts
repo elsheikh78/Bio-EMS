@@ -23,7 +23,11 @@ function tokenMatches(received: string | undefined, expected: string): boolean {
   return candidate.length === target.length && timingSafeEqual(candidate, target);
 }
 
-export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, token: string, sim?: SimFlashingRunner) {
+export function createDeviceProvisionerApp(
+  runner: LocalProvisioningRunner,
+  token: string,
+  sim?: SimFlashingRunner
+) {
   const app = express();
   app.disable("x-powered-by");
   app.use(express.json({ limit: "16kb" }));
@@ -36,13 +40,22 @@ export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, toke
   });
 
   app.get("/health", (_request, response) => response.json(runner.health()));
-  app.get("/sim/health", (_request, response) => response.json(sim?.health() ?? { toolReady: false, firmwareReady: false, firmwareVersion: null }));
+  app.get("/sim/health", (_request, response) =>
+    response.json(
+      sim?.health() ?? { toolReady: false, firmwareReady: false, firmwareVersion: null }
+    )
+  );
   app.post("/sim/flash", async (request, response, next) => {
     try {
-      const input = z.object({ port: z.string(), firmwareVersion: z.string().min(1).max(80) }).strict().parse(request.body);
+      const input = z
+        .object({ port: z.string(), firmwareVersion: z.string().min(1).max(80) })
+        .strict()
+        .parse(request.body);
       if (!sim) throw new Error("SIM flashing is not configured");
       response.json(await sim.flash(input.port, input.firmwareVersion));
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   });
   app.get("/ports", async (_request, response, next) => {
     try {

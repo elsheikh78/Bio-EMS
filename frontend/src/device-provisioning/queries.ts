@@ -47,9 +47,13 @@ export function useSimFlashingHealth() {
   return useQuery({
     queryKey: ["platform", "device-provisioning", "sim", "health"],
     enabled: status === "authenticated",
-    queryFn: async () => simFlashingHealthSchema.parse(await apiClient.request<unknown>(
-      "/platform-operations/device-provisioning/sim/health", { auth: "protected" }
-    )),
+    queryFn: async () =>
+      simFlashingHealthSchema.parse(
+        await apiClient.request<unknown>(
+          "/platform-operations/device-provisioning/sim/health",
+          { auth: "protected" },
+        ),
+      ),
   });
 }
 
@@ -57,13 +61,17 @@ export function useFlashSimFirmware() {
   const { apiClient } = usePlatformAuthentication();
   return useMutation({
     mutationFn: async (input: { port: string; firmwareVersion: string }) =>
-      simFlashingResultSchema.parse(await apiClient.request<unknown>(
-        "/platform-operations/device-provisioning/sim/flash", {
-          method: "POST", auth: "protected",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(input),
-        }
-      )),
+      simFlashingResultSchema.parse(
+        await apiClient.request<unknown>(
+          "/platform-operations/device-provisioning/sim/flash",
+          {
+            method: "POST",
+            auth: "protected",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(input),
+          },
+        ),
+      ),
   });
 }
 

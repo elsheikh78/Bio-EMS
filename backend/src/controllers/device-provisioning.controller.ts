@@ -115,7 +115,8 @@ export const getSimFlashingHealth = asyncHandler(async (_request: Request, respo
 
 export const flashSimFirmware = asyncHandler(async (request: Request, response: Response) => {
   const result = await deviceProvisioningLocalClient.simFlash(
-    String(request.body.port), String(request.body.firmwareVersion)
+    String(request.body.port),
+    String(request.body.firmwareVersion)
   );
   response.json(result);
 });

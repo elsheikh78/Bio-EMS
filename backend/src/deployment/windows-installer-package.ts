@@ -93,7 +93,15 @@ export const vendorInputLockSchema = z
       .array(
         z
           .object({
-            id: z.enum(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool", "avrdude"]),
+            id: z.enum([
+              "node",
+              "mosquitto",
+              "influxdb",
+              "winsw",
+              "influx-cli",
+              "esptool",
+              "avrdude",
+            ]),
             version: z.string().regex(/^\d+\.\d+\.\d+$/),
             fileName: z.string().regex(/^[A-Za-z0-9._-]+$/),
             sourceUrl: z
@@ -119,7 +127,15 @@ export const vendorInputLockSchema = z
   })
   .strict()
   .superRefine((value, context) => {
-    const expected = new Set(["node", "mosquitto", "influxdb", "winsw", "influx-cli", "esptool", "avrdude"]);
+    const expected = new Set([
+      "node",
+      "mosquitto",
+      "influxdb",
+      "winsw",
+      "influx-cli",
+      "esptool",
+      "avrdude",
+    ]);
     const ids = value.inputs.map((input) => input.id);
     if (new Set(ids).size !== expected.size || ids.some((id) => !expected.has(id))) {
       context.addIssue({ code: "custom", message: "Vendor input set must be exact" });

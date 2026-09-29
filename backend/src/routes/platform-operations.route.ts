@@ -123,7 +123,11 @@ router.post("/customers", validateBody(createPlatformCustomerSchema), createPlat
 router.get("/installation-context", getInstallationContext);
 router.get("/device-provisioning/health", getDeviceProvisioningHealth);
 router.get("/device-provisioning/sim/health", getSimFlashingHealth);
-router.post("/device-provisioning/sim/flash", validateBody(deviceProvisioningSimFlashSchema), flashSimFirmware);
+router.post(
+  "/device-provisioning/sim/flash",
+  validateBody(deviceProvisioningSimFlashSchema),
+  flashSimFirmware
+);
 router.get("/device-provisioning/ports", listDeviceProvisioningPorts);
 router.get("/device-provisioning/targets", listDeviceProvisioningTargets);
 router.post(
