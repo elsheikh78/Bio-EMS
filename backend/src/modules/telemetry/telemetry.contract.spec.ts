@@ -26,6 +26,8 @@ describe("Telemetry contracts", () => {
     };
 
     expect(telemetrySchema.parse(valid)).toEqual(valid);
+    const { battery: _battery, ...externallyPowered } = valid;
+    expect(telemetrySchema.parse(externallyPowered)).not.toHaveProperty("battery");
     expect(() => telemetrySchema.parse({ ...valid, sensors: [] })).toThrow();
     expect(() =>
       telemetrySchema.parse({ ...valid, sensors: [{ channel: "1", value: 7.5 }] })
