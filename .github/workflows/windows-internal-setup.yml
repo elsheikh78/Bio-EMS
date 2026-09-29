@@ -92,7 +92,7 @@ jobs:
           manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
           assert manifest["schemaVersion"] == 1
           assert manifest["target"] == "esp32s3"
-          assert manifest["firmwareVersion"] == "0.1.0-pilot.1"
+          assert manifest["firmwareVersion"] == "0.1.0-pilot.2"
           assert manifest["protocolVersion"] == "1.3"
           assert manifest["bindingSchemaVersion"] == 1
           assert manifest["segments"]

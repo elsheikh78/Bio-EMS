@@ -38,7 +38,7 @@ $firmwareManifest = Get-Content -LiteralPath $firmwareManifestPath -Raw | Conver
 if (
     $firmwareManifest.schemaVersion -ne 1 -or
     $firmwareManifest.target -ne "esp32s3" -or
-    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.1" -or
+    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.2" -or
     $firmwareManifest.protocolVersion -ne "1.3" -or
     $firmwareManifest.bindingSchemaVersion -ne 1 -or
     -not $firmwareManifest.segments -or
