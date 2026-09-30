@@ -1,5 +1,9 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
+## 30 September hardware integration boundary
+
+This source is the ESP32-S3 pairing/provisioning foundation. It does not include a qualified SIM-D4 MCU firmware or MAIN-16 four-SIM Modbus acquisition/SIM800L fallback implementation. Wi-Fi bootstrap instructions below do not prove the proposed Ethernet bench path. Record exact source SHA and firmware manifest; shared firmware version alone does not identify a binary.
+
 Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 ## Identity model

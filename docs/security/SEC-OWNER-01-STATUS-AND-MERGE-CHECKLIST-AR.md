@@ -17,7 +17,7 @@ Issue: `#232`
 - آخر commit حاكم لهذه الدورة على `main`:
   `6d2b25ef35f48d5a87df0f2073e46cddd6deca48`.
 - دليل القبول التشغيلي التفصيلي:
-  `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
+  `docs/archive/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
 - لا يعني نجاح Pilot هذا اعتماد Production أو إغلاق بوابات Production key ceremony/security review أو
   BIO EGYPT field commissioning/UAT.
 - يظل المفتاح الخاص وعبارة المرور وكلمة مرور Owner وTOTP/secret خارج التوثيق وGitHub وCI.

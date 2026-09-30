@@ -1,9 +1,21 @@
 # BIO-EMS Implementation Plan
 
-**Plan date:** 24 September 2026  
-**Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+## Immediate execution order — 30 September 2026
 
-## Immediate restart point — 24 September 2026
+1. Verify the merged Builder and Flash & Bind flow on the installed Windows host using the exact matching Setup/firmware commit and manifests.
+2. Reconcile ADMIN topology policy and threshold authoring requirements against the current UI/API; do not infer missing controls from schema fields.
+3. Freeze the 1–4 SIM × 4 channels contract, populated-module behavior, Modbus address/register map and main/SIM firmware versions; implement and test the missing integration before claiming 16-sensor support.
+4. Compare the DS18B20 breadboard candidate with the PT100 field baseline; resolve El Manial positions and Egypt-local sourcing before site procurement.
+5. Execute single-channel, four-channel and four-SIM bench tests, power/cable/fault/endurance tests and real 2G SMS fallback.
+6. Continue multi-machine Windows and Backup/Restore qualification, then field commissioning/UAT.
+7. Complete deferred production protection, key ceremony and final user/owner manuals after Pilot stability.
+
+The dated plan below is retained as context; this sequence controls the restart point.
+
+**Plan date:** 30 September 2026
+**Master audit:** `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+
+## Historical restart point — 24 September 2026
 
 1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**.
 2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; physical pairing remains pending.

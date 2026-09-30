@@ -5,7 +5,7 @@
 - `PROJECT_STATE.md` is the **single authoritative current-state document**.
 - `IMPLEMENTATION_PLAN.md` is the approved execution-plan document; it does not replace current state.
 - `README.md` is the stable project entry/map; it must not become a second project-status ledger.
-- `docs/SPRINT_PROGRESS.md` is a historical execution ledger only.
+- `docs/archive/SPRINT_PROGRESS.md` is a historical execution ledger only.
 - Dedicated Sprint/BF/PVR/audit/closure/hardware documents are evidence for their specific work; they do not override `PROJECT_STATE.md`.
 - `VERSION` is the source-software version authority.
 - `CHANGELOG.md` is the controlled source/release ledger.
@@ -186,3 +186,10 @@ For a controlled published release:
 7. only then describe that version as the latest **published tagged release**.
 
 Historical release tags and their claims are immutable and must not be rewritten to include later development.
+
+## Documentation placement
+
+- `docs/current/README.md` lists current entry points without duplicating state authority.
+- `docs/archive/` contains dated closure, audit and acceptance records; retain their recorded evidence boundaries.
+- Keep active operating/design specifications in their domain folders and architectural decisions in `docs/adr/`; date alone is not an archive criterion.
+- When moving documentation, update repository references and relative links, and maintain the archive inventory.

@@ -1,5 +1,9 @@
 # BIO-EMS Backend
 
+## Current operational boundaries — 30 September 2026
+
+The source includes managed communication channels, isolated owner commissioning/MFA, installation revisions, device pairing/provisioning, licensing and full platform backup/restore. Review `../PROJECT_STATE.md` before interpreting historical closure reports. USB provisioning code does not establish MAIN-16/SIM MCU acquisition support. The Windows installer manages protected runtime configuration; the development `.env` procedure below is not the customer Setup procedure.
+
 The backend provides authenticated REST APIs, MQTT telemetry ingestion, SQLite
 configuration and operational persistence, InfluxDB time-series writes, Alarm-domain
 evaluation, Device health, calibration evidence, and durable notification events.

@@ -329,7 +329,7 @@ The remaining Sprint 14 activity is documentation reconciliation and formal Spri
 
 The authoritative Sprint-level closure record is:
 
-`docs/project-management/SPRINT-14-CLOSURE.md`
+`docs/archive/project-management/SPRINT-14-CLOSURE.md`
 
 ---
 
