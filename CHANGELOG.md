@@ -4,6 +4,8 @@
 
 ### 30 September 2026 documentation reconciliation
 
+- Separated 72 dated closure/audit/acceptance records into `docs/archive/`, added current documentation navigation, and updated links and the required-document manifest path. Architectural decisions and active specifications retain their domain folders.
+
 - Reconciled state, execution plan, Arabic guide, backend/frontend guidance, architecture, persistence, Windows operations, risks and Pilot scope against `main@6efd78a`.
 - Documented merged Builder/USB provisioning separately from missing MAIN-16/SIM-D4 acquisition, threshold authoring and ADMIN topology-policy gaps.
 - Added a complete documentation inventory with current-authority and historical-evidence boundaries; preserved dated release and acceptance claims.
@@ -144,7 +146,7 @@ Source-software milestone consolidating the substantial post-`v0.15.0` work thro
 - Completed the P1 Notification Delivery Engine software sequence, including durable notification events/delivery operations and controlled provider/runtime boundaries.
 - Completed P2-01 through P2-09 Site Controller host-side software runtime: deterministic runtime/watchdog state, BF-08 configuration receipt/integrity, DS18B20 acquisition abstraction, offline Alarm evaluation, emergency SMS failover, reconnect reconciliation, controller health evidence, and bench qualification gating.
 - Hardened P2 after qualification review by persisting/revalidating the complete known-good BF-08 envelope and making replay acceptance durable across restart with same-batch duplicate suppression.
-- Established `PROJECT_STATE.md` as the single current-state authority, converted `docs/SPRINT_PROGRESS.md` to a historical ledger, removed duplicate `docs/project-status.md`, and made README the stable project/documentation entry point.
+- Established `PROJECT_STATE.md` as the single current-state authority, converted `docs/archive/SPRINT_PROGRESS.md` to a historical ledger, removed duplicate `docs/project-status.md`, and made README the stable project/documentation entry point.
 - Preserved the independent hardware validation path: initial test kit first, then HV execution; no hardware approval is inferred from software CI.
 
 ### Verification evidence

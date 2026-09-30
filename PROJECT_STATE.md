@@ -82,7 +82,7 @@ Sections below are dated checkpoints, not unresolved statements overriding this 
 - Physical troubleshooting exposed and closed four concrete defects through PRs #248-#251: installed Node runtime discovery, protected `backend.env` loading for owner-package import, controlled MFA enrollment-token handoff, and safe resume of pending MFA enrollment after short-lived token expiry.
 - Final merged fixes are represented by main commit `6d2b25ef35f48d5a87df0f2073e46cddd6deca48`.
 - PR #251 CI passed and Internal Windows Setup run `35855353686` passed the signed Pilot Setup/build/install/health workflow.
-- Evidence record: `docs/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
+- Evidence record: `docs/archive/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md`.
 - This closes the immediate Pilot-host SYSTEM_OWNER commissioning/MFA/login verification item only. COM-07, multi-machine qualification, hardware validation, BIO EGYPT field commissioning/UAT, Production security acceptance and final commercial protection remain open.
 - BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
@@ -130,7 +130,7 @@ Source software is mature and full CI is green, but the BIO EGYPT Pilot is still
 8. then complete deferred final Device PKI/mTLS/Secure Boot/Flash Encryption/commercial protection.
 
 Master audit:
-`docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
+`docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
 
 ## Repository / CI baseline
 

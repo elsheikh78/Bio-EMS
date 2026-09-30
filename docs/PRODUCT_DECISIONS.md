@@ -227,4 +227,4 @@ Changes must preserve existing telemetry and alarm architecture. New capabilitie
 - Final production Device PKI/mTLS, Secure Boot/Flash Encryption, host-transfer and commercial anti-copy qualification are deferred until Pilot software/hardware stability is established.
 - This sequencing is intentional: it avoids repeated certificate/host-protection rework while the Pilot is still being installed and tested across multiple computers.
 - Existing licensing source work remains preserved; deferral applies to the final production-grade protection/device-trust completion and qualification.
-- Current authority: `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.
+- Current authority: `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`.

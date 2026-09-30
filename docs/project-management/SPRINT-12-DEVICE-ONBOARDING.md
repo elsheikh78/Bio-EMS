@@ -233,7 +233,7 @@ At implementation completion—not during this planning-only change—update:
 
 - `docs/architecture/roadmap.md` with Sprint 12 completion and Device onboarding scope.
 - `docs/project-status.md` and `PROJECT_STATE.md` with tested status and v0.12.0.
-- `docs/SPRINT_PROGRESS.md` to replace stale Device registration/activation entries.
+- `docs/archive/SPRINT_PROGRESS.md` to replace stale Device registration/activation entries.
 - ADR-009 and ADR-010 implementation-status sections to reflect exactly what shipped;
   retain QR, activation-code, Asset approval, and Authentication work as deferred.
 - MQTT protocol copies and other stale architecture text only to reconcile them with

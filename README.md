@@ -1,5 +1,11 @@
 # BIO-EMS
 
+## Documentation navigation
+
+- [Current documentation / التوثيق الحالي](docs/current/README.md)
+- [Historical archive / التوثيق التاريخي](docs/archive/README.md)
+- [Complete documentation index / الفهرس الكامل](docs/README.md)
+
 ## Documentation baseline — 30 September 2026
 
 Source reviewed: `6efd78a`. See [all documents](docs/README.md) and `PROJECT_STATE.md` for evidence boundaries. Builder/USB provisioning exists in source; MAIN-16-2G/SIM-D4 acquisition remains an integration gap, and sensor technology/site quantity decisions remain open.
@@ -18,7 +24,7 @@ Enterprise Environmental Monitoring System for regulated and operational environ
 | Where is the project now? | `PROJECT_STATE.md` |
 | What do we execute next? | `IMPLEMENTATION_PLAN.md` |
 | ماذا يجب على مالك المنصة أن يفعل بنفسه الآن؟ | `docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md` |
-| What did the 11 September complete audit conclude? | `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
+| What did the 11 September complete audit conclude? | `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
 | What is the current Pilot scope? | `PILOT_SCOPE.md` |
 | What are the active project risks? | `RISK_REGISTER.md` |
 | What controls Communication Channel Administration? | `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md` |

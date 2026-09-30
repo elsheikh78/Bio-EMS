@@ -41,7 +41,7 @@ Acceptance targets achieved:
 - localization/accessibility consistent with the main product shell;
 - frontend authorization tests.
 
-Closure: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
+Closure: `docs/archive/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
 
 ### P7-02 — Customer / Site Fleet Management
 
@@ -58,7 +58,7 @@ Acceptance targets achieved:
 - no cross-boundary customer ADMIN privilege escalation;
 - no unsupported customer lifecycle edit/status mutation presented in the UI.
 
-Closure: PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d` / `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
+Closure: PR #142 / CI run #516 / workflow `33543271797` / merge `f84a3f9ec8a290e4765d4228a6209140cdba5f3d` / `docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
 
 ### P7-03 — License Lifecycle and Installation Binding UI
 
@@ -166,7 +166,7 @@ Minimum software gate:
 - relevant report/export regression;
 - commercial API/UI contract regression.
 
-P7 closure must update `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, `README.md`, `docs/architecture/roadmap.md`, `docs/SPRINT_PROGRESS.md`, this P7 record, `CHANGELOG.md`, and the documentation audit with actual PR/CI/merge evidence.
+P7 closure must update `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, `README.md`, `docs/architecture/roadmap.md`, `docs/archive/SPRINT_PROGRESS.md`, this P7 record, `CHANGELOG.md`, and the documentation audit with actual PR/CI/merge evidence.
 
 ## 4. Explicit Non-Goals / External Integrations
 

@@ -314,8 +314,8 @@ The following documents are part of that reconciliation:
 - `docs/project-management/SPRINT-14-PLAN.md`;
 - `docs/project-management/SPRINT-14-S14-05-PROGRESS.md`;
 - `docs/project-status.md`;
-- `docs/SPRINT_PROGRESS.md`;
-- `docs/project-management/SPRINT-14-CLOSURE.md`.
+- `docs/archive/SPRINT_PROGRESS.md`;
+- `docs/archive/project-management/SPRINT-14-CLOSURE.md`.
 
 After reconciliation, no authoritative project-status document should continue to describe:
 

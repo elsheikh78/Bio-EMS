@@ -13,7 +13,7 @@
 The dated plan below is retained as context; this sequence controls the restart point.
 
 **Plan date:** 30 September 2026
-**Master audit:** `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+**Master audit:** `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
 ## Historical restart point — 24 September 2026
 

@@ -10,7 +10,7 @@ Reconcile repository documents that can reasonably be interpreted as describing 
 - `IMPLEMENTATION_PLAN.md` defines the controlled P0-P7 implementation/evidence sequence and the exact next-session start point.
 - `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md` defines P7 scope and acceptance boundaries.
 - `docs/architecture/roadmap.md` defines the forward software and external-evidence roadmap.
-- `docs/SPRINT_PROGRESS.md` is a historical ledger with a current handoff pointer, not a competing status authority.
+- `docs/archive/SPRINT_PROGRESS.md` is a historical ledger with a current handoff pointer, not a competing status authority.
 - Dedicated P7 closure records document completed package evidence.
 - Dated Sprint/P/BF/PVR handoff and closure records remain historical evidence of their specific execution point and are not rewritten merely because later P7 work completed.
 
@@ -48,7 +48,7 @@ Updated after P7-02 closure with an explicit next-session start procedure, P7-03
 
 Remains the controlled P7 scope/acceptance document. Package-status truth is carried by `PROJECT_STATE.md`, `IMPLEMENTATION_PLAN.md`, and dedicated closure records rather than rewriting the original approved scope definition.
 
-### `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
+### `docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
 
 Finalized with PR #142 head, final CI run #516, merge commit, authorization/mutation boundary, verification evidence, and P7-03 handoff.
 
@@ -56,7 +56,7 @@ Finalized with PR #142 head, final CI run #516, merge commit, authorization/muta
 
 Advanced to show P7-01/P7-02 complete and P7-03 as the next controlled software package while preserving the parallel external evidence track.
 
-### `docs/SPRINT_PROGRESS.md`
+### `docs/archive/SPRINT_PROGRESS.md`
 
 Preserved as a historical ledger but refreshed its handoff pointer so it no longer says P7 is unimplemented; it now directs future work to P7-03.
 
@@ -94,7 +94,7 @@ Payment/invoicing integration and live remote OTA/update execution also remain o
 1. `PROJECT_STATE.md`
 2. `IMPLEMENTATION_PLAN.md`
 3. `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md`
-4. `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
+4. `docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`
 5. this audit
 6. `docs/architecture/roadmap.md`
 7. relevant P3/P6/hardware evidence packs for parallel external execution
