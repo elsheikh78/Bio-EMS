@@ -34,9 +34,16 @@ if ($provisionerToken) {
             $provisioner.esptoolReady -eq $true -and
             $provisioner.firmwareReady -eq $true
         )
-    } catch { $checks["provisioner:loopback"] = $false }
+        $sim = Invoke-RestMethod -Uri "http://127.0.0.1:9444/sim/health" -Headers @{ Authorization = "Bearer $provisionerToken" } -TimeoutSec 10
+        $checks["sim:flash-package"] = (
+            $sim.toolReady -eq $true -and
+            $sim.firmwareReady -eq $true -and
+            $sim.firmwareVersion -eq "0.1.0-bench.1"
+        )
+    } catch { $checks["provisioner:loopback"] = $false; $checks["sim:flash-package"] = $false }
 } else {
     $checks["provisioner:loopback"] = $false
+    $checks["sim:flash-package"] = $false
 }
 try {
     $influx = Invoke-RestMethod -Uri "http://127.0.0.1:8086/health" -TimeoutSec 5

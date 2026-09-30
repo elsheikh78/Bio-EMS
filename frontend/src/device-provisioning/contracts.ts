@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+export const simFlashingHealthSchema = z
+  .object({
+    toolReady: z.boolean(),
+    firmwareReady: z.boolean(),
+    firmwareVersion: z.string().nullable(),
+  })
+  .strict();
+export const simFlashingResultSchema = z
+  .object({
+    port: z.string(),
+    firmwareVersion: z.string(),
+    toolOutput: z.string(),
+  })
+  .strict();
+
 export const deviceProvisionerHealthSchema = z
   .object({
     status: z.literal("UP"),

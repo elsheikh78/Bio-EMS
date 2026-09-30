@@ -19,7 +19,9 @@ const ids = [
   "winsw",
   "influx-cli",
   "esptool",
+  "avrdude",
   "site-controller-firmware",
+  "sim-d4-firmware",
 ] as const;
 const content = (id: string) => Buffer.from(`controlled-${id}`);
 const checksum = (value: Buffer) => createHash("sha256").update(value).digest("hex");
@@ -56,7 +58,7 @@ function stage(input = manifest()) {
 }
 
 describe("DEP-01 controlled Windows installer package", () => {
-  it("accepts exactly the nine controlled, checksummed runtime/application inputs", () => {
+  it("accepts exactly the eleven controlled, checksummed runtime/application inputs", () => {
     expect(readAndValidateWindowsInstallerPackage(stage())).toMatchObject({
       ready: true,
       issues: [],
@@ -135,6 +137,7 @@ describe("DEP-01-02 frozen inputs and build source", () => {
       "winsw",
       "influx-cli",
       "esptool",
+      "avrdude",
     ]);
   });
 
