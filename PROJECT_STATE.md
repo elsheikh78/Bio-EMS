@@ -1,8 +1,22 @@
 # BIO-EMS Project State
 
-**State date:** 27 September 2026  
-**Authoritative main audited:** `80bb5ca3985ecc515f4f3072d804edc6932d1968`  
-**Current integration branch:** `feat/installation-builder-provisioning-flow`  
+## 30 September documentation and source reconciliation
+
+- Reviewed against `main@6efd78a9fd9ea50a1d1b0e88f074708be1189546`; source version remains `0.20.0`. This documentation update creates no new software release or installer artifact.
+- Installation Builder and local USB Device Provisioning are present in source: logical configuration -> validate -> queue -> detect ESP32-S3 -> Flash & Bind -> runtime inventory activation. Physical end-to-end acceptance remains open.
+- Firmware remains `0.1.0-pilot.1`, MQTT protocol `1.3`, binding schema `1`. Version identifies compatibility; hardware UID and platform binding identify the physical Device.
+- MAIN-16-2G / SIM-D4 (1–4 SIM units, up to four probes each) is a bench candidate. SIM MCU firmware, versioned Modbus profile, populated-module discovery/channel mapping and integrated 2G fallback are not qualified by the current ESP32-S3 pairing firmware.
+- PT100 modular field baseline and DS18B20 bench candidate remain separate pending the controlled sensor decision. El Manial documents count seven positions; planning also mentions six. Resolve the approved position map before full procurement/commissioning.
+- SYSTEM_OWNER Pilot-host commissioning/MFA passed on 23 September. This is separate from Production key ceremony and multi-machine qualification.
+- COM-01–06 are merged; live COM-07/SMS and field acceptance remain open. Historical provider results retain their dated evidence boundaries.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**. Final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred.
+
+Sections below are dated checkpoints, not unresolved statements overriding this checkpoint. ADMIN currently lacks `TOPOLOGY_MANAGE` in `frontend/src/authorization/permissions.ts`; any earlier approval for ADMIN topology creation must be reconciled with backend policy before claiming that capability. Installation Builder exposes codes and channel mappings; its normal controls do not yet expose all alarm thresholds. Customer Configuration provides the existing threshold-editing path.
+
+
+**State date:** 30 September 2026
+**Authoritative main audited:** `6efd78a9fd9ea50a1d1b0e88f074708be1189546`
+**Current integration branch:** `main`
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
 

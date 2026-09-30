@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### 30 September 2026 documentation reconciliation
+
+- Reconciled state, execution plan, Arabic guide, backend/frontend guidance, architecture, persistence, Windows operations, risks and Pilot scope against `main@6efd78a`.
+- Documented merged Builder/USB provisioning separately from missing MAIN-16/SIM-D4 acquisition, threshold authoring and ADMIN topology-policy gaps.
+- Added a complete documentation inventory with current-authority and historical-evidence boundaries; preserved dated release and acceptance claims.
+- No source-version bump, new Setup/firmware binary, physical acceptance or new published release is claimed.
+
+
 ### 16 September 2026 Pilot validation and integration reconciliation
 
 - Recorded successful clean Pilot Setup validation from the current integration line, including the three BIO-EMS Windows services and successful customer ADMIN login.

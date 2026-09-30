@@ -1,6 +1,6 @@
 # BIO-EMS Frontend
 
-This directory contains the completed Sprint 14 browser application foundation.
+This directory contains the current React/TypeScript/Vite application. Source review: 30 September 2026, `main@6efd78a`. Sprint 14 notes below are historical foundation evidence.
 
 Integrated work:
 
@@ -60,8 +60,7 @@ S14-03 established versioned browser session persistence, restoration, expiry ha
 
 The application includes `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, `/configuration`, and `/users`, subject to the centralized route policy.
 
-`/dashboard` and `/monitored-areas` are operational. The remaining routes retain their
-current approved presentation scope. Monitored Area is presentation terminology for
+Operational routes also include `/live-board`, `/notification-deliveries`, `/sensors-calibration`, `/reports`, `/commissioning` and `/backup-restore`. System Owner has separate login, installation, provisioning, communication, licensing and backup routes under `/system-owner`. Backend authorization remains authoritative. Monitored Area is presentation terminology for
 the existing Room domain.
 
 ## S14-05 Delivered Scope

@@ -1,5 +1,9 @@
 # BIO EGYPT Pilot Documentation Package
 
+## 30 September commissioning boundary
+
+BIO EGYPT remains NOT COMMISSIONED / NOT ACCEPTED. Prepare the logical installation with Builder, validate and then use Device Provisioning. Resolve the El Manial seven documented positions versus six in planning before entering final quantities. Do not treat the DS18B20 bench candidate as an approved replacement of the PT100 field BOM or infer 16-channel readiness from controller pairing.
+
 ## Document control
 
 | Field              | Value                                                |

@@ -1,5 +1,9 @@
 # BIO-EMS Installation Builder & Device Provisioning Work Package
 
+## 30 September implementation reconciliation
+
+Builder, code inventory, logical revision validation, provisioning queue, local runner and Flash & Bind are present in `main@6efd78a`. The decision-date status below is historical. Physical flashing/binding/telemetry acceptance remains open. Builder threshold controls and 1–4 SIM × 4 sensor acquisition are not established by the existing logical channel mapping contract.
+
 **Decision date:** 27 September 2026  
 **Status:** APPROVED PRODUCT DIRECTION / IMPLEMENTATION PENDING  
 **Target:** Pilot stabilization leading to production-grade commissioning UX  
