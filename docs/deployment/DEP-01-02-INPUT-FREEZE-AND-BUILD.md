@@ -36,6 +36,8 @@ Run these commands from Windows PowerShell with explicit paths:
 .\installer\windows\New-InstallerStaging.ps1 `
   -RepositoryRoot C:\src\Bio-EMS `
   -VendorCache C:\BIO-EMS-Build\vendor-cache `
+  -FirmwarePackageDirectory C:\BIO-EMS-Build\firmware-site-controller `
+  -SimFirmwarePackageDirectory C:\BIO-EMS-Build\firmware-sim-d4-nano `
   -StagingDirectory C:\BIO-EMS-Build\staging `
   -SourceCommit 0123456789abcdef0123456789abcdef01234567 `
   -BuildTimestamp 2026-09-08T12:00:00Z

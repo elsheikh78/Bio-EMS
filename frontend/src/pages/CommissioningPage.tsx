@@ -1,3 +1,4 @@
+import { simMappingLabel } from "../devices/simMapping";
 import {
   Alert,
   Box,
@@ -399,7 +400,8 @@ export function CommissioningPage() {
                     <TableCell>{item.sensorCode}</TableCell>
                     <TableCell>{item.roomCode}</TableCell>
                     <TableCell>
-                      {item.deviceIdentity} / {item.channel}
+                      {item.deviceIdentity} ·{" "}
+                      {simMappingLabel(item.channel, language === "ar")}
                     </TableCell>
                     <TableCell>
                       <Chip

@@ -1,3 +1,4 @@
+import { simMappingLabel } from "../devices/simMapping";
 import {
   Alert,
   Box,
@@ -261,6 +262,33 @@ export function InstallationBuilder({
                 {device.deviceId}
               </Typography>
               <Typography variant="caption">BIO-EMS-SC-V1</Typography>
+              <TextField
+                select
+                size="small"
+                sx={{ display: "block", mt: 1, minWidth: 190 }}
+                label={
+                  language === "ar"
+                    ? "وحدات SIM-D4 المركبة"
+                    : "Fitted SIM-D4 modules"
+                }
+                value={device.simModules ?? 1}
+                onChange={(event) =>
+                  setDevices((current) =>
+                    current.map((item) =>
+                      item.deviceId === device.deviceId
+                        ? { ...item, simModules: Number(event.target.value) }
+                        : item,
+                    ),
+                  )
+                }
+              >
+                {[1, 2, 3, 4].map((count) => (
+                  <MenuItem key={count} value={count}>
+                    {count} SIM · {count * 4}{" "}
+                    {language === "ar" ? "قنوات" : "channels"}
+                  </MenuItem>
+                ))}
+              </TextField>
               {devices.length > 1 ? (
                 <Button
                   size="small"
@@ -293,7 +321,7 @@ export function InstallationBuilder({
           onClick={() =>
             setDevices((current) => [
               ...current,
-              { deviceId: nextDeviceCode(current) },
+              { deviceId: nextDeviceCode(current), simModules: 1 },
             ])
           }
         >
@@ -447,13 +475,82 @@ export function InstallationBuilder({
                   type="number"
                   label={text.channel}
                   value={telemetry.channel}
-                  slotProps={{ htmlInput: { min: 1, step: 1 } }}
+                  helperText={simMappingLabel(
+                    telemetry.channel,
+                    language === "ar",
+                  )}
+                  slotProps={{
+                    htmlInput: {
+                      min: 1,
+                      max:
+                        (devices.find(
+                          (device) => device.deviceId === telemetry.deviceId,
+                        )?.simModules ?? 4) * 4,
+                      step: 1,
+                    },
+                  }}
                   onChange={(event) =>
                     updateTelemetry(area.code, telemetry.code, {
                       channel: Number(event.target.value),
                     })
                   }
                 />
+                {telemetry.type === "TEMPERATURE" ? (
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      display: "grid",
+                      gap: 1,
+                      gridTemplateColumns: {
+                        xs: "1fr 1fr",
+                        md: "repeat(4, 1fr)",
+                      },
+                    }}
+                  >
+                    {(
+                      [
+                        [
+                          "alarmLow",
+                          language === "ar" ? "إنذار منخفض °C" : "Low alarm °C",
+                        ],
+                        [
+                          "warningLow",
+                          language === "ar"
+                            ? "تحذير منخفض °C"
+                            : "Low warning °C",
+                        ],
+                        [
+                          "warningHigh",
+                          language === "ar"
+                            ? "تحذير مرتفع °C"
+                            : "High warning °C",
+                        ],
+                        [
+                          "alarmHigh",
+                          language === "ar"
+                            ? "إنذار مرتفع °C"
+                            : "High alarm °C",
+                        ],
+                      ] as const
+                    ).map(([field, label]) => (
+                      <TextField
+                        key={field}
+                        type="number"
+                        label={label}
+                        value={telemetry[field] ?? ""}
+                        slotProps={{ htmlInput: { step: "any" } }}
+                        onChange={(event) =>
+                          updateTelemetry(area.code, telemetry.code, {
+                            [field]:
+                              event.target.value === ""
+                                ? undefined
+                                : Number(event.target.value),
+                          })
+                        }
+                      />
+                    ))}
+                  </Box>
+                ) : null}
                 <Button
                   onClick={() => removeTelemetry(area.code, telemetry.code)}
                 >

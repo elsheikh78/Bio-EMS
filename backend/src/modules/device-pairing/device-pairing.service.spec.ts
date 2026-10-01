@@ -1,6 +1,8 @@
 import Database from "better-sqlite3";
+import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration030 } from "../../../database/sqlite/migrations/030_create_device_platform_pairing";
+import { migration031 } from "../../../database/sqlite/migrations/031_add_device_telemetry_credentials";
 import { AppError } from "../../errors/app-error";
 import { DevicePairingService } from "./device-pairing.service";
 
@@ -36,6 +38,7 @@ describe("DevicePairingService", () => {
       );
     `);
     migration030.up(database);
+    migration031.up(database);
     now = new Date("2026-09-23T17:00:00.000Z");
     service = new DevicePairingService(database, () => now);
 
@@ -133,6 +136,12 @@ describe("DevicePairingService", () => {
       checksum: "a".repeat(64),
     });
     expect(claimed.mqtt.telemetry_topic).toBe("bioems/MANIAL/telemetry/CTRL-001");
+    expect(claimed.telemetry_token).toMatch(/^[a-f0-9]{64}$/);
+    const tokenRow = database
+      .prepare("SELECT telemetry_token_hash AS hash FROM device_platform_bindings")
+      .get() as { hash: string };
+    expect(tokenRow.hash).toBe(createHash("sha256").update(claimed.telemetry_token).digest("hex"));
+    expect(tokenRow.hash).not.toBe(claimed.telemetry_token);
 
     const binding = database
       .prepare(

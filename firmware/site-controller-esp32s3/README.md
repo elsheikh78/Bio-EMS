@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.1`;
+- firmware version: `0.1.0-pilot.3`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -73,13 +73,14 @@ Once a Device has an ACTIVE platform binding, telemetry/heartbeat messages must 
 platform binding ID and hardware UID. Unpaired legacy devices remain accepted during the Pilot
 transition; after pairing, omission or mismatch is rejected.
 
-The current Pilot firmware intentionally does **not** claim the final commercial transport
-security. The customer-local Windows HTTPS endpoint uses an installer-generated self-signed
-certificate, so the Pilot build enables ESP-TLS insecure server-certificate verification only
-for the short-lived bootstrap/pairing phase. This is explicitly testing-only behavior and must
-not be carried into Production. The governed firmware manifest still records the exact source
-commit so Pilot binaries remain traceable even while the Pilot firmware version remains
-`0.1.0-pilot.1`.
+The Windows installer generates a customer-local HTTPS certificate. During USB provisioning,
+the provisioner transfers its public certificate to the ESP32, which verifies the HTTPS peer
+against that certificate for pairing and telemetry. The Pilot still skips hostname matching
+because the certificate does not contain the LAN IP address; this is not a final commercial
+identity model. USB provisioning also sets and stores the PC's UTC time so certificate
+validation works after controller reboot. This bench clock can drift; the production design
+needs trusted time synchronization or an RTC. The governed firmware manifest records the
+exact source commit.
 
 The current customer-local HTTPS certificate model is not yet the final BIO-EMS Root CA /
 Device CA / mTLS architecture. Before Production:
@@ -92,3 +93,45 @@ Device CA / mTLS architecture. Before Production:
 - add revocation/replacement and clone-detection tests.
 
 Do not burn irreversible security eFuses on development boards during this Pilot stage.
+# SIM-D4 bench acquisition (draft)
+
+An installation may declare `simModules` from 1 through 4. The ESP32 polls
+Modbus addresses `1..simModules` at 9600 8N1 every five seconds. Address 1
+contributes channels 1–4, address 2 channels 5–8, address 3 channels 9–12,
+and address 4 channels 13–16. Any channel without an installed probe returns
+an invalid status and is not a usable temperature reading. Only declare
+modules that are physically present; assign consecutive addresses starting at
+1 using the Nano D7/D8 jumpers.
+
+Bench UART pins: ESP32-S3 GPIO17 TX to transceiver DI, GPIO18 RX from RO,
+GPIO16 to tied DE and /RE. Both boards must share signal ground. Check the
+pinout of the purchased ESP32-S3 board, RS485 transceiver logic voltage,
+isolation, termination and bias before connecting. Pins can be overridden at
+build time with `SIM_RS485_TX_GPIO`, `SIM_RS485_RX_GPIO`, and
+`SIM_RS485_DE_GPIO`.
+
+The controller posts only valid, mapped temperature readings to the BIO-EMS HTTPS endpoint.
+The server verifies a per-binding token and resolves the site/device identity from the binding,
+then uses the existing telemetry processing path. The installer MQTT listener remains bound to
+loopback with backend credentials. The HTTPS delivery is not yet validated on physical hardware;
+fault reporting, controller power monitoring, retries and buffering need field qualification.
+
+## USB SIM diagnostics (Pilot 0.1.0-pilot.3)
+
+Connect the controller USB and the powered SIM-D4 RS485 bus, select the controller COM
+port, then use **Scan SIMs and sensors**. The serial `simscan` command checks addresses
+1–4 regardless of the configured fitted count, and reports each response and four input
+statuses/valid temperatures. A UART mutex prevents polling and diagnostics overlapping.
+A missing response can mean absent hardware, wiring/power faults, wrong address or invalid
+frames; it does not prove a module is absent. Duplicate physical RS485 addresses cannot be
+reliably identified by this scan. The scan does not save mappings or commission the site.
+
+Nano USB **Detect Nano / SIM** reads an ATmega328P bootloader signature without flash
+writes, trying 57600 then 115200 baud. A compatible signature does not identify a particular
+SIM instance or verify its sensor wiring. Flashing repeats detection and requires the baud
+specified by the governed Nano firmware manifest; the current package requires 57600.
+
+Re-save/revalidate unprovisioned installation revisions for the new controller version before
+Flash & Bind. Existing sensor channel assignments are preserved; do not delete sensors.
+Hardware tests of detection, USB serial scan, RS485 addressing and missing probes are still
+required. USB diagnostics do not implement a remote network scan.

@@ -93,6 +93,10 @@ import {
   flashAndBindInstallationDevice,
   flashInstallationDevice,
   getDeviceProvisioningHealth,
+  getSimFlashingHealth,
+  detectSimBoard,
+  scanControllerSims,
+  flashSimFirmware,
   listDeviceProvisioningPorts,
   listDeviceProvisioningTargets,
 } from "../controllers/device-provisioning.controller";
@@ -100,6 +104,7 @@ import {
   deviceProvisioningDetectSchema,
   deviceProvisioningFlashBindSchema,
   deviceProvisioningFlashSchema,
+  deviceProvisioningSimFlashSchema,
 } from "../modules/device-provisioning/device-provisioning.schema";
 
 const router = Router();
@@ -119,6 +124,22 @@ router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installation-context", getInstallationContext);
 router.get("/device-provisioning/health", getDeviceProvisioningHealth);
+router.post(
+  "/device-provisioning/sim/detect",
+  validateBody(deviceProvisioningDetectSchema),
+  detectSimBoard
+);
+router.post(
+  "/device-provisioning/sim/scan",
+  validateBody(deviceProvisioningDetectSchema),
+  scanControllerSims
+);
+router.get("/device-provisioning/sim/health", getSimFlashingHealth);
+router.post(
+  "/device-provisioning/sim/flash",
+  validateBody(deviceProvisioningSimFlashSchema),
+  flashSimFirmware
+);
 router.get("/device-provisioning/ports", listDeviceProvisioningPorts);
 router.get("/device-provisioning/targets", listDeviceProvisioningTargets);
 router.post(

@@ -30,6 +30,7 @@ import installationAcceptanceRouter from "./routes/installation-acceptance.route
 import communicationChannelRouter from "./routes/communication-channel.route";
 import platformBackupRouter from "./routes/platform-backup.route";
 import devicePairingRouter from "./routes/device-pairing.route";
+import deviceTelemetryRouter from "./routes/device-telemetry.route";
 import { resolve } from "node:path";
 import { reconcilePlatformRestoreAudits } from "./modules/platform-backup/platform-backup.service";
 import { startPlatformBackupScheduleRuntime } from "./modules/platform-backup/platform-backup-schedule.runtime";
@@ -57,6 +58,7 @@ app.use(`${config.apiPrefix}/platform-auth`, platformAuthRouter);
 app.use(`${config.apiPrefix}/platform-audit-events`, platformAuditEventRouter);
 app.use(`${config.apiPrefix}/platform-operations`, platformOperationsRouter);
 app.use(`${config.apiPrefix}/device-pairing`, devicePairingRouter);
+app.use(`${config.apiPrefix}/device-telemetry`, deviceTelemetryRouter);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/auth`, authRouter);

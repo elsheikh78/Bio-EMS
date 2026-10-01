@@ -86,6 +86,18 @@ describe("ConfigurationPage", () => {
     expect(screen.getByText(/No sensors match/i)).toBeInTheDocument();
   });
 
+  it("explains missing runtime sensors instead of suggesting a failed search", () => {
+    mockedSensors.mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useSensors>);
+    render(<ConfigurationPage />);
+    expect(
+      screen.getByText(/No runtime sensors are available/),
+    ).toBeInTheDocument();
+  });
+
   it("validates order before sending either controlled mutation", () => {
     render(<ConfigurationPage />);
     fireEvent.click(screen.getByRole("button", { name: /Edit Cold room/i }));

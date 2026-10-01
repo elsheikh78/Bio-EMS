@@ -35,12 +35,12 @@ jobs:
           test -f firmware/site-controller-esp32s3/build/bootloader/bootloader.bin
           test -f firmware/site-controller-esp32s3/build/partition_table/partition-table.bin
 
-      - name: Verify Pilot HTTPS bootstrap configuration
+      - name: Verify TLS certificate validation is required
         shell: bash
         run: |
           set -euo pipefail
-          grep -qx 'CONFIG_ESP_TLS_INSECURE=y' firmware/site-controller-esp32s3/sdkconfig
-          grep -qx 'CONFIG_ESP_TLS_SKIP_SERVER_CERT_VERIFY=y' firmware/site-controller-esp32s3/sdkconfig
+          if grep -qx 'CONFIG_ESP_TLS_INSECURE=y' firmware/site-controller-esp32s3/sdkconfig; then exit 1; fi
+          if grep -qx 'CONFIG_ESP_TLS_SKIP_SERVER_CERT_VERIFY=y' firmware/site-controller-esp32s3/sdkconfig; then exit 1; fi
 
       - name: Package governed ESP32-S3 firmware
         shell: bash

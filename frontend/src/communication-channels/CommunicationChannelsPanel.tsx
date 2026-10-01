@@ -105,7 +105,10 @@ export function CommunicationChannelsPanel({
           secrets: buildSecrets(channel, displayed),
         }),
       }),
-    onSuccess: () => cache.invalidateQueries({ queryKey: key }),
+    onSuccess: () => {
+      setDirty(false);
+      return cache.invalidateQueries({ queryKey: key });
+    },
   });
   const testMutation = useMutation({
     mutationFn: () =>
@@ -115,6 +118,15 @@ export function CommunicationChannelsPanel({
         body: JSON.stringify({ siteId: Number(testSiteId), destination }),
       }),
   });
+  const savedEnabled = current?.config.enabled === true;
+  const needsSecret =
+    channel === "TELEGRAM" ||
+    channel === "WHATSAPP" ||
+    (channel === "EMAIL" && Boolean(current?.config.username)) ||
+    (channel === "SMS" && current?.config.transport === "HTTP");
+  const testReady = Boolean(
+    current && savedEnabled && (!needsSecret || current.secretsConfigured),
+  );
   return (
     <Paper variant="outlined" sx={{ p: 3 }}>
       <Stack spacing={2}>
@@ -126,6 +138,37 @@ export function CommunicationChannelsPanel({
             ? "هذه البيانات تخص حسابات الإرسال الخاصة بمنصة BIO-EMS وليست بيانات مستلمي الإنذارات. الأسرار لا تُعرض بعد حفظها؛ ترك حقل السر فارغًا يحتفظ بالقيمة الحالية."
             : "These are BIO-EMS platform sender-account settings, not alarm-recipient details. Secrets are never displayed after saving; leave a secret blank to keep its current value."}
         </Typography>
+        {query.isError ? (
+          <Alert severity="error">
+            {ar
+              ? "تعذر تحميل إعدادات الإرسال المحفوظة."
+              : "Unable to load saved sender settings."}
+          </Alert>
+        ) : null}
+        <Alert severity={testReady ? "info" : "warning"}>
+          {!current
+            ? ar
+              ? "القناة لم تُضبط بعد. القيم المعروضة مبدئية وليست إعدادات إرسال محفوظة."
+              : "This channel is not configured. Displayed defaults are not saved sender settings."
+            : !savedEnabled
+              ? ar
+                ? "القناة المحفوظة معطلة."
+                : "The saved channel is disabled."
+              : needsSecret && !current.secretsConfigured
+                ? ar
+                  ? "بيانات اعتماد الإرسال غير مكتملة."
+                  : "Sender credentials are incomplete."
+                : ar
+                  ? "الإعدادات محفوظة؛ اختبار الإرسال الفعلي يحدد نجاح الاتصال."
+                  : "Settings are saved; a delivery test confirms connectivity."}
+        </Alert>
+        {dirty ? (
+          <Alert severity="info">
+            {ar
+              ? "احفظ التعديلات قبل اختبار الإرسال."
+              : "Save your changes before testing delivery."}
+          </Alert>
+        ) : null}
         <TextField
           select
           label="Channel"
@@ -133,6 +176,8 @@ export function CommunicationChannelsPanel({
           onChange={(e) => {
             setChannel(e.target.value as Channel);
             setDirty(false);
+            mutation.reset();
+            testMutation.reset();
           }}
         >
           {channels.map((value) => (
@@ -219,7 +264,16 @@ export function CommunicationChannelsPanel({
         />
         <Button
           variant="outlined"
-          disabled={testMutation.isPending || !testSiteId || !destination}
+          disabled={
+            testMutation.isPending ||
+            query.isPending ||
+            query.isError ||
+            mutation.isPending ||
+            dirty ||
+            !testReady ||
+            !testSiteId ||
+            !destination
+          }
           onClick={() => testMutation.mutate()}
         >
           Send test
@@ -285,7 +339,7 @@ function buildSecrets(channel: Channel, form: Record<string, string>) {
 function buildConfig(channel: Channel, form: Record<string, string>) {
   const common = {
     channel,
-    enabled: form.enabled !== "false",
+    enabled: String(form.enabled) !== "false",
     priority: Number(form.priority),
   };
   if (channel === "EMAIL")

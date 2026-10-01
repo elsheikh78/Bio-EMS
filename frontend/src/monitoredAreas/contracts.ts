@@ -40,6 +40,7 @@ export const sensorSchema = z
     uuid: z.string(),
     room_id: databaseIdSchema,
     device_id: databaseIdSchema,
+    device_identity: z.string().nullable().optional(),
     channel: z.number().int().nonnegative(),
     code: z.string(),
     name: z.string(),

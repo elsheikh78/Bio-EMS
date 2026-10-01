@@ -8,6 +8,7 @@ import {
   localProvisionerProvisionSchema,
 } from "../modules/device-provisioning/device-provisioning.schema";
 import { LocalProvisioningRunner } from "../modules/device-provisioning/device-provisioning.runner";
+import { SimFlashingRunner } from "../modules/device-provisioning/sim-flashing.runner";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -22,7 +23,11 @@ function tokenMatches(received: string | undefined, expected: string): boolean {
   return candidate.length === target.length && timingSafeEqual(candidate, target);
 }
 
-export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, token: string) {
+export function createDeviceProvisionerApp(
+  runner: LocalProvisioningRunner,
+  token: string,
+  sim?: SimFlashingRunner
+) {
   const app = express();
   app.disable("x-powered-by");
   app.use(express.json({ limit: "16kb" }));
@@ -35,6 +40,40 @@ export function createDeviceProvisionerApp(runner: LocalProvisioningRunner, toke
   });
 
   app.get("/health", (_request, response) => response.json(runner.health()));
+  app.get("/sim/health", (_request, response) =>
+    response.json(
+      sim?.health() ?? { toolReady: false, firmwareReady: false, firmwareVersion: null }
+    )
+  );
+  app.post("/sim/detect", async (request, response, next) => {
+    try {
+      const input = deviceProvisioningDetectSchema.parse(request.body);
+      if (!sim) throw new Error("SIM flashing is not configured");
+      response.json(await sim.detect(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post("/sim/scan", async (request, response, next) => {
+    try {
+      const input = deviceProvisioningDetectSchema.parse(request.body);
+      response.json(await runner.scanSims(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post("/sim/flash", async (request, response, next) => {
+    try {
+      const input = z
+        .object({ port: z.string(), firmwareVersion: z.string().min(1).max(80) })
+        .strict()
+        .parse(request.body);
+      if (!sim) throw new Error("SIM flashing is not configured");
+      response.json(await sim.flash(input.port, input.firmwareVersion));
+    } catch (error) {
+      next(error);
+    }
+  });
   app.get("/ports", async (_request, response, next) => {
     try {
       response.json({ ports: await runner.listPorts() });
@@ -105,8 +144,15 @@ if (require.main === module) {
     applicationRoot,
     esptoolPath,
     firmwareManifestPath,
+    tlsCertificatePath: process.env.BIOEMS_PROVISIONER_TLS_CERT?.trim() || undefined,
   });
-  const app = createDeviceProvisionerApp(runner, token);
+  const sim = new SimFlashingRunner({
+    applicationRoot,
+    avrdudePath: process.env.BIOEMS_SIM_AVRDUDE_PATH,
+    avrdudeConfigPath: process.env.BIOEMS_SIM_AVRDUDE_CONFIG,
+    firmwareManifestPath: process.env.BIOEMS_SIM_FIRMWARE_MANIFEST,
+  });
+  const app = createDeviceProvisionerApp(runner, token, sim);
   app.listen(port, "127.0.0.1", () => {
     console.log(`BIO-EMS Device Provisioner listening on 127.0.0.1:${port}`);
   });
