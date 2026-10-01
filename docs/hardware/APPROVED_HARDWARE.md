@@ -1,5 +1,9 @@
 # BIO-EMS Approved Hardware Register
 
+## 30 September source and procurement boundary
+
+Consult `MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md` for the DS18B20 candidate and `BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md` for the PT100 field baseline. Neither a proposed BOM nor pairing firmware proves four-SIM acquisition. Egypt-local stock, sensor selection, populated-module behavior and site counts require recorded qualification before expanded purchases.
+
 ## Current status
 
 **NO PRODUCTION OR PILOT HARDWARE REVISION IS RELEASED.**

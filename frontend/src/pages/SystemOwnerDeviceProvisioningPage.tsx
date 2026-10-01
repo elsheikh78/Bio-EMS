@@ -21,6 +21,8 @@ import {
   useFlashAndBindProvisioningDevice,
   useFlashSimFirmware,
   useSimFlashingHealth,
+  useDetectSimBoard,
+  useScanControllerSims,
 } from "../device-provisioning/queries";
 import { useLocalization } from "../localization/useLocalization";
 
@@ -141,6 +143,9 @@ export function SystemOwnerDeviceProvisioningPage() {
   const flashBind = useFlashAndBindProvisioningDevice();
   const simHealth = useSimFlashingHealth();
   const simFlash = useFlashSimFirmware();
+  const simDetect = useDetectSimBoard();
+  const simScan = useScanControllerSims();
+  const ar = language === "ar";
   const [selectedPort, setSelectedPort] = useState("");
   const [selectedTarget, setSelectedTarget] = useState("");
   const [wifiSsid, setWifiSsid] = useState("");
@@ -152,7 +157,9 @@ export function SystemOwnerDeviceProvisioningPage() {
       : "";
   });
 
-  const inventory = ports.data?.ports ?? [];
+  const inventory = (ports.data?.ports ?? []).filter(
+    (item) => !/Active Management Technology|Bluetooth/i.test(item.name ?? ""),
+  );
   const effectivePort = inventory.some((item) => item.port === selectedPort)
     ? selectedPort
     : inventory.length === 1
@@ -257,23 +264,32 @@ export function SystemOwnerDeviceProvisioningPage() {
             <Stack spacing={2}>
               <TextField
                 disabled={
-                  (!serviceReady && !simReady) || ports.data.ports.length === 0
+                  (!serviceReady && !simReady) ||
+                  inventory.length === 0 ||
+                  simScan.isPending ||
+                  simDetect.isPending ||
+                  simFlash.isPending ||
+                  detect.isPending ||
+                  flashBind.isPending
                 }
                 label={text.select}
                 onChange={(event) => {
                   setSelectedPort(event.target.value);
+                  simDetect.reset();
+                  simFlash.reset();
+                  simScan.reset();
                   detect.reset();
                   flashBind.reset();
                 }}
                 select
                 value={effectivePort}
               >
-                {ports.data.ports.length === 0 ? (
+                {inventory.length === 0 ? (
                   <MenuItem disabled value="">
                     {text.none}
                   </MenuItem>
                 ) : null}
-                {ports.data.ports.map((item) => (
+                {inventory.map((item) => (
                   <MenuItem key={item.port} value={item.port}>
                     {item.port}
                     {item.name ? ` — ${item.name}` : ""}
@@ -282,7 +298,15 @@ export function SystemOwnerDeviceProvisioningPage() {
               </TextField>
 
               <Button
-                disabled={!serviceReady || !effectivePort || detect.isPending}
+                disabled={
+                  !serviceReady ||
+                  !effectivePort ||
+                  detect.isPending ||
+                  simDetect.isPending ||
+                  simScan.isPending ||
+                  simFlash.isPending ||
+                  flashBind.isPending
+                }
                 onClick={() => {
                   flashBind.reset();
                   detect.mutate(effectivePort);
@@ -346,8 +370,50 @@ export function SystemOwnerDeviceProvisioningPage() {
               {text.simVersion}: {simHealth.data?.firmwareVersion ?? "—"}
             </Typography>
             <Button
+              variant="outlined"
+              disabled={
+                !effectivePort ||
+                !simReady ||
+                simDetect.isPending ||
+                simFlash.isPending ||
+                simScan.isPending ||
+                flashBind.isPending ||
+                detect.isPending
+              }
+              onClick={() => {
+                simFlash.reset();
+                simDetect.mutate(effectivePort);
+              }}
+            >
+              {ar ? "اكتشاف Nano / SIM" : "Detect Nano / SIM"}
+            </Button>
+            {simDetect.isError ? (
+              <Alert severity="error">
+                {ar
+                  ? "تعذر اكتشاف Nano. راجع منفذ USB والتوصيلات."
+                  : "Nano detection failed. Check the USB port and wiring."}
+              </Alert>
+            ) : null}
+            {simDetect.data?.port === effectivePort ? (
+              <Alert
+                severity={simDetect.data.supported ? "success" : "warning"}
+              >
+                {simDetect.data.supported
+                  ? `${effectivePort}: ATmega328P · ${simDetect.data.baud} baud`
+                  : ar
+                    ? "لم يُكتشف متحكم ATmega328P متوافق. لا يمكن الفلاش."
+                    : "No compatible ATmega328P bootloader detected. Flashing is blocked."}
+              </Alert>
+            ) : null}
+            <Button
               variant="contained"
               disabled={
+                simDetect.data?.port !== effectivePort ||
+                !simDetect.data?.supported ||
+                simDetect.isPending ||
+                simScan.isPending ||
+                flashBind.isPending ||
+                detect.isPending ||
                 !effectivePort ||
                 !simHealth.data?.firmwareVersion ||
                 !simHealth.data.toolReady ||
@@ -371,6 +437,75 @@ export function SystemOwnerDeviceProvisioningPage() {
             ) : null}
             {simFlash.isError ? (
               <Alert severity="error">{simFlash.error.message}</Alert>
+            ) : null}
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Card variant="outlined" sx={{ mb: 3 }}>
+        <CardContent>
+          <Stack spacing={2}>
+            <Typography variant="h6">
+              {ar
+                ? "فحص وحدات SIM عبر ESP32"
+                : "Scan SIM modules through ESP32"}
+            </Typography>
+            <Alert severity="info">
+              {ar
+                ? "وصل ESP32 بالـUSB ووحدات SIM عبر RS485 ثم اختر منفذ ESP32. الفحص يعرض ما يستجيب الآن، ولا يغيّر ربط الحساسات."
+                : "Connect ESP32 by USB and the SIM modules over RS485, then select the ESP32 port. The scan reports current responses and does not change sensor mappings."}
+            </Alert>
+            <Button
+              variant="outlined"
+              disabled={
+                !effectivePort ||
+                simScan.isPending ||
+                simDetect.isPending ||
+                simFlash.isPending ||
+                flashBind.isPending ||
+                detect.isPending
+              }
+              onClick={() => simScan.mutate(effectivePort)}
+            >
+              {ar ? "فحص SIMs والحساسات" : "Scan SIMs and sensors"}
+            </Button>
+            {simScan.isError ? (
+              <Alert severity="error">
+                {ar
+                  ? "تعذر الفحص. راجع منفذ ESP32 وإصدار الفيرموير والتوصيلات."
+                  : "Scan failed. Check the ESP32 port, firmware version and wiring."}
+              </Alert>
+            ) : null}
+            {simScan.data?.port === effectivePort ? (
+              <>
+                <Typography>
+                  {ar ? "هوية ESP32" : "ESP32 hardware UID"}:{" "}
+                  {simScan.data.hardwareUid}
+                </Typography>
+                {simScan.data.modules.map((module) => (
+                  <Box key={module.address}>
+                    <Typography>
+                      SIM {module.address}:{" "}
+                      {module.responding
+                        ? ar
+                          ? "تستجيب"
+                          : "Responding"
+                        : ar
+                          ? "لا توجد استجابة صحيحة"
+                          : "No valid response"}
+                    </Typography>
+                    {module.inputs.map((input) => (
+                      <Typography variant="body2" key={input.input}>
+                        {ar ? "المدخل" : "Input"} {input.input} · CH{" "}
+                        {input.channel} ·{" "}
+                        {input.value !== undefined && input.status === 0
+                          ? `${input.value} °C`
+                          : `${ar ? "قراءة غير صالحة؛ حالة" : "Invalid reading; status"} ${input.status}`}
+                      </Typography>
+                    ))}
+                  </Box>
+                ))}
+              </>
             ) : null}
           </Stack>
         </CardContent>
@@ -432,7 +567,11 @@ export function SystemOwnerDeviceProvisioningPage() {
                   !serviceReady ||
                   !boardReady ||
                   !formReady ||
-                  flashBind.isPending
+                  flashBind.isPending ||
+                  simDetect.isPending ||
+                  simScan.isPending ||
+                  simFlash.isPending ||
+                  detect.isPending
                 }
                 onClick={() => {
                   if (!effectiveTarget) return;

@@ -1,5 +1,15 @@
 # BIO-EMS
 
+## Documentation navigation
+
+- [Current documentation / التوثيق الحالي](docs/current/README.md)
+- [Historical archive / التوثيق التاريخي](docs/archive/README.md)
+- [Complete documentation index / الفهرس الكامل](docs/README.md)
+
+## Documentation baseline — 30 September 2026
+
+Source reviewed: `6efd78a`. See [all documents](docs/README.md) and `PROJECT_STATE.md` for evidence boundaries. Builder/USB provisioning exists in source; MAIN-16-2G/SIM-D4 acquisition remains an integration gap, and sensor technology/site quantity decisions remain open.
+
 Enterprise Environmental Monitoring System for regulated and operational environments.
 
 **Current source version:** `0.20.0`  
@@ -10,10 +20,11 @@ Enterprise Environmental Monitoring System for regulated and operational environ
 
 | Question | Authority |
 | --- | --- |
+| Where are all documents and their evidence boundaries? | [Documentation index](docs/README.md) |
 | Where is the project now? | `PROJECT_STATE.md` |
 | What do we execute next? | `IMPLEMENTATION_PLAN.md` |
 | ماذا يجب على مالك المنصة أن يفعل بنفسه الآن؟ | `docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md` |
-| What did the 11 September complete audit conclude? | `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
+| What did the 11 September complete audit conclude? | `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
 | What is the current Pilot scope? | `PILOT_SCOPE.md` |
 | What are the active project risks? | `RISK_REGISTER.md` |
 | What controls Communication Channel Administration? | `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md` |
@@ -25,9 +36,8 @@ Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a histor
 
 ## Current position
 
-The core source platform is mature. The latest audited CI baseline passed:
+The core source platform is mature. The following are historical verification results, not tests rerun by the 30 September documentation update:
 
-- Backend typecheck/build/lint/format;
 - Backend typecheck/build/lint/format passed; 137 test files / 965 tests passed on the current Windows verification baseline;
 - Frontend typecheck/lint/format/build passed; 56 test files / 311 tests passed on the current verification baseline.
 
@@ -35,8 +45,8 @@ BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
 
 ## Current execution order
 
-1. Complete repository hygiene and keep `main` as the single authoritative integration line.
-2. Verify the merged SYSTEM_OWNER entry, commissioning and MFA workflow on the current Pilot build.
+1. Keep `main` as the authoritative integration line; verify the merged Installation Builder and Flash & Bind flow on physical hardware.
+2. Preserve the passed 23 September SYSTEM_OWNER Pilot-host evidence and continue multi-machine qualification.
 3. Verify the merged Communication Channels configuration and live test actions; complete COM-07 provider/hardware acceptance.
 4. Continue qualification on multiple clean Windows computers, including Repair/Restore evidence.
 5. Execute hardware bench qualification.

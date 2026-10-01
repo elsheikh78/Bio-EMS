@@ -6,7 +6,7 @@ Use this handoff together with:
 
 1. `PROJECT_STATE.md`
 2. `IMPLEMENTATION_PLAN.md`
-3. `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+3. `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 4. `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md`
 
 Older handoffs are historical evidence only.

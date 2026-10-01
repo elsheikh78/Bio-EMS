@@ -22,13 +22,13 @@ Controlled plan: `docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-
 
 Status: **COMPLETE / MERGED / CI VERIFIED**
 
-Implemented an owner-only frontend authentication/session boundary and protected console surface, invisible from customer ADMIN/OPERATOR/VIEWER navigation and constrained to the existing isolated SYSTEM_OWNER trust domain. PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`. Closure record: `docs/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
+Implemented an owner-only frontend authentication/session boundary and protected console surface, invisible from customer ADMIN/OPERATOR/VIEWER navigation and constrained to the existing isolated SYSTEM_OWNER trust domain. PR #141 / merge `873b55439f02fbb7de84d29631d22af399208dec`. Closure record: `docs/archive/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md`.
 
 ### P7-02 — Customer / Site Fleet Management
 
 Status: **COMPLETE / MERGED / CI VERIFIED**
 
-Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/create workflows, existing Site/installation context from commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle mutation remains absent because the backend does not authorize it. Final PR CI run #516 / workflow `33543271797` passed; PR #142 merged as `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`. Closure record: `docs/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
+Exposes approved customer/fleet identity through SYSTEM_OWNER-only list/detail/create workflows, existing Site/installation context from commercial bindings, authenticated provenance, and owner-session query isolation. Unsupported customer lifecycle mutation remains absent because the backend does not authorize it. Final PR CI run #516 / workflow `33543271797` passed; PR #142 merged as `f84a3f9ec8a290e4765d4228a6209140cdba5f3d`. Closure record: `docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md`.
 
 ### P7-03 — License Lifecycle / Installation Binding
 

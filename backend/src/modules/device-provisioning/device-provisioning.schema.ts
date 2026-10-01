@@ -133,3 +133,41 @@ export const firmwareManifestSchema = z
   .strict();
 
 export type FirmwareManifest = z.infer<typeof firmwareManifestSchema>;
+
+export const simScanResultSchema = z
+  .object({
+    hardwareUid: z.string().regex(/^[a-fA-F0-9]{12,32}$/),
+    modules: z
+      .array(
+        z
+          .object({
+            address: z.number().int().min(1).max(4),
+            responding: z.boolean(),
+            inputs: z
+              .array(
+                z
+                  .object({
+                    input: z.number().int().min(1).max(4),
+                    channel: z.number().int().min(1).max(16),
+                    status: z.number().int().nonnegative(),
+                    value: z.number().finite().optional(),
+                  })
+                  .strict()
+              )
+              .max(4),
+          })
+          .strict()
+      )
+      .length(4),
+  })
+  .strict()
+  .superRefine((result, ctx) => {
+    result.modules.forEach((module, index) => {
+      if (module.address !== index + 1 || module.inputs.length !== (module.responding ? 4 : 0))
+        ctx.addIssue({ code: "custom", message: "Invalid SIM scan topology" });
+      module.inputs.forEach((input, position) => {
+        if (input.input !== position + 1 || input.channel !== index * 4 + position + 1)
+          ctx.addIssue({ code: "custom", message: "Invalid SIM input mapping" });
+      });
+    });
+  });

@@ -94,6 +94,8 @@ import {
   flashInstallationDevice,
   getDeviceProvisioningHealth,
   getSimFlashingHealth,
+  detectSimBoard,
+  scanControllerSims,
   flashSimFirmware,
   listDeviceProvisioningPorts,
   listDeviceProvisioningTargets,
@@ -122,6 +124,16 @@ router.get("/restore-jobs/:jobId", getOwnerPlatformRestoreJob);
 router.post("/customers", validateBody(createPlatformCustomerSchema), createPlatformCustomer);
 router.get("/installation-context", getInstallationContext);
 router.get("/device-provisioning/health", getDeviceProvisioningHealth);
+router.post(
+  "/device-provisioning/sim/detect",
+  validateBody(deviceProvisioningDetectSchema),
+  detectSimBoard
+);
+router.post(
+  "/device-provisioning/sim/scan",
+  validateBody(deviceProvisioningDetectSchema),
+  scanControllerSims
+);
 router.get("/device-provisioning/sim/health", getSimFlashingHealth);
 router.post(
   "/device-provisioning/sim/flash",

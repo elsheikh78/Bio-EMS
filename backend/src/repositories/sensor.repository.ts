@@ -108,9 +108,10 @@ export class SensorRepository {
 
   getAll(): Sensor[] {
     const stmt = this.database.prepare(`
-            SELECT *
+            SELECT sensors.*, devices.device_id AS device_identity
             FROM sensors
-            ORDER BY id
+            LEFT JOIN devices ON devices.id = sensors.device_id
+            ORDER BY sensors.id
         `);
 
     return stmt.all() as Sensor[];

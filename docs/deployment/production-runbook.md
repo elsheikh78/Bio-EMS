@@ -1,5 +1,9 @@
 # BIO-EMS Pilot Production Runbook
 
+## Windows Pilot operator path — 30 September 2026
+
+For the packaged Windows Pilot, use the governed client Setup, its protected services/configuration and post-install health check. Manufacturer Tools is a separate company-side signing tool; do not distribute private keys with the client. Use `/system-owner/login` after controlled owner provisioning/MFA, `/system-owner/installations` for logical authoring, then `/system-owner/device-provisioning` for USB Flash & Bind. Use customer `/backup-restore` or the owner equivalent for governed complete backup/restore and verify final job/health evidence after reconnect. The manual deployment instructions below describe a different deployment path; do not overwrite installed protected configuration with a development `.env`. Record artifact source SHA and SHA256 rather than relying on `0.20.0` alone.
+
 ## 1. Release input
 
 - Use an approved immutable commit/tag and record its full SHA.

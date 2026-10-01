@@ -1,5 +1,17 @@
 # BIO-EMS Pilot Scope
 
+## 30 September scope reconciliation
+
+- Reviewed against `main@6efd78a9fd9ea50a1d1b0e88f074708be1189546`; source version remains `0.20.0`. This documentation update creates no new software release or installer artifact.
+- Installation Builder and local USB Device Provisioning are present in source: logical configuration -> validate -> queue -> detect ESP32-S3 -> Flash & Bind -> runtime inventory activation. Physical end-to-end acceptance remains open.
+- Firmware remains `0.1.0-pilot.1`, MQTT protocol `1.3`, binding schema `1`. Version identifies compatibility; hardware UID and platform binding identify the physical Device.
+- MAIN-16-2G / SIM-D4 (1–4 SIM units, up to four probes each) is a bench candidate. SIM MCU firmware, versioned Modbus profile, populated-module discovery/channel mapping and integrated 2G fallback are not qualified by the current ESP32-S3 pairing firmware.
+- PT100 modular field baseline and DS18B20 bench candidate remain separate pending the controlled sensor decision. El Manial documents count seven positions; planning also mentions six. Resolve the approved position map before full procurement/commissioning.
+- SYSTEM_OWNER Pilot-host commissioning/MFA passed on 23 September. This is separate from Production key ceremony and multi-machine qualification.
+- COM-01–06 are merged; live COM-07/SMS and field acceptance remain open. Historical provider results retain their dated evidence boundaries.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**. Final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred.
+
+
 **Scope date:** 11 September 2026  
 **Status:** CONTROLLED PILOT SCOPE / NOT YET COMMISSIONED
 

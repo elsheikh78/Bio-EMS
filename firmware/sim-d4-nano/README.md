@@ -48,6 +48,6 @@ RS485 is Modbus RTU 9600 baud, 8N1, slave address 1–4. Function 03 reads holdi
 | 8–11 | Channel status: 0 valid, 1 missing, 2 CRC fault, 3 invalid/power-on |
 | 12 | Age of most recent sample in seconds |
 
-The firmware has not been tested on a physical board. Qualify 1 m and 20 m probe runs, the four independent channels, unplug/replug and CRC failures, temperature accuracy, RS485 addressing and bus termination, and power/restart before calling it a field release. The current ESP32-S3 firmware still needs Modbus polling and telemetry mapping for this SIM profile; flashing the Nano alone does not create end-to-end platform readings.
+The firmware has not been tested on a physical board. Qualify 1 m and 20 m probe runs, the four independent channels, unplug/replug and CRC failures, temperature accuracy, RS485 addressing and bus termination, and power/restart before calling it a field release. PR #280 provides ESP32-S3 Modbus polling, channel mapping and HTTPS telemetry, plus USB SIM scanning in controller firmware 0.1.0-pilot.3. Flashing the Nano alone does not bind a controller or create platform readings; complete the System Owner installation and Flash & Bind workflow. Physical acceptance is still required.
 
 AVRDUDE is redistributed as a separate GPL-2.0 tool from the upstream release; review the upstream `COPYING` and source offer for commercial distribution. The BIO-EMS Nano sketch is a separate application and is not linked into AVRDUDE.

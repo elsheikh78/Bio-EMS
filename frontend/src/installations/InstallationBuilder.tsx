@@ -1,3 +1,4 @@
+import { simMappingLabel } from "../devices/simMapping";
 import {
   Alert,
   Box,
@@ -474,11 +475,10 @@ export function InstallationBuilder({
                   type="number"
                   label={text.channel}
                   value={telemetry.channel}
-                  helperText={
-                    language === "ar"
-                      ? "1–4: SIM1، 5–8: SIM2، 9–12: SIM3، 13–16: SIM4"
-                      : "1–4: SIM1; 5–8: SIM2; 9–12: SIM3; 13–16: SIM4"
-                  }
+                  helperText={simMappingLabel(
+                    telemetry.channel,
+                    language === "ar",
+                  )}
                   slotProps={{
                     htmlInput: {
                       min: 1,

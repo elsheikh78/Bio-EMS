@@ -1,3 +1,4 @@
+import { simMappingLabel } from "../devices/simMapping";
 import {
   Alert,
   Box,
@@ -259,7 +260,10 @@ export function SensorsCalibrationPage() {
                           {sensor.name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {sensor.code} · CH {sensor.channel}
+                          {sensor.code} ·{" "}
+                          {sensor.device_identity ??
+                            `Device #${sensor.device_id}`}{" "}
+                          · {simMappingLabel(sensor.channel, language === "ar")}
                         </Typography>
                       </TableCell>
                       <TableCell>

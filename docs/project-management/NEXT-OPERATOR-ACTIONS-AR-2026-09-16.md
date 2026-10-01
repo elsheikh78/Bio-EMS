@@ -111,7 +111,7 @@
 
 1. `PROJECT_STATE.md`
 2. `IMPLEMENTATION_PLAN.md`
-3. `docs/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` — قسم 16 سبتمبر
+3. `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` — قسم 16 سبتمبر
 4. `docs/security/SEC-OWNER-01-STATUS-AND-MERGE-CHECKLIST-AR.md`
 5. `docs/security/SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md`
 6. هذا الملف.

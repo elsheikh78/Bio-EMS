@@ -84,6 +84,42 @@ export class SimFlashingRunner {
     };
   }
 
+  async detect(portInput: string) {
+    const port = windowsSerialPortSchema.parse(portInput);
+    if (!this.health().toolReady || !this.config.avrdudePath || !this.config.avrdudeConfigPath)
+      throw new Error("Controlled AVR tool is not installed");
+    const tool = controlledPath(this.config.applicationRoot, this.config.avrdudePath);
+    const config = controlledPath(this.config.applicationRoot, this.config.avrdudeConfigPath);
+    for (const baud of [57600, 115200]) {
+      try {
+        const result = await this.execute(
+          tool,
+          [
+            "-C",
+            config,
+            "-p",
+            "m328p",
+            "-c",
+            "arduino",
+            "-P",
+            port,
+            "-b",
+            String(baud),
+            "-n",
+            "-v",
+          ],
+          { timeout: 15000, maxBuffer: 1000000, windowsHide: true }
+        );
+        // USB bridge identity alone cannot establish the MCU or bootloader.
+        if (/0x1e950f\b/i.test(`${result.stdout}\n${result.stderr}`))
+          return { port, supported: true, chip: "ATmega328P", baud };
+      } catch {
+        /* Try the other supported Nano bootloader baud without writing. */
+      }
+    }
+    return { port, supported: false, chip: null, baud: null };
+  }
+
   async flash(portInput: string, expectedVersion: string) {
     const port = windowsSerialPortSchema.parse(portInput);
     const { applicationRoot, avrdudePath, avrdudeConfigPath, firmwareManifestPath } = this.config;
@@ -113,6 +149,11 @@ export class SimFlashingRunner {
     );
     const digest = createHash("sha256").update(readFileSync(hexPath)).digest("hex");
     if (digest !== manifest.sha256) throw new Error("SIM firmware checksum mismatch");
+    const detected = await this.detect(port);
+    if (!detected.supported || detected.baud !== manifest.baud)
+      throw new Error(
+        "Nano detection failed or bootloader baud does not match the installed firmware package"
+      );
     const tool = controlledPath(applicationRoot, avrdudePath);
     const config = controlledPath(applicationRoot, avrdudeConfigPath);
     // Bootloader baud differs between classic and newer Nano boards. The controlled

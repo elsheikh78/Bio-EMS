@@ -6,6 +6,9 @@
 #include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
+
+static SemaphoreHandle_t bus_mutex;
 
 // Bench pin assignment. Verify the chosen ESP32-S3 board before wiring.
 #ifndef SIM_RS485_TX_GPIO
@@ -55,10 +58,11 @@ bool sim_modbus_init(void) {
   };
   if (gpio_config(&direction) != ESP_OK) return false;
   gpio_set_level(SIM_RS485_DE_GPIO, 0);
-  return true;
+  bus_mutex = xSemaphoreCreateMutex();
+  return bus_mutex != NULL;
 }
 
-bool sim_modbus_read(uint8_t address, sim_modbus_sample_t *sample) {
+static bool read_frame(uint8_t address, sim_modbus_sample_t *sample) {
   if (!sample || address < 1 || address > SIM_MAX_MODULES) return false;
   uint8_t request[] = {address, 0x03, 0, 0, 0, SIM_REGISTER_COUNT, 0, 0};
   uint16_t crc = modbus_crc(request, sizeof(request) - 2);
@@ -97,4 +101,13 @@ bool sim_modbus_read(uint8_t address, sim_modbus_sample_t *sample) {
     sample->status[i] = regs[8 + i];
   }
   return true;
+}
+
+
+bool sim_modbus_read(uint8_t address, sim_modbus_sample_t *sample) {
+  if (!bus_mutex || xSemaphoreTake(bus_mutex, pdMS_TO_TICKS(3000)) != pdTRUE)
+    return false;
+  bool ok = read_frame(address, sample);
+  xSemaphoreGive(bus_mutex);
+  return ok;
 }

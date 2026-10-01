@@ -32,7 +32,7 @@ describe("SIM USB flashing", () => {
     writeFileSync(join(root, "avrdude.exe"), "");
     writeFileSync(join(root, "avrdude.conf"), "");
     const execute = vi.fn(async (_file: string, _args: string[]) => ({
-      stdout: "verified",
+      stdout: "Device signature = 0x1e950f\nverified",
       stderr: "",
     }));
     const runner = new SimFlashingRunner(
@@ -47,11 +47,50 @@ describe("SIM USB flashing", () => {
     await expect(runner.flash("COM7", "0.1.0")).resolves.toMatchObject({
       firmwareVersion: "0.1.0",
     });
-    expect(execute.mock.calls[0]?.[1]).not.toContain("-V");
+    expect(execute.mock.calls[0]?.[1]).toContain("-n");
+    expect(execute.mock.calls[0]?.[1]).not.toContain("-U");
+    expect(execute.mock.calls[1]?.[1]).not.toContain("-V");
     await expect(runner.flash("COM7", "0.2.0")).rejects.toThrow("version");
     writeFileSync(join(firmware, "sim.hex"), "changed");
     expect(runner.health().firmwareReady).toBe(false);
     await expect(runner.flash("COM7", "0.1.0")).rejects.toThrow("not installed");
-    expect(execute).toHaveBeenCalledTimes(1);
+    expect(execute).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("Nano detection", () => {
+  function setup(output: string) {
+    const root = mkdtempSync(join(tmpdir(), "sim-detect-"));
+    roots.push(root);
+    writeFileSync(join(root, "avrdude.exe"), "");
+    writeFileSync(join(root, "avrdude.conf"), "");
+    const execute = vi.fn(async (_file: string, _args: string[]) => ({
+      stdout: output,
+      stderr: "",
+    }));
+    return {
+      execute,
+      runner: new SimFlashingRunner(
+        {
+          applicationRoot: root,
+          avrdudePath: join(root, "avrdude.exe"),
+          avrdudeConfigPath: join(root, "avrdude.conf"),
+        },
+        execute
+      ),
+    };
+  }
+  it("rejects wrong MCU signatures without writing", async () => {
+    const test = setup("USB serial device; signature = 0x1e9514");
+    expect(await test.runner.detect("COM3")).toMatchObject({ supported: false });
+    for (const call of test.execute.mock.calls) {
+      expect(call[1]).toContain("-n");
+      expect(call[1]).not.toContain("-U");
+    }
+  });
+  it("reports compatible bootloader baud and rejects unsafe port names", async () => {
+    const test = setup("Device signature = 0x1e950f");
+    expect(await test.runner.detect("COM7")).toMatchObject({ supported: true, baud: 57600 });
+    await expect(test.runner.detect("COM7 & injected")).rejects.toThrow();
   });
 });

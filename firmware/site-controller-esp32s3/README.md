@@ -1,12 +1,16 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
+## 30 September hardware integration boundary
+
+This source is the ESP32-S3 pairing/provisioning foundation. It does not include a qualified SIM-D4 MCU firmware or MAIN-16 four-SIM Modbus acquisition/SIM800L fallback implementation. Wi-Fi bootstrap instructions below do not prove the proposed Ethernet bench path. Record exact source SHA and firmware manifest; shared firmware version alone does not identify a binary.
+
 Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 ## Identity model
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.2`;
+- firmware version: `0.1.0-pilot.3`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -111,3 +115,23 @@ The server verifies a per-binding token and resolves the site/device identity fr
 then uses the existing telemetry processing path. The installer MQTT listener remains bound to
 loopback with backend credentials. The HTTPS delivery is not yet validated on physical hardware;
 fault reporting, controller power monitoring, retries and buffering need field qualification.
+
+## USB SIM diagnostics (Pilot 0.1.0-pilot.3)
+
+Connect the controller USB and the powered SIM-D4 RS485 bus, select the controller COM
+port, then use **Scan SIMs and sensors**. The serial `simscan` command checks addresses
+1–4 regardless of the configured fitted count, and reports each response and four input
+statuses/valid temperatures. A UART mutex prevents polling and diagnostics overlapping.
+A missing response can mean absent hardware, wiring/power faults, wrong address or invalid
+frames; it does not prove a module is absent. Duplicate physical RS485 addresses cannot be
+reliably identified by this scan. The scan does not save mappings or commission the site.
+
+Nano USB **Detect Nano / SIM** reads an ATmega328P bootloader signature without flash
+writes, trying 57600 then 115200 baud. A compatible signature does not identify a particular
+SIM instance or verify its sensor wiring. Flashing repeats detection and requires the baud
+specified by the governed Nano firmware manifest; the current package requires 57600.
+
+Re-save/revalidate unprovisioned installation revisions for the new controller version before
+Flash & Bind. Existing sensor channel assignments are preserved; do not delete sensors.
+Hardware tests of detection, USB serial scan, RS485 addressing and missing probes are still
+required. USB diagnostics do not implement a remote network scan.

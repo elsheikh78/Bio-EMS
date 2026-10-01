@@ -4,6 +4,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
 import {
+  simScanResultSchema,
   firmwareManifestSchema,
   windowsSerialPortSchema,
   type FirmwareManifest,
@@ -244,6 +245,44 @@ export class LocalProvisioningRunner {
       bindingSchemaVersion: manifest.bindingSchemaVersion,
       toolOutput: sanitizeToolOutput(`${result.stdout}\n${result.stderr}`),
     };
+  }
+
+  async scanSims(portInput: string) {
+    const port = windowsSerialPortSchema.parse(portInput);
+    const script = [
+      "$ErrorActionPreference='Stop'",
+      "$serial=[System.IO.Ports.SerialPort]::new($env:BIOEMS_SERIAL_PORT,115200,[System.IO.Ports.Parity]::None,8,[System.IO.Ports.StopBits]::One)",
+      "$serial.NewLine=[Environment]::NewLine",
+      "$serial.WriteTimeout=3000",
+      "$serial.Open()",
+      "try {",
+      "  Start-Sleep -Milliseconds 2000",
+      "  $serial.DiscardInBuffer()",
+      "  $serial.WriteLine('simscan')",
+      "  $deadline=[DateTime]::UtcNow.AddSeconds(20)",
+      "  $buffer=New-Object Text.StringBuilder",
+      "  while([DateTime]::UtcNow -lt $deadline) {",
+      "    Start-Sleep -Milliseconds 100",
+      "    [void]$buffer.Append($serial.ReadExisting())",
+      "    if($buffer.ToString() -match 'BIOEMS_SIM_SCAN:([^\\r\\n]+)[\\r\\n]') { Write-Output $Matches[1]; break }",
+      "  }",
+      "} finally { if($serial.IsOpen){ $serial.Close() }; $serial.Dispose() }",
+    ].join("\n");
+    const result = await this.execute(
+      "powershell.exe",
+      ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script],
+      {
+        timeout: 25000,
+        maxBuffer: 100000,
+        windowsHide: true,
+        env: { ...process.env, BIOEMS_SERIAL_PORT: port },
+      }
+    );
+    if (!result.stdout.trim())
+      throw new Error(
+        "Controller did not report a SIM scan; install firmware with simscan support"
+      );
+    return { port, ...simScanResultSchema.parse(JSON.parse(result.stdout.trim())) };
   }
 
   async provision(portInput: string, input: SerialProvisioningInput) {

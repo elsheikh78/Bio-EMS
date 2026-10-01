@@ -45,7 +45,7 @@ The authoritative next step is controlled field-pilot preparation using:
 - `docs/pilot/bio-egypt/BIO-EGYPT-OPEN-ITEMS.md`;
 - `docs/pilot/bio-egypt/BIO-EGYPT-COMMISSIONING.md`;
 - `docs/deployment/production-runbook.md`;
-- `docs/deployment/S15-07-READINESS-EVIDENCE.md`.
+- `docs/archive/deployment/S15-07-READINESS-EVIDENCE.md`.
 
 ## Final decision
 

@@ -382,11 +382,6 @@ static void clear_binding(void) {
 
 static void sim_poll_task(void *argument) {
   (void)argument;
-  if (!sim_modbus_init()) {
-    ESP_LOGE(TAG, "SIM-D4 RS485 UART initialization failed");
-    vTaskDelete(NULL);
-    return;
-  }
   while (true) {
     char count_text[2] = {0};
     char mask_text[9] = {0};
@@ -458,6 +453,36 @@ static void sim_poll_task(void *argument) {
   }
 }
 
+static void print_sim_scan(void) {
+  cJSON *root = cJSON_CreateObject();
+  cJSON *modules = cJSON_AddArrayToObject(root, "modules");
+  char uid[33];
+  hardware_uid(uid);
+  cJSON_AddStringToObject(root, "hardwareUid", uid);
+  for (int address = 1; address <= SIM_MAX_MODULES; ++address) {
+    sim_modbus_sample_t sample = {0};
+    bool present = sim_modbus_read(address, &sample);
+    cJSON *module = cJSON_CreateObject();
+    cJSON_AddNumberToObject(module, "address", address);
+    cJSON_AddBoolToObject(module, "responding", present);
+    cJSON_AddItemToArray(modules, module);
+    cJSON *inputs = cJSON_AddArrayToObject(module, "inputs");
+    if (!present) continue;
+    for (int input = 0; input < SIM_CHANNELS_PER_MODULE; ++input) {
+      cJSON *probe = cJSON_CreateObject();
+      cJSON_AddNumberToObject(probe, "input", input + 1);
+      cJSON_AddNumberToObject(probe, "channel", (address - 1) * 4 + input + 1);
+      cJSON_AddNumberToObject(probe, "status", sample.status[input]);
+      bool valid = sample.status[input] == 0 && sample.tenths_celsius[input] != INT16_MIN;
+      if (valid) cJSON_AddNumberToObject(probe, "value", sample.tenths_celsius[input] / 10.0);
+      cJSON_AddItemToArray(inputs, probe);
+    }
+  }
+  char *json = cJSON_PrintUnformatted(root);
+  if (json) { printf("BIOEMS_SIM_SCAN:%s\n", json); free(json); }
+  cJSON_Delete(root);
+}
+
 static void command_loop(void) {
   char line[MAX_LINE];
   printf("commands: status | setwifi <ssid> <password> | setplatform <url> | pair <12-digit-code> | clearbinding\n");
@@ -471,6 +496,10 @@ static void command_loop(void) {
     }
     line[strcspn(line, "\r\n")] = '\0';
 
+    if (strcmp(line, "simscan") == 0) {
+      print_sim_scan();
+      continue;
+    }
     if (strcmp(line, "status") == 0) {
       print_status();
       continue;
@@ -591,6 +620,9 @@ void app_main(void) {
   char current_binding[MAX_NVS_TEXT];
   if (nvs_get_text("binding_id", current_binding, sizeof(current_binding)))
     connect_wifi();
-  xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
+  if (sim_modbus_init())
+    xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
+  else
+    ESP_LOGE(TAG, "SIM-D4 UART initialization failed");
   command_loop();
 }

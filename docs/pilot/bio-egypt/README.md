@@ -1,5 +1,9 @@
 # BIO EGYPT Pilot Documentation Package
 
+## 30 September commissioning boundary
+
+BIO EGYPT remains NOT COMMISSIONED / NOT ACCEPTED. Prepare the logical installation with Builder, validate and then use Device Provisioning. Resolve the El Manial seven documented positions versus six in planning before entering final quantities. Do not treat the DS18B20 bench candidate as an approved replacement of the PT100 field BOM or infer 16-channel readiness from controller pairing.
+
 ## Document control
 
 | Field              | Value                                                |
@@ -36,7 +40,7 @@ baseline:
 1. [Production runbook](../../deployment/production-runbook.md)
 2. [Deployment architecture](../../deployment/deployment-architecture.md)
 3. [Site Controller integration contract](../../deployment/site-controller-integration-contract.md)
-4. [S15-07 readiness evidence](../../deployment/S15-07-READINESS-EVIDENCE.md)
+4. [S15-07 readiness evidence](../../archive/deployment/S15-07-READINESS-EVIDENCE.md)
 
 Sprint 15 repository scope is closed. The BIO EGYPT Pilot remains **NOT COMMISSIONED /
 NOT ACCEPTED** until the open-item and commissioning evidence is completed and signed.

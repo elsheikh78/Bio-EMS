@@ -101,3 +101,36 @@ export type DeviceProvisioningTarget = z.infer<
   typeof deviceProvisioningTargetsSchema
 >["targets"][number];
 export type FlashBindResult = z.infer<typeof flashBindResultSchema>;
+
+export const simDetectionSchema = z
+  .object({
+    port: z.string(),
+    supported: z.boolean(),
+    chip: z.string().nullable(),
+    baud: z.number().int().nullable(),
+  })
+  .strict();
+export const simScanSchema = z
+  .object({
+    port: z.string(),
+    hardwareUid: z.string(),
+    modules: z.array(
+      z
+        .object({
+          address: z.number().int().min(1).max(4),
+          responding: z.boolean(),
+          inputs: z.array(
+            z
+              .object({
+                input: z.number().int(),
+                channel: z.number().int(),
+                status: z.number().int(),
+                value: z.number().optional(),
+              })
+              .strict(),
+          ),
+        })
+        .strict(),
+    ),
+  })
+  .strict();

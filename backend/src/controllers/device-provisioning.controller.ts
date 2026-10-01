@@ -317,3 +317,10 @@ export const flashAndBindInstallationDevice = asyncHandler(
     });
   }
 );
+
+export const detectSimBoard = asyncHandler(async (request: Request, response: Response) => {
+  response.json(await deviceProvisioningLocalClient.simDetect(String(request.body.port)));
+});
+export const scanControllerSims = asyncHandler(async (request: Request, response: Response) => {
+  response.json(await deviceProvisioningLocalClient.scanSims(String(request.body.port)));
+});

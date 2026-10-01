@@ -45,6 +45,23 @@ export function createDeviceProvisionerApp(
       sim?.health() ?? { toolReady: false, firmwareReady: false, firmwareVersion: null }
     )
   );
+  app.post("/sim/detect", async (request, response, next) => {
+    try {
+      const input = deviceProvisioningDetectSchema.parse(request.body);
+      if (!sim) throw new Error("SIM flashing is not configured");
+      response.json(await sim.detect(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post("/sim/scan", async (request, response, next) => {
+    try {
+      const input = deviceProvisioningDetectSchema.parse(request.body);
+      response.json(await runner.scanSims(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
   app.post("/sim/flash", async (request, response, next) => {
     try {
       const input = z
