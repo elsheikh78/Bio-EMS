@@ -4,9 +4,9 @@ import { describe, it, expect, vi } from "vitest";
 import { CommunicationChannelsPanel } from "./CommunicationChannelsPanel";
 function renderPanel(saved: boolean) {
   const request = vi.fn(
-    async (_path: string, options?: { method?: string; body?: string }) => {
-      if (options?.method === "PUT") return {};
-      return {
+    (_path: string, options?: { method?: string; body?: string }) => {
+      if (options?.method === "PUT") return Promise.resolve({});
+      return Promise.resolve({
         channels: saved
           ? [
               {
@@ -25,7 +25,7 @@ function renderPanel(saved: boolean) {
               },
             ]
           : [],
-      };
+      });
     },
   );
   render(
@@ -61,6 +61,7 @@ describe("Sender readiness", () => {
       ),
     );
     const put = request.mock.calls.find((call) => call[1]?.method === "PUT")!;
-    expect(JSON.parse(put[1]!.body!).config.enabled).toBe(false);
+    const body = JSON.parse(put[1]!.body!) as { config: { enabled: boolean } };
+    expect(body.config.enabled).toBe(false);
   });
 });
