@@ -19,7 +19,7 @@ import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPa
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
 import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPage";
-import { SystemOwnerDeviceProvisioningPage } from "./pages/SystemOwnerDeviceProvisioningPage";
+import { SystemOwnerDeviceProvisioningPage } from "./pages/SystemOwnerDeviceProvisioningPage";\nimport { SystemOwnerHardwareLabPage } from "./pages/SystemOwnerHardwareLabPage";
 import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdminsPage";
 import { SystemOwnerCommunicationChannelsPage } from "./pages/SystemOwnerCommunicationChannelsPage";
 import { BackupRestorePage } from "./pages/BackupRestorePage";
@@ -82,6 +82,10 @@ export function App() {
         <Route
           path="system-owner/device-provisioning"
           element={<SystemOwnerDeviceProvisioningPage />}
+        />
+        <Route
+          path="system-owner/hardware-lab"
+          element={<SystemOwnerHardwareLabPage />}
         />
         <Route
           path="system-owner/backup-restore"

@@ -36,9 +36,10 @@ const copy = {
     modules: [
       { key: "customers", label: "Customer fleet" },
       { key: "admins", label: "Customer ADMIN accounts" },
-      { key: "communication-channels", label: "Communication channels" },
       { key: "installations", label: "Installation configuration" },
       { key: "device-provisioning", label: "Device provisioning" },
+      { key: "hardware-lab", label: "Hardware Lab · Test & Qualification" },
+      { key: "communication-channels", label: "Communication channels" },
       { key: "licenses", label: "Licenses & installations" },
       { key: "updates", label: "Update entitlements" },
       { key: "service", label: "Maintenance, calibration & support" },
@@ -79,9 +80,10 @@ const copy = {
     modules: [
       { key: "customers", label: "العملاء والمواقع" },
       { key: "admins", label: "إدارة حسابات Admin" },
-      { key: "communication-channels", label: "قنوات الاتصال" },
       { key: "installations", label: "تهيئة التركيبات" },
       { key: "device-provisioning", label: "تهيئة وربط الأجهزة" },
+      { key: "hardware-lab", label: "مختبر الهاردوير · الاختبار والتأهيل" },
+      { key: "communication-channels", label: "قنوات الاتصال" },
       { key: "licenses", label: "التراخيص والتركيبات" },
       { key: "updates", label: "استحقاقات التحديث" },
       { key: "service", label: "الصيانة والمعايرة والدعم" },
