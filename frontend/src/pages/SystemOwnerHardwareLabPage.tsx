@@ -80,7 +80,7 @@ const copy = {
     faultCode: "Fault code",
     severity: "Severity",
     addEvent: "Store event",
-    evidenceSaved: "Evidence stored.",
+    evidenceSaved: "Evidence stored.",\n    storedEvidence: "Recent stored evidence",\n    noEvidence: "No stored records yet.",
     firmwareIntro:
       "Firmware is installed only on programmable IC/MCU targets. Passive modules and peripherals do not receive firmware.",
     provisioner: "Local COM / flashing service",
@@ -162,7 +162,7 @@ const copy = {
     faultCode: "كود العطل",
     severity: "الدرجة",
     addEvent: "حفظ الحدث",
-    evidenceSaved: "تم حفظ الدليل.",
+    evidenceSaved: "تم حفظ الدليل.",\n    storedEvidence: "أحدث الأدلة المحفوظة",\n    noEvidence: "لا توجد سجلات محفوظة حتى الآن.",
     firmwareIntro:
       "يتم تحميل Firmware فقط على الـIC/MCU القابل للبرمجة. الوحدات السلبية والـperipherals لا يتم تحميل Firmware عليها.",
     provisioner: "خدمة COM والتفليش المحلية",
@@ -228,7 +228,12 @@ export function SystemOwnerHardwareLabPage() {
   const [selectedRunId, setSelectedRunId] = useState("");
   const [run, setRun] = useState<HardwareRun>();
   const [drafts, setDrafts] = useState<StepDrafts>({});
-  const [report, setReport] = useState<ReturnType<typeof hardwareReportSchema.parse>>();
+  const [report, setReport] =
+    useState<ReturnType<typeof hardwareReportSchema.parse>>();
+  const [storedMeasurements, setStoredMeasurements] = useState<
+    HardwareMeasurementRecord[]
+  >([]);
+  const [storedEvents, setStoredEvents] = useState<HardwareEventRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [pendingStep, setPendingStep] = useState("");
@@ -275,6 +280,18 @@ export function SystemOwnerHardwareLabPage() {
         `/platform-hardware-lab/runs/${runId}`,
       );
       const parsed = hardwareRunSchema.parse(raw);
+      const [measurementRaw, eventRaw] = await Promise.all([
+        protectedRequest<unknown>(
+          `/platform-hardware-lab/runs/${runId}/measurements`,
+        ),
+        protectedRequest<unknown>(
+          `/platform-hardware-lab/runs/${runId}/events`,
+        ),
+      ]);
+      setStoredMeasurements(
+        hardwareMeasurementListSchema.parse(measurementRaw).measurements,
+      );
+      setStoredEvents(hardwareEventListSchema.parse(eventRaw).events);
       setRun(parsed);
       setDrafts(
         Object.fromEntries(
@@ -916,6 +933,74 @@ export function SystemOwnerHardwareLabPage() {
               <Card variant="outlined">
                 <CardContent>
                   <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+                    {text.storedEvidence}
+                  </Typography>
+                  {storedMeasurements.length === 0 && storedEvents.length === 0 ? (
+                    <Typography color="text.secondary">{text.noEvidence}</Typography>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gap: 3,
+                        gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                      }}
+                    >
+                      <Box>
+                        <Typography sx={{ fontWeight: 700 }}>
+                          {text.measurements}
+                        </Typography>
+                        <Stack divider={<Divider flexItem />} spacing={1} sx={{ mt: 1 }}>
+                          {storedMeasurements.slice(0, 20).map((item) => (
+                            <Box key={item.id}>
+                              <Typography variant="body2">
+                                {item.stepKey}
+                                {item.channel ? ` · ${item.channel}` : ""} ·{" "}
+                                {item.metricKey}
+                              </Typography>
+                              <Typography color="text.secondary" variant="caption">
+                                {item.numericValue ?? item.textValue}
+                                {item.unit ? ` ${item.unit}` : ""} · {item.observedAt}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: 700 }}>{text.events}</Typography>
+                        <Stack divider={<Divider flexItem />} spacing={1} sx={{ mt: 1 }}>
+                          {storedEvents.slice(0, 20).map((item) => (
+                            <Box key={item.id}>
+                              <Stack direction="row" spacing={1}>
+                                <Chip
+                                  color={
+                                    item.severity === "ERROR"
+                                      ? "error"
+                                      : item.severity === "WARNING"
+                                        ? "warning"
+                                        : "default"
+                                  }
+                                  label={item.severity}
+                                  size="small"
+                                />
+                                <Typography variant="body2">
+                                  {item.stepKey} · {item.code}
+                                </Typography>
+                              </Stack>
+                              <Typography color="text.secondary" variant="caption">
+                                {item.observedAt}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
                     {text.eventRecorder}
                   </Typography>
                   <Box
@@ -1086,6 +1171,7 @@ export function SystemOwnerHardwareLabPage() {
                       onChange={(event) => {
                         const next = event.target.value;
                         setFirmwareTarget(next);
+                        setFlashResult("RECORDED");
                         const catalog = profile.firmwareCatalog.find(
                           (item) => item.target === next,
                         );
@@ -1126,7 +1212,13 @@ export function SystemOwnerHardwareLabPage() {
                       select
                       value={flashResult}
                     >
-                      {["RECORDED", "PASS", "FAIL"].map((result) => (
+                      {(
+                        profile.firmwareCatalog.find(
+                          (item) => item.target === firmwareTarget,
+                        )?.availability === "SOURCE_REQUIRED"
+                          ? ["RECORDED", "FAIL"]
+                          : ["RECORDED", "PASS", "FAIL"]
+                      ).map((result) => (
                         <MenuItem key={result} value={result}>
                           {result}
                         </MenuItem>
