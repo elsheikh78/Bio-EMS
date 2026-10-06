@@ -1,5 +1,7 @@
 name: Internal Windows Setup
 
+# HW-519 release QA: rebuild artifacts from the final documentation-cleanup commit.
+
 on:
   workflow_dispatch:
   pull_request:
