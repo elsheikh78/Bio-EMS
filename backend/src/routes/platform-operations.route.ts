@@ -84,6 +84,25 @@ import {
 } from "../modules/communication-channels/communication-channel.schema";
 import { platformBackupScheduleInputSchema } from "../modules/platform-backup/platform-backup-schedule.schema";
 import {
+  createHardwareTestRun,
+  finalizeHardwareTestRun,
+  getHardwareLabProfile,
+  getHardwareTestRun,
+  listHardwareTestRuns,
+  recordHardwareFirmwareEvidence,
+  recordHardwareTestEvent,
+  recordHardwareTestStepResult,
+  startHardwareTestStep,
+} from "../controllers/hardware-lab.controller";
+import {
+  createHardwareTestRunSchema,
+  hardwareFirmwareEvidenceSchema,
+  hardwareTestEventSchema,
+  hardwareTestRunParamsSchema,
+  hardwareTestStepParamsSchema,
+  hardwareTestStepResultSchema,
+} from "../modules/hardware-lab/hardware-lab.schema";
+import {
   issueDevicePairingCodeController,
   listDevicePlatformBindingsController,
 } from "../controllers/device-pairing.controller";
