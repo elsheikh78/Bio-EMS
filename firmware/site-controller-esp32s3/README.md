@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.3`;
+- firmware version: `0.1.0-pilot.4`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -103,12 +103,14 @@ an invalid status and is not a usable temperature reading. Only declare
 modules that are physically present; assign consecutive addresses starting at
 1 using the Nano D7/D8 jumpers.
 
-Bench UART pins: ESP32-S3 GPIO17 TX to transceiver DI, GPIO18 RX from RO,
-GPIO16 to tied DE and /RE. Both boards must share signal ground. Check the
-pinout of the purchased ESP32-S3 board, RS485 transceiver logic voltage,
-isolation, termination and bias before connecting. Pins can be overridden at
-build time with `SIM_RS485_TX_GPIO`, `SIM_RS485_RX_GPIO`, and
-`SIM_RS485_DE_GPIO`.
+Bench RS485 interface: HW-519 automatic-direction TTL-to-RS485. ESP32-S3
+GPIO17 TX connects to HW-519 RXD and GPIO18 RX connects from HW-519 TXD.
+GPIO16 is not used for RS485 direction control and must not be wired to the
+HW-519. The module controls half-duplex transmit/receive direction in hardware.
+Both boards must share the required signal reference for the bench setup. Verify
+the purchased module markings, logic/power voltage, A+/B- polarity, termination
+and grounding before energizing. UART pins can be overridden at build time with
+`SIM_RS485_TX_GPIO` and `SIM_RS485_RX_GPIO`.
 
 The controller posts only valid, mapped temperature readings to the BIO-EMS HTTPS endpoint.
 The server verifies a per-binding token and resolves the site/device identity from the binding,
@@ -116,7 +118,7 @@ then uses the existing telemetry processing path. The installer MQTT listener re
 loopback with backend credentials. The HTTPS delivery is not yet validated on physical hardware;
 fault reporting, controller power monitoring, retries and buffering need field qualification.
 
-## USB SIM diagnostics (Pilot 0.1.0-pilot.3)
+## USB SIM diagnostics (Pilot 0.1.0-pilot.4)
 
 Connect the controller USB and the powered SIM-D4 RS485 bus, select the controller COM
 port, then use **Scan SIMs and sensors**. The serial `simscan` command checks addresses
