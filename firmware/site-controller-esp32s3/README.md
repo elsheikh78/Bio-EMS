@@ -2,7 +2,7 @@
 
 ## 30 September hardware integration boundary
 
-This source is the ESP32-S3 pairing/provisioning foundation. It does not include a qualified SIM-D4 MCU firmware or MAIN-16 four-SIM Modbus acquisition/SIM800L fallback implementation. Wi-Fi bootstrap instructions below do not prove the proposed Ethernet bench path. Record exact source SHA and firmware manifest; shared firmware version alone does not identify a binary.
+This source is the ESP32-S3 pairing/provisioning foundation and now includes the bench-candidate MAIN-16/SIM-D4 Modbus polling, mapping and USB scan path. That acquisition path and the separate SIM-D4 Nano firmware are not physically qualified; integrated SIM800L fallback also remains open. Wi-Fi bootstrap instructions below do not prove the proposed Ethernet bench path. Record exact source SHA and firmware manifest; shared firmware version alone does not identify a binary.
 
 Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
