@@ -40,7 +40,7 @@ export function loadPlatformJwtConfig(
 
 function parseExpireMinutes(value: string | undefined): number {
   if (value === undefined) {
-    return 15;
+    return 480;
   }
 
   if (!/^\d+$/.test(value)) {
