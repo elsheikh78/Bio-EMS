@@ -38,7 +38,7 @@ $firmwareManifest = Get-Content -LiteralPath $firmwareManifestPath -Raw | Conver
 if (
     $firmwareManifest.schemaVersion -ne 1 -or
     $firmwareManifest.target -ne "esp32s3" -or
-    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.3" -or
+    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.4" -or
     $firmwareManifest.protocolVersion -ne "1.3" -or
     $firmwareManifest.bindingSchemaVersion -ne 1 -or
     -not $firmwareManifest.segments -or
@@ -69,7 +69,7 @@ if (-not (Test-Path -LiteralPath $simManifestPath -PathType Leaf)) {
 }
 $simManifest = Get-Content -LiteralPath $simManifestPath -Raw | ConvertFrom-Json
 if ($simManifest.schemaVersion -ne 1 -or $simManifest.target -ne "atmega328p-nano" -or
-    $simManifest.firmwareVersion -ne "0.1.0-bench.1" -or $simManifest.baud -ne 57600 -or
+    $simManifest.firmwareVersion -ne "0.1.0-bench.2" -or $simManifest.baud -ne 57600 -or
     $simManifest.hexFile -ne "sim.hex" -or $simManifest.sha256 -notmatch '^[a-f0-9]{64}$') {
     throw "SIM-D4 Nano firmware manifest does not match the bench contract"
 }
