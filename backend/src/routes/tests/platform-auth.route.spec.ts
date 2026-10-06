@@ -213,6 +213,13 @@ describe("Platform Login REST API", () => {
 });
 
 it("refreshes the rolling owner token inside the same persisted session", async () => {
+  mocks.config.platformJwt = {
+    secret: "p".repeat(32),
+    expireMinutes: 60,
+    idleMinutes: 30,
+    issuer: "bio-ems-platform",
+    audience: "bio-ems-platform-api",
+  };
   mocks.issueAccessToken.mockReturnValue({
     accessToken: "refreshed-platform-token",
     expiresIn: 3600,
