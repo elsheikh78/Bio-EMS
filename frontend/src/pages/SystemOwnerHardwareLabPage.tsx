@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { HardwareLabStep } from "../hardware-lab/contracts";
 import {
@@ -271,10 +271,6 @@ export function SystemOwnerHardwareLabPage() {
   const [faultObserved, setFaultObserved] = useState("");
   const [faultSeverity, setFaultSeverity] = useState<"INFO" | "WARNING" | "ERROR">("INFO");
 
-  useEffect(() => {
-    if (createRun.data?.run.id) setSelectedRunId(createRun.data.run.id);
-  }, [createRun.data]);
-
   const runRows = runs.data?.runs ?? [];
   const run = selected.data?.run;
   const passCount = useMemo(
@@ -360,11 +356,16 @@ export function SystemOwnerHardwareLabPage() {
             <Button
               disabled={createRun.isPending}
               onClick={() =>
-                createRun.mutate({
-                  ...(mainUid.trim() ? { main_hardware_uid: mainUid.trim() } : {}),
-                  ...(simSerial.trim() ? { sim_serial: simSerial.trim() } : {}),
-                  ...(runNotes.trim() ? { notes: runNotes.trim() } : {}),
-                })
+                createRun.mutate(
+                  {
+                    ...(mainUid.trim() ? { main_hardware_uid: mainUid.trim() } : {}),
+                    ...(simSerial.trim() ? { sim_serial: simSerial.trim() } : {}),
+                    ...(runNotes.trim() ? { notes: runNotes.trim() } : {}),
+                  },
+                  {
+                    onSuccess: (created) => setSelectedRunId(created.run.id),
+                  },
+                )
               }
               variant="contained"
             >
