@@ -88,7 +88,7 @@ export function PlatformAuthenticationProvider({
     session ? "bootstrapping" : "unauthenticated",
   );
   const [loginPending, setLoginPending] = useState(false);
-  const lastActivityAtRef = useRef(session?.lastActivityAt ?? Date.now());
+  const lastActivityAtRef = useRef(session?.lastActivityAt ?? 0);
 
   const apiClient = useMemo(
     () => createApiClient({ getAccessToken: () => session?.accessToken }),
