@@ -80,7 +80,9 @@ const copy = {
     faultCode: "Fault code",
     severity: "Severity",
     addEvent: "Store event",
-    evidenceSaved: "Evidence stored.",\n    storedEvidence: "Recent stored evidence",\n    noEvidence: "No stored records yet.",
+    evidenceSaved: "Evidence stored.",
+    storedEvidence: "Recent stored evidence",
+    noEvidence: "No stored records yet.",
     firmwareIntro:
       "Firmware is installed only on programmable IC/MCU targets. Passive modules and peripherals do not receive firmware.",
     provisioner: "Local COM / flashing service",
@@ -162,7 +164,9 @@ const copy = {
     faultCode: "كود العطل",
     severity: "الدرجة",
     addEvent: "حفظ الحدث",
-    evidenceSaved: "تم حفظ الدليل.",\n    storedEvidence: "أحدث الأدلة المحفوظة",\n    noEvidence: "لا توجد سجلات محفوظة حتى الآن.",
+    evidenceSaved: "تم حفظ الدليل.",
+    storedEvidence: "أحدث الأدلة المحفوظة",
+    noEvidence: "لا توجد سجلات محفوظة حتى الآن.",
     firmwareIntro:
       "يتم تحميل Firmware فقط على الـIC/MCU القابل للبرمجة. الوحدات السلبية والـperipherals لا يتم تحميل Firmware عليها.",
     provisioner: "خدمة COM والتفليش المحلية",
