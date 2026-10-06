@@ -226,6 +226,17 @@ function evaluationReasons(value: unknown): string[] {
     : [];
 }
 
+function primitiveText(value: unknown, fallback: string): string {
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return String(value);
+  }
+  return fallback;
+}
+
 export function SystemOwnerHardwareLabPage() {
   const { language } = useLocalization();
   const { apiClient } = usePlatformAuthentication();
@@ -323,8 +334,6 @@ export function SystemOwnerHardwareLabPage() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setLoadError(false);
     Promise.all([
       protectedRequest<unknown>("/platform-hardware-lab/profile"),
       protectedRequest<unknown>("/platform-hardware-lab/runs"),
@@ -351,10 +360,7 @@ export function SystemOwnerHardwareLabPage() {
   }, [protectedRequest]);
 
   useEffect(() => {
-    if (!selectedRunId) {
-      setRun(undefined);
-      return;
-    }
+    if (!selectedRunId) return;
     void loadRun(selectedRunId).catch(() => setLoadError(true));
   }, [loadRun, selectedRunId]);
 
@@ -480,9 +486,10 @@ export function SystemOwnerHardwareLabPage() {
         ? (portsRaw as { ports?: Array<{ port: string; name: string | null }> }).ports
         : undefined;
     setProvisionerStatus(
-      `${String(health.status ?? "UNKNOWN")} · esptool=${String(
-        health.esptoolReady ?? false,
-      )} · firmware=${String(health.firmwareReady ?? false)}`,
+      `${primitiveText(health.status, "UNKNOWN")} · esptool=${primitiveText(
+        health.esptoolReady,
+        "false",
+      )} · firmware=${primitiveText(health.firmwareReady, "false")}`,
     );
     setPorts(inventory ?? []);
     setSelectedPort((current) => current || inventory?.[0]?.port || "");
@@ -531,12 +538,6 @@ export function SystemOwnerHardwareLabPage() {
     );
     setReport(hardwareReportSchema.parse(raw));
   };
-
-  useEffect(() => {
-    if (tab === 3 && run) {
-      void loadReport();
-    }
-  }, [tab, run?.id]);
 
   if (loading) {
     return (
@@ -695,7 +696,10 @@ export function SystemOwnerHardwareLabPage() {
           ) : null}
 
           <Tabs
-            onChange={(_event, value: number) => setTab(value)}
+            onChange={(_event, value: number) => {
+              setTab(value);
+              if (value === 3 && run) void loadReport();
+            }}
             scrollButtons="auto"
             sx={{ mb: 3 }}
             value={tab}
