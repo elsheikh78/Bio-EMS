@@ -21,11 +21,15 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  hardwareEventListSchema,
+  hardwareMeasurementListSchema,
   hardwareProfileSchema,
   hardwareReportSchema,
   hardwareRunListSchema,
   hardwareRunSchema,
+  type HardwareEventRecord,
   type HardwareEvidenceValue,
+  type HardwareMeasurementRecord,
   type HardwareProfile,
   type HardwareRun,
   type HardwareRunListItem,
@@ -712,10 +716,9 @@ export function SystemOwnerHardwareLabPage() {
                   <Accordion key={definition.key} variant="outlined">
                     <AccordionSummary>
                       <Stack
-                        alignItems="center"
                         direction="row"
                         spacing={2}
-                        sx={{ width: "100%" }}
+                        sx={{ alignItems: "center", width: "100%" }}
                       >
                         <Typography sx={{ minWidth: 78 }}>{definition.stage}</Typography>
                         <Typography sx={{ flex: 1, fontWeight: 700 }}>
@@ -1125,8 +1128,8 @@ export function SystemOwnerHardwareLabPage() {
                   <CardContent>
                     <Stack
                       direction={{ xs: "column", md: "row" }}
-                      justifyContent="space-between"
                       spacing={2}
+                      sx={{ justifyContent: "space-between" }}
                     >
                       <Box>
                         <Typography variant="h6">{item.name}</Typography>
@@ -1268,7 +1271,7 @@ export function SystemOwnerHardwareLabPage() {
                           {item.prototypeType} · {item.operatorUsername}
                         </Typography>
                       </Box>
-                      <Stack alignItems="flex-end">
+                      <Stack sx={{ alignItems: "flex-end" }}>
                         <Chip color={chipColor(item.status)} label={item.status} size="small" />
                         <Typography variant="caption">
                           {item.passedSteps}/{item.totalSteps} PASS · {item.failedSteps} FAIL
@@ -1286,10 +1289,12 @@ export function SystemOwnerHardwareLabPage() {
               <Card variant="outlined">
                 <CardContent>
                   <Stack
-                    alignItems={{ xs: "stretch", md: "center" }}
                     direction={{ xs: "column", md: "row" }}
-                    justifyContent="space-between"
                     spacing={2}
+                    sx={{
+                      alignItems: { xs: "stretch", md: "center" },
+                      justifyContent: "space-between",
+                    }}
                   >
                     <Box>
                       <Typography component="h2" variant="h6">
@@ -1336,10 +1341,12 @@ export function SystemOwnerHardwareLabPage() {
                       <Stack spacing={1}>
                         {report.run.steps.map((step) => (
                           <Stack
-                            alignItems="center"
                             direction="row"
-                            justifyContent="space-between"
                             key={step.key}
+                            sx={{
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
                           >
                             <Typography>
                               {stepByKey.get(step.key)?.stage} —{" "}
