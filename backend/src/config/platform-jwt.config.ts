@@ -58,7 +58,6 @@ function parseExpireMinutes(value: string | undefined): number {
   return parsed;
 }
 
-
 function parseIdleMinutes(value: string | undefined): number {
   if (value === undefined) {
     return 30;

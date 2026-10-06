@@ -16,9 +16,12 @@ export function useHardwareLabProfile() {
     enabled: status === "authenticated",
     queryFn: async () =>
       hardwareLabProfileSchema.parse(
-        await apiClient.request<unknown>("/platform-operations/hardware-lab/profile", {
-          auth: "protected",
-        }),
+        await apiClient.request<unknown>(
+          "/platform-operations/hardware-lab/profile",
+          {
+            auth: "protected",
+          },
+        ),
       ),
   });
 }
@@ -30,9 +33,12 @@ export function useHardwareLabRuns() {
     enabled: status === "authenticated",
     queryFn: async () =>
       hardwareLabRunsSchema.parse(
-        await apiClient.request<unknown>("/platform-operations/hardware-lab/runs", {
-          auth: "protected",
-        }),
+        await apiClient.request<unknown>(
+          "/platform-operations/hardware-lab/runs",
+          {
+            auth: "protected",
+          },
+        ),
       ),
   });
 }
@@ -64,8 +70,12 @@ function useRunMutation<T>(
         await apiClient.request<unknown>(path(input), {
           method: "POST",
           auth: "protected",
-          headers: body(input) === undefined ? undefined : { "Content-Type": "application/json" },
-          body: body(input) === undefined ? undefined : JSON.stringify(body(input)),
+          headers:
+            body(input) === undefined
+              ? undefined
+              : { "Content-Type": "application/json" },
+          body:
+            body(input) === undefined ? undefined : JSON.stringify(body(input)),
         }),
       ),
     onSuccess: async (result) => {
@@ -76,9 +86,11 @@ function useRunMutation<T>(
 }
 
 export function useCreateHardwareLabRun() {
-  return useRunMutation<
-    { main_hardware_uid?: string; sim_serial?: string; notes?: string }
-  >(
+  return useRunMutation<{
+    main_hardware_uid?: string;
+    sim_serial?: string;
+    notes?: string;
+  }>(
     () => "/platform-operations/hardware-lab/runs",
     (input) => ({ prototype_type: "MAIN16_SIMD4", ...input }),
   );

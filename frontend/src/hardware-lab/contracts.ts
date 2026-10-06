@@ -21,7 +21,15 @@ export const hardwareLabRunRowSchema = z
     id: z.string().uuid(),
     run_code: z.string(),
     prototype_type: z.literal("MAIN16_SIMD4"),
-    status: z.enum(["NOT_STARTED", "SETUP", "FLASHING", "TESTING", "ENDURANCE", "PASS", "FAIL"]),
+    status: z.enum([
+      "NOT_STARTED",
+      "SETUP",
+      "FLASHING",
+      "TESTING",
+      "ENDURANCE",
+      "PASS",
+      "FAIL",
+    ]),
     operator: z.string(),
     main_hardware_uid: z.string().nullable(),
     sim_serial: z.string().nullable(),
@@ -87,12 +95,17 @@ export const hardwareLabRunDetailSchema = z
     measurements: z.array(hardwareLabMeasurementSchema),
     events: z.array(hardwareLabEventSchema),
     evaluation: z
-      .object({ status: z.enum(["PASS", "FAIL"]), reason: z.string().optional() })
+      .object({
+        status: z.enum(["PASS", "FAIL"]),
+        reason: z.string().optional(),
+      })
       .optional(),
   })
   .passthrough();
 
-export const hardwareLabRunsSchema = z.object({ runs: z.array(hardwareLabRunRowSchema) }).strict();
+export const hardwareLabRunsSchema = z
+  .object({ runs: z.array(hardwareLabRunRowSchema) })
+  .strict();
 
 export const hardwareLabProfileSchema = z
   .object({

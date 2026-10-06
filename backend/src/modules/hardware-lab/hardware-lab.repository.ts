@@ -1,11 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
-import {
-  HARDWARE_PROFILE_REV,
-  TEST_PROFILE_REV,
-  hardwareLabSteps,
-} from "./hardware-lab.profile";
+import { HARDWARE_PROFILE_REV, TEST_PROFILE_REV, hardwareLabSteps } from "./hardware-lab.profile";
 
 export interface HardwareMetricInput {
   key: string;
@@ -44,7 +40,10 @@ export interface HardwareEventInput {
 const isoNow = () => new Date().toISOString();
 
 function createRunCode(now = new Date()): string {
-  const stamp = now.toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
+  const stamp = now
+    .toISOString()
+    .replace(/[-:TZ.]/g, "")
+    .slice(0, 14);
   return `HQT-${stamp}-${randomUUID().slice(0, 6).toUpperCase()}`;
 }
 
@@ -167,9 +166,7 @@ export class HardwareLabRepository {
     return {
       run,
       steps: this.database
-        .prepare(
-          `SELECT * FROM hardware_test_steps WHERE run_id = ? ORDER BY sequence ASC`
-        )
+        .prepare(`SELECT * FROM hardware_test_steps WHERE run_id = ? ORDER BY sequence ASC`)
         .all(runId),
       firmware: this.database
         .prepare(
@@ -192,7 +189,9 @@ export class HardwareLabRepository {
   startStep(runId: string, stepCode: string) {
     const timestamp = this.now();
     const step = this.database
-      .prepare("SELECT sequence, status FROM hardware_test_steps WHERE run_id = ? AND step_code = ?")
+      .prepare(
+        "SELECT sequence, status FROM hardware_test_steps WHERE run_id = ? AND step_code = ?"
+      )
       .get(runId, stepCode) as { sequence: number; status: string } | undefined;
     if (!step) return undefined;
     if (step.status === "PASS") return this.getRun(runId);
@@ -209,9 +208,7 @@ export class HardwareLabRepository {
     }
 
     const runStatus =
-      stepCode === "ENDURANCE_24H" || stepCode === "SYSTEM_16_SENSOR_48H"
-        ? "ENDURANCE"
-        : "TESTING";
+      stepCode === "ENDURANCE_24H" || stepCode === "SYSTEM_16_SENSOR_48H" ? "ENDURANCE" : "TESTING";
 
     this.database.transaction(() => {
       this.database
@@ -241,9 +238,7 @@ export class HardwareLabRepository {
 
     this.database.transaction(() => {
       this.database
-        .prepare(
-          "DELETE FROM hardware_test_measurements WHERE run_id = ? AND step_code = ?"
-        )
+        .prepare("DELETE FROM hardware_test_measurements WHERE run_id = ? AND step_code = ?")
         .run(runId, stepCode);
 
       const insertMetric = this.database.prepare(
@@ -270,14 +265,7 @@ export class HardwareLabRepository {
            SET status = ?, completed_at = ?, notes = ?, metrics_json = ?
            WHERE run_id = ? AND step_code = ?`
         )
-        .run(
-          evaluation.status,
-          timestamp,
-          notes,
-          JSON.stringify(input.metrics),
-          runId,
-          stepCode
-        );
+        .run(evaluation.status, timestamp, notes, JSON.stringify(input.metrics), runId, stepCode);
 
       this.database
         .prepare(
@@ -359,7 +347,9 @@ export class HardwareLabRepository {
     const run = this.getRun(runId);
     if (!run) return undefined;
 
-    const incomplete = (run.steps as Array<{ status: string }>).some((step) => step.status !== "PASS");
+    const incomplete = (run.steps as Array<{ status: string }>).some(
+      (step) => step.status !== "PASS"
+    );
     const firmware = run.firmware as Array<{ target: string; flash_status: string }>;
     const hasMainFirmware = firmware.some(
       (item) => item.target === "MAIN16" && item.flash_status === "PASS"

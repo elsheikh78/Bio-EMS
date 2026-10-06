@@ -88,11 +88,7 @@ describe("PlatformSessionService", () => {
 
   it("rotates the persisted token hash during a rolling refresh", () => {
     const creator = new PlatformSessionService(database, () => now, 30);
-    const session = creator.create(
-      "owner",
-      "old-token",
-      new Date("2026-09-14T13:00:00.000Z")
-    );
+    const session = creator.create("owner", "old-token", new Date("2026-09-14T13:00:00.000Z"));
 
     const refresher = new PlatformSessionService(
       database,

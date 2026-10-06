@@ -40,9 +40,9 @@ describe("HardwareLabRepository", () => {
     const repository = new HardwareLabRepository(database, () => now);
     const created = repository.createRun({ prototype_type: "MAIN16_SIMD4" }, "owner");
 
-    expect(() => repository.startStep((created!.run as { id: string }).id, "SENSOR_SINGLE")).toThrow(
-      "PREVIOUS_STEP_NOT_PASSED"
-    );
+    expect(() =>
+      repository.startStep((created!.run as { id: string }).id, "SENSOR_SINGLE")
+    ).toThrow("PREVIOUS_STEP_NOT_PASSED");
   });
 
   it("automatically fails the cable gate below 99.99 percent", () => {

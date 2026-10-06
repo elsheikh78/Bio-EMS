@@ -10,9 +10,7 @@ export const createHardwareTestRunSchema = z
   })
   .strict();
 
-export const hardwareTestRunParamsSchema = z
-  .object({ runId: z.string().uuid() })
-  .strict();
+export const hardwareTestRunParamsSchema = z.object({ runId: z.string().uuid() }).strict();
 
 export const hardwareTestStepParamsSchema = z
   .object({
@@ -51,7 +49,10 @@ export const hardwareFirmwareEvidenceSchema = z
     firmware_name: z.string().trim().min(1).max(128),
     version: z.string().trim().min(1).max(64),
     git_commit: z.string().trim().max(64).optional(),
-    sha256: z.string().regex(/^[A-Fa-f0-9]{64}$/).optional(),
+    sha256: z
+      .string()
+      .regex(/^[A-Fa-f0-9]{64}$/)
+      .optional(),
     chip: z.string().trim().min(1).max(128),
     port: z.string().trim().max(64).optional(),
     flash_status: z.enum(["PENDING", "PASS", "FAIL"]),
@@ -61,7 +62,10 @@ export const hardwareFirmwareEvidenceSchema = z
 
 export const hardwareTestEventSchema = z
   .object({
-    step_code: z.string().regex(/^[A-Z0-9_]+$/).optional(),
+    step_code: z
+      .string()
+      .regex(/^[A-Z0-9_]+$/)
+      .optional(),
     event_code: z.enum(hardwareLabFaultCodes),
     expected: z.string().max(2000).optional(),
     observed: z.string().max(2000).optional(),

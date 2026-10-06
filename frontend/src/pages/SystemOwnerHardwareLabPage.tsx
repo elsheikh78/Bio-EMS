@@ -36,19 +36,15 @@ type MetricDraft = {
   channel: string;
 };
 
-function StepPanel({
-  runId,
-  step,
-}: {
-  runId: string;
-  step: HardwareLabStep;
-}) {
+function StepPanel({ runId, step }: { runId: string; step: HardwareLabStep }) {
   const start = useStartHardwareLabStep();
   const record = useRecordHardwareLabStepResult();
   const [notes, setNotes] = useState("");
   const [metrics, setMetrics] = useState<MetricDraft[]>(() => {
     if (step.step_code === "SENSOR_CABLE") {
-      return [{ key: "success_rate_percent", value: "", unit: "%", channel: "" }];
+      return [
+        { key: "success_rate_percent", value: "", unit: "%", channel: "" },
+      ];
     }
     if (
       step.step_code === "ENDURANCE_24H" ||
@@ -78,7 +74,9 @@ function StepPanel({
               ? { value_real: numeric }
               : { value_text: metric.value }),
             ...(metric.unit.trim() ? { unit: metric.unit.trim() } : {}),
-            ...(metric.channel.trim() ? { channel: metric.channel.trim() } : {}),
+            ...(metric.channel.trim()
+              ? { channel: metric.channel.trim() }
+              : {}),
           };
         }),
     });
@@ -143,7 +141,10 @@ function StepPanel({
                   sx={{
                     display: "grid",
                     gap: 1,
-                    gridTemplateColumns: { xs: "1fr", md: "2fr 1fr 1fr 1fr auto" },
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      md: "2fr 1fr 1fr 1fr auto",
+                    },
                   }}
                 >
                   <TextField
@@ -152,7 +153,9 @@ function StepPanel({
                     onChange={(event) =>
                       setMetrics((current) =>
                         current.map((item, itemIndex) =>
-                          itemIndex === index ? { ...item, key: event.target.value } : item,
+                          itemIndex === index
+                            ? { ...item, key: event.target.value }
+                            : item,
                         ),
                       )
                     }
@@ -163,7 +166,9 @@ function StepPanel({
                     onChange={(event) =>
                       setMetrics((current) =>
                         current.map((item, itemIndex) =>
-                          itemIndex === index ? { ...item, value: event.target.value } : item,
+                          itemIndex === index
+                            ? { ...item, value: event.target.value }
+                            : item,
                         ),
                       )
                     }
@@ -174,7 +179,9 @@ function StepPanel({
                     onChange={(event) =>
                       setMetrics((current) =>
                         current.map((item, itemIndex) =>
-                          itemIndex === index ? { ...item, unit: event.target.value } : item,
+                          itemIndex === index
+                            ? { ...item, unit: event.target.value }
+                            : item,
                         ),
                       )
                     }
@@ -185,14 +192,18 @@ function StepPanel({
                     onChange={(event) =>
                       setMetrics((current) =>
                         current.map((item, itemIndex) =>
-                          itemIndex === index ? { ...item, channel: event.target.value } : item,
+                          itemIndex === index
+                            ? { ...item, channel: event.target.value }
+                            : item,
                         ),
                       )
                     }
                   />
                   <Button
                     onClick={() =>
-                      setMetrics((current) => current.filter((_, itemIndex) => itemIndex !== index))
+                      setMetrics((current) =>
+                        current.filter((_, itemIndex) => itemIndex !== index),
+                      )
                     }
                   >
                     Remove
@@ -211,7 +222,8 @@ function StepPanel({
               </Button>
               {record.isError ? (
                 <Alert severity="error">
-                  Result was not accepted. Check mandatory metrics and the qualification gate.
+                  Result was not accepted. Check mandatory metrics and the
+                  qualification gate.
                 </Alert>
               ) : null}
               <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
@@ -235,7 +247,11 @@ function StepPanel({
             </Stack>
           ) : null}
 
-          {step.notes ? <Alert severity={step.status === "FAIL" ? "error" : "info"}>{step.notes}</Alert> : null}
+          {step.notes ? (
+            <Alert severity={step.status === "FAIL" ? "error" : "info"}>
+              {step.notes}
+            </Alert>
+          ) : null}
         </Stack>
       </CardContent>
     </Card>
@@ -257,7 +273,9 @@ export function SystemOwnerHardwareLabPage() {
   const [simSerial, setSimSerial] = useState("");
   const [runNotes, setRunNotes] = useState("");
 
-  const [fwTarget, setFwTarget] = useState<"MAIN16" | "SIMD4" | "SITE_CONTROLLER">("MAIN16");
+  const [fwTarget, setFwTarget] = useState<
+    "MAIN16" | "SIMD4" | "SITE_CONTROLLER"
+  >("MAIN16");
   const [fwName, setFwName] = useState("BIOEMS-MAIN16-BENCH");
   const [fwVersion, setFwVersion] = useState("");
   const [fwChip, setFwChip] = useState("ESP32-S3");
@@ -269,12 +287,15 @@ export function SystemOwnerHardwareLabPage() {
   const [faultCode, setFaultCode] = useState("MISSING_SENSOR");
   const [faultExpected, setFaultExpected] = useState("");
   const [faultObserved, setFaultObserved] = useState("");
-  const [faultSeverity, setFaultSeverity] = useState<"INFO" | "WARNING" | "ERROR">("INFO");
+  const [faultSeverity, setFaultSeverity] = useState<
+    "INFO" | "WARNING" | "ERROR"
+  >("INFO");
 
   const runRows = runs.data?.runs ?? [];
   const run = selected.data?.run;
   const passCount = useMemo(
-    () => selected.data?.steps.filter((step) => step.status === "PASS").length ?? 0,
+    () =>
+      selected.data?.steps.filter((step) => step.status === "PASS").length ?? 0,
     [selected.data?.steps],
   );
 
@@ -358,8 +379,12 @@ export function SystemOwnerHardwareLabPage() {
               onClick={() =>
                 createRun.mutate(
                   {
-                    ...(mainUid.trim() ? { main_hardware_uid: mainUid.trim() } : {}),
-                    ...(simSerial.trim() ? { sim_serial: simSerial.trim() } : {}),
+                    ...(mainUid.trim()
+                      ? { main_hardware_uid: mainUid.trim() }
+                      : {}),
+                    ...(simSerial.trim()
+                      ? { sim_serial: simSerial.trim() }
+                      : {}),
                     ...(runNotes.trim() ? { notes: runNotes.trim() } : {}),
                   },
                   {
@@ -390,8 +415,8 @@ export function SystemOwnerHardwareLabPage() {
           >
             {runRows.map((item) => (
               <MenuItem key={item.id} value={item.id}>
-                {item.run_code} — {item.status} — {item.main_hardware_uid ?? "MAIN not set"} —{" "}
-                {item.created_at}
+                {item.run_code} — {item.status} —{" "}
+                {item.main_hardware_uid ?? "MAIN not set"} — {item.created_at}
               </MenuItem>
             ))}
           </TextField>
@@ -408,11 +433,12 @@ export function SystemOwnerHardwareLabPage() {
                   {text.active}: {run.run_code}
                 </Typography>
                 <Typography>
-                  Status: <Chip label={run.status} size="small" /> · Progress: {passCount}/
-                  {selected.data.steps.length}
+                  Status: <Chip label={run.status} size="small" /> · Progress:{" "}
+                  {passCount}/{selected.data.steps.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Operator: {run.operator} · MAIN: {run.main_hardware_uid ?? "—"} · SIM-D4:{" "}
+                  Operator: {run.operator} · MAIN:{" "}
+                  {run.main_hardware_uid ?? "—"} · SIM-D4:{" "}
                   {run.sim_serial ?? "—"}
                 </Typography>
               </Stack>
@@ -435,7 +461,11 @@ export function SystemOwnerHardwareLabPage() {
                   {profile.data.firmware.map((item) => (
                     <Alert
                       key={item.target}
-                      severity={item.requiredForPhysicalQualification ? "warning" : "info"}
+                      severity={
+                        item.requiredForPhysicalQualification
+                          ? "warning"
+                          : "info"
+                      }
                     >
                       {item.target}: {item.name} — {item.chip} — {item.purpose}
                     </Alert>
@@ -470,12 +500,30 @@ export function SystemOwnerHardwareLabPage() {
                 >
                   <MenuItem value="MAIN16">MAIN16 — ESP32-S3</MenuItem>
                   <MenuItem value="SIMD4">SIMD4 — ATmega328P/Nano</MenuItem>
-                  <MenuItem value="SITE_CONTROLLER">Site Controller — ESP32-S3</MenuItem>
+                  <MenuItem value="SITE_CONTROLLER">
+                    Site Controller — ESP32-S3
+                  </MenuItem>
                 </TextField>
-                <TextField label="Firmware name" value={fwName} onChange={(e) => setFwName(e.target.value)} />
-                <TextField label="Version" value={fwVersion} onChange={(e) => setFwVersion(e.target.value)} />
-                <TextField label="Chip" value={fwChip} onChange={(e) => setFwChip(e.target.value)} />
-                <TextField label="COM port" value={fwPort} onChange={(e) => setFwPort(e.target.value)} />
+                <TextField
+                  label="Firmware name"
+                  value={fwName}
+                  onChange={(e) => setFwName(e.target.value)}
+                />
+                <TextField
+                  label="Version"
+                  value={fwVersion}
+                  onChange={(e) => setFwVersion(e.target.value)}
+                />
+                <TextField
+                  label="Chip"
+                  value={fwChip}
+                  onChange={(e) => setFwChip(e.target.value)}
+                />
+                <TextField
+                  label="COM port"
+                  value={fwPort}
+                  onChange={(e) => setFwPort(e.target.value)}
+                />
                 <TextField
                   label="SHA-256 (optional)"
                   value={fwSha}
@@ -495,7 +543,11 @@ export function SystemOwnerHardwareLabPage() {
               <Button
                 sx={{ mt: 2 }}
                 variant="contained"
-                disabled={!fwVersion.trim() || firmware.isPending || (Boolean(fwSha) && !/^[A-Fa-f0-9]{64}$/.test(fwSha))}
+                disabled={
+                  !fwVersion.trim() ||
+                  firmware.isPending ||
+                  (Boolean(fwSha) && !/^[A-Fa-f0-9]{64}$/.test(fwSha))
+                }
                 onClick={() =>
                   firmware.mutate({
                     runId: run.id,
@@ -505,7 +557,9 @@ export function SystemOwnerHardwareLabPage() {
                     chip: fwChip.trim(),
                     ...(fwPort.trim() ? { port: fwPort.trim() } : {}),
                     ...(fwSha.trim() ? { sha256: fwSha.trim() } : {}),
-                    ...(fwOutput.trim() ? { tool_output: fwOutput.trim() } : {}),
+                    ...(fwOutput.trim()
+                      ? { tool_output: fwOutput.trim() }
+                      : {}),
                     flash_status: "PASS",
                   })
                 }
@@ -516,10 +570,16 @@ export function SystemOwnerHardwareLabPage() {
                 {selected.data.firmware.map((item) => (
                   <Alert
                     key={item.id}
-                    severity={item.flash_status === "PASS" ? "success" : item.flash_status === "FAIL" ? "error" : "info"}
+                    severity={
+                      item.flash_status === "PASS"
+                        ? "success"
+                        : item.flash_status === "FAIL"
+                          ? "error"
+                          : "info"
+                    }
                   >
-                    {item.target} · {item.firmware_name} {item.version} · {item.chip} ·{" "}
-                    {item.port ?? "no COM"} · {item.flash_status}
+                    {item.target} · {item.firmware_name} {item.version} ·{" "}
+                    {item.chip} · {item.port ?? "no COM"} · {item.flash_status}
                   </Alert>
                 ))}
               </Stack>
@@ -577,7 +637,9 @@ export function SystemOwnerHardwareLabPage() {
                   label="Severity"
                   select
                   value={faultSeverity}
-                  onChange={(e) => setFaultSeverity(e.target.value as typeof faultSeverity)}
+                  onChange={(e) =>
+                    setFaultSeverity(e.target.value as typeof faultSeverity)
+                  }
                 >
                   <MenuItem value="INFO">INFO</MenuItem>
                   <MenuItem value="WARNING">WARNING</MenuItem>
@@ -603,8 +665,18 @@ export function SystemOwnerHardwareLabPage() {
               </Button>
               <Stack spacing={1} sx={{ mt: 2 }}>
                 {selected.data.events.map((item) => (
-                  <Alert key={item.id} severity={item.severity === "ERROR" ? "error" : item.severity === "WARNING" ? "warning" : "info"}>
-                    {item.event_code} · {item.step_code ?? "RUN"} · expected: {item.expected ?? "—"} · observed: {item.observed ?? "—"}
+                  <Alert
+                    key={item.id}
+                    severity={
+                      item.severity === "ERROR"
+                        ? "error"
+                        : item.severity === "WARNING"
+                          ? "warning"
+                          : "info"
+                    }
+                  >
+                    {item.event_code} · {item.step_code ?? "RUN"} · expected:{" "}
+                    {item.expected ?? "—"} · observed: {item.observed ?? "—"}
                   </Alert>
                 ))}
               </Stack>
@@ -619,13 +691,22 @@ export function SystemOwnerHardwareLabPage() {
               <Divider sx={{ my: 2 }} />
               <Typography>Run: {run.run_code}</Typography>
               <Typography>Qualification status: {run.status}</Typography>
-              <Typography>Steps passed: {passCount}/{selected.data.steps.length}</Typography>
-              <Typography>Firmware evidence records: {selected.data.firmware.length}</Typography>
-              <Typography>Stored measurements: {selected.data.measurements.length}</Typography>
-              <Typography>Fault/event records: {selected.data.events.length}</Typography>
+              <Typography>
+                Steps passed: {passCount}/{selected.data.steps.length}
+              </Typography>
+              <Typography>
+                Firmware evidence records: {selected.data.firmware.length}
+              </Typography>
+              <Typography>
+                Stored measurements: {selected.data.measurements.length}
+              </Typography>
+              <Typography>
+                Fault/event records: {selected.data.events.length}
+              </Typography>
               {finalize.data?.run.status === "FAIL" ? (
                 <Alert severity="error" sx={{ mt: 2 }}>
-                  Final gate failed. Every qualification step plus verified MAIN16 and SIMD4 bench firmware evidence must PASS.
+                  Final gate failed. Every qualification step plus verified
+                  MAIN16 and SIMD4 bench firmware evidence must PASS.
                 </Alert>
               ) : null}
               {finalize.data?.run.status === "PASS" ? (
@@ -633,7 +714,11 @@ export function SystemOwnerHardwareLabPage() {
                   QUALIFIED — all software qualification gates are satisfied.
                 </Alert>
               ) : null}
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 2 }}>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1}
+                sx={{ mt: 2 }}
+              >
                 <Button
                   variant="contained"
                   disabled={finalize.isPending}
@@ -644,7 +729,11 @@ export function SystemOwnerHardwareLabPage() {
                 <Button variant="outlined" onClick={() => window.print()}>
                   Print / Save report
                 </Button>
-                <Button component={Link} to="/system-owner/device-provisioning" variant="outlined">
+                <Button
+                  component={Link}
+                  to="/system-owner/device-provisioning"
+                  variant="outlined"
+                >
                   Proceed to Device Provisioning
                 </Button>
               </Stack>
