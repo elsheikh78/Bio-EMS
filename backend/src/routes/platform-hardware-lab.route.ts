@@ -6,7 +6,9 @@ import {
   getHardwareLabProfile,
   getHardwareQualificationReport,
   getHardwareRun,
-  listHardwareEvents,\n  listHardwareMeasurements,\n  listHardwareRuns,
+  listHardwareEvents,
+  listHardwareMeasurements,
+  listHardwareRuns,
   recordHardwareFirmware,
   recordHardwareStep,
 } from "../controllers/hardware-lab.controller";
