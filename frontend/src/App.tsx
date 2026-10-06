@@ -19,7 +19,8 @@ import { SystemOwnerCustomerFleetPage } from "./pages/SystemOwnerCustomerFleetPa
 import { SystemOwnerLoginPage } from "./pages/SystemOwnerLoginPage";
 import { SystemOwnerCommercialOperationsPage } from "./pages/SystemOwnerCommercialOperationsPage";
 import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPage";
-import { SystemOwnerDeviceProvisioningPage } from "./pages/SystemOwnerDeviceProvisioningPage";\nimport { SystemOwnerHardwareLabPage } from "./pages/SystemOwnerHardwareLabPage";
+import { SystemOwnerDeviceProvisioningPage } from "./pages/SystemOwnerDeviceProvisioningPage";
+import { SystemOwnerHardwareLabPage } from "./pages/SystemOwnerHardwareLabPage";
 import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdminsPage";
 import { SystemOwnerCommunicationChannelsPage } from "./pages/SystemOwnerCommunicationChannelsPage";
 import { BackupRestorePage } from "./pages/BackupRestorePage";
