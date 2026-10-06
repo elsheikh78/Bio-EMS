@@ -75,8 +75,8 @@ export function PlatformAuthenticationProvider({
     session ? "bootstrapping" : "unauthenticated",
   );
   const [loginPending, setLoginPending] = useState(false);
-  const lastActivityAt = useRef(Date.now());
-  const lastHeartbeatAt = useRef(Date.now());
+  const lastActivityAt = useRef(0);
+  const lastHeartbeatAt = useRef(0);
   const refreshPending = useRef(false);
 
   const apiClient = useMemo(
