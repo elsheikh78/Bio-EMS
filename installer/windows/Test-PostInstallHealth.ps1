@@ -55,7 +55,7 @@ if ($provisionerToken) {
         $checks["sim:flash-package"] = (
             $sim.toolReady -eq $true -and
             $sim.firmwareReady -eq $true -and
-            $sim.firmwareVersion -eq "0.1.0-bench.1"
+            $sim.firmwareVersion -eq "0.1.0-bench.2"
         )
     } catch { $checks["provisioner:loopback"] = $false; $checks["sim:flash-package"] = $false }
 } else {

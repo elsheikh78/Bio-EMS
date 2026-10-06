@@ -1,12 +1,12 @@
 # SIM-D4 discovery and sensor mapping — integration candidate
 
-This describes the pending PR #280 integration, not hardware acceptance. Controller firmware:
-`0.1.0-pilot.3`; Nano firmware: `0.1.0-bench.1`.
+This describes the merged SIM-D4 integration after the HW-519 interface correction; it is still bench software, not hardware acceptance. Controller firmware:
+`0.1.0-pilot.4`; Nano firmware: `0.1.0-bench.2`.
 
 - System Owner defines each Device's fitted SIM count (1–4) and maps sensor channels 1–16.
   Channels 1–4, 5–8, 9–12 and 13–16 map to SIM addresses 1, 2, 3 and 4 respectively.
   The SIM input is `(channel - 1) % 4 + 1`. Existing sensor records need not be deleted.
-- **Detect Nano / SIM** operates on a USB COM port. AVRDUDE reads the ATmega328P signature
+- The RS485 bench interface is **HW-519 automatic-direction TTL-to-RS485**. Nano D1/TX -> HW-519 RXD and D0/RX <- HW-519 TXD. ESP32-S3 GPIO17/TX -> HW-519 RXD and GPIO18/RX <- HW-519 TXD. Nano D6 and ESP32 GPIO16 are **not RS485 direction pins** in this hardware contract and stay unconnected.\n- **Detect Nano / SIM** operates on a USB COM port. AVRDUDE reads the ATmega328P signature
   without flash writes at the supported bootloader speeds. A compatible chip response does
   not identify a unique SIM or test its probes. Flash checks detection again and rejects a
   baud mismatch with the installed firmware manifest.
@@ -23,7 +23,7 @@ This describes the pending PR #280 integration, not hardware acceptance. Control
   Delivery testing uses saved settings and is blocked while changes are unsaved. Saved
   settings do not prove delivery; actual provider tests remain necessary.
 
-Re-save/revalidate an unprovisioned installation revision for controller firmware .3 before
+Re-save/revalidate an unprovisioned installation revision for controller firmware .4 before
 Flash & Bind. This preserves channel assignments. Existing paired units need the normal
 controlled firmware/binding recovery procedure, not deletion of customer sensor data.
 

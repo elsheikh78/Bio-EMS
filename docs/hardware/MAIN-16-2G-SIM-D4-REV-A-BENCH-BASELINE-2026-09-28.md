@@ -18,6 +18,18 @@ The September 24 modular architecture, SIM-T4 procurement note and El Manial bas
 5. Run integrated 24 h endurance. Only after a recorded pass, add three SIMs and twelve probes; test all four ports, then run 48 h at 16 channels. Record firmware hashes and a fault/retest ledger.
 
 The Word manual `BIO-EMS_Prototype_Test_Manual_RevA_2G_v2.docx` contains the provisional component list, wiring and step-by-step bench instructions. Its prices and 24 V/3.2 A supply are estimates subject to actual local quotations and current measurements. HW-519 and breadboard wiring are for qualification only.
+### HW-519 RS485 correction (6 October 2026)
+
+The bench RS485 module is **HW-519 automatic-direction TTL-to-RS485**, not a manual DE/RE transceiver. The hardware contract is:
+- Nano D1/TX -> HW-519 RXD; Nano D0/RX <- HW-519 TXD; Nano D6 is not used for RS485.
+- ESP32-S3 GPIO17/TX -> HW-519 RXD; GPIO18/RX <- HW-519 TXD; GPIO16 is not used for RS485.
+- A+ connects to A+ and B- connects to B- across the bench bus; use the required common/reference ground according to the actual purchased module and bench topology.
+- Do not add DE/RE wiring to the HW-519. Firmware packages `0.1.0-pilot.4` and `0.1.0-bench.2` remove the earlier manual-direction assumption.
+- Before energizing the ESP32 side, verify the actual purchased HW-519 supply/logic markings and output level. Local listings describe the module as automatic-direction and 3.3 V / 5 V logic compatible, but physical incoming inspection remains mandatory.
+
+Reference product pages used for the bench contract:
+- Makers Electronics: https://makerselectronics.com/product/hw-519-ttl-to-rs485-converter-module/
+- Electra Store: https://www.electra.store/products/hw-519-ttl-to-rs485-converter-module
 
 ## Integration gap
 

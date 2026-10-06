@@ -20,6 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Verify HW-519 automatic-direction contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -R "SIM_RS485_DE_GPIO\|gpio_set_level(SIM_RS485_DE" firmware/site-controller-esp32s3/main
+          grep -q "HW-519" firmware/site-controller-esp32s3/main/sim_modbus.c
+
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:

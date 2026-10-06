@@ -157,7 +157,7 @@ Status: **MERGED TO MAIN / PHYSICAL PAIRING PENDING**
 
 Source baseline merged in PR #254:
 
-- common ESP32-S3 firmware `0.1.0-pilot.1`;
+- common ESP32-S3 firmware `0.1.0-pilot.4`; SIM-D4 Nano bench firmware `0.1.0-bench.2`;
 - protocol `1.3`;
 - binding schema `1`;
 - hardware UID acquisition;

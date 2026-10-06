@@ -2,10 +2,10 @@
 
 // Bench profile v0.1.0: externally powered, three-wire DS18B20 probes.
 // One independent 1-Wire bus per channel, each with a 4.7k pull-up to 5 V.
-// RS485 transceiver: Serial D0/D1, DE and /RE tied to D6, 9600 8N1.
+// RS485 interface: HW-519 automatic-direction TTL<->RS485 on Serial D0/D1, 9600 8N1.
+// D1/TX -> HW-519 RXD; D0/RX <- HW-519 TXD. No DE/RE direction GPIO is used.
 // Address jumpers D7/D8 to GND: 1 through 4, sampled only at startup.
 static const uint8_t kPins[4] = {2, 3, 4, 5};
-static const uint8_t kDirection = 6;
 static const uint8_t kAddressBit0 = 7;
 static const uint8_t kAddressBit1 = 8;
 static const uint16_t kVersion = 0x0100;
@@ -138,12 +138,9 @@ static uint16_t registerValue(uint16_t index) {
 }
 
 static void transmit(const uint8_t *bytes, uint8_t count) {
-  digitalWrite(kDirection, HIGH);
-  delayMicroseconds(200);
+  // HW-519 controls half-duplex transmit/receive direction in hardware.
   Serial.write(bytes, count);
   Serial.flush();
-  delayMicroseconds(200);
-  digitalWrite(kDirection, LOW);
 }
 
 static void respond() {
@@ -177,8 +174,6 @@ static void respond() {
 }
 
 void setup() {
-  pinMode(kDirection, OUTPUT);
-  digitalWrite(kDirection, LOW);
   pinMode(kAddressBit0, INPUT_PULLUP);
   pinMode(kAddressBit1, INPUT_PULLUP);
   address = 1 + (digitalRead(kAddressBit0) == LOW ? 1 : 0)
