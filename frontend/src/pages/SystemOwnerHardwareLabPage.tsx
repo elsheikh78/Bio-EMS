@@ -978,7 +978,7 @@ export function SystemOwnerHardwareLabPage() {
           {tab === 1 ? (
             <Stack spacing={3}>
               <Alert severity="info">{text.firmwareIntro}</Alert>
-              <Alert severity="secondary">{text.passive}</Alert>
+              <Alert severity="info">{text.passive}</Alert>
 
               <Card variant="outlined">
                 <CardContent>
