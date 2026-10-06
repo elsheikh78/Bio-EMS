@@ -6,7 +6,7 @@ import {
   getHardwareLabProfile,
   getHardwareQualificationReport,
   getHardwareRun,
-  listHardwareRuns,
+  listHardwareEvents,\n  listHardwareMeasurements,\n  listHardwareRuns,
   recordHardwareFirmware,
   recordHardwareStep,
 } from "../controllers/hardware-lab.controller";
@@ -30,6 +30,16 @@ router.get("/profile", getHardwareLabProfile);
 router.get("/runs", listHardwareRuns);
 router.post("/runs", validateBody(createHardwareRunSchema), createHardwareRun);
 router.get("/runs/:runId", validateParams(hardwareRunParamsSchema), getHardwareRun);
+router.get(
+  "/runs/:runId/measurements",
+  validateParams(hardwareRunParamsSchema),
+  listHardwareMeasurements
+);
+router.get(
+  "/runs/:runId/events",
+  validateParams(hardwareRunParamsSchema),
+  listHardwareEvents
+);
 router.get(
   "/runs/:runId/report",
   validateParams(hardwareRunParamsSchema),
