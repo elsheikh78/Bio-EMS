@@ -59,15 +59,15 @@ export class PlatformSessionService {
     const now = this.now();
     const nowIso = now.toISOString();
     const idleCutoff = new Date(now.getTime() - this.idleMinutes * 60_000).toISOString();
-    const result = this.database
+    const active = this.database
       .prepare(
-        `UPDATE platform_sessions
-         SET last_seen_at = ?
+        `SELECT 1
+         FROM platform_sessions
          WHERE id = ? AND principal_id = ? AND token_hash = ?
            AND revoked_at IS NULL AND expires_at > ? AND last_seen_at > ?`
       )
-      .run(nowIso, id, principalId, hashAccessToken(accessToken), nowIso, idleCutoff);
-    return result.changes === 1;
+      .get(id, principalId, hashAccessToken(accessToken), nowIso, idleCutoff);
+    return Boolean(active);
   }
 
   refresh(
