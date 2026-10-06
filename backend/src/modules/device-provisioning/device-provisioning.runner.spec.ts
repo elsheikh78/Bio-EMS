@@ -25,7 +25,9 @@ describe("LocalProvisioningRunner", () => {
     mkdirSync(firmware, { recursive: true });
     const esptoolPath = join(runtime, "esptool.exe");
     writeFileSync(esptoolPath, "controlled-test-tool");
-    return { root, firmware, esptoolPath };
+    const tlsCertificatePath = join(root, "bioems-local.cer");
+    writeFileSync(tlsCertificatePath, Buffer.alloc(200, 1));
+    return { root, firmware, esptoolPath, tlsCertificatePath };
   }
 
   it("enumerates only validated Windows COM ports using a fixed PowerShell query", async () => {
@@ -198,11 +200,11 @@ describe("LocalProvisioningRunner", () => {
   });
 
   it("provisions over the fixed serial helper without exposing bootstrap secrets in arguments or evidence", async () => {
-    const { root, esptoolPath } = workspace();
+    const { root, esptoolPath, tlsCertificatePath } = workspace();
     let captured:
       { executable: string; args: string[]; env: NodeJS.ProcessEnv | undefined } | undefined;
     const runner = new LocalProvisioningRunner(
-      { applicationRoot: root, esptoolPath },
+      { applicationRoot: root, esptoolPath, tlsCertificatePath },
       async (executable, args, options) => {
         captured = { executable, args, env: options.env };
         return {

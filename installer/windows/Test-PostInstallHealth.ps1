@@ -15,6 +15,23 @@ try {
     $checks["backend:https"] = $backend.status -eq "UP"
 } catch { $checks["backend:https"] = $false }
 
+$publicCertificate = Join-Path $PersistentRoot "config\bioems-local.cer"
+$checks["device-tls:certificate"] = (
+    (Test-Path -LiteralPath $publicCertificate -PathType Leaf) -and
+    (Get-Item -LiteralPath $publicCertificate).Length -ge 100
+)
+try {
+    Invoke-WebRequest -Uri "https://localhost/api/v1/device-telemetry/00000000-0000-4000-8000-000000000000" `
+        -Method Post -Headers @{ "x-bioems-device-token" = ('a' * 64) } `
+        -ContentType "application/json" -Body '{"sensors":[{"channel":1,"value":4}]}' `
+        -TimeoutSec 10 | Out-Null
+    $checks["device-telemetry:auth-required"] = $false
+} catch {
+    $checks["device-telemetry:auth-required"] = (
+        $_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 401
+    )
+}
+
 $backendEnv = Join-Path $PersistentRoot "config\backend.env"
 $provisionerToken = $null
 if (Test-Path -LiteralPath $backendEnv -PathType Leaf) {
@@ -34,9 +51,16 @@ if ($provisionerToken) {
             $provisioner.esptoolReady -eq $true -and
             $provisioner.firmwareReady -eq $true
         )
-    } catch { $checks["provisioner:loopback"] = $false }
+        $sim = Invoke-RestMethod -Uri "http://127.0.0.1:9444/sim/health" -Headers @{ Authorization = "Bearer $provisionerToken" } -TimeoutSec 10
+        $checks["sim:flash-package"] = (
+            $sim.toolReady -eq $true -and
+            $sim.firmwareReady -eq $true -and
+            $sim.firmwareVersion -eq "0.1.0-bench.1"
+        )
+    } catch { $checks["provisioner:loopback"] = $false; $checks["sim:flash-package"] = $false }
 } else {
     $checks["provisioner:loopback"] = $false
+    $checks["sim:flash-package"] = $false
 }
 try {
     $influx = Invoke-RestMethod -Uri "http://127.0.0.1:8086/health" -TimeoutSec 5

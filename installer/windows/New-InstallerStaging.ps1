@@ -7,6 +7,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$FirmwarePackageDirectory,
     [Parameter(Mandatory = $true)]
+    [string]$SimFirmwarePackageDirectory,
+    [Parameter(Mandatory = $true)]
     [string]$StagingDirectory,
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^[a-f0-9]{40}$')]
@@ -25,6 +27,7 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repository = [System.IO.Path]::GetFullPath($RepositoryRoot)
 $vendor = [System.IO.Path]::GetFullPath($VendorCache)
 $firmwarePackage = [System.IO.Path]::GetFullPath($FirmwarePackageDirectory)
+$simFirmwarePackage = [System.IO.Path]::GetFullPath($SimFirmwarePackageDirectory)
 $staging = [System.IO.Path]::GetFullPath($StagingDirectory)
 
 $firmwareManifestPath = Join-Path $firmwarePackage "manifest.json"
@@ -35,7 +38,7 @@ $firmwareManifest = Get-Content -LiteralPath $firmwareManifestPath -Raw | Conver
 if (
     $firmwareManifest.schemaVersion -ne 1 -or
     $firmwareManifest.target -ne "esp32s3" -or
-    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.1" -or
+    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.3" -or
     $firmwareManifest.protocolVersion -ne "1.3" -or
     $firmwareManifest.bindingSchemaVersion -ne 1 -or
     -not $firmwareManifest.segments -or
@@ -58,6 +61,22 @@ foreach ($segment in $firmwareManifest.segments) {
     if ($segmentHash -ne $segment.sha256) {
         throw "ESP32-S3 firmware package segment checksum mismatch"
     }
+}
+
+$simManifestPath = Join-Path $simFirmwarePackage "manifest.json"
+if (-not (Test-Path -LiteralPath $simManifestPath -PathType Leaf)) {
+    throw "SIM-D4 Nano firmware package manifest is missing"
+}
+$simManifest = Get-Content -LiteralPath $simManifestPath -Raw | ConvertFrom-Json
+if ($simManifest.schemaVersion -ne 1 -or $simManifest.target -ne "atmega328p-nano" -or
+    $simManifest.firmwareVersion -ne "0.1.0-bench.1" -or $simManifest.baud -ne 57600 -or
+    $simManifest.hexFile -ne "sim.hex" -or $simManifest.sha256 -notmatch '^[a-f0-9]{64}$') {
+    throw "SIM-D4 Nano firmware manifest does not match the bench contract"
+}
+$simHex = Join-Path $simFirmwarePackage $simManifest.hexFile
+if (-not (Test-Path -LiteralPath $simHex -PathType Leaf) -or
+    (Get-FileHash -Algorithm SHA256 -LiteralPath $simHex).Hash.ToLowerInvariant() -ne $simManifest.sha256) {
+    throw "SIM-D4 Nano firmware checksum mismatch"
 }
 
 if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
@@ -166,12 +185,14 @@ Copy-Item (Join-Path $repository "frontend\dist") $frontendStage -Recurse
 New-DeterministicZip $backendStage (Join-Path $staging "payload\backend.zip")
 New-DeterministicZip $frontendStage (Join-Path $staging "payload\frontend.zip")
 New-DeterministicZip $firmwarePackage (Join-Path $staging "payload\firmware-site-controller.zip")
+New-DeterministicZip $simFirmwarePackage (Join-Path $staging "payload\firmware-sim-d4-nano.zip")
 
 $lock = Get-Content (Join-Path $scriptRoot "vendor-input-lock.json") -Raw | ConvertFrom-Json
 $artifacts = @(
     [ordered]@{ id = "backend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/backend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
     [ordered]@{ id = "frontend"; version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim(); relativePath = "payload/frontend.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
-    [ordered]@{ id = "site-controller-firmware"; version = $firmwareManifest.firmwareVersion; relativePath = "payload/firmware-site-controller.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" }
+    [ordered]@{ id = "site-controller-firmware"; version = $firmwareManifest.firmwareVersion; relativePath = "payload/firmware-site-controller.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" },
+    [ordered]@{ id = "sim-d4-firmware"; version = $simManifest.firmwareVersion; relativePath = "payload/firmware-sim-d4-nano.zip"; redistributionEvidence = "PROPRIETARY-BIO-EMS" }
 )
 if ($null -ne $ownerTrustArtifact) {
     $artifacts += $ownerTrustArtifact

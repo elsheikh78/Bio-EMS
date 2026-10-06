@@ -20,7 +20,7 @@ export interface TelemetryPoint {
 
   value: number;
 
-  battery: number;
+  battery?: number;
 
   signal: number;
 
@@ -40,7 +40,7 @@ export async function writeTelemetryPoint(data: TelemetryPoint): Promise<void> {
 }
 
 export function buildTelemetryPoint(data: TelemetryPoint): Point {
-  return new Point(data.sensorType)
+  const point = new Point(data.sensorType)
 
     .tag("site", data.site)
 
@@ -52,9 +52,9 @@ export function buildTelemetryPoint(data: TelemetryPoint): Point {
 
     .floatField("value", data.value)
 
-    .floatField("battery", data.battery)
-
     .floatField("signal", data.signal)
 
     .timestamp(new Date(data.timestamp));
+  if (data.battery !== undefined) point.floatField("battery", data.battery);
+  return point;
 }

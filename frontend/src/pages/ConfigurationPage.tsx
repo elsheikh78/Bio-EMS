@@ -1,3 +1,4 @@
+import { simMappingLabel } from "../devices/simMapping";
 import {
   Alert,
   Box,
@@ -89,9 +90,13 @@ export function ConfigurationPage() {
             />
             {sensors.length === 0 ? (
               <Alert severity="info">
-                {ar
-                  ? "لا توجد حساسات تطابق البحث الحالي."
-                  : "No sensors match the current search."}
+                {(sensorsQuery.data ?? []).length === 0
+                  ? ar
+                    ? "لا توجد حساسات تشغيل متاحة. إذا أدخلت الحساسات في System Owner، أكمل تفعيل التركيب عبر Device Provisioning / Flash & Bind ثم حدّث الصفحة."
+                    : "No runtime sensors are available. If sensors were configured in System Owner, complete installation activation through Device Provisioning / Flash & Bind, then refresh this page."
+                  : ar
+                    ? "لا توجد حساسات تطابق البحث الحالي."
+                    : "No sensors match the current search."}
               </Alert>
             ) : (
               sensors.map((sensor) => (
@@ -111,6 +116,10 @@ export function ConfigurationPage() {
                     </Typography>
                     <Typography color="text.secondary">
                       {sensor.code} · {sensor.sensor_type} · {sensor.unit}
+                      {" · "}
+                      {sensor.device_identity ??
+                        `Device #${sensor.device_id}`}{" "}
+                      · {simMappingLabel(sensor.channel, ar)}
                     </Typography>
                   </Box>
                   <Button

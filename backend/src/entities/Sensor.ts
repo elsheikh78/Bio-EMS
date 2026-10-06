@@ -10,6 +10,8 @@ export interface Sensor {
 
   device_id: number;
 
+  device_identity?: string | null;
+
   channel: number;
 
   code: string;

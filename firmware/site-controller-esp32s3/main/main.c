@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "cJSON.h"
 #include "esp_event.h"
@@ -16,12 +18,17 @@
 #include "nvs_flash.h"
 
 #include "bioems_version.h"
+#include "sim_modbus.h"
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAILED_BIT BIT1
 #define MAX_LINE 256
 #define MAX_URL 192
 #define MAX_NVS_TEXT 192
+#define MAX_CA_PEM 4096
+
+static char ca_pem[MAX_CA_PEM];
+static size_t ca_base64_length;
 
 static const char *TAG = "bioems";
 static EventGroupHandle_t wifi_events;
@@ -79,6 +86,7 @@ static void wifi_event_handler(
     return;
   }
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+    xEventGroupClearBits(wifi_events, WIFI_CONNECTED_BIT);
     if (wifi_retry_count < 5) {
       wifi_retry_count++;
       esp_wifi_connect();
@@ -169,6 +177,7 @@ static bool persist_pairing_response(const char *body) {
   if (!root) return false;
 
   const cJSON *binding = cJSON_GetObjectItemCaseSensitive(root, "platform_binding_id");
+  const cJSON *telemetry_token = cJSON_GetObjectItemCaseSensitive(root, "telemetry_token");
   const cJSON *installation = cJSON_GetObjectItemCaseSensitive(root, "installation_id");
   const cJSON *device = cJSON_GetObjectItemCaseSensitive(root, "device_id");
   const cJSON *site = cJSON_GetObjectItemCaseSensitive(root, "site_code");
@@ -182,17 +191,46 @@ static bool persist_pairing_response(const char *body) {
       configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "revision") : NULL;
   const cJSON *checksum =
       configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "checksum") : NULL;
+  const cJSON *configured_device =
+      configuration ? cJSON_GetObjectItemCaseSensitive(configuration, "device") : NULL;
+  const cJSON *sim_modules = configured_device
+      ? cJSON_GetObjectItemCaseSensitive(configured_device, "simModules") : NULL;
+  const cJSON *mappings = configured_device
+      ? cJSON_GetObjectItemCaseSensitive(configured_device, "mappings") : NULL;
 
   bool valid =
       cJSON_IsString(binding) && cJSON_IsString(installation) && cJSON_IsString(device) &&
       cJSON_IsString(site) && cJSON_IsString(telemetry) && cJSON_IsString(heartbeat) &&
       cJSON_IsNumber(revision) && cJSON_IsString(checksum);
+  valid = valid && cJSON_IsString(telemetry_token) &&
+          strlen(telemetry_token->valuestring) == 64;
+  if (sim_modules && (!cJSON_IsNumber(sim_modules) ||
+                      sim_modules->valuedouble != sim_modules->valueint ||
+                      sim_modules->valueint < 1 ||
+                      sim_modules->valueint > SIM_MAX_MODULES)) valid = false;
+  uint32_t mapped_mask = 0;
+  if (sim_modules) {
+    if (!cJSON_IsArray(mappings)) valid = false;
+    const cJSON *mapping = NULL;
+    cJSON_ArrayForEach(mapping, mappings) {
+      const cJSON *channel = cJSON_GetObjectItemCaseSensitive(mapping, "channel");
+      if (!cJSON_IsNumber(channel) || channel->valuedouble != channel->valueint ||
+          channel->valueint < 1 || channel->valueint > sim_modules->valueint * 4)
+        valid = false;
+      else mapped_mask |= 1u << (channel->valueint - 1);
+    }
+  }
 
   if (valid) {
     char revision_text[16];
     snprintf(revision_text, sizeof(revision_text), "%d", revision->valueint);
+    char module_count[2];
+    char channel_mask[9];
+    snprintf(module_count, sizeof(module_count), "%d", sim_modules ? sim_modules->valueint : 0);
+    snprintf(channel_mask, sizeof(channel_mask), "%08lx", (unsigned long)mapped_mask);
     valid =
         nvs_set_text("binding_id", binding->valuestring) == ESP_OK &&
+        nvs_set_text("tele_token", telemetry_token->valuestring) == ESP_OK &&
         nvs_set_text("install_id", installation->valuestring) == ESP_OK &&
         nvs_set_text("device_id", device->valuestring) == ESP_OK &&
         nvs_set_text("site_code", site->valuestring) == ESP_OK &&
@@ -200,6 +238,8 @@ static bool persist_pairing_response(const char *body) {
         nvs_set_text("heart_topic", heartbeat->valuestring) == ESP_OK &&
         nvs_set_text("config_rev", revision_text) == ESP_OK &&
         nvs_set_text("config_sha", checksum->valuestring) == ESP_OK &&
+        nvs_set_text("sim_count", module_count) == ESP_OK &&
+        nvs_set_text("sim_mask", channel_mask) == ESP_OK &&
         nvs_set_text("bind_schema", "1") == ESP_OK;
   }
 
@@ -216,6 +256,10 @@ static bool claim_pairing(const char *code) {
   char base_url[MAX_URL] = {0};
   if (!nvs_get_text("platform_url", base_url, sizeof(base_url))) {
     printf("platform url not configured; use: setplatform <https://host:port>\n");
+    return false;
+  }
+  if (!nvs_get_text("tls_ca", ca_pem, sizeof(ca_pem))) {
+    printf("platform certificate not installed; use USB provisioning\n");
     return false;
   }
 
@@ -244,6 +288,7 @@ static bool claim_pairing(const char *code) {
       .event_handler = http_event,
       .user_data = &response,
       .timeout_ms = 15000,
+      .cert_pem = ca_pem,
       /*
        * Pilot-only compatibility with the current customer-local TLS deployment.
        * Production firmware must replace this with BIO-EMS CA validation + mTLS.
@@ -315,6 +360,7 @@ static void clear_binding(void) {
   if (nvs_open("bioems", NVS_READWRITE, &handle) != ESP_OK) return;
   const char *keys[] = {
       "binding_id",
+      "tele_token",
       "install_id",
       "device_id",
       "site_code",
@@ -323,6 +369,8 @@ static void clear_binding(void) {
       "config_rev",
       "config_sha",
       "bind_schema",
+      "sim_count",
+      "sim_mask",
   };
   for (size_t i = 0; i < sizeof(keys) / sizeof(keys[0]); i++) {
     nvs_erase_key(handle, keys[i]);
@@ -330,6 +378,109 @@ static void clear_binding(void) {
   nvs_commit(handle);
   nvs_close(handle);
   printf("local binding cleared; backend binding must be revoked separately by System Owner\n");
+}
+
+static void sim_poll_task(void *argument) {
+  (void)argument;
+  while (true) {
+    char count_text[2] = {0};
+    char mask_text[9] = {0};
+    int count = nvs_get_text("sim_count", count_text, sizeof(count_text))
+        ? atoi(count_text) : 0;
+    uint32_t mapped_mask = nvs_get_text("sim_mask", mask_text, sizeof(mask_text))
+        ? (uint32_t)strtoul(mask_text, NULL, 16) : 0;
+    for (int address = 1; address <= count && address <= SIM_MAX_MODULES; ++address) {
+      sim_modbus_sample_t sample = {0};
+      if (!sim_modbus_read(address, &sample)) {
+        ESP_LOGW(TAG, "SIM-D4 address %d did not return a valid Modbus frame", address);
+        continue;
+      }
+      char readings[256] = {0};
+      size_t used = 0;
+      for (int probe = 0; probe < SIM_CHANNELS_PER_MODULE; ++probe) {
+        int channel = (address - 1) * SIM_CHANNELS_PER_MODULE + probe + 1;
+        if (!(mapped_mask & (1u << (channel - 1)))) continue;
+        if (sample.status[probe] == 0 && sample.tenths_celsius[probe] != INT16_MIN) {
+          ESP_LOGI(TAG, "SIM channel %d = %.1f C", channel,
+                   (double)sample.tenths_celsius[probe] / 10.0);
+          int written = snprintf(readings + used, sizeof(readings) - used,
+              "%s{\"channel\":%d,\"value\":%.1f}", used ? "," : "",
+              channel, (double)sample.tenths_celsius[probe] / 10.0);
+          if (written > 0 && (size_t)written < sizeof(readings) - used) used += written;
+        } else {
+          ESP_LOGW(TAG, "SIM channel %d sensor status %u", channel, sample.status[probe]);
+        }
+      }
+      if (used) {
+        char binding[40] = {0};
+        char token[65] = {0};
+        char base_url[MAX_URL] = {0};
+        if (nvs_get_text("binding_id", binding, sizeof(binding)) &&
+            nvs_get_text("tele_token", token, sizeof(token)) &&
+            nvs_get_text("platform_url", base_url, sizeof(base_url)) &&
+            nvs_get_text("tls_ca", ca_pem, sizeof(ca_pem)) && wifi_events &&
+            (xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT)) {
+          char url[MAX_URL + 80];
+          snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base_url, binding);
+          char body[320];
+          wifi_ap_record_t access_point = {0};
+          int signal = esp_wifi_sta_get_ap_info(&access_point) == ESP_OK
+              ? access_point.rssi : 0;
+          snprintf(body, sizeof(body), "{\"signal\":%d,\"sensors\":[%s]}",
+                   signal, readings);
+          esp_http_client_config_t config = {
+              .url = url, .cert_pem = ca_pem, .timeout_ms = 10000,
+              .skip_cert_common_name_check = true,
+          };
+          esp_http_client_handle_t client = esp_http_client_init(&config);
+          if (client) {
+            esp_http_client_set_method(client, HTTP_METHOD_POST);
+            esp_http_client_set_header(client, "Content-Type", "application/json");
+            esp_http_client_set_header(client, "x-bioems-device-token", token);
+            esp_http_client_set_post_field(client, body, strlen(body));
+            esp_err_t result = esp_http_client_perform(client);
+            int status = result == ESP_OK ? esp_http_client_get_status_code(client) : 0;
+            if (status != 202) ESP_LOGW(TAG, "SIM telemetry delivery failed: %s HTTP %d",
+                                         esp_err_to_name(result), status);
+            esp_http_client_cleanup(client);
+          }
+        }
+      }
+    }
+    if (wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
+      esp_wifi_connect();
+    vTaskDelay(pdMS_TO_TICKS(5000));
+  }
+}
+
+static void print_sim_scan(void) {
+  cJSON *root = cJSON_CreateObject();
+  cJSON *modules = cJSON_AddArrayToObject(root, "modules");
+  char uid[33];
+  hardware_uid(uid);
+  cJSON_AddStringToObject(root, "hardwareUid", uid);
+  for (int address = 1; address <= SIM_MAX_MODULES; ++address) {
+    sim_modbus_sample_t sample = {0};
+    bool present = sim_modbus_read(address, &sample);
+    cJSON *module = cJSON_CreateObject();
+    cJSON_AddNumberToObject(module, "address", address);
+    cJSON_AddBoolToObject(module, "responding", present);
+    cJSON_AddItemToArray(modules, module);
+    cJSON *inputs = cJSON_AddArrayToObject(module, "inputs");
+    if (!present) continue;
+    for (int input = 0; input < SIM_CHANNELS_PER_MODULE; ++input) {
+      cJSON *probe = cJSON_CreateObject();
+      cJSON_AddNumberToObject(probe, "input", input + 1);
+      cJSON_AddNumberToObject(probe, "channel", (address - 1) * 4 + input + 1);
+      cJSON_AddNumberToObject(probe, "status", sample.status[input]);
+      bool valid = sample.status[input] == 0 && sample.tenths_celsius[input] != INT16_MIN;
+      if (valid) cJSON_AddNumberToObject(probe, "value", sample.tenths_celsius[input] / 10.0);
+      cJSON_AddItemToArray(inputs, probe);
+    }
+  }
+  char *json = cJSON_PrintUnformatted(root);
+  if (json) { printf("BIOEMS_SIM_SCAN:%s\n", json); free(json); }
+  cJSON_Delete(root);
 }
 
 static void command_loop(void) {
@@ -345,6 +496,10 @@ static void command_loop(void) {
     }
     line[strcspn(line, "\r\n")] = '\0';
 
+    if (strcmp(line, "simscan") == 0) {
+      print_sim_scan();
+      continue;
+    }
     if (strcmp(line, "status") == 0) {
       print_status();
       continue;
@@ -377,6 +532,61 @@ static void command_loop(void) {
       }
       continue;
     }
+    if (strcmp(line, "cabegin") == 0) {
+      ca_base64_length = 0;
+      ca_pem[0] = '\0';
+      printf("certificate transfer started\n");
+      continue;
+    }
+    if (strncmp(line, "cachunk ", 8) == 0) {
+      const char *chunk = line + 8;
+      size_t length = strlen(chunk);
+      bool valid = length > 0;
+      for (size_t i = 0; i < length; ++i) {
+        if (!(isalnum((unsigned char)chunk[i]) || chunk[i] == '+' ||
+              chunk[i] == '/' || chunk[i] == '=')) valid = false;
+      }
+      if (!valid || ca_base64_length + length > MAX_CA_PEM - 128) {
+        printf("certificate chunk rejected\n");
+      } else {
+        memcpy(ca_pem + ca_base64_length, chunk, length);
+        ca_base64_length += length;
+        ca_pem[ca_base64_length] = '\0';
+        printf("certificate chunk saved\n");
+      }
+      continue;
+    }
+    if (strcmp(line, "caend") == 0) {
+      if (ca_base64_length < 100 || ca_base64_length > MAX_CA_PEM - 128) {
+        printf("certificate transfer invalid\n");
+        continue;
+      }
+      memmove(ca_pem + 28, ca_pem, ca_base64_length);
+      memcpy(ca_pem, "-----BEGIN CERTIFICATE-----\n", 28);
+      size_t end = ca_base64_length + 28;
+      memcpy(ca_pem + end, "\n-----END CERTIFICATE-----\n", 27);
+      ca_pem[end + 27] = '\0';
+      if (nvs_set_text("tls_ca", ca_pem) == ESP_OK)
+        printf("platform certificate saved\n");
+      continue;
+    }
+    if (strncmp(line, "settime ", 8) == 0) {
+      char *end = NULL;
+      long long epoch = strtoll(line + 8, &end, 10);
+      if (!end || *end != '\0' || epoch < 1760000000LL ||
+          epoch > 4102444800LL) {
+        printf("invalid UTC epoch\n");
+        continue;
+      }
+      struct timeval utc = {.tv_sec = (time_t)epoch, .tv_usec = 0};
+      if (settimeofday(&utc, NULL) != 0 ||
+          nvs_set_text("utc_epoch", line + 8) != ESP_OK) {
+        printf("UTC time could not be saved\n");
+      } else {
+        printf("UTC time saved\n");
+      }
+      continue;
+    }
     if (strncmp(line, "pair ", 5) == 0) {
       claim_pairing(line + 5);
       continue;
@@ -396,7 +606,23 @@ void app_main(void) {
     ESP_ERROR_CHECK(nvs_result);
   }
 
+  // Bench bootstrap: restore the last trusted USB-provisioned epoch before TLS.
+  // The server timestamps accepted readings. Production needs NTP/RTC time policy.
+  char saved_epoch[24] = {0};
+  if (nvs_get_text("utc_epoch", saved_epoch, sizeof(saved_epoch))) {
+    time_t epoch = (time_t)strtoll(saved_epoch, NULL, 10);
+    struct timeval utc = {.tv_sec = epoch, .tv_usec = 0};
+    settimeofday(&utc, NULL);
+  }
+
   ESP_LOGI(TAG, "BIO-EMS Site Controller boot");
   print_status();
+  char current_binding[MAX_NVS_TEXT];
+  if (nvs_get_text("binding_id", current_binding, sizeof(current_binding)))
+    connect_wifi();
+  if (sim_modbus_init())
+    xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
+  else
+    ESP_LOGE(TAG, "SIM-D4 UART initialization failed");
   command_loop();
 }

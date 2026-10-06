@@ -47,6 +47,8 @@ const device = z
     manufacturer: z.string().trim().max(100).nullable().optional(),
     model: z.string().trim().max(100).nullable().optional(),
     firmwareVersion: z.string().trim().max(100).nullable().optional(),
+    // SIM-D4 uses addresses 1..4; each fitted module contributes four channels.
+    simModules: z.number().int().min(1).max(4).optional(),
     mappings: z
       .array(
         z
@@ -59,7 +61,19 @@ const device = z
       )
       .min(1),
   })
-  .strict();
+  .strict()
+  .superRefine((device, ctx) => {
+    if (device.simModules === undefined) return;
+    for (const [index, mapping] of device.mappings.entries()) {
+      if (mapping.channel < 1 || mapping.channel > device.simModules * 4) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["mappings", index, "channel"],
+          message: "SIM-D4 channel must be within fitted modules (1..simModules*4)",
+        });
+      }
+    }
+  });
 
 export const installationSnapshotSchema = z
   .object({

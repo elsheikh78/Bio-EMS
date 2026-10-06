@@ -11,7 +11,7 @@ export const telemetrySchema = z.object({
 
   timestamp: z.string().datetime(),
 
-  battery: z.number().min(0).max(100),
+  battery: z.number().min(0).max(100).optional(),
 
   signal: z.number(),
 

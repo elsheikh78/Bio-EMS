@@ -35,6 +35,7 @@ export type DraftArea = {
 
 export type DraftDevice = {
   deviceId: string;
+  simModules?: number;
 };
 
 export type InstallationBuilderSnapshot = {
@@ -70,6 +71,7 @@ export type InstallationBuilderSnapshot = {
     manufacturer: string;
     model: string;
     firmwareVersion: string;
+    simModules?: number;
     mappings: Array<{
       areaCode: string;
       telemetryCode: string;
@@ -150,9 +152,29 @@ export function validBuilder(areas: DraftArea[], devices: DraftDevice[]) {
         !telemetry.unit.trim() ||
         !devices.some((device) => device.deviceId === telemetry.deviceId) ||
         !Number.isInteger(telemetry.channel) ||
-        telemetry.channel < 1
+        telemetry.channel < 1 ||
+        telemetry.channel >
+          (devices.find((device) => device.deviceId === telemetry.deviceId)
+            ?.simModules ?? 4) *
+            4
       ) {
         return false;
+      }
+      const limits = [
+        telemetry.alarmLow,
+        telemetry.warningLow,
+        telemetry.warningHigh,
+        telemetry.alarmHigh,
+      ];
+      if (
+        limits.some((value) => value !== undefined && !Number.isFinite(value))
+      )
+        return false;
+      for (let i = 0; i < limits.length; i += 1) {
+        if (limits[i] === undefined) continue;
+        for (let j = i + 1; j < limits.length; j += 1) {
+          if (limits[j] !== undefined && limits[i]! > limits[j]!) return false;
+        }
       }
 
       mappedByDevice.set(
@@ -187,7 +209,14 @@ export function builderStateFromSnapshot(
     .filter((device) => device.siteCode === siteCode)
     .flatMap((device) =>
       typeof device.deviceId === "string" && device.deviceId.length > 0
-        ? [{ deviceId: device.deviceId }]
+        ? [
+            {
+              deviceId: device.deviceId,
+              ...(typeof device.simModules === "number"
+                ? { simModules: device.simModules }
+                : {}),
+            },
+          ]
         : [],
     );
 
@@ -351,7 +380,10 @@ export function buildSnapshot(
       protocol: "mqtt",
       manufacturer: "BIO-EMS",
       model: "BIO-EMS-SC-V1",
-      firmwareVersion: "0.1.0-pilot.1",
+      firmwareVersion: "0.1.0-pilot.3",
+      ...(device.simModules !== undefined
+        ? { simModules: device.simModules }
+        : {}),
       mappings: areas.flatMap((area) =>
         area.telemetries
           .filter((telemetry) => telemetry.deviceId === device.deviceId)
