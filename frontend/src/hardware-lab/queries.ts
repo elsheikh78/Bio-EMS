@@ -54,7 +54,7 @@ export function useHardwareLabRun(runId?: string) {
 
 function useRunMutation<T>(
   path: (input: T) => `/${string}`,
-  body: (input: T) => unknown | undefined,
+  body: (input: T) => Record<string, unknown> | undefined,
 ) {
   const { apiClient } = usePlatformAuthentication();
   const cache = useQueryClient();
@@ -124,7 +124,11 @@ export const useRecordHardwareLabFirmware = () =>
     tool_output?: string;
   }>(
     (input) => `/platform-operations/hardware-lab/runs/${input.runId}/firmware`,
-    ({ runId: _runId, ...payload }) => payload,
+    (input) => {
+      const { runId, ...payload } = input;
+      void runId;
+      return payload;
+    },
   );
 
 export const useRecordHardwareLabEvent = () =>
@@ -137,7 +141,11 @@ export const useRecordHardwareLabEvent = () =>
     severity: "INFO" | "WARNING" | "ERROR";
   }>(
     (input) => `/platform-operations/hardware-lab/runs/${input.runId}/events`,
-    ({ runId: _runId, ...payload }) => payload,
+    (input) => {
+      const { runId, ...payload } = input;
+      void runId;
+      return payload;
+    },
   );
 
 export const useFinalizeHardwareLabRun = () =>
