@@ -8,6 +8,7 @@ import {
   listOwnerSupportGrantsController,
   platformLoginController,
   platformLogoutController,
+  refreshPlatformSessionController,
   revokeAllPlatformSessionsController,
   revokeOwnerSupportGrantController,
 } from "../controllers/platform-auth.controller";
@@ -37,6 +38,7 @@ router.post(
   platformLoginController
 );
 router.get("/me", platformAuthenticationMiddleware, currentPlatformPrincipalController);
+router.post("/session/refresh", platformAuthenticationMiddleware, refreshPlatformSessionController);
 router.post("/logout", platformAuthenticationMiddleware, platformLogoutController);
 router.post(
   "/mfa/enrollment",

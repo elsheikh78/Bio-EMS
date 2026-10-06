@@ -24,6 +24,7 @@ import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdmins
 import { SystemOwnerCommunicationChannelsPage } from "./pages/SystemOwnerCommunicationChannelsPage";
 import { BackupRestorePage } from "./pages/BackupRestorePage";
 import { SystemOwnerBackupRestorePage } from "./pages/SystemOwnerBackupRestorePage";
+import { SystemOwnerHardwareLabPage } from "./pages/SystemOwnerHardwareLabPage";
 import {
   AuthenticationBoundary,
   LoginBoundary,
@@ -82,6 +83,10 @@ export function App() {
         <Route
           path="system-owner/device-provisioning"
           element={<SystemOwnerDeviceProvisioningPage />}
+        />
+        <Route
+          path="system-owner/hardware-lab"
+          element={<SystemOwnerHardwareLabPage />}
         />
         <Route
           path="system-owner/backup-restore"

@@ -11,6 +11,7 @@ import { OwnerSecurityAuditService } from "../services/owner-security-audit.serv
 import { OwnerSupportGrantService } from "../services/owner-support-grant.service";
 import { PlatformSessionService } from "../services/platform-session.service";
 import { PlatformTokenService } from "../services/platform-token.service";
+import { parseSingleAuthorizationHeader } from "../middleware/authentication.middleware";
 
 const ownerSecurityAuditService = () => new OwnerSecurityAuditService(sqlite);
 
@@ -26,7 +27,7 @@ export const platformLoginController = asyncHandler(async (req: Request, res: Re
     new PlatformPrincipalRepository(),
     new PlatformTokenService(config.platformJwt),
     undefined,
-    new PlatformSessionService(sqlite),
+    new PlatformSessionService(sqlite, undefined, config.platformJwt.idleMinutes ?? 30),
     config.ownerMfaEncryptionKey
       ? new OwnerMfaService(new PlatformPrincipalRepository(), config.ownerMfaEncryptionKey)
       : undefined,
@@ -43,6 +44,40 @@ export const platformLoginController = asyncHandler(async (req: Request, res: Re
 
 export const currentPlatformPrincipalController = (req: Request, res: Response): void => {
   res.status(200).json({ principal: req.platformPrincipal! });
+};
+
+export const refreshPlatformSessionController = (req: Request, res: Response): void => {
+  if (!config.platformJwt) throw unavailable();
+
+  const currentToken = parseSingleAuthorizationHeader(req);
+  if (!currentToken || !req.platformSessionId || !req.platformPrincipal) {
+    throw new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED");
+  }
+
+  const tokenService = new PlatformTokenService(config.platformJwt);
+  const issued = tokenService.issueAccessToken(req.platformPrincipal, req.platformSessionId);
+  const refreshed = new PlatformSessionService(
+    sqlite,
+    undefined,
+    config.platformJwt.idleMinutes ?? 30
+  ).refresh(
+    req.platformSessionId,
+    req.platformPrincipal.id,
+    currentToken,
+    issued.accessToken,
+    new Date(Date.now() + issued.expiresIn * 1000)
+  );
+
+  if (!refreshed) {
+    throw new AppError("Platform authentication required", 401, "PLATFORM_AUTHENTICATION_REQUIRED");
+  }
+
+  res.status(200).json({
+    access_token: issued.accessToken,
+    token_type: "bearer",
+    expires_in: issued.expiresIn,
+    principal: req.platformPrincipal,
+  });
 };
 
 export const platformLogoutController = (req: Request, res: Response): void => {
