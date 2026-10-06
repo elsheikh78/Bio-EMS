@@ -3,6 +3,7 @@ import type Database from "better-sqlite3";
 import { sqlite } from "../../../database/sqlite/client";
 import { AppError } from "../../errors/app-error";
 import {
+  HARDWARE_FIRMWARE_CATALOG,
   HARDWARE_TEST_PROFILE_REVISION,
   HARDWARE_TEST_STEPS,
   evaluateHardwareStep,
@@ -321,6 +322,48 @@ export class HardwareLabService {
         observedAt
       );
     return { id: Number(result.lastInsertRowid), observedAt };
+  }
+
+  listMeasurements(runId: string) {
+    if (!this.database.prepare("SELECT 1 FROM hardware_test_runs WHERE id=?").get(runId)) {
+      throw notFound();
+    }
+    return this.database
+      .prepare(
+        `SELECT id,step_key AS stepKey,channel,metric_key AS metricKey,
+                numeric_value AS numericValue,text_value AS textValue,unit,
+                observed_at AS observedAt
+         FROM hardware_test_measurements
+         WHERE run_id=?
+         ORDER BY observed_at DESC,id DESC
+         LIMIT 100`
+      )
+      .all(runId);
+  }
+
+  listEvents(runId: string) {
+    if (!this.database.prepare("SELECT 1 FROM hardware_test_runs WHERE id=?").get(runId)) {
+      throw notFound();
+    }
+    return (
+      this.database
+        .prepare(
+          `SELECT id,step_key AS stepKey,code,severity,payload_json AS payloadJson,
+                  observed_at AS observedAt
+           FROM hardware_test_events
+           WHERE run_id=?
+           ORDER BY observed_at DESC,id DESC
+           LIMIT 100`
+        )
+        .all(runId) as Array<Record<string, unknown> & { payloadJson: string }>
+    ).map((item) => ({
+      id: item.id,
+      stepKey: item.stepKey,
+      code: item.code,
+      severity: item.severity,
+      payload: parseJson(item.payloadJson),
+      observedAt: item.observedAt,
+    }));
   }
 
   recordFirmware(
