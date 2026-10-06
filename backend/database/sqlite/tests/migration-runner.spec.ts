@@ -108,7 +108,7 @@ describe("SQLite migrations", () => {
       database.prepare("PRAGMA table_info(sensors)").all() as Array<{ name: string }>
     ).filter((column) => ["warning_low", "warning_high"].includes(column.name));
 
-    expect(historyCount.count).toBe(30);
+    expect(historyCount.count).toBe(31);
     expect(warningColumns).toHaveLength(2);
   });
 
