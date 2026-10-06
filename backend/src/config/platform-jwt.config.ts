@@ -1,6 +1,7 @@
 export interface PlatformJwtConfig {
   secret: string;
   expireMinutes: number;
+  idleMinutes?: number;
   issuer: string;
   audience: string;
 }
@@ -17,10 +18,11 @@ export function loadPlatformJwtConfig(
 ): PlatformJwtConfig | undefined {
   const secret = environment.BIOEMS_PLATFORM_JWT_SECRET;
   const expireMinutesValue = environment.BIOEMS_PLATFORM_JWT_EXPIRE_MINUTES;
+  const idleMinutesValue = environment.BIOEMS_PLATFORM_SESSION_IDLE_MINUTES;
   const issuerValue = environment.BIOEMS_PLATFORM_JWT_ISSUER;
   const audienceValue = environment.BIOEMS_PLATFORM_JWT_AUDIENCE;
   const hasAnyPlatformJwtSetting = Boolean(
-    secret || expireMinutesValue || issuerValue || audienceValue
+    secret || expireMinutesValue || idleMinutesValue || issuerValue || audienceValue
   );
 
   if (!hasAnyPlatformJwtSetting) {
@@ -28,6 +30,7 @@ export function loadPlatformJwtConfig(
   }
 
   const expireMinutes = parseExpireMinutes(expireMinutesValue);
+  const idleMinutes = parseIdleMinutes(idleMinutesValue);
   const issuer = issuerValue ?? "bio-ems-platform";
   const audience = audienceValue ?? "bio-ems-platform-api";
 
@@ -35,12 +38,30 @@ export function loadPlatformJwtConfig(
     throw new PlatformJwtConfigurationError();
   }
 
-  return { secret, expireMinutes, issuer, audience };
+  return { secret, expireMinutes, idleMinutes, issuer, audience };
 }
 
 function parseExpireMinutes(value: string | undefined): number {
   if (value === undefined) {
-    return 15;
+    return 60;
+  }
+
+  if (!/^\d+$/.test(value)) {
+    throw new PlatformJwtConfigurationError();
+  }
+
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+    throw new PlatformJwtConfigurationError();
+  }
+
+  return parsed;
+}
+
+
+function parseIdleMinutes(value: string | undefined): number {
+  if (value === undefined) {
+    return 30;
   }
 
   if (!/^\d+$/.test(value)) {
