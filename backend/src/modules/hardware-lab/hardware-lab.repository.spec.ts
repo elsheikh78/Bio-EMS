@@ -40,7 +40,7 @@ describe("HardwareLabRepository", () => {
     const repository = new HardwareLabRepository(database, () => now);
     const created = repository.createRun({ prototype_type: "MAIN16_SIMD4" }, "owner");
 
-    expect(() => repository.startStep(created!.run.id as string, "SENSOR_SINGLE")).toThrow(
+    expect(() => repository.startStep((created!.run as { id: string }).id, "SENSOR_SINGLE")).toThrow(
       "PREVIOUS_STEP_NOT_PASSED"
     );
   });
@@ -48,7 +48,7 @@ describe("HardwareLabRepository", () => {
   it("automatically fails the cable gate below 99.99 percent", () => {
     const repository = new HardwareLabRepository(database, () => now);
     const created = repository.createRun({ prototype_type: "MAIN16_SIMD4" }, "owner");
-    const runId = created!.run.id as string;
+    const runId = (created!.run as { id: string }).id;
 
     repository.recordStepResult(runId, "BENCH_SETUP", { status: "PASS", metrics: [] });
     repository.recordStepResult(runId, "POWER_RAILS", { status: "PASS", metrics: [] });
@@ -68,7 +68,7 @@ describe("HardwareLabRepository", () => {
   it("requires zero unexplained reboots and unrecovered faults for endurance", () => {
     const repository = new HardwareLabRepository(database, () => now);
     const created = repository.createRun({ prototype_type: "MAIN16_SIMD4" }, "owner");
-    const runId = created!.run.id as string;
+    const runId = (created!.run as { id: string }).id;
 
     for (const step of (created!.steps as Array<{ step_code: string }>).slice(0, 11)) {
       repository.recordStepResult(runId, step.step_code, {
@@ -94,7 +94,7 @@ describe("HardwareLabRepository", () => {
   it("finalizes PASS only when every step and both bench firmware targets pass", () => {
     const repository = new HardwareLabRepository(database, () => now);
     const created = repository.createRun({ prototype_type: "MAIN16_SIMD4" }, "owner");
-    const runId = created!.run.id as string;
+    const runId = (created!.run as { id: string }).id;
 
     for (const step of created!.steps as Array<{ step_code: string }>) {
       const metrics =
