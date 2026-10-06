@@ -344,7 +344,9 @@ export function SystemOwnerHardwareLabPage() {
         const parsedRuns = hardwareRunListSchema.parse(runsRaw).runs;
         setProfile(parsedProfile);
         setRuns(parsedRuns);
-        setSelectedRunId((current) => current || parsedRuns[0]?.id || "");
+        const initialRunId = parsedRuns[0]?.id ?? "";
+        setSelectedRunId((current) => current || initialRunId);
+        if (initialRunId) void loadRun(initialRunId);
         setEventCode(parsedProfile.faultCodes[0] ?? "");
       })
       .catch(() => {
@@ -357,12 +359,7 @@ export function SystemOwnerHardwareLabPage() {
     return () => {
       active = false;
     };
-  }, [protectedRequest]);
-
-  useEffect(() => {
-    if (!selectedRunId) return;
-    void loadRun(selectedRunId).catch(() => setLoadError(true));
-  }, [loadRun, selectedRunId]);
+  }, [loadRun, protectedRequest]);
 
   const stepByKey = useMemo(
     () => new Map(profile?.steps.map((step) => [step.key, step]) ?? []),
@@ -629,8 +626,10 @@ export function SystemOwnerHardwareLabPage() {
           fullWidth
           label={text.selectRun}
           onChange={(event) => {
-            setSelectedRunId(event.target.value);
+            const nextRunId = event.target.value;
+            setSelectedRunId(nextRunId);
             setReport(undefined);
+            void loadRun(nextRunId).catch(() => setLoadError(true));
           }}
           select
           sx={{ mb: 3 }}
@@ -1262,6 +1261,7 @@ export function SystemOwnerHardwareLabPage() {
                       onClick={() => {
                         setSelectedRunId(item.id);
                         setTab(0);
+                        void loadRun(item.id).catch(() => setLoadError(true));
                       }}
                       sx={{
                         alignItems: "flex-start",
