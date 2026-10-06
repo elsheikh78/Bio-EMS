@@ -77,13 +77,22 @@ describe("PlatformSessionService", () => {
       30
     );
     expect(atTwentyMinutes.isActive(active.id, "owner", "rolling-token")).toBe(true);
+    expect(
+      atTwentyMinutes.refresh(
+        active.id,
+        "owner",
+        "rolling-token",
+        "rolling-token-v2",
+        new Date("2026-09-14T13:20:00.000Z")
+      )
+    ).toBe(true);
 
     const atFortyNineMinutes = new PlatformSessionService(
       database,
       () => new Date("2026-09-14T12:49:00.000Z"),
       30
     );
-    expect(atFortyNineMinutes.isActive(active.id, "owner", "rolling-token")).toBe(true);
+    expect(atFortyNineMinutes.isActive(active.id, "owner", "rolling-token-v2")).toBe(true);
   });
 
   it("rotates the persisted token hash during a rolling refresh", () => {
