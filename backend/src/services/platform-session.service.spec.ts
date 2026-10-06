@@ -59,6 +59,60 @@ describe("PlatformSessionService", () => {
     expect(later.isActive(expired.id, "owner", "expired-token")).toBe(false);
   });
 
+  it("expires after 30 minutes of inactivity but slides while activity continues", () => {
+    const creator = new PlatformSessionService(database, () => now, 30);
+    const idle = creator.create("owner", "idle-token", new Date("2026-09-14T13:00:00.000Z"));
+    const active = creator.create("owner", "rolling-token", new Date("2026-09-14T13:00:00.000Z"));
+
+    const afterThirtyMinutes = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:30:01.000Z"),
+      30
+    );
+    expect(afterThirtyMinutes.isActive(idle.id, "owner", "idle-token")).toBe(false);
+
+    const atTwentyMinutes = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:20:00.000Z"),
+      30
+    );
+    expect(atTwentyMinutes.isActive(active.id, "owner", "rolling-token")).toBe(true);
+
+    const atFortyNineMinutes = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:49:00.000Z"),
+      30
+    );
+    expect(atFortyNineMinutes.isActive(active.id, "owner", "rolling-token")).toBe(true);
+  });
+
+  it("rotates the persisted token hash during a rolling refresh", () => {
+    const creator = new PlatformSessionService(database, () => now, 30);
+    const session = creator.create(
+      "owner",
+      "old-token",
+      new Date("2026-09-14T13:00:00.000Z")
+    );
+
+    const refresher = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:10:00.000Z"),
+      30
+    );
+    expect(
+      refresher.refresh(
+        session.id,
+        "owner",
+        "old-token",
+        "new-token",
+        new Date("2026-09-14T13:10:00.000Z")
+      )
+    ).toBe(true);
+
+    expect(refresher.isActive(session.id, "owner", "old-token")).toBe(false);
+    expect(refresher.isActive(session.id, "owner", "new-token")).toBe(true);
+  });
+
   it("revokes every active owner session without modifying prior revocations", () => {
     const service = new PlatformSessionService(database, () => now);
     const expiresAt = new Date("2026-09-14T12:15:00.000Z");
