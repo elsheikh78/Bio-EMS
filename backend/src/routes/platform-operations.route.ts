@@ -124,6 +124,30 @@ import {
 const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.get("/", platformOperationsOverview);
+router.get("/hardware-lab/profile", getHardwareLabProfile);
+router.get("/hardware-lab/runs", listHardwareTestRuns);
+router.post("/hardware-lab/runs", validateBody(createHardwareTestRunSchema), createHardwareTestRun);
+router.get("/hardware-lab/runs/:runId", validateParams(hardwareTestRunParamsSchema), getHardwareTestRun);
+router.post("/hardware-lab/runs/:runId/steps/:stepCode/start", validateParams(hardwareTestStepParamsSchema), startHardwareTestStep);
+router.post(
+  "/hardware-lab/runs/:runId/steps/:stepCode/result",
+  validateParams(hardwareTestStepParamsSchema),
+  validateBody(hardwareTestStepResultSchema),
+  recordHardwareTestStepResult
+);
+router.post(
+  "/hardware-lab/runs/:runId/firmware",
+  validateParams(hardwareTestRunParamsSchema),
+  validateBody(hardwareFirmwareEvidenceSchema),
+  recordHardwareFirmwareEvidence
+);
+router.post(
+  "/hardware-lab/runs/:runId/events",
+  validateParams(hardwareTestRunParamsSchema),
+  validateBody(hardwareTestEventSchema),
+  recordHardwareTestEvent
+);
+router.post("/hardware-lab/runs/:runId/finalize", validateParams(hardwareTestRunParamsSchema), finalizeHardwareTestRun);
 router.get("/backups/schedule", getOwnerPlatformBackupSchedule);
 router.put(
   "/backups/schedule",
