@@ -182,7 +182,7 @@ const principalRepository = new PlatformPrincipalRepository();
 export const platformAuthenticationMiddleware = createPlatformAuthenticationMiddleware(
   tokenService,
   principalRepository,
-  new PlatformSessionService(sqlite)
+  new PlatformSessionService(sqlite, undefined, config.platformJwt?.idleMinutes ?? 30)
 );
 
 export const ownerMfaEnrollmentAuthenticationMiddleware =
