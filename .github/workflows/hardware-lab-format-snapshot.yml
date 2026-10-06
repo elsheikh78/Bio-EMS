@@ -1,0 +1,50 @@
+name: Hardware Lab Format Snapshot
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  format-snapshot:
+    if: github.head_ref == 'feature/system-owner-hardware-lab'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Format backend
+        working-directory: backend
+        run: |
+          npm ci
+          npm run format
+      - name: Format frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run format
+      - name: Collect formatted files
+        run: |
+          mkdir -p formatted/backend/src/config
+          mkdir -p formatted/backend/src/modules/hardware-lab
+          mkdir -p formatted/backend/src/routes
+          mkdir -p formatted/backend/src/services
+          mkdir -p formatted/frontend/src/hardware-lab
+          mkdir -p formatted/frontend/src/pages
+          cp backend/src/config/platform-jwt.config.ts formatted/backend/src/config/
+          cp backend/src/modules/hardware-lab/hardware-lab.repository.spec.ts formatted/backend/src/modules/hardware-lab/
+          cp backend/src/modules/hardware-lab/hardware-lab.repository.ts formatted/backend/src/modules/hardware-lab/
+          cp backend/src/modules/hardware-lab/hardware-lab.schema.ts formatted/backend/src/modules/hardware-lab/
+          cp backend/src/routes/platform-operations.route.ts formatted/backend/src/routes/
+          cp backend/src/services/platform-session.service.spec.ts formatted/backend/src/services/
+          cp frontend/src/hardware-lab/contracts.ts formatted/frontend/src/hardware-lab/
+          cp frontend/src/hardware-lab/queries.ts formatted/frontend/src/hardware-lab/
+          cp frontend/src/pages/SystemOwnerHardwareLabPage.tsx formatted/frontend/src/pages/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hardware-lab-formatted
+          path: formatted
