@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
 import type Database from "better-sqlite3";
 
+export const PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES = 30;
+export const PLATFORM_OWNER_IDLE_TIMEOUT_MS =
+  PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES * 60 * 1000;
+
 export interface PlatformSessionMetadata {
   ipAddress?: string;
   userAgent?: string;
@@ -14,8 +18,13 @@ export interface CreatedPlatformSession {
 export class PlatformSessionService {
   constructor(
     private readonly database: Database.Database,
-    private readonly now: () => Date = () => new Date()
-  ) {}
+    private readonly now: () => Date = () => new Date(),
+    private readonly idleTimeoutMs: number = PLATFORM_OWNER_IDLE_TIMEOUT_MS
+  ) {
+    if (!Number.isFinite(idleTimeoutMs) || idleTimeoutMs <= 0) {
+      throw new Error("Platform session idle timeout must be positive");
+    }
+  }
 
   create(
     principalId: string,
@@ -51,15 +60,17 @@ export class PlatformSessionService {
   }
 
   isActive(id: string, principalId: string, accessToken: string): boolean {
-    const now = this.now().toISOString();
+    const current = this.now();
+    const now = current.toISOString();
+    const idleCutoff = new Date(current.getTime() - this.idleTimeoutMs).toISOString();
     const result = this.database
       .prepare(
         `UPDATE platform_sessions
          SET last_seen_at = ?
          WHERE id = ? AND principal_id = ? AND token_hash = ?
-           AND revoked_at IS NULL AND expires_at > ?`
+           AND revoked_at IS NULL AND expires_at > ? AND last_seen_at > ?`
       )
-      .run(now, id, principalId, hashAccessToken(accessToken), now);
+      .run(now, id, principalId, hashAccessToken(accessToken), now, idleCutoff);
     return result.changes === 1;
   }
 
