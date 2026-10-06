@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format-snapshot:
@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -27,24 +29,14 @@ jobs:
         run: |
           npm ci
           npm run format
-      - name: Collect formatted files
+      - name: Commit Prettier output
         run: |
-          mkdir -p formatted/backend/src/config
-          mkdir -p formatted/backend/src/modules/hardware-lab
-          mkdir -p formatted/backend/src/routes
-          mkdir -p formatted/backend/src/services
-          mkdir -p formatted/frontend/src/hardware-lab
-          mkdir -p formatted/frontend/src/pages
-          cp backend/src/config/platform-jwt.config.ts formatted/backend/src/config/
-          cp backend/src/modules/hardware-lab/hardware-lab.repository.spec.ts formatted/backend/src/modules/hardware-lab/
-          cp backend/src/modules/hardware-lab/hardware-lab.repository.ts formatted/backend/src/modules/hardware-lab/
-          cp backend/src/modules/hardware-lab/hardware-lab.schema.ts formatted/backend/src/modules/hardware-lab/
-          cp backend/src/routes/platform-operations.route.ts formatted/backend/src/routes/
-          cp backend/src/services/platform-session.service.spec.ts formatted/backend/src/services/
-          cp frontend/src/hardware-lab/contracts.ts formatted/frontend/src/hardware-lab/
-          cp frontend/src/hardware-lab/queries.ts formatted/frontend/src/hardware-lab/
-          cp frontend/src/pages/SystemOwnerHardwareLabPage.tsx formatted/frontend/src/pages/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hardware-lab-formatted
-          path: formatted
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend frontend
+          if git diff --cached --quiet; then
+            echo "No formatting changes"
+          else
+            git commit -m "style: apply Prettier to Hardware Lab changes"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
