@@ -1,5 +1,7 @@
 name: ESP32-S3 Firmware
 
+# HW-519 release QA: rebuild artifacts from the final documentation-cleanup commit.
+
 on:
   pull_request:
     paths:
