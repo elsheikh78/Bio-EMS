@@ -2,7 +2,6 @@
 
 #include <string.h>
 
-#include "driver/gpio.h"
 #include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,9 +15,6 @@ static SemaphoreHandle_t bus_mutex;
 #endif
 #ifndef SIM_RS485_RX_GPIO
 #define SIM_RS485_RX_GPIO 18
-#endif
-#ifndef SIM_RS485_DE_GPIO
-#define SIM_RS485_DE_GPIO 16
 #endif
 
 #define SIM_UART UART_NUM_1
@@ -52,12 +48,7 @@ bool sim_modbus_init(void) {
                    UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE) != ESP_OK) {
     return false;
   }
-  gpio_config_t direction = {
-      .pin_bit_mask = 1ULL << SIM_RS485_DE_GPIO,
-      .mode = GPIO_MODE_OUTPUT,
-  };
-  if (gpio_config(&direction) != ESP_OK) return false;
-  gpio_set_level(SIM_RS485_DE_GPIO, 0);
+  // HW-519 performs automatic half-duplex direction control; no DE/RE GPIO is used.
   bus_mutex = xSemaphoreCreateMutex();
   return bus_mutex != NULL;
 }
@@ -69,10 +60,8 @@ static bool read_frame(uint8_t address, sim_modbus_sample_t *sample) {
   request[6] = (uint8_t)crc;
   request[7] = (uint8_t)(crc >> 8);
   uart_flush_input(SIM_UART);
-  gpio_set_level(SIM_RS485_DE_GPIO, 1);
   int written = uart_write_bytes(SIM_UART, request, sizeof(request));
   esp_err_t drained = uart_wait_tx_done(SIM_UART, pdMS_TO_TICKS(100));
-  gpio_set_level(SIM_RS485_DE_GPIO, 0);
   if (written != sizeof(request) || drained != ESP_OK) return false;
 
   uint8_t reply[SIM_RESPONSE_LENGTH] = {0};
