@@ -27,6 +27,8 @@ const mocks = vi.hoisted(() => ({
   verifyMfaLoginCode: vi.fn(),
   beginMfaEnrollment: vi.fn(),
   issueMfaEnrollmentToken: vi.fn(),
+  issueAccessToken: vi.fn(),
+  refreshSession: vi.fn(),
   revokeSession: vi.fn(),
   revokeAllSessions: vi.fn(),
   listSupportGrants: vi.fn(),
@@ -47,6 +49,7 @@ vi.mock("../../repositories/platform-principal.repository", () => ({
 vi.mock("../../services/platform-token.service", () => ({
   PlatformTokenService: class {
     issueMfaEnrollmentToken = mocks.issueMfaEnrollmentToken;
+    issueAccessToken = mocks.issueAccessToken;
     issueSupportToken = vi.fn(() => ({
       supportToken: "support-token",
       expiresIn: 1800,
@@ -56,6 +59,7 @@ vi.mock("../../services/platform-token.service", () => ({
 
 vi.mock("../../services/platform-session.service", () => ({
   PlatformSessionService: class {
+    refresh = mocks.refreshSession;
     revoke = mocks.revokeSession;
     revokeAll = mocks.revokeAllSessions;
   },
@@ -205,6 +209,36 @@ describe("Platform Login REST API", () => {
       },
     });
     expect(mocks.login).not.toHaveBeenCalled();
+  });
+});
+
+it("refreshes the rolling owner token inside the same persisted session", async () => {
+  mocks.issueAccessToken.mockReturnValue({
+    accessToken: "refreshed-platform-token",
+    expiresIn: 3600,
+  });
+  mocks.refreshSession.mockReturnValue(true);
+
+  const response = await request(app)
+    .post("/api/v1/platform-auth/session/refresh")
+    .set("Authorization", "Bearer platform-token")
+    .expect(200);
+
+  expect(mocks.issueAccessToken).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "system-owner", type: "SYSTEM_OWNER" }),
+    "session-id"
+  );
+  expect(mocks.refreshSession).toHaveBeenCalledWith(
+    "session-id",
+    "system-owner",
+    "platform-token",
+    "refreshed-platform-token",
+    expect.any(Date)
+  );
+  expect(response.body).toMatchObject({
+    access_token: "refreshed-platform-token",
+    token_type: "bearer",
+    expires_in: 3600,
   });
 });
 
