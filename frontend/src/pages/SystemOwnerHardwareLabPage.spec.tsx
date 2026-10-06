@@ -79,10 +79,10 @@ const run = {
 };
 
 function renderPage() {
-  const request = vi.fn(async (path: string) => {
-    if (path === "/platform-hardware-lab/profile") return profile;
+  const request = vi.fn((path: string) => {
+    if (path === "/platform-hardware-lab/profile") return Promise.resolve(profile);
     if (path === "/platform-hardware-lab/runs") {
-      return {
+      return Promise.resolve({
         runs: [
           {
             id: runId,
@@ -101,10 +101,18 @@ function renderPage() {
             totalSteps: 1,
           },
         ],
-      };
+      });
     }
-    if (path === `/platform-hardware-lab/runs/${runId}`) return run;
-    throw new Error(`Unexpected request: ${path}`);
+    if (path === `/platform-hardware-lab/runs/${runId}`) {
+      return Promise.resolve(run);
+    }
+    if (path === `/platform-hardware-lab/runs/${runId}/measurements`) {
+      return Promise.resolve({ measurements: [] });
+    }
+    if (path === `/platform-hardware-lab/runs/${runId}/events`) {
+      return Promise.resolve({ events: [] });
+    }
+    return Promise.reject(new Error(`Unexpected request: ${path}`));
   });
 
   const apiClient = { request } as unknown as ApiClient;
