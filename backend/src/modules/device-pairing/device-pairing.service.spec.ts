@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration030 } from "../../../database/sqlite/migrations/030_create_device_platform_pairing";
-import { migration031 } from "../../../database/sqlite/migrations/031_add_device_telemetry_credentials";
+import { migration032 } from "../../../database/sqlite/migrations/032_add_device_telemetry_credentials";
 import { AppError } from "../../errors/app-error";
 import { DevicePairingService } from "./device-pairing.service";
 
@@ -38,7 +38,7 @@ describe("DevicePairingService", () => {
       );
     `);
     migration030.up(database);
-    migration031.up(database);
+    migration032.up(database);
     now = new Date("2026-09-23T17:00:00.000Z");
     service = new DevicePairingService(database, () => now);
 

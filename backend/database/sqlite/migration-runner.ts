@@ -32,7 +32,8 @@ import { migration027 } from "./migrations/027_create_communication_channel_conf
 import { migration028 } from "./migrations/028_create_password_recovery_domain";
 import { migration029 } from "./migrations/029_create_platform_backup_schedule";
 import { migration030 } from "./migrations/030_create_device_platform_pairing";
-import { migration031 } from "./migrations/031_add_device_telemetry_credentials";
+import { migration031 } from "./migrations/031_create_hardware_qualification_lab";
+import { migration032 } from "./migrations/032_add_device_telemetry_credentials";
 
 export interface Migration {
   version: number;
@@ -74,6 +75,7 @@ const migrations: Migration[] = [
   migration029,
   migration030,
   migration031,
+  migration032,
 ];
 
 export function runMigrations(

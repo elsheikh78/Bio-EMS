@@ -9,7 +9,8 @@ describe("platform JWT configuration", () => {
   it("loads an isolated platform trust domain with safe defaults", () => {
     expect(loadPlatformJwtConfig({ BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32) })).toEqual({
       secret: "p".repeat(32),
-      expireMinutes: 15,
+      expireMinutes: 60,
+      idleMinutes: 30,
       issuer: "bio-ems-platform",
       audience: "bio-ems-platform-api",
     });
@@ -20,12 +21,14 @@ describe("platform JWT configuration", () => {
       loadPlatformJwtConfig({
         BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32),
         BIOEMS_PLATFORM_JWT_EXPIRE_MINUTES: "10",
+        BIOEMS_PLATFORM_SESSION_IDLE_MINUTES: "45",
         BIOEMS_PLATFORM_JWT_ISSUER: "installation-platform",
         BIOEMS_PLATFORM_JWT_AUDIENCE: "installation-platform-api",
       })
     ).toEqual({
       secret: "p".repeat(32),
       expireMinutes: 10,
+      idleMinutes: 45,
       issuer: "installation-platform",
       audience: "installation-platform-api",
     });
@@ -43,6 +46,10 @@ describe("platform JWT configuration", () => {
     {
       BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32),
       BIOEMS_PLATFORM_JWT_EXPIRE_MINUTES: "abc",
+    },
+    {
+      BIOEMS_PLATFORM_JWT_SECRET: "p".repeat(32),
+      BIOEMS_PLATFORM_SESSION_IDLE_MINUTES: "0",
     },
   ])("rejects partial or invalid platform JWT settings", (environment) => {
     expect(() => loadPlatformJwtConfig(environment)).toThrow(PlatformJwtConfigurationError);
