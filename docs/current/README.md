@@ -22,6 +22,7 @@ Reviewed entry points: 30 September 2026. Source review baseline: `6efd78a`. Thi
 | قاعدة البيانات | [database-design.md](../architecture/database-design.md) |
 | سجل الهاردوير | [APPROVED_HARDWARE.md](../hardware/APPROVED_HARDWARE.md) |
 | مرشح اختبار MAIN-16 / SIM-D4 | [Bench baseline](../hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md) |
+| عقد توصيل HW-519 للاختبارات | [HW-519 RS485 bench contract](HW-519-RS485-BENCH-CONTRACT-2026-10-06.md) |
 | Builder وتجهيز الأجهزة | [Work package](../project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md) |
 
 For the pending SIM-D4 integration candidate, see [SIM discovery and mapping](SIM-D4-DISCOVERY-AND-MAPPING.md).
