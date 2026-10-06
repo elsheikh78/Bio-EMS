@@ -143,7 +143,7 @@ describe("HardwareLabService", () => {
     service.recordFirmware(run.id, "MAIN16_BENCH", {
       firmwareName: "BIOEMS-MAIN16-BENCH",
       firmwareVersion: "0.1.0",
-      flashResult: "PASS",
+      flashResult: "RECORDED",
       evidence: { verified: true },
     });
 
