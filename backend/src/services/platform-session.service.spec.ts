@@ -2,7 +2,11 @@ import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration009 } from "../../database/sqlite/migrations/009_create_platform_principals";
 import { migration026 } from "../../database/sqlite/migrations/026_harden_owner_access";
-import { hashAccessToken, PlatformSessionService } from "./platform-session.service";
+import {
+  hashAccessToken,
+  PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES,
+  PlatformSessionService,
+} from "./platform-session.service";
 
 describe("PlatformSessionService", () => {
   let database: Database.Database;
@@ -24,12 +28,16 @@ describe("PlatformSessionService", () => {
 
   afterEach(() => database.close());
 
+  it("uses the approved 30-minute inactivity window", () => {
+    expect(PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES).toBe(30);
+  });
+
   it("stores only a token hash and validates an active session", () => {
     const service = new PlatformSessionService(database, () => now);
     const session = service.create(
       "owner",
       "secret-access-token",
-      new Date("2026-09-14T12:15:00.000Z"),
+      new Date("2026-09-14T20:00:00.000Z"),
       { ipAddress: "127.0.0.1", userAgent: "BIO-EMS test" }
     );
 
@@ -47,7 +55,35 @@ describe("PlatformSessionService", () => {
     );
   });
 
-  it("rejects expired sessions and supports immediate revocation", () => {
+  it("slides last_seen while activity remains inside the idle window", () => {
+    const created = new PlatformSessionService(database, () => now);
+    const session = created.create("owner", "active-token", new Date("2026-09-14T20:00:00.000Z"));
+
+    const atTwentyNine = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:29:00.000Z")
+    );
+    expect(atTwentyNine.isActive(session.id, "owner", "active-token")).toBe(true);
+
+    const atFiftyEight = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:58:00.000Z")
+    );
+    expect(atFiftyEight.isActive(session.id, "owner", "active-token")).toBe(true);
+  });
+
+  it("rejects a session after 30 continuous minutes of inactivity", () => {
+    const created = new PlatformSessionService(database, () => now);
+    const session = created.create("owner", "idle-token", new Date("2026-09-14T20:00:00.000Z"));
+
+    const idle = new PlatformSessionService(
+      database,
+      () => new Date("2026-09-14T12:30:00.001Z")
+    );
+    expect(idle.isActive(session.id, "owner", "idle-token")).toBe(false);
+  });
+
+  it("rejects absolute expiry and supports immediate revocation", () => {
     const service = new PlatformSessionService(database, () => now);
     const active = service.create("owner", "active-token", new Date("2026-09-14T12:15:00.000Z"));
     const expired = service.create("owner", "expired-token", new Date("2026-09-14T12:00:01.000Z"));
@@ -61,7 +97,7 @@ describe("PlatformSessionService", () => {
 
   it("revokes every active owner session without modifying prior revocations", () => {
     const service = new PlatformSessionService(database, () => now);
-    const expiresAt = new Date("2026-09-14T12:15:00.000Z");
+    const expiresAt = new Date("2026-09-14T20:00:00.000Z");
     const first = service.create("owner", "first-token", expiresAt);
     service.create("owner", "second-token", expiresAt);
     service.revoke(first.id, "owner", "FIRST_REVOKED");
