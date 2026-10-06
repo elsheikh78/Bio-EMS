@@ -53,7 +53,9 @@ export const addHardwareMeasurement = (request: Request, response: Response): vo
 };
 
 export const addHardwareEvent = (request: Request, response: Response): void => {
-  response.status(201).json(hardwareLabService.addEvent(String(request.params.runId), request.body));
+  response
+    .status(201)
+    .json(hardwareLabService.addEvent(String(request.params.runId), request.body));
 };
 
 export const recordHardwareFirmware = (request: Request, response: Response): void => {

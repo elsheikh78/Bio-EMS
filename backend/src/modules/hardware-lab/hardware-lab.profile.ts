@@ -162,18 +162,8 @@ export const HARDWARE_TEST_STEPS: HardwareTestStepDefinition[] = [
         required: true,
         rule: { kind: "non-empty" },
       },
-      number(
-        "durationMinutes",
-        "Observed duration",
-        "min",
-        { kind: "number-min", value: 60 }
-      ),
-      number(
-        "successRatePercent",
-        "Successful reads",
-        "%",
-        { kind: "number-min", value: 99.99 }
-      ),
+      number("durationMinutes", "Observed duration", "min", { kind: "number-min", value: 60 }),
+      number("successRatePercent", "Successful reads", "%", { kind: "number-min", value: 99.99 }),
       yes("romStable", "ROM ID remained fixed"),
       number("resetCount", "MCU resets", undefined, { kind: "number-max", value: 0 }),
       no("recurringErrors", "Recurring unexplained sensor errors"),
@@ -214,18 +204,8 @@ export const HARDWARE_TEST_STEPS: HardwareTestStepDefinition[] = [
           { value: "2200", label: "2.2 kΩ" },
         ],
       },
-      number(
-        "durationMinutes",
-        "Observed duration",
-        "min",
-        { kind: "number-min", value: 120 }
-      ),
-      number(
-        "successRatePercent",
-        "Successful reads",
-        "%",
-        { kind: "number-min", value: 99.99 }
-      ),
+      number("durationMinutes", "Observed duration", "min", { kind: "number-min", value: 120 }),
+      number("successRatePercent", "Successful reads", "%", { kind: "number-min", value: 99.99 }),
       no("recurringCrcErrors", "Recurring CRC errors"),
     ],
     acceptanceNote:
@@ -311,12 +291,7 @@ export const HARDWARE_TEST_STEPS: HardwareTestStepDefinition[] = [
     expectedDurationMinutes: 240,
     fields: [
       number("cableLengthM", "Cable length", "m", { kind: "number-equals", value: 20 }),
-      number(
-        "durationMinutes",
-        "Observed duration",
-        "min",
-        { kind: "number-min", value: 240 }
-      ),
+      number("durationMinutes", "Observed duration", "min", { kind: "number-min", value: 240 }),
       number("main24V", "24 V at MAIN", "V"),
       number("sim24V", "24 V at SIM-D4", "V"),
       number("sim5V", "5 V inside SIM-D4", "V"),
@@ -404,12 +379,7 @@ export const HARDWARE_TEST_STEPS: HardwareTestStepDefinition[] = [
     ],
     expectedDurationMinutes: 1440,
     fields: [
-      number(
-        "durationMinutes",
-        "Observed duration",
-        "min",
-        { kind: "number-min", value: 1440 }
-      ),
+      number("durationMinutes", "Observed duration", "min", { kind: "number-min", value: 1440 }),
       yes("countersCaptured", "Required firmware counters captured"),
       number("unrecoveredFaults", "Unrecovered faults", undefined, {
         kind: "number-max",
@@ -460,12 +430,7 @@ export const HARDWARE_TEST_STEPS: HardwareTestStepDefinition[] = [
         kind: "number-equals",
         value: 16,
       }),
-      number(
-        "durationMinutes",
-        "Observed duration",
-        "min",
-        { kind: "number-min", value: 2880 }
-      ),
+      number("durationMinutes", "Observed duration", "min", { kind: "number-min", value: 2880 }),
       yes("mappingFixed", "Channel mapping remained fixed"),
       yes("romIdsMatch", "Sensor ROM IDs matched the approved mapping"),
       yes("faultsIsolated", "Each SIM-D4 fault remained isolated"),
@@ -509,10 +474,7 @@ function missing(value: HardwareEvidenceValue | undefined): boolean {
   return value === undefined || value === null || value === "";
 }
 
-function evaluateRule(
-  field: HardwareTestField,
-  value: HardwareEvidenceValue
-): string | undefined {
+function evaluateRule(field: HardwareTestField, value: HardwareEvidenceValue): string | undefined {
   const rule = field.rule;
   if (!rule) return undefined;
   if (rule.kind === "boolean") {

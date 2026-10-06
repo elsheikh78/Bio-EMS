@@ -45,7 +45,12 @@ const copy = {
     subtitle: "Test & Qualification",
     intro:
       "Manufacturer-only qualification workspace for MAIN-16-2G + SIM-D4. Test evidence is stored on the BIO-EMS backend and PASS/FAIL is calculated from the approved profile.",
-    tabs: ["Active Test", "Firmware Center", "Test History", "Qualification Report"],
+    tabs: [
+      "Active Test",
+      "Firmware Center",
+      "Test History",
+      "Qualification Report",
+    ],
     newRun: "New Test Run",
     create: "Create run",
     creating: "Creating…",
@@ -129,7 +134,12 @@ const copy = {
     subtitle: "الاختبار والتأهيل",
     intro:
       "واجهة خاصة بالمصنّع لتأهيل MAIN-16-2G + SIM-D4. يتم حفظ أدلة الاختبار في Backend ويحسب النظام PASS/FAIL طبقاً لبروفايل الاختبار المعتمد.",
-    tabs: ["الاختبار الحالي", "مركز Firmware", "سجل الاختبارات", "تقرير التأهيل"],
+    tabs: [
+      "الاختبار الحالي",
+      "مركز Firmware",
+      "سجل الاختبارات",
+      "تقرير التأهيل",
+    ],
     newRun: "اختبار جديد",
     create: "إنشاء الاختبار",
     creating: "جارٍ الإنشاء…",
@@ -211,7 +221,9 @@ const copy = {
 
 type StepDrafts = Record<string, Record<string, HardwareEvidenceValue>>;
 
-function chipColor(status: string): "default" | "success" | "error" | "warning" {
+function chipColor(
+  status: string,
+): "default" | "success" | "error" | "warning" {
   if (status === "PASS" || status === "QUALIFIED") return "success";
   if (status === "FAIL" || status === "FAILED") return "error";
   if (status === "TESTING") return "warning";
@@ -275,7 +287,9 @@ export function SystemOwnerHardwareLabPage() {
   const [eventCode, setEventCode] = useState("");
   const [eventSeverity, setEventSeverity] = useState("INFO");
 
-  const [ports, setPorts] = useState<Array<{ port: string; name: string | null }>>([]);
+  const [ports, setPorts] = useState<
+    Array<{ port: string; name: string | null }>
+  >([]);
   const [selectedPort, setSelectedPort] = useState("");
   const [provisionerStatus, setProvisionerStatus] = useState("");
   const [detectResult, setDetectResult] = useState("");
@@ -370,16 +384,19 @@ export function SystemOwnerHardwareLabPage() {
     setCreating(true);
     setNotice("");
     try {
-      const raw = await protectedRequest<unknown>("/platform-hardware-lab/runs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prototypeType,
-          ...(mainHardwareUid ? { mainHardwareUid } : {}),
-          ...(simD4Serial ? { simD4Serial } : {}),
-          ...(notes ? { notes } : {}),
-        }),
-      });
+      const raw = await protectedRequest<unknown>(
+        "/platform-hardware-lab/runs",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prototypeType,
+            ...(mainHardwareUid ? { mainHardwareUid } : {}),
+            ...(simD4Serial ? { simD4Serial } : {}),
+            ...(notes ? { notes } : {}),
+          }),
+        },
+      );
       const created = hardwareRunSchema.parse(raw);
       await loadRuns();
       setSelectedRunId(created.id);
@@ -471,8 +488,12 @@ export function SystemOwnerHardwareLabPage() {
 
   const loadProvisioner = async () => {
     const [healthRaw, portsRaw] = await Promise.all([
-      protectedRequest<unknown>("/platform-operations/device-provisioning/health"),
-      protectedRequest<unknown>("/platform-operations/device-provisioning/ports"),
+      protectedRequest<unknown>(
+        "/platform-operations/device-provisioning/health",
+      ),
+      protectedRequest<unknown>(
+        "/platform-operations/device-provisioning/ports",
+      ),
     ]);
     const health =
       healthRaw && typeof healthRaw === "object"
@@ -480,7 +501,8 @@ export function SystemOwnerHardwareLabPage() {
         : {};
     const inventory =
       portsRaw && typeof portsRaw === "object"
-        ? (portsRaw as { ports?: Array<{ port: string; name: string | null }> }).ports
+        ? (portsRaw as { ports?: Array<{ port: string; name: string | null }> })
+            .ports
         : undefined;
     setProvisionerStatus(
       `${primitiveText(health.status, "UNKNOWN")} · esptool=${primitiveText(
@@ -553,7 +575,8 @@ export function SystemOwnerHardwareLabPage() {
     );
   }
 
-  const passedSteps = run?.steps.filter((step) => step.status === "PASS").length ?? 0;
+  const passedSteps =
+    run?.steps.filter((step) => step.status === "PASS").length ?? 0;
 
   return (
     <Container component="main" maxWidth="xl" sx={{ py: 4 }}>
@@ -712,7 +735,9 @@ export function SystemOwnerHardwareLabPage() {
           {tab === 0 ? (
             <Stack spacing={2}>
               {profile.steps.map((definition) => {
-                const result = run.steps.find((step) => step.key === definition.key);
+                const result = run.steps.find(
+                  (step) => step.key === definition.key,
+                );
                 const reasons = evaluationReasons(result?.evaluation);
                 const draft = drafts[definition.key] ?? {};
                 return (
@@ -723,7 +748,9 @@ export function SystemOwnerHardwareLabPage() {
                         spacing={2}
                         sx={{ alignItems: "center", width: "100%" }}
                       >
-                        <Typography sx={{ minWidth: 78 }}>{definition.stage}</Typography>
+                        <Typography sx={{ minWidth: 78 }}>
+                          {definition.stage}
+                        </Typography>
                         <Typography sx={{ flex: 1, fontWeight: 700 }}>
                           {definition.title}
                         </Typography>
@@ -811,7 +838,10 @@ export function SystemOwnerHardwareLabPage() {
                                 value={typeof value === "string" ? value : ""}
                               >
                                 {(field.options ?? []).map((option) => (
-                                  <MenuItem key={option.value} value={option.value}>
+                                  <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
                                     {option.label}
                                   </MenuItem>
                                 ))}
@@ -821,8 +851,9 @@ export function SystemOwnerHardwareLabPage() {
                           return (
                             <TextField
                               helperText={
-                                [field.unit, field.help].filter(Boolean).join(" · ") ||
-                                undefined
+                                [field.unit, field.help]
+                                  .filter(Boolean)
+                                  .join(" · ") || undefined
                               }
                               key={field.key}
                               label={field.label}
@@ -840,7 +871,8 @@ export function SystemOwnerHardwareLabPage() {
                               required={field.required}
                               type={field.type === "number" ? "number" : "text"}
                               value={
-                                typeof value === "string" || typeof value === "number"
+                                typeof value === "string" ||
+                                typeof value === "number"
                                   ? value
                                   : ""
                               }
@@ -888,7 +920,9 @@ export function SystemOwnerHardwareLabPage() {
                   >
                     <TextField
                       label={text.step}
-                      onChange={(event) => setMeasurementStep(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementStep(event.target.value)
+                      }
                       select
                       value={measurementStep}
                     >
@@ -900,28 +934,38 @@ export function SystemOwnerHardwareLabPage() {
                     </TextField>
                     <TextField
                       label={text.channel}
-                      onChange={(event) => setMeasurementChannel(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementChannel(event.target.value)
+                      }
                       value={measurementChannel}
                     />
                     <TextField
                       label={text.metric}
-                      onChange={(event) => setMeasurementMetric(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementMetric(event.target.value)
+                      }
                       value={measurementMetric}
                     />
                     <TextField
                       label={text.numericValue}
-                      onChange={(event) => setMeasurementNumeric(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementNumeric(event.target.value)
+                      }
                       type="number"
                       value={measurementNumeric}
                     />
                     <TextField
                       label={text.textValue}
-                      onChange={(event) => setMeasurementText(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementText(event.target.value)
+                      }
                       value={measurementText}
                     />
                     <TextField
                       label={text.unit}
-                      onChange={(event) => setMeasurementUnit(event.target.value)}
+                      onChange={(event) =>
+                        setMeasurementUnit(event.target.value)
+                      }
                       value={measurementUnit}
                     />
                   </Box>
@@ -945,39 +989,60 @@ export function SystemOwnerHardwareLabPage() {
                   <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
                     {text.storedEvidence}
                   </Typography>
-                  {storedMeasurements.length === 0 && storedEvents.length === 0 ? (
-                    <Typography color="text.secondary">{text.noEvidence}</Typography>
+                  {storedMeasurements.length === 0 &&
+                  storedEvents.length === 0 ? (
+                    <Typography color="text.secondary">
+                      {text.noEvidence}
+                    </Typography>
                   ) : (
                     <Box
                       sx={{
                         display: "grid",
                         gap: 3,
-                        gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                        gridTemplateColumns: {
+                          xs: "1fr",
+                          md: "repeat(2, 1fr)",
+                        },
                       }}
                     >
                       <Box>
                         <Typography sx={{ fontWeight: 700 }}>
                           {text.measurements}
                         </Typography>
-                        <Stack divider={<Divider flexItem />} spacing={1} sx={{ mt: 1 }}>
+                        <Stack
+                          divider={<Divider flexItem />}
+                          spacing={1}
+                          sx={{ mt: 1 }}
+                        >
                           {storedMeasurements.slice(0, 20).map((item) => (
                             <Box key={item.id}>
                               <Typography variant="body2">
                                 {item.stepKey}
-                                {item.channel ? ` · ${item.channel}` : ""} ·{" "}
-                                {item.metricKey}
+                                {item.channel
+                                  ? ` · ${item.channel}`
+                                  : ""} · {item.metricKey}
                               </Typography>
-                              <Typography color="text.secondary" variant="caption">
+                              <Typography
+                                color="text.secondary"
+                                variant="caption"
+                              >
                                 {item.numericValue ?? item.textValue}
-                                {item.unit ? ` ${item.unit}` : ""} · {item.observedAt}
+                                {item.unit ? ` ${item.unit}` : ""} ·{" "}
+                                {item.observedAt}
                               </Typography>
                             </Box>
                           ))}
                         </Stack>
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 700 }}>{text.events}</Typography>
-                        <Stack divider={<Divider flexItem />} spacing={1} sx={{ mt: 1 }}>
+                        <Typography sx={{ fontWeight: 700 }}>
+                          {text.events}
+                        </Typography>
+                        <Stack
+                          divider={<Divider flexItem />}
+                          spacing={1}
+                          sx={{ mt: 1 }}
+                        >
                           {storedEvents.slice(0, 20).map((item) => (
                             <Box key={item.id}>
                               <Stack direction="row" spacing={1}>
@@ -996,7 +1061,10 @@ export function SystemOwnerHardwareLabPage() {
                                   {item.stepKey} · {item.code}
                                 </Typography>
                               </Stack>
-                              <Typography color="text.secondary" variant="caption">
+                              <Typography
+                                color="text.secondary"
+                                variant="caption"
+                              >
                                 {item.observedAt}
                               </Typography>
                             </Box>
@@ -1080,8 +1148,15 @@ export function SystemOwnerHardwareLabPage() {
                   <Typography component="h2" variant="h6">
                     {text.provisioner}
                   </Typography>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mt: 2 }}>
-                    <Button onClick={() => void loadProvisioner()} variant="outlined">
+                  <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={2}
+                    sx={{ mt: 2 }}
+                  >
+                    <Button
+                      onClick={() => void loadProvisioner()}
+                      variant="outlined"
+                    >
                       {text.refreshPorts}
                     </Button>
                     <TextField
@@ -1137,7 +1212,9 @@ export function SystemOwnerHardwareLabPage() {
                       <Box>
                         <Typography variant="h6">{item.name}</Typography>
                         <Typography>{item.device}</Typography>
-                        <Typography color="text.secondary">{item.purpose}</Typography>
+                        <Typography color="text.secondary">
+                          {item.purpose}
+                        </Typography>
                       </Box>
                       <Chip
                         color={
@@ -1203,7 +1280,9 @@ export function SystemOwnerHardwareLabPage() {
                     />
                     <TextField
                       label={text.firmwareVersion}
-                      onChange={(event) => setFirmwareVersion(event.target.value)}
+                      onChange={(event) =>
+                        setFirmwareVersion(event.target.value)
+                      }
                       value={firmwareVersion}
                     />
                     <TextField
@@ -1213,7 +1292,9 @@ export function SystemOwnerHardwareLabPage() {
                     />
                     <TextField
                       label={text.sourceCommit}
-                      onChange={(event) => setFirmwareCommit(event.target.value)}
+                      onChange={(event) =>
+                        setFirmwareCommit(event.target.value)
+                      }
                       value={firmwareCommit}
                     />
                     <TextField
@@ -1222,12 +1303,11 @@ export function SystemOwnerHardwareLabPage() {
                       select
                       value={flashResult}
                     >
-                      {(
-                        profile.firmwareCatalog.find(
-                          (item) => item.target === firmwareTarget,
-                        )?.availability === "SOURCE_REQUIRED"
-                          ? ["RECORDED", "FAIL"]
-                          : ["RECORDED", "PASS", "FAIL"]
+                      {(profile.firmwareCatalog.find(
+                        (item) => item.target === firmwareTarget,
+                      )?.availability === "SOURCE_REQUIRED"
+                        ? ["RECORDED", "FAIL"]
+                        : ["RECORDED", "PASS", "FAIL"]
                       ).map((result) => (
                         <MenuItem key={result} value={result}>
                           {result}
@@ -1276,9 +1356,14 @@ export function SystemOwnerHardwareLabPage() {
                         </Typography>
                       </Box>
                       <Stack sx={{ alignItems: "flex-end" }}>
-                        <Chip color={chipColor(item.status)} label={item.status} size="small" />
+                        <Chip
+                          color={chipColor(item.status)}
+                          label={item.status}
+                          size="small"
+                        />
                         <Typography variant="caption">
-                          {item.passedSteps}/{item.totalSteps} PASS · {item.failedSteps} FAIL
+                          {item.passedSteps}/{item.totalSteps} PASS ·{" "}
+                          {item.failedSteps} FAIL
                         </Typography>
                       </Stack>
                     </Button>
@@ -1308,18 +1393,31 @@ export function SystemOwnerHardwareLabPage() {
                         {run.runNumber} · {run.profileRevision}
                       </Typography>
                     </Box>
-                    <Button onClick={() => void loadReport()} variant="outlined">
+                    <Button
+                      onClick={() => void loadReport()}
+                      variant="outlined"
+                    >
                       {text.refreshReport}
                     </Button>
                   </Stack>
                   {report ? (
                     <>
-                      <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mt: 3 }}>
+                      <Stack
+                        direction={{ xs: "column", md: "row" }}
+                        spacing={2}
+                        sx={{ mt: 3 }}
+                      >
                         <Box>
-                          <Typography variant="caption">{text.finalDecision}</Typography>
+                          <Typography variant="caption">
+                            {text.finalDecision}
+                          </Typography>
                           <Box>
                             <Chip
-                              color={report.acceptance.qualified ? "success" : "error"}
+                              color={
+                                report.acceptance.qualified
+                                  ? "success"
+                                  : "error"
+                              }
                               label={
                                 report.acceptance.qualified
                                   ? text.qualified
@@ -1329,16 +1427,28 @@ export function SystemOwnerHardwareLabPage() {
                           </Box>
                         </Box>
                         <Box>
-                          <Typography variant="caption">{text.passed}</Typography>
-                          <Typography>{report.acceptance.passedSteps}</Typography>
+                          <Typography variant="caption">
+                            {text.passed}
+                          </Typography>
+                          <Typography>
+                            {report.acceptance.passedSteps}
+                          </Typography>
                         </Box>
                         <Box>
-                          <Typography variant="caption">{text.failed}</Typography>
-                          <Typography>{report.acceptance.failedSteps}</Typography>
+                          <Typography variant="caption">
+                            {text.failed}
+                          </Typography>
+                          <Typography>
+                            {report.acceptance.failedSteps}
+                          </Typography>
                         </Box>
                         <Box>
-                          <Typography variant="caption">{text.pending}</Typography>
-                          <Typography>{report.acceptance.pendingSteps}</Typography>
+                          <Typography variant="caption">
+                            {text.pending}
+                          </Typography>
+                          <Typography>
+                            {report.acceptance.pendingSteps}
+                          </Typography>
                         </Box>
                       </Stack>
                       <Divider sx={{ my: 3 }} />

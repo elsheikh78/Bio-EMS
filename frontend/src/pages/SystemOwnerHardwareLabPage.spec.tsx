@@ -80,7 +80,8 @@ const run = {
 
 function renderPage() {
   const request = vi.fn((path: string) => {
-    if (path === "/platform-hardware-lab/profile") return Promise.resolve(profile);
+    if (path === "/platform-hardware-lab/profile")
+      return Promise.resolve(profile);
     if (path === "/platform-hardware-lab/runs") {
       return Promise.resolve({
         runs: [
@@ -154,8 +155,12 @@ describe("SystemOwnerHardwareLabPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Test & Qualification")).toBeInTheDocument();
     expect(await screen.findByText("HQT-2026-ABCDEF12")).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Active Test" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Firmware Center" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Active Test" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Firmware Center" }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText(/manual pass/i)).not.toBeInTheDocument();
   });
 });

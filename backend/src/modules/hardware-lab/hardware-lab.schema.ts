@@ -74,8 +74,16 @@ export const hardwareFirmwareEvidenceSchema = z
   .object({
     firmwareName: z.string().trim().min(1).max(160),
     firmwareVersion: z.string().trim().min(1).max(80),
-    sha256: z.string().trim().regex(/^[a-fA-F0-9]{64}$/).optional(),
-    sourceCommit: z.string().trim().regex(/^[a-fA-F0-9]{40}$/).optional(),
+    sha256: z
+      .string()
+      .trim()
+      .regex(/^[a-fA-F0-9]{64}$/)
+      .optional(),
+    sourceCommit: z
+      .string()
+      .trim()
+      .regex(/^[a-fA-F0-9]{40}$/)
+      .optional(),
     port: z.string().trim().max(32).optional(),
     flashResult: z.enum(["RECORDED", "PASS", "FAIL"]),
     evidence: z.record(z.string(), z.unknown()).default({}),

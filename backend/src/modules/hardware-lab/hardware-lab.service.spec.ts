@@ -24,10 +24,7 @@ describe("HardwareLabService", () => {
         ) VALUES('owner','SYSTEM_OWNER','system-owner','hash','active')`
       )
       .run();
-    service = new HardwareLabService(
-      database,
-      () => new Date("2026-10-06T06:00:00.000Z")
-    );
+    service = new HardwareLabService(database, () => new Date("2026-10-06T06:00:00.000Z"));
   });
 
   afterEach(() => database.close());

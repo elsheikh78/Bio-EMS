@@ -37,11 +37,7 @@ router.get(
   validateParams(hardwareRunParamsSchema),
   listHardwareMeasurements
 );
-router.get(
-  "/runs/:runId/events",
-  validateParams(hardwareRunParamsSchema),
-  listHardwareEvents
-);
+router.get("/runs/:runId/events", validateParams(hardwareRunParamsSchema), listHardwareEvents);
 router.get(
   "/runs/:runId/report",
   validateParams(hardwareRunParamsSchema),

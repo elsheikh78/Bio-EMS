@@ -197,7 +197,9 @@ export type HardwareProfile = z.infer<typeof hardwareProfileSchema>;
 export type HardwareRun = z.infer<typeof hardwareRunSchema>;
 export type HardwareRunListItem = z.infer<typeof hardwareRunListItemSchema>;
 export type HardwareEvidenceValue = z.infer<typeof hardwareEvidenceValueSchema>;
-export type HardwareStepDefinition = z.infer<typeof hardwareStepDefinitionSchema>;
+export type HardwareStepDefinition = z.infer<
+  typeof hardwareStepDefinitionSchema
+>;
 export type HardwareMeasurementRecord = z.infer<
   typeof hardwareMeasurementRecordSchema
 >;

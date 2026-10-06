@@ -2,8 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import type Database from "better-sqlite3";
 
 export const PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES = 30;
-export const PLATFORM_OWNER_IDLE_TIMEOUT_MS =
-  PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES * 60 * 1000;
+export const PLATFORM_OWNER_IDLE_TIMEOUT_MS = PLATFORM_OWNER_IDLE_TIMEOUT_MINUTES * 60 * 1000;
 
 export interface PlatformSessionMetadata {
   ipAddress?: string;

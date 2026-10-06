@@ -76,10 +76,7 @@ describe("PlatformSessionService", () => {
     const created = new PlatformSessionService(database, () => now);
     const session = created.create("owner", "idle-token", new Date("2026-09-14T20:00:00.000Z"));
 
-    const idle = new PlatformSessionService(
-      database,
-      () => new Date("2026-09-14T12:30:00.001Z")
-    );
+    const idle = new PlatformSessionService(database, () => new Date("2026-09-14T12:30:00.001Z"));
     expect(idle.isActive(session.id, "owner", "idle-token")).toBe(false);
   });
 

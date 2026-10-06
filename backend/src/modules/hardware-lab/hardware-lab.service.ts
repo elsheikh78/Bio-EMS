@@ -118,9 +118,10 @@ export class HardwareLabService {
   }
 
   list() {
-    return (this.database
-      .prepare(
-        `SELECT id,run_number AS runNumber,profile_revision AS profileRevision,
+    return (
+      this.database
+        .prepare(
+          `SELECT id,run_number AS runNumber,profile_revision AS profileRevision,
                 prototype_type AS prototypeType,status,main_hardware_uid AS mainHardwareUid,
                 sim_d4_serial AS simD4Serial,operator_username AS operatorUsername,
                 created_at AS createdAt,updated_at AS updatedAt,completed_at AS completedAt,
@@ -130,25 +131,27 @@ export class HardwareLabService {
                   WHERE s.run_id=r.id AND s.status='FAIL') AS failedSteps
          FROM hardware_test_runs r
          ORDER BY created_at DESC`
-      )
-      .all() as Array<Record<string, unknown>>).map((row) => ({
+        )
+        .all() as Array<Record<string, unknown>>
+    ).map((row) => ({
       ...row,
       totalSteps: HARDWARE_TEST_STEPS.length,
     }));
   }
 
   get(runId: string) {
-    const run = this.database
-      .prepare("SELECT * FROM hardware_test_runs WHERE id=?")
-      .get(runId) as RunRow | undefined;
+    const run = this.database.prepare("SELECT * FROM hardware_test_runs WHERE id=?").get(runId) as
+      RunRow | undefined;
     if (!run) throw notFound();
 
-    const steps = (this.database
-      .prepare(
-        `SELECT * FROM hardware_test_steps
+    const steps = (
+      this.database
+        .prepare(
+          `SELECT * FROM hardware_test_steps
          WHERE run_id=? ORDER BY step_order ASC`
-      )
-      .all(runId) as StepRow[]).map((step) => ({
+        )
+        .all(runId) as StepRow[]
+    ).map((step) => ({
       key: step.step_key,
       order: step.step_order,
       status: step.status,
@@ -241,11 +244,7 @@ export class HardwareLabService {
     const timestamp = this.now().toISOString();
     const stepStatus = evaluation.passed ? "PASS" : "FAIL";
     const nextRunStatus =
-      stepKey === "ACCURACY_FINAL"
-        ? evaluation.passed
-          ? "QUALIFIED"
-          : "FAILED"
-        : "TESTING";
+      stepKey === "ACCURACY_FINAL" ? (evaluation.passed ? "QUALIFIED" : "FAILED") : "TESTING";
 
     this.database.transaction(() => {
       this.database
@@ -272,9 +271,7 @@ export class HardwareLabService {
         .run(
           nextRunStatus,
           timestamp,
-          nextRunStatus === "QUALIFIED" || nextRunStatus === "FAILED"
-            ? timestamp
-            : null,
+          nextRunStatus === "QUALIFIED" || nextRunStatus === "FAILED" ? timestamp : null,
           runId
         );
     })();
@@ -371,9 +368,7 @@ export class HardwareLabService {
     target: "MAIN16_BENCH" | "SIMD4_BENCH" | "SITE_CONTROLLER_PILOT",
     input: HardwareFirmwareEvidenceInput
   ) {
-    if (
-      !this.database.prepare("SELECT 1 FROM hardware_test_runs WHERE id=?").get(runId)
-    ) {
+    if (!this.database.prepare("SELECT 1 FROM hardware_test_runs WHERE id=?").get(runId)) {
       throw notFound();
     }
     const catalog = HARDWARE_FIRMWARE_CATALOG.find((item) => item.target === target);
@@ -455,18 +450,14 @@ export class HardwareLabService {
         passedSteps: run.steps.filter((step) => step.status === "PASS").length,
         failedSteps: run.steps.filter((step) => step.status === "FAIL").length,
         pendingSteps: run.steps.filter((step) => step.status === "PENDING").length,
-        qualified:
-          run.status === "QUALIFIED" &&
-          run.steps.every((step) => step.status === "PASS"),
+        qualified: run.status === "QUALIFIED" && run.steps.every((step) => step.status === "PASS"),
       },
     };
   }
 
   private requireStep(runId: string, stepKey: string): void {
     const exists = this.database
-      .prepare(
-        "SELECT 1 FROM hardware_test_steps WHERE run_id=? AND step_key=?"
-      )
+      .prepare("SELECT 1 FROM hardware_test_steps WHERE run_id=? AND step_key=?")
       .get(runId, stepKey);
     if (!exists) {
       throw new AppError("Hardware test step not found", 404, "HARDWARE_STEP_NOT_FOUND");
