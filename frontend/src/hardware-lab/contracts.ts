@@ -143,6 +143,39 @@ export const hardwareRunListSchema = z
   .object({ runs: z.array(hardwareRunListItemSchema) })
   .strict();
 
+export const hardwareMeasurementRecordSchema = z
+  .object({
+    id: z.number().int().positive(),
+    stepKey: z.string(),
+    channel: z.string().nullable(),
+    metricKey: z.string(),
+    numericValue: z.number().nullable(),
+    textValue: z.string().nullable(),
+    unit: z.string().nullable(),
+    observedAt: z.string(),
+  })
+  .strict();
+
+export const hardwareMeasurementListSchema = z
+  .object({ measurements: z.array(hardwareMeasurementRecordSchema) })
+  .strict();
+
+export const hardwareEventRecordSchema = z
+  .object({
+    id: z.number().int().positive(),
+    stepKey: z.string(),
+    code: z.string(),
+    severity: z.enum(["INFO", "WARNING", "ERROR"]),
+    payload: z.unknown(),
+    payloadJson: z.undefined().optional(),
+    observedAt: z.string(),
+  })
+  .passthrough();
+
+export const hardwareEventListSchema = z
+  .object({ events: z.array(hardwareEventRecordSchema) })
+  .strict();
+
 export const hardwareReportSchema = z
   .object({
     generatedAt: z.string(),
@@ -165,3 +198,7 @@ export type HardwareRun = z.infer<typeof hardwareRunSchema>;
 export type HardwareRunListItem = z.infer<typeof hardwareRunListItemSchema>;
 export type HardwareEvidenceValue = z.infer<typeof hardwareEvidenceValueSchema>;
 export type HardwareStepDefinition = z.infer<typeof hardwareStepDefinitionSchema>;
+export type HardwareMeasurementRecord = z.infer<
+  typeof hardwareMeasurementRecordSchema
+>;
+export type HardwareEventRecord = z.infer<typeof hardwareEventRecordSchema>;
