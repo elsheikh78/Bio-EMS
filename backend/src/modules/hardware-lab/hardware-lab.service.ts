@@ -333,6 +333,14 @@ export class HardwareLabService {
     ) {
       throw notFound();
     }
+    const catalog = HARDWARE_FIRMWARE_CATALOG.find((item) => item.target === target);
+    if (catalog?.availability === "SOURCE_REQUIRED" && input.flashResult === "PASS") {
+      throw new AppError(
+        "Bench firmware cannot be marked PASS until a controlled source/package exists",
+        409,
+        "HARDWARE_FIRMWARE_PACKAGE_REQUIRED"
+      );
+    }
     const flashedAt = input.flashedAt ?? this.now().toISOString();
     this.database
       .prepare(
