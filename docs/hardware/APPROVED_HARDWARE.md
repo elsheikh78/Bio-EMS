@@ -21,6 +21,10 @@ These decisions do not constitute an electrical schematic, PCB release, approved
 cable limit, environmental rating, enclosure release, firmware release, prototype
 acceptance, FAT approval, or authorization to procure the Pilot quantity.
 
+### Bench-only HW-519 interface note
+
+For the current MAIN-16/SIM-D4 breadboard qualification only, the RS485 test interface is the HW-519 automatic-direction TTL-to-RS485 module. It does not expose or require an MCU DE/RE direction-control wire in the BIO-EMS bench contract. Nano D6 and ESP32-S3 GPIO16 therefore remain unused for RS485 direction. This does **not** promote HW-519 to released Pilot/Production hardware; the existing industrial/protected/isolated field-interface gate remains in force.
+
 ## Release register
 
 | Hardware item                     | Released revision | Status       | Evidence                                                                    |
