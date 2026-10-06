@@ -23,6 +23,18 @@ export const getHardwareRun = (request: Request, response: Response): void => {
   response.json(hardwareLabService.get(String(request.params.runId)));
 };
 
+export const listHardwareMeasurements = (request: Request, response: Response): void => {
+  response.json({
+    measurements: hardwareLabService.listMeasurements(String(request.params.runId)),
+  });
+};
+
+export const listHardwareEvents = (request: Request, response: Response): void => {
+  response.json({
+    events: hardwareLabService.listEvents(String(request.params.runId)),
+  });
+};
+
 export const recordHardwareStep = (request: Request, response: Response): void => {
   response.json(
     hardwareLabService.recordStep(
