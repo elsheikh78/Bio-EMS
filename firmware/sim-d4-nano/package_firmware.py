@@ -6,7 +6,7 @@ import json
 import shutil
 from pathlib import Path
 
-VERSION = "0.1.0-bench.1"
+VERSION = "0.1.0-bench.2"
 
 
 def package(source: Path, destination: Path) -> None:
