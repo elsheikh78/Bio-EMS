@@ -14,8 +14,13 @@ export interface CreatedPlatformSession {
 export class PlatformSessionService {
   constructor(
     private readonly database: Database.Database,
-    private readonly now: () => Date = () => new Date()
-  ) {}
+    private readonly now: () => Date = () => new Date(),
+    private readonly idleMinutes = 30
+  ) {
+    if (!Number.isFinite(idleMinutes) || idleMinutes <= 0) {
+      throw new Error("Platform session idle timeout must be positive");
+    }
+  }
 
   create(
     principalId: string,
@@ -51,15 +56,50 @@ export class PlatformSessionService {
   }
 
   isActive(id: string, principalId: string, accessToken: string): boolean {
-    const now = this.now().toISOString();
+    const now = this.now();
+    const nowIso = now.toISOString();
+    const idleCutoff = new Date(now.getTime() - this.idleMinutes * 60_000).toISOString();
     const result = this.database
       .prepare(
         `UPDATE platform_sessions
          SET last_seen_at = ?
          WHERE id = ? AND principal_id = ? AND token_hash = ?
-           AND revoked_at IS NULL AND expires_at > ?`
+           AND revoked_at IS NULL AND expires_at > ? AND last_seen_at > ?`
       )
-      .run(now, id, principalId, hashAccessToken(accessToken), now);
+      .run(nowIso, id, principalId, hashAccessToken(accessToken), nowIso, idleCutoff);
+    return result.changes === 1;
+  }
+
+  refresh(
+    id: string,
+    principalId: string,
+    currentAccessToken: string,
+    nextAccessToken: string,
+    nextExpiresAt: Date
+  ): boolean {
+    const now = this.now();
+    if (nextExpiresAt.getTime() <= now.getTime()) {
+      throw new Error("Platform session refresh expiry must be in the future");
+    }
+    const nowIso = now.toISOString();
+    const idleCutoff = new Date(now.getTime() - this.idleMinutes * 60_000).toISOString();
+    const result = this.database
+      .prepare(
+        `UPDATE platform_sessions
+         SET token_hash = ?, expires_at = ?, last_seen_at = ?
+         WHERE id = ? AND principal_id = ? AND token_hash = ?
+           AND revoked_at IS NULL AND expires_at > ? AND last_seen_at > ?`
+      )
+      .run(
+        hashAccessToken(nextAccessToken),
+        nextExpiresAt.toISOString(),
+        nowIso,
+        id,
+        principalId,
+        hashAccessToken(currentAccessToken),
+        nowIso,
+        idleCutoff
+      );
     return result.changes === 1;
   }
 
