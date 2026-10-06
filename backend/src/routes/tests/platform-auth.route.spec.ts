@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
       | {
           secret: string;
           expireMinutes: number;
+          idleMinutes?: number;
           issuer: string;
           audience: string;
         }
