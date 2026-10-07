@@ -785,10 +785,7 @@ describe("DEP-BR explicit installer mode contract", () => {
 
   it("reclaims protected legacy ProgramData ACLs before reading TLS evidence", () => {
     const modeIndex = lifecycle.indexOf('if ($Mode -eq "NewInstallCleanup")');
-    const takeownIndex = lifecycle.indexOf(
-      "& takeown.exe /F $persistent /A /R /D Y",
-      modeIndex
-    );
+    const takeownIndex = lifecycle.indexOf("& takeown.exe /F $persistent /A /R /D Y", modeIndex);
     const grantIndex = lifecycle.indexOf(
       '& icacls.exe $persistent /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q',
       takeownIndex
