@@ -389,8 +389,9 @@ begin
   if IsNewInstallSelected() and NewInstallCleanupRequired then begin
     ExtractTemporaryFile('Invoke-DEP0105Lifecycle.ps1');
     ScriptPath := ExpandConstant('{tmp}\\Invoke-DEP0105Lifecycle.ps1');
+    ResultCode := -1;
     if not Exec('powershell.exe', '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + ScriptPath + '" -Mode NewInstallCleanup -ApplicationRoot "' + ExpandConstant('{app}') + '" -PersistentRoot "' + ExpandConstant('{commonappdata}\\BIO-EMS') + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) or (ResultCode <> 0) then begin
-      Result := 'BIO-EMS controlled New Install cleanup failed. No fresh installation was started. See BIO-EMS-NewInstallCleanup.log in the Windows TEMP directory.';
+      Result := 'BIO-EMS controlled New Install cleanup failed (exit code ' + IntToStr(ResultCode) + '). No fresh installation was started. See C:\\Windows\\Temp\\BIO-EMS-NewInstallCleanup.log.';
       Exit;
     end;
   end;
