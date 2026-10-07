@@ -861,6 +861,16 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("retention-days: 14");
   });
 
+  it("qualifies New Install cleanup against an already installed Windows instance", () => {
+    expect(workflow).toContain("Exercise controlled New Install over existing installation");
+    expect(workflow).toContain('$env:BIOEMS_CI_CONFIRM_NEW_INSTALL_CLEANUP = "YES"');
+    expect(workflow).toContain('"ci-admin-reinstall"');
+    expect(workflow).toContain('"BIO-EMS-NewInstallCleanup.log"');
+    expect(workflow).toContain(
+      'Write-Host "BIO-EMS controlled New Install over existing installation: PASS"'
+    );
+  });
+
   it("ships a clean-machine guide without requesting production secrets", () => {
     expect(guide).toContain("disposable clean Windows 10/11");
     expect(guide).toContain("Get-Service mosquitto,BIOEMS-*");
