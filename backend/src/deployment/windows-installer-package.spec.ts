@@ -785,12 +785,18 @@ describe("DEP-BR explicit installer mode contract", () => {
 
   it("reclaims protected legacy ProgramData ACLs before reading TLS evidence", () => {
     const modeIndex = lifecycle.indexOf('if ($Mode -eq "NewInstallCleanup")');
-    const takeownIndex = lifecycle.indexOf("& takeown.exe /F $persistent /A /R /D Y", modeIndex);
+    const takeownIndex = lifecycle.indexOf(
+      "& takeown.exe /F $persistent /A /R /D Y",
+      modeIndex
+    );
     const grantIndex = lifecycle.indexOf(
       '& icacls.exe $persistent /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q',
       takeownIndex
     );
-    const tlsIndex = lifecycle.indexOf('$certificateEvidence = Join-Path $persistent "config\\tls-certificate.json"', modeIndex);
+    const tlsIndex = lifecycle.indexOf(
+      '$certificateEvidence = Join-Path $persistent "config\\tls-certificate.json"',
+      modeIndex
+    );
 
     expect(takeownIndex).toBeGreaterThan(modeIndex);
     expect(grantIndex).toBeGreaterThan(takeownIndex);
@@ -824,7 +830,9 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(removeIndex).toBeGreaterThan(stopIndex);
     expect(catchIndex).toBeGreaterThan(removeIndex);
     expect(lifecycle).toContain("[IO.File]::WriteAllText($cleanupDiagnostic, $detail");
-    expect(lifecycle).toContain('[Console]::Error.WriteLine("$detail Diagnostic: $cleanupDiagnostic")');
+    expect(lifecycle).toContain(
+      '[Console]::Error.WriteLine("$detail Diagnostic: $cleanupDiagnostic")'
+    );
     expect(lifecycle).toContain("exit 41");
     expect(setup).toContain("C:\\Windows\\Temp\\BIO-EMS-NewInstallCleanup.log");
     expect(setup).toContain("exit code ' + IntToStr(ResultCode)");
