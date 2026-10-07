@@ -783,6 +783,36 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(lifecycle).toContain("Where-Object Thumbprint -eq $thumbprint");
   });
 
+  it("waits for SCM service deletion and handles WinSW marked-for-deletion races", () => {
+    expect(lifecycle).toContain("function Remove-ControlledService");
+    expect(lifecycle).toContain("& sc.exe delete $service");
+    expect(lifecycle).toContain("$deleteExitCode -notin @(0, 1060, 1072)");
+    expect(lifecycle).toContain("(Get-Date).AddSeconds(45)");
+    expect(lifecycle).toContain(
+      "New Install cleanup timed out waiting for controlled service $service to be removed"
+    );
+  });
+
+  it("writes the advertised cleanup diagnostic for failures at every cleanup stage", () => {
+    const modeIndex = lifecycle.indexOf('if ($Mode -eq "NewInstallCleanup")');
+    const diagnosticIndex = lifecycle.indexOf(
+      '$cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"',
+      modeIndex
+    );
+    const tryIndex = lifecycle.indexOf("    try {", diagnosticIndex);
+    const stopIndex = lifecycle.indexOf("Stop-ControlledServices", tryIndex);
+    const removeIndex = lifecycle.indexOf("Remove-ControlledService $service", tryIndex);
+    const catchIndex = lifecycle.indexOf("    } catch {", tryIndex);
+
+    expect(diagnosticIndex).toBeGreaterThan(modeIndex);
+    expect(tryIndex).toBeGreaterThan(diagnosticIndex);
+    expect(stopIndex).toBeGreaterThan(tryIndex);
+    expect(removeIndex).toBeGreaterThan(stopIndex);
+    expect(catchIndex).toBeGreaterThan(removeIndex);
+    expect(lifecycle).toContain("[IO.File]::WriteAllText($cleanupDiagnostic, $detail");
+    expect(lifecycle).toContain("exit 41");
+  });
+
   it("routes repair through preservation lifecycle and never NewInstallCleanup", () => {
     expect(setup).toContain(
       "IsRepairSelected() and ExistingInstallAtStart and ServicesPresentAtStart"
@@ -829,6 +859,16 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("BIO-EMS-Pilot-Code-Signing.cer");
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("retention-days: 14");
+  });
+
+  it("qualifies New Install cleanup against an already installed Windows instance", () => {
+    expect(workflow).toContain("Exercise controlled New Install over existing installation");
+    expect(workflow).toContain('$env:BIOEMS_CI_CONFIRM_NEW_INSTALL_CLEANUP = "YES"');
+    expect(workflow).toContain('"ci-admin-reinstall"');
+    expect(workflow).toContain('"BIO-EMS-NewInstallCleanup.log"');
+    expect(workflow).toContain(
+      'Write-Host "BIO-EMS controlled New Install over existing installation: PASS"'
+    );
   });
 
   it("ships a clean-machine guide without requesting production secrets", () => {

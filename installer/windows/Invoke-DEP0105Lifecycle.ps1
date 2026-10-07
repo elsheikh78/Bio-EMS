@@ -347,42 +347,75 @@ function Get-Manifest([string]$root) {
         [ordered]@{ relativePath = $_.FullName.Substring($root.Length).TrimStart('\'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     })
 }
+function Remove-ControlledService([string]$service) {
+    $wrapper = Join-Path $application "services\$service.exe"
+    if (Test-Path -LiteralPath $wrapper -PathType Leaf) {
+        # WinSW can return before the Service Control Manager has fully released
+        # the service record. Treat the wrapper as the preferred uninstall path,
+        # then verify/remove by the controlled service name below.
+        & $wrapper uninstall 2>$null | Out-Null
+    }
+
+    $deadline = (Get-Date).AddSeconds(45)
+    do {
+        $current = Get-Service -Name $service -ErrorAction SilentlyContinue
+        if (-not $current) { return }
+
+        if ($current.Status -ne "Stopped") {
+            Stop-Service -Name $service -Force -ErrorAction SilentlyContinue
+        }
+
+        & sc.exe delete $service 2>$null | Out-Null
+        $deleteExitCode = $LASTEXITCODE
+        # 0 = delete accepted, 1060 = already absent, 1072 = already marked
+        # for deletion. The latter is expected while SCM releases handles.
+        if ($deleteExitCode -notin @(0, 1060, 1072)) {
+            throw "New Install cleanup could not request removal of controlled service $service (sc.exe exit code $deleteExitCode)"
+        }
+        Start-Sleep -Milliseconds 500
+    } while ((Get-Date) -lt $deadline)
+
+    if (Get-Service -Name $service -ErrorAction SilentlyContinue) {
+        throw "New Install cleanup timed out waiting for controlled service $service to be removed"
+    }
+}
 
 if ($Mode -eq "NewInstallCleanup") {
     # Destructive cleanup is deliberately a separate, explicit mode. Never infer it
-    # from the presence of an old installation.
-    $ownedPersistent = [IO.Path]::GetFullPath($persistent)
-    $expectedPersistent = [IO.Path]::GetFullPath((Join-Path $env:ProgramData "BIO-EMS"))
-    if (-not $ownedPersistent.Equals($expectedPersistent, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "New Install cleanup refuses a persistent root that is not the BIO-EMS ProgramData root"
-    }
-
-    Stop-ControlledServices
-    foreach ($service in $services) {
-        $wrapper = Join-Path $application "services\$service.exe"
-        if (Test-Path -LiteralPath $wrapper) { & $wrapper uninstall 2>$null | Out-Null }
-        if (Get-Service -Name $service -ErrorAction SilentlyContinue) {
-            throw "New Install cleanup could not remove controlled service $service"
+    # from the presence of an old installation. Keep the complete cleanup inside
+    # one diagnostic boundary so every failure named by Setup produces the log
+    # that Setup tells the operator to inspect.
+    $cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
+    try {
+        $ownedPersistent = [IO.Path]::GetFullPath($persistent)
+        $expectedPersistent = [IO.Path]::GetFullPath((Join-Path $env:ProgramData "BIO-EMS"))
+        if (-not $ownedPersistent.Equals($expectedPersistent, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "New Install cleanup refuses a persistent root that is not the BIO-EMS ProgramData root"
         }
-    }
 
-    Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+        Stop-ControlledServices
+        foreach ($service in $services) {
+            Remove-ControlledService $service
+        }
 
-    $certificateEvidence = Join-Path $persistent "config\tls-certificate.json"
-    if (Test-Path -LiteralPath $certificateEvidence -PathType Leaf) {
-        & icacls.exe $certificateEvidence /grant "*S-1-5-32-544:(R)" /C /Q | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "Unable to read BIO-EMS TLS certificate evidence during New Install cleanup" }
-        $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
-        if ($thumbprint) {
-            foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
-                Get-ChildItem $store | Where-Object Thumbprint -eq $thumbprint | Remove-Item -Force
+        Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue |
+            Remove-NetFirewallRule -ErrorAction SilentlyContinue
+
+        $certificateEvidence = Join-Path $persistent "config\tls-certificate.json"
+        if (Test-Path -LiteralPath $certificateEvidence -PathType Leaf) {
+            & icacls.exe $certificateEvidence /grant "*S-1-5-32-544:(R)" /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Unable to read BIO-EMS TLS certificate evidence during New Install cleanup" }
+            $thumbprint = (Get-Content -LiteralPath $certificateEvidence -Raw | ConvertFrom-Json).thumbprint
+            if ($thumbprint) {
+                foreach ($store in @("Cert:\LocalMachine\My", "Cert:\LocalMachine\Root")) {
+                    Get-ChildItem $store -ErrorAction SilentlyContinue |
+                        Where-Object Thumbprint -eq $thumbprint |
+                        Remove-Item -Force -ErrorAction SilentlyContinue
+                }
             }
         }
-    }
 
-    if (Test-Path -LiteralPath $persistent) {
-        $cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
-        try {
+        if (Test-Path -LiteralPath $persistent) {
             & takeown.exe /F $persistent /A /R /D Y | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "takeown failed with exit code $LASTEXITCODE" }
 
@@ -396,17 +429,20 @@ if ($Mode -eq "NewInstallCleanup") {
                 ForEach-Object { $_.Attributes = $_.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }
 
             Remove-Item -LiteralPath $persistent -Recurse -Force
-            if (Test-Path -LiteralPath $persistent) { throw "Persistent BIO-EMS directory still exists after controlled removal" }
-            Remove-Item -LiteralPath $cleanupDiagnostic -Force -ErrorAction SilentlyContinue
-        } catch {
-            $detail = "BIO-EMS New Install cleanup failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
-            [IO.File]::WriteAllText($cleanupDiagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
-            Write-Error "$detail Diagnostic: $cleanupDiagnostic"
-            exit 41
+            if (Test-Path -LiteralPath $persistent) {
+                throw "Persistent BIO-EMS directory still exists after controlled removal"
+            }
         }
+
+        Remove-Item -LiteralPath $cleanupDiagnostic -Force -ErrorAction SilentlyContinue
+        Write-Host "BIO-EMS controlled New Install cleanup: PASS"
+        exit 0
+    } catch {
+        $detail = "BIO-EMS New Install cleanup failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
+        [IO.File]::WriteAllText($cleanupDiagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
+        Write-Error "$detail Diagnostic: $cleanupDiagnostic"
+        exit 41
     }
-    Write-Host "BIO-EMS controlled New Install cleanup: PASS"
-    exit 0
 }
 
 if ($Mode -eq "PreUpdate") {
