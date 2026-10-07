@@ -385,7 +385,8 @@ if ($Mode -eq "NewInstallCleanup") {
     # from the presence of an old installation. Keep the complete cleanup inside
     # one diagnostic boundary so every failure named by Setup produces the log
     # that Setup tells the operator to inspect.
-    $cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
+    $cleanupDiagnostic = Join-Path $env:WINDIR "Temp\BIO-EMS-NewInstallCleanup.log"
+    Remove-Item -LiteralPath $cleanupDiagnostic -Force -ErrorAction SilentlyContinue
     try {
         $ownedPersistent = [IO.Path]::GetFullPath($persistent)
         $expectedPersistent = [IO.Path]::GetFullPath((Join-Path $env:ProgramData "BIO-EMS"))
@@ -396,6 +397,21 @@ if ($Mode -eq "NewInstallCleanup") {
         Stop-ControlledServices
         foreach ($service in $services) {
             Remove-ControlledService $service
+        }
+
+        # Legacy September Pilot installs can protect BIO-EMS ProgramData with
+        # service-owned explicit ACLs. New Install is already an explicitly
+        # destructive operation, so reclaim only the BIO-EMS persistent tree
+        # before reading certificate evidence or attempting recursive removal.
+        if (Test-Path -LiteralPath $persistent -PathType Container) {
+            & takeown.exe /F $persistent /A /R /D Y | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to take ownership of legacy BIO-EMS ProgramData during New Install cleanup (takeown exit code $LASTEXITCODE)"
+            }
+            & icacls.exe $persistent /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to normalize legacy BIO-EMS ProgramData ACLs during New Install cleanup (icacls exit code $LASTEXITCODE)"
+            }
         }
 
         Get-NetFirewallRule -DisplayName "BIO-EMS HTTPS" -ErrorAction SilentlyContinue |
@@ -440,7 +456,7 @@ if ($Mode -eq "NewInstallCleanup") {
     } catch {
         $detail = "BIO-EMS New Install cleanup failed at $((Get-Date).ToUniversalTime().ToString('o')): $($_.Exception.Message)"
         [IO.File]::WriteAllText($cleanupDiagnostic, $detail, (New-Object Text.UTF8Encoding($false)))
-        Write-Error "$detail Diagnostic: $cleanupDiagnostic"
+        [Console]::Error.WriteLine("$detail Diagnostic: $cleanupDiagnostic")
         exit 41
     }
 }
