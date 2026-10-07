@@ -783,6 +783,23 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(lifecycle).toContain("Where-Object Thumbprint -eq $thumbprint");
   });
 
+  it("reclaims protected legacy ProgramData ACLs before reading TLS evidence", () => {
+    const modeIndex = lifecycle.indexOf('if ($Mode -eq "NewInstallCleanup")');
+    const takeownIndex = lifecycle.indexOf("& takeown.exe /F $persistent /A /R /D Y", modeIndex);
+    const grantIndex = lifecycle.indexOf(
+      '& icacls.exe $persistent /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" /T /C /Q',
+      takeownIndex
+    );
+    const tlsIndex = lifecycle.indexOf(
+      '$certificateEvidence = Join-Path $persistent "config\\tls-certificate.json"',
+      modeIndex
+    );
+
+    expect(takeownIndex).toBeGreaterThan(modeIndex);
+    expect(grantIndex).toBeGreaterThan(takeownIndex);
+    expect(tlsIndex).toBeGreaterThan(grantIndex);
+  });
+
   it("waits for SCM service deletion and handles WinSW marked-for-deletion races", () => {
     expect(lifecycle).toContain("function Remove-ControlledService");
     expect(lifecycle).toContain("& sc.exe delete $service");
@@ -796,7 +813,7 @@ describe("DEP-BR explicit installer mode contract", () => {
   it("writes the advertised cleanup diagnostic for failures at every cleanup stage", () => {
     const modeIndex = lifecycle.indexOf('if ($Mode -eq "NewInstallCleanup")');
     const diagnosticIndex = lifecycle.indexOf(
-      '$cleanupDiagnostic = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"',
+      '$cleanupDiagnostic = Join-Path $env:WINDIR "Temp\\BIO-EMS-NewInstallCleanup.log"',
       modeIndex
     );
     const tryIndex = lifecycle.indexOf("    try {", diagnosticIndex);
@@ -810,7 +827,12 @@ describe("DEP-BR explicit installer mode contract", () => {
     expect(removeIndex).toBeGreaterThan(stopIndex);
     expect(catchIndex).toBeGreaterThan(removeIndex);
     expect(lifecycle).toContain("[IO.File]::WriteAllText($cleanupDiagnostic, $detail");
+    expect(lifecycle).toContain(
+      '[Console]::Error.WriteLine("$detail Diagnostic: $cleanupDiagnostic")'
+    );
     expect(lifecycle).toContain("exit 41");
+    expect(setup).toContain("C:\\Windows\\Temp\\BIO-EMS-NewInstallCleanup.log");
+    expect(setup).toContain("exit code ' + IntToStr(ResultCode)");
   });
 
   it("routes repair through preservation lifecycle and never NewInstallCleanup", () => {
@@ -865,7 +887,9 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("Exercise controlled New Install over existing installation");
     expect(workflow).toContain('$env:BIOEMS_CI_CONFIRM_NEW_INSTALL_CLEANUP = "YES"');
     expect(workflow).toContain('"ci-admin-reinstall"');
-    expect(workflow).toContain('"BIO-EMS-NewInstallCleanup.log"');
+    expect(workflow).toContain("Temp\\BIO-EMS-NewInstallCleanup.log");
+    expect(workflow).toContain("protected legacy TLS evidence ACL");
+    expect(workflow).toContain("protected legacy data ACL");
     expect(workflow).toContain(
       'Write-Host "BIO-EMS controlled New Install over existing installation: PASS"'
     );

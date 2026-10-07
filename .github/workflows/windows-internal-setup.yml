@@ -450,7 +450,21 @@ jobs:
           $env:BIOEMS_CI_SITE_CODE = "CI-REPLACEMENT-SITE"
           $env:BIOEMS_CI_SITE_LOCATION = "CI"
 
-          $cleanupLog = Join-Path $env:TEMP "BIO-EMS-NewInstallCleanup.log"
+          # Emulate a legacy September Pilot install whose ProgramData children
+          # carry protected service-owned ACLs. The replacement Setup must reclaim
+          # only the BIO-EMS tree before reading TLS evidence and deleting it.
+          $legacyTlsEvidence = "C:\ProgramData\BIO-EMS\config\tls-certificate.json"
+          if (Test-Path -LiteralPath $legacyTlsEvidence -PathType Leaf) {
+            & icacls.exe $legacyTlsEvidence /inheritance:r /grant:r "*S-1-5-18:F" /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Could not stage protected legacy TLS evidence ACL" }
+          }
+          $legacyDataRoot = "C:\ProgramData\BIO-EMS\data"
+          if (Test-Path -LiteralPath $legacyDataRoot -PathType Container) {
+            & icacls.exe $legacyDataRoot /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" /T /C /Q | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Could not stage protected legacy data ACL" }
+          }
+
+          $cleanupLog = Join-Path $env:WINDIR "Temp\BIO-EMS-NewInstallCleanup.log"
           Remove-Item -LiteralPath $cleanupLog -Force -ErrorAction SilentlyContinue
           $setupLog = Join-Path $env:RUNNER_TEMP "bioems-new-install-over-existing.log"
           $process = Start-Process -FilePath $setup[0].FullName -ArgumentList @(
