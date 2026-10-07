@@ -6,7 +6,8 @@ This describes the merged SIM-D4 integration after the HW-519 interface correcti
 - System Owner defines each Device's fitted SIM count (1–4) and maps sensor channels 1–16.
   Channels 1–4, 5–8, 9–12 and 13–16 map to SIM addresses 1, 2, 3 and 4 respectively.
   The SIM input is `(channel - 1) % 4 + 1`. Existing sensor records need not be deleted.
-- The RS485 bench interface is **HW-519 automatic-direction TTL-to-RS485**. Nano D1/TX -> HW-519 RXD and D0/RX <- HW-519 TXD. ESP32-S3 GPIO17/TX -> HW-519 RXD and GPIO18/RX <- HW-519 TXD. Nano D6 and ESP32 GPIO16 are **not RS485 direction pins** in this hardware contract and stay unconnected.\n- **Detect Nano / SIM** operates on a USB COM port. AVRDUDE reads the ATmega328P signature
+- The RS485 bench interface is **HW-519 automatic-direction TTL-to-RS485**. Nano D1/TX -> HW-519 RXD and D0/RX <- HW-519 TXD. ESP32-S3 GPIO17/TX -> HW-519 RXD and GPIO18/RX <- HW-519 TXD. Nano D6 and ESP32 GPIO16 are **not RS485 direction pins** in this hardware contract and stay unconnected.
+- **Detect Nano / SIM** operates on a USB COM port. AVRDUDE reads the ATmega328P signature
   without flash writes at the supported bootloader speeds. A compatible chip response does
   not identify a unique SIM or test its probes. Flash checks detection again and rejects a
   baud mismatch with the installed firmware manifest.
@@ -27,6 +28,6 @@ Re-save/revalidate an unprovisioned installation revision for controller firmwar
 Flash & Bind. This preserves channel assignments. Existing paired units need the normal
 controlled firmware/binding recovery procedure, not deletion of customer sensor data.
 
-Local TypeScript, lint and backend/frontend test suites pass. GitHub firmware and Windows
-Setup builds are the remaining automated gates. Physical USB/Nano/RS485/probe and delivery
+Local TypeScript, lint and backend/frontend test suites pass. The corrected firmware, Windows
+Setup and Manufacturer Tools automated gates passed before release merge; Physical USB/Nano/RS485/probe and delivery
 acceptance remains required; no hardware is accessible in the development workspace.

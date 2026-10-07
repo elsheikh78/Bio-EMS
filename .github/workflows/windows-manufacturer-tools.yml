@@ -1,5 +1,7 @@
 name: Windows Manufacturer Tools
 
+# HW-519 release QA: rebuild artifacts from the final documentation-cleanup commit.
+
 # Build artifacts are commit-scoped so a release package set can be traced to one source revision.
 
 on:
