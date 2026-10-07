@@ -887,7 +887,7 @@ describe("DEP-01-06 repeatable internal Windows artifact", () => {
     expect(workflow).toContain("Exercise controlled New Install over existing installation");
     expect(workflow).toContain('$env:BIOEMS_CI_CONFIRM_NEW_INSTALL_CLEANUP = "YES"');
     expect(workflow).toContain('"ci-admin-reinstall"');
-    expect(workflow).toContain('"BIO-EMS-NewInstallCleanup.log"');
+    expect(workflow).toContain("Temp\\BIO-EMS-NewInstallCleanup.log");
     expect(workflow).toContain("protected legacy TLS evidence ACL");
     expect(workflow).toContain("protected legacy data ACL");
     expect(workflow).toContain(
