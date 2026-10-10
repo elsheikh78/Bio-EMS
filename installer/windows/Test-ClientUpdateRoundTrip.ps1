@@ -46,6 +46,9 @@ do {
   if ($status.state -in @('SUCCEEDED','FAILED')) {break}
 } while ([DateTime]::UtcNow -lt $deadline)
 if ($status.state -ne 'SUCCEEDED') {
+  foreach ($diagnostic in @('post-update-failure.json','pending-lifecycle.json','last-lifecycle.json','post-install-health.json')) {
+    Get-Content -LiteralPath (Join-Path $persistent "logs\$diagnostic") -Raw -ErrorAction SilentlyContinue
+  }
   Get-Content -LiteralPath (Join-Path $persistent 'logs\platform-restore-worker.log') -Tail 80 -ErrorAction SilentlyContinue
   Get-Content -LiteralPath (Join-Path $persistent "update-jobs\$($job.jobId).install.log") -Tail 120 -ErrorAction SilentlyContinue
   throw "Client update round trip failed state=$($status.state) error=$($status.error)"

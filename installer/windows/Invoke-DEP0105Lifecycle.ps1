@@ -607,6 +607,11 @@ if ($Mode -eq "PostUpdate") {
         Write-Utf8 (Join-Path $persistent "logs\last-lifecycle.json") $state
         Remove-Item -LiteralPath $pointer -Force
     } catch {
+        $updateFailure = $_.Exception.Message
+        Write-Utf8 (Join-Path $persistent "logs\post-update-failure.json") ([ordered]@{
+            state = "UPDATE_VERIFICATION_FAILED"; error = $updateFailure; backupPath = $backup
+            failedAt = [DateTime]::UtcNow.ToString("o")
+        })
         Stop-ControlledServices
         Remove-DeviceProvisionerWhenAbsentFromSnapshot $backup
         Grant-LifecycleTreeRestoreAccess $backup
@@ -620,7 +625,7 @@ if ($Mode -eq "PostUpdate") {
         $restoreStartOrder = @($services)
         [array]::Reverse($restoreStartOrder)
         foreach ($service in $restoreStartOrder) { Start-Service -Name $service -ErrorAction SilentlyContinue }
-        throw "Update verification failed and the previous application/data snapshot was restored"
+        throw "Update verification failed and the previous application/data snapshot was restored: $updateFailure"
     }
     Write-Host "DEP-01-05 update lifecycle: PASS"
     exit 0

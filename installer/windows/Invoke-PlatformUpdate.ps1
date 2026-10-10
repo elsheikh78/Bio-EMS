@@ -40,6 +40,14 @@ try {
   if (-not $?) {throw 'Post-update health failed'}
   $after=Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
   $receiptAfter=Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
+  if (-not (Test-Path -LiteralPath $previousLifecyclePath)) {
+    $failurePath=Join-Path $PersistentRoot 'logs\post-update-failure.json'
+    if (Test-Path -LiteralPath $failurePath) {
+      $failure=Get-Content -LiteralPath $failurePath -Raw | ConvertFrom-Json
+      throw "Repair failed verification: $($failure.error)"
+    }
+    throw 'Repair did not produce successful lifecycle evidence; inspect installer log'
+  }
   $lifecycle=Get-Content -LiteralPath $previousLifecyclePath -Raw | ConvertFrom-Json
   if ($lifecycle.state -ne 'UPDATE_HEALTH_VERIFIED' -or $lifecycle.backupPath -eq $previousBackup -or (Test-Path -LiteralPath (Join-Path $PersistentRoot 'logs\pending-lifecycle.json'))) {throw 'Repair lifecycle did not verify this update'}
   if ($after.sourceCommit -ne $status.sourceCommit -or $after.productVersion -ne $status.version -or $receiptAfter.installationId -ne $receiptBefore.installationId) {throw 'Installed version or installation identity verification failed'}
