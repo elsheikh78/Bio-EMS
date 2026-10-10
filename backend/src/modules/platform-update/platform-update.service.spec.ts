@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { cloudUpdateUrl, compareUpdateVersions } from "./platform-update.service";
+import {
+  cloudUpdateUrl,
+  compareUpdateVersions,
+  parseInstalledUpdateManifest,
+} from "./platform-update.service";
 import { deviceProvisioningFlashBindSchema } from "../device-provisioning/device-provisioning.schema";
 const device = {
   installationId: "1f2f2f2f-2f2f-4f2f-8f2f-2f2f2f2f2f2f",
@@ -8,6 +12,13 @@ const device = {
   platformUrl: "https://192.168.1.20",
 };
 describe("Pilot update and network policy", () => {
+  it("reads productVersion from the installer manifest and refuses the wrong version field", () => {
+    const sourceCommit = "a".repeat(40);
+    expect(
+      parseInstalledUpdateManifest({ schemaVersion: 1, productVersion: "0.20.0", sourceCommit })
+    ).toEqual({ productVersion: "0.20.0", sourceCommit });
+    expect(() => parseInstalledUpdateManifest({ version: "0.20.0", sourceCommit })).toThrow();
+  });
   it("enables cloud download only with an explicit flag and a credential-free HTTPS URL", () => {
     expect(
       cloudUpdateUrl({ BIOEMS_UPDATE_CLOUD_URL: "https://updates.example/client.exe" })

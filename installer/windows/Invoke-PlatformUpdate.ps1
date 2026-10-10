@@ -23,7 +23,7 @@ try {
   if ($evidence.sha256 -ne $status.sha256 -or $evidence.publisher -ne $status.publisher -or $evidence.version -ne $status.version -or $evidence.sourceCommit -ne $status.sourceCommit) {throw 'Update evidence changed after upload'}
   $manifestPath=Join-Path $ApplicationRoot 'manifest\package-manifest.json'
   $before=Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-  if ([Version]$evidence.version -lt [Version]$before.version) {throw 'Downgrade rejected'}
+  if ([Version]$evidence.version -lt [Version]$before.productVersion) {throw 'Downgrade rejected'}
   $receiptPath=Join-Path $PersistentRoot 'licensing\installation-provisioning-receipt.json'
   $receiptBefore=Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
   $previousLifecyclePath=Join-Path $PersistentRoot 'logs\last-lifecycle.json'
@@ -42,7 +42,7 @@ try {
   $receiptAfter=Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
   $lifecycle=Get-Content -LiteralPath $previousLifecyclePath -Raw | ConvertFrom-Json
   if ($lifecycle.state -ne 'UPDATE_HEALTH_VERIFIED' -or $lifecycle.backupPath -eq $previousBackup -or (Test-Path -LiteralPath (Join-Path $PersistentRoot 'logs\pending-lifecycle.json'))) {throw 'Repair lifecycle did not verify this update'}
-  if ($after.sourceCommit -ne $status.sourceCommit -or $after.version -ne $status.version -or $receiptAfter.installationId -ne $receiptBefore.installationId) {throw 'Installed version or installation identity verification failed'}
+  if ($after.sourceCommit -ne $status.sourceCommit -or $after.productVersion -ne $status.version -or $receiptAfter.installationId -ne $receiptBefore.installationId) {throw 'Installed version or installation identity verification failed'}
   Save-Status 'SUCCEEDED'
 } catch {
   if ($status) {Save-Status 'FAILED' $_.Exception.Message}

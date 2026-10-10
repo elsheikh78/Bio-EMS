@@ -6,6 +6,7 @@ import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { z } from "zod";
 import { AppError } from "../../errors/app-error";
 const execute = promisify(execFile);
 export type UpdateJob = {
@@ -74,13 +75,20 @@ export async function downloadCloudUpdate(actor: string) {
     actor
   );
 }
+const installedManifestSchema = z.object({
+  productVersion: z.string().regex(/^\d+\.\d+\.\d+$/),
+  sourceCommit: z.string().regex(/^[a-f0-9]{40}$/),
+});
+export function parseInstalledUpdateManifest(value: unknown) {
+  return installedManifestSchema.parse(value);
+}
 export async function updateStatus() {
   const { root, app } = settings();
-  const manifest = JSON.parse(
-    await readFile(resolve(app, "manifest/package-manifest.json"), "utf8")
-  ) as { version: string; sourceCommit: string };
+  const manifest = parseInstalledUpdateManifest(
+    JSON.parse(await readFile(resolve(app, "manifest/package-manifest.json"), "utf8"))
+  );
   return {
-    installedVersion: manifest.version,
+    installedVersion: manifest.productVersion,
     sourceCommit: manifest.sourceCommit,
     internetEnabled: cloudUpdateUrl() !== null,
     latestJob: (await jobs(root))[0] ?? null,

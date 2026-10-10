@@ -8,6 +8,9 @@ $receipt=Join-Path $persistent 'licensing\installation-provisioning-receipt.json
 $identity=(Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json).installationId
 $login=Invoke-RestMethod -Uri "$base/auth/login" -Method Post -ContentType 'application/json' -Body (@{username='ci-admin';password='CiAdminPilot2026'} | ConvertTo-Json)
 $headers=@{Authorization="Bearer $($login.access_token)"}
+$installed=Invoke-RestMethod -Uri "$base/platform-updates" -Headers $headers
+$manifest=Get-Content -LiteralPath (Join-Path $application 'manifest\package-manifest.json') -Raw | ConvertFrom-Json
+if ($installed.installedVersion -ne $manifest.productVersion -or $installed.sourceCommit -ne $manifest.sourceCommit) {throw 'Installed update status does not match the package manifest'}
 $cloudRejected=$false
 try {Invoke-RestMethod -Uri "$base/platform-updates/internet" -Method Post -Headers $headers | Out-Null} catch {$cloudRejected=$_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 503}
 if (-not $cloudRejected) {throw 'Cloud updater must remain disabled'}
