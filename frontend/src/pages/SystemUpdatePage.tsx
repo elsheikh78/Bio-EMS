@@ -22,6 +22,7 @@ const jobSchema = z.object({
     "FAILED",
   ]),
   version: z.string().optional(),
+  sourceCommit: z.string().optional(),
   sha256: z.string().optional(),
   error: z.string().optional(),
 });
@@ -166,6 +167,8 @@ export function SystemUpdatePage() {
                   {job.version ?? "—"}
                 </Typography>
                 <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>
+                  Commit: {job.sourceCommit ?? "—"}
+                  <br />
                   SHA256: {job.sha256 ?? "—"}
                 </Typography>
               </>

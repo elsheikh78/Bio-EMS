@@ -36,7 +36,7 @@ need a stable signing identity and a controlled certificate rotation process.
 
 BIOEMS-RestoreWorker dispatches one-shot SYSTEM scheduled tasks. The task rechecks
 hash/publisher/version, invokes silent Repair, then verifies health, installed version,
-and the original installation ID. The existing PreUpdate/PostUpdate lifecycle provides
+the signed source commit, a newly verified Repair lifecycle, and the original installation ID. The existing PreUpdate/PostUpdate lifecycle provides
 a verified application/data/config/licensing safety snapshot and its rollback path.
 Update status persists across Backend downtime; the page polls for its terminal result.
 PC monitoring and notifications pause during update; schedule a maintenance window.

@@ -298,6 +298,7 @@ export const flashAndBindInstallationDevice = asyncHandler(
         site_code: provisioned.siteCode,
         firmware_version: flashed.firmwareVersion,
         protocol_version: flashed.protocolVersion,
+        network_mode: request.body.networkMode ?? "wifi",
         pairing_code_exposed_to_operator: false,
       }
     );

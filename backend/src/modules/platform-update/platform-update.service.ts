@@ -17,6 +17,7 @@ export type UpdateJob = {
   actor: string;
   version?: string;
   sha256?: string;
+  sourceCommit?: string;
   publisher?: string;
   error?: string;
 };
@@ -121,6 +122,7 @@ export async function stageUpdate(stream: Readable, actor: string) {
     );
     const evidence = JSON.parse(stdout.trim()) as {
       version: string;
+      sourceCommit: string;
       sha256: string;
       publisher: string;
     };

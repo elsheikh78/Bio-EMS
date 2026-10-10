@@ -5,6 +5,10 @@
   #error ProductVersion must be supplied by the controlled build
 #endif
 
+#ifndef SourceCommit
+  #error SourceCommit must identify the controlled build
+#endif
+
 #define ProductName "BIO-EMS"
 
 [Setup]
@@ -13,6 +17,7 @@ AppName={#ProductName}
 AppVersion={#ProductVersion}
 VersionInfoProductName=BIO-EMS
 VersionInfoDescription=BIO-EMS Client Setup
+VersionInfoComments=BIO-EMS source {#SourceCommit}
 DefaultDirName={autopf}\BIO-EMS
 DefaultGroupName=BIO-EMS
 ArchitecturesAllowed=x64compatible
