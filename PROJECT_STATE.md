@@ -1,5 +1,33 @@
 # BIO-EMS Project State
 
+## 10 October 2026 Pilot integration checkpoint
+
+PR #288 is merged at `98cea574baaecb5b648aa92133982c412856c681`.
+Source product version remains `0.20.0`; this is post-release Pilot development,
+not a new semantic version or Production acceptance.
+
+- Client Setup includes ADMIN `/system-update`: upload a signed Client Setup EXE,
+  review its version/hash, then install or discard. Internet download is disabled
+  by default; the future HTTPS adapter requires explicit protected configuration.
+- New ESP32-S3 commissioning supports Wi-Fi or W5500 Ethernet with DHCP.
+  Controller firmware is `0.1.0-pilot.5`, protocol `1.3`, binding schema `1`;
+  SIM-D4 firmware remains `0.1.0-bench.2`. No automatic failover/static-IP UI is claimed.
+- Repair preserves the Provisioner token and accepts fresh Base64 and legacy hex
+  tokens. It initializes protected update-jobs storage for older installations.
+  Original PostUpdate failure evidence is retained before rollback.
+- Manufacturer Tools behavior and SIM-D4 firmware were not changed by PR #288.
+  Client and controller artifacts must be matched to their source commit.
+- Main CI, ESP32-S3 Firmware, Manufacturer Tools and Internal Windows Setup passed.
+  Windows run [38078138666](https://github.com/elsheikh78/Bio-EMS/actions/runs/38078138666)
+  passed install/health, Influx backup/restore, token/ACL regressions, real API
+  update dispatch/Repair, identity and secret preservation, tamper rejection,
+  and controlled New Install over an existing installation.
+- Physical W5500/RS485/power/endurance, live 2G fallback and customer acceptance
+  remain separate gates. BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
+
+Operating details: [network and client updates](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md).
+
+
 ## 30 September documentation and source reconciliation
 
 - Reviewed against `main@6efd78a9fd9ea50a1d1b0e88f074708be1189546`; source version remains `0.20.0`. This documentation update creates no new software release or installer artifact.
@@ -14,8 +42,8 @@
 Sections below are dated checkpoints, not unresolved statements overriding this checkpoint. ADMIN currently lacks `TOPOLOGY_MANAGE` in `frontend/src/authorization/permissions.ts`; any earlier approval for ADMIN topology creation must be reconciled with backend policy before claiming that capability. Installation Builder exposes codes and channel mappings; its normal controls do not yet expose all alarm thresholds. Customer Configuration provides the existing threshold-editing path.
 
 
-**State date:** 30 September 2026
-**Authoritative main audited:** `6efd78a9fd9ea50a1d1b0e88f074708be1189546`
+**State date:** 10 October 2026
+**Current integration checkpoint:** `98cea574baaecb5b648aa92133982c412856c681` (targeted PR #288 review; the 30 September full audit remains dated evidence)
 **Current integration branch:** `main`
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`

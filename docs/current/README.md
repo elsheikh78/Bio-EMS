@@ -1,5 +1,14 @@
 # Current documentation / التوثيق الحالي
 
+## 10 October integration references
+
+- [Pilot build notes and artifact hashes](PILOT-BUILD-NOTES-2026-10-10.md)
+- [Network selection and client update operations](PILOT-NETWORK-AND-CLIENT-UPDATES.md)
+
+PR #288 main checkpoint: `98cea57`. The 30 September inventory below is retained
+as a dated inventory; current status is governed by `PROJECT_STATE.md`.
+
+
 Reviewed entry points: 30 September 2026. Source review baseline: `6efd78a`. This is a navigation index, not a second status authority. `PROJECT_STATE.md` controls current state; `IMPLEMENTATION_PLAN.md` controls execution. Linked operational guides must be read with those boundaries. A current guide may retain explicitly dated context.
 
 ابدأ بالحالة الحالية وخطة التنفيذ، ثم دليل المشروع العربي. تاريخ الملف وحده لا يعني أن محتواه هو المعتمد. نتائج الاختبارات القديمة في [الأرشيف التاريخي](../archive/README.md)، والمراجع والقرارات المعمارية في [الفهرس الكامل](../README.md).

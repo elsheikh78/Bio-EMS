@@ -1,6 +1,23 @@
 # BIO-EMS Implementation Plan
 
-## Immediate execution order — 30 September 2026
+## Immediate execution order — 10 October 2026
+
+1. Install the verified `main@98cea57` Pilot Client Setup using the company launcher;
+   use **Reinstall / Repair** on existing installations and verify health/data afterward.
+2. Qualify new controller provisioning with matching `0.1.0-pilot.5` firmware on
+   physical Wi-Fi and W5500 DHCP hardware using the documented pin assignment.
+3. Exercise the ADMIN file update page on a separate Pilot PC after trusting the
+   company-supplied build certificate; confirm terminal status and retained identity/data.
+4. Continue SIM-D4/RS485, power, fault and endurance tests and real 2G fallback.
+5. Continue multi-machine qualification and field commissioning/UAT.
+6. Prepare stable production signing and a company HTTPS update endpoint before
+   enabling internet updates. Final device protection remains deferred until Pilot stability.
+
+The earlier dated sequence below is historical context; this checkpoint controls the
+next actions for the network/client-update work. No new product version is created.
+
+
+## Historical execution order — 30 September 2026
 
 1. Verify the merged Builder and Flash & Bind flow on the installed Windows host using the exact matching Setup/firmware commit and manifests.
 2. Reconcile ADMIN topology policy and threshold authoring requirements against the current UI/API; do not infer missing controls from schema fields.
@@ -12,7 +29,7 @@
 
 The dated plan below is retained as context; this sequence controls the restart point.
 
-**Plan date:** 30 September 2026
+**Plan date:** 10 October 2026
 **Master audit:** `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
 
 ## Historical restart point — 24 September 2026

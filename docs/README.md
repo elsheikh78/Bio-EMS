@@ -1,5 +1,14 @@
 # BIO-EMS Documentation Index / فهرس التوثيق
 
+## 10 October integration references
+
+- [Pilot build notes and artifact hashes](current/PILOT-BUILD-NOTES-2026-10-10.md)
+- [Network selection and client update operations](current/PILOT-NETWORK-AND-CLIENT-UPDATES.md)
+
+PR #288 main checkpoint: `98cea57`. The 30 September inventory below is retained
+as a dated inventory; current status is governed by `PROJECT_STATE.md`.
+
+
 Inventory date: 30 September 2026. Source baseline: `6efd78a9fd9ea50a1d1b0e88f074708be1189546`.
 
 `PROJECT_STATE.md` is the sole current-state authority; `IMPLEMENTATION_PLAN.md` controls execution. `VERSION` controls source version; dated closure, Sprint, ADR and test documents retain the evidence and decision boundaries of their recorded date. They are not new acceptance evidence. Historical records are preserved instead of rewriting past results.

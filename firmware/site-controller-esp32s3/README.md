@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.4`;
+- firmware version: `0.1.0-pilot.5`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -35,7 +35,7 @@ The normal Pilot workflow is now orchestrated by BIO-EMS:
 3. Open System Owner -> Device provisioning and connect the ESP32-S3 by USB.
 4. Detect the controlled COM port and supported ESP32-S3.
 5. Select the already-defined logical Device.
-6. Enter the Pilot Wi-Fi credentials and the LAN-reachable BIO-EMS HTTPS origin.
+6. Select Wi-Fi (enter its credentials) or W5500 Ethernet (DHCP), and enter the LAN-reachable BIO-EMS HTTPS origin. See the Ethernet bench wiring below; no automatic failover is provided.
 7. Press **Flash & Bind Device**.
 8. BIO-EMS flashes the governed common firmware, issues the short-lived pairing credential
    server-side, sends the bootstrap commands over the local serial connection, verifies the
