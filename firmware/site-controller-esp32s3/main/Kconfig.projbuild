@@ -1,0 +1,14 @@
+menu "BIO-EMS W5500 bench wiring"
+config BIOEMS_ETH_MOSI
+    int "W5500 MOSI GPIO"
+    default 11
+config BIOEMS_ETH_MISO
+    int "W5500 MISO GPIO"
+    default 13
+config BIOEMS_ETH_SCLK
+    int "W5500 SCLK GPIO"
+    default 12
+config BIOEMS_ETH_CS
+    int "W5500 chip select GPIO"
+    default 10
+endmenu

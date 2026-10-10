@@ -5,12 +5,20 @@
   #error ProductVersion must be supplied by the controlled build
 #endif
 
+#ifndef SourceCommit
+  #error SourceCommit must identify the controlled build
+#endif
+
 #define ProductName "BIO-EMS"
 
 [Setup]
 AppId={{7F182A31-C831-4CCF-965B-BF40A54D14C3}
 AppName={#ProductName}
 AppVersion={#ProductVersion}
+VersionInfoProductName=BIO-EMS
+VersionInfoDescription=BIO-EMS Client Setup
+VersionInfoProductTextVersion={#ProductVersion}+{#SourceCommit}
+VersionInfoTextVersion={#ProductVersion}
 DefaultDirName={autopf}\BIO-EMS
 DefaultGroupName=BIO-EMS
 ArchitecturesAllowed=x64compatible
@@ -49,6 +57,8 @@ Source: "{#StageRoot}\payload\firmware-site-controller.zip"; Flags: dontcopy noe
 Source: "{#StageRoot}\payload\firmware-sim-d4-nano.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Test-PlatformUpdatePackage.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Invoke-PlatformUpdate.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
@@ -73,7 +83,7 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Install-DEP0103Services.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -ProductVersion ""{#ProductVersion}"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"" -ContactName ""{code:GetContactName}"" -ContactEmail ""{code:GetContactEmail}"" -ContactPhone ""{code:GetContactPhone}"" -PilotMode"; StatusMsg: "Configuring protected BIO-EMS services..."; Flags: runhidden waituntilterminated; Check: IsFreshInstall
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Initialize-PilotAdmin.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -CredentialFile ""{tmp}\bioems-admin-bootstrap.txt"" -CustomerName ""{code:GetCustomerName}"" -CustomerCode ""{code:GetCustomerCode}"" -SiteName ""{code:GetSiteName}"" -SiteCode ""{code:GetSiteCode}"" -SiteLocation ""{code:GetSiteLocation}"""; StatusMsg: "Creating the customer administrator account..."; Flags: runhidden waituntilterminated logoutput; Check: ShouldInitializeAdmin; BeforeInstall: PrepareAdminBootstrap; AfterInstall: ClearAdminBootstrap
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Test-PostInstallHealth.ps1"" -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying BIO-EMS installation health..."; Flags: runhidden waituntilterminated logoutput; Check: IsFreshInstall
-Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated; Check: WasExistingInstall
+Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File ""{app}\installer\Invoke-DEP0105Lifecycle.ps1"" -Mode PostUpdate -ApplicationRoot ""{app}"" -PersistentRoot ""{commonappdata}\BIO-EMS"" -PilotMode"; StatusMsg: "Verifying update and rollback safety..."; Flags: runhidden waituntilterminated logoutput; Check: WasExistingInstall
 Filename: "https://localhost/__bioems/start"; Description: "Open BIO-EMS"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]

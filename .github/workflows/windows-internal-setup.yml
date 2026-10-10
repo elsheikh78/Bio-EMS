@@ -109,7 +109,7 @@ jobs:
           manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
           assert manifest["schemaVersion"] == 1
           assert manifest["target"] == "esp32s3"
-          assert manifest["firmwareVersion"] == "0.1.0-pilot.4"
+          assert manifest["firmwareVersion"] == "0.1.0-pilot.5"
           assert manifest["protocolVersion"] == "1.3"
           assert manifest["bindingSchemaVersion"] == 1
           assert manifest["segments"]
@@ -214,6 +214,11 @@ jobs:
           }
           if ($failed) { throw "Windows PowerShell installer script parsing failed" }
 
+      - name: Verify fresh and legacy Provisioner token Repair compatibility
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-ProvisionerTokenContract.ps1"
+
       - name: Acquire and verify locked vendor inputs
         shell: powershell
         run: |
@@ -298,6 +303,9 @@ jobs:
           "$hash  $($setup.Name)" | Set-Content -LiteralPath (Join-Path $output "SHA256SUMS.txt") -Encoding ASCII
           Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
           Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
+          & (Join-Path $output "Install-PilotSigningCertificate.ps1") -CertificatePath $certificatePath -ThumbprintPath (Join-Path $output "CERTIFICATE-THUMBPRINT.txt")
+          $setup.VersionInfo | Select-Object ProductName,FileDescription,ProductVersion,FileVersion | Format-List
+          & ".\installer\windows\Test-PlatformUpdatePackage.ps1" -PackagePath $setup.FullName
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
       - name: Install Setup and verify pilot health on Windows
@@ -424,11 +432,25 @@ jobs:
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
 
+      - name: Verify legacy Repair update directory ACL migration
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-UpdateJobsAclContract.ps1"
+
       - name: Exercise installed InfluxDB backup and historical telemetry restore
         timeout-minutes: 10
         shell: powershell
         run: |
           & ".\installer\windows\Test-DEPBRInfluxRoundTrip.ps1" -ApplicationRoot "C:\Program Files\BIO-EMS" -PersistentRoot "C:\ProgramData\BIO-EMS"
+
+      - name: Exercise client update upload and independent worker
+        timeout-minutes: 20
+        shell: powershell
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP "bioems-staging\output"
+          $setup = @(Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File)
+          if ($setup.Count -ne 1) { throw "Expected one client Setup" }
+          & ".\installer\windows\Test-ClientUpdateRoundTrip.ps1" -SetupPath $setup[0].FullName
 
       - name: Exercise controlled New Install over existing installation
         timeout-minutes: 15

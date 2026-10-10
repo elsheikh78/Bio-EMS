@@ -22,6 +22,7 @@ import { SystemOwnerInstallationsPage } from "./pages/SystemOwnerInstallationsPa
 import { SystemOwnerDeviceProvisioningPage } from "./pages/SystemOwnerDeviceProvisioningPage";
 import { SystemOwnerCustomerAdminsPage } from "./pages/SystemOwnerCustomerAdminsPage";
 import { SystemOwnerCommunicationChannelsPage } from "./pages/SystemOwnerCommunicationChannelsPage";
+import { SystemUpdatePage } from "./pages/SystemUpdatePage";
 import { BackupRestorePage } from "./pages/BackupRestorePage";
 import { SystemOwnerBackupRestorePage } from "./pages/SystemOwnerBackupRestorePage";
 import { SystemOwnerHardwareLabPage } from "./pages/SystemOwnerHardwareLabPage";
@@ -223,6 +224,14 @@ export function App() {
             }
           />
 
+          <Route
+            path="system-update"
+            element={
+              <PermissionBoundary path="/system-update">
+                <SystemUpdatePage />
+              </PermissionBoundary>
+            }
+          />
           <Route path="foundation" element={<Navigate to="/" replace />} />
 
           <Route path="*" element={<NotFoundPage />} />

@@ -22,6 +22,24 @@ const wifiPasswordSchema = z
     message: "Wi-Fi password must not contain line breaks",
   });
 
+const networkFields = {
+  networkMode: z.enum(["wifi", "ethernet"]).default("wifi"),
+  wifiSsid: wifiSsidSchema.optional(),
+  wifiPassword: wifiPasswordSchema.optional(),
+};
+const validateNetwork = (
+  value: { networkMode: string; wifiSsid?: string; wifiPassword?: string },
+  ctx: z.RefinementCtx
+) => {
+  if (value.networkMode === "wifi" && (!value.wifiSsid || !value.wifiPassword))
+    ctx.addIssue({ code: "custom", path: ["wifiSsid"], message: "Wi-Fi credentials are required" });
+  if (
+    value.networkMode === "ethernet" &&
+    (value.wifiSsid !== undefined || value.wifiPassword !== undefined)
+  )
+    ctx.addIssue({ code: "custom", message: "Ethernet does not accept Wi-Fi credentials" });
+};
+
 const platformUrlSchema = z
   .string()
   .trim()
@@ -68,11 +86,11 @@ export const deviceProvisioningFlashBindSchema = z
     installationId: z.string().uuid(),
     deviceId: z.string().trim().min(1).max(80),
     port: windowsSerialPortSchema,
-    wifiSsid: wifiSsidSchema,
-    wifiPassword: wifiPasswordSchema,
+    ...networkFields,
     platformUrl: platformUrlSchema,
   })
-  .strict();
+  .strict()
+  .superRefine(validateNetwork);
 
 export const localProvisionerFlashSchema = z
   .object({
@@ -90,12 +108,12 @@ export const deviceProvisioningSimFlashSchema = z
 export const localProvisionerProvisionSchema = z
   .object({
     port: windowsSerialPortSchema,
-    wifiSsid: wifiSsidSchema,
-    wifiPassword: wifiPasswordSchema,
+    ...networkFields,
     platformUrl: platformUrlSchema,
     pairingCode: z.string().regex(/^\d{12}$/),
   })
-  .strict();
+  .strict()
+  .superRefine(validateNetwork);
 
 export const firmwareManifestSchema = z
   .object({

@@ -250,8 +250,9 @@ export const flashAndBindInstallationDevice = asyncHandler(
 
     const bootstrap = devicePairingService.issuePairingCode(installationId, deviceId, actor);
     const provisioned = await deviceProvisioningLocalClient.provision(port, {
-      wifiSsid: String(request.body.wifiSsid),
-      wifiPassword: String(request.body.wifiPassword),
+      networkMode: request.body.networkMode ?? "wifi",
+      wifiSsid: request.body.wifiSsid,
+      wifiPassword: request.body.wifiPassword,
       platformUrl: String(request.body.platformUrl),
       pairingCode: bootstrap.pairing_code,
     });
@@ -297,6 +298,7 @@ export const flashAndBindInstallationDevice = asyncHandler(
         site_code: provisioned.siteCode,
         firmware_version: flashed.firmwareVersion,
         protocol_version: flashed.protocolVersion,
+        network_mode: request.body.networkMode ?? "wifi",
         pairing_code_exposed_to_operator: false,
       }
     );
