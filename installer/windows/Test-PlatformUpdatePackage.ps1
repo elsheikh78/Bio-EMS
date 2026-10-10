@@ -11,11 +11,15 @@ $publishers = @(Get-ChildItem Cert:\LocalMachine\TrustedPublisher | Where-Object
 })
 if ($publishers.Count -ne 1 -or $cert.NotAfter.ToUniversalTime() -le [DateTime]::UtcNow) { throw 'Update publisher is not an approved BIO-EMS publisher' }
 $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($file.FullName)
-if ($info.ProductName -ne 'BIO-EMS' -or $info.FileDescription -ne 'BIO-EMS Client Setup' -or $info.ProductVersion -notmatch '^\d+\.\d+\.\d+(?:\.0)?$') {
-    throw "File is not a BIO-EMS client update (product=$($info.ProductName); description=$($info.FileDescription); productVersion=$($info.ProductVersion); fileVersion=$($info.FileVersion))"
+# Inno Setup pads version strings. ProductVersion has room for the full
+# version + 40-character commit; FileVersion is truncated to 20 characters.
+$productName = $info.ProductName.Trim()
+$description = $info.FileDescription.Trim()
+$productText = $info.ProductVersion.Trim()
+if ($productName -ne 'BIO-EMS' -or $description -ne 'BIO-EMS Client Setup') {
+    throw "File is not a BIO-EMS client update (product=$productName; description=$description)"
 }
-$versionParts = $info.ProductVersion.Split('.')
-$productVersion = ($versionParts[0..2] -join '.')
-if ($info.FileVersion -notmatch '^\d+\.\d+\.\d+\+([a-f0-9]{40})$') { throw 'Update source commit is missing from signed metadata' }
-$sourceCommit = $matches[1]
+if ($productText -notmatch '^(\d+\.\d+\.\d+)\+([a-f0-9]{40})$') { throw 'Update version or full source commit is missing from signed product metadata' }
+$productVersion = $matches[1]
+$sourceCommit = $matches[2]
 [ordered]@{sourceCommit=$sourceCommit;version=$productVersion; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant(); publisher=$cert.Thumbprint} | ConvertTo-Json -Compress

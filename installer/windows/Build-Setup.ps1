@@ -42,6 +42,7 @@ if ($LASTEXITCODE -ne 0) { throw "Installer staging validation failed" }
 $version = (Get-Content (Join-Path $repository "VERSION") -Raw).Trim()
 $sourceCommit = (Get-Content -LiteralPath (Join-Path $staging "package-manifest.json") -Raw | ConvertFrom-Json).sourceCommit
 if ($sourceCommit -notmatch '^[a-f0-9]{40}$') { throw "Staging source commit is invalid" }
+if (("$version+$sourceCommit").Length -gt 50) { throw "Signed product version exceeds Inno Setup's 50-character resource limit" }
 $source = Join-Path $repository "installer\windows\BioEMS.iss"
 & $compiler "/Qp" "/DStageRoot=$staging" "/DProductVersion=$version" "/DSourceCommit=$sourceCommit" $source
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup compilation failed" }
