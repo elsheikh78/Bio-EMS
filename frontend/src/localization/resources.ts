@@ -64,6 +64,7 @@ export interface TranslationResources {
     configuration: string;
     users: string;
     backupRestore?: string;
+    systemUpdate?: string;
   };
 
   workspace: {
@@ -347,6 +348,7 @@ export const englishResources = {
     configuration: "Configuration",
     users: "Users",
     backupRestore: "Backup & Restore",
+    systemUpdate: "System update",
   },
 
   workspace: {
@@ -655,6 +657,7 @@ export const arabicResources = {
     configuration: "الإعدادات",
     users: "المستخدمون",
     backupRestore: "النسخ الاحتياطي والاستعادة",
+    systemUpdate: "تحديث النظام",
   },
   workspace: {
     title: "مساحة العمل التشغيلية",

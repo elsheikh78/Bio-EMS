@@ -148,6 +148,7 @@ export function SystemOwnerDeviceProvisioningPage() {
   const ar = language === "ar";
   const [selectedPort, setSelectedPort] = useState("");
   const [selectedTarget, setSelectedTarget] = useState("");
+  const [networkMode, setNetworkMode] = useState<"wifi" | "ethernet">("wifi");
   const [wifiSsid, setWifiSsid] = useState("");
   const [wifiPassword, setWifiPassword] = useState("");
   const [platformUrl, setPlatformUrl] = useState(() => {
@@ -190,9 +191,10 @@ export function SystemOwnerDeviceProvisioningPage() {
     detect.data?.port === effectivePort && detect.data.supported;
   const formReady =
     Boolean(effectiveTarget) &&
-    wifiSsid.length > 0 &&
-    !/\s/.test(wifiSsid) &&
-    wifiPassword.length >= 8 &&
+    (networkMode === "ethernet" ||
+      (wifiSsid.length > 0 &&
+        !/\s/.test(wifiSsid) &&
+        wifiPassword.length >= 8)) &&
     platformUrl.length > 0;
 
   return (
@@ -542,18 +544,34 @@ export function SystemOwnerDeviceProvisioningPage() {
                 ))}
               </TextField>
               <TextField
-                label={text.wifiSsid}
-                value={wifiSsid}
-                onChange={(event) => setWifiSsid(event.target.value)}
-                helperText={text.wifiSsidHelp}
-                error={wifiSsid.length > 0 && /\s/.test(wifiSsid)}
-              />
-              <TextField
-                label={text.wifiPassword}
-                type="password"
-                value={wifiPassword}
-                onChange={(event) => setWifiPassword(event.target.value)}
-              />
+                select
+                label="Ethernet / Wi-Fi"
+                value={networkMode}
+                onChange={(event) => {
+                  setNetworkMode(event.target.value as "wifi" | "ethernet");
+                  flashBind.reset();
+                }}
+              >
+                <MenuItem value="wifi">Wi-Fi</MenuItem>
+                <MenuItem value="ethernet">Ethernet — W5500 / DHCP</MenuItem>
+              </TextField>
+              {networkMode === "wifi" && (
+                <>
+                  <TextField
+                    label={text.wifiSsid}
+                    value={wifiSsid}
+                    onChange={(event) => setWifiSsid(event.target.value)}
+                    helperText={text.wifiSsidHelp}
+                    error={wifiSsid.length > 0 && /\s/.test(wifiSsid)}
+                  />
+                  <TextField
+                    label={text.wifiPassword}
+                    type="password"
+                    value={wifiPassword}
+                    onChange={(event) => setWifiPassword(event.target.value)}
+                  />
+                </>
+              )}
               <TextField
                 label={text.platformUrl}
                 value={platformUrl}
@@ -579,8 +597,10 @@ export function SystemOwnerDeviceProvisioningPage() {
                     installationId: effectiveTarget.installationId,
                     deviceId: effectiveTarget.deviceId,
                     port: effectivePort,
-                    wifiSsid,
-                    wifiPassword,
+                    networkMode,
+                    ...(networkMode === "wifi"
+                      ? { wifiSsid, wifiPassword }
+                      : {}),
                     platformUrl,
                   });
                 }}

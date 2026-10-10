@@ -250,8 +250,9 @@ export const flashAndBindInstallationDevice = asyncHandler(
 
     const bootstrap = devicePairingService.issuePairingCode(installationId, deviceId, actor);
     const provisioned = await deviceProvisioningLocalClient.provision(port, {
-      wifiSsid: String(request.body.wifiSsid),
-      wifiPassword: String(request.body.wifiPassword),
+      networkMode: request.body.networkMode ?? "wifi",
+      wifiSsid: request.body.wifiSsid,
+      wifiPassword: request.body.wifiPassword,
       platformUrl: String(request.body.platformUrl),
       pairingCode: bootstrap.pairing_code,
     });

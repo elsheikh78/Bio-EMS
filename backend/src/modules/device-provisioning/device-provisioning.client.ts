@@ -123,8 +123,9 @@ export class DeviceProvisioningLocalClient {
   provision(
     port: string,
     input: {
-      wifiSsid: string;
-      wifiPassword: string;
+      networkMode?: "wifi" | "ethernet";
+      wifiSsid?: string;
+      wifiPassword?: string;
       platformUrl: string;
       pairingCode: string;
     }

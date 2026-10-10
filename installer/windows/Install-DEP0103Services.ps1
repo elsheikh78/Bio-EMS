@@ -314,6 +314,9 @@ Protect-Path $paths.Logs "BIOEMS-Backend"
 Add-PathAccess $paths.Logs "BIOEMS-MQTT" "(OI)(CI)M"
 Add-PathAccess $paths.Logs "BIOEMS-InfluxDB" "(OI)(CI)M"
 Protect-Path $paths.Backups "BIOEMS-Backend"
+$updateJobs = Join-Path $persistent "update-jobs"
+New-Item -ItemType Directory -Path $updateJobs -Force | Out-Null
+Protect-Path $updateJobs "BIOEMS-Backend"
 
 Start-Service "BIOEMS-MQTT"
 Start-Service "BIOEMS-InfluxDB"

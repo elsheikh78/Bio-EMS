@@ -298,6 +298,7 @@ jobs:
           "$hash  $($setup.Name)" | Set-Content -LiteralPath (Join-Path $output "SHA256SUMS.txt") -Encoding ASCII
           Copy-Item -LiteralPath ".\installer\windows\INTERNAL-SETUP-TESTING.md" -Destination (Join-Path $output "INTERNAL-SETUP-TESTING.md")
           Copy-Item -LiteralPath ".\installer\windows\Install-PilotSigningCertificate.ps1" -Destination (Join-Path $output "Install-PilotSigningCertificate.ps1")
+          & (Join-Path $output "Install-PilotSigningCertificate.ps1") -CertificatePath $certificatePath -ThumbprintPath (Join-Path $output "CERTIFICATE-THUMBPRINT.txt")
           Copy-Item -LiteralPath ".\installer\windows\Install-BIOEMS-Pilot.cmd" -Destination (Join-Path $output "Install-BIOEMS-Pilot.cmd")
 
       - name: Install Setup and verify pilot health on Windows
@@ -429,6 +430,15 @@ jobs:
         shell: powershell
         run: |
           & ".\installer\windows\Test-DEPBRInfluxRoundTrip.ps1" -ApplicationRoot "C:\Program Files\BIO-EMS" -PersistentRoot "C:\ProgramData\BIO-EMS"
+
+      - name: Exercise client update upload and independent worker
+        timeout-minutes: 20
+        shell: powershell
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP "bioems-staging\output"
+          $setup = @(Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File)
+          if ($setup.Count -ne 1) { throw "Expected one client Setup" }
+          & ".\installer\windows\Test-ClientUpdateRoundTrip.ps1" -SetupPath $setup[0].FullName
 
       - name: Exercise controlled New Install over existing installation
         timeout-minutes: 15

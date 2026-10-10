@@ -34,8 +34,9 @@ export interface SerialPortInventoryItem {
 }
 
 export interface SerialProvisioningInput {
-  wifiSsid: string;
-  wifiPassword: string;
+  networkMode?: "wifi" | "ethernet";
+  wifiSsid?: string;
+  wifiPassword?: string;
   platformUrl: string;
   pairingCode: string;
 }
@@ -335,10 +336,14 @@ export class LocalProvisioningRunner {
       "  $epoch=[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()",
       "  $serial.WriteLine(('settime {0}' -f $epoch))",
       "  if((Read-Window 500) -notmatch 'UTC time saved') { throw 'Controller UTC time was not saved' }",
+      "  if ($env:BIOEMS_NETWORK_MODE -eq 'wifi') {",
       "  $serial.WriteLine(('setwifi {0} {1}' -f $ssid,$password))",
       "  $wifi=Read-Window 2500",
       "  Write-Output $wifi",
       "  if($wifi -notmatch 'wifi configuration saved') { throw 'Wi-Fi configuration was not acknowledged' }",
+      "  }",
+      "  $serial.WriteLine('setnetwork ' + $env:BIOEMS_NETWORK_MODE)",
+      "  if((Read-Window 750) -notmatch 'network configuration saved') { throw 'Network mode was not acknowledged' }",
       "  $serial.WriteLine(('setplatform {0}' -f $platformUrl))",
       "  $platform=Read-Window 2000",
       "  Write-Output $platform",
@@ -365,8 +370,11 @@ export class LocalProvisioningRunner {
         env: {
           ...process.env,
           BIOEMS_SERIAL_PORT: port,
-          BIOEMS_WIFI_SSID_B64: Buffer.from(input.wifiSsid, "utf8").toString("base64"),
-          BIOEMS_WIFI_PASSWORD_B64: Buffer.from(input.wifiPassword, "utf8").toString("base64"),
+          BIOEMS_NETWORK_MODE: input.networkMode ?? "wifi",
+          BIOEMS_WIFI_SSID_B64: Buffer.from(input.wifiSsid ?? "", "utf8").toString("base64"),
+          BIOEMS_WIFI_PASSWORD_B64: Buffer.from(input.wifiPassword ?? "", "utf8").toString(
+            "base64"
+          ),
           BIOEMS_PLATFORM_URL_B64: Buffer.from(input.platformUrl, "utf8").toString("base64"),
           BIOEMS_PAIRING_CODE: input.pairingCode,
           BIOEMS_CA_DER_B64: certificate.toString("base64"),
@@ -389,7 +397,7 @@ export class LocalProvisioningRunner {
       ).toLowerCase(),
       deviceId: provisioningField(output, "device-id", "[A-Za-z0-9_-]{1,80}"),
       siteCode: provisioningField(output, "site-code", "[A-Za-z0-9_-]{1,80}"),
-      toolOutput: redactProvisioningOutput(output, [input.wifiPassword, input.pairingCode]),
+      toolOutput: redactProvisioningOutput(output, [input.wifiPassword ?? "", input.pairingCode]),
     };
   }
 }

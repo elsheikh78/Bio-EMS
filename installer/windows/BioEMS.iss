@@ -11,6 +11,8 @@
 AppId={{7F182A31-C831-4CCF-965B-BF40A54D14C3}
 AppName={#ProductName}
 AppVersion={#ProductVersion}
+VersionInfoProductName=BIO-EMS
+VersionInfoDescription=BIO-EMS Client Setup
 DefaultDirName={autopf}\BIO-EMS
 DefaultGroupName=BIO-EMS
 ArchitecturesAllowed=x64compatible
@@ -49,6 +51,8 @@ Source: "{#StageRoot}\payload\firmware-site-controller.zip"; Flags: dontcopy noe
 Source: "{#StageRoot}\payload\firmware-sim-d4-nano.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\mosquitto-2.1.2-install-windows-x64.exe"; DestDir: "{app}\vendor"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\WinSW-x64.exe"; DestDir: "{app}\runtime\service-wrapper"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Test-PlatformUpdatePackage.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Invoke-PlatformUpdate.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp

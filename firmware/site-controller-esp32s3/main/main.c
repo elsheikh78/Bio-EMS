@@ -19,6 +19,7 @@
 
 #include "bioems_version.h"
 #include "sim_modbus.h"
+#include "ethernet.h"
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAILED_BIT BIT1
@@ -101,6 +102,11 @@ static void wifi_event_handler(
   }
 }
 
+static bool ethernet_selected(void) {
+  char mode[16] = {0};
+  return nvs_get_text("network_mode", mode, sizeof(mode)) && strcmp(mode, "ethernet") == 0;
+}
+static bool network_started;
 static bool connect_wifi(void) {
   char ssid[33] = {0};
   char password[65] = {0};
@@ -110,6 +116,11 @@ static bool connect_wifi(void) {
   }
   nvs_get_text("wifi_pass", password, sizeof(password));
 
+  if (wifi_events) {
+    esp_wifi_connect();
+    return (xEventGroupWaitBits(wifi_events, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE,
+      pdMS_TO_TICKS(20000)) & WIFI_CONNECTED_BIT) != 0;
+  }
   wifi_events = xEventGroupCreate();
   ESP_ERROR_CHECK(esp_netif_init());
   esp_err_t loop_result = esp_event_loop_create_default();
@@ -143,6 +154,14 @@ static bool connect_wifi(void) {
   return (bits & WIFI_CONNECTED_BIT) != 0;
 }
 
+static bool connect_network(void) {
+  network_started = true;
+  return ethernet_selected() ? bioems_ethernet_connect() : connect_wifi();
+}
+static bool network_ready(void) {
+  return ethernet_selected() ? bioems_ethernet_ready() :
+    (wifi_events && (xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT));
+}
 static esp_err_t http_event(esp_http_client_event_t *event) {
   http_buffer_t *buffer = (http_buffer_t *)event->user_data;
   if (event->event_id != HTTP_EVENT_ON_DATA || !buffer || event->data_len <= 0) {
@@ -263,8 +282,8 @@ static bool claim_pairing(const char *code) {
     return false;
   }
 
-  if (!connect_wifi()) {
-    printf("wifi connection failed\n");
+  if (!connect_network()) {
+    printf("network connection failed\n");
     return false;
   }
 
@@ -337,6 +356,7 @@ static void print_status(void) {
   bool paired = nvs_get_text("binding_id", binding, sizeof(binding));
 
   printf("BIO-EMS Site Controller\n");
+  printf("  network-mode: %s\n", ethernet_selected() ? "ethernet" : "wifi");
   printf("  model: %s\n", BIOEMS_CONTROLLER_MODEL);
   printf("  firmware: %s\n", BIOEMS_FIRMWARE_VERSION);
   printf("  protocol: %s\n", BIOEMS_PROTOCOL_VERSION);
@@ -418,8 +438,7 @@ static void sim_poll_task(void *argument) {
         if (nvs_get_text("binding_id", binding, sizeof(binding)) &&
             nvs_get_text("tele_token", token, sizeof(token)) &&
             nvs_get_text("platform_url", base_url, sizeof(base_url)) &&
-            nvs_get_text("tls_ca", ca_pem, sizeof(ca_pem)) && wifi_events &&
-            (xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT)) {
+            nvs_get_text("tls_ca", ca_pem, sizeof(ca_pem)) && network_ready()) {
           char url[MAX_URL + 80];
           snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base_url, binding);
           char body[320];
@@ -447,7 +466,7 @@ static void sim_poll_task(void *argument) {
         }
       }
     }
-    if (wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
+    if (!ethernet_selected() && wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
       esp_wifi_connect();
     vTaskDelay(pdMS_TO_TICKS(5000));
   }
@@ -506,6 +525,13 @@ static void command_loop(void) {
     }
     if (strcmp(line, "clearbinding") == 0) {
       clear_binding();
+      continue;
+    }
+    if (strncmp(line, "setnetwork ", 11) == 0) {
+      const char *mode = line + 11;
+      if (strcmp(mode, "wifi") && strcmp(mode, "ethernet")) { printf("invalid network mode\n"); continue; }
+      if (network_started) { printf("reboot required before changing network mode\n"); continue; }
+      if (nvs_set_text("network_mode", mode) == ESP_OK) printf("network configuration saved\n");
       continue;
     }
     if (strncmp(line, "setwifi ", 8) == 0) {
@@ -619,7 +645,7 @@ void app_main(void) {
   print_status();
   char current_binding[MAX_NVS_TEXT];
   if (nvs_get_text("binding_id", current_binding, sizeof(current_binding)))
-    connect_wifi();
+    connect_network();
   if (sim_modbus_init())
     xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
   else

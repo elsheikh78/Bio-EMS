@@ -137,3 +137,30 @@ Re-save/revalidate unprovisioned installation revisions for the new controller v
 Flash & Bind. Existing sensor channel assignments are preserved; do not delete sensors.
 Hardware tests of detection, USB serial scan, RS485 addressing and missing probes are still
 required. USB diagnostics do not implement a remote network scan.
+
+## Pilot network selection (0.1.0-pilot.5)
+
+USB commissioning accepts `setnetwork wifi` or `setnetwork ethernet` before pairing.
+Legacy devices without a stored mode default to Wi-Fi. Wi-Fi still uses `setwifi`;
+Ethernet uses the ESP-IDF W5500 driver and DHCP, without Wi-Fi credentials. Pairing
+must reach the HTTPS platform before the device is considered provisioned. Sensor
+polling continues during link loss; this change does not add offline telemetry replay
+or automatic Ethernet/Wi-Fi failover. Configure a new device before binding; changing
+an already running device's mode requires a separate reconfiguration/reboot flow.
+
+The following **new bench pin assignment** is configurable through `menuconfig`;
+verify the actual ESP32-S3 board and W5500 module before connecting it. These pins
+are not a statement that the earlier Word wiring diagram already used this map.
+
+| W5500 | ESP32-S3 default |
+|---|---|
+| MOSI | GPIO11 |
+| MISO | GPIO13 |
+| SCLK | GPIO12 |
+| CS | GPIO10 |
+| INT | Unconnected; polling mode |
+| RST | Module hardware reset/power-on reset; no MCU reset GPIO |
+
+Keep GPIO17/18 for the existing HW-519 RS485 interface. Use the purchased module's
+specified power input and 3.3 V logic; do not connect a 5 V logic signal to ESP32-S3.
+W5500 driver initialization and link recovery require bench verification on hardware.

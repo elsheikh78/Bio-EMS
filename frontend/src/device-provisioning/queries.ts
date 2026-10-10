@@ -133,8 +133,9 @@ export function useFlashAndBindProvisioningDevice() {
       installationId: string;
       deviceId: string;
       port: string;
-      wifiSsid: string;
-      wifiPassword: string;
+      networkMode?: "wifi" | "ethernet";
+      wifiSsid?: string;
+      wifiPassword?: string;
       platformUrl: string;
     }) =>
       flashBindResultSchema.parse(
