@@ -214,6 +214,11 @@ jobs:
           }
           if ($failed) { throw "Windows PowerShell installer script parsing failed" }
 
+      - name: Verify fresh and legacy Provisioner token Repair compatibility
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-ProvisionerTokenContract.ps1"
+
       - name: Acquire and verify locked vendor inputs
         shell: powershell
         run: |

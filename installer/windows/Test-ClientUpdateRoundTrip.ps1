@@ -6,6 +6,9 @@ $application='C:\Program Files\BIO-EMS'
 $persistent='C:\ProgramData\BIO-EMS'
 $receipt=Join-Path $persistent 'licensing\installation-provisioning-receipt.json'
 $identity=(Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json).installationId
+$environmentPath=Join-Path $persistent 'config\backend.env'
+$tokenBefore=@(Get-Content -LiteralPath $environmentPath | Where-Object { $_.StartsWith('BIOEMS_PROVISIONER_TOKEN=') })
+if ($tokenBefore.Count -ne 1) {throw 'Expected one existing Provisioner secret'}
 $login=Invoke-RestMethod -Uri "$base/auth/login" -Method Post -ContentType 'application/json' -Body (@{username='ci-admin';password='CiAdminPilot2026'} | ConvertTo-Json)
 $headers=@{Authorization="Bearer $($login.access_token)"}
 $installed=Invoke-RestMethod -Uri "$base/platform-updates" -Headers $headers
@@ -54,6 +57,8 @@ if ($status.state -ne 'SUCCEEDED') {
   throw "Client update round trip failed state=$($status.state) error=$($status.error)"
 }
 if ((Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json).installationId -ne $identity) {throw 'Update changed installation identity'}
+$tokenAfter=@(Get-Content -LiteralPath $environmentPath | Where-Object { $_.StartsWith('BIOEMS_PROVISIONER_TOKEN=') })
+if ($tokenAfter.Count -ne 1 -or $tokenAfter[0] -cne $tokenBefore[0]) {throw 'Repair changed the existing Provisioner secret'}
 $health=Invoke-RestMethod -Uri "$base/health"
 if ($health.status -ne 'UP') {throw 'Backend did not recover'}
 $state=Invoke-RestMethod -Uri "$base/platform-updates" -Headers $headers

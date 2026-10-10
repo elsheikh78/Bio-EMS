@@ -199,6 +199,18 @@ function New-DeviceProvisionerToken {
     try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }
     return ([BitConverter]::ToString($bytes) -replace "-", "").ToLowerInvariant()
 }
+function Test-ControlledProvisionerToken {
+    param([string]$Token)
+    # Fresh installers generate Base64; legacy Repair generates hexadecimal.
+    # Preserve either existing secret instead of rotating one side of the link.
+    if (-not $Token -or $Token.Length -lt 32) { return $false }
+    if ($Token -cmatch '^[a-f0-9]+\z') { return $true }
+    if ($Token -cnotmatch '^[A-Za-z0-9+/]+={0,2}\z') { return $false }
+    try {
+        $decoded = [Convert]::FromBase64String($Token)
+        return [Convert]::ToBase64String($decoded) -ceq $Token
+    } catch { return $false }
+}
 function Get-BackendEnvironmentValue([string]$path, [string]$name) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $null }
     $prefix = "$name="
@@ -242,7 +254,7 @@ function Ensure-DeviceProvisionerService {
         $token = New-DeviceProvisionerToken
         [IO.File]::AppendAllText($backendEnv, "`r`nBIOEMS_PROVISIONER_TOKEN=$token", (New-Object Text.UTF8Encoding($false)))
     }
-    if ($token.Length -lt 32 -or $token -notmatch "^[a-f0-9]+$") {
+    if (-not (Test-ControlledProvisionerToken $token)) {
         throw "Existing Device Provisioner token does not satisfy the controlled contract"
     }
 
