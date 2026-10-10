@@ -29,7 +29,7 @@ const jobSchema = z.object({
 const statusSchema = z.object({
   installedVersion: z.string(),
   sourceCommit: z.string(),
-  internetEnabled: z.literal(false),
+  internetEnabled: z.boolean(),
   latestJob: jobSchema.nullable(),
 });
 export function SystemUpdatePage() {
@@ -60,6 +60,15 @@ export function SystemUpdatePage() {
     },
     onSuccess: refresh,
   });
+  const cloud = useMutation({
+    mutationFn: async () =>
+      jobSchema.parse(
+        await protectedRequest("/platform-updates/internet", {
+          method: "POST",
+        }),
+      ),
+    onSuccess: refresh,
+  });
   const apply = useMutation({
     mutationFn: async () =>
       protectedRequest(
@@ -79,6 +88,7 @@ export function SystemUpdatePage() {
   const running = job?.state === "QUEUED" || job?.state === "APPLYING";
   const pending =
     upload.isPending ||
+    cloud.isPending ||
     apply.isPending ||
     cancel.isPending ||
     running ||
@@ -206,7 +216,7 @@ export function SystemUpdatePage() {
                   : "Could not read update status. Check the system connection."}
               </Alert>
             )}
-            {[upload.error, apply.error, cancel.error]
+            {[upload.error, cloud.error, apply.error, cancel.error]
               .filter(Boolean)
               .map((error, i) => (
                 <Alert severity="error" key={i}>
@@ -225,9 +235,12 @@ export function SystemUpdatePage() {
             <Alert severity="info">
               {ar
                 ? "غير متاح في البيلوت. يُفعّل بعد تجهيز خادم تحديثات الشركة؛ ويستخدم نفس مسار التحقق والتثبيت."
-                : "Disabled in Pilot. Available after the company update server is configured, using the same verification and installation path."}
+                : "Disabled by default in Pilot. Once the company server is configured, downloaded packages use the same verification and installation path."}
             </Alert>
-            <Button disabled>
+            <Button
+              disabled={!status.data?.internetEnabled || pending}
+              onClick={() => cloud.mutate()}
+            >
               {ar ? "البحث عن تحديث وتنزيله" : "Check and download update"}
             </Button>
           </Stack>

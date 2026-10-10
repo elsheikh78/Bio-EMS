@@ -2,11 +2,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { createWriteStream } from "node:fs";
 import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { Transform } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import type { Readable } from "node:stream";
 import { AppError } from "../../errors/app-error";
 const execute = promisify(execFile);
 export type UpdateJob = {
@@ -52,6 +51,29 @@ async function jobs(root: string) {
       result.push(JSON.parse(await readFile(resolve(root, file), "utf8")) as UpdateJob);
   return result.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
+export function cloudUpdateUrl(environment: NodeJS.ProcessEnv = process.env): string | null {
+  if (environment.BIOEMS_UPDATE_CLOUD_ENABLED !== "true") return null;
+  try {
+    const url = new URL(environment.BIOEMS_UPDATE_CLOUD_URL ?? "");
+    if (url.protocol !== "https:" || url.username || url.password || url.hash) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+export async function downloadCloudUpdate(actor: string) {
+  const url = cloudUpdateUrl();
+  if (!url)
+    throw new AppError("Cloud updates are not enabled in Pilot", 503, "UPDATE_CLOUD_DISABLED");
+  settings();
+  const response = await fetch(url, { redirect: "error", signal: AbortSignal.timeout(300000) });
+  if (!response.ok || !response.body)
+    throw new AppError("Cloud update download failed", 502, "UPDATE_DOWNLOAD_FAILED");
+  return stageUpdate(
+    Readable.fromWeb(response.body as unknown as import("node:stream/web").ReadableStream),
+    actor
+  );
+}
 export async function updateStatus() {
   const { root, app } = settings();
   const manifest = JSON.parse(
@@ -60,7 +82,7 @@ export async function updateStatus() {
   return {
     installedVersion: manifest.version,
     sourceCommit: manifest.sourceCommit,
-    internetEnabled: false as const,
+    internetEnabled: cloudUpdateUrl() !== null,
     latestJob: (await jobs(root))[0] ?? null,
   };
 }

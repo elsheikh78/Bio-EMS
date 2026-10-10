@@ -2,10 +2,12 @@ import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import router from "../platform-update.route";
+import { AppError } from "../../errors/app-error";
 import { errorMiddleware } from "../../middleware/error.middleware";
 import * as updates from "../../modules/platform-update/platform-update.service";
 vi.mock("../../modules/platform-update/platform-update.service", () => ({
   updateStatus: vi.fn(),
+  downloadCloudUpdate: vi.fn(),
   stageUpdate: vi.fn(),
   applyUpdate: vi.fn(),
   cancelUpdate: vi.fn(),
@@ -38,6 +40,9 @@ describe("Client update authorization", () => {
     expect(updates.stageUpdate).not.toHaveBeenCalled();
   });
   it("keeps cloud disabled on the server as well as the page", async () => {
+    vi.mocked(updates.downloadCloudUpdate).mockRejectedValue(
+      new AppError("Cloud updates disabled", 503, "UPDATE_CLOUD_DISABLED")
+    );
     expect((await request(app).post("/updates/internet")).status).toBe(503);
     expect(updates.stageUpdate).not.toHaveBeenCalled();
   });

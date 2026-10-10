@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareUpdateVersions } from "./platform-update.service";
+import { cloudUpdateUrl, compareUpdateVersions } from "./platform-update.service";
 import { deviceProvisioningFlashBindSchema } from "../device-provisioning/device-provisioning.schema";
 const device = {
   installationId: "1f2f2f2f-2f2f-4f2f-8f2f-2f2f2f2f2f2f",
@@ -8,6 +8,30 @@ const device = {
   platformUrl: "https://192.168.1.20",
 };
 describe("Pilot update and network policy", () => {
+  it("enables cloud download only with an explicit flag and a credential-free HTTPS URL", () => {
+    expect(
+      cloudUpdateUrl({ BIOEMS_UPDATE_CLOUD_URL: "https://updates.example/client.exe" })
+    ).toBeNull();
+    expect(cloudUpdateUrl({ BIOEMS_UPDATE_CLOUD_ENABLED: "true" })).toBeNull();
+    expect(
+      cloudUpdateUrl({
+        BIOEMS_UPDATE_CLOUD_ENABLED: "true",
+        BIOEMS_UPDATE_CLOUD_URL: "http://updates.example/client.exe",
+      })
+    ).toBeNull();
+    expect(
+      cloudUpdateUrl({
+        BIOEMS_UPDATE_CLOUD_ENABLED: "true",
+        BIOEMS_UPDATE_CLOUD_URL: "https://user:password@updates.example/client.exe",
+      })
+    ).toBeNull();
+    expect(
+      cloudUpdateUrl({
+        BIOEMS_UPDATE_CLOUD_ENABLED: "true",
+        BIOEMS_UPDATE_CLOUD_URL: "https://updates.example/client.exe",
+      })
+    ).toBe("https://updates.example/client.exe");
+  });
   it("compares numeric versions rather than lexicographic values", () => {
     expect(compareUpdateVersions("0.20.10", "0.20.2")).toBe(1);
     expect(compareUpdateVersions("0.19.99", "0.20.0")).toBe(-1);

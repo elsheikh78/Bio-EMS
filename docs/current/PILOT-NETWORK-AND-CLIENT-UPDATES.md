@@ -18,9 +18,14 @@ firmware, manufacturer tools, or scripts. The administrator uploads, reviews the
 version/hash, then explicitly installs or discards it. Same-version builds are allowed
 because Pilot source revisions may share version 0.20.0; lower versions are refused.
 
-The installed page also shows the source commit. Internet download is disabled in both
-the UI and API; a later cloud download adapter must feed the same staging, publisher,
-hash, compatibility and installation checks. It must not bypass those checks.
+The installed page also shows the source commit. Internet download is disabled by default in both UI and API. After the company server
+is commissioned, configure `BIOEMS_UPDATE_CLOUD_ENABLED=true` and
+`BIOEMS_UPDATE_CLOUD_URL=https://<company-server>/client.exe` in the protected backend
+configuration and restart Backend. The adapter requires HTTPS without URL credentials,
+refuses redirects, bounds download time/size, and passes bytes through the same staging,
+publisher, hash, compatibility and source-commit verification. Download only stages the
+package; ADMIN must still review and click Install. With no valid URL/explicit flag,
+the control remains disabled. Pilot setup does not set either configuration value.
 
 Uploads are streamed to the protected ProgramData update-jobs directory (512 MiB max).
 Windows Authenticode must be Valid and the certificate must already be present in the

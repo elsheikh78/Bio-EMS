@@ -46,6 +46,34 @@ describe("Client system update", () => {
       screen.queryByRole("button", { name: /Install update/ }),
     ).not.toBeInTheDocument();
   });
+  it("downloads from the configured cloud adapter without automatically applying", async () => {
+    request.mockImplementation((path: string) =>
+      Promise.resolve(
+        path === "/platform-updates/internet"
+          ? { jobId: "cloud-1", state: "PREPARED", version: "0.21.0" }
+          : {
+              installedVersion: "0.20.0",
+              sourceCommit: "a".repeat(40),
+              internetEnabled: true,
+              latestJob: null,
+            },
+      ),
+    );
+    show();
+    const button = await screen.findByRole("button", {
+      name: "Check and download update",
+    });
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith("/platform-updates/internet", {
+        method: "POST",
+      }),
+    );
+    expect(
+      request.mock.calls.some(([path]) => String(path).endsWith("/apply")),
+    ).toBe(false);
+  });
   it("installs only the verified job displayed by the server", async () => {
     request.mockResolvedValue({
       installedVersion: "0.20.0",

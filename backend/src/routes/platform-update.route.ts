@@ -4,6 +4,7 @@ import { PERMISSION } from "../authorization/permissions";
 import {
   applyUpdate,
   cancelUpdate,
+  downloadCloudUpdate,
   stageUpdate,
   updateStatus,
 } from "../modules/platform-update/platform-update.service";
@@ -27,7 +28,7 @@ router.delete("/:jobId", async (req, res) => {
   await cancelUpdate(String(req.params.jobId));
   res.sendStatus(204);
 });
-router.post("/internet", (_req, res) => {
-  res.status(503).json({ message: "Cloud updates are not enabled in Pilot" });
+router.post("/internet", async (req, res) => {
+  res.status(201).json(await downloadCloudUpdate(customerAuditActor(req).username));
 });
 export default router;
