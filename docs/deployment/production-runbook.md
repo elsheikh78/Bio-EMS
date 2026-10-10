@@ -1,5 +1,19 @@
 # BIO-EMS Pilot Production Runbook
 
+## 10 October Windows update operations
+
+See [network/update guide](../current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) and
+[verified Pilot build notes](../current/PILOT-BUILD-NOTES-2026-10-10.md).
+Use the company-supplied launcher for certificate trust and controlled Setup.
+On an existing installation select **Reinstall / Repair**. ADMIN `/system-update`
+accepts the extracted signed Client Setup EXE, not the ZIP or Manufacturer Setup.
+Schedule a maintenance window: monitoring/notifications pause during installation.
+Review the persisted terminal result and post-install health after Backend reconnects.
+Internet updates remain disabled until explicit company HTTPS configuration and
+stable signing are established. Firmware flashing is a separate provisioning action;
+a PC update does not automatically flash existing controllers.
+
+
 ## Windows Pilot operator path — 30 September 2026
 
 For the packaged Windows Pilot, use the governed client Setup, its protected services/configuration and post-install health check. Manufacturer Tools is a separate company-side signing tool; do not distribute private keys with the client. Use `/system-owner/login` after controlled owner provisioning/MFA, `/system-owner/installations` for logical authoring, then `/system-owner/device-provisioning` for USB Flash & Bind. Use customer `/backup-restore` or the owner equivalent for governed complete backup/restore and verify final job/health evidence after reconnect. The manual deployment instructions below describe a different deployment path; do not overwrite installed protected configuration with a development `.env`. Record artifact source SHA and SHA256 rather than relying on `0.20.0` alone.

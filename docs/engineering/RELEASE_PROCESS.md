@@ -1,5 +1,17 @@
 # BIO-EMS Release Process
 
+## Current Pilot artifact record — 10 October 2026
+
+Use [Pilot build notes](../current/PILOT-BUILD-NOTES-2026-10-10.md) for the exact
+merged source, passing workflow runs and signed artifact hashes. A documentation
+PR must not bump `VERSION`, retag v0.20.0, or attach later changes to that historical
+release as if they were its original contents. Client, Manufacturer and firmware
+artifacts have distinct roles; shared version numbers do not establish identical bytes.
+Record the artifact source SHA and the SHA256SUMS signed EXE hash. Windows signing
+occurs after compilation, so the existing build-evidence setupSha256 is the pre-signing
+hash; it must not be used as the distributed signed executable checksum.
+
+
 | Item           | Value               |
 | -------------- | ------------------- |
 | Document       | Release Process     |
@@ -8,7 +20,7 @@
 | Applies To     | BIO-EMS Engineering |
 | Owner          | Engineering Team    |
 | Classification | Internal            |
-| Last Updated   | 2026-09-01          |
+| Last Updated   | 2026-10-10          |
 
 ## 1. Purpose
 
@@ -18,8 +30,9 @@ The process makes a release a traceable engineering milestone: a reviewed reposi
 state with verified build and tests, accurate documentation, an identified version,
 and a corresponding Git tag.
 
-This document does not describe CI/CD pipelines, GitHub Actions, automated deployment,
-or release automation because none is implemented in the current repository.
+GitHub Actions provides backend/frontend CI, ESP32-S3 firmware, Manufacturer Tools
+and signed Internal Windows Setup builds. These gates produce engineering evidence
+and artifacts; they do not automatically approve Production deployment or field acceptance.
 
 ## 2. Scope
 
@@ -168,7 +181,9 @@ This preserves release traceability.
 
 BIO-EMS currently records its published version in the root `VERSION` file and
 documents published and unreleased repository development in `CHANGELOG.md`. The
-current published release is `v0.17.0`; earlier release tags remain immutable.
+source version is `0.20.0`; the published source-release baseline is `v0.20.0`.
+Post-release Pilot changes remain under Unreleased until an explicit next-version
+release decision; earlier release tags remain immutable.
 
 Completed Sprint work does not itself update `VERSION`, create a tag, or publish a
 GitHub Release. Those actions require a separate release-readiness review and explicit

@@ -6,9 +6,9 @@
 - [Historical archive / التوثيق التاريخي](docs/archive/README.md)
 - [Complete documentation index / الفهرس الكامل](docs/README.md)
 
-## Documentation baseline — 30 September 2026
+## Documentation baseline — 10 October 2026
 
-Source reviewed: `6efd78a`. See [all documents](docs/README.md) and `PROJECT_STATE.md` for evidence boundaries. Builder/USB provisioning exists in source; MAIN-16-2G/SIM-D4 acquisition remains an integration gap, and sensor technology/site quantity decisions remain open.
+Current integration checkpoint: `main@98cea57` (PR #288). See [Project State](PROJECT_STATE.md) for status and evidence boundaries, [Pilot build notes](docs/current/PILOT-BUILD-NOTES-2026-10-10.md) for exact artifacts, and [network/update operations](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) for Wi-Fi/Ethernet commissioning and customer updates. Physical hardware and site acceptance remain open.
 
 Enterprise Environmental Monitoring System for regulated and operational environments.
 
@@ -36,7 +36,7 @@ Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a histor
 
 ## Current position
 
-The core source platform is mature. The following are historical verification results, not tests rerun by the 30 September documentation update:
+The core source platform is mature. The following are historical verification results, not test counts from the 10 October build:
 
 - Backend typecheck/build/lint/format passed; 137 test files / 965 tests passed on the current Windows verification baseline;
 - Frontend typecheck/lint/format/build passed; 56 test files / 311 tests passed on the current verification baseline.
@@ -110,9 +110,9 @@ Installer source is materially advanced:
 
 Current `main` includes the installer/security/backup integration merged through PR #239 plus the Windows portability correction from PR #240. PR #240 CI and Internal Windows Setup both passed, and a separate clean-install exercise verified all three BIO-EMS services and customer ADMIN login.
 
-Still required:
+The PR #288 main build additionally passed install/health, backup/restore and the real client-update Repair round trip; see the build notes above. Repeat physical qualification is still required:
 
-- HTTPS/API/frontend health regression where affected;
+- HTTPS/API/frontend health regression on customer hosts where affected;
 - reboot recovery;
 - Repair/Upgrade/rollback;
 - retained-data Uninstall;
@@ -150,7 +150,7 @@ Separate evidence is still required for:
 - commercial Production Installer release.
 
 
-## 19 September 2026 integration checkpoint
+## Historical 19 September 2026 integration checkpoint
 
 - Active integration authority: draft PR #239 / `feat/dep-br-backup-restore`; it contains the stacked SEC-OWNER, COM, AUTH-RECOVERY and DEP-BR work carried forward from PRs #233, #235 and #237.
 - Manufacturer owner key `owner-primary-2026` was verified directly against the encrypted offline private key; approved SPKI DER SHA-256 is `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`.
@@ -159,7 +159,7 @@ Separate evidence is still required for:
 - Do not merge PR #239 until physical SEC-OWNER commissioning/MFA, Repair preservation, Backup/Restore historical telemetry and remaining DEP-BR acceptance are complete.
 - Older stacked PRs #233/#235/#237 are historical integration layers; reconcile/close them only after confirming #239 remains a strict descendant and is the selected merge vehicle. PR #138 is obsolete/conflicted documentation and should not be merged as-is.
 
-## 16 September 2026 status note
+## Historical 16 September 2026 status note
 
 - `main`: `653a573` (customer ADMIN Setup provisioning merged via PR #231).
 - SEC-OWNER-01: implemented on PR #233; Production acceptance/merge remains gated by the real manufacturer key ceremony and offline commissioning evidence.

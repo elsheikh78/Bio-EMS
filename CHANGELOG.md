@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### 10 October 2026 Pilot network and client update integration
+
+- Merged PR #288: Wi-Fi/W5500 DHCP choice for new controller commissioning and
+  controller firmware `0.1.0-pilot.5`; SIM-D4 remains `0.1.0-bench.2`.
+- Added ADMIN signed Client Setup EXE staging/review/install with persistent update
+  results and independent worker dispatch. Cloud download remains disabled by default.
+- Fixed Base64/legacy-hex Provisioner token compatibility, protected update-jobs
+  initialization during Repair, and original PostUpdate failure diagnostics.
+- Main Windows run `38078138666` passed install, backup/restore, update/Repair,
+  token/identity preservation, ACL migration and tamper rejection. Other main gates passed.
+- Manufacturer Tools behavior is unchanged. Product version stays `0.20.0`;
+  this entry does not amend the historical v0.20.0 release or claim physical acceptance.
+- Reconciled README, current indexes, project state, operations and release process;
+  exact build provenance is in `docs/current/PILOT-BUILD-NOTES-2026-10-10.md`.
+
+
 ### 30 September 2026 documentation reconciliation
 
 - Separated 72 dated closure/audit/acceptance records into `docs/archive/`, added current documentation navigation, and updated links and the required-document manifest path. Architectural decisions and active specifications retain their domain folders.
