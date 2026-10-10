@@ -17,6 +17,7 @@ AppName={#ProductName}
 AppVersion={#ProductVersion}
 VersionInfoProductName=BIO-EMS
 VersionInfoDescription=BIO-EMS Client Setup
+VersionInfoProductTextVersion={#ProductVersion}
 VersionInfoTextVersion={#ProductVersion}+{#SourceCommit}
 DefaultDirName={autopf}\BIO-EMS
 DefaultGroupName=BIO-EMS

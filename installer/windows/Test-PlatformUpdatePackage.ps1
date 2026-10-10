@@ -10,8 +10,12 @@ $publishers = @(Get-ChildItem Cert:\LocalMachine\TrustedPublisher | Where-Object
     $_.Thumbprint -eq $cert.Thumbprint -and $_.Subject -eq 'CN=BIO-EMS Pilot Internal Code Signing'
 })
 if ($publishers.Count -ne 1 -or $cert.NotAfter.ToUniversalTime() -le [DateTime]::UtcNow) { throw 'Update publisher is not an approved BIO-EMS publisher' }
-$info = $file.VersionInfo
-if ($info.ProductName -ne 'BIO-EMS' -or $info.FileDescription -ne 'BIO-EMS Client Setup' -or $info.ProductVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'File is not a BIO-EMS client update' }
+$info = [Diagnostics.FileVersionInfo]::GetVersionInfo($file.FullName)
+if ($info.ProductName -ne 'BIO-EMS' -or $info.FileDescription -ne 'BIO-EMS Client Setup' -or $info.ProductVersion -notmatch '^\d+\.\d+\.\d+(?:\.0)?$') {
+    throw "File is not a BIO-EMS client update (product=$($info.ProductName); description=$($info.FileDescription); productVersion=$($info.ProductVersion); fileVersion=$($info.FileVersion))"
+}
+$versionParts = $info.ProductVersion.Split('.')
+$productVersion = ($versionParts[0..2] -join '.')
 if ($info.FileVersion -notmatch '^\d+\.\d+\.\d+\+([a-f0-9]{40})$') { throw 'Update source commit is missing from signed metadata' }
 $sourceCommit = $matches[1]
-[ordered]@{sourceCommit=$sourceCommit;version=$info.ProductVersion; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant(); publisher=$cert.Thumbprint} | ConvertTo-Json -Compress
+[ordered]@{sourceCommit=$sourceCommit;version=$productVersion; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant(); publisher=$cert.Thumbprint} | ConvertTo-Json -Compress
