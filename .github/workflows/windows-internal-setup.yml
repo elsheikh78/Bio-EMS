@@ -432,6 +432,11 @@ jobs:
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
 
+      - name: Verify legacy Repair update directory ACL migration
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-UpdateJobsAclContract.ps1"
+
       - name: Exercise installed InfluxDB backup and historical telemetry restore
         timeout-minutes: 10
         shell: powershell

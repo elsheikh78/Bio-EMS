@@ -318,7 +318,15 @@ function Ensure-DeviceProvisionerService {
     & sc.exe config "BIOEMS-Provisioner" obj= "LocalSystem" start= "delayed-auto" | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "Device Provisioner service configuration failed during Repair" }
 }
+function Initialize-ControlledUpdateJobs {
+    param([string]$PersistentRoot)
+    $updateJobs = Join-Path $PersistentRoot "update-jobs"
+    New-Item -ItemType Directory -Path $updateJobs -Force | Out-Null
+    & icacls.exe $updateJobs /inheritance:r /grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F" "NT SERVICE\BIOEMS-Backend:(OI)(CI)M" /C /Q | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Unable to protect the controlled update job directory during Repair" }
+}
 function Ensure-RestoreWorkerService {
+    Initialize-ControlledUpdateJobs $persistent
     $servicesRoot = Join-Path $application "services"
     Grant-LifecycleAdministratorAccess $servicesRoot
     $wrapper = Join-Path $servicesRoot "BIOEMS-RestoreWorker.exe"
