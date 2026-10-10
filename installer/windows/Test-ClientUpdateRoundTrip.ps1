@@ -11,7 +11,28 @@ $headers=@{Authorization="Bearer $($login.access_token)"}
 $cloudRejected=$false
 try {Invoke-RestMethod -Uri "$base/platform-updates/internet" -Method Post -Headers $headers | Out-Null} catch {$cloudRejected=$_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 503}
 if (-not $cloudRejected) {throw 'Cloud updater must remain disabled'}
-$job=Invoke-RestMethod -Uri "$base/platform-updates/upload" -Method Post -Headers $headers -ContentType 'application/octet-stream' -InFile $SetupPath -TimeoutSec 180
+# Stream the installer instead of buffering a large EXE in Windows PowerShell's
+# Invoke-RestMethod. Keep a bounded timeout for upload plus signature validation.
+Add-Type -AssemblyName System.Net.Http
+$http=New-Object System.Net.Http.HttpClient
+$http.Timeout=[TimeSpan]::FromMinutes(10)
+$http.DefaultRequestHeaders.Authorization=New-Object System.Net.Http.Headers.AuthenticationHeaderValue('Bearer',$login.access_token)
+$inputStream=[IO.File]::OpenRead($SetupPath)
+$content=New-Object System.Net.Http.StreamContent($inputStream)
+$content.Headers.ContentType=New-Object System.Net.Http.Headers.MediaTypeHeaderValue('application/octet-stream')
+$content.Headers.ContentLength=$inputStream.Length
+Write-Host "Uploading signed client Setup ($($inputStream.Length) bytes)"
+try {
+  $response=$http.PostAsync("$base/platform-updates/upload",$content).GetAwaiter().GetResult()
+  $responseText=$response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+  if (-not $response.IsSuccessStatusCode) {throw "Update upload HTTP $([int]$response.StatusCode): $responseText"}
+  $job=$responseText | ConvertFrom-Json
+} catch {
+  Get-ChildItem -LiteralPath (Join-Path $persistent 'update-jobs') -Filter '*.json' -ErrorAction SilentlyContinue | ForEach-Object {Get-Content -LiteralPath $_.FullName -Raw}
+  Get-ChildItem -LiteralPath (Join-Path $persistent 'update-jobs') -Filter '*.exe' -ErrorAction SilentlyContinue | Select-Object Name,Length | Format-Table
+  Get-Service BIOEMS-Backend -ErrorAction SilentlyContinue | Format-Table Name,Status
+  throw
+} finally {$content.Dispose();$inputStream.Dispose();$http.Dispose()}
 if ($job.state -ne 'PREPARED' -or $job.sha256 -ne (Get-FileHash -Algorithm SHA256 -LiteralPath $SetupPath).Hash.ToLowerInvariant()) {throw 'Update package did not pass verification'}
 Invoke-RestMethod -Uri "$base/platform-updates/$($job.jobId)/apply" -Method Post -Headers $headers | Out-Null
 $deadline=[DateTime]::UtcNow.AddMinutes(15)
