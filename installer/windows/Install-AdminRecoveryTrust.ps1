@@ -9,7 +9,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $licensing = Join-Path $PersistentRoot 'licensing'
 if (-not (Test-Path -LiteralPath (Join-Path $licensing 'installation-provisioning-receipt.json'))) { throw 'Installed identity receipt is missing' }
-$node = Join-Path $ApplicationRoot 'runtime\node\node.exe'
+$nodeFile = Get-ChildItem -LiteralPath (Join-Path $ApplicationRoot 'runtime') -Filter 'node.exe' -File -Recurse | Select-Object -First 1
+if ($null -eq $nodeFile) { throw 'Installed Node runtime is missing' }
+$node = $nodeFile.FullName
 $script = Join-Path $ApplicationRoot 'backend\dist\src\scripts\install-admin-recovery-trust.js'
 $oldSource = $env:BIOEMS_ADMIN_RECOVERY_TRUST_SOURCE
 $oldReceipt = $env:BIOEMS_INSTALLATION_PROVISIONING_RECEIPT_PATH

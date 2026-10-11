@@ -2,7 +2,9 @@
 param([string]$ApplicationRoot = 'C:\Program Files\BIO-EMS', [string]$PersistentRoot = 'C:\ProgramData\BIO-EMS')
 $ErrorActionPreference = 'Stop'
 $base = 'https://localhost/api/v1'
-$node = Join-Path $ApplicationRoot 'runtime\node\node.exe'
+$nodeFile = Get-ChildItem -LiteralPath (Join-Path $ApplicationRoot 'runtime') -Filter 'node.exe' -File -Recurse | Select-Object -First 1
+if ($null -eq $nodeFile) { throw 'Installed Node runtime is missing' }
+$node = $nodeFile.FullName
 $issuer = Join-Path $ApplicationRoot 'backend\dist\src\scripts\issue-admin-recovery-package.js'
 $work = Join-Path $env:RUNNER_TEMP ('admin-recovery-' + [Guid]::NewGuid().ToString())
 New-Item -ItemType Directory -Path $work | Out-Null
