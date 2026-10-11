@@ -22,21 +22,30 @@ const recoveryCopy = {
   en: {
     forgot: "Forgot password?",
     title: "Password recovery",
-    help: "Enter your username. If the account is eligible, an administrator can continue the reset process. For security, the response does not reveal whether an account exists.",
+    help: "Operator and Viewer: enter your username to request a reset from your customer administrator. ADMIN: contact the company that supplied BIO-EMS; only System Owner can reset your password.",
+    admin: "I am a customer ADMIN",
+    user: "I am an Operator or Viewer",
+    adminHelp:
+      "Contact the company that supplied BIO-EMS and provide your customer/site name and username. After verifying your identity, System Owner opens Customer ADMIN management, selects your customer and account, and resets the password. No recovery request is submitted from this screen and no email or WhatsApp reset link is sent.",
     submit: "Request password reset",
     pending: "Submitting…",
     success:
-      "If the account is eligible, the password recovery request has been recorded.",
+      "If this is an eligible Operator or Viewer account, a recovery request has been recorded for your customer administrator. ADMIN accounts must contact the company for a System Owner reset.",
     error: "The recovery request could not be submitted. Try again.",
     back: "Back to sign in",
   },
   ar: {
     forgot: "نسيت كلمة المرور؟",
     title: "استعادة كلمة المرور",
-    help: "أدخل اسم المستخدم. إذا كان الحساب مؤهلاً، يستطيع المسؤول استكمال إعادة التعيين. لأسباب أمنية لا يكشف الرد ما إذا كان الحساب موجوداً.",
+    help: "Operator وViewer: أدخل اسم المستخدم لطلب إعادة التعيين من مسؤول العميل. Admin: تواصل مع الشركة الموردة لـBIO-EMS؛ مالك النظام فقط يمكنه إعادة تعيين كلمة مرورك.",
+    admin: "أنا Admin لدى العميل",
+    user: "أنا Operator أو Viewer",
+    adminHelp:
+      "تواصل مع الشركة الموردة لـBIO-EMS وقدم اسم العميل والموقع واسم المستخدم. بعد التحقق من هويتك، يفتح مالك النظام إدارة حسابات Admin، ويختار العميل وحسابك، ويعيد تعيين كلمة المرور. لا يُرسل طلب استعادة من هذه الشاشة ولا يُرسل رابط عبر البريد أو WhatsApp.",
     submit: "طلب إعادة تعيين كلمة المرور",
     pending: "جارٍ الإرسال…",
-    success: "إذا كان الحساب مؤهلاً، فقد تم تسجيل طلب استعادة كلمة المرور.",
+    success:
+      "إذا كان الحساب Operator أو Viewer مؤهلاً، فقد تم تسجيل طلب الاستعادة لمسؤول العميل. حسابات Admin تتواصل مع الشركة لإعادة التعيين بواسطة مالك النظام.",
     error: "تعذر إرسال طلب الاستعادة. حاول مرة أخرى.",
     back: "العودة لتسجيل الدخول",
   },
@@ -53,6 +62,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [failure, setFailure] = useState<AuthenticationFailureKind>();
   const [recovering, setRecovering] = useState(false);
+  const [adminRecovery, setAdminRecovery] = useState(false);
   const [recoveryPending, setRecoveryPending] = useState(false);
   const [recoveryResult, setRecoveryResult] = useState<"success" | "error">();
   const recovery = recoveryCopy[language];
@@ -60,6 +70,7 @@ export function LoginPage() {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (recovering) {
+      if (adminRecovery) return;
       setRecoveryPending(true);
       setRecoveryResult(undefined);
       try {
@@ -119,9 +130,38 @@ export function LoginPage() {
           {recovering ? recovery.title : resources.authentication.loginTitle}
         </Typography>
         {recovering ? (
-          <Typography color="text.secondary" sx={{ mb: 2 }}>
-            {recovery.help}
-          </Typography>
+          <>
+            <Typography color="text.secondary" sx={{ mb: 2 }}>
+              {recovery.help}
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+              <Button
+                type="button"
+                aria-pressed={adminRecovery}
+                disabled={recoveryPending}
+                onClick={() => {
+                  setAdminRecovery(true);
+                  setRecoveryResult(undefined);
+                }}
+              >
+                {recovery.admin}
+              </Button>
+              <Button
+                type="button"
+                aria-pressed={!adminRecovery}
+                disabled={recoveryPending}
+                onClick={() => {
+                  setAdminRecovery(false);
+                  setRecoveryResult(undefined);
+                }}
+              >
+                {recovery.user}
+              </Button>
+            </Box>
+            {adminRecovery && (
+              <Alert severity="info">{recovery.adminHelp}</Alert>
+            )}
+          </>
         ) : null}
         {failure && !recovering ? (
           <Alert
@@ -142,24 +182,26 @@ export function LoginPage() {
             {recoveryResult === "success" ? recovery.success : recovery.error}
           </Alert>
         ) : null}
-        <TextField
-          autoComplete="username"
-          disabled={loginPending || recoveryPending}
-          fullWidth
-          label={resources.authentication.username}
-          margin="normal"
-          name="username"
-          onChange={(event) => setUsername(event.target.value)}
-          required
-          slotProps={{
-            htmlInput: {
-              "aria-describedby":
-                failure && !recovering ? "login-error" : undefined,
-              "aria-invalid": failure && !recovering ? true : undefined,
-            },
-          }}
-          value={username}
-        />
+        {!(recovering && adminRecovery) && (
+          <TextField
+            autoComplete="username"
+            disabled={loginPending || recoveryPending}
+            fullWidth
+            label={resources.authentication.username}
+            margin="normal"
+            name="username"
+            onChange={(event) => setUsername(event.target.value)}
+            required
+            slotProps={{
+              htmlInput: {
+                "aria-describedby":
+                  failure && !recovering ? "login-error" : undefined,
+                "aria-invalid": failure && !recovering ? true : undefined,
+              },
+            }}
+            value={username}
+          />
+        )}
         {!recovering ? (
           <TextField
             autoComplete="current-password"
@@ -180,33 +222,36 @@ export function LoginPage() {
             value={password}
           />
         ) : null}
-        <Button
-          disabled={loginPending || recoveryPending}
-          fullWidth
-          sx={{ mt: 2, minHeight: 44 }}
-          type="submit"
-          variant="contained"
-        >
-          {recovering ? (
-            recoveryPending ? (
-              recovery.pending
+        {!(recovering && adminRecovery) && (
+          <Button
+            disabled={loginPending || recoveryPending}
+            fullWidth
+            sx={{ mt: 2, minHeight: 44 }}
+            type="submit"
+            variant="contained"
+          >
+            {recovering ? (
+              recoveryPending ? (
+                recovery.pending
+              ) : (
+                recovery.submit
+              )
+            ) : loginPending ? (
+              <>
+                <CircularProgress aria-hidden size={20} sx={{ mr: 1 }} />
+                {resources.authentication.signingIn}
+              </>
             ) : (
-              recovery.submit
-            )
-          ) : loginPending ? (
-            <>
-              <CircularProgress aria-hidden size={20} sx={{ mr: 1 }} />
-              {resources.authentication.signingIn}
-            </>
-          ) : (
-            resources.authentication.signIn
-          )}
-        </Button>
+              resources.authentication.signIn
+            )}
+          </Button>
+        )}
         <Button
           disabled={loginPending || recoveryPending}
           fullWidth
           onClick={() => {
             setRecovering((value) => !value);
+            setAdminRecovery(false);
             setFailure(undefined);
             setRecoveryResult(undefined);
             setPassword("");

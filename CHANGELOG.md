@@ -1,5 +1,10 @@
 # BIO-EMS Changelog
 
+### 11 October 2026 ADMIN password recovery guidance
+
+- Split public password recovery guidance into customer ADMIN company/System Owner support and Operator/Viewer request paths, in Arabic and English. ADMIN guidance submits no request and promises no automatic reset link; generic recovery responses now clarify eligibility.
+- Added UI regression tests and wait for initial heading focus before simulated login typing to avoid the observed test focus race.
+
 ### 11 October 2026 installation identity records
 
 - Added Arabic/English copy and JSON export controls to the System Owner installation identity section for company customer records. Exports use the host UUID and contain only customer/site identifiers and names, with no provisioning secrets.
