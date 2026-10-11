@@ -63,6 +63,7 @@ Source: "{#SourcePath}\Install-DEP0103Services.ps1"; DestDir: "{app}\installer";
 Source: "{#SourcePath}\Invoke-BackendPreStart.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Test-PostInstallHealth.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Initialize-PilotAdmin.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
+Source: "{#SourcePath}\Install-AdminRecoveryTrust.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-SystemOwnerProvisioning.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-DEP0105Lifecycle.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp
 Source: "{#SourcePath}\Invoke-PlatformInfluxBackup.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion notimestamp

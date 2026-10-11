@@ -31,6 +31,9 @@ Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencr
 Source: "{#StageRoot}\payload\Invoke-ManufacturerOwnerSigner.ps1"; DestDir: "{app}"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\Start-ManufacturerOwnerSigner.ps1"; DestDir: "{app}"; Flags: ignoreversion notimestamp
 
+Source: "{#StageRoot}\payload\Invoke-ManufacturerAdminRecovery.ps1"; DestDir: "{app}"; Flags: ignoreversion notimestamp
+Source: "{#StageRoot}\payload\Start-ManufacturerAdminRecovery.ps1"; DestDir: "{app}"; Flags: ignoreversion notimestamp
+
 [Run]
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\manufacturer-backend.zip' -DestinationPath '{app}\backend' -Force"""; StatusMsg: "Installing secure signing runtime..."; Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ""Expand-Archive -LiteralPath '{tmp}\node-v22.22.0-win-x64.zip' -DestinationPath '{app}\runtime' -Force"""; StatusMsg: "Installing private Node.js runtime..."; Flags: runhidden waituntilterminated
@@ -38,6 +41,9 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -NonInteractive -ExecutionPo
 [Icons]
 Name: "{group}\BIO-EMS Manufacturer Owner Signer"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\Start-ManufacturerOwnerSigner.ps1"" -ToolRoot ""{app}"""; WorkingDir: "{app}"
 Name: "{commondesktop}\BIO-EMS Manufacturer Owner Signer"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\Start-ManufacturerOwnerSigner.ps1"" -ToolRoot ""{app}"""; WorkingDir: "{app}"; Tasks: desktopicon
+
+Name: "{group}\BIO-EMS Customer ADMIN Recovery"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\Start-ManufacturerAdminRecovery.ps1"" -ToolRoot ""{app}"""; WorkingDir: "{app}"
+Name: "{commondesktop}\BIO-EMS Customer ADMIN Recovery"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\Start-ManufacturerAdminRecovery.ps1"" -ToolRoot ""{app}"""; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a Manufacturer Owner Signer desktop shortcut"

@@ -452,6 +452,12 @@ jobs:
           if ($setup.Count -ne 1) { throw "Expected one client Setup" }
           & ".\installer\windows\Test-ClientUpdateRoundTrip.ps1" -SetupPath $setup[0].FullName
 
+      - name: Exercise offline ADMIN signed recovery on installed client
+        timeout-minutes: 5
+        shell: powershell
+        run: |
+          & ".\installer\windows\Test-AdminOfflineRecoveryRoundTrip.ps1"
+
       - name: Exercise controlled New Install over existing installation
         timeout-minutes: 15
         shell: powershell

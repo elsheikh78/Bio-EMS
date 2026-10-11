@@ -1,5 +1,11 @@
 # BIO-EMS Changelog
 
+### 11 October 2026 offline ADMIN signed password recovery
+
+- Added client request export, company-signed permit verification and restricted password entry without issuing an authenticated session. Requests expire in 24 hours; signed permits last at most 60 minutes and grants at most 10 minutes, with installation/account/challenge binding and atomic one-time consumption.
+- Added standalone Manufacturer Tools ADMIN recovery signer, encrypted Ed25519 key generation/public trust export, and elevated client public-trust installation. Signing keys are independent and never shipped in Setup; field use requires company key provisioning.
+- Added SQLite migration 033, domain/UI/issuer tests and an installed Windows round-trip test. Existing direct System Owner reset remains available.
+
 ### 11 October 2026 ADMIN password recovery guidance
 
 - Split public password recovery guidance into customer ADMIN company/System Owner support and Operator/Viewer request paths, in Arabic and English. ADMIN guidance submits no request and promises no automatic reset link; generic recovery responses now clarify eligibility.

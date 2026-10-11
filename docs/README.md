@@ -2,6 +2,8 @@
 
 ## 11 October current references
 
+- [استعادة Admin بملف موقّع من الشركة](current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md)
+
 - [هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل](current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md)
 
 PR #290 checkpoint: `70108f0`; includes copy/export operations and verified main build references.

@@ -18,6 +18,8 @@ import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
 import { resolveSafeReturnPath } from "../routing/routePolicy";
 
+import { AdminOfflineRecovery } from "./AdminOfflineRecovery";
+
 const recoveryCopy = {
   en: {
     forgot: "Forgot password?",
@@ -26,7 +28,7 @@ const recoveryCopy = {
     admin: "I am a customer ADMIN",
     user: "I am an Operator or Viewer",
     adminHelp:
-      "Contact the company that supplied BIO-EMS and provide your customer/site name and username. After verifying your identity, System Owner opens Customer ADMIN management, selects your customer and account, and resets the password. No recovery request is submitted from this screen and no email or WhatsApp reset link is sent.",
+      "Contact the company that supplied BIO-EMS and provide your customer/site name and username. After verifying your identity, System Owner opens Customer ADMIN management, selects your customer and account, and resets the password. You can also export a recovery request below and import the company-signed permit. No automatic email or WhatsApp link is sent.",
     submit: "Request password reset",
     pending: "Submitting…",
     success:
@@ -41,7 +43,7 @@ const recoveryCopy = {
     admin: "أنا Admin لدى العميل",
     user: "أنا Operator أو Viewer",
     adminHelp:
-      "تواصل مع الشركة الموردة لـBIO-EMS وقدم اسم العميل والموقع واسم المستخدم. بعد التحقق من هويتك، يفتح مالك النظام إدارة حسابات Admin، ويختار العميل وحسابك، ويعيد تعيين كلمة المرور. لا يُرسل طلب استعادة من هذه الشاشة ولا يُرسل رابط عبر البريد أو WhatsApp.",
+      "تواصل مع الشركة الموردة لـBIO-EMS وقدم اسم العميل والموقع واسم المستخدم. بعد التحقق من هويتك، يفتح مالك النظام إدارة حسابات Admin، ويختار العميل وحسابك، ويعيد تعيين كلمة المرور. يمكنك أيضًا تصدير طلب الاستعادة أدناه واستيراد التصريح الموقّع من الشركة. لا يُرسل رابط تلقائي عبر البريد أو WhatsApp.",
     submit: "طلب إعادة تعيين كلمة المرور",
     pending: "جارٍ الإرسال…",
     success:
@@ -159,7 +161,10 @@ export function LoginPage() {
               </Button>
             </Box>
             {adminRecovery && (
-              <Alert severity="info">{recovery.adminHelp}</Alert>
+              <>
+                <Alert severity="info">{recovery.adminHelp}</Alert>
+                <AdminOfflineRecovery language={language} />
+              </>
             )}
           </>
         ) : null}
