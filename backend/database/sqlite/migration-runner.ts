@@ -36,6 +36,7 @@ import { migration031 } from "./migrations/031_create_hardware_qualification_lab
 import { migration032 } from "./migrations/032_add_device_telemetry_credentials";
 
 import { migration033 } from "./migrations/033_create_admin_offline_recovery";
+import { migration034 } from "./migrations/034_create_company_connection";
 
 export interface Migration {
   version: number;
@@ -79,6 +80,7 @@ const migrations: Migration[] = [
   migration031,
   migration032,
   migration033,
+  migration034,
 ];
 
 export function runMigrations(

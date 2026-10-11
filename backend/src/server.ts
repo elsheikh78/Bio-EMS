@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createServer as createHttpsServer } from "node:https";
 import app from "./app";
+import { startCompanyConnection } from "./modules/company-cloud/runtime";
 import { config } from "./config/config";
 import { startNotificationDeliveryRuntime } from "./modules/notification/notification-delivery.runtime";
 
@@ -24,3 +25,4 @@ server.listen(PORT, () => {
 });
 
 startNotificationDeliveryRuntime();
+startCompanyConnection(app);

@@ -1,5 +1,27 @@
 # BIO-EMS Project State
 
+## 11 October 2026 company cloud pilot candidate
+
+- Separate Cloudflare Workers/D1 package adds a company customer/site registry,
+  connection status, persisted device/alarm count summaries, monitor-only site
+  license records and central operation audit.
+- Optional client connection is configured from the local System Owner UI. Remote
+  transport reuses local owner authentication/MFA and validated owner routes;
+  sensitive request/response payloads are encrypted end to end.
+- This is a source candidate. No company Cloudflare account, live URL, installed
+  Windows client qualification or pilot field acceptance is asserted.
+- Central records do not issue local signed license certificates or enforce new
+  restrictions. Historical telemetry replication and large remote file transfer
+  are outside this first connection candidate. One connection per local DB.
+- Product version remains 0.20.0. Firmware is unchanged. New client source needs a
+  qualified Client Setup before the connection can be used at a customer site.
+- Local validation: 1072 backend tests, 356 frontend tests and 9 Worker/D1 adapter
+  tests passed. Backend/frontend typecheck, lint, formatting and builds passed;
+  cloud asset build and Wrangler deployment dry-run passed. Browser UI, actual
+  Cloudflare deployment and installed-client tests remain unverified.
+
+Operations: [company cloud pilot](docs/current/COMPANY-CLOUD-PILOT-AR.md).
+
 ## 11 October 2026 offline customer ADMIN recovery
 
 - Source includes a client request/permit/reset flow with installation, account, challenge,

@@ -12,6 +12,25 @@ permissions:
   contents: read
 
 jobs:
+  company-cloud-quality:
+    name: Company Cloudflare pilot gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm ci
+        working-directory: frontend
+      - run: npm ci
+        working-directory: company-cloud
+      - run: npm test
+        working-directory: company-cloud
+      - run: npm run build
+        working-directory: company-cloud
+      - run: npx wrangler deploy --dry-run
+        working-directory: company-cloud
   quality:
     name: Backend quality gates
     runs-on: ubuntu-latest

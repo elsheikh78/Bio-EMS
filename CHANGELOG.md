@@ -1,5 +1,16 @@
 # BIO-EMS Changelog
 
+### 11 October 2026 company cloud pilot source candidate
+
+- Added a separate Cloudflare Workers/D1 company portal for customers, enrolled
+  installations, device/alarm count summaries, site license tracking and audit.
+- Added opt-in local System Owner connection configuration and end-to-end encrypted
+  remote owner transport preserving local credentials, MFA and route validation.
+  SQLite migration 034 stores encrypted connection data and one-time command receipts.
+- Added deployment/operating guidance and CI gates. Central license records remain
+  monitor-only; local signed certificates, large file transfer, live account deployment
+  and installed Windows qualification are separate. Firmware/version unchanged.
+
 ### 11 October 2026 offline ADMIN signed password recovery
 
 - Added client request export, company-signed permit verification and restricted password entry without issuing an authenticated session. Requests expire in 24 hours; signed permits last at most 60 minutes and grants at most 10 minutes, with installation/account/challenge binding and atomic one-time consumption.

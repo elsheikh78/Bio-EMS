@@ -2,6 +2,8 @@
 
 ## 11 October current references
 
+- [منصة الشركة المركزية — مرشح تجربة Cloudflare](COMPANY-CLOUD-PILOT-AR.md)
+
 - [استعادة Admin بملف موقّع من الشركة](OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md)
 
 - [هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل](INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md)

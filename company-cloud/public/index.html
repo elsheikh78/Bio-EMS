@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BIO-EMS | منصة الشركة</title>
+    <link rel="stylesheet" href="/portal.css" />
+  </head>
+  <body>
+    <aside>
+      <div class="brand">
+        BIO<span>EMS</span><small>COMPANY PLATFORM</small>
+      </div>
+      <p>مركز إدارة العملاء والمواقع</p>
+      <div class="pilot">نسخة البيلوت • الرخص للمتابعة</div>
+      <a
+        href="https://developers.cloudflare.com/workers/"
+        target="_blank"
+        rel="noreferrer"
+        >Cloudflare Workers + D1</a
+      >
+    </aside>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">CONNECTED OPERATIONS</p>
+          <h1>منصة الشركة</h1>
+          <p>رؤية واحدة للعملاء، اتصال المواقع، وإدارة الرخص.</p>
+        </div>
+        <button id="logout" hidden>تسجيل الخروج</button>
+      </header>
+      <p id="notice" role="status"></p>
+      <section id="login" class="panel">
+        <h2>دخول إدارة الشركة</h2>
+        <p>
+          استخدم مفتاح دخول الشركة الذي تم إعداده كسرّ على Cloudflare. جلسة
+          الدخول 30 دقيقة.
+        </p>
+        <form id="login-form">
+          <label
+            >مفتاح دخول الشركة<input
+              name="token"
+              type="password"
+              required
+              autocomplete="off"
+              minlength="32" /></label
+          ><button>دخول آمن</button>
+        </form>
+      </section>
+      <div id="dashboard" hidden>
+        <div class="metrics">
+          <article>
+            <small>العملاء</small><strong id="customer-count">0</strong>
+          </article>
+          <article>
+            <small>المواقع المتصلة</small><strong id="online-count">0</strong>
+          </article>
+          <article>
+            <small>المواقع غير المتصلة</small
+            ><strong id="offline-count">0</strong>
+          </article>
+          <article>
+            <small>رخص تنتهي خلال 30 يومًا</small
+            ><strong id="expiring-count">0</strong>
+          </article>
+        </div>
+        <section class="panel">
+          <div class="section-heading">
+            <h2>العملاء والمواقع</h2>
+            <button id="refresh">تحديث الحالة</button>
+          </div>
+          <p>
+            الحالة تعني اتصال برنامج العميل. لا تُعد وحدها تأكيدًا لسلامة كل
+            حساس. افتح System Owner لمراجعة التفاصيل.
+          </p>
+          <div id="sites" class="sites"></div>
+        </section>
+        <div class="forms">
+          <section class="panel">
+            <h2>إضافة عميل</h2>
+            <form id="customer-form">
+              <label
+                >اسم العميل<input name="name" required maxlength="160" /></label
+              ><button>إضافة العميل</button>
+            </form>
+          </section>
+          <section class="panel">
+            <h2>إضافة موقع وربطه</h2>
+            <form id="site-form">
+              <label
+                >العميل<select
+                  name="customerId"
+                  id="customer-select"
+                  required
+                ></select></label
+              ><label
+                >اسم الموقع<input name="name" required maxlength="160" /></label
+              ><button>إنشاء بيانات الربط</button>
+            </form>
+          </section>
+        </div>
+        <section id="enrollment" class="panel" hidden>
+          <h2>بيانات الربط — احفظها الآن</h2>
+          <p>
+            على جهاز العميل: System Owner ← الاتصال بمنصة الشركة. رمز الربط يظهر
+            مرة واحدة. لا ترسله لغير المسؤول عن التركيب.
+          </p>
+          <pre id="enrollment-data"></pre>
+          <button id="copy-enrollment">نسخ بيانات الربط</button>
+        </section>
+        <section class="panel">
+          <h2>رخص المواقع</h2>
+          <p>
+            الرخص الحالية سجلات متابعة مركزية؛ إصدارها أو تعليقها لا يوقف
+            الحساسات أو الإنذارات، ولا يثبت شهادة الرخصة المحلية تلقائيًا.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>الموقع</th>
+                  <th>الحالة</th>
+                  <th>الانتهاء</th>
+                  <th>الحساسات / الأجهزة</th>
+                  <th>إدارة</th>
+                </tr>
+              </thead>
+              <tbody id="licenses"></tbody>
+            </table>
+          </div>
+          <h3 id="license-title">إصدار رخصة متابعة</h3>
+          <form id="license-form" class="license-form">
+            <input type="hidden" name="id" /><label
+              >الموقع<select
+                name="siteId"
+                id="site-select"
+                required
+              ></select></label
+            ><label>البداية<input name="startsAt" type="date" required /></label
+            ><label
+              >الانتهاء<input name="expiresAt" type="date" required /></label
+            ><label
+              >الحساسات<input
+                name="sensorLimit"
+                type="number"
+                min="1"
+                max="10000"
+                value="30"
+                required /></label
+            ><label
+              >الأجهزة<input
+                name="deviceLimit"
+                type="number"
+                min="1"
+                max="10000"
+                value="4"
+                required /></label
+            ><label
+              >نوع / حالة الرخصة<select name="status">
+                <option value="trial">تجريبية</option>
+                <option value="active">سارية</option>
+                <option value="suspended">معلقة للمتابعة</option>
+              </select></label
+            ><button>حفظ الرخصة</button
+            ><button id="cancel-edit" type="button">رخصة جديدة</button>
+          </form>
+        </section>
+        <section class="panel">
+          <h2>سجل العمليات الأخير</h2>
+          <div id="audit"></div>
+        </section>
+      </div>
+      <footer>BIO-EMS • تشغيل العميل مستقل عن اتصال منصة الشركة</footer>
+    </main>
+    <script type="module" src="/portal.js"></script>
+  </body>
+</html>
