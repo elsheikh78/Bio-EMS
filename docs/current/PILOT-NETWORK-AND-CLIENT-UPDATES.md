@@ -10,6 +10,27 @@ listed in the firmware README; it is a new configurable bench pin assignment.
 There is no automatic network failover or static-IP form in this change. Existing
 binding recovery preserves the already configured device; it is not a network-edit flow.
 
+## Customer installation record
+
+System Owner opens **Installation configuration / تهيئة التركيب**. The installed
+customer/site section shows the Setup-authoritative names, codes and host installation
+UUID. Use **Copy installation details / نسخ بيانات التثبيت** or **Export installation
+details / تصدير بيانات التثبيت** to save a customer record. Export is available before
+creating a configuration draft and does not submit or revise the configuration.
+
+The JSON filename is `BIO-EMS-Installation-<host UUID>.json`. It contains a schema
+version, product, export time, host UUID, identity source, and customer/site database
+IDs, codes and names. Save one record per host installation under the company customer
+folder. Database numeric IDs are local references; the host UUID identifies the Windows
+installation. The configuration lifecycle UUID displayed in the lifecycle register is
+a separate identifier. No raw receipt, credentials, private keys or pairing codes are
+exported. Clipboard failure offers download instead. This is an informational record,
+not a backup, signed commissioning certificate or authorization to update.
+
+Current client updates are common signed EXEs; exporting identity does not restrict an
+EXE to that customer. Customer-specific package authorization requires a separate
+signed target-identity check and is not implemented by this UI change.
+
 ## Customer update page
 
 Customer ADMIN opens `/system-update`. Operator and Viewer cannot access update
