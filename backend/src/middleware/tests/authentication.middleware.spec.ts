@@ -65,6 +65,9 @@ describe("Authentication middleware", () => {
   app.get("/api/v1/health", protectedHandler);
   app.post("/api/v1/auth/login", protectedHandler);
   app.post("/api/v1/auth/forgot-password", protectedHandler);
+  for (const action of ["request", "authorize", "complete"]) {
+    app.post(`/api/v1/auth/admin-recovery/${action}`, protectedHandler);
+  }
   app.post("/api/v1/auth/change-password", protectedHandler);
   app.get("/api/v1/protected", protectedHandler);
   app.get("/api/v1/principal", (req, res) => res.json(req.user));
@@ -232,6 +235,11 @@ describe("Authentication middleware", () => {
     await request(app).get("/api/v1/health").expect(200);
     await request(app).post("/api/v1/auth/login").send({}).expect(200);
     await request(app).post("/api/v1/auth/forgot-password").send({}).expect(200);
+    for (const action of ["request", "authorize", "complete"]) {
+      await request(app).post(`/api/v1/auth/admin-recovery/${action}`).send({}).expect(200);
+      await request(app).get(`/api/v1/auth/admin-recovery/${action}`).expect(401);
+    }
+    await request(app).post("/api/v1/auth/admin-recovery/other").send({}).expect(401);
     await request(app).get("/api/v1/auth/login").expect(401);
     await request(app).post("/api/v1/health").expect(401);
   });

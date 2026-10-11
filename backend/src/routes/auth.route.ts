@@ -13,7 +13,34 @@ import {
   forgotPasswordSchema,
 } from "../modules/auth/dto/password-recovery.schema";
 
+import {
+  createAdminRecoveryRequest,
+  authorizeAdminRecovery,
+  completeAdminRecovery,
+  adminRecoveryRequestInput,
+  adminRecoveryCompleteInput,
+} from "../controllers/admin-recovery.controller";
+import { adminRecoveryPackageSchema } from "../modules/admin-recovery/admin-recovery.domain";
+
 const router = Router();
+router.post(
+  "/admin-recovery/request",
+  passwordRecoveryRateLimitMiddleware,
+  validateBody(adminRecoveryRequestInput),
+  createAdminRecoveryRequest
+);
+router.post(
+  "/admin-recovery/authorize",
+  passwordRecoveryRateLimitMiddleware,
+  validateBody(adminRecoveryPackageSchema),
+  authorizeAdminRecovery
+);
+router.post(
+  "/admin-recovery/complete",
+  passwordRecoveryRateLimitMiddleware,
+  validateBody(adminRecoveryCompleteInput),
+  completeAdminRecovery
+);
 
 router.post("/login", validateBody(loginSchema), loginController);
 router.post(

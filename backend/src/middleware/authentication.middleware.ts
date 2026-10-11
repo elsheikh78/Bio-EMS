@@ -77,7 +77,13 @@ function isPublicRequest(req: Request): boolean {
   return (
     (req.method === "GET" && req.path === "/health") ||
     (req.method === "POST" && req.path === "/auth/login") ||
-    (req.method === "POST" && req.path === "/auth/forgot-password")
+    (req.method === "POST" && req.path === "/auth/forgot-password") ||
+    (req.method === "POST" &&
+      [
+        "/auth/admin-recovery/request",
+        "/auth/admin-recovery/authorize",
+        "/auth/admin-recovery/complete",
+      ].includes(req.path))
   );
 }
 

@@ -40,7 +40,9 @@ Copy-Item -LiteralPath $nodeArchive -Destination (Join-Path $staging "payload")
 
 @(
     "Invoke-ManufacturerOwnerSigner.ps1",
-    "Start-ManufacturerOwnerSigner.ps1"
+    "Start-ManufacturerOwnerSigner.ps1",
+    "Invoke-ManufacturerAdminRecovery.ps1",
+    "Start-ManufacturerAdminRecovery.ps1"
 ) | ForEach-Object {
     $script = Join-Path $repository "installer\windows\$_"
     Copy-Item -LiteralPath $script -Destination (Join-Path $staging "payload")

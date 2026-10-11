@@ -86,9 +86,7 @@ describe("accessible Login experience", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "أنا Admin لدى العميل" }),
     );
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "لا يُرسل طلب استعادة من هذه الشاشة",
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("لا يُرسل رابط تلقائي");
     expect(
       screen.queryByRole("button", { name: "طلب إعادة تعيين كلمة المرور" }),
     ).not.toBeInTheDocument();

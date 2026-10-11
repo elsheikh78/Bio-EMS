@@ -4,6 +4,8 @@ System Owner can copy or export the Setup-authoritative customer/site and host i
 
 Arabic operations: [customer installation identity and update signing](docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md), including PR #290 validation and main Windows build provenance.
 
+Customer ADMIN offline recovery: [Arabic request/permit operating guide](docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md). Company key provisioning is required before use.
+
 ## Documentation navigation
 
 - [Current documentation / التوثيق الحالي](docs/current/README.md)

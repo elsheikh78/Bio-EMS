@@ -1,5 +1,23 @@
 # BIO-EMS Project State
 
+## 11 October 2026 offline customer ADMIN recovery
+
+- Source includes a client request/permit/reset flow with installation, account, challenge,
+  expiry and atomic consumption checks. Recovery grants allow only password reset and do
+  not issue a customer access token.
+- Manufacturer Tools includes a separate ADMIN recovery signer, encrypted Ed25519 key
+  generation and public trust export. Company key provisioning is required: no private
+  signing key is packaged, and the public login page never establishes trust.
+- SQLite migration 033 stores pending requests/restricted grants. Public POST endpoints
+  are rate limited; business endpoints remain authenticated.
+- Local verification: 1064 backend tests and 354 frontend tests passed, with typing,
+  lint, formatting and builds. Windows installed-client and Manufacturer Tools build
+  qualification must pass for the resulting source commit before delivery.
+- This is source implementation; field acceptance, cloud delivery and production key
+  deployment are separate. Product version remains `0.20.0`.
+
+Operations: [offline ADMIN recovery guide](docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md).
+
 ## 11 October 2026 installation identity record checkpoint
 
 PR [#290](https://github.com/elsheikh78/Bio-EMS/pull/290) is merged at
