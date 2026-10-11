@@ -1,5 +1,11 @@
 # BIO-EMS Documentation Index / فهرس التوثيق
 
+## 11 October current references
+
+- [هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل](current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md)
+
+PR #290 checkpoint: `70108f0`; includes copy/export operations and verified main build references.
+
 ## 10 October integration references
 
 - [Pilot build notes and artifact hashes](current/PILOT-BUILD-NOTES-2026-10-10.md)

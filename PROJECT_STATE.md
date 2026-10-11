@@ -1,5 +1,25 @@
 # BIO-EMS Project State
 
+## 11 October 2026 installation identity record checkpoint
+
+PR [#290](https://github.com/elsheikh78/Bio-EMS/pull/290) is merged at
+`70108f05bfc0f1826edf44db1eb15bc291e0ea33`; source version remains `0.20.0`.
+
+- System Owner Installation configuration now copies/exports the Setup-authoritative
+  customer/site identity and host UUID into an informational JSON customer record.
+  Export does not submit configuration, export secrets, or authorize a targeted update.
+- Host UUID and configuration lifecycle UUID are separate. Common signed Client Setup
+  EXEs remain the update mechanism; customer-specific target checks are not implemented.
+- Local frontend validation: 348 tests in 63 files plus typecheck/lint/format/build passed.
+  Main CI run [38126214712](https://github.com/elsheikh78/Bio-EMS/actions/runs/38126214712)
+  and Internal Windows Setup run [38126214721](https://github.com/elsheikh78/Bio-EMS/actions/runs/38126214721)
+  passed. Windows build/install, backup/restore and independent client-update tests passed.
+- The PR does not change Manufacturer Tools or firmware behavior. Pilot signing remains
+  per-build self-signed; stable company signing/rotation is a separate operational step.
+  Physical commissioning and customer acceptance remain open.
+
+Operating instructions and build provenance: [Arabic identity/signing guide](docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md).
+
 ## 10 October 2026 Pilot integration checkpoint
 
 PR #288 is merged at `98cea574baaecb5b648aa92133982c412856c681`.
@@ -42,8 +62,8 @@ Operating details: [network and client updates](docs/current/PILOT-NETWORK-AND-C
 Sections below are dated checkpoints, not unresolved statements overriding this checkpoint. ADMIN currently lacks `TOPOLOGY_MANAGE` in `frontend/src/authorization/permissions.ts`; any earlier approval for ADMIN topology creation must be reconciled with backend policy before claiming that capability. Installation Builder exposes codes and channel mappings; its normal controls do not yet expose all alarm thresholds. Customer Configuration provides the existing threshold-editing path.
 
 
-**State date:** 10 October 2026
-**Current integration checkpoint:** `98cea574baaecb5b648aa92133982c412856c681` (targeted PR #288 review; the 30 September full audit remains dated evidence)
+**State date:** 11 October 2026
+**Current integration checkpoint:** `70108f05bfc0f1826edf44db1eb15bc291e0ea33` (PR #290; the 30 September full audit remains dated evidence)
 **Current integration branch:** `main`
 **Current source-software version:** `0.20.0`  
 **Latest published source release:** `v0.20.0`
