@@ -46,6 +46,9 @@ Name: "{commonappdata}\BIO-EMS\licensing"
 [Files]
 Source: "{#StageRoot}\package-manifest.json"; DestDir: "{app}\manifest"; Flags: ignoreversion notimestamp
 Source: "{#StageRoot}\payload\manufacturer-owner-trust.json"; DestDir: "{commonappdata}\BIO-EMS\licensing"; Flags: ignoreversion notimestamp skipifsourcedoesntexist
+; Approved public trust is deployed automatically on fresh install and Repair/update.
+; Never include the company private key or require a customer shell command.
+Source: "{#StageRoot}\payload\manufacturer-admin-recovery-trust.json"; DestDir: "{commonappdata}\BIO-EMS\licensing"; Flags: ignoreversion notimestamp skipifsourcedoesntexist
 Source: "{#StageRoot}\payload\backend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\frontend.zip"; Flags: dontcopy noencryption
 Source: "{#StageRoot}\payload\node-v22.22.0-win-x64.zip"; Flags: dontcopy noencryption

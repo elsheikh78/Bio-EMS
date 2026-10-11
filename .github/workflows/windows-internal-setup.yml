@@ -227,7 +227,13 @@ jobs:
 
       - name: Create deterministic application staging
         shell: powershell
+        env:
+          BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON: ${{ vars.BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON }}
         run: |
+          if (-not [string]::IsNullOrWhiteSpace($env:BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON)) {
+            $env:BIOEMS_ADMIN_RECOVERY_BUILD_TRUST_PATH = Join-Path $env:RUNNER_TEMP "company-admin-recovery-public-trust.json"
+            [IO.File]::WriteAllText($env:BIOEMS_ADMIN_RECOVERY_BUILD_TRUST_PATH, $env:BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON, (New-Object Text.UTF8Encoding($false)))
+          }
           $vendor = Join-Path $env:RUNNER_TEMP "bioems-vendor-cache"
           $stage = Join-Path $env:RUNNER_TEMP "bioems-staging"
           $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
@@ -432,6 +438,11 @@ jobs:
           Remove-Item Env:BIOEMS_CI_ADMIN_PASSWORD -ErrorAction SilentlyContinue
           Remove-Item Env:BIOEMS_CI_ADMIN_EMAIL -ErrorAction SilentlyContinue
 
+      - name: Verify automatically deployed public trust after fresh install
+        shell: powershell
+        run: |
+          & .\installer\windows\Test-BundledAdminRecoveryTrust.ps1 -StagingDirectory (Join-Path $env:RUNNER_TEMP "bioems-staging")
+
       - name: Verify legacy Repair update directory ACL migration
         shell: powershell
         run: |
@@ -451,6 +462,11 @@ jobs:
           $setup = @(Get-ChildItem -LiteralPath $output -Filter "BIO-EMS-Setup-*-x64.exe" -File)
           if ($setup.Count -ne 1) { throw "Expected one client Setup" }
           & ".\installer\windows\Test-ClientUpdateRoundTrip.ps1" -SetupPath $setup[0].FullName
+
+      - name: Verify automatically deployed company recovery public trust
+        shell: powershell
+        run: |
+          & .\installer\windows\Test-BundledAdminRecoveryTrust.ps1 -StagingDirectory (Join-Path $env:RUNNER_TEMP "bioems-staging")
 
       - name: Exercise offline ADMIN signed recovery on installed client
         timeout-minutes: 5
@@ -548,6 +564,11 @@ jobs:
             throw "Replacement administrator login verification failed after controlled New Install"
           }
           Write-Host "BIO-EMS controlled New Install over existing installation: PASS"
+
+      - name: Verify automatically deployed public trust after controlled New Install
+        shell: powershell
+        run: |
+          & .\installer\windows\Test-BundledAdminRecoveryTrust.ps1 -StagingDirectory (Join-Path $env:RUNNER_TEMP "bioems-staging")
 
       - name: Upload internal Setup
         uses: actions/upload-artifact@v4

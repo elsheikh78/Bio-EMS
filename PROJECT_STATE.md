@@ -1,5 +1,19 @@
 # BIO-EMS Project State
 
+## Automatic ADMIN recovery public trust deployment
+
+- Client staging accepts the company-exported public JSON through `AdminRecoveryTrustKeyring`
+  or `BIOEMS_ADMIN_RECOVERY_BUILD_TRUST_PATH`. The Windows workflow can consume the public
+  repository variable `BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON`.
+- Packaging validates strict Ed25519 public keyrings, active keys, size and duplicate IDs,
+  rejects private PEM/extra secret fields, and includes the public file in the checksummed manifest.
+- Signed Client Setup deploys it automatically on fresh install and Repair/update into the
+  protected licensing directory. Customer recovery remains entirely in the login interface.
+- Production requires this artifact. Pilot builds without company public trust remain possible
+  for qualification but are not ready for field file recovery. A real company public export
+  is still required before producing the company's recovery-enabled installer.
+- Manufacturer Tools and firmware behavior are unchanged; version remains `0.20.0`.
+
 ## 11 October 2026 offline customer ADMIN recovery
 
 - Source includes a client request/permit/reset flow with installation, account, challenge,
