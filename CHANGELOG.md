@@ -1,5 +1,10 @@
 # BIO-EMS Changelog
 
+### 11 October 2026 installation identity records
+
+- Added Arabic/English copy and JSON export controls to the System Owner installation identity section for company customer records. Exports use the host UUID and contain only customer/site identifiers and names, with no provisioning secrets.
+- Documented the distinction between host identity, configuration lifecycle identity and common signed client updates.
+
 ## [Unreleased]
 
 ### 10 October 2026 Pilot network and client update integration

@@ -1,5 +1,7 @@
 # BIO-EMS
 
+System Owner can copy or export the Setup-authoritative customer/site and host installation identity from **Installation configuration** for company customer records. See [installation record instructions](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md#customer-installation-record).
+
 ## Documentation navigation
 
 - [Current documentation / التوثيق الحالي](docs/current/README.md)
