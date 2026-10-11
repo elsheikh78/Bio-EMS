@@ -44,7 +44,7 @@ $browseRequest.Add_Click({
         $dialog = New-Object Windows.Forms.OpenFileDialog; $dialog.Filter = 'JSON request (*.json)|*.json'
         if ($dialog.ShowDialog() -ne 'OK') { return }
         if ((Get-Item -LiteralPath $dialog.FileName).Length -gt 16384) { throw 'Request too large' }
-        $data = Get-Content -LiteralPath $dialog.FileName -Raw | ConvertFrom-Json
+        $data = Get-Content -LiteralPath $dialog.FileName -Raw -Encoding UTF8 | ConvertFrom-Json
         if ($data.purpose -ne 'CUSTOMER_ADMIN_RECOVERY_REQUEST') { throw 'Not an ADMIN recovery request' }
         $request.Text = $dialog.FileName
         $preview.Text = "Customer: $($data.customerName) [$($data.customerCode)]`r`nSite: $($data.siteName) [$($data.siteCode)]`r`nInstallation: $($data.installationId)`r`nAccount: $($data.username)`r`nRequest: $($data.requestId)`r`nExpires: $($data.expiresAt)`r`nRequest data is unverified until you confirm it with the customer."
@@ -75,7 +75,7 @@ function Run-Issuer([string]$mode) {
             if ((Get-Item -LiteralPath $request.Text).Length -gt 16384) { throw 'Request too large' }
             $reviewedHash = (Get-FileHash -LiteralPath $request.Text -Algorithm SHA256).Hash.ToLowerInvariant()
             # Re-read at signing time so the displayed file cannot silently change.
-            $data = Get-Content -LiteralPath $request.Text -Raw | ConvertFrom-Json
+            $data = Get-Content -LiteralPath $request.Text -Raw -Encoding UTF8 | ConvertFrom-Json
             $message = "Issue a password-reset permit for $($data.username) at $($data.customerName) / $($data.siteName)?`r`nInstallation: $($data.installationId)`r`nRequest: $($data.requestId)"
             if ([Windows.Forms.MessageBox]::Show($message,$form.Text,'YesNo','Warning') -ne 'Yes') { return }
         }

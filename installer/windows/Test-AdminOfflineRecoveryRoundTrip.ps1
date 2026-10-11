@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param([string]$ApplicationRoot = 'C:\Program Files\BIO-EMS', [string]$PersistentRoot = 'C:\ProgramData\BIO-EMS')
 $ErrorActionPreference = 'Stop'
-[Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 $base = 'https://localhost/api/v1'
 $node = Join-Path $ApplicationRoot 'runtime\node\node.exe'
 $issuer = Join-Path $ApplicationRoot 'backend\dist\src\scripts\issue-admin-recovery-package.js'
