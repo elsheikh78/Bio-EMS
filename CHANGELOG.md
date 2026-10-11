@@ -4,6 +4,7 @@
 
 - Added Arabic/English copy and JSON export controls to the System Owner installation identity section for company customer records. Exports use the host UUID and contain only customer/site identifiers and names, with no provisioning secrets.
 - Documented the distinction between host identity, configuration lifecycle identity and common signed client updates.
+- Added the Arabic customer-record/signing operating guide and synchronized current documentation navigation and state with PR #290 (`70108f0`). Main CI `38126214712` and Windows build `38126214721` passed; this documentation change does not create a new release.
 
 ## [Unreleased]
 

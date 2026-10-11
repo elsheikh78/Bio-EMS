@@ -2,6 +2,8 @@
 
 System Owner can copy or export the Setup-authoritative customer/site and host installation identity from **Installation configuration** for company customer records. See [installation record instructions](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md#customer-installation-record).
 
+Arabic operations: [customer installation identity and update signing](docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md), including PR #290 validation and main Windows build provenance.
+
 ## Documentation navigation
 
 - [Current documentation / التوثيق الحالي](docs/current/README.md)
@@ -10,7 +12,7 @@ System Owner can copy or export the Setup-authoritative customer/site and host i
 
 ## Documentation baseline — 10 October 2026
 
-Current integration checkpoint: `main@98cea57` (PR #288). See [Project State](PROJECT_STATE.md) for status and evidence boundaries, [Pilot build notes](docs/current/PILOT-BUILD-NOTES-2026-10-10.md) for exact artifacts, and [network/update operations](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) for Wi-Fi/Ethernet commissioning and customer updates. Physical hardware and site acceptance remain open.
+Current integration checkpoint: `main@70108f0` (PR #290). See [Project State](PROJECT_STATE.md) for status and evidence boundaries, [Pilot build notes](docs/current/PILOT-BUILD-NOTES-2026-10-10.md) for exact artifacts, and [network/update operations](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) for Wi-Fi/Ethernet commissioning and customer updates. Physical hardware and site acceptance remain open.
 
 Enterprise Environmental Monitoring System for regulated and operational environments.
 
