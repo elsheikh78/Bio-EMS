@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "bioems-company",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+      "database_id": "21d37686-0ae1-4e17-b995-388131d29e86",
       "migrations_dir": "migrations",
     },
   ],
