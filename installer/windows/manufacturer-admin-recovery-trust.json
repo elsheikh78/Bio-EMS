@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "keys": [
+    {
+      "keyId": "admin-recovery-2026",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA9OlPzxZFfFDHvXo0+WPT65DRzOdp8jfBPKmXjUqBFHY=\n-----END PUBLIC KEY-----\n",
+      "status": "active"
+    }
+  ]
+}
