@@ -18,7 +18,8 @@ param(
     [string]$BuildTimestamp,
     [ValidateSet("Pilot", "Production")]
     [string]$ReleaseChannel = "Production",
-    [string]$OwnerTrustKeyring
+    [string]$OwnerTrustKeyring,
+    [string]$AdminRecoveryTrustKeyring = $env:BIOEMS_ADMIN_RECOVERY_BUILD_TRUST_PATH
 )
 
 $ErrorActionPreference = "Stop"
@@ -81,6 +82,13 @@ if (-not (Test-Path -LiteralPath $simHex -PathType Leaf) -or
 
 if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTrustKeyring)) {
     $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
+}
+
+if ([string]::IsNullOrWhiteSpace($AdminRecoveryTrustKeyring)) {
+    $approvedRecoveryTrust = Join-Path $repository "installer/windows/manufacturer-admin-recovery-trust.json"
+    if (Test-Path -LiteralPath $approvedRecoveryTrust -PathType Leaf) {
+        $AdminRecoveryTrustKeyring = $approvedRecoveryTrust
+    }
 }
 
 if ($staging -eq [System.IO.Path]::GetPathRoot($staging) -or $staging -eq $repository) {
@@ -169,6 +177,22 @@ function New-DeterministicZip([string]$SourceDirectory, [string]$DestinationFile
 
 Invoke-Npm (Join-Path $repository "backend") @("ci")
 Invoke-Npm (Join-Path $repository "backend") @("run", "build")
+$adminRecoveryTrustArtifact = $null
+if (-not [string]::IsNullOrWhiteSpace($AdminRecoveryTrustKeyring)) {
+    $trustRelativePath = "payload/manufacturer-admin-recovery-trust.json"
+    & node (Join-Path $repository "backend\dist\src\scripts\stage-admin-recovery-trust.js") `
+        ([IO.Path]::GetFullPath($AdminRecoveryTrustKeyring)) (Join-Path $staging $trustRelativePath)
+    if ($LASTEXITCODE -ne 0) { throw "Company ADMIN recovery public trust was rejected" }
+    $adminRecoveryTrustArtifact = [ordered]@{
+        id = "admin-recovery-trust"
+        version = "1"
+        relativePath = $trustRelativePath
+        redistributionEvidence = "BIO-EMS-MANUFACTURER-PUBLIC-KEYS"
+    }
+}
+elseif ($ReleaseChannel -eq "Production") {
+    throw "Production staging requires company ADMIN recovery public trust"
+}
 Invoke-Npm (Join-Path $repository "frontend") @("ci")
 $env:VITE_API_BASE_URL = "https://localhost/api/v1"
 Invoke-Npm (Join-Path $repository "frontend") @("run", "build")
@@ -196,6 +220,9 @@ $artifacts = @(
 )
 if ($null -ne $ownerTrustArtifact) {
     $artifacts += $ownerTrustArtifact
+}
+if ($null -ne $adminRecoveryTrustArtifact) {
+    $artifacts += $adminRecoveryTrustArtifact
 }
 foreach ($input in $lock.inputs) {
     $source = Join-Path $vendor $input.fileName

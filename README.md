@@ -4,7 +4,7 @@ System Owner can copy or export the Setup-authoritative customer/site and host i
 
 Arabic operations: [customer installation identity and update signing](docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md), including PR #290 validation and main Windows build provenance.
 
-Customer ADMIN offline recovery: [Arabic request/permit operating guide](docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md). Company key provisioning is required before use.
+Customer ADMIN offline recovery: [Arabic request/permit operating guide](docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md). Client Setup automatically installs the company-approved public recovery trust when supplied by the company build; customers use only Login request/import/reset controls. Company key generation stays in Manufacturer Tools.
 
 ## Documentation navigation
 

@@ -32,6 +32,7 @@ export const windowsInstallerManifestSchema = z
               "site-controller-firmware",
               "sim-d4-firmware",
               "owner-commissioning-trust",
+              "admin-recovery-trust",
             ]),
             version: z.string().min(1),
             relativePath: z.string().min(1),
@@ -41,7 +42,7 @@ export const windowsInstallerManifestSchema = z
           .strict()
       )
       .min(11)
-      .max(12),
+      .max(13),
   })
   .strict()
   .superRefine((manifest, context) => {
@@ -62,6 +63,12 @@ export const windowsInstallerManifestSchema = z
     ] as const;
     const hasRequiredArtifacts = requiredIds.every((id) => uniqueIds.has(id));
     const hasOwnerTrust = uniqueIds.has("owner-commissioning-trust");
+    if (manifest.releaseChannel === "Production" && !uniqueIds.has("admin-recovery-trust")) {
+      context.addIssue({
+        code: "custom",
+        message: "Production requires ADMIN recovery trust artifact",
+      });
+    }
 
     if (uniqueIds.size !== ids.length || !hasRequiredArtifacts) {
       context.addIssue({ code: "custom", message: "Invalid installer artifact inventory" });
@@ -195,8 +202,11 @@ export function validateWindowsInstallerPackage(
   const actualIds = new Set<string>(ids);
   const expectedIds =
     manifest.releaseChannel === "Production"
-      ? [...runtimeArtifactIds, "owner-commissioning-trust"]
-      : runtimeArtifactIds;
+      ? [...runtimeArtifactIds, "owner-commissioning-trust", "admin-recovery-trust"]
+      : [
+          ...runtimeArtifactIds,
+          ...(actualIds.has("admin-recovery-trust") ? ["admin-recovery-trust"] : []),
+        ];
   if (actualIds.size !== expectedIds.length || expectedIds.some((id) => !actualIds.has(id))) {
     issues.push({ code: WINDOWS_INSTALLER_ISSUES.ARTIFACT_SET_INVALID });
   }
