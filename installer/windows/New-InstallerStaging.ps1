@@ -84,6 +84,13 @@ if ($ReleaseChannel -eq "Production" -and [string]::IsNullOrWhiteSpace($OwnerTru
     $OwnerTrustKeyring = Join-Path $repository "installer\\windows\\manufacturer-owner-trust.json"
 }
 
+if ([string]::IsNullOrWhiteSpace($AdminRecoveryTrustKeyring)) {
+    $approvedRecoveryTrust = Join-Path $repository "installer/windows/manufacturer-admin-recovery-trust.json"
+    if (Test-Path -LiteralPath $approvedRecoveryTrust -PathType Leaf) {
+        $AdminRecoveryTrustKeyring = $approvedRecoveryTrust
+    }
+}
+
 if ($staging -eq [System.IO.Path]::GetPathRoot($staging) -or $staging -eq $repository) {
     throw "Unsafe staging directory"
 }
