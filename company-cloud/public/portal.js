@@ -1,4 +1,5 @@
 import { translate } from "./locale.js";
+import { currentPortfolio } from "./portfolio.js";
 const $ = (id) => document.getElementById(id);
 let state, enrollment;
 let language = "ar";
@@ -85,17 +86,18 @@ function siteLabel(site) {
   return `${site.name} · ${t(site.connection)} · ${site.id.slice(0, 8)}`;
 }
 function renderState() {
+  const current = currentPortfolio(state);
   $("login").hidden = true;
   $("dashboard").hidden = false;
   $("logout").hidden = false;
   $("customer-count").textContent = state.customers.length;
-  $("online-count").textContent = state.sites.filter(
+  $("online-count").textContent = current.sites.filter(
     (s) => s.connection === "online",
   ).length;
-  $("offline-count").textContent = state.sites.filter(
+  $("offline-count").textContent = current.sites.filter(
     (s) => s.connection === "offline",
   ).length;
-  $("expiring-count").textContent = state.licenses.filter(
+  $("expiring-count").textContent = current.licenses.filter(
     (l) =>
       l.expires_at > Date.now() &&
       l.expires_at < Date.now() + 30 * 86400000 &&
@@ -110,8 +112,8 @@ function renderState() {
         `${state.customers.find((c) => c.id === s.customer_id)?.name} / ${siteLabel(s)}`,
     );
   $("sites").replaceChildren();
-  if (!state.sites.length) $("sites").append(element("p", t("noSites")));
-  for (const site of state.sites) {
+  if (!current.sites.length) $("sites").append(element("p", t("noSites")));
+  for (const site of current.sites) {
     const card = element("article", undefined, "site");
     card.append(
       element("span", names[site.connection], `badge ${site.connection}`),
@@ -173,7 +175,7 @@ function renderState() {
     $("sites").append(card);
   }
   $("licenses").replaceChildren();
-  for (const license of state.licenses) {
+  for (const license of current.licenses) {
     const row = element("tr");
     const site = state.sites.find((s) => s.id === license.site_id);
     for (const text of [
@@ -187,7 +189,7 @@ function renderState() {
     const button = element("button", t("renew"), "secondary");
     button.onclick = () => {
       const form = $("license-form");
-      options($("site-select"), state.sites, siteLabel);
+      options($("site-select"), current.sites, siteLabel);
       form.elements.id.value = license.id;
       form.elements.siteId.value = license.site_id;
       form.elements.siteId.disabled = true;
@@ -206,14 +208,14 @@ function renderState() {
     row.append(cell);
     $("licenses").append(row);
   }
-  if (!state.licenses.length) {
+  if (!current.licenses.length) {
     const row = element("tr");
     const cell = element("td", t("noLicenses"));
     cell.colSpan = 5;
     row.append(cell);
     $("licenses").append(row);
   }
-  const editing = state.licenses.find(
+  const editing = current.licenses.find(
     (l) => l.id === $("license-form").elements.id.value,
   );
   $("license-title").textContent = editing
