@@ -379,3 +379,27 @@ test("body limits and security headers apply to error and asset responses", asyn
     /connect-src 'self'/,
   );
 });
+
+
+test("owner routes serve canonical HTML without redirecting the browser away from owner login", async () => {
+  const s = setup();
+  await s.login();
+  s.env.ASSETS.fetch = async (request) => {
+    const url = new URL(request.url);
+    if (url.pathname === "/owner.html")
+      return Response.redirect(new URL("/owner", url), 307);
+    if (url.pathname === "/owner")
+      return new Response("<html>Owner application</html>", {
+        headers: { "Content-Type": "text/html" },
+      });
+    return new Response("Not found", { status: 404 });
+  };
+  for (const path of ["/system-owner/login", "/system-owner", "/system-owner/installations"]) {
+    const response = await s.call(path);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("Location"), null);
+    assert.match(await response.text(), /Owner application/);
+  }
+  s.setCookie(undefined);
+  assert.equal((await s.call("/system-owner/login")).status, 401);
+});
