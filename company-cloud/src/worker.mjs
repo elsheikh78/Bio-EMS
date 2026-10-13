@@ -469,7 +469,9 @@ async function handle(req, env) {
   if (!["GET", "HEAD"].includes(req.method)) fail(405, "Read only");
   if (path.startsWith("/system-owner") || path === "/login") {
     await admin(req, env);
-    return env.ASSETS.fetch(new Request(new URL("/owner.html", req.url), req));
+    // Fetch the canonical asset path: /owner.html redirects to /owner under
+    // Cloudflare HTML handling, which would change the browser router location.
+    return env.ASSETS.fetch(new Request(new URL("/owner", req.url), req));
   }
   return env.ASSETS.fetch(req);
 }
