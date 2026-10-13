@@ -7,3 +7,7 @@ System Owner > Licenses & installations displays these records under Company lic
 Deploy both the company Worker and the updated client Setup. Existing central license records require no recreation and are synchronized with the next heartbeat. Before repair/update, obtain a successful backup. Verify the same license ID and dates centrally and locally; renew centrally and verify within two minutes; disconnect and verify the last sync time remains unchanged; reconnect and verify it advances. Changing an enrollment must clear the previous site's records.
 
 Automated validation covers authenticated site isolation, renewal, empty snapshots, persisted client receipt, and existing remote owner authentication. Real Windows update and live synchronization remain deployment acceptance checks.
+
+## Company portal presentation
+
+The company portal uses the existing frontend BIO-EMS horizontal logo and mark copied during the cloud build. Arabic/English switching covers static content, connection/license status, summaries, forms, dates, confirmation messages and activity labels. Language persists locally, and document direction switches RTL/LTR. Switching preserves in-progress form values. Site selectors and license rows show connection status and a short connection ID to distinguish revoked enrollments with the same name. Full connection IDs are available on site cards. This is a company-cloud-only update; existing client Setup does not need rebuilding. Build and redeploy the Worker once, then refresh the portal.

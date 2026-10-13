@@ -1,17 +1,17 @@
+import { translate } from "./locale.js";
 const $ = (id) => document.getElementById(id);
 let state, enrollment;
-const names = {
-  online: "متصل",
-  offline: "غير متصل",
-  pending: "بانتظار الربط",
-  revoked: "تم إلغاء الربط",
-  trial: "تجريبية",
-  active: "سارية",
-  suspended: "معلقة",
-  expired: "منتهية",
-  scheduled: "لم تبدأ",
-};
-const date = (value) => new Date(value).toLocaleString("ar-EG");
+let language = "ar";
+try {
+  language =
+    localStorage.getItem("bioems.company.language") === "en" ? "en" : "ar";
+} catch {
+  /* Language preference is optional. */
+}
+const t = (key, values) => translate(language, key, values);
+const names = new Proxy({}, { get: (_, key) => t(key) });
+const date = (value) =>
+  new Date(value).toLocaleString(language === "ar" ? "ar-EG" : "en-GB");
 const dateInput = (value) => {
   const date = new Date(value);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -43,22 +43,31 @@ async function api(path, method = "GET", data) {
       $("login").hidden = false;
       $("logout").hidden = true;
     }
-    throw new Error(body.error || `HTTP ${response.status}`);
+    throw new Error(t("requestFailed", { status: response.status }));
   }
   return body;
 }
 async function action(fn) {
   try {
-    notice("جارٍ التنفيذ…");
+    notice(t("working"));
     await fn();
     notice("");
   } catch (error) {
-    notice(error.message);
+    notice(
+      error instanceof Error &&
+        ![
+          "Failed to fetch",
+          "NetworkError when attempting to fetch resource.",
+        ].includes(error.message)
+        ? error.message
+        : t("unexpected"),
+    );
   }
 }
 function options(select, rows, label) {
+  const selected = select.value;
   select.replaceChildren();
-  const empty = element("option", "اختر…");
+  const empty = element("option", t("choose"));
   empty.value = "";
   select.append(empty);
   for (const row of rows) {
@@ -66,9 +75,16 @@ function options(select, rows, label) {
     option.value = row.id;
     select.append(option);
   }
+  if (rows.some((row) => row.id === selected)) select.value = selected;
 }
 async function refresh() {
   state = await api("overview");
+  renderState();
+}
+function siteLabel(site) {
+  return `${site.name} · ${t(site.connection)} · ${site.id.slice(0, 8)}`;
+}
+function renderState() {
   $("login").hidden = true;
   $("dashboard").hidden = false;
   $("logout").hidden = false;
@@ -91,11 +107,10 @@ async function refresh() {
       $("site-select"),
       state.sites.filter((s) => !s.revoked),
       (s) =>
-        `${state.customers.find((c) => c.id === s.customer_id)?.name} / ${s.name}`,
+        `${state.customers.find((c) => c.id === s.customer_id)?.name} / ${siteLabel(s)}`,
     );
   $("sites").replaceChildren();
-  if (!state.sites.length)
-    $("sites").append(element("p", "أضف العميل ثم الموقع لإنشاء أول اتصال."));
+  if (!state.sites.length) $("sites").append(element("p", t("noSites")));
   for (const site of state.sites) {
     const card = element("article", undefined, "site");
     card.append(
@@ -108,8 +123,11 @@ async function refresh() {
       element(
         "small",
         site.last_seen
-          ? `آخر اتصال: ${date(site.last_seen)} • الإصدار ${site.heartbeat?.version || "—"}`
-          : "لم يتصل جهاز العميل بعد",
+          ? t("lastSeen", {
+              date: date(site.last_seen),
+              version: site.heartbeat?.version || "—",
+            })
+          : t("notConnected"),
       ),
     );
     const summary = site.heartbeat?.summary;
@@ -117,11 +135,20 @@ async function refresh() {
       element(
         "small",
         summary
-          ? `آخر ملخص: ${summary.sensorCount} حساس مفعّل • ${summary.deviceCount} جهاز • ${summary.offlineDevices} جهاز منقطع/لم يتصل • ${summary.activeAlarms} إنذار قائم (${summary.unacknowledgedAlarms} لم يتم الإقرار به)`
-          : "ملخص الحساسات والإنذارات غير متاح بعد",
+          ? t("summary", {
+              sensors: summary.sensorCount,
+              devices: summary.deviceCount,
+              offline: summary.offlineDevices,
+              alarms: summary.activeAlarms,
+              unack: summary.unacknowledgedAlarms,
+            })
+          : t("noSummary"),
       ),
     );
-    const open = element("button", "فتح System Owner");
+    card.append(
+      element("small", `${t("connectionId")}: ${site.id}`, "connection-id"),
+    );
+    const open = element("button", t("openOwner"));
     open.disabled =
       site.connection !== "online" || !site.heartbeat?.remoteControl;
     open.onclick = () => {
@@ -133,14 +160,10 @@ async function refresh() {
       location.assign("/system-owner/login");
     };
     card.append(open);
-    const revoke = element("button", "إلغاء الربط", "secondary");
+    const revoke = element("button", t("revoke"), "secondary");
     revoke.disabled = !!site.revoked;
     revoke.onclick = () => {
-      if (
-        confirm(
-          "إلغاء اتصال هذا الموقع بمنصة الشركة؟ المراقبة المحلية ستظل تعمل.",
-        )
-      )
+      if (confirm(t("revokeConfirm")))
         void action(async () => {
           await api(`sites/${site.id}/revoke`, "POST", {});
           await refresh();
@@ -154,17 +177,17 @@ async function refresh() {
     const row = element("tr");
     const site = state.sites.find((s) => s.id === license.site_id);
     for (const text of [
-      site?.name || license.site_id,
+      site ? siteLabel(site) : license.site_id,
       names[license.effective_status],
       date(license.expires_at),
       `${license.sensor_limit} / ${license.device_limit}`,
     ])
       row.append(element("td", text));
     const cell = element("td");
-    const button = element("button", "تجديد / تعديل", "secondary");
+    const button = element("button", t("renew"), "secondary");
     button.onclick = () => {
       const form = $("license-form");
-      options($("site-select"), state.sites, (s) => s.name);
+      options($("site-select"), state.sites, siteLabel);
       form.elements.id.value = license.id;
       form.elements.siteId.value = license.site_id;
       form.elements.siteId.disabled = true;
@@ -174,22 +197,40 @@ async function refresh() {
       form.elements.sensorLimit.value = license.sensor_limit;
       form.elements.deviceLimit.value = license.device_limit;
       form.elements.status.value = license.status;
-      $("license-title").textContent = `تجديد / تعديل رخصة ${site?.name || ""}`;
+      $("license-title").textContent = t("editLicense", {
+        site: site?.name || "",
+      });
       form.scrollIntoView({ behavior: "smooth" });
     };
     cell.append(button);
     row.append(cell);
     $("licenses").append(row);
   }
+  if (!state.licenses.length) {
+    const row = element("tr");
+    const cell = element("td", t("noLicenses"));
+    cell.colSpan = 5;
+    row.append(cell);
+    $("licenses").append(row);
+  }
+  const editing = state.licenses.find(
+    (l) => l.id === $("license-form").elements.id.value,
+  );
+  $("license-title").textContent = editing
+    ? t("editLicense", {
+        site: state.sites.find((s) => s.id === editing.site_id)?.name || "",
+      })
+    : t("issueLicense");
   $("audit").replaceChildren();
+  if (!state.audit.length) $("audit").append(element("p", t("noActivity")));
   const actions = {
-    "customer.created": "إضافة عميل",
-    "site.created": "إضافة موقع",
-    "site.revoked": "إلغاء الربط",
-    "license.created": "إصدار رخصة",
-    "license.updated": "تعديل رخصة",
-    "remote.queued": "طلب عملية عن بُعد",
-    "remote.completed": "وصول نتيجة عملية",
+    "customer.created": t("customerCreated"),
+    "site.created": t("siteCreated"),
+    "site.revoked": t("siteRevoked"),
+    "license.created": t("licenseCreated"),
+    "license.updated": t("licenseUpdated"),
+    "remote.queued": t("remoteQueued"),
+    "remote.completed": t("remoteCompleted"),
   };
   for (const record of state.audit)
     $("audit").append(
@@ -261,12 +302,12 @@ function resetLicense() {
   form.elements.startsAt.disabled = false;
   form.elements.startsAt.value = dateInput(Date.now());
   form.elements.expiresAt.value = dateInput(Date.now() + 90 * 86400000);
-  $("license-title").textContent = "إصدار رخصة متابعة";
+  $("license-title").textContent = t("issueLicense");
   if (state)
     options(
       $("site-select"),
       state.sites.filter((s) => !s.revoked),
-      (s) => s.name,
+      siteLabel,
     );
 }
 $("cancel-edit").onclick = resetLicense;
@@ -290,6 +331,30 @@ $("license-form").onsubmit = (event) => {
     await refresh();
   });
 };
+function applyLanguage() {
+  document.documentElement.lang = language;
+  document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+  document.title = `BIO-EMS | ${t("companyWorkspace")}`;
+  document
+    .querySelectorAll("[data-i18n]")
+    .forEach((node) => (node.textContent = t(node.dataset.i18n)));
+  $("language-toggle").textContent = language === "ar" ? "English" : "العربية";
+  $("language-toggle").setAttribute(
+    "aria-label",
+    language === "ar" ? "Switch to English" : "التبديل إلى العربية",
+  );
+  if (state) renderState();
+}
+$("language-toggle").onclick = () => {
+  language = language === "ar" ? "en" : "ar";
+  try {
+    localStorage.setItem("bioems.company.language", language);
+  } catch {
+    /* Optional preference. */
+  }
+  applyLanguage();
+};
+applyLanguage();
 resetLicense();
 void api("overview")
   .then(() => refresh())

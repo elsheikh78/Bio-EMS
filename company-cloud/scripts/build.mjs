@@ -26,5 +26,8 @@ if (run.status !== 0) process.exit(run.status || 1);
 renameSync(`${root}/dist/index.html`, `${root}/dist/owner.html`);
 mkdirSync(`${root}/dist`, { recursive: true });
 cpSync(`${root}/public`, `${root}/dist`, { recursive: true });
+for (const name of ["bio-ems-logo-horizontal.png", "bio-ems-mark.png"]) {
+  cpSync(`${frontend}/src/assets/${name}`, `${root}/dist/${name}`);
+}
 // No credentials, local DB or Node services are uploaded in this bundle.
 rmSync(`${root}/dist/.env`, { force: true });

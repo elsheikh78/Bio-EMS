@@ -3,144 +3,207 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>BIO-EMS | منصة الشركة</title>
+    <meta name="theme-color" content="#eef4f7" />
+    <title>BIO-EMS | Company platform</title>
+    <link rel="icon" href="/bio-ems-mark.png" />
     <link rel="stylesheet" href="/portal.css" />
   </head>
   <body>
     <aside>
-      <div class="brand">
-        BIO<span>EMS</span><small>COMPANY PLATFORM</small>
-      </div>
-      <p>مركز إدارة العملاء والمواقع</p>
-      <div class="pilot">نسخة البيلوت • الرخص للمتابعة</div>
-      <a
-        href="https://developers.cloudflare.com/workers/"
-        target="_blank"
-        rel="noreferrer"
-        >Cloudflare Workers + D1</a
-      >
-    </aside>
-    <main>
-      <header>
-        <div>
-          <p class="eyebrow">CONNECTED OPERATIONS</p>
-          <h1>منصة الشركة</h1>
-          <p>رؤية واحدة للعملاء، اتصال المواقع، وإدارة الرخص.</p>
+      <a class="brand" href="#top" aria-label="BIO-EMS"
+        ><img src="/bio-ems-logo-horizontal.png" alt="BIO-EMS" /><small
+          data-i18n="companyWorkspace"
+        ></small
+      ></a>
+      <p class="sidebar-caption" data-i18n="controlCenter"></p>
+      <nav aria-label="Navigation">
+        <a href="#fleet"
+          ><span class="nav-icon">◈</span><span data-i18n="fleet"></span></a
+        ><a href="#onboarding"
+          ><span class="nav-icon">＋</span
+          ><span data-i18n="onboarding"></span></a
+        ><a href="#licensing"
+          ><span class="nav-icon">▤</span><span data-i18n="licenses"></span></a
+        ><a href="#activity"
+          ><span class="nav-icon">◷</span><span data-i18n="activity"></span
+        ></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="pilot">
+          <span class="status-dot"></span><span data-i18n="pilot"></span>
         </div>
-        <button id="logout" hidden>تسجيل الخروج</button>
+        <p data-i18n="independent"></p>
+      </div>
+    </aside>
+    <main id="top">
+      <header>
+        <div class="breadcrumb">
+          <span>BIO-EMS</span><span>/</span
+          ><span data-i18n="companyWorkspace"></span>
+        </div>
+        <div class="header-actions">
+          <button id="language-toggle" class="secondary" type="button">
+            English</button
+          ><button
+            id="logout"
+            class="secondary"
+            hidden
+            data-i18n="logout"
+          ></button>
+        </div>
       </header>
-      <p id="notice" role="status"></p>
-      <section id="login" class="panel">
-        <h2>دخول إدارة الشركة</h2>
-        <p>
-          استخدم مفتاح دخول الشركة الذي تم إعداده كسرّ على Cloudflare. جلسة
-          الدخول 30 دقيقة.
-        </p>
+      <section class="hero">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow"></p>
+          <h1 data-i18n="heroTitle"></h1>
+          <p class="hero-description" data-i18n="heroDescription"></p>
+          <div class="hero-pills">
+            <span data-i18n="customerManagement"></span
+            ><span data-i18n="remoteOwner"></span
+            ><span data-i18n="licenseTracking"></span>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="orbital-node node-one"></div>
+          <div class="orbital-node node-two"></div>
+          <div class="orbital-node node-three"></div>
+          <img src="/bio-ems-mark.png" alt="" />
+        </div>
+      </section>
+      <p id="notice" role="status" aria-live="polite"></p>
+      <section id="login" class="panel login-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" data-i18n="secureWorkspace"></p>
+            <h2 data-i18n="loginTitle"></h2>
+          </div>
+          <span class="badge" data-i18n="ownerAccess"></span>
+        </div>
+        <p data-i18n="loginDescription"></p>
         <form id="login-form">
           <label
-            >مفتاح دخول الشركة<input
+            ><span data-i18n="accessKey"></span
+            ><input
               name="token"
               type="password"
               required
               autocomplete="off"
               minlength="32" /></label
-          ><button>دخول آمن</button>
+          ><button data-i18n="secureLogin"></button>
         </form>
       </section>
       <div id="dashboard" hidden>
         <div class="metrics">
           <article>
-            <small>العملاء</small><strong id="customer-count">0</strong>
+            <span class="metric-icon">◈</span
+            ><small data-i18n="customers"></small
+            ><strong id="customer-count">0</strong
+            ><span class="metric-caption" data-i18n="customerPortfolio"></span>
           </article>
           <article>
-            <small>المواقع المتصلة</small><strong id="online-count">0</strong>
+            <span class="metric-icon">↗</span
+            ><small data-i18n="onlineSites"></small
+            ><strong id="online-count">0</strong
+            ><span class="metric-caption" data-i18n="connectedClients"></span>
           </article>
           <article>
-            <small>المواقع غير المتصلة</small
-            ><strong id="offline-count">0</strong>
+            <span class="metric-icon">◷</span
+            ><small data-i18n="offlineSites"></small
+            ><strong id="offline-count">0</strong
+            ><span class="metric-caption" data-i18n="attention"></span>
           </article>
           <article>
-            <small>رخص تنتهي خلال 30 يومًا</small
-            ><strong id="expiring-count">0</strong>
+            <span class="metric-icon">▤</span
+            ><small data-i18n="expiringLicenses"></small
+            ><strong id="expiring-count">0</strong
+            ><span class="metric-caption" data-i18n="nextThirtyDays"></span>
           </article>
         </div>
-        <section class="panel">
+        <section id="fleet" class="panel">
           <div class="section-heading">
-            <h2>العملاء والمواقع</h2>
-            <button id="refresh">تحديث الحالة</button>
+            <div>
+              <p class="eyebrow" data-i18n="portfolio"></p>
+              <h2 data-i18n="fleet"></h2>
+            </div>
+            <button id="refresh" class="secondary" data-i18n="refresh"></button>
           </div>
-          <p>
-            الحالة تعني اتصال برنامج العميل. لا تُعد وحدها تأكيدًا لسلامة كل
-            حساس. افتح System Owner لمراجعة التفاصيل.
-          </p>
+          <p data-i18n="connectionHelp"></p>
           <div id="sites" class="sites"></div>
         </section>
-        <div class="forms">
+        <div id="onboarding" class="forms">
           <section class="panel">
-            <h2>إضافة عميل</h2>
+            <p class="eyebrow" data-i18n="stepOne"></p>
+            <h2 data-i18n="addCustomer"></h2>
             <form id="customer-form">
               <label
-                >اسم العميل<input name="name" required maxlength="160" /></label
-              ><button>إضافة العميل</button>
+                ><span data-i18n="customerName"></span
+                ><input name="name" required maxlength="160" /></label
+              ><button data-i18n="addCustomer"></button>
             </form>
           </section>
           <section class="panel">
-            <h2>إضافة موقع وربطه</h2>
+            <p class="eyebrow" data-i18n="stepTwo"></p>
+            <h2 data-i18n="addSite"></h2>
             <form id="site-form">
               <label
-                >العميل<select
+                ><span data-i18n="customer"></span
+                ><select
                   name="customerId"
                   id="customer-select"
                   required
                 ></select></label
               ><label
-                >اسم الموقع<input name="name" required maxlength="160" /></label
-              ><button>إنشاء بيانات الربط</button>
+                ><span data-i18n="siteName"></span
+                ><input name="name" required maxlength="160" /></label
+              ><button data-i18n="createConnection"></button>
             </form>
           </section>
         </div>
-        <section id="enrollment" class="panel" hidden>
-          <h2>بيانات الربط — احفظها الآن</h2>
-          <p>
-            على جهاز العميل: System Owner ← الاتصال بمنصة الشركة. رمز الربط يظهر
-            مرة واحدة. لا ترسله لغير المسؤول عن التركيب.
-          </p>
+        <section id="enrollment" class="panel enrollment-panel" hidden>
+          <h2 data-i18n="enrollmentTitle"></h2>
+          <p data-i18n="enrollmentHelp"></p>
           <pre id="enrollment-data"></pre>
-          <button id="copy-enrollment">نسخ بيانات الربط</button>
+          <button id="copy-enrollment" data-i18n="copyConnection"></button>
         </section>
-        <section class="panel">
-          <h2>رخص المواقع</h2>
-          <p>
-            الرخص الحالية سجلات متابعة مركزية؛ إصدارها أو تعليقها لا يوقف
-            الحساسات أو الإنذارات، ولا يثبت شهادة الرخصة المحلية تلقائيًا.
-          </p>
+        <section id="licensing" class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow" data-i18n="entitlements"></p>
+              <h2 data-i18n="licenses"></h2>
+            </div>
+            <span class="badge" data-i18n="monitorOnly"></span>
+          </div>
+          <p data-i18n="licenseHelp"></p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>الموقع</th>
-                  <th>الحالة</th>
-                  <th>الانتهاء</th>
-                  <th>الحساسات / الأجهزة</th>
-                  <th>إدارة</th>
+                  <th data-i18n="site"></th>
+                  <th data-i18n="status"></th>
+                  <th data-i18n="expiry"></th>
+                  <th data-i18n="limits"></th>
+                  <th data-i18n="manage"></th>
                 </tr>
               </thead>
               <tbody id="licenses"></tbody>
             </table>
           </div>
-          <h3 id="license-title">إصدار رخصة متابعة</h3>
+          <h3 id="license-title" data-i18n="issueLicense"></h3>
           <form id="license-form" class="license-form">
             <input type="hidden" name="id" /><label
-              >الموقع<select
-                name="siteId"
-                id="site-select"
-                required
-              ></select></label
-            ><label>البداية<input name="startsAt" type="date" required /></label
+              ><span data-i18n="site"></span
+              ><select name="siteId" id="site-select" required></select></label
             ><label
-              >الانتهاء<input name="expiresAt" type="date" required /></label
+              ><span data-i18n="start"></span
+              ><input name="startsAt" type="date" required /></label
             ><label
-              >الحساسات<input
+              ><span data-i18n="expiry"></span
+              ><input name="expiresAt" type="date" required /></label
+            ><label
+              ><span data-i18n="sensors"></span
+              ><input
                 name="sensorLimit"
                 type="number"
                 min="1"
@@ -148,7 +211,8 @@
                 value="30"
                 required /></label
             ><label
-              >الأجهزة<input
+              ><span data-i18n="devices"></span
+              ><input
                 name="deviceLimit"
                 type="number"
                 min="1"
@@ -156,21 +220,34 @@
                 value="4"
                 required /></label
             ><label
-              >نوع / حالة الرخصة<select name="status">
-                <option value="trial">تجريبية</option>
-                <option value="active">سارية</option>
-                <option value="suspended">معلقة للمتابعة</option>
-              </select></label
-            ><button>حفظ الرخصة</button
-            ><button id="cancel-edit" type="button">رخصة جديدة</button>
+              ><span data-i18n="licenseStatus"></span
+              ><select name="status">
+                <option value="trial" data-i18n="trial"></option>
+                <option value="active" data-i18n="active"></option>
+                <option
+                  value="suspended"
+                  data-i18n="suspended"
+                ></option></select></label
+            ><button data-i18n="saveLicense"></button
+            ><button
+              id="cancel-edit"
+              class="secondary"
+              type="button"
+              data-i18n="newLicense"
+            ></button>
           </form>
         </section>
-        <section class="panel">
-          <h2>سجل العمليات الأخير</h2>
+        <section id="activity" class="panel">
+          <p class="eyebrow" data-i18n="auditTrail"></p>
+          <h2 data-i18n="activity"></h2>
           <div id="audit"></div>
         </section>
       </div>
-      <footer>BIO-EMS • تشغيل العميل مستقل عن اتصال منصة الشركة</footer>
+      <footer>
+        <img src="/bio-ems-logo-horizontal.png" alt="BIO-EMS" /><span
+          data-i18n="independent"
+        ></span>
+      </footer>
     </main>
     <script type="module" src="/portal.js"></script>
   </body>
