@@ -438,3 +438,79 @@ test("heartbeat synchronizes only the authenticated site's pilot licenses includ
   result = await poll();
   assert.deepEqual(result.licenseSnapshot.licenses, []);
 });
+
+test("company removal requires auth and same origin, isolates other sites and clears dependent records", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A"),
+    b = await s.enroll("B");
+  s.db
+    .prepare("INSERT INTO licenses VALUES (?,?,?,?,?,?,?,?)")
+    .run("remove-me", a.id, 1, 200, 7, 1, "trial", 1);
+  s.db
+    .prepare("INSERT INTO licenses VALUES (?,?,?,?,?,?,?,?)")
+    .run("keep-me", b.id, 1, 200, 7, 1, "trial", 1);
+  const cookie = s.getCookie();
+  s.setCookie(undefined);
+  assert.equal(
+    (await s.call("/api/company/licenses/remove-me", "DELETE")).status,
+    401,
+  );
+  s.setCookie(cookie);
+  assert.equal(
+    (
+      await s.call("/api/company/licenses/remove-me", "DELETE", undefined, {
+        Origin: "https://evil.invalid",
+      })
+    ).status,
+    403,
+  );
+  assert.equal(
+    (await s.call("/api/company/licenses/remove-me", "DELETE")).status,
+    200,
+  );
+  assert.equal(
+    s.db.prepare("SELECT count(*) AS n FROM licenses WHERE site_id=?").get(a.id)
+      .n,
+    0,
+  );
+  assert.ok(s.db.prepare("SELECT * FROM sites WHERE id=?").get(a.id));
+  s.db
+    .prepare("INSERT INTO licenses VALUES (?,?,?,?,?,?,?,?)")
+    .run("site-license", a.id, 1, 200, 7, 1, "trial", 1);
+  s.db
+    .prepare("INSERT INTO jobs VALUES (?,?,?,?,?,?,?)")
+    .run("job-a", a.id, "encrypted", null, "queued", 1, Date.now() + 60000);
+  assert.equal(
+    (await s.call(`/api/company/sites/${a.id}`, "DELETE")).status,
+    200,
+  );
+  assert.equal(
+    (await s.call(`/api/agent/${a.id}/heartbeat`, "POST", heartbeat, auth(a)))
+      .status,
+    401,
+  );
+  assert.equal(
+    s.db.prepare("SELECT count(*) AS n FROM jobs WHERE site_id=?").get(a.id).n,
+    0,
+  );
+  assert.equal(
+    s.db.prepare("SELECT count(*) AS n FROM licenses WHERE site_id=?").get(a.id)
+      .n,
+    0,
+  );
+  assert.ok(s.db.prepare("SELECT * FROM licenses WHERE id='keep-me'").get());
+  assert.ok(s.db.prepare("SELECT * FROM sites WHERE id=?").get(b.id));
+  assert.equal(
+    s.db
+      .prepare(
+        "SELECT count(*) AS n FROM audit WHERE action IN ('site.deleted','license.deleted')",
+      )
+      .get().n,
+    2,
+  );
+  assert.equal(
+    (await s.call(`/api/company/sites/${a.id}`, "DELETE")).status,
+    404,
+  );
+});

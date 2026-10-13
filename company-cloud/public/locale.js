@@ -1,4 +1,18 @@
 export const messages = {
+  removeSite: ["× إزالة الموقع", "× Remove site"],
+  removeSiteName: ["إزالة الموقع {site}", "Remove site {site}"],
+  removeSiteConfirm: [
+    "إزالة الموقع {site} من منصة الشركة؟\nكود الربط: {id}\nسيُلغى الاتصال وتُحذف رخص الموقع وعملياته المركزية. المراقبة والبيانات المحلية ستظل تعمل. الإزالة نهائية.",
+    "Remove site {site} from the company platform?\nConnection ID: {id}\nIts connection, central licenses and remote jobs will be deleted. Local monitoring and data remain intact. This cannot be undone.",
+  ],
+  removeLicense: ["× إزالة الرخصة", "× Remove license"],
+  removeLicenseId: ["إزالة الرخصة {id}", "Remove license {id}"],
+  removeLicenseConfirm: [
+    "إزالة رخصة المتابعة {id} للموقع {site} نهائيًا؟ ستُزال من العميل في المزامنة التالية. لا يوقف ذلك المراقبة المحلية.",
+    "Permanently remove tracking license {id} for site {site}? It will disappear from the client on its next successful synchronization. Local monitoring continues.",
+  ],
+  siteDeleted: ["إزالة موقع", "Site removed"],
+  licenseDeleted: ["إزالة رخصة", "License removed"],
   companyWorkspace: ["منصة الشركة", "Company workspace"],
   controlCenter: ["مركز إدارة العملاء والمواقع", "Customer & site management"],
   fleet: ["العملاء والمواقع", "Customers & sites"],

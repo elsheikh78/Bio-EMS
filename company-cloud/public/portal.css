@@ -653,3 +653,16 @@ footer img {
     transition: none;
   }
 }
+
+.danger {
+  background: #fff0ef;
+  color: #a1322a;
+  border-color: #f1d0cc;
+}
+.danger:hover {
+  background: #ffe0db;
+}
+td button {
+  margin-inline-end: 8px;
+  margin-block: 4px;
+}

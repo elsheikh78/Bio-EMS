@@ -172,6 +172,31 @@ function renderState() {
         });
     };
     card.append(revoke);
+    const remove = element("button", t("removeSite"), "danger");
+    remove.setAttribute("aria-label", t("removeSiteName", { site: site.name }));
+    remove.onclick = () => {
+      if (confirm(t("removeSiteConfirm", { site: site.name, id: site.id })))
+        void action(async () => {
+          await api(`sites/${site.id}`, "DELETE");
+          const selected = sessionStorage.getItem(
+            "bioems.company.selected-site",
+          );
+          if (selected && JSON.parse(selected).id === site.id) {
+            sessionStorage.removeItem("bioems.company.selected-site");
+            sessionStorage.removeItem("bioems.platform.session.v1");
+          }
+          if (
+            state.licenses.some(
+              (l) =>
+                l.site_id === site.id &&
+                l.id === $("license-form").elements.id.value,
+            )
+          )
+            resetLicense();
+          await refresh();
+        });
+    };
+    card.append(remove);
     $("sites").append(card);
   }
   $("licenses").replaceChildren();
@@ -205,6 +230,25 @@ function renderState() {
       form.scrollIntoView({ behavior: "smooth" });
     };
     cell.append(button);
+    const remove = element("button", t("removeLicense"), "danger");
+    remove.setAttribute("aria-label", t("removeLicenseId", { id: license.id }));
+    remove.onclick = () => {
+      if (
+        confirm(
+          t("removeLicenseConfirm", {
+            site: site?.name || license.site_id,
+            id: license.id,
+          }),
+        )
+      )
+        void action(async () => {
+          await api(`licenses/${license.id}`, "DELETE");
+          if ($("license-form").elements.id.value === license.id)
+            resetLicense();
+          await refresh();
+        });
+    };
+    cell.append(remove);
     row.append(cell);
     $("licenses").append(row);
   }
@@ -231,6 +275,8 @@ function renderState() {
     "site.revoked": t("siteRevoked"),
     "license.created": t("licenseCreated"),
     "license.updated": t("licenseUpdated"),
+    "site.deleted": t("siteDeleted"),
+    "license.deleted": t("licenseDeleted"),
     "remote.queued": t("remoteQueued"),
     "remote.completed": t("remoteCompleted"),
   };

@@ -342,6 +342,30 @@ async function handle(req, env) {
       await audit(env, "site.created", id);
       return json({ id, token }, 201);
     }
+    const deleteSite = path.match(
+      /^\/api\/company\/sites\/([a-zA-Z0-9-]{1,64})$/,
+    );
+    if (deleteSite && req.method === "DELETE") {
+      const id = deleteSite[1];
+      if (
+        !(await env.DB.prepare("SELECT id FROM sites WHERE id=?")
+          .bind(id)
+          .first())
+      )
+        fail(404, "Unknown site");
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM jobs WHERE site_id=?").bind(id),
+        env.DB.prepare("DELETE FROM licenses WHERE site_id=?").bind(id),
+        env.DB.prepare("DELETE FROM sites WHERE id=?").bind(id),
+        env.DB.prepare("INSERT INTO audit VALUES (?,?,?,?)").bind(
+          crypto.randomUUID(),
+          "site.deleted",
+          id,
+          Date.now(),
+        ),
+      ]);
+      return json({ ok: true });
+    }
     const revoke = path.match(
       /^\/api\/company\/sites\/([a-zA-Z0-9-]{1,64})\/revoke$/,
     );
@@ -392,6 +416,25 @@ async function handle(req, env) {
     const license = path.match(
       /^\/api\/company\/licenses\/([a-zA-Z0-9-]{1,64})$/,
     );
+    if (license && req.method === "DELETE") {
+      const id = license[1];
+      if (
+        !(await env.DB.prepare("SELECT id FROM licenses WHERE id=?")
+          .bind(id)
+          .first())
+      )
+        fail(404, "Unknown license");
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM licenses WHERE id=?").bind(id),
+        env.DB.prepare("INSERT INTO audit VALUES (?,?,?,?)").bind(
+          crypto.randomUUID(),
+          "license.deleted",
+          id,
+          Date.now(),
+        ),
+      ]);
+      return json({ ok: true });
+    }
     if (license && req.method === "PATCH") {
       const data = await body(req);
       const current = await env.DB.prepare("SELECT * FROM licenses WHERE id=?")
