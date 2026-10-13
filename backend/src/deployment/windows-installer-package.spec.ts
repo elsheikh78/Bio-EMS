@@ -90,12 +90,42 @@ describe("DEP-01 controlled Windows installer package", () => {
           sha256: checksum(content("owner-commissioning-trust")),
           redistributionEvidence: "BIO-EMS-MANUFACTURER-PUBLIC-KEYS",
         },
+        {
+          id: "admin-recovery-trust",
+          version: "1",
+          relativePath: "payload/manufacturer-admin-recovery-trust.json",
+          sha256: checksum(content("admin-recovery-trust")),
+          redistributionEvidence: "BIO-EMS-MANUFACTURER-PUBLIC-KEYS",
+        },
       ],
     };
     expect(validateWindowsInstallerPackage(production).ready).toBe(true);
 
     production.releaseChannel = "Pilot";
     expect(validateWindowsInstallerPackage(production).ready).toBe(false);
+  });
+
+  it("accepts checksummed public recovery trust in Pilot and detects tampering", () => {
+    const input = {
+      ...manifest(),
+      artifacts: [
+        ...manifest().artifacts,
+        {
+          id: "admin-recovery-trust",
+          version: "1",
+          relativePath: "payload/manufacturer-admin-recovery-trust.json",
+          sha256: checksum(content("admin-recovery-trust")),
+          redistributionEvidence: "BIO-EMS-MANUFACTURER-PUBLIC-KEYS",
+        },
+      ],
+    };
+    const directory = stage(input as ReturnType<typeof manifest>);
+    expect(readAndValidateWindowsInstallerPackage(directory).ready).toBe(true);
+    writeFileSync(join(directory, "payload/manufacturer-admin-recovery-trust.json"), "tampered");
+    expect(readAndValidateWindowsInstallerPackage(directory).issues).toContainEqual({
+      code: WINDOWS_INSTALLER_ISSUES.ARTIFACT_CHECKSUM_MISMATCH,
+      artifactId: "admin-recovery-trust",
+    });
   });
 
   it("rejects traversal, private material and reusable installation state", () => {
