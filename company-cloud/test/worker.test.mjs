@@ -380,7 +380,6 @@ test("body limits and security headers apply to error and asset responses", asyn
   );
 });
 
-
 test("owner routes serve canonical HTML without redirecting the browser away from owner login", async () => {
   const s = setup();
   await s.login();
@@ -394,7 +393,11 @@ test("owner routes serve canonical HTML without redirecting the browser away fro
       });
     return new Response("Not found", { status: 404 });
   };
-  for (const path of ["/system-owner/login", "/system-owner", "/system-owner/installations"]) {
+  for (const path of [
+    "/system-owner/login",
+    "/system-owner",
+    "/system-owner/installations",
+  ]) {
     const response = await s.call(path);
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("Location"), null);
@@ -402,4 +405,36 @@ test("owner routes serve canonical HTML without redirecting the browser away fro
   }
   s.setCookie(undefined);
   assert.equal((await s.call("/system-owner/login")).status, 401);
+});
+
+test("heartbeat synchronizes only the authenticated site's pilot licenses including renewals", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A");
+  const b = await s.enroll("B");
+  s.db
+    .prepare("INSERT INTO licenses VALUES (?,?,?,?,?,?,?,?)")
+    .run("lic-a", a.id, 1, 100, 7, 1, "trial", 1);
+  s.db
+    .prepare("INSERT INTO licenses VALUES (?,?,?,?,?,?,?,?)")
+    .run("lic-b", b.id, 1, 100, 20, 2, "active", 1);
+  const poll = async () =>
+    (
+      await s.call(`/api/agent/${a.id}/heartbeat`, "POST", heartbeat, {
+        Authorization: `Bearer ${a.token}`,
+      })
+    ).json();
+  let result = await poll();
+  assert.equal(result.licenseSnapshot.enforcement, false);
+  assert.equal(result.licenseSnapshot.siteId, a.id);
+  assert.deepEqual(
+    result.licenseSnapshot.licenses.map((x) => x.id),
+    ["lic-a"],
+  );
+  s.db.prepare("UPDATE licenses SET expires_at=200 WHERE id='lic-a'").run();
+  result = await poll();
+  assert.equal(result.licenseSnapshot.licenses[0].expires_at, 200);
+  s.db.prepare("DELETE FROM licenses WHERE id='lic-a'").run();
+  result = await poll();
+  assert.deepEqual(result.licenseSnapshot.licenses, []);
 });

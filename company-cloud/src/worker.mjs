@@ -222,7 +222,19 @@ async function handle(req, env) {
       )
         .bind(publicKey, JSON.stringify(heartbeat), Date.now(), record.id)
         .run();
-      return json({ ok: true });
+      const licenses = await env.DB.prepare(
+        "SELECT id,starts_at,expires_at,sensor_limit,device_limit,status FROM licenses WHERE site_id=? ORDER BY created_at DESC,id DESC LIMIT 1000",
+      )
+        .bind(record.id)
+        .all();
+      return json({
+        ok: true,
+        licenseSnapshot: {
+          siteId: record.id,
+          enforcement: false,
+          licenses: licenses.results,
+        },
+      });
     }
     if (agent[2] === "claim") {
       // Atomic claim; a command is never retried after claim. A lost response is indeterminate.

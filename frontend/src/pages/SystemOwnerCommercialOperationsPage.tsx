@@ -270,6 +270,44 @@ export function SystemOwnerCommercialOperationsPage() {
       <Alert severity="info" sx={{ my: 2 }}>
         {boundary}
       </Alert>
+      {section === "licenses" && data.companyLicenseSnapshot && (
+        <Card variant="outlined" sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6">
+              {language === "ar"
+                ? "رخص منصة الشركة — متابعة البيلوت"
+                : "Company licenses — pilot tracking"}
+            </Typography>
+            <Typography>
+              {language === "ar"
+                ? "بدون قيود تشغيل. آخر مزامنة:"
+                : "No runtime enforcement. Last synchronized:"}{" "}
+              {new Date(data.companyLicenseSnapshot.syncedAt).toLocaleString(
+                language,
+              )}
+            </Typography>
+            <Typography>{data.companyLicenseSnapshot.siteId}</Typography>
+            {data.companyLicenseSnapshot.licenses.length === 0 && (
+              <Typography>
+                {language === "ar"
+                  ? "لا توجد رخص محفوظة لهذا الربط."
+                  : "No licenses recorded for this connection."}
+              </Typography>
+            )}
+            {data.companyLicenseSnapshot.licenses.map((license) => (
+              <Typography key={license.id} sx={{ mt: 1 }}>
+                {license.id} · {license.status} ·{" "}
+                {new Date(license.starts_at).toLocaleDateString(language)} —{" "}
+                {new Date(license.expires_at).toLocaleDateString(language)} ·{" "}
+                {language === "ar" ? "الحساسات" : "Sensors"}:{" "}
+                {license.sensor_limit} ·{" "}
+                {language === "ar" ? "الأجهزة" : "Devices"}:{" "}
+                {license.device_limit}
+              </Typography>
+            ))}
+          </CardContent>
+        </Card>
+      )}
       {(section === "licenses" || section === "updates") && (
         <Card variant="outlined" sx={{ mb: 3 }}>
           <CardContent>

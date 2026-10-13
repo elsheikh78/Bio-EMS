@@ -25,6 +25,9 @@ vi.mock("../../config/config", () => ({
   config: { ownerMfaEncryptionKey: Buffer.alloc(32, 7), apiPrefix: "/api/v1" },
 }));
 migration034.up(sqlite);
+sqlite.exec(
+  "CREATE TABLE company_license_snapshot (singleton INTEGER PRIMARY KEY,site_id TEXT,synced_at TEXT,licenses_json TEXT)"
+);
 const originalFetch = globalThis.fetch;
 afterEach(() => {
   disableConnection();
@@ -91,7 +94,24 @@ describe("opt-in client cloud runtime", () => {
         };
         if (url.endsWith("/heartbeat")) {
           publicKey = data.publicKey;
-          return new Response("{}");
+          return new Response(
+            JSON.stringify({
+              licenseSnapshot: {
+                siteId: "site",
+                enforcement: false,
+                licenses: [
+                  {
+                    id: "central-license",
+                    starts_at: 1,
+                    expires_at: 1800000000000,
+                    sensor_limit: 7,
+                    device_limit: 1,
+                    status: "trial",
+                  },
+                ],
+              },
+            })
+          );
         }
         if (url.endsWith("/claim")) {
           if (claimed) return new Response('{"job":null}');
@@ -160,6 +180,12 @@ describe("opt-in client cloud runtime", () => {
     });
     await vi.waitFor(() => expect(resultBody).toBeDefined(), { timeout: 5000 });
     expect(localCalls).toBe(1);
+    const snapshot = sqlite.prepare("SELECT licenses_json FROM company_license_snapshot").get() as {
+      licenses_json: string;
+    };
+    expect(JSON.parse(snapshot.licenses_json)).toMatchObject([
+      { id: "central-license", sensor_limit: 7 },
+    ]);
     expect(resultBody).toMatchObject({ status: 200 });
     const decoded = JSON.parse(
       Buffer.from((resultBody as { body: string }).body, "base64").toString()

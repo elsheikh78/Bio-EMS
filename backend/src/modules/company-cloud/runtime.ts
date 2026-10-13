@@ -5,6 +5,7 @@ import {
   hkdfSync,
   randomBytes,
 } from "node:crypto";
+import { z } from "zod";
 import type { Express } from "express";
 import type { Server } from "node:http";
 import { sqlite } from "../../../database/sqlite/client";
@@ -108,10 +109,13 @@ export function configureConnection(input: {
         "."
       )
     );
+  if (!current || current.siteId !== connection.siteId || current.url !== connection.url)
+    sqlite.prepare("DELETE FROM company_license_snapshot").run();
   restart();
   return connectionStatus();
 }
 export function disableConnection() {
+  sqlite.prepare("DELETE FROM company_license_snapshot").run();
   sqlite.prepare("DELETE FROM company_connection").run();
   generation++;
   if (timer) clearTimeout(timer);
@@ -132,6 +136,7 @@ async function cloud(connection: Connection, action: string, data: unknown) {
   });
   if (!response.ok) throw new Error(`Cloud HTTP ${response.status}`);
   return response.json() as Promise<{
+    licenseSnapshot?: unknown;
     job?: { id: string; envelope: string; expires_at: number } | null;
   }>;
 }
@@ -213,7 +218,7 @@ async function tick(currentGeneration: number) {
       } catch {
         /* Report unavailable rather than a false healthy zero. */
       }
-      await cloud(connection, "heartbeat", {
+      const response = await cloud(connection, "heartbeat", {
         summary,
         publicKey: connection.publicKey,
         status: "UP",
@@ -221,6 +226,34 @@ async function tick(currentGeneration: number) {
         uptime: Math.floor(process.uptime()),
         remoteControl: connection.remoteControl,
       });
+      if (currentGeneration !== generation) return;
+      if (response.licenseSnapshot !== undefined) {
+        const snapshot = z
+          .object({
+            siteId: z.literal(connection.siteId),
+            enforcement: z.literal(false),
+            licenses: z
+              .array(
+                z.object({
+                  id: z.string().min(1).max(64),
+                  starts_at: z.number().int().nonnegative(),
+                  expires_at: z.number().int().nonnegative(),
+                  sensor_limit: z.number().int().nonnegative(),
+                  device_limit: z.number().int().nonnegative(),
+                  status: z.enum(["trial", "active", "suspended"]),
+                })
+              )
+              .max(1000),
+          })
+          .parse(response.licenseSnapshot);
+        sqlite
+          .prepare(
+            `INSERT INTO company_license_snapshot VALUES (1,?,?,?)
+          ON CONFLICT(singleton) DO UPDATE SET site_id=excluded.site_id,
+          synced_at=excluded.synced_at,licenses_json=excluded.licenses_json`
+          )
+          .run(connection.siteId, new Date().toISOString(), JSON.stringify(snapshot.licenses));
+      }
       heartbeatAt = Date.now();
       lastSuccess = new Date().toISOString();
       lastError = null;
