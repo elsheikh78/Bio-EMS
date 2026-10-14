@@ -48,6 +48,8 @@ coverage/
 # Database
 *.db
 *.sqlite
+company-cloud/.wrangler/
+company-cloud/.dev.vars
 *.db-shm
 *.db-wal
 

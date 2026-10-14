@@ -131,6 +131,21 @@ export class PlatformOperationsRepository {
           "SELECT id,event_type AS eventType,entity_type AS entityType,entity_id AS entityId,occurred_at AS occurredAt,actor_identity AS actorIdentity FROM platform_commercial_events ORDER BY id DESC"
         )
         .all(),
+      companyLicenseSnapshot: (() => {
+        const row = this.database
+          .prepare(
+            "SELECT site_id,synced_at,licenses_json FROM company_license_snapshot WHERE singleton=1"
+          )
+          .get() as { site_id: string; synced_at: string; licenses_json: string } | undefined;
+        return row
+          ? {
+              siteId: row.site_id,
+              syncedAt: row.synced_at,
+              enforcement: false,
+              licenses: JSON.parse(row.licenses_json),
+            }
+          : null;
+      })(),
       siteBoundLicensing: new LicenseGovernanceService(this.database).overview(),
     };
   }

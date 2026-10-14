@@ -1,4 +1,5 @@
 import { getEnvironment } from "../config/environment";
+import { companyCloudMode, companyRequest } from "./companyTransport";
 import { backendErrorEnvelopeSchema } from "../auth/contracts";
 
 export type ApiRequestMode = "public" | "protected";
@@ -107,10 +108,13 @@ async function request<T>(
     }
   ).responseMode;
 
-  const response = await fetch(`${getEnvironment().VITE_API_BASE_URL}${path}`, {
+  const fetchOptions = {
     ...requestOptions,
     headers,
-  });
+  };
+  const response = companyCloudMode()
+    ? await companyRequest(path, fetchOptions)
+    : await fetch(`${getEnvironment().VITE_API_BASE_URL}${path}`, fetchOptions);
 
   if (!response.ok) {
     const envelope = await readErrorEnvelope(response);

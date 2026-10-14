@@ -23,6 +23,7 @@ import { useLocalization } from "../localization/useLocalization";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 import { ownerMfaResetResponseSchema } from "../platform-auth/contracts";
 import { BrandLogo } from "../components/BrandLogo";
+import { CompanyConnectionPanel } from "../platform-operations/CompanyConnectionPanel";
 
 const copy = {
   en: {
@@ -269,6 +270,7 @@ export function SystemOwnerConsolePage() {
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        <CompanyConnectionPanel />
         <Typography color="text.secondary" sx={{ mb: 3 }}>
           {text.foundation}
         </Typography>

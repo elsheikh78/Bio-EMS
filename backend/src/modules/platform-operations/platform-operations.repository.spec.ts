@@ -1,3 +1,4 @@
+import { migration035 } from "../../../database/sqlite/migrations/035_company_license_snapshot";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { migration018 } from "../../../database/sqlite/migrations/018_create_commercial_operations";
@@ -32,6 +33,7 @@ describe("isolated platform commercial operations", () => {
     migration022.up(db);
     migration023.up(db);
     migration024.up(db);
+    migration035.up(db);
     repository = new PlatformOperationsRepository(db);
   });
 

@@ -1,5 +1,20 @@
 # BIO-EMS Implementation Plan
 
+## Company cloud pilot — 11 October 2026
+
+1. Validate the separate Workers/D1 source and opt-in client connection candidate.
+2. Create the company-owned Cloudflare account, D1 database and runtime secrets;
+   deploy to the actual workers.dev address and test company session protection.
+3. Build/qualify Client Setup from the same source commit before enabling its
+   System Owner company connection UI on a pilot Windows machine.
+4. Enroll one installation, verify real owner MFA and operations, disconnected
+   local monitoring, revoked enrollment and indeterminate command handling.
+5. Exercise monitor-only license expiry/renewal; monitor free-tier request/row
+   usage. Do not enable enforcement or claim signed certificate rollout.
+
+See [company cloud operating guide](docs/current/COMPANY-CLOUD-PILOT-AR.md).
+This sequence adds company management without replacing hardware commissioning.
+
 ## Immediate execution order — 10 October 2026
 
 1. Install the verified `main@98cea57` Pilot Client Setup using the company launcher;

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import companyConnectionRouter from "./company-connection.route";
 import {
   createPlatformCustomer,
   createPlatformLicense,
@@ -128,6 +129,7 @@ import {
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
+router.use("/company-connection", companyConnectionRouter);
 router.get("/", platformOperationsOverview);
 router.get("/hardware-lab/profile", getHardwareLabProfile);
 router.get("/hardware-lab/runs", listHardwareTestRuns);

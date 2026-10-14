@@ -1,17 +1,43 @@
 # BIO-EMS Project State
 
+## 11 October 2026 company cloud pilot candidate
+
+- Separate Cloudflare Workers/D1 package adds a company customer/site registry,
+  connection status, persisted device/alarm count summaries, monitor-only site
+  license records and central operation audit.
+- Optional client connection is configured from the local System Owner UI. Remote
+  transport reuses local owner authentication/MFA and validated owner routes;
+  sensitive request/response payloads are encrypted end to end.
+- Company Worker is deployed at `https://bioems-company.bioems-egypt.workers.dev`.
+  Company login and creation of the Bio Egypt / Elmanial warehouse record were
+  verified on the pilot browser. Installed Windows connection and field acceptance
+  are still pending; the existing client predates this connection feature.
+- Central records do not issue local signed license certificates or enforce new
+  restrictions. Historical telemetry replication and large remote file transfer
+  are outside this first connection candidate. One connection per local DB.
+- Product version remains 0.20.0. Firmware is unchanged. New client source needs a
+  qualified Client Setup before the connection can be used at a customer site.
+- Local validation: 1072 backend tests, 356 frontend tests and 9 Worker/D1 adapter
+  tests passed. Backend/frontend typecheck, lint, formatting and builds passed;
+  cloud asset build and Wrangler deployment dry-run passed. Actual deployment, D1
+  migration and initial portal login/site creation succeeded. Client heartbeat,
+  remote owner operations and installed-client qualification remain pending.
+
+Operations: [company cloud pilot](docs/current/COMPANY-CLOUD-PILOT-AR.md).
+
 ## Automatic ADMIN recovery public trust deployment
 
 - Client staging accepts the company-exported public JSON through `AdminRecoveryTrustKeyring`
   or `BIOEMS_ADMIN_RECOVERY_BUILD_TRUST_PATH`. The Windows workflow can consume the public
-  repository variable `BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON`.
+  repository variable `BIOEMS_ADMIN_RECOVERY_PUBLIC_TRUST_JSON`. Without an explicit
+  override, staging uses the checked-in public `manufacturer-admin-recovery-trust.json`.
 - Packaging validates strict Ed25519 public keyrings, active keys, size and duplicate IDs,
   rejects private PEM/extra secret fields, and includes the public file in the checksummed manifest.
 - Signed Client Setup deploys it automatically on fresh install and Repair/update into the
   protected licensing directory. Customer recovery remains entirely in the login interface.
 - Production requires this artifact. Pilot builds without company public trust remain possible
   for qualification but are not ready for field file recovery. A real company public export
-  is still required before producing the company's recovery-enabled installer.
+  is included in the repository; the encrypted private key remains with the company.
 - Manufacturer Tools and firmware behavior are unchanged; version remains `0.20.0`.
 
 ## 11 October 2026 offline customer ADMIN recovery

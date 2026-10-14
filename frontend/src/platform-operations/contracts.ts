@@ -69,6 +69,24 @@ export const platformOperationsOverviewSchema = z
     licenses: z.array(platformLicenseSummarySchema),
     serviceEvents: z.array(platformServiceEventSummarySchema),
     commercialEvents: z.array(platformCommercialEventSchema),
+    companyLicenseSnapshot: z
+      .object({
+        siteId: z.string(),
+        syncedAt: z.string(),
+        enforcement: z.literal(false),
+        licenses: z.array(
+          z.object({
+            id: z.string(),
+            starts_at: z.number(),
+            expires_at: z.number(),
+            sensor_limit: z.number(),
+            device_limit: z.number(),
+            status: z.enum(["trial", "active", "suspended"]),
+          }),
+        ),
+      })
+      .nullable()
+      .optional(),
     siteBoundLicensing: z
       .object({
         installations: z.array(
