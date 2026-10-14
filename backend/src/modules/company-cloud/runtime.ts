@@ -10,6 +10,7 @@ import type { Express } from "express";
 import type { Server } from "node:http";
 import { sqlite } from "../../../database/sqlite/client";
 import { config } from "../../config/config";
+import { VIEWER_EXPORT_INTERVAL_MS } from "./viewer-policy";
 import { operationalSummary } from "./summary";
 import { decryptRemoteRequest, encryptRemoteResult, type CloudEnvelope } from "./protocol";
 
@@ -18,6 +19,7 @@ interface Connection {
   siteId: string;
   token: string;
   remoteControl: boolean;
+  viewerMonitoring?: boolean;
   privateKey: string;
   publicKey: Record<string, unknown>;
 }
@@ -29,6 +31,9 @@ let generation = 0;
 let lastSuccess: string | null = null;
 let lastError: string | null = null;
 let heartbeatAt = 0;
+let viewerSnapshotAt = 0;
+let viewerLastSuccess: string | null = null;
+let viewerLastError: string | null = null;
 function storageKey() {
   if (!config.ownerMfaEncryptionKey)
     throw new Error("Owner encryption key is required for cloud connection");
@@ -61,6 +66,9 @@ export function connectionStatus() {
     url: current?.url,
     siteId: current?.siteId,
     remoteControl: current?.remoteControl || false,
+    viewerMonitoring: current?.viewerMonitoring === true,
+    viewerLastSuccess,
+    viewerLastError,
     lastSuccess,
     lastError,
   };
@@ -70,6 +78,7 @@ export function configureConnection(input: {
   siteId: string;
   token: string;
   remoteControl: boolean;
+  viewerMonitoring?: boolean;
 }) {
   const url = new URL(input.url);
   if (
@@ -122,6 +131,8 @@ export function disableConnection() {
   localServer?.close();
   localServer = undefined;
   localUrl = "";
+  viewerLastSuccess = null;
+  viewerLastError = null;
   lastSuccess = null;
   lastError = null;
   return connectionStatus();
@@ -258,6 +269,24 @@ async function tick(currentGeneration: number) {
       lastSuccess = new Date().toISOString();
       lastError = null;
     }
+    if (
+      connection.viewerMonitoring &&
+      currentGeneration === generation &&
+      Date.now() - viewerSnapshotAt >= VIEWER_EXPORT_INTERVAL_MS
+    ) {
+      try {
+        const { buildViewerSnapshot } = await import("./viewer-snapshot");
+        const snapshot = await buildViewerSnapshot();
+        if (currentGeneration !== generation) return;
+        await cloud(connection, "snapshot", snapshot);
+        viewerSnapshotAt = Date.now();
+        viewerLastSuccess = new Date().toISOString();
+        viewerLastError = null;
+      } catch {
+        viewerLastError =
+          "Viewer snapshot export failed; check installed site identity and telemetry service";
+      }
+    }
     if (connection.remoteControl && currentGeneration === generation) {
       const result = await cloud(connection, "claim", {});
       if (result.job && currentGeneration === generation) await execute(connection, result.job);
@@ -271,7 +300,11 @@ async function tick(currentGeneration: number) {
   if (currentGeneration === generation) {
     timer = setTimeout(
       () => void tick(currentGeneration),
-      connection.remoteControl ? 15_000 : 60_000
+      connection.remoteControl
+        ? 15_000
+        : connection.viewerMonitoring
+          ? VIEWER_EXPORT_INTERVAL_MS
+          : 60_000
     );
     timer.unref();
   }
@@ -280,6 +313,9 @@ function restart() {
   generation++;
   if (timer) clearTimeout(timer);
   heartbeatAt = 0;
+  viewerSnapshotAt = 0;
+  viewerLastSuccess = null;
+  viewerLastError = null;
   const current = load();
   if (!application || !current) return;
   const currentGeneration = generation;

@@ -167,6 +167,55 @@
           <pre id="enrollment-data"></pre>
           <button id="copy-enrollment" data-i18n="copyConnection"></button>
         </section>
+        <section class="panel" id="viewer-accounts">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow" data-i18n="viewerAccess"></p>
+              <h2 data-i18n="viewerAccounts"></h2>
+            </div>
+            <a
+              href="/viewer/"
+              target="_blank"
+              rel="noopener"
+              data-i18n="openViewer"
+            ></a>
+          </div>
+          <p data-i18n="viewerHelp"></p>
+          <form id="viewer-form" class="license-form">
+            <label
+              ><span data-i18n="customer"></span
+              ><select id="viewer-customer" name="customerId" required></select
+            ></label>
+            <label
+              ><span data-i18n="viewerName"></span
+              ><input name="name" required maxlength="160"
+            /></label>
+            <label
+              ><span data-i18n="viewerUsername"></span
+              ><input
+                name="username"
+                required
+                minlength="3"
+                maxlength="100"
+                autocomplete="off"
+                dir="ltr"
+                pattern="[a-zA-Z0-9][a-zA-Z0-9._@-]{2,99}"
+            /></label>
+            <label
+              ><span data-i18n="viewerPassword"></span
+              ><input
+                name="password"
+                required
+                type="password"
+                minlength="12"
+                maxlength="128"
+                autocomplete="new-password"
+                dir="ltr"
+            /></label>
+            <button data-i18n="createViewer"></button>
+          </form>
+          <div id="viewer-users" class="sites"></div>
+        </section>
         <section id="licensing" class="panel">
           <div class="section-heading">
             <div>

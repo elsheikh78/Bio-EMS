@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePlatformAuthentication } from "../platform-auth/usePlatformAuthentication";
 import { companyCloudMode } from "../api/companyTransport";
 import { useLocalization } from "../localization/useLocalization";
@@ -18,6 +18,9 @@ interface Status {
   url?: string;
   siteId?: string;
   remoteControl: boolean;
+  viewerMonitoring?: boolean;
+  viewerLastSuccess?: string | null;
+  viewerLastError?: string | null;
   lastSuccess: string | null;
   lastError: string | null;
 }
@@ -25,10 +28,12 @@ export function CompanyConnectionPanel() {
   const { apiClient } = usePlatformAuthentication();
   const { language } = useLocalization();
   const ar = language === "ar";
+  const initialized = useRef(false);
   const [status, setStatus] = useState<Status>();
   const [url, setUrl] = useState("");
   const [siteId, setSiteId] = useState("");
   const [token, setToken] = useState("");
+  const [viewerMonitoring, setViewerMonitoring] = useState(false);
   const [remote, setRemote] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
@@ -41,7 +46,16 @@ export function CompanyConnectionPanel() {
           auth: "protected",
         })
         .then((value) => {
-          if (active) setStatus(value);
+          if (active) {
+            setStatus(value);
+            if (!initialized.current) {
+              setUrl(value.url || "");
+              setSiteId(value.siteId || "");
+              setRemote(value.remoteControl);
+              setViewerMonitoring(value.viewerMonitoring === true);
+              initialized.current = true;
+            }
+          }
         })
         .catch(() => {
           if (active) setError(true);
@@ -76,7 +90,13 @@ export function CompanyConnectionPanel() {
           headers: { "Content-Type": "application/json" },
           body: disable
             ? undefined
-            : JSON.stringify({ url, siteId, token, remoteControl: remote }),
+            : JSON.stringify({
+                url,
+                siteId,
+                token,
+                remoteControl: remote,
+                viewerMonitoring,
+              }),
         },
       );
       setStatus(value);
@@ -106,6 +126,14 @@ export function CompanyConnectionPanel() {
             : ar
               ? "غير متصل بمنصة الشركة"
               : "Company connection disabled"}
+        </Alert>
+      )}
+      {status?.viewerMonitoring && (
+        <Alert severity={status.viewerLastError ? "warning" : "info"}>
+          {ar ? "مزامنة بوابة العميل: " : "Viewer sync: "}
+          {status.viewerLastError ||
+            status.viewerLastSuccess ||
+            (ar ? "بانتظار المزامنة" : "Awaiting sync")}
         </Alert>
       )}
       {error && (
@@ -148,6 +176,19 @@ export function CompanyConnectionPanel() {
             ar
               ? "السماح بالتحكم عن بُعد مع تسجيل دخول System Owner وMFA"
               : "Allow remote control using System Owner login and MFA"
+          }
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={viewerMonitoring}
+              onChange={(e) => setViewerMonitoring(e.target.checked)}
+            />
+          }
+          label={
+            ar
+              ? "السماح بإرسال قراءات وإنذارات الموقع المثبت لبوابة العميل للعرض فقط"
+              : "Export installed-site readings and alarms to the read-only customer portal"
           }
         />
         <Stack direction="row" spacing={2}>

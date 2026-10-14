@@ -1,5 +1,7 @@
 # BIO-EMS
 
+Customer Viewer cloud/PWA source candidate: [Arabic operating/deployment guide](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md). Latest readings and alarms require an upgraded client with explicit export enabled; live deployment and phone qualification are separate.
+
 Company cloud pilot candidate: [Arabic deployment/connection guide](docs/current/COMPANY-CLOUD-PILOT-AR.md) and [Cloudflare source package](company-cloud/README.md). Deployment and installed-client qualification remain separate from source checks.
 
 System Owner can copy or export the Setup-authoritative customer/site and host installation identity from **Installation configuration** for company customer records. See [installation record instructions](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md#customer-installation-record).

@@ -45,3 +45,5 @@ Reviewed entry points: 30 September 2026. Source review baseline: `6efd78a`. Thi
 | Builder وتجهيز الأجهزة | [Work package](../project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md) |
 
 For the merged SIM-D4 integration candidate and current bench limits, see [SIM discovery and mapping](SIM-D4-DISCOVERY-AND-MAPPING.md).
+
+- [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — source candidate, live deployment and phone acceptance pending.

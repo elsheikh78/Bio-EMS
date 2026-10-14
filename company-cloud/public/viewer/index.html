@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#092d32" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>BIO-EMS | Customer monitoring</title>
+    <link rel="manifest" href="/viewer/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/viewer/icon-192.png" />
+    <link rel="icon" href="/bio-ems-mark.png" />
+    <link rel="stylesheet" href="/viewer/viewer.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="/viewer/"
+        ><img src="/bio-ems-logo-horizontal.png" alt="BIO-EMS"
+      /></a>
+      <div class="workspace">
+        <span class="workspace-icon">◈</span>
+        <div>
+          <strong id="customer-name">BIO-EMS</strong
+          ><small data-t="workspace"></small>
+        </div>
+      </div>
+      <p class="nav-label" data-t="overviewLabel"></p>
+      <nav>
+        <a class="selected" href="#overview"
+          ><span>◈</span><span data-t="overview"></span></a
+        ><a href="#rooms"><span>▦</span><span data-t="rooms"></span></a
+        ><a href="#alarms"
+          ><span>◉</span><span data-t="alarms"></span
+          ><b id="nav-alarm-count">0</b></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="live-dot"></span><strong data-t="readOnly"></strong>
+        <p data-t="readOnlyHelp"></p>
+      </div>
+      <div class="user-tile">
+        <span class="avatar" id="avatar">V</span>
+        <div>
+          <strong id="user-name" data-t="viewer"></strong><small>VIEWER</small>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div class="breadcrumbs">
+          BIO-EMS <span>/</span> <span data-t="workspace"></span>
+        </div>
+        <div class="header-actions">
+          <button id="language" class="ghost">English</button
+          ><button id="install" class="ghost" hidden data-t="install"></button
+          ><button id="logout" class="ghost" hidden data-t="logout"></button>
+        </div>
+      </header>
+      <div id="notice" role="status" aria-live="polite" hidden></div>
+      <section id="login" class="login-layout">
+        <div class="login-story">
+          <span class="eyebrow">BIO-EMS CONNECT</span>
+          <h1 data-t="loginHero"></h1>
+          <p data-t="loginHelp"></p>
+          <div class="signal-art" aria-hidden="true">
+            <div class="signal-ring"></div>
+            <div class="signal-ring second"></div>
+            <div class="signal-core">◈</div>
+            <span class="signal-caption">CONNECTED ENVIRONMENTS</span>
+          </div>
+          <span class="login-foot" data-t="loginFoot"></span>
+        </div>
+        <form id="login-form" class="login-card">
+          <span class="eyebrow" data-t="secureAccess"></span>
+          <h2 data-t="welcome"></h2>
+          <p data-t="loginDescription"></p>
+          <label
+            ><span data-t="username"></span
+            ><input
+              name="username"
+              autocomplete="username"
+              required
+              maxlength="100"
+              dir="ltr" /></label
+          ><label
+            ><span data-t="password"></span
+            ><input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              minlength="12"
+              maxlength="128"
+              dir="ltr" /></label
+          ><button class="primary" data-t="signIn"></button
+          ><small data-t="accountHelp"></small>
+        </form>
+      </section>
+      <div id="dashboard" hidden>
+        <section class="hero" id="overview">
+          <div>
+            <span class="eyebrow">BIO-EMS · LIVE MONITORING</span>
+            <h1 data-t="hero"></h1>
+            <p data-t="heroHelp"></p>
+            <div class="hero-bottom">
+              <span class="connection-pill" id="connection"></span
+              ><span id="last-sync"></span>
+            </div>
+          </div>
+          <div class="hero-summary">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="60" r="49" class="ring-track" />
+              <circle
+                id="health-ring"
+                cx="60"
+                cy="60"
+                r="49"
+                class="ring-value"
+              />
+            </svg>
+            <div>
+              <strong id="healthy-percent">—</strong
+              ><small data-t="normalRooms"></small>
+            </div>
+          </div>
+        </section>
+        <div class="metrics">
+          <article>
+            <span class="metric-label" data-t="sites"></span
+            ><strong id="site-count">0</strong
+            ><small data-t="yourSites"></small>
+          </article>
+          <article>
+            <span class="metric-label" data-t="rooms"></span
+            ><strong id="room-count">0</strong
+            ><small data-t="monitoredRooms"></small>
+          </article>
+          <article>
+            <span class="metric-label" data-t="telemetries"></span
+            ><strong id="sensor-count">0</strong
+            ><small data-t="enabledPoints"></small>
+          </article>
+          <article class="alarm-metric">
+            <span class="metric-label" data-t="activeAlarms"></span
+            ><strong id="alarm-count">0</strong
+            ><small id="alarm-caption"></small>
+          </article>
+        </div>
+        <section class="notification-strip">
+          <div>
+            <strong data-t="stayInformed"></strong>
+            <p id="push-help" data-t="pushHelp"></p>
+          </div>
+          <div class="notification-actions">
+            <button id="sound" class="ghost" data-t="enableSound"></button
+            ><button id="mute" class="ghost" hidden data-t="mute"></button
+            ><button id="push" class="primary" data-t="enablePush"></button>
+          </div>
+        </section>
+        <section id="rooms">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow" data-t="environment"></span>
+              <h2 data-t="roomOverview"></h2>
+            </div>
+            <button id="refresh" class="ghost" data-t="refresh"></button>
+          </div>
+          <div class="toolbar">
+            <label
+              ><span class="sr-only" data-t="site"></span
+              ><select id="site-filter"></select></label
+            ><label class="search"
+              ><span class="sr-only" data-t="search"></span
+              ><input
+                id="search"
+                type="search"
+                data-placeholder="search" /></label
+            ><label
+              ><span class="sr-only" data-t="status"></span
+              ><select id="status-filter">
+                <option value="all" data-t="allStates"></option>
+                <option value="normal" data-t="normal"></option>
+                <option value="warning" data-t="warning"></option>
+                <option value="critical" data-t="critical"></option>
+                <option value="offline" data-t="offline"></option></select
+            ></label>
+          </div>
+          <div class="legend">
+            <span><i class="normal"></i><span data-t="normal"></span></span
+            ><span><i class="warning"></i><span data-t="warning"></span></span
+            ><span><i class="critical"></i><span data-t="critical"></span></span
+            ><span><i class="offline"></i><span data-t="offline"></span></span>
+          </div>
+          <div id="room-grid" class="room-grid"></div>
+        </section>
+        <section id="alarms" class="alarm-panel">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow" data-t="attention"></span>
+              <h2 data-t="alarmFeed"></h2>
+            </div>
+            <label
+              ><span class="sr-only" data-t="alarms"></span
+              ><select id="alarm-filter">
+                <option value="active" data-t="activeAlarms"></option>
+                <option value="all" data-t="lastDay"></option></select
+            ></label>
+          </div>
+          <p class="section-description" data-t="alarmHelp"></p>
+          <div id="alarm-feed"></div>
+        </section>
+        <footer>
+          <span>BIO-EMS CONNECT</span><span data-t="footer"></span>
+        </footer>
+      </div>
+    </main>
+    <dialog id="room-dialog">
+      <div class="dialog-heading">
+        <h2 id="dialog-title"></h2>
+        <button id="dialog-close" class="ghost" data-t="close"></button>
+      </div>
+      <div id="dialog-content"></div>
+    </dialog>
+    <script type="module" src="/viewer/viewer.js"></script>
+  </body>
+</html>

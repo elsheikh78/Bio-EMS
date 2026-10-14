@@ -80,6 +80,7 @@ function options(select, rows, label) {
 }
 async function refresh() {
   state = await api("overview");
+  state.viewers = (await api("viewers")).users;
   renderState();
 }
 function siteLabel(site) {
@@ -104,6 +105,54 @@ function renderState() {
       l.status !== "suspended",
   ).length;
   options($("customer-select"), state.customers, (c) => c.name);
+  options($("viewer-customer"), state.customers, (c) => c.name);
+  $("viewer-users").replaceChildren();
+  for (const viewer of state.viewers || []) {
+    const card = element("article", undefined, "site");
+    card.append(
+      element("h3", viewer.name),
+      element(
+        "p",
+        `${viewer.username} · ${state.customers.find((c) => c.id === viewer.customer_id)?.name || ""} · VIEWER`,
+      ),
+    );
+    const toggle = element(
+      "button",
+      t(viewer.disabled ? "enableViewer" : "disableViewer"),
+      "secondary",
+    );
+    toggle.onclick = () =>
+      void action(async () => {
+        await api(`viewers/${viewer.id}`, "PATCH", {
+          disabled: !viewer.disabled,
+        });
+        await refresh();
+      });
+    const form = element("form"),
+      password = element("input"),
+      save = element("button", t("resetViewer"));
+    password.type = "password";
+    password.minLength = 12;
+    password.maxLength = 128;
+    password.required = true;
+    password.autocomplete = "new-password";
+    password.setAttribute("aria-label", t("viewerPassword"));
+    password.placeholder = t("viewerPassword");
+    form.append(password, save);
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      void action(async () => {
+        await api(`viewers/${viewer.id}`, "PATCH", {
+          disabled: !!viewer.disabled,
+          password: password.value,
+        });
+        password.value = "";
+        await refresh();
+      });
+    };
+    card.append(toggle, form);
+    $("viewer-users").append(card);
+  }
   if (!$("license-form").elements.id.value)
     options(
       $("site-select"),
@@ -316,6 +365,15 @@ $("customer-form").onsubmit = (event) => {
   void action(async () => {
     await api("customers", "POST", { name: event.target.elements.name.value });
     event.target.reset();
+    await refresh();
+  });
+};
+$("viewer-form").onsubmit = (event) => {
+  event.preventDefault();
+  void action(async () => {
+    const form = event.target;
+    await api("viewers", "POST", Object.fromEntries(new FormData(form)));
+    form.reset();
     await refresh();
   });
 };

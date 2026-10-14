@@ -71,3 +71,27 @@ or sensor health assurance. Use the owner UI for the existing operational detail
 Central license records do not generate/install signed local certificates or alter
 local license enforcement. Such certificate issuance and deployment remain under
 the existing local licensing process during this pilot.
+
+## Customer Viewer portal — source candidate
+
+`/viewer/` is a separate read-only customer PWA. Company operators create, disable,
+and reset Viewer accounts from the portal. Customer users receive only their
+customer's non-revoked sites, snapshot readings and alarm lifecycle records.
+
+Apply migration `0002_viewer.sql`, configure VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY /
+VAPID_SUBJECT via Wrangler secrets, then build/deploy. Node compatibility is enabled
+for encrypted Web Push. The private VAPID key is never sent to browsers. Cron now
+runs each minute for bounded push retries and cleanup. No full telemetry history
+is copied. Updated installed clients must explicitly enable Viewer export; the
+verified installer-site context scopes every snapshot. Existing clients continue
+heartbeat/owner operations without export. One local DB connection represents one
+installer-authoritative site, and several site connections can share a customer.
+
+The earlier heartbeat-only limitation above describes existing clients without
+this opt-in upgrade. Snapshot export targets 30 seconds and Viewer polling 30
+seconds; this is not a zero-latency or guaranteed alarm channel. PWA caches public
+shell assets only, never account or telemetry API responses. Native store packages
+and real Android/iOS background notification acceptance remain phase-two/field work.
+
+See [customer operations](../docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) and
+[ADR-023](../docs/adr/ADR-023-customer-viewer-cloud.md) for limits and acceptance.

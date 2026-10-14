@@ -1,3 +1,9 @@
+import {
+  viewerRoutes,
+  companyViewer,
+  saveSnapshot,
+  deliverPush,
+} from "./viewer.mjs";
 const enc = new TextEncoder();
 const MAX_BODY = 600_000;
 const SESSION_MS = 30 * 60_000;
@@ -143,9 +149,11 @@ async function site(req, env, id) {
     fail(401, "Agent authentication failed");
   return record;
 }
-async function handle(req, env) {
+async function handle(req, env, ctx) {
   const url = new URL(req.url),
     path = url.pathname;
+  const viewerResponse = await viewerRoutes(req, env, path, body, origin);
+  if (viewerResponse) return viewerResponse;
   if (path === "/api/company/login" && req.method === "POST") {
     origin(req);
     if (
@@ -174,12 +182,17 @@ async function handle(req, env) {
     return response;
   }
   const agent = path.match(
-    /^\/api\/agent\/([a-zA-Z0-9-]{1,64})\/(heartbeat|claim|result)$/,
+    /^\/api\/agent\/([a-zA-Z0-9-]{1,64})\/(heartbeat|claim|result|snapshot)$/,
   );
   if (agent) {
     if (req.method !== "POST") fail(405, "POST required");
     const record = await site(req, env, agent[1]);
     const data = await body(req);
+    if (agent[2] === "snapshot") {
+      const response = await saveSnapshot(env, record, data);
+      if (ctx?.waitUntil) ctx.waitUntil(deliverPush(env));
+      return response;
+    }
     if (agent[2] === "heartbeat") {
       if (
         !data.publicKey ||
@@ -264,6 +277,14 @@ async function handle(req, env) {
   if (path.startsWith("/api/company/")) {
     await admin(req, env);
     origin(req);
+    const viewerAdminResponse = await companyViewer(
+      req,
+      env,
+      path,
+      body,
+      audit,
+    );
+    if (viewerAdminResponse) return viewerAdminResponse;
     if (path === "/api/company/logout" && req.method === "POST") {
       const response = json({ ok: true });
       response.headers.set(
@@ -355,6 +376,8 @@ async function handle(req, env) {
         fail(404, "Unknown site");
       await env.DB.batch([
         env.DB.prepare("DELETE FROM jobs WHERE site_id=?").bind(id),
+        env.DB.prepare("DELETE FROM viewer_push_jobs WHERE site_id=?").bind(id),
+        env.DB.prepare("DELETE FROM viewer_snapshots WHERE site_id=?").bind(id),
         env.DB.prepare("DELETE FROM licenses WHERE site_id=?").bind(id),
         env.DB.prepare("DELETE FROM sites WHERE id=?").bind(id),
         env.DB.prepare("INSERT INTO audit VALUES (?,?,?,?)").bind(
@@ -528,12 +551,14 @@ async function handle(req, env) {
     // Cloudflare HTML handling, which would change the browser router location.
     return env.ASSETS.fetch(new Request(new URL("/owner", req.url), req));
   }
+  if (path === "/viewer" || path === "/viewer/")
+    return env.ASSETS.fetch(new Request(new URL("/viewer/", req.url), req));
   return env.ASSETS.fetch(req);
 }
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     try {
-      return secure(await handle(req, env));
+      return secure(await handle(req, env, ctx));
     } catch (error) {
       return secure(
         json(
@@ -544,7 +569,14 @@ export default {
     }
   },
   async scheduled(_event, env) {
+    await deliverPush(env);
     await env.DB.batch([
+      env.DB.prepare("DELETE FROM viewer_sessions WHERE expires_at<?").bind(
+        Date.now(),
+      ),
+      env.DB.prepare("DELETE FROM viewer_push_jobs WHERE created_at<?").bind(
+        Date.now() - 86_400_000,
+      ),
       env.DB.prepare(
         "UPDATE jobs SET state='expired',envelope='',result=NULL WHERE expires_at<?",
       ).bind(Date.now()),
