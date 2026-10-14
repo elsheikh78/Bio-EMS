@@ -54,6 +54,10 @@ function showLogin() {
   $("logout").hidden = true;
   $("room-grid").replaceChildren();
   $("alarm-feed").replaceChildren();
+  $("dialog-content").replaceChildren();
+  $("dialog-title").textContent = "";
+  $("site-filter").replaceChildren();
+  selectedRoom = null;
   $("customer-name").textContent = "BIO-EMS";
   $("user-name").textContent = t("viewer");
   $("avatar").textContent = "V";
