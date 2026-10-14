@@ -34,6 +34,28 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("opt-in client cloud runtime", () => {
+  it("preserves the saved credential only for the same enrolled site and origin", () => {
+    const input = {
+      url: "https://company.account.workers.dev",
+      siteId: "site",
+      remoteControl: false,
+    };
+    expect(() => configureConnection(input)).toThrow();
+    configureConnection({ ...input, token: "A".repeat(44) });
+    expect(configureConnection({ ...input, viewerMonitoring: true })).toMatchObject({
+      enabled: true,
+      viewerMonitoring: true,
+    });
+    expect(connectionStatus()).not.toHaveProperty("token");
+    expect(() => configureConnection({ ...input, siteId: "another-site" })).toThrow();
+    expect(() =>
+      configureConnection({ ...input, url: "https://other.account.workers.dev" })
+    ).toThrow();
+    expect(() => configureConnection({ ...input, token: "invalid" })).toThrow();
+    expect(connectionStatus()).toMatchObject({ siteId: "site", viewerMonitoring: true });
+    disableConnection();
+    expect(() => configureConnection(input)).toThrow();
+  });
   it("starts disabled and persists neither enrollment token nor private key as plaintext", () => {
     expect(connectionStatus().enabled).toBe(false);
     configureConnection({

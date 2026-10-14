@@ -76,7 +76,7 @@ export function connectionStatus() {
 export function configureConnection(input: {
   url: string;
   siteId: string;
-  token: string;
+  token?: string;
   remoteControl: boolean;
   viewerMonitoring?: boolean;
 }) {
@@ -91,10 +91,16 @@ export function configureConnection(input: {
     !/^[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\.workers\.dev$/.test(url.hostname)
   )
     throw new Error("Use the company workers.dev HTTPS origin");
-  if (!/^[a-zA-Z0-9-]{1,64}$/.test(input.siteId) || !/^[a-zA-Z0-9+/=]{40,64}$/.test(input.token))
-    throw new Error("Invalid site connection details");
   storageKey();
   const current = load();
+  const sameConnection = current?.siteId === input.siteId && current?.url === url.origin;
+  const token = input.token || (sameConnection ? current?.token : undefined);
+  if (
+    !/^[a-zA-Z0-9-]{1,64}$/.test(input.siteId) ||
+    !token ||
+    !/^[a-zA-Z0-9+/=]{40,64}$/.test(token)
+  )
+    throw new Error("Invalid site connection details");
   const keys =
     current && current.siteId === input.siteId && current.url === url.origin
       ? { privateKey: current.privateKey, publicKey: current.publicKey }
@@ -105,7 +111,7 @@ export function configureConnection(input: {
             publicKey: pair.publicKey.export({ format: "jwk" }) as Record<string, unknown>,
           };
         })();
-  const connection: Connection = { ...input, url: url.origin, ...keys };
+  const connection: Connection = { ...input, token, url: url.origin, ...keys };
   const iv = randomBytes(12),
     cipher = createCipheriv("aes-256-gcm", storageKey(), iv);
   const data = Buffer.concat([cipher.update(JSON.stringify(connection)), cipher.final()]);
