@@ -2,8 +2,9 @@
 
 Central customer/site registry, site heartbeat, monitor-only license records and
 an encrypted remote transport for the existing System Owner interface.
-This package is a source candidate, not evidence of an online deployment or
-Windows installed-client acceptance. Product version remains 0.20.0.
+The company/Viewer Worker is deployed at https://bioems-company.bioems-egypt.workers.dev.
+Deployment on 14 October 2026 is recorded in [evidence and pending acceptance](../docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md).
+Customer telemetry and real-phone qualification remain pending. Product version remains 0.20.0.
 
 See [Arabic operating and deployment guide](../docs/current/COMPANY-CLOUD-PILOT-AR.md).
 
@@ -72,7 +73,7 @@ Central license records do not generate/install signed local certificates or alt
 local license enforcement. Such certificate issuance and deployment remain under
 the existing local licensing process during this pilot.
 
-## Customer Viewer portal — source candidate
+## Customer Viewer portal — deployed pilot
 
 `/viewer/` is a separate read-only customer PWA. Company operators create, disable,
 and reset Viewer accounts from the portal. Customer users receive only their
@@ -95,3 +96,8 @@ and real Android/iOS background notification acceptance remain phase-two/field w
 
 See [customer operations](../docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) and
 [ADR-023](../docs/adr/ADR-023-customer-viewer-cloud.md) for limits and acceptance.
+
+Existing local connections can leave the token blank when editing the same company
+origin and site ID (#297); the backend reuses the encrypted saved credential. New
+connections or changed targets require a valid token. This setting is available
+from local System Owner, not the cloud remote-owner console.

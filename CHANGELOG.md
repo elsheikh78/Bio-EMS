@@ -6,15 +6,18 @@
   settings without re-entering the saved encrypted token. Token reuse requires the
   same site ID and company origin; new or changed targets still require a token.
 
-### 14 October 2026 customer Viewer cloud/PWA source candidate
+### 14 October 2026 customer Viewer cloud/PWA deployment
 
 - Added Arabic/English responsive read-only customer monitoring across sites/rooms,
   telemetry timestamps, explicit stale/offline states, alarm feed and browser sound.
 - Added customer-scoped Viewer credentials, revocable sessions, company account UI,
   opt-in installed-site-only export, D1 snapshots and encrypted Web Push retry jobs.
 - Added installable PWA shell/icons and a scoped service worker caching public assets
-  only. Source tests/builds and local browser/runtime smoke do not imply live
-  deployment, phone Push acceptance or native store publication. Version unchanged.
+  only. PR #296 was merged and the Worker/D1/VAPID deployment completed; live
+  HTML and unauthenticated API checks passed. PR #297 preserves the saved encrypted
+  token for existing connection settings and passed Windows setup/health/update CI.
+  Customer telemetry and real-phone Push acceptance remain pending; native store
+  apps are not built. Version unchanged.
 
 ### 11 October 2026 company cloud pilot source candidate
 

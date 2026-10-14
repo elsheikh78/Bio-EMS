@@ -1,6 +1,6 @@
 # BIO-EMS
 
-Customer Viewer cloud/PWA source candidate: [Arabic operating/deployment guide](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md). Latest readings and alarms require an upgraded client with explicit export enabled; live deployment and phone qualification are separate.
+Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Native Google Play/App Store apps are phase two and are not built.
 
 Company cloud pilot candidate: [Arabic deployment/connection guide](docs/current/COMPANY-CLOUD-PILOT-AR.md) and [Cloudflare source package](company-cloud/README.md). Deployment and installed-client qualification remain separate from source checks.
 

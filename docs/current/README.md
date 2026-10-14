@@ -46,4 +46,6 @@ Reviewed entry points: 30 September 2026. Source review baseline: `6efd78a`. Thi
 
 For the merged SIM-D4 integration candidate and current bench limits, see [SIM discovery and mapping](SIM-D4-DISCOVERY-AND-MAPPING.md).
 
-- [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — source candidate, live deployment and phone acceptance pending.
+- [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — deployed pilot; live telemetry and real-phone acceptance pending.
+
+- [Viewer deployment evidence — 14 October 2026](VIEWER-DEPLOYMENT-STATUS-2026-10-14.md) — deployed components, tested package and remaining mobile/field work.
