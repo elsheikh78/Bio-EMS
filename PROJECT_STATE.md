@@ -1,6 +1,6 @@
 # BIO-EMS Project State
 
-## 14 October 2026 customer Viewer portal source candidate
+## 14 October 2026 customer Viewer portal deployed — field acceptance pending
 
 - Adds a separate Arabic/English customer portal at `/viewer/`, responsive PWA shell,
   all-customer-site monitoring, room/sensor details, stale/offline indicators and
@@ -11,16 +11,24 @@
 - Adds D1 migration `0002_viewer.sql`, latest snapshots, VAPID Web Push subscription
   lifecycle and durable deduplicated retry jobs. Export is independently opt-in,
   every 30 seconds; old clients/previous connections retain their existing behavior.
-- Local source checks: 1082 backend / 356 frontend / 23 cloud tests; typecheck, lint,
+- Local source checks: 1083 backend / 356 frontend tests after #297; 23 cloud tests for #296; typecheck, lint,
   formatting and builds; Wrangler dry-run, real local workerd/D1 auth/export smoke,
   Chromium desktop/mobile RTL/LTR interactions with synthetic fixtures.
-- This feature is NOT deployed/accepted: live D1 migration, VAPID keys, upgraded
-  Windows client, actual Android/iOS Push and native store packages remain open.
-  The previously deployed company portal described below predates this feature.
+- PR #296 merged at `97de7a96207e281b7b7b86640053f72248d2ad21`; D1 migration
+  `0002_viewer.sql`, three VAPID secrets and Worker deployment completed on 14 October.
+  Live Viewer HTML returned HTTP 200; unauthenticated overview returned HTTP 401.
+- PR #297 merged at `377ade8b65e8622a60027b541d4ca8c7ff488679`: unchanged site/origin
+  settings reuse the saved encrypted token. Windows setup/health/update CI passed;
+  updated client package delivered. Installation of #297 and successful export on
+  the customer PC are not yet verified.
+- Live customer telemetry/alarm acceptance and real Android/iOS foreground/background
+  Push tests remain pending. Native store apps, APK/IPA, developer accounts and
+  publication remain phase two. Cloud deployment is not pilot commissioning.
 - Version remains 0.20.0; Manufacturer Tools and firmware unchanged.
 
 Operations: [customer Viewer portal](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md);
-architecture: [ADR-023](docs/adr/ADR-023-customer-viewer-cloud.md).
+architecture: [ADR-023](docs/adr/ADR-023-customer-viewer-cloud.md);
+deployment evidence: [14 October status](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md).
 
 ## 11 October 2026 company cloud pilot candidate
 

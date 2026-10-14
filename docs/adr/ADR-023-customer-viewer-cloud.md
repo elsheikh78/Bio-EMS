@@ -1,6 +1,6 @@
 # ADR-023 — Customer read-only cloud monitoring
 
-Status: Accepted scope by customer on 14 October 2026; deployment qualification pending.
+Status: Accepted scope; Worker/D1/VAPID deployed on 14 October 2026. Live customer telemetry and real-phone acceptance pending.
 
 ## Requirement and acceptance
 
@@ -42,3 +42,9 @@ Source tests/builds are separate from deployed Cloudflare migration, VAPID setup
 installed Windows client upgrade, real Android/iOS notification acceptance and
 App Store/Google Play accounts/review. Product version remains 0.20.0 until an
 explicit release decision.
+
+Deployment and client package evidence are recorded in
+[14 October status](../current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md).
+PR #297 allows a blank token only for an existing identical company origin/site ID;
+the server reuses its encrypted credential without exposing it to the browser.
+Native Android/iOS store apps remain unimplemented phase-two work.
