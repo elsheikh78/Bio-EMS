@@ -93,7 +93,7 @@ export function CompanyConnectionPanel() {
             : JSON.stringify({
                 url,
                 siteId,
-                token,
+                ...(token ? { token } : {}),
                 remoteControl: remote,
                 viewerMonitoring,
               }),
@@ -163,6 +163,11 @@ export function CompanyConnectionPanel() {
               : "Connection token — hidden after saving"
           }
           value={token}
+          helperText={
+            ar
+              ? "اتركه فارغًا للاحتفاظ بالرمز المحفوظ عند تعديل إعدادات نفس الموقع والعنوان. الربط الجديد يحتاج رمزًا."
+              : "Leave blank to keep the saved token for the same site and address. A new connection requires a token."
+          }
           onChange={(e) => setToken(e.target.value)}
         />
         <FormControlLabel
@@ -194,7 +199,17 @@ export function CompanyConnectionPanel() {
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
-            disabled={busy || !url || !siteId || !token}
+            disabled={
+              busy ||
+              !url ||
+              !siteId ||
+              (!token &&
+                !(
+                  status?.enabled &&
+                  status.url === url &&
+                  status.siteId === siteId
+                ))
+            }
             onClick={() => void save()}
           >
             {ar ? "حفظ الربط" : "Save connection"}

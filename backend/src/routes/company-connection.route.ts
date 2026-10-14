@@ -16,7 +16,7 @@ router.put(
       .object({
         url: z.string().max(250),
         siteId: z.string().max(64),
-        token: z.string().max(64),
+        token: z.string().max(64).optional(),
         remoteControl: z.boolean(),
         viewerMonitoring: z.boolean().optional(),
       })

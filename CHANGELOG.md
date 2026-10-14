@@ -1,5 +1,11 @@
 # BIO-EMS Changelog
 
+### 14 October 2026 existing company connection settings
+
+- Existing System Owner connections can enable Viewer export or change remote-control
+  settings without re-entering the saved encrypted token. Token reuse requires the
+  same site ID and company origin; new or changed targets still require a token.
+
 ### 14 October 2026 customer Viewer cloud/PWA source candidate
 
 - Added Arabic/English responsive read-only customer monitoring across sites/rooms,
