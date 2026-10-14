@@ -1,0 +1,1 @@
+export const VIEWER_EXPORT_INTERVAL_MS = 30_000;

@@ -1,5 +1,27 @@
 # BIO-EMS Project State
 
+## 14 October 2026 customer Viewer portal source candidate
+
+- Adds a separate Arabic/English customer portal at `/viewer/`, responsive PWA shell,
+  all-customer-site monitoring, room/sensor details, stale/offline indicators and
+  foreground alarm sound with device-local silence.
+- Cloud viewer passwords/sessions are separate from company/owner identities.
+  Company UI provisions/revokes customer-scoped accounts; Viewer cannot mutate
+  operational APIs. Optional installed-site export uses verified installer context.
+- Adds D1 migration `0002_viewer.sql`, latest snapshots, VAPID Web Push subscription
+  lifecycle and durable deduplicated retry jobs. Export is independently opt-in,
+  every 30 seconds; old clients/previous connections retain their existing behavior.
+- Local source checks: 1082 backend / 356 frontend / 23 cloud tests; typecheck, lint,
+  formatting and builds; Wrangler dry-run, real local workerd/D1 auth/export smoke,
+  Chromium desktop/mobile RTL/LTR interactions with synthetic fixtures.
+- This feature is NOT deployed/accepted: live D1 migration, VAPID keys, upgraded
+  Windows client, actual Android/iOS Push and native store packages remain open.
+  The previously deployed company portal described below predates this feature.
+- Version remains 0.20.0; Manufacturer Tools and firmware unchanged.
+
+Operations: [customer Viewer portal](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md);
+architecture: [ADR-023](docs/adr/ADR-023-customer-viewer-cloud.md).
+
 ## 11 October 2026 company cloud pilot candidate
 
 - Separate Cloudflare Workers/D1 package adds a company customer/site registry,

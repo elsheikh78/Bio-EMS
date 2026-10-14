@@ -3,6 +3,7 @@
   "main": "src/worker.mjs",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
@@ -16,5 +17,5 @@
       "migrations_dir": "migrations",
     },
   ],
-  "triggers": { "crons": ["0 * * * *"] },
+  "triggers": { "crons": ["* * * * *"] },
 }

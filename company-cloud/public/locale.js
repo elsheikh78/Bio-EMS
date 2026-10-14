@@ -1,4 +1,22 @@
 export const messages = {
+  viewerAccess: ["بوابة المتابعة", "MONITORING PORTAL"],
+  viewerAccounts: ["حسابات العميل — مشاهدة فقط", "Customer viewer accounts"],
+  openViewer: ["فتح بوابة العميل ↗", "Open customer portal ↗"],
+  viewerHelp: [
+    "كل حساب يشاهد مواقع العميل المحدد فقط. تغيير كلمة المرور أو تعطيل الحساب يلغي جلساته وإشعاراته. كلمة المرور لا تظهر بعد الحفظ.",
+    "Each account sees only its customer's sites. Password changes or disabling revoke sessions and device subscriptions. Passwords are never displayed after saving.",
+  ],
+  viewerName: ["اسم المشاهد", "Display name"],
+  viewerUsername: ["اسم المستخدم", "Username"],
+  viewerPassword: [
+    "كلمة مرور — ١٢ حرفًا على الأقل",
+    "Password — at least 12 characters",
+  ],
+  createViewer: ["إنشاء حساب Viewer", "Create viewer"],
+  disableViewer: ["تعطيل الحساب", "Disable account"],
+  enableViewer: ["تفعيل الحساب", "Enable account"],
+  resetViewer: ["حفظ كلمة المرور الجديدة", "Save new password"],
+
   removeSite: ["× إزالة الموقع", "× Remove site"],
   removeSiteName: ["إزالة الموقع {site}", "Remove site {site}"],
   removeSiteConfirm: [

@@ -1,5 +1,15 @@
 # BIO-EMS Changelog
 
+### 14 October 2026 customer Viewer cloud/PWA source candidate
+
+- Added Arabic/English responsive read-only customer monitoring across sites/rooms,
+  telemetry timestamps, explicit stale/offline states, alarm feed and browser sound.
+- Added customer-scoped Viewer credentials, revocable sessions, company account UI,
+  opt-in installed-site-only export, D1 snapshots and encrypted Web Push retry jobs.
+- Added installable PWA shell/icons and a scoped service worker caching public assets
+  only. Source tests/builds and local browser/runtime smoke do not imply live
+  deployment, phone Push acceptance or native store publication. Version unchanged.
+
 ### 11 October 2026 company cloud pilot source candidate
 
 - Added a separate Cloudflare Workers/D1 company portal for customers, enrolled

@@ -13,6 +13,12 @@ function setup() {
       "utf8",
     ),
   );
+  db.exec(
+    readFileSync(
+      new URL("../migrations/0002_viewer.sql", import.meta.url),
+      "utf8",
+    ),
+  );
   const adapter = {
     prepare(sql) {
       let args = [];
@@ -513,4 +519,333 @@ test("company removal requires auth and same origin, isolates other sites and cl
     (await s.call(`/api/company/sites/${a.id}`, "DELETE")).status,
     404,
   );
+});
+
+test("viewer session isolates customers and company access, then revokes immediately", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A"),
+    b = await s.enroll("B");
+  const customer = s.db
+    .prepare("SELECT customer_id FROM sites WHERE id=?")
+    .get(a.id).customer_id;
+  const create = await s.call("/api/company/viewers", "POST", {
+    customerId: customer,
+    name: "Site viewer",
+    username: "viewer-a",
+    password: "customer-password-123",
+  });
+  assert.equal(create.status, 201);
+  const { id } = await create.json();
+  assert.ok(
+    !s.db
+      .prepare("SELECT password_hash FROM viewer_users")
+      .get()
+      .password_hash.includes("customer-password-123"),
+  );
+  const companyCookie = s.getCookie();
+  assert.equal((await s.call("/api/viewer/overview")).status, 401);
+  const login = await s.call("/api/viewer/login", "POST", {
+    username: "viewer-a",
+    password: "customer-password-123",
+  });
+  assert.equal(login.status, 200);
+  const viewerCookie = login.headers.get("Set-Cookie").split(";")[0];
+  assert.match(
+    login.headers.get("Set-Cookie"),
+    /Secure; HttpOnly; SameSite=Strict/,
+  );
+  s.setCookie(viewerCookie);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+  const overview = await (await s.call("/api/viewer/overview")).json();
+  assert.equal(overview.role, "VIEWER");
+  assert.deepEqual(
+    overview.sites.map((s) => s.id),
+    [a.id],
+  );
+  assert.ok(!JSON.stringify(overview).includes(b.id));
+  assert.equal((await s.call("/api/viewer/overview", "POST", {})).status, 405);
+  assert.equal(
+    (await s.call("/api/company/customers", "POST", { name: "Forbidden" }))
+      .status,
+    401,
+  );
+  assert.equal(
+    (
+      await s.call(
+        "/api/viewer/logout",
+        "POST",
+        {},
+        { Origin: "https://evil.example" },
+      )
+    ).status,
+    403,
+  );
+  s.setCookie(companyCookie);
+  assert.equal(
+    (await s.call(`/api/company/viewers/${id}`, "PATCH", { disabled: true }))
+      .status,
+    200,
+  );
+  s.setCookie(viewerCookie);
+  assert.equal((await s.call("/api/viewer/overview")).status, 401);
+});
+const snapshot = () => ({
+  schemaVersion: 1,
+  capturedAt: new Date().toISOString(),
+  telemetryAvailable: true,
+  rooms: [{ id: "1", name: "Cold room", code: "CR1" }],
+  sensors: [
+    {
+      id: "1",
+      roomId: "1",
+      name: "Temperature",
+      code: "T1",
+      type: "temperature",
+      unit: "°C",
+      value: 4.5,
+      recordedAt: new Date().toISOString(),
+    },
+  ],
+  alarms: [
+    {
+      id: "installation:1",
+      sensorId: "1",
+      roomId: "1",
+      type: "CRITICAL_HIGH",
+      severity: "CRITICAL",
+      status: "TRIGGERED",
+      value: 10,
+      triggeredAt: new Date().toISOString(),
+      recoveredAt: null,
+    },
+  ],
+});
+test("agent snapshots validate data, authenticate site and respect revocation", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A"),
+    b = await s.enroll("B"),
+    data = snapshot();
+  assert.equal(
+    (await s.call(`/api/agent/${a.id}/snapshot`, "POST", data)).status,
+    401,
+  );
+  assert.equal(
+    (
+      await s.call(
+        `/api/agent/${a.id}/snapshot`,
+        "POST",
+        { ...data, sensors: [{ ...data.sensors[0], roomId: "unknown" }] },
+        auth(a),
+      )
+    ).status,
+    400,
+  );
+  assert.equal(
+    (
+      await s.call(
+        `/api/agent/${a.id}/snapshot`,
+        "POST",
+        { ...data, capturedAt: "2020-01-01T00:00:00Z" },
+        auth(a),
+      )
+    ).status,
+    400,
+  );
+  assert.equal(
+    (await s.call(`/api/agent/${a.id}/snapshot`, "POST", data, auth(a))).status,
+    200,
+  );
+  assert.ok(
+    s.db.prepare("SELECT * FROM viewer_snapshots WHERE site_id=?").get(a.id),
+  );
+  assert.equal(
+    s.db.prepare("SELECT * FROM viewer_snapshots WHERE site_id=?").get(b.id),
+    undefined,
+  );
+  assert.equal(
+    (await s.call(`/api/agent/${b.id}/snapshot`, "POST", data, auth(a))).status,
+    401,
+  );
+  await s.call(`/api/company/sites/${a.id}/revoke`, "POST", {});
+  assert.equal(
+    (await s.call(`/api/agent/${a.id}/snapshot`, "POST", data, auth(a))).status,
+    401,
+  );
+  assert.equal(
+    (await s.call(`/api/company/sites/${a.id}`, "DELETE")).status,
+    200,
+  );
+  assert.equal(
+    s.db.prepare("SELECT count(*) AS n FROM viewer_snapshots").get().n,
+    0,
+  );
+});
+test("password changes invalidate sessions; viewer login is rate limited", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll();
+  const customer = s.db
+    .prepare("SELECT customer_id FROM sites WHERE id=?")
+    .get(a.id).customer_id;
+  const { id } = await (
+    await s.call("/api/company/viewers", "POST", {
+      customerId: customer,
+      name: "Viewer",
+      username: "view1",
+      password: "old-password-123",
+    })
+  ).json();
+  const companyCookie = s.getCookie(),
+    login = await s.call("/api/viewer/login", "POST", {
+      username: "view1",
+      password: "old-password-123",
+    });
+  const viewerCookie = login.headers.get("Set-Cookie").split(";")[0];
+  await s.call(`/api/company/viewers/${id}`, "PATCH", {
+    disabled: false,
+    password: "new-password-456",
+  });
+  s.setCookie(viewerCookie);
+  assert.equal((await s.call("/api/viewer/overview")).status, 401);
+  s.setCookie(companyCookie);
+  assert.equal(
+    (
+      await s.call("/api/viewer/login", "POST", {
+        username: "view1",
+        password: "old-password-123",
+      })
+    ).status,
+    401,
+  );
+  assert.equal(
+    (
+      await s.call("/api/viewer/login", "POST", {
+        username: "view1",
+        password: "new-password-456",
+      })
+    ).status,
+    200,
+  );
+  for (let i = 0; i < 7; i++)
+    await s.call("/api/viewer/login", "POST", {
+      username: "view1",
+      password: "wrong-password-123",
+    });
+  assert.equal(
+    (
+      await s.call("/api/viewer/login", "POST", {
+        username: "view1",
+        password: "new-password-456",
+      })
+    ).status,
+    429,
+  );
+});
+
+test("push queue is customer-scoped, deduplicated, retries failures and removes expired subscriptions", async () => {
+  const { createECDH, randomBytes } = await import("node:crypto");
+  const { default: webpush } = await import("web-push");
+  const { deliverPush } = await import("../src/viewer.mjs");
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A"),
+    b = await s.enroll("B");
+  const ac = s.db
+    .prepare("SELECT customer_id FROM sites WHERE id=?")
+    .get(a.id).customer_id;
+  const bc = s.db
+    .prepare("SELECT customer_id FROM sites WHERE id=?")
+    .get(b.id).customer_id;
+  for (const [id, customer] of [
+    ["ua", ac],
+    ["ub", bc],
+  ])
+    s.db
+      .prepare("INSERT INTO viewer_users VALUES (?,?,?,?,?,0,?)")
+      .run(id, customer, id, id, "unused", Date.now());
+  const key = createECDH("prime256v1");
+  key.generateKeys();
+  const subscription = {
+    endpoint: "https://fcm.googleapis.com/test",
+    keys: {
+      p256dh: key.getPublicKey().toString("base64url"),
+      auth: randomBytes(16).toString("base64url"),
+    },
+  };
+  for (const [id, user] of [
+    ["pa", "ua"],
+    ["pb", "ub"],
+  ])
+    s.db
+      .prepare("INSERT INTO viewer_subscriptions VALUES (?,?,?,?,?)")
+      .run(
+        id,
+        user,
+        subscription.endpoint + id,
+        JSON.stringify({
+          ...subscription,
+          endpoint: subscription.endpoint + id,
+        }),
+        Date.now() - 1000,
+      );
+  Object.assign(s.env, webpush.generateVAPIDKeys());
+  s.env.VAPID_PUBLIC_KEY = s.env.publicKey;
+  s.env.VAPID_PRIVATE_KEY = s.env.privateKey;
+  s.env.VAPID_SUBJECT = "mailto:test@example.com";
+  const data = snapshot();
+  await s.call(`/api/agent/${a.id}/snapshot`, "POST", data, auth(a));
+  await s.call(`/api/agent/${a.id}/snapshot`, "POST", data, auth(a));
+  assert.deepEqual(
+    s.db
+      .prepare("SELECT subscription_id FROM viewer_push_jobs")
+      .all()
+      .map((r) => r.subscription_id),
+    ["pa"],
+  );
+  const original = globalThis.fetch;
+  let calls = 0;
+  try {
+    globalThis.fetch = async (_url, init) => {
+      calls++;
+      assert.equal(init.method, "POST");
+      assert.ok(init.body.length > 0);
+      return new Response("busy", { status: 503 });
+    };
+    await deliverPush(s.env);
+    assert.equal(calls, 1);
+    assert.equal(
+      s.db.prepare("SELECT attempts FROM viewer_push_jobs").get().attempts,
+      1,
+    );
+    s.db.prepare("UPDATE viewer_push_jobs SET next_at=0").run();
+    globalThis.fetch = async () => new Response("accepted", { status: 201 });
+    await deliverPush(s.env);
+    assert.equal(
+      s.db.prepare("SELECT state FROM viewer_push_jobs").get().state,
+      "sent",
+    );
+    s.db.prepare("UPDATE viewer_push_jobs SET state='pending',next_at=0").run();
+    globalThis.fetch = async () => new Response("gone", { status: 410 });
+    await deliverPush(s.env);
+    assert.equal(
+      s.db
+        .prepare("SELECT count(*) AS n FROM viewer_subscriptions WHERE id='pa'")
+        .get().n,
+      0,
+    );
+    assert.equal(
+      s.db.prepare("SELECT count(*) AS n FROM viewer_push_jobs").get().n,
+      0,
+    );
+    assert.equal(
+      s.db
+        .prepare("SELECT count(*) AS n FROM viewer_subscriptions WHERE id='pb'")
+        .get().n,
+      1,
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
 });

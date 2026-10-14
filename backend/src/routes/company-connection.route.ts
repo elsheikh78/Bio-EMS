@@ -18,6 +18,7 @@ router.put(
         siteId: z.string().max(64),
         token: z.string().max(64),
         remoteControl: z.boolean(),
+        viewerMonitoring: z.boolean().optional(),
       })
       .strict()
   ),
