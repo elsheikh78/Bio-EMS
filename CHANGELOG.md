@@ -1,5 +1,15 @@
 # BIO-EMS Changelog
 
+### 15 October 2026 company customer and activity management
+
+- Add customer removal with name confirmation, linked-site guard and transactional
+  Viewer access cleanup. Audit customer deletion independently.
+- Show five activity events initially, load older pages with stable cursors, and
+  preview/confirm deletion by device-local calendar dates. Keep a deletion event.
+  This selects manual retention instead of weekly archives. Cloud redeployment
+  required; no Client Setup, migration, firmware or version changes.
+
+
 ### 14 October 2026 existing company connection settings
 
 - Existing System Owner connections can enable Viewer export or change remote-control

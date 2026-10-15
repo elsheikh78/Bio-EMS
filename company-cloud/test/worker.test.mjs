@@ -39,7 +39,16 @@ function setup() {
       };
     },
     async batch(statements) {
-      return Promise.all(statements.map((s) => s.run()));
+      db.exec("BEGIN");
+      try {
+        const results = [];
+        for (const statement of statements) results.push(await statement.run());
+        db.exec("COMMIT");
+        return results;
+      } catch (error) {
+        db.exec("ROLLBACK");
+        throw error;
+      }
     },
   };
   const env = {
@@ -778,18 +787,16 @@ test("push queue is customer-scoped, deduplicated, retries failures and removes 
     ["pa", "ua"],
     ["pb", "ub"],
   ])
-    s.db
-      .prepare("INSERT INTO viewer_subscriptions VALUES (?,?,?,?,?)")
-      .run(
-        id,
-        user,
-        subscription.endpoint + id,
-        JSON.stringify({
-          ...subscription,
-          endpoint: subscription.endpoint + id,
-        }),
-        Date.now() - 1000,
-      );
+    s.db.prepare("INSERT INTO viewer_subscriptions VALUES (?,?,?,?,?)").run(
+      id,
+      user,
+      subscription.endpoint + id,
+      JSON.stringify({
+        ...subscription,
+        endpoint: subscription.endpoint + id,
+      }),
+      Date.now() - 1000,
+    );
   Object.assign(s.env, webpush.generateVAPIDKeys());
   s.env.VAPID_PUBLIC_KEY = s.env.publicKey;
   s.env.VAPID_PRIVATE_KEY = s.env.privateKey;
@@ -848,4 +855,176 @@ test("push queue is customer-scoped, deduplicated, retries failures and removes 
   } finally {
     globalThis.fetch = original;
   }
+});
+
+test("customer removal requires company auth, name confirmation and no linked sites; removes viewer access", async () => {
+  const s = setup();
+  assert.equal(
+    (await s.call("/api/company/customers/test", "DELETE", {})).status,
+    401,
+  );
+  await s.login();
+  const customer = await (
+    await s.call("/api/company/customers", "POST", { name: "Mistake" })
+  ).json();
+  s.db
+    .prepare("INSERT INTO viewer_users VALUES (?,?,?,?,?,?,?)")
+    .run("viewer", customer.id, "viewer", "Viewer", "unused", 0, 1);
+  s.db
+    .prepare("INSERT INTO viewer_sessions VALUES (?,?,?)")
+    .run("session", "viewer", 9999999999999);
+  s.db
+    .prepare("INSERT INTO viewer_subscriptions VALUES (?,?,?,?,?)")
+    .run("sub", "viewer", "https://example.invalid", "{}", 1);
+  assert.equal(
+    (
+      await s.call(`/api/company/customers/${customer.id}`, "DELETE", {
+        confirmName: "wrong",
+      })
+    ).status,
+    400,
+  );
+  const site = await (
+    await s.call("/api/company/sites", "POST", {
+      name: "Site",
+      customerId: customer.id,
+    })
+  ).json();
+  assert.equal(
+    (
+      await s.call(`/api/company/customers/${customer.id}`, "DELETE", {
+        confirmName: "Mistake",
+      })
+    ).status,
+    409,
+  );
+  assert.equal(
+    s.db.prepare("SELECT COUNT(*) AS n FROM viewer_users").get().n,
+    1,
+  );
+  await s.call(`/api/company/sites/${site.id}`, "DELETE");
+  assert.equal(
+    (
+      await s.call(`/api/company/customers/${customer.id}`, "DELETE", {
+        confirmName: "Mistake",
+      })
+    ).status,
+    200,
+  );
+  for (const table of [
+    "customers",
+    "viewer_users",
+    "viewer_sessions",
+    "viewer_subscriptions",
+  ])
+    assert.equal(s.db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get().n, 0);
+  assert.equal(
+    s.db
+      .prepare(
+        "SELECT COUNT(*) AS n FROM audit WHERE action='customer.deleted'",
+      )
+      .get().n,
+    1,
+  );
+});
+test("audit uses stable five-item cursor pages and range deletion leaves outside events and a deletion receipt", async () => {
+  const s = setup();
+  assert.equal((await s.call("/api/company/audit")).status, 401);
+  await s.login();
+  for (let i = 0; i < 13; i++)
+    s.db
+      .prepare("INSERT INTO audit VALUES (?,?,?,?)")
+      .run(
+        `event-${String(i).padStart(2, "0")}`,
+        "test",
+        "target",
+        1000 + Math.floor(i / 3),
+      );
+  const overview = await (await s.call("/api/company/overview")).json();
+  assert.equal(overview.audit.length, 5);
+  let page = await (await s.call("/api/company/audit")).json(),
+    ids = page.records.map((r) => r.id);
+  s.db
+    .prepare("INSERT INTO audit VALUES (?,?,?,?)")
+    .run("new", "test", "target", 2000);
+  while (page.nextCursor) {
+    page = await (
+      await s.call(
+        `/api/company/audit?cursor=${encodeURIComponent(page.nextCursor)}`,
+      )
+    ).json();
+    assert.ok(page.records.length <= 5);
+    ids.push(...page.records.map((r) => r.id));
+  }
+  assert.equal(ids.length, 13);
+  assert.equal(new Set(ids).size, 13);
+  assert.equal((await s.call("/api/company/audit?cursor=bad")).status, 400);
+  assert.equal(
+    (
+      await s.call("/api/company/audit/preview", "POST", {
+        from: 2000,
+        to: 1000,
+      })
+    ).status,
+    400,
+  );
+  const preview = await (
+    await s.call("/api/company/audit/preview", "POST", { from: 1001, to: 1003 })
+  ).json();
+  assert.equal(preview.count, 6);
+  assert.equal(
+    (await s.call("/api/company/audit", "DELETE", preview)).status,
+    400,
+  );
+  const result = await (
+    await s.call("/api/company/audit", "DELETE", {
+      ...preview,
+      confirm: "delete-audit-range",
+    })
+  ).json();
+  assert.equal(result.deleted, 6);
+  assert.equal(
+    s.db
+      .prepare(
+        "SELECT COUNT(*) AS n FROM audit WHERE created_at>=1001 AND created_at<1003",
+      )
+      .get().n,
+    0,
+  );
+  assert.equal(
+    s.db
+      .prepare("SELECT COUNT(*) AS n FROM audit WHERE action='audit.deleted'")
+      .get().n,
+    1,
+  );
+  assert.equal(
+    s.db.prepare("SELECT COUNT(*) AS n FROM audit WHERE id='new'").get().n,
+    1,
+  );
+});
+
+test("customer delete rolls back viewer removal if a site appears before parent deletion", async () => {
+  const s = setup();
+  await s.login();
+  const customer = await (
+    await s.call("/api/company/customers", "POST", { name: "Keep" })
+  ).json();
+  s.db
+    .prepare("INSERT INTO viewer_users VALUES (?,?,?,?,?,?,?)")
+    .run("viewer", customer.id, "keep", "Viewer", "unused", 0, 1);
+  s.db.exec(
+    "CREATE TRIGGER concurrent_site BEFORE DELETE ON customers BEGIN INSERT INTO sites(id,customer_id,name,agent_hash) VALUES ('late',OLD.id,'Late','hash'); END;",
+  );
+  const response = await s.call(
+    `/api/company/customers/${customer.id}`,
+    "DELETE",
+    { confirmName: "Keep" },
+  );
+  assert.equal(response.status, 500);
+  assert.equal(
+    s.db.prepare("SELECT COUNT(*) AS n FROM viewer_users").get().n,
+    1,
+  );
+  assert.equal(s.db.prepare("SELECT COUNT(*) AS n FROM customers").get().n, 1);
+  assert.equal(s.db.prepare("SELECT COUNT(*) AS n FROM sites").get().n, 0);
 });
