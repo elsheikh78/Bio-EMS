@@ -2,6 +2,7 @@ import { translate } from "./locale.js";
 import { currentPortfolio } from "./portfolio.js";
 const $ = (id) => document.getElementById(id);
 let state, enrollment;
+let auditLoading = false;
 let language = "ar";
 try {
   language =
@@ -44,7 +45,11 @@ async function api(path, method = "GET", data) {
       $("login").hidden = false;
       $("logout").hidden = true;
     }
-    throw new Error(t("requestFailed", { status: response.status }));
+    throw new Error(
+      body.error === "CUSTOMER_HAS_SITES"
+        ? t("customerHasSites")
+        : t("requestFailed", { status: response.status }),
+    );
   }
   return body;
 }
@@ -78,8 +83,13 @@ function options(select, rows, label) {
   }
   if (rows.some((row) => row.id === selected)) select.value = selected;
 }
-async function refresh() {
+async function refresh(keepAudit = false) {
+  const previous =
+    keepAudit && state?.audit.length > 5
+      ? { audit: state.audit, auditNextCursor: state.auditNextCursor }
+      : null;
   state = await api("overview");
+  if (previous) Object.assign(state, previous);
   state.viewers = (await api("viewers")).users;
   renderState();
 }
@@ -104,6 +114,57 @@ function renderState() {
       l.expires_at < Date.now() + 30 * 86400000 &&
       l.status !== "suspended",
   ).length;
+  $("customer-list").replaceChildren();
+  for (const customer of state.customers) {
+    const card = element("article", undefined, "site");
+    const count = state.sites.filter(
+      (s) => s.customer_id === customer.id,
+    ).length;
+    const viewers = state.viewers.filter(
+      (v) => v.customer_id === customer.id,
+    ).length;
+    const remove = element("button", t("removeCustomer"), "danger");
+    remove.disabled = count > 0;
+    remove.onclick = () => {
+      if (
+        prompt(t("removeCustomerConfirm", { name: customer.name, viewers })) !==
+        customer.name
+      )
+        return;
+      void action(async () => {
+        await api(`customers/${customer.id}`, "DELETE", {
+          confirmName: customer.name,
+        });
+        await refresh();
+      });
+    };
+    card.append(
+      element("h3", customer.name),
+      element("p", t("customerCounts", { sites: count, viewers })),
+      remove,
+    );
+    if (count) card.append(element("small", t("customerHasSites")));
+    // Revoked sites are hidden from the current fleet but still own records.
+    for (const site of state.sites.filter(
+      (s) => s.customer_id === customer.id && s.revoked,
+    )) {
+      const removeSite = element(
+        "button",
+        `${t("removeSite")}: ${site.name}`,
+        "danger",
+      );
+      removeSite.onclick = () => {
+        if (!confirm(t("removeSiteConfirm", { site: site.name, id: site.id })))
+          return;
+        void action(async () => {
+          await api(`sites/${site.id}`, "DELETE");
+          await refresh();
+        });
+      };
+      card.append(removeSite);
+    }
+    $("customer-list").append(card);
+  }
   options($("customer-select"), state.customers, (c) => c.name);
   options($("viewer-customer"), state.customers, (c) => c.name);
   $("viewer-users").replaceChildren();
@@ -316,10 +377,15 @@ function renderState() {
         site: state.sites.find((s) => s.id === editing.site_id)?.name || "",
       })
     : t("issueLicense");
+  renderAudit();
+}
+function renderAudit() {
   $("audit").replaceChildren();
   if (!state.audit.length) $("audit").append(element("p", t("noActivity")));
   const actions = {
     "customer.created": t("customerCreated"),
+    "customer.deleted": t("customerDeleted"),
+    "audit.deleted": t("auditDeleted"),
     "site.created": t("siteCreated"),
     "site.revoked": t("siteRevoked"),
     "license.created": t("licenseCreated"),
@@ -329,6 +395,8 @@ function renderState() {
     "remote.queued": t("remoteQueued"),
     "remote.completed": t("remoteCompleted"),
   };
+  $("audit-more").hidden = !state.auditNextCursor;
+  $("audit-more").disabled = auditLoading;
   for (const record of state.audit)
     $("audit").append(
       element(
@@ -338,6 +406,58 @@ function renderState() {
       ),
     );
 }
+$("audit-more").onclick = () => {
+  if (auditLoading || !state?.auditNextCursor) return;
+  auditLoading = true;
+  $("audit-more").disabled = true;
+  void action(async () => {
+    try {
+      const page = await api(
+        `audit?cursor=${encodeURIComponent(state.auditNextCursor)}`,
+      );
+      state.audit.push(...page.records);
+      state.auditNextCursor = page.nextCursor;
+    } finally {
+      auditLoading = false;
+      renderAudit();
+    }
+  });
+};
+$("audit-latest").onclick = () => void action(refresh);
+$("audit-range").onsubmit = (event) => {
+  event.preventDefault();
+  const form = event.target;
+  // Local calendar boundaries: end date includes the full selected day.
+  const from = new Date(`${form.elements.from.value}T00:00:00`).getTime();
+  const end = new Date(`${form.elements.to.value}T00:00:00`);
+  end.setDate(end.getDate() + 1);
+  const to = end.getTime();
+  void action(async () => {
+    if (!Number.isFinite(from) || !Number.isFinite(to) || to <= from)
+      throw new Error(t("invalidAuditRange"));
+    const preview = await api("audit/preview", "POST", { from, to });
+    if (!preview.count) {
+      alert(t("noAuditRange"));
+      return;
+    }
+    if (
+      !confirm(
+        t("deleteAuditConfirm", {
+          count: preview.count,
+          from: date(preview.from),
+          to: date(preview.to),
+        }),
+      )
+    )
+      return;
+    await api("audit", "DELETE", {
+      from: preview.from,
+      to: preview.to,
+      confirm: "delete-audit-range",
+    });
+    await refresh();
+  });
+};
 $("login-form").onsubmit = (event) => {
   event.preventDefault();
   void action(async () => {
@@ -466,5 +586,5 @@ void api("overview")
   .then(() => refresh())
   .catch(() => {});
 setInterval(() => {
-  if (state) void action(refresh);
+  if (state) void action(() => refresh(true));
 }, 60_000);

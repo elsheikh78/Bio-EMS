@@ -1,4 +1,42 @@
 export const messages = {
+  manageCustomers: ["إدارة العملاء", "Manage customers"],
+  customerDeleteHelp: [
+    "يمكن إزالة العميل بعد إزالة مواقعه من منصة الشركة. تُحذف حسابات المشاهدة وجلساتها وإشعاراتها معه، وتظل بيانات التشغيل المحلية مستقلة.",
+    "Remove a customer after removing its company sites. Viewer accounts, sessions and subscriptions are deleted with it; local operations remain independent.",
+  ],
+  removeCustomer: ["إزالة العميل", "Remove customer"],
+  customerCounts: [
+    "المواقع: {sites} · حسابات المشاهدة: {viewers}",
+    "Sites: {sites} · Viewer accounts: {viewers}",
+  ],
+  customerHasSites: [
+    "أزل المواقع المرتبطة أولًا من بطاقات المواقع؛ لا يمكن إزالة عميل له مواقع حتى لو كانت غير متصلة أو ملغاة الربط.",
+    "Remove linked sites from their site cards first, including offline or revoked sites.",
+  ],
+  removeCustomerConfirm: [
+    "إزالة العميل {name} نهائيًا وحذف {viewers} حساب مشاهدة وجلساته وإشعاراته؟ اكتب اسم العميل للتأكيد:",
+    "Permanently remove customer {name} and its {viewers} viewer accounts, sessions and subscriptions? Type the customer name to confirm:",
+  ],
+  customerDeleted: ["إزالة عميل", "Customer removed"],
+  auditDeleted: ["حذف فترة من سجل العمليات", "Activity range deleted"],
+  auditHelp: [
+    "تظهر آخر خمس عمليات، والمزيد يعرض خمسًا إضافية. الحذف بين تاريخين يقلل السجلات المخزنة فعليًا ولا يمس القراءات أو الإنذارات. التواريخ حسب توقيت جهازك وتشمل يوم النهاية؛ الحذف نهائي وتُسجل عملية الحذف نفسها. لا توجد أرشفة أسبوعية تلقائية في هذا الخيار.",
+    "Latest five events; More loads five additional events. Range deletion removes stored activity only, not telemetry or alarms. Dates use your device timezone and include the end day. Deletion is permanent and itself logged. This option does not create weekly archives.",
+  ],
+  auditFrom: ["من تاريخ", "From date"],
+  auditTo: ["إلى تاريخ (شامل)", "To date (inclusive)"],
+  deleteAuditRange: ["مراجعة وحذف الفترة", "Review and delete range"],
+  moreAudit: ["المزيد", "More"],
+  latestAudit: ["آخر خمس عمليات", "Latest five events"],
+  invalidAuditRange: ["اختر فترة زمنية صحيحة.", "Choose a valid date range."],
+  noAuditRange: [
+    "لا توجد عمليات في الفترة المحددة.",
+    "No events in this range.",
+  ],
+  deleteAuditConfirm: [
+    "حذف {count} عملية نهائيًا من {from} إلى ما قبل {to}؟ لن يمكن الرجوع إليها بعد الحذف. القراءات والإنذارات لن تُحذف.",
+    "Permanently delete {count} events from {from} until before {to}? Deleted history cannot be recovered. Telemetry and alarms are unaffected.",
+  ],
   viewerAccess: ["بوابة المتابعة", "MONITORING PORTAL"],
   viewerAccounts: ["حسابات العميل — مشاهدة فقط", "Customer viewer accounts"],
   openViewer: ["فتح بوابة العميل ↗", "Open customer portal ↗"],

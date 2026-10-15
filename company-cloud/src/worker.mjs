@@ -1,3 +1,4 @@
+import { auditPage, managementRoutes } from "./management.mjs";
 import {
   viewerRoutes,
   companyViewer,
@@ -277,6 +278,15 @@ async function handle(req, env, ctx) {
   if (path.startsWith("/api/company/")) {
     await admin(req, env);
     origin(req);
+    const managementResponse = await managementRoutes(
+      req,
+      env,
+      path,
+      body,
+      json,
+      fail,
+    );
+    if (managementResponse) return managementResponse;
     const viewerAdminResponse = await companyViewer(
       req,
       env,
@@ -304,9 +314,7 @@ async function handle(req, env, ctx) {
         env.DB.prepare(
           "SELECT * FROM licenses ORDER BY created_at DESC LIMIT 1000",
         ).all(),
-        env.DB.prepare(
-          "SELECT * FROM audit ORDER BY created_at DESC LIMIT 100",
-        ).all(),
+        auditPage(env),
       ]);
       return json({
         customers: customers.results,
@@ -331,7 +339,8 @@ async function handle(req, env, ctx) {
                 ? "scheduled"
                 : l.status,
         })),
-        audit: events.results,
+        audit: events.records,
+        auditNextCursor: events.nextCursor,
         licenseEnforcement: false,
       });
     }

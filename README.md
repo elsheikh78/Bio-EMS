@@ -175,3 +175,5 @@ Separate evidence is still required for:
 - SEC-OWNER-01: implemented on PR #233; Production acceptance/merge remains gated by the real manufacturer key ceremony and offline commissioning evidence.
 - Active integration: draft PR #235 / `feat/com-01-06-communication-channels`; COM-01 through COM-06 source implemented and automated Windows Setup gate passed; COM-07 live acceptance remains open.
 - Product version remains `0.20.0`; this documentation sync does not create a new release.
+
+Company portal customer removal and five-event activity pagination/date-range deletion: [Arabic operating guide](docs/current/COMPANY-CLOUD-PILOT-AR.md). Source update dated 15 October; cloud redeployment required.

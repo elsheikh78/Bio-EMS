@@ -167,6 +167,11 @@
           <pre id="enrollment-data"></pre>
           <button id="copy-enrollment" data-i18n="copyConnection"></button>
         </section>
+        <section class="panel" id="customer-management">
+          <h2 data-i18n="manageCustomers"></h2>
+          <p data-i18n="customerDeleteHelp"></p>
+          <div id="customer-list" class="sites"></div>
+        </section>
         <section class="panel" id="viewer-accounts">
           <div class="section-heading">
             <div>
@@ -289,7 +294,29 @@
         <section id="activity" class="panel">
           <p class="eyebrow" data-i18n="auditTrail"></p>
           <h2 data-i18n="activity"></h2>
+          <p data-i18n="auditHelp"></p>
+          <form id="audit-range" class="license-form">
+            <label
+              ><span data-i18n="auditFrom"></span
+              ><input name="from" type="date" required
+            /></label>
+            <label
+              ><span data-i18n="auditTo"></span
+              ><input name="to" type="date" required
+            /></label>
+            <button class="danger" data-i18n="deleteAuditRange"></button>
+          </form>
           <div id="audit"></div>
+          <button
+            id="audit-more"
+            class="secondary"
+            data-i18n="moreAudit"
+          ></button>
+          <button
+            id="audit-latest"
+            class="secondary"
+            data-i18n="latestAudit"
+          ></button>
         </section>
       </div>
       <footer>

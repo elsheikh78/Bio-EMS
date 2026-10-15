@@ -1,5 +1,16 @@
 # BIO-EMS Project State
 
+## 15 October 2026 company customer/activity management
+
+- Adds name-confirmed customer deletion, blocked while any sites remain; transactional
+  cleanup of viewer accounts/sessions/subscriptions and retained deletion audit event.
+- Activity defaults to five records with keyset More, date-range preview and confirmed
+  deletion of stored audit rows. Local telemetry/alarms remain independent.
+- Chosen retention option is manual date-range deletion, not weekly automatic archives.
+  No new schema, client setup, firmware or product version change. Cloud deployment
+  of this source update remains pending.
+
+
 ## 14 October 2026 customer Viewer portal deployed — field acceptance pending
 
 - Adds a separate Arabic/English customer portal at `/viewer/`, responsive PWA shell,
