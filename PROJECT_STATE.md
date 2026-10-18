@@ -422,3 +422,10 @@ A source merge must never be represented as field acceptance, and an approved ar
 - COM-01 through COM-06: source implemented on draft PR #235; COM-07 external/live acceptance remains pending.
 - Documentation sync commit on the integration branch records the 16 September Pilot Admin/Installer validation without storing any credential secret.
 - BIO EGYPT remains NOT COMMISSIONED / NOT ACCEPTED.
+
+
+## 18 October 2026 — SD replay and central battery
+
+Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
+See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.

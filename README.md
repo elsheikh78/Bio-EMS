@@ -177,3 +177,10 @@ Separate evidence is still required for:
 - Product version remains `0.20.0`; this documentation sync does not create a new release.
 
 Company portal customer removal and five-event activity pagination/date-range deletion: [Arabic operating guide](docs/current/COMPANY-CLOUD-PILOT-AR.md). Source update dated 15 October; cloud redeployment required.
+
+
+## 18 October 2026 — SD replay and central battery
+
+Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
+See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.

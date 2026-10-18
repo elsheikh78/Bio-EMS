@@ -1,5 +1,14 @@
 # BIO-EMS Changelog
 
+### 18 October 2026 — pending SD replay / central battery change
+
+- Add checksum-protected bounded Main SD queue; retry original timestamped readings as REPLAY and preserve failed/corrupt records.
+- Require actual pipeline acceptance before HTTP acknowledgement; replay does not evaluate live alarms.
+- Add local-platform clock synchronization and explicit storage/time diagnostics.
+- Bump ESP32 firmware and installer gates to `0.1.0-pilot.6`; Nano firmware is unchanged.
+- Document one central Main battery/charger/UPS supplying four SIM-D4 modules and sixteen probes; capacity and physical qualification pending.
+- Details: [SD replay](docs/current/SD-OFFLINE-REPLAY.md), [central backup and wiring](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+
 ### 15 October 2026 company customer and activity management
 
 - Add customer removal with name confirmation, linked-site guard and transactional

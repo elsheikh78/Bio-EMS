@@ -10,7 +10,7 @@ vi.mock("../telemetry/services/telemetry.service", () => ({
 
 const bindingId = "11111111-1111-4111-8111-111111111111";
 const token = "a".repeat(64);
-const process = vi.fn(async () => {});
+const process = vi.fn(async () => true);
 const database = {
   prepare: () => ({
     get: () => ({
@@ -66,5 +66,41 @@ describe("device telemetry ingress", () => {
     await expect(
       service.accept(bindingId, token, { sensors: [{ channel: 17, value: 4 }] })
     ).rejects.toThrow();
+  });
+  it("preserves historical acquisition time and REPLAY mode", async () => {
+    process.mockClear();
+    await service.accept(bindingId, token, {
+      timestamp: "2026-09-29T18:00:00.123Z",
+      mode: "REPLAY",
+      sensors: [{ channel: 5, value: 4.2 }],
+    });
+    expect(process).toHaveBeenCalledWith(
+      "bioems/MANIAL/telemetry/D001",
+      expect.objectContaining({ timestamp: "2026-09-29T18:00:00.123Z", mode: "REPLAY" })
+    );
+  });
+  it("rejects replay without time and future samples before processing", async () => {
+    process.mockClear();
+    await expect(
+      service.accept(bindingId, token, {
+        mode: "REPLAY",
+        sensors: [{ channel: 1, value: 4 }],
+      })
+    ).rejects.toThrow();
+    await expect(
+      service.accept(bindingId, token, {
+        timestamp: "2026-09-29T20:02:00Z",
+        mode: "LIVE",
+        sensors: [{ channel: 1, value: 4 }],
+      })
+    ).rejects.toThrow();
+    expect(process).not.toHaveBeenCalled();
+  });
+
+  it("does not acknowledge data rejected by the telemetry pipeline", async () => {
+    process.mockResolvedValueOnce(false);
+    expect(await service.accept(bindingId, token, { sensors: [{ channel: 1, value: 4 }] })).toBe(
+      false
+    );
   });
 });

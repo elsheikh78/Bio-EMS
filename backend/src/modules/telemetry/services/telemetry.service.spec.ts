@@ -88,7 +88,7 @@ describe("Telemetry trust-boundary policy", () => {
   };
 
   it("accepts active/1 telemetry for an exact Site and enabled Sensor", async () => {
-    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload);
+    expect(await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload)).toBe(true);
 
     expect(dependencies.deviceRepository.findByDeviceId).toHaveBeenCalledWith("ZC-FW-001");
     expect(dependencies.publishAcceptedTelemetry).toHaveBeenCalledWith({
@@ -307,7 +307,7 @@ describe("Telemetry trust-boundary policy", () => {
   it("rejects an unknown channel without side effects", async () => {
     dependencies.sensorRepository.findByDeviceAndChannel.mockReturnValue(undefined);
 
-    await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload);
+    expect(await service.process("bioems/CAIRO01/telemetry/ZC-FW-001", payload)).toBe(false);
 
     expect(dependencies.logRejection).toHaveBeenCalledWith(
       TELEMETRY_REJECTION_REASONS.UNKNOWN_CHANNEL,

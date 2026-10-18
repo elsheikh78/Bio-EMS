@@ -12,7 +12,10 @@ router.post(
       request.body
     );
     if (!authorized) return response.status(401).json({ code: "DEVICE_TELEMETRY_UNAUTHORIZED" });
-    return response.status(202).json({ accepted: true });
+    return response
+      .status(202)
+      .set("x-bioems-utc-epoch", String(Math.floor(Date.now() / 1000)))
+      .json({ accepted: true });
   })
 );
 export default router;

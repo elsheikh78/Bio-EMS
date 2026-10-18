@@ -352,3 +352,10 @@ Every package requires the evidence appropriate to its type:
 - production: security/licensing/signing/release gates.
 
 No package is closed by documentation alone.
+
+
+## 18 October 2026 — SD replay and central battery
+
+Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
+See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.
