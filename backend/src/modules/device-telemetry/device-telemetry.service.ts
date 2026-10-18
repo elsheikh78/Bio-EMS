@@ -18,9 +18,17 @@ const readingSchema = z
       .min(1)
       .max(16),
     signal: z.number().finite().optional(),
+    timestamp: z.string().datetime().optional(),
+    mode: z.enum(["LIVE", "REPLAY"]).optional(),
   })
   .strict()
   .superRefine((payload, ctx) => {
+    if (payload.mode === "REPLAY" && !payload.timestamp)
+      ctx.addIssue({
+        code: "custom",
+        path: ["timestamp"],
+        message: "Replay requires original timestamp",
+      });
     const channels = new Set<number>();
     for (const [index, sensor] of payload.sensors.entries()) {
       if (channels.has(sensor.channel))
@@ -66,18 +74,21 @@ export class DeviceTelemetryService {
     const expected = Buffer.from(row.tokenHash, "hex");
     if (expected.length !== digest.length || !timingSafeEqual(expected, digest)) return false;
     const parsed = readingSchema.parse(body);
+    if (parsed.timestamp && new Date(parsed.timestamp).getTime() > this.now().getTime() + 60_000)
+      throw new Error("Telemetry timestamp is in the future");
     const telemetry =
       this.telemetry ??
       new (await import("../telemetry/services/telemetry.service")).TelemetryService();
-    await telemetry.process(`bioems/${row.siteCode}/telemetry/${row.deviceId}`, {
+    const accepted = await telemetry.process(`bioems/${row.siteCode}/telemetry/${row.deviceId}`, {
       protocolVersion: row.protocolVersion,
-      timestamp: this.now().toISOString(),
+      timestamp: parsed.timestamp ?? this.now().toISOString(),
+      mode: parsed.mode ?? "LIVE",
       signal: parsed.signal ?? 0,
       platformBindingId: row.bindingId,
       hardwareUid: row.hardwareUid,
       sensors: parsed.sensors,
     });
-    return true;
+    return accepted;
   }
 }
 

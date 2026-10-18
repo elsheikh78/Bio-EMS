@@ -20,6 +20,10 @@
 #include "bioems_version.h"
 #include "sim_modbus.h"
 #include "ethernet.h"
+#include "offline_queue.h"
+#include "sd_storage.h"
+#include <strings.h>
+#include <stdatomic.h>
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAILED_BIT BIT1
@@ -28,6 +32,9 @@
 #define MAX_NVS_TEXT 192
 #define MAX_CA_PEM 4096
 
+static atomic_bool clock_trusted;
+static bool storage_ready;
+static atomic_uint queued_records;
 static char ca_pem[MAX_CA_PEM];
 static size_t ca_base64_length;
 
@@ -400,6 +407,98 @@ static void clear_binding(void) {
   printf("local binding cleared; backend binding must be revoked separately by System Owner\n");
 }
 
+static esp_err_t sample_response(esp_http_client_event_t *event) {
+  if (event->event_id == HTTP_EVENT_ON_HEADER && event->user_data &&
+      event->header_key && event->header_value &&
+      strcasecmp(event->header_key, "x-bioems-utc-epoch") == 0) {
+    char *end = NULL;
+    long long epoch = strtoll(event->header_value, &end, 10);
+    if (end && *end == 0 && epoch >= 1760000000LL && epoch <= 4102444800LL)
+      *(time_t *)event->user_data = (time_t)epoch;
+  }
+  return ESP_OK;
+}
+
+static bool send_sample(const char *binding, const char *body) {
+  char active[40], token[65], base[MAX_URL], certificate[MAX_CA_PEM];
+  if (!nvs_get_text("binding_id", active, sizeof(active))) return false;
+  if (strcmp(binding, active)) { ESP_LOGE(TAG, "STORAGE_BINDING_MISMATCH: retain card history for original installation"); return false; }
+  if (!network_ready() || !nvs_get_text("tele_token", token, sizeof(token)) ||
+      !nvs_get_text("platform_url", base, sizeof(base)) ||
+      !nvs_get_text("tls_ca", certificate, sizeof(certificate))) return false;
+  char url[MAX_URL + 80];
+  snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base, binding);
+  time_t server_epoch = 0;
+  esp_http_client_config_t config = {.url=url, .cert_pem=certificate,
+    .timeout_ms=2000, .skip_cert_common_name_check=true,
+    .event_handler=sample_response, .user_data=&server_epoch};
+  esp_http_client_handle_t client = esp_http_client_init(&config);
+  if (!client) return false;
+  esp_http_client_set_method(client, HTTP_METHOD_POST);
+  esp_http_client_set_header(client, "Content-Type", "application/json");
+  esp_http_client_set_header(client, "x-bioems-device-token", token);
+  esp_http_client_set_post_field(client, body, strlen(body));
+  esp_err_t result = esp_http_client_perform(client);
+  int status = result == ESP_OK ? esp_http_client_get_status_code(client) : 0;
+  esp_http_client_cleanup(client);
+  if (status == 202 && server_epoch && !atomic_load(&clock_trusted)) {
+    struct timeval utc = {.tv_sec=server_epoch, .tv_usec=0};
+    if (settimeofday(&utc, NULL) == 0) atomic_store(&clock_trusted, true);
+  }
+  if (status != 202) ESP_LOGW(TAG, "Delivery failed HTTP %d: retaining queued data", status);
+  return status == 202;
+}
+
+static void replay_samples(void) {
+  // Bound replay per cycle so live acquisition is never starved by a long backlog.
+  for (int batch = 0; storage_ready && network_ready() && batch < 8; batch++) {
+    char record[OFFLINE_RECORD_MAX];
+    int result = offline_queue_peek(record, sizeof(record));
+    if (!result) return;
+    if (result < 0) { ESP_LOGE(TAG, "STORAGE_CORRUPT: replay stopped; preserve card for recovery"); return; }
+    cJSON *root = cJSON_Parse(record);
+    cJSON *binding = root ? cJSON_GetObjectItemCaseSensitive(root, "binding") : NULL;
+    cJSON *payload = root ? cJSON_GetObjectItemCaseSensitive(root, "payload") : NULL;
+    if (!cJSON_IsString(binding) || !cJSON_IsObject(payload)) {
+      cJSON_Delete(root); ESP_LOGE(TAG, "STORAGE_CORRUPT: invalid envelope"); return;
+    }
+    cJSON_ReplaceItemInObject(payload, "mode", cJSON_CreateString("REPLAY"));
+    char *body = cJSON_PrintUnformatted(payload);
+    bool accepted = body && send_sample(binding->valuestring, body);
+    free(body); cJSON_Delete(root);
+    if (!accepted) return;
+    if (!offline_queue_ack()) { ESP_LOGE(TAG, "STORAGE_ACK_FAILED"); return; }
+    atomic_store(&queued_records, offline_queue_count());
+  }
+}
+
+static void deliver_or_store(const char *readings) {
+  char binding[40];
+  if (!nvs_get_text("binding_id", binding, sizeof(binding))) return;
+  wifi_ap_record_t ap = {0};
+  int signal = esp_wifi_sta_get_ap_info(&ap) == ESP_OK ? ap.rssi : 0;
+  bool trusted = atomic_load(&clock_trusted);
+  char timestamp[32] = {0}, body[512];
+  if (trusted) {
+    struct timeval now; gettimeofday(&now, NULL);
+    struct tm utc; gmtime_r(&now.tv_sec, &utc);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%S", &utc);
+    size_t used = strlen(timestamp);
+    snprintf(timestamp + used, sizeof(timestamp) - used, ".%03ldZ", (long)(now.tv_usec / 1000));
+  }
+  // Without current-boot time sync, only live server-timestamped delivery is safe.
+  if (trusted) snprintf(body, sizeof(body),
+    "{\"timestamp\":\"%s\",\"mode\":\"LIVE\",\"signal\":%d,\"sensors\":[%s]}", timestamp, signal, readings);
+  else snprintf(body, sizeof(body), "{\"signal\":%d,\"sensors\":[%s]}", signal, readings);
+  if (send_sample(binding, body)) return;
+  if (!trusted) { ESP_LOGE(TAG, "TIME_UNTRUSTED: cannot buffer an accurate historical sample"); return; }
+  if (!storage_ready) { ESP_LOGE(TAG, "STORAGE_UNAVAILABLE: sample could not be retained"); return; }
+  char record[OFFLINE_RECORD_MAX];
+  snprintf(record, sizeof(record), "{\"binding\":\"%s\",\"payload\":%s}", binding, body);
+  if (!offline_queue_append(record)) ESP_LOGE(TAG, "STORAGE_WRITE_FAILED_OR_FULL: manual attention required");
+  atomic_store(&queued_records, offline_queue_count());
+}
+
 static void sim_poll_task(void *argument) {
   (void)argument;
   while (true) {
@@ -431,41 +530,9 @@ static void sim_poll_task(void *argument) {
           ESP_LOGW(TAG, "SIM channel %d sensor status %u", channel, sample.status[probe]);
         }
       }
-      if (used) {
-        char binding[40] = {0};
-        char token[65] = {0};
-        char base_url[MAX_URL] = {0};
-        if (nvs_get_text("binding_id", binding, sizeof(binding)) &&
-            nvs_get_text("tele_token", token, sizeof(token)) &&
-            nvs_get_text("platform_url", base_url, sizeof(base_url)) &&
-            nvs_get_text("tls_ca", ca_pem, sizeof(ca_pem)) && network_ready()) {
-          char url[MAX_URL + 80];
-          snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base_url, binding);
-          char body[320];
-          wifi_ap_record_t access_point = {0};
-          int signal = esp_wifi_sta_get_ap_info(&access_point) == ESP_OK
-              ? access_point.rssi : 0;
-          snprintf(body, sizeof(body), "{\"signal\":%d,\"sensors\":[%s]}",
-                   signal, readings);
-          esp_http_client_config_t config = {
-              .url = url, .cert_pem = ca_pem, .timeout_ms = 10000,
-              .skip_cert_common_name_check = true,
-          };
-          esp_http_client_handle_t client = esp_http_client_init(&config);
-          if (client) {
-            esp_http_client_set_method(client, HTTP_METHOD_POST);
-            esp_http_client_set_header(client, "Content-Type", "application/json");
-            esp_http_client_set_header(client, "x-bioems-device-token", token);
-            esp_http_client_set_post_field(client, body, strlen(body));
-            esp_err_t result = esp_http_client_perform(client);
-            int status = result == ESP_OK ? esp_http_client_get_status_code(client) : 0;
-            if (status != 202) ESP_LOGW(TAG, "SIM telemetry delivery failed: %s HTTP %d",
-                                         esp_err_to_name(result), status);
-            esp_http_client_cleanup(client);
-          }
-        }
-      }
+      if (used) deliver_or_store(readings);
     }
+    replay_samples();
     if (!ethernet_selected() && wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
       esp_wifi_connect();
     vTaskDelay(pdMS_TO_TICKS(5000));
@@ -515,6 +582,11 @@ static void command_loop(void) {
     }
     line[strcspn(line, "\r\n")] = '\0';
 
+    if (strcmp(line, "storage") == 0) {
+      printf("SD mounted=%d timeTrusted=%d queued=%u\n",
+        storage_ready, atomic_load(&clock_trusted), atomic_load(&queued_records));
+      continue;
+    }
     if (strcmp(line, "simscan") == 0) {
       print_sim_scan();
       continue;
@@ -609,6 +681,7 @@ static void command_loop(void) {
           nvs_set_text("utc_epoch", line + 8) != ESP_OK) {
         printf("UTC time could not be saved\n");
       } else {
+        atomic_store(&clock_trusted, true);
         printf("UTC time saved\n");
       }
       continue;
@@ -633,7 +706,7 @@ void app_main(void) {
   }
 
   // Bench bootstrap: restore the last trusted USB-provisioned epoch before TLS.
-  // The server timestamps accepted readings. Production needs NTP/RTC time policy.
+  // A restored old epoch is sufficient only for TLS bootstrap, never historical timestamps.
   char saved_epoch[24] = {0};
   if (nvs_get_text("utc_epoch", saved_epoch, sizeof(saved_epoch))) {
     time_t epoch = (time_t)strtoll(saved_epoch, NULL, 10);
@@ -641,13 +714,16 @@ void app_main(void) {
     settimeofday(&utc, NULL);
   }
 
+  storage_ready = bioems_sd_mount();
+  atomic_store(&queued_records, offline_queue_count());
+  if (!storage_ready) ESP_LOGW(TAG, "STORAGE_UNAVAILABLE: live delivery only");
   ESP_LOGI(TAG, "BIO-EMS Site Controller boot");
   print_status();
   char current_binding[MAX_NVS_TEXT];
   if (nvs_get_text("binding_id", current_binding, sizeof(current_binding)))
     connect_network();
   if (sim_modbus_init())
-    xTaskCreate(sim_poll_task, "sim_modbus", 4096, NULL, 5, NULL);
+    xTaskCreate(sim_poll_task, "sim_modbus", 12288, NULL, 5, NULL);
   else
     ESP_LOGE(TAG, "SIM-D4 UART initialization failed");
   command_loop();

@@ -1,5 +1,5 @@
 idf_component_register(
-  SRCS "main.c" "sim_modbus.c" "ethernet.c"
+  SRCS "main.c" "sim_modbus.c" "ethernet.c" "offline_queue.c" "sd_storage.c"
   INCLUDE_DIRS "."
-  REQUIRES nvs_flash esp_eth esp_wifi esp_event esp_netif esp_http_client json driver
+  REQUIRES nvs_flash esp_eth esp_wifi esp_event esp_netif esp_http_client json driver fatfs sdmmc esp_driver_sdspi
 )

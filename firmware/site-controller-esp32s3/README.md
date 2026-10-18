@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.5`;
+- firmware version: `0.1.0-pilot.6`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -144,8 +144,8 @@ USB commissioning accepts `setnetwork wifi` or `setnetwork ethernet` before pair
 Legacy devices without a stored mode default to Wi-Fi. Wi-Fi still uses `setwifi`;
 Ethernet uses the ESP-IDF W5500 driver and DHCP, without Wi-Fi credentials. Pairing
 must reach the HTTPS platform before the device is considered provisioned. Sensor
-polling continues during link loss; this change does not add offline telemetry replay
-or automatic Ethernet/Wi-Fi failover. Configure a new device before binding; changing
+polling continues during link loss. Controller pilot.6 adds SD offline replay as described
+below; automatic Ethernet/Wi-Fi failover is not provided. Configure a new device before binding; changing
 an already running device's mode requires a separate reconfiguration/reboot flow.
 
 The following **new bench pin assignment** is configurable through `menuconfig`;
@@ -164,3 +164,16 @@ are not a statement that the earlier Word wiring diagram already used this map.
 Keep GPIO17/18 for the existing HW-519 RS485 interface. Use the purchased module's
 specified power input and 3.3 V logic; do not connect a 5 V logic signal to ESP32-S3.
 W5500 driver initialization and link recovery require bench verification on hardware.
+
+## SD offline replay (pilot.6)
+
+The Main can persist failed timestamped deliveries to a FAT microSD card on a separate
+SPI3 bus (MOSI4/MISO5/SCLK6/CS7, configurable). Never format an existing card on mount
+failure. Fresh USB or authenticated platform time is required after cold boot before
+historical buffering; an old NVS epoch alone is not sufficient. Up to eight queued
+samples replay per cycle with original timestamps and REPLAY mode; acknowledgement
+is required before deletion. Missing/full/corrupt media are explicit serial faults.
+
+See [behavior, limits and deployment](../../docs/current/SD-OFFLINE-REPLAY.md) and
+[central battery, four-SIM topology and wiring](../../docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+This is source implementation, not physical qualification or a guaranteed backup duration.

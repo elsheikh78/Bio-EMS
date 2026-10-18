@@ -29,6 +29,11 @@ jobs:
           ! grep -R "SIM_RS485_DE_GPIO\|gpio_set_level(SIM_RS485_DE" firmware/site-controller-esp32s3/main
           grep -q "HW-519" firmware/site-controller-esp32s3/main/sim_modbus.c
 
+      - name: Verify durable offline queue
+        run: |
+          cc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -I firmware/site-controller-esp32s3/main firmware/site-controller-esp32s3/main/offline_queue.c firmware/site-controller-esp32s3/tests/offline_queue_test.c -o /tmp/offline-queue-test
+          /tmp/offline-queue-test
+
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:

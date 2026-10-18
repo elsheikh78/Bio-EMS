@@ -62,12 +62,12 @@ const defaultDependencies: TelemetryDependencies = {
 export class TelemetryService {
   constructor(private readonly dependencies: TelemetryDependencies = defaultDependencies) {}
 
-  async process(topic: string, payload: TelemetryPayload): Promise<void> {
+  async process(topic: string, payload: TelemetryPayload): Promise<boolean> {
     const parts = topic.split("/");
 
     if (parts.length !== 4 || parts[0] !== "bioems" || !parts[1] || !parts[3]) {
       this.reject(TELEMETRY_REJECTION_REASONS.INVALID_TOPIC, {});
-      return;
+      return false;
     }
 
     const [, siteCode, messageType, deviceId] = parts;
@@ -77,7 +77,7 @@ export class TelemetryService {
         deviceId,
         siteCode,
       });
-      return;
+      return false;
     }
 
     const device = this.dependencies.deviceRepository.findByDeviceId(deviceId);
@@ -85,7 +85,7 @@ export class TelemetryService {
     if (!device) {
       this.reject(TELEMETRY_REJECTION_REASONS.UNKNOWN_DEVICE, { deviceId, siteCode });
 
-      return;
+      return false;
     }
 
     if (device.status !== "active" || device.activated !== 1) {
@@ -94,7 +94,7 @@ export class TelemetryService {
         siteCode,
       });
 
-      return;
+      return false;
     }
 
     const site = this.dependencies.siteRepository.findById(device.site_id);
@@ -102,13 +102,13 @@ export class TelemetryService {
     if (!site) {
       this.reject(TELEMETRY_REJECTION_REASONS.SITE_NOT_FOUND, { deviceId, siteCode });
 
-      return;
+      return false;
     }
 
     if (site.code !== siteCode) {
       this.reject(TELEMETRY_REJECTION_REASONS.SITE_MISMATCH, { deviceId, siteCode });
 
-      return;
+      return false;
     }
 
     const activeBinding = this.dependencies.bindingRepository.findActiveByDeviceIdentity(
@@ -125,7 +125,7 @@ export class TelemetryService {
         deviceId,
         siteCode,
       });
-      return;
+      return false;
     }
 
     if (
@@ -139,7 +139,7 @@ export class TelemetryService {
         deviceId,
         siteCode,
       });
-      return;
+      return false;
     }
 
     console.log("====================================");
@@ -252,6 +252,7 @@ export class TelemetryService {
     }
 
     console.log("====================================");
+    return acceptedSensorCodes.length === payload.sensors.length;
   }
 
   private reject(reason: TelemetryRejectionReason, context: RejectionContext): void {

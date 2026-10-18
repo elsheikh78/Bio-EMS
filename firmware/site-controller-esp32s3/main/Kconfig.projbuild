@@ -12,3 +12,25 @@ config BIOEMS_ETH_CS
     int "W5500 chip select GPIO"
     default 10
 endmenu
+
+menu "BIO-EMS offline SD storage"
+config BIOEMS_SD_ENABLED
+    bool "Enable SD store and forward (requires wired card)"
+    default y
+config BIOEMS_SD_MOSI
+    int "SD MOSI GPIO (SPI3)"
+    default 4
+config BIOEMS_SD_MISO
+    int "SD MISO GPIO (SPI3)"
+    default 5
+config BIOEMS_SD_SCLK
+    int "SD SCLK GPIO (SPI3)"
+    default 6
+config BIOEMS_SD_CS
+    int "SD CS GPIO (SPI3)"
+    default 7
+config BIOEMS_SD_QUEUE_RECORDS
+    int "Maximum queued four-channel samples"
+    range 1 20000
+    default 20000
+endmenu
