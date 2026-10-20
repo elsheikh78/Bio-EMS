@@ -60,6 +60,8 @@ Do not connect loads until regulator polarity/output is measured. Final branch p
 | P12 | U2 OUT- | GSM1 GND | Black | Same HOLD |
 | P13 | Modem 4V | C1 positive, 1000uF/10V Low ESR | Short local connection | Pending part; support capacitance, not substitute for adequate supply |
 | P14 | Modem GND | C1 negative/striped terminal | Short local connection | Pending |
+| P21 | Modem 4V | C2 100nF ceramic, one end | Short local connection | Confirm part |
+| P22 | Modem GND | C2 other end | Short local connection | Confirm part |
 | P15 | PS1 +V, separately protected branch | J1 terminal 1 | Red, 24V | Planned |
 | P16 | PS1 -V | J1 terminal 2 | Black, 0V | Planned |
 | P17 | J2 terminal 1 | U3 IN+ | Red, 24V | Planned |
@@ -190,7 +192,7 @@ Do NOT use LS1 HV=5V for the modem. The module UART has lower voltage limits. Ad
 | G08 | Q1 COLLECTOR | MC1 GPIO21 RX and R9 bottom |
 | G09 | R9 4.7k top | MC1 3V3 |
 
-Q1 = 2N2222A, verify manufacturer E/B/C before fitting. G02 nominal ~2.80V; 1% resistor tolerances give divider ratio ~0.846 to 0.851. At 3.6V TX high the node is <3.07V; at 2.64V TX high >2.23V. These calculations cover static levels, not board-level waveform validation. Q1 restores the low modem TX high level to an ESP 3.3V signal and INVERTS it. Firmware MUST retain `BIOEMS_GSM_RX_INVERTED=y`; a direct wire would be the wrong interface. Keep logic runs short; verify idle and 9600-baud waveforms on the actual unit.
+Q1 = 2N2222A, verify manufacturer E/B/C before fitting. G02 nominal ~2.80V; 1% resistor tolerances give divider ratio ~0.846 to 0.851. At 3.6V TX high the node is <3.07V; at 2.64V TX high >2.23V. Require the ESP 3V3 rail to remain 3.2–3.4V under load; at 3.2V supply and an 0.8*VDD GPIO high, the divider node remains above 2.16V. These calculations cover static levels, not board-level waveform validation. Q1 restores the low modem TX high level to an ESP 3.3V signal and INVERTS it. Firmware MUST retain `BIOEMS_GSM_RX_INVERTED=y`; a direct wire would be the wrong interface. Keep logic runs short; verify idle and 9600-baud waveforms on the actual unit.
 
 U2 supplies modem VCC at 4.00V, NOT 5V. C1 1000uF/10V Low ESR goes directly across GSM1 VCC/GND (positive to VCC). Add local 100nF ceramic across the same rails. Use secure short supply leads, no Dupont contacts for burst current. Verify 2A burst capability and voltage at the module remains within 3.4–4.4V. A capacitor does not compensate for a bad supply. U2/module must share the signal ground; prevent UART driving an unpowered modem during commissioning. Only connect the logic after both rails are stable, power off for wiring changes.
 

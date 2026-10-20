@@ -22,6 +22,8 @@
 <text x="550" y="595" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">SD1</text>
 <rect x="690" y="550" width="140" height="90" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
 <text x="700" y="595" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">RTC1</text>
+<rect x="540" y="660" width="290" height="75" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="550" y="705" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">W5500 / FUTURE POSITION</text>
 <rect x="915" y="200" width="200" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
 <text x="925" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">U3 24V -&gt; 5V</text>
 <rect x="1140" y="200" width="195" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
@@ -36,7 +38,7 @@
 <text x="65" y="590" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">Electrician: inlet, fuse,</text>
 <text x="65" y="620" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">switch, PE, clearances</text>
 <text x="65" y="710" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">24V fan / guarded vent</text>
-<text x="380" y="735" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">DC cable duct / strain relief</text>
+<text x="380" y="790" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">DC cable duct / strain relief</text>
 <text x="685" y="315" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">RF -&gt; outside wall</text>
 <text x="930" y="750" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Incoming: 24V / 0V / A / B</text>
 <text x="40" y="900" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Use insulated plates and standoffs matched to actual holes; secure carriers for modules without holes.</text>
