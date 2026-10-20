@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+sample-output/
+exe-smoke/
+package/
+firmware/build/
+*.zip
+gui-smoke.png

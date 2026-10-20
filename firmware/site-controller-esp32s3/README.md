@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.6`;
+- firmware version: `0.1.0-pilot.7`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 

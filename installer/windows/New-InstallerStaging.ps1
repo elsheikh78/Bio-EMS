@@ -35,13 +35,14 @@ $firmwareManifestPath = Join-Path $firmwarePackage "manifest.json"
 if (-not (Test-Path -LiteralPath $firmwareManifestPath -PathType Leaf)) {
     throw "ESP32-S3 firmware package manifest is missing"
 }
+$firmwareContract = & (Join-Path $scriptRoot "Read-ControllerFirmwareContract.ps1") -RepositoryRoot $repository
 $firmwareManifest = Get-Content -LiteralPath $firmwareManifestPath -Raw | ConvertFrom-Json
 if (
     $firmwareManifest.schemaVersion -ne 1 -or
     $firmwareManifest.target -ne "esp32s3" -or
-    $firmwareManifest.firmwareVersion -ne "0.1.0-pilot.6" -or
-    $firmwareManifest.protocolVersion -ne "1.3" -or
-    $firmwareManifest.bindingSchemaVersion -ne 1 -or
+    $firmwareManifest.firmwareVersion -ne $firmwareContract.firmwareVersion -or
+    $firmwareManifest.protocolVersion -ne $firmwareContract.protocolVersion -or
+    $firmwareManifest.bindingSchemaVersion -ne $firmwareContract.bindingSchemaVersion -or
     -not $firmwareManifest.segments -or
     $firmwareManifest.segments.Count -lt 1
 ) {
