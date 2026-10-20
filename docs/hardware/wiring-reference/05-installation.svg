@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000">
+<rect width="1400" height="1000" fill="white"/>
+<text x="40" y="50" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#172a3a">BIO-EMS | Installation layout / not to scale</text>
+<text x="40" y="90" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Use electrical sheets 01–04 for connections. Positions are an arrangement, not a drilling template.</text>
+<rect x="40" y="130" width="820" height="720" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="890" y="130" width="470" height="720" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="65" y="170" font-family="DejaVu Sans,sans-serif" font-size="26" fill="#172a3a">MAIN</text>
+<text x="915" y="170" font-family="DejaVu Sans,sans-serif" font-size="26" fill="#172a3a">SIM-D4</text>
+<rect x="65" y="200" width="260" height="270" rx="7" fill="#fff2e9" stroke="#93a9b8"/>
+<text x="75" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">PS1 / MAINS COMPARTMENT</text>
+<rect x="380" y="200" width="210" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="390" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">U1 24V -&gt; 5V</text>
+<rect x="620" y="200" width="210" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="630" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">U2 24V -&gt; 4V</text>
+<rect x="380" y="350" width="280" height="150" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="390" y="395" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">MC1 + terminal base</text>
+<rect x="685" y="350" width="145" height="150" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="695" y="395" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">GSM1 + Q1</text>
+<rect x="380" y="550" width="130" height="90" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="390" y="595" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">RS1 + LS1</text>
+<rect x="540" y="550" width="125" height="90" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="550" y="595" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">SD1</text>
+<rect x="690" y="550" width="140" height="90" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="700" y="595" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">RTC1</text>
+<rect x="915" y="200" width="200" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="925" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">U3 24V -&gt; 5V</text>
+<rect x="1140" y="200" width="195" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="1150" y="245" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">RS2 HW519</text>
+<rect x="960" y="360" width="330" height="160" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="970" y="405" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">Nano + terminal base</text>
+<rect x="935" y="600" width="385" height="100" rx="7" fill="#e4f1f4" stroke="#93a9b8"/>
+<text x="945" y="645" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#172a3a">CH1 | CH2 | CH3 | CH4 exits</text>
+<path d="M350 190 V815" stroke="#b92032" stroke-width="6"/>
+<text x="65" y="515" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#b92032">FIXED INSULATED BARRIER</text>
+<text x="65" y="555" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">Covered AC terminals</text>
+<text x="65" y="590" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">Electrician: inlet, fuse,</text>
+<text x="65" y="620" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">switch, PE, clearances</text>
+<text x="65" y="710" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">24V fan / guarded vent</text>
+<text x="380" y="735" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">DC cable duct / strain relief</text>
+<text x="685" y="315" font-family="DejaVu Sans,sans-serif" font-size="16" fill="#172a3a">RF -&gt; outside wall</text>
+<text x="930" y="750" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Incoming: 24V / 0V / A / B</text>
+<text x="40" y="900" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Use insulated plates and standoffs matched to actual holes; secure carriers for modules without holes.</text>
+<text x="40" y="935" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Keep ESP antenna clear. Box sizes, thermal airflow and AC separation require real measurements.</text>
+</svg>

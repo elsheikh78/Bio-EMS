@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1014" viewBox="0 0 1400 1014">
+<rect width="1400" height="100%" fill="white"/>
+<text x="40" y="48" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#172a3a">BIO-EMS | MAIN / DC power</text>
+<text x="40" y="83" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Terminal schedule: every row is a connection; branch dots mean an intentional common node.</text>
+<text x="40" y="117" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#b92032">REV B / pilot.7 • BENCH DESIGN • Verify actual terminals before connecting</text>
+<rect x="40" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">PS1 protected +24V branch</text>
+<text x="854" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U1 LM2596 IN+</text>
+<path d="M560 174 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="167" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P01</text>
+<rect x="40" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">PS1 -V / 0V</text>
+<text x="854" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U1 IN-</text>
+<path d="M560 222 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="215" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P02</text>
+<rect x="40" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">PS1 protected +24V branch</text>
+<text x="854" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U2 XL4015 IN+</text>
+<path d="M560 270 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="263" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P03</text>
+<rect x="40" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">PS1 -V / 0V</text>
+<text x="854" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U2 IN-</text>
+<path d="M560 318 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="311" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P04</text>
+<rect x="40" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U1 OUT+ = 5.00V</text>
+<text x="854" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 expansion base 5V</text>
+<path d="M560 366 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="359" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P05</text>
+<rect x="40" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U1 OUT- / common 0V</text>
+<text x="854" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GND / DC GND distribution</text>
+<path d="M560 414 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="407" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P06</text>
+<rect x="40" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V / common GND (separate wires)</text>
+<text x="854" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">SD1 VCC / GND</text>
+<path d="M560 462 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="455" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P07/08</text>
+<rect x="40" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V / common GND (separate wires)</text>
+<text x="854" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS1 VCC / TTL-side GND</text>
+<path d="M560 510 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="503" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P09/10</text>
+<rect x="40" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U2 OUT+ = 4.00V / OUT-</text>
+<text x="854" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">GSM1 VCC / GND (short secure leads)</text>
+<path d="M560 558 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="551" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P11/12</text>
+<rect x="40" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">GSM1 VCC / GND</text>
+<text x="854" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">C1 1000uF 10V: + / negative stripe</text>
+<path d="M560 606 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="599" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P13/14</text>
+<rect x="40" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">GSM1 VCC / GND</text>
+<text x="854" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">C2 100nF: either end / other end</text>
+<path d="M560 654 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="647" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P21/22</text>
+<rect x="40" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">PS1 protected +24V / 0V</text>
+<text x="854" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J1.1 / J1.2 -&gt; SIM cable</text>
+<path d="M560 702 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="695" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P15/16</text>
+<rect x="40" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Protected +24V / 0V branch</text>
+<text x="854" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Optional 24V fan + / -</text>
+<path d="M560 750 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="743" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">FAN</text>
+<text x="40" y="799" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">PS1 = existing S-72-24 (24V, 3A). U1/U2 share common signal ground.</text>
+<text x="40" y="829" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">AC inlet / fuse / switch / PE / protective covers: electrician design, outside this DC drawing.</text>
+<text x="40" y="859" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">No 24V to MC1, Nano, GSM, SD, RTC or converter logic terminals. Never power modem from ESP 3V3.</text>
+<text x="40" y="889" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">USB disconnected during external-5V operation until the exact board power path is verified.</text>
+<text x="40" y="919" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Check regulator outputs unloaded first. Check GSM VCC 3.4–4.4V during 2A bursts at the module.</text>
+<text x="40" y="949" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Branch fuses, cable sizes and connector ratings require actual lengths/loads. This is not AC approval.</text>
+</svg>
