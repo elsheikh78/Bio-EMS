@@ -1,5 +1,13 @@
 # BIO-EMS Changelog
 
+### 20 October 2026 — unified pilot.7 assembly release
+
+- Add DS3231 UTC retention and explicit SIM800L bench diagnostics/SMS commands; preserve RS485, SD and Ethernet pin assignments.
+- Read installer firmware identity from the version header, with a Windows regression test for future version changes and duplicate definitions.
+- Add Hardware Tester 0.2.0 source/build workflow, frozen Rev B assembly criteria, RTC evidence and bounded USB operational diagnostic capture. Sensor-only QC firmware remains isolated and must be restored to operational firmware afterwards.
+- Publish numbered terminal schedules and Main/SIM mounting reference. Physical qualification remains separate from software/build checks.
+
+
 ### 18 October 2026 — pending SD replay / central battery change
 
 - Add checksum-protected bounded Main SD queue; retry original timestamped readings as REPLAY and preserve failed/corrupt records.
