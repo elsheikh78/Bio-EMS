@@ -34,6 +34,11 @@ jobs:
           cc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -I firmware/site-controller-esp32s3/main firmware/site-controller-esp32s3/main/offline_queue.c firmware/site-controller-esp32s3/tests/offline_queue_test.c -o /tmp/offline-queue-test
           /tmp/offline-queue-test
 
+      - name: Verify RTC calendar and GSM protocol
+        run: |
+          cc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -I firmware/site-controller-esp32s3/main firmware/site-controller-esp32s3/main/rtc_codec.c firmware/site-controller-esp32s3/main/gsm_protocol.c firmware/site-controller-esp32s3/tests/peripheral_protocol_test.c -o /tmp/peripheral-test
+          /tmp/peripheral-test
+
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:
