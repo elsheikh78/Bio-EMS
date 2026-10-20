@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+sample-output/
+*.sqlite*
+gui-smoke.png
