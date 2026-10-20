@@ -4,7 +4,7 @@ Date: 2026-10-20 • Revision B • Status: ENGINEERING DRAFT — NOT RELEASED F
 ## Scope and release status
 One ESP32-S3 Main, one Nano SIM-D4, four independent DS18B20 channels. Power supply inside Main; GSM is SIM800L 2G with external antenna. Supersedes all generated photorealistic wiring pictures in the discussion.
 
-This document contains exact named-terminal schedules for the supported bench interfaces, with conditional and held circuits explicitly identified. It is NOT a fully qualified assembly reference. No physical measurements, firmware build, continuity check, or energisation test was performed. No dimensional drilling template is supplied.
+This document contains exact named-terminal schedules for the supported bench interfaces, with conditional and held circuits explicitly identified. It is NOT a fully qualified assembly reference. No physical measurements, continuity check, or energisation test was performed. Host protocol/calendar/offline-queue tests and a full ESP-IDF v5.5.5 ESP32-S3 build passed; CI is tracked in PR #304. No dimensional drilling template is supplied.
 
 Firmware target: 0.1.0-pilot.7. RS485/SD/Ethernet pin assignments are retained; DS3231 UTC restore and explicit SIM800L bench commands are now implemented. This is still a bench engineering reference: code tests do not certify the actual assembly. Autonomous SMS alarm/fallback policy is NOT implemented. Source and drawings must be reviewed together.
 

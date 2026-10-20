@@ -10,13 +10,19 @@
 #define GSM_UART UART_NUM_2
 // UART setup is lazy; only the serial command task calls these entry points.
 static SemaphoreHandle_t mutex;
+#if CONFIG_BIOEMS_GSM_ENABLED
 static bool installed;
 static bool attempted;
+#endif
 
 static bool init_locked(void) {
 #if CONFIG_BIOEMS_GSM_ENABLED
   if (attempted) return installed;
   attempted = true;
+  uint32_t inverse = 0;
+#ifdef CONFIG_BIOEMS_GSM_RX_INVERTED
+  inverse = UART_SIGNAL_RXD_INV;
+#endif
   uart_config_t cfg = {.baud_rate=9600, .data_bits=UART_DATA_8_BITS,
     .parity=UART_PARITY_DISABLE, .stop_bits=UART_STOP_BITS_1,
     .flow_ctrl=UART_HW_FLOWCTRL_DISABLE, .source_clk=UART_SCLK_DEFAULT};
@@ -24,8 +30,7 @@ static bool init_locked(void) {
   if (uart_param_config(GSM_UART, &cfg) != ESP_OK ||
       uart_set_pin(GSM_UART, CONFIG_BIOEMS_GSM_TX, CONFIG_BIOEMS_GSM_RX,
         UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE) != ESP_OK ||
-      uart_set_line_inverse(GSM_UART, CONFIG_BIOEMS_GSM_RX_INVERTED ?
-        UART_SIGNAL_RXD_INV : 0) != ESP_OK) {
+      uart_set_line_inverse(GSM_UART, inverse) != ESP_OK) {
     uart_driver_delete(GSM_UART); return false;
   }
   installed = true;
