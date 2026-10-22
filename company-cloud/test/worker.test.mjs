@@ -1028,3 +1028,105 @@ test("customer delete rolls back viewer removal if a site appears before parent 
   assert.equal(s.db.prepare("SELECT COUNT(*) AS n FROM customers").get().n, 1);
   assert.equal(s.db.prepare("SELECT COUNT(*) AS n FROM sites").get().n, 0);
 });
+
+test("native viewer bearer sessions isolate customers, ignore cookies, revoke and expire", async () => {
+  const s = setup();
+  await s.login();
+  const a = await s.enroll("A"),
+    b = await s.enroll("B");
+  const customer = s.db
+    .prepare("SELECT customer_id FROM sites WHERE id=?")
+    .get(a.id).customer_id;
+  const made = await s.call("/api/company/viewers", "POST", {
+    customerId: customer,
+    name: "Mobile viewer",
+    username: "mobile-a",
+    password: "customer-password-123",
+  });
+  const { id } = await made.json();
+  const companyCookie = s.getCookie();
+  const native = async (path, method = "GET", data, token) =>
+    worker.fetch(
+      new Request(`https://test.workers.dev/api/mobile/viewer/${path}`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: data === undefined ? undefined : JSON.stringify(data),
+      }),
+      s.env,
+    );
+  const response = await native("login", "POST", {
+    username: "mobile-a",
+    password: "customer-password-123",
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Set-Cookie"), null);
+  const { token, expiresAt } = await response.json();
+  assert.match(token, /^mobile\./);
+  assert.ok(expiresAt > Date.now());
+  assert.ok(
+    !JSON.stringify(
+      s.db.prepare("SELECT * FROM viewer_sessions").all(),
+    ).includes(token),
+  );
+  assert.equal((await native("overview")).status, 401);
+  const view = await (await native("overview", "GET", undefined, token)).json();
+  assert.equal(view.role, "VIEWER");
+  assert.deepEqual(
+    view.sites.map((x) => x.id),
+    [a.id],
+  );
+  assert.ok(!JSON.stringify(view).includes(b.id));
+  s.setCookie(undefined);
+  assert.equal(
+    (
+      await s.call("/api/company/overview", "GET", undefined, {
+        Authorization: `Bearer ${token}`,
+      })
+    ).status,
+    401,
+  );
+  s.setCookie(`__Host-bioems-viewer=${token}`);
+  assert.equal((await s.call("/api/mobile/viewer/overview")).status, 401);
+  assert.equal((await s.call("/api/viewer/overview")).status, 401);
+  assert.equal((await native("overview", "POST", {}, token)).status, 405);
+  assert.equal((await native("subscriptions", "POST", {}, token)).status, 405);
+  assert.equal(
+    (
+      await s.call(
+        "/api/mobile/viewer/login",
+        "POST",
+        { username: "mobile-a", password: "customer-password-123" },
+        { Origin: "https://evil.example" },
+      )
+    ).status,
+    403,
+  );
+  assert.equal((await native("logout", "POST", {}, token)).status, 200);
+  assert.equal((await native("overview", "GET", undefined, token)).status, 401);
+  const second = await (
+    await native("login", "POST", {
+      username: "mobile-a",
+      password: "customer-password-123",
+    })
+  ).json();
+  s.db.prepare("UPDATE viewer_sessions SET expires_at=0").run();
+  assert.equal(
+    (await native("overview", "GET", undefined, second.token)).status,
+    401,
+  );
+  const third = await (
+    await native("login", "POST", {
+      username: "mobile-a",
+      password: "customer-password-123",
+    })
+  ).json();
+  s.setCookie(companyCookie);
+  await s.call(`/api/company/viewers/${id}`, "PATCH", { disabled: true });
+  assert.equal(
+    (await native("overview", "GET", undefined, third.token)).status,
+    401,
+  );
+});

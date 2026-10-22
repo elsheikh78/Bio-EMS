@@ -270,14 +270,23 @@ export async function companyViewer(req, env, path, body, audit) {
   }
   return null;
 }
-async function viewer(req, env) {
-  const token = req.headers
-    .get("Cookie")
-    ?.split(";")
-    .map((s) => s.trim())
-    .find((s) => s.startsWith("__Host-bioems-viewer="))
-    ?.slice(21);
-  if (!token) error(401, "Viewer login required");
+function mobileToken(req) {
+  const header = req.headers.get("Authorization") || "";
+  return /^Bearer mobile\.[A-Za-z0-9+/=]{44}$/.test(header)
+    ? header.slice(7)
+    : null;
+}
+async function viewer(req, env, mobile = false) {
+  const token = mobile
+    ? mobileToken(req)
+    : req.headers
+        .get("Cookie")
+        ?.split(";")
+        .map((s) => s.trim())
+        .find((s) => s.startsWith("__Host-bioems-viewer="))
+        ?.slice(21);
+  if (!token || (!mobile && token.startsWith("mobile.")))
+    error(401, "Viewer login required");
   const user = await env.DB.prepare(
     "SELECT u.id,u.customer_id,u.name,u.username,c.name AS customer_name FROM viewer_sessions s JOIN viewer_users u ON u.id=s.user_id JOIN customers c ON c.id=u.customer_id WHERE s.token_hash=? AND s.expires_at>? AND u.disabled=0",
   )
@@ -289,8 +298,22 @@ async function viewer(req, env) {
 const cookie = (token, seconds) =>
   `__Host-bioems-viewer=${token}; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=${seconds}`;
 export async function viewerRoutes(req, env, path, body, origin) {
-  if (!path.startsWith("/api/viewer/")) return null;
-  origin(req);
+  const mobile = path.startsWith("/api/mobile/viewer/");
+  if (!mobile && !path.startsWith("/api/viewer/")) return null;
+  // Native clients use bearer sessions only, never cookies. Browser writes retain
+  // same-origin protection; native clients do not send a browser Origin header.
+  if (!mobile || req.headers.has("Origin")) origin(req);
+  if (mobile) {
+    path = path.replace("/api/mobile/viewer/", "/api/viewer/");
+    if (
+      ![
+        "/api/viewer/login",
+        "/api/viewer/logout",
+        "/api/viewer/overview",
+      ].includes(path)
+    )
+      error(405, "Mobile viewer access is read only");
+  }
   if (path === "/api/viewer/login" && req.method === "POST") {
     const ip = req.headers.get("CF-Connecting-IP") || "unknown",
       now = Date.now();
@@ -319,10 +342,12 @@ export async function viewerRoutes(req, env, path, body, origin) {
       (await digest(supplied)) !== (await digest(stored))
     )
       error(401, "Invalid username or password");
-    const token = random();
+    const token = mobile ? `mobile.${random()}` : random();
     await env.DB.prepare("INSERT INTO viewer_sessions VALUES (?,?,?)")
       .bind(await digest(token), user.id, now + SESSION_MS)
       .run();
+    if (mobile)
+      return json({ token, expiresAt: now + SESSION_MS, role: "VIEWER" });
     return new Response('{"ok":true}', {
       headers: {
         "Content-Type": "application/json",
@@ -330,7 +355,13 @@ export async function viewerRoutes(req, env, path, body, origin) {
       },
     });
   }
-  const user = await viewer(req, env);
+  const user = await viewer(req, env, mobile);
+  if (path === "/api/viewer/logout" && req.method === "POST" && mobile) {
+    await env.DB.prepare("DELETE FROM viewer_sessions WHERE token_hash=?")
+      .bind(await digest(mobileToken(req)))
+      .run();
+    return json({ ok: true });
+  }
   if (path === "/api/viewer/logout" && req.method === "POST") {
     await env.DB.batch([
       env.DB.prepare("DELETE FROM viewer_sessions WHERE user_id=?").bind(
