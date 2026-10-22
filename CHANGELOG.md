@@ -1,5 +1,12 @@
 # BIO-EMS Changelog
 
+### 22 October 2026 — company Android/iOS app (PR #307)
+
+- Add the independent `company-mobile/` Expo / React Native company administration shell, original logo and restricted WebView for the deployed Arabic/English company portal and selected-site System Owner.
+- Preserve existing company sessions, owner authentication/MFA and destructive-action confirmations. Add confirmed native navigation, recovery controls and exact-origin URL validation; no embedded company credentials or new backend API.
+- Add Android/iOS source generation and Hermes export checks, plus an isolated arm64 Android QA APK build and signature/package verification. The user reported successful Android application operation on 22 October; detailed feature acceptance remains unrecorded.
+- Document installation, authentication, limitations, build provenance, APK checksum and pending iOS signing/distribution. This QA app is version `0.1.0`; platform source version remains `0.20.0`. No Client Setup, Manufacturer Tools, firmware, cloud deployment or database migration is required for this change.
+
 ### 20 October 2026 — unified pilot.7 assembly release
 
 - Add DS3231 UTC retention and explicit SIM800L bench diagnostics/SMS commands; preserve RS485, SD and Ethernet pin assignments.

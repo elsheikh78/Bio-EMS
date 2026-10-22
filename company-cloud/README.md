@@ -1,5 +1,9 @@
 # BIO-EMS Company Platform — Cloudflare pilot
 
+## Company mobile access
+
+The separate [company Android/iOS app](../company-mobile/README.md) opens this deployed portal in a restricted WebView, preserving company login and selected-site System Owner authentication. [Arabic installation/operation](../docs/current/COMPANY-MOBILE-APP-AR.md) records the Android QA artifact and user-reported success on 22 October. iOS signing and device qualification remain pending. Installing the app requires no Worker redeployment or database migration; changes to the portal/backend retain their own deployment requirements.
+
 Central customer/site registry, site heartbeat, monitor-only license records and
 an encrypted remote transport for the existing System Owner interface.
 The company/Viewer Worker is deployed at https://bioems-company.bioems-egypt.workers.dev.

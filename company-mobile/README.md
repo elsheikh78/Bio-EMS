@@ -1,5 +1,15 @@
 # BIO-EMS Company for Android and iOS
 
+## Delivered QA baseline — 22 October 2026
+
+The user reported successful Android app operation (“نجح التطبيق”) after receiving the QA APK. This is an operational smoke result; individual administration, language, System Owner/MFA, file and failure-recovery checks below are still unrecorded. iOS has generated source and Hermes export only, with no native Xcode/device build or signed IPA claimed.
+
+- PR: [#307](https://github.com/elsheikh78/Bio-EMS/pull/307); tested application source `349a7b5b1cbb85da6e4424ec1e182766128dfdae`.
+- [Successful mobile build 39842439397](https://github.com/elsheikh78/Bio-EMS/actions/runs/39842439397); artifact `BIOEMS-Company-Pilot-Android-arm64-QA`.
+- APK: `BIOEMS-Company-Pilot-Android-arm64.apk`; 26,739,559 bytes; SHA-256 `3094561e4eb0e34d7f68e618aeb26a1dc3b4f31d8e2fa54722930e16321b4fd9`.
+- App `0.1.0`, QA package `com.bioemsegypt.company.pilot`, arm64, development certificate; not a store production release.
+- [Arabic operations](../docs/current/COMPANY-MOBILE-APP-AR.md); [authoritative project status](../PROJECT_STATE.md). APK artifacts expire under Actions retention; rebuild instructions below remain available. A later rebuild has its own hash and must not be labelled with this artifact's checksum.
+
 A dedicated Expo / React Native app that opens the live company platform in a restricted WebView. Uses the original project logo. The existing portal supplies Arabic / English switching, company authentication, client/site/license management, deletion confirmations and selected-site System Owner access. This is a web-backed mobile shell, not a second implementation of the administration APIs. Internet access and a reachable deployed company portal are required. No cloud deployment or database changes are needed.
 
 The fixed HTTPS origin is `https://bioems-company.bioems-egypt.workers.dev`. Navigation is restricted by parsed exact-origin comparison; external URLs, cleartext, file access, third-party/shared cookies, WebView debugging and media capture are disabled. There is no native message bridge, embedded access key or native credential storage. The existing HttpOnly company cookie and its server-side expiry remain in effect, with an incognito app session. Use the portal's own sign-out action when finished. System Owner retains its existing login/MFA and permissions. The native toolbar asks before home, refresh or back navigation so forms are not discarded accidentally. Session recovery can require signing in again.
