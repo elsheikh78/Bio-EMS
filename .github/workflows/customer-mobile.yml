@@ -18,6 +18,9 @@ on:
         ".github/workflows/customer-mobile.yml",
       ]
   workflow_dispatch:
+concurrency:
+  group: customer-mobile-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -67,11 +70,11 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: mobile/package-lock.json
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - run: sdkmanager "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"
       - run: npm ci
       - name: Generate isolated QA Android project

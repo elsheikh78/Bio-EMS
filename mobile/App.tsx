@@ -137,7 +137,11 @@ function Workspace() {
       controller = new AbortController();
       try {
         const next = await overview(session.token, controller.signal);
-        if (cancelled) return;
+        if (
+          cancelled ||
+          (AppState.currentState && AppState.currentState !== "active")
+        )
+          return;
         setOffset(next.serverTime - Date.now());
         setClock(Date.now());
         setData(next);
@@ -166,8 +170,8 @@ function Workspace() {
         if (error instanceof ApiError && error.status === 401) {
           setData(null);
           setNotice("expired");
-          await SecureStore.deleteItemAsync(SESSION_KEY);
-          if (!cancelled) setSession(null);
+          setSession(null);
+          void SecureStore.deleteItemAsync(SESSION_KEY).catch(() => {});
         } else setNotice("failed");
       } finally {
         inFlight = false;
@@ -220,17 +224,23 @@ function Workspace() {
     if (!session || busy) return;
     const token = session.token;
     setBusy(true);
-    setSession(null);
-    setData(null);
-    setPassword("");
-    setNotice("");
-    setTab("overview");
     try {
       await SecureStore.deleteItemAsync(SESSION_KEY);
-      await Notifications.cancelAllScheduledNotificationsAsync();
-      await logout(token);
+      setSession(null);
+      setData(null);
+      setPassword("");
+      setNotice("");
+      setTab("overview");
+      await Notifications.cancelAllScheduledNotificationsAsync().catch(
+        () => {},
+      );
+      try {
+        await logout(token);
+      } catch {
+        setNotice("logoutHelp");
+      }
     } catch {
-      setNotice("logoutHelp");
+      setNotice("failed");
     } finally {
       setBusy(false);
     }
