@@ -75,7 +75,7 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v4
-      - run: sdkmanager "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"
+      - run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.1.12297006"
       - run: npm ci
       - name: Generate isolated QA Android project
         run: npx expo prebuild --no-install --platform android
@@ -93,8 +93,8 @@ jobs:
         run: |
           mkdir -p qa-output
           cp android/app/build/outputs/apk/release/app-release.apk qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk
-          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --verbose qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk
-          "$ANDROID_HOME/build-tools/37.0.0/aapt2" dump badging qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk | head -1 | grep "com.bioemsegypt.monitor.pilot"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk
+          "$ANDROID_HOME/build-tools/36.0.0/aapt2" dump badging qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk | head -1 | grep "com.bioemsegypt.monitor.pilot"
           cd qa-output
           sha256sum BIOEMS-Monitor-Pilot-Android-arm64.apk > SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
