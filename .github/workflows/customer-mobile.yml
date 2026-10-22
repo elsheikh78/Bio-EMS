@@ -1,0 +1,101 @@
+name: Customer mobile Android and iOS
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      [
+        "mobile/**",
+        "company-cloud/src/viewer.mjs",
+        "company-cloud/test/**",
+        ".github/workflows/customer-mobile.yml",
+      ]
+  push:
+    branches: [main]
+    paths:
+      [
+        "mobile/**",
+        "company-cloud/src/viewer.mjs",
+        ".github/workflows/customer-mobile.yml",
+      ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx expo install --check
+        env:
+          EXPO_OFFLINE: "1"
+      - run: npx expo prebuild --no-install --platform all
+        env:
+          CI: "1"
+      - run: npm run export
+        env:
+          CI: "1"
+          EXPO_OFFLINE: "1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIOEMS-mobile-Android-iOS-JS-bundles-not-installers
+          path: mobile/dist
+          retention-days: 14
+
+  android-qa:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006"
+      - run: npm ci
+      - name: Generate isolated QA Android project
+        run: npx expo prebuild --no-install --platform android
+        env:
+          CI: "1"
+          BIOEMS_MOBILE_QA: "1"
+      - name: Build bundled arm64 QA APK (development certificate, not a store release)
+        run: ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --max-workers=2 --no-daemon
+        working-directory: mobile/android
+        env:
+          CI: "1"
+          BIOEMS_MOBILE_QA: "1"
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
+      - name: Verify QA package and signature
+        run: |
+          mkdir -p qa-output
+          cp android/app/build/outputs/apk/release/app-release.apk qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --verbose qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk
+          "$ANDROID_HOME/build-tools/37.0.0/aapt2" dump badging qa-output/BIOEMS-Monitor-Pilot-Android-arm64.apk | head -1 | grep "com.bioemsegypt.monitor.pilot"
+          cd qa-output
+          sha256sum BIOEMS-Monitor-Pilot-Android-arm64.apk > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIOEMS-Monitor-Pilot-Android-arm64-QA
+          path: mobile/qa-output/
+          retention-days: 14

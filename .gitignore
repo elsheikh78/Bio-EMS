@@ -65,3 +65,14 @@ build/
 
 # Archives
 *.zip
+
+# Native customer mobile
+mobile/node_modules/
+mobile/.expo/
+mobile/android/
+mobile/ios/
+mobile/.env
+*.keystore
+*.p12
+*.mobileprovision
+mobile/qa-output/
