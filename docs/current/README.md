@@ -1,5 +1,12 @@
 # Current documentation / التوثيق الحالي
 
+## 22 October mobile references
+
+- [تطبيق منصة الشركة — التثبيت والتشغيل وحدود الاختبار](COMPANY-MOBILE-APP-AR.md)
+- [Company Android/iOS development and builds](../../company-mobile/README.md)
+
+Android QA operation was reported successful by the user; iOS signing/device acceptance remains pending. `PROJECT_STATE.md` controls status.
+
 ## 11 October current references
 
 - [منصة الشركة المركزية — مرشح تجربة Cloudflare](COMPANY-CLOUD-PILOT-AR.md)
