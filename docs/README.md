@@ -1,5 +1,12 @@
 # BIO-EMS Documentation Index / فهرس التوثيق
 
+## Company mobile references — 22 October 2026
+
+- [تطبيق منصة الشركة — دليل التشغيل](current/COMPANY-MOBILE-APP-AR.md)
+- [Company Android/iOS source and build reference](../company-mobile/README.md)
+
+These references describe the separate company app; they do not change customer Viewer, hardware or site acceptance.
+
 ## 11 October current references
 
 - [استعادة Admin بملف موقّع من الشركة](current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md)

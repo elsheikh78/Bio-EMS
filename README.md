@@ -1,6 +1,8 @@
 # BIO-EMS
 
-Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Native Google Play/App Store apps are phase two and are not built.
+Company mobile app: [Arabic installation and operation](docs/current/COMPANY-MOBILE-APP-AR.md) · [Android/iOS source and build guide](company-mobile/README.md). This separate company administration app opens the existing portal in a restricted WebView. Android QA operation was reported successful by the user on 22 October 2026; iOS source/export is prepared, with signed device distribution pending. See [Project State](PROJECT_STATE.md) for evidence and remaining acceptance.
+
+Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Customer Viewer store publication remains pending; the separate company administration app is documented above.
 
 Company cloud pilot candidate: [Arabic deployment/connection guide](docs/current/COMPANY-CLOUD-PILOT-AR.md) and [Cloudflare source package](company-cloud/README.md). Deployment and installed-client qualification remain separate from source checks.
 
