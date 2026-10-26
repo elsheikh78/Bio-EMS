@@ -17,7 +17,7 @@ class App:
   self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
   self.home=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'BIO-EMS-Hardware-Tester'
   self.store=Store(self.home/'qc.sqlite'); self.rid=None; self.capture=None; self.stop_event=None; self.messages=queue.Queue(); self.active=False; self.demo=False; self.port=None
-  self.fields={}; self.points={}; self.last=None; self.diag_running=False
+  self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None
   style=ttk.Style(); style.theme_use('clam'); style.configure('TButton',padding=6); style.configure('Heading.TLabel',font=('Segoe UI',19,'bold')); style.configure('Status.TLabel',font=('Segoe UI',11,'bold'))
   shell=ttk.Frame(root,padding=14); shell.pack(fill='both',expand=True)
   ttk.Label(shell,text='BIO-EMS  /  Hardware Quality Control',style='Heading.TLabel').pack(anchor='w')
@@ -26,6 +26,19 @@ class App:
   setup=ttk.Frame(tabs,padding=10); live=ttk.Frame(tabs,padding=10); manual=ttk.Frame(tabs,padding=10); history=ttk.Frame(tabs,padding=10)
   tabs.add(setup,text='1  Test setup'); tabs.add(live,text='2  Live sensors'); tabs.add(manual,text='3  Inspection / evidence'); tabs.add(history,text='4  Records / PDF')
   self.tabs=tabs
+  firmware=ttk.Frame(tabs,padding=10); tabs.add(firmware,text='5  Flash QC firmware')
+  ttk.Label(firmware,text='Flash isolated test firmware directly over USB',style='Status.TLabel').pack(anchor='w')
+  ttk.Label(firmware,text='No Arduino IDE, Python or platform installation needed in the Windows package.\nThis replaces operating firmware. Restore the governed operating package before integrated use.\nESP32-S3: disconnect SD and other peripherals; test probe uses GPIO4 and 3V3.\nNano: disconnect HW-519 D0/D1 for flashing AND sensor readings. Use USB-only board power.',wraplength=1000).pack(anchor='w',pady=8)
+  self.flash_target=tk.StringVar(value='ESP32-S3')
+  from flashing import TARGETS
+  ttk.Combobox(firmware,textvariable=self.flash_target,values=list(TARGETS),state='readonly',width=45).pack(anchor='w',pady=5)
+  ttk.Label(firmware,text='Uses the COM port, assembly serial and operator entered in Test setup. Connect one intended board.').pack(anchor='w')
+  actions=ttk.Frame(firmware); actions.pack(anchor='w',pady=8)
+  ttk.Button(actions,text='Detect selected board',command=lambda:self.flash_qc(True)).pack(side='left',padx=4)
+  ttk.Button(actions,text='Flash QC firmware and verify',command=lambda:self.flash_qc(False)).pack(side='left',padx=4)
+  self.flash_state=tk.StringVar(value='Ready. Select board and USB COM port first.')
+  ttk.Label(firmware,textvariable=self.flash_state,wraplength=1000).pack(anchor='w',pady=5)
+  self.flash_log=tk.Text(firmware,height=18,wrap='word',state='disabled'); self.flash_log.pack(fill='both',expand=True)
   defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
   for i,(key,label,default) in enumerate(defaults):
    ttk.Label(setup,text=label).grid(row=i,column=0,sticky='w',pady=3)
@@ -40,7 +53,7 @@ class App:
   ttk.Button(buttons,text='Start hardware run',command=lambda:self.start(False)).pack(side='left',padx=4)
   ttk.Button(buttons,text='DEMO (simulated)',command=lambda:self.start(True)).pack(side='left',padx=4)
   ttk.Button(buttons,text='Firmware / wiring instructions',command=self.instructions).pack(side='left',padx=4)
-  ttk.Label(setup,text='Review and approve limits BEFORE starting. Settings are frozen for each run.\nGPIO4 is for the isolated ESP32 sensor test only: disconnect SD and other peripherals.\nThis build does not flash firmware. Use the included QC sketch; restore operational firmware afterwards.',wraplength=900).grid(row=16,column=0,columnspan=3,sticky='w')
+  ttk.Label(setup,text='Review and approve limits BEFORE starting. Settings are frozen for each run.\nGPIO4 is for the isolated ESP32 sensor test only: disconnect SD and other peripherals.\nUse tab 5 to flash bundled QC firmware; restore operational firmware afterwards.',wraplength=900).grid(row=16,column=0,columnspan=3,sticky='w')
   self.status=tk.StringVar(value='Ready - no run started')
   ttk.Label(live,textvariable=self.status,style='Status.TLabel',wraplength=1050).pack(anchor='w')
   self.tree=ttk.Treeview(live,columns=('ch','rom','temp','state'),show='headings',height=5)
@@ -75,7 +88,7 @@ class App:
   root.protocol('WM_DELETE_WINDOW',self.close); root.after(150,self.pump); self.refresh_ports(); self.refresh_history()
  def check_hint(self,event=None): self.hint.set(CHECKS[self.check.get()][1])
  def instructions(self):
-  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUpload QC_Sensors.ino with Arduino IDE. This replaces the current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
+  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUse tab 5 Flash QC firmware. Select board and COM, Detect, then Flash and verify. This replaces current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
  def refresh_ports(self):
   try:
    from serial.tools import list_ports
@@ -88,6 +101,7 @@ class App:
   c['reference_c']=float(c['reference_c']) if c['reference_c'] else None
   return c
  def start(self,demo):
+  if self.flash_running: return messagebox.showwarning('Firmware operation active','Wait for firmware detection or flashing to finish.')
   if self.active: return messagebox.showwarning('Run active','Finalize the current run first.')
   try:
    c=self.config(); self.demo=demo
@@ -100,6 +114,8 @@ class App:
     self.port=serial.Serial(self.fields['port'].get(),115200,timeout=.3)
     self.port.reset_input_buffer()
    self.rid=self.store.start(c,'DEMO' if demo else 'HARDWARE'); self.capture=Capture(self.store,self.rid,time.monotonic)
+   if not demo and self.last_flash and self.last_flash['success'] and self.last_flash['operation']=='flash' and self.last_flash['unit']==c['unit'] and self.last_flash['port']==self.fields['port'].get() and self.last_flash.get('runtime',{}).get('board')==PROFILES[c['profile']][0]:
+    self.store.append(self.rid,'note',{'qc_firmware_flash':self.last_flash,'evidence_boundary':'Host upload record; streamed version is not cryptographic binary attestation. Verify same physical board.'})
    self.active=True; self.points={}; self.last=time.monotonic(); self.tree.delete(*self.tree.get_children()); self.canvas.delete('all')
    for ch in range(1,PROFILES[c['profile']][1]+1): self.tree.insert('','end',iid=str(ch),values=(ch,'-','-','WAITING'))
    self.stop_event=threading.Event()
@@ -131,6 +147,17 @@ class App:
   while True:
    try: rid,kind,value=self.messages.get_nowait()
    except queue.Empty: break
+   if kind=='flash_log':
+    self.flash_log.configure(state='normal'); self.flash_log.insert('end',value+'\n'); self.flash_log.see('end'); self.flash_log.configure(state='disabled'); continue
+   if kind=='flash_done':
+    self.flash_running=False; record,path=value
+    if record['operation']=='flash': self.last_flash=record
+    self.flash_state.set(('SUCCESS' if record['success'] else 'FAILED')+' | Evidence: '+str(path))
+    if record['success'] and record['operation']=='flash':
+     self.fields['profile'].set('ESP32 / 1 sensor' if record['target']=='esp32s3' else 'Nano / 4 sensors')
+     messagebox.showinfo('QC firmware ready','Upload verified and matching QC stream received. Start hardware run in Test setup. Firmware restoration remains a separate step.')
+    elif not record['success']: messagebox.showerror('Firmware operation failed',record.get('error','See retained log'))
+    continue
    if not self.active or rid!=self.rid: continue
    if kind=='diagnostics':
     self.diag_running=False
@@ -173,6 +200,29 @@ class App:
    for x,y in points: coords.extend([70+(x-xmin)/max(1,xmax-xmin)*(w-95),20+(ymax-y)/(ymax-ymin)*(h-65)])
    if len(coords)>2: self.canvas.create_line(*coords,fill=colors[i%4],width=2)
    self.canvas.create_text(95+i*120,h-15,text='CH'+key,fill=colors[i%4])
+ def flash_qc(self,detect):
+  if self.active or self.diag_running or self.flash_running:
+   return messagebox.showwarning('Serial port busy','Finalize the active run and wait for other operations before flashing.')
+  from flashing import TARGETS, package_root, command, perform
+  target=TARGETS[self.flash_target.get()]; port=self.fields['port'].get()
+  unit=self.fields['unit'].get().strip(); operator=self.fields['operator'].get().strip()
+  try:
+   if not unit or not operator: raise ValueError('Enter assembly serial and operator in Test setup')
+   command(package_root(),target,port,detect)
+  except Exception as exc: return messagebox.showerror('Package or selection invalid',str(exc))
+  text=('Detection opens COM and may reset the board.' if detect else 'This replaces the current operating firmware with isolated sensor test firmware. It does not restore operating firmware.')
+  text+='\nSelected: '+self.flash_target.get()+' on '+port+'\nUnit: '+unit+'\nConfirm the intended physical board, USB-only power, disconnected peripherals and wiring. Close other serial applications.'
+  if target=='esp32s3': text+='\nUse the USB-UART connector. If auto-reset fails, use BOOT/RESET according to the board documentation.'
+  else: text+='\nDisconnect HW-519 D0/D1. Confirm the selected bootloader baud.'
+  if not messagebox.askokcancel('Confirm board and isolated wiring',text): return
+  self.flash_running=True; self.flash_state.set('Working. Do not disconnect the board or close the program.')
+  def work():
+   try:
+    record,path=perform(package_root(),target,port,unit,operator,self.home/'firmware-events',lambda line:self.messages.put((None,'flash_log',line)),detect)
+   except Exception as exc:
+    record={'success':False,'operation':'detect' if detect else 'flash','error':str(exc)}; path=self.home/'firmware-events'
+   self.messages.put((None,'flash_done',(record,path)))
+  threading.Thread(target=work,daemon=True).start()
  def main_diagnostics(self):
   if not self.active or self.demo or PROFILES[self.capture.config['profile']][1]!=0:
    return messagebox.showwarning('Manual hardware run required','Start Main + 1 SIM / Rev B (or Assembly manual scope) in HARDWARE mode first.')
@@ -229,6 +279,7 @@ class App:
    if os.name=='nt': os.startfile(str(pdf))
   except Exception as e: messagebox.showerror('Export failed',str(e))
  def close(self):
+  if self.flash_running: return messagebox.showinfo('Firmware operation active','Wait for firmware detection or flashing to finish before closing.')
   if self.diag_running: return messagebox.showinfo('Diagnostics active','Wait for diagnostic capture before closing.')
   if self.active:
    if not messagebox.askyesno('Active test','Stop and finalize this test before exiting?'):return
