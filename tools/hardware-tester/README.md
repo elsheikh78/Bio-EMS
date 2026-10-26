@@ -1,4 +1,4 @@
-# BIO-EMS Hardware Tester 0.3.0
+# BIO-EMS Hardware Tester 0.4.0
 
 Standalone Windows QC candidate. No platform services, login, commissioning,
 MQTT, cloud or platform database. English UI and printable English PDF.
@@ -13,9 +13,10 @@ PDF quality-control record with reviewer signature fields. Demo data NEVER passe
 as hardware evidence. Missing checks produce INCOMPLETE. Faults are not erased
 by later successful readings. Manual retests retain earlier attempts in ledger.
 
-RS485, network, SD, GSM, battery and integrated endurance are **manual evidence
-checks** in the assembly profile, not automatic exercise of those interfaces.
-Only direct sensor acquisition is automated in this version. Built-in USB upload of isolated QC firmware is provided for ESP32-S3 and both Nano bootloaders. Automatic operational firmware restoration is not included. Included QC sketch replaces operational firmware;
+Network, SD, GSM, battery and integrated endurance are **manual evidence
+checks** in the assembly profile. RS485 has a separate automated four-probe
+acquisition scope plus physical response/recovery evidence.
+Direct sensor acquisition and the selected Main-to-Nano four-probe path are automated; see the integrated scope below. Built-in USB upload of isolated QC firmware is provided for ESP32-S3 and both Nano bootloaders. Automatic operational firmware restoration is not included. Included QC sketch replaces operational firmware;
 restore governed operating firmware afterwards. Do not erase flash or burn eFuses.
 The previous plain-text single-sensor sketch is not protocol-compatible.
 
@@ -125,3 +126,28 @@ The separate esptool helper uses esptool 4.8.1 (GPL-2.0-or-later); source and
 license: https://github.com/espressif/esptool/tree/v4.8.1. PyInstaller collects
 its distribution license metadata. These are separate executables, not an
 Arduino IDE dependency on the operator PC.
+
+## 0.4.0 integrated Main -> RS485 -> Nano -> four probes
+Select `Main + Nano / 4 sensors via RS485`, the expected SIM address (1–4),
+and the Main USB-UART COM port. The freshness gap must be at least 20 seconds.
+Both boards must already have the governed operating firmware: Main pilot.7,
+Nano bench.2. Do not use the isolated QC sketches. Operational firmware restoration
+is still separate; tab 5 only flashes isolated QC images. No platform login is
+needed for integrated acquisition. Disconnect Nano USB during RS485 operation.
+Confirm the approved supply and USB power path before connecting Main USB.
+
+Start hardware run identifies Main, then repeatedly issues read-only `simscan`.
+The live view shows four temperatures and SIM/input mapping. Raw scans, errors,
+host timestamps, frozen criteria and Main identity are retained in JSON; CSV and
+PDF include the integrated acquisition. Failure to communicate blocks PASS.
+Manual visual/continuity/voltage, individual response/recovery and RS485 evidence
+must be recorded within the tester; missing checks block PASS. Perform warming
+as a separate functional attempt from a stable-temperature acceptance run.
+
+This scope tests one selected SIM, not every module or the entire product.
+Operational Modbus does not expose probe ROM, unique Nano identity or conversion
+age in simscan: these are not invented. Counters are host scan counters, not
+Main/Nano uptime. Fresh replies alone cannot prove a fresh sensor conversion;
+record individual physical probe response/recovery. Network, SD, RTC, GSM and
+UPS are outside this four-sensor path scope; use their existing evidence scopes.
+Physical hardware/USB acceptance is still required.

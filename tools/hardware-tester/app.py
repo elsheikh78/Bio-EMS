@@ -14,7 +14,7 @@ from report import write_pdf
 
 class App:
  def __init__(self,root):
-  self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
+  self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
   self.home=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'BIO-EMS-Hardware-Tester'
   self.store=Store(self.home/'qc.sqlite'); self.rid=None; self.capture=None; self.stop_event=None; self.messages=queue.Queue(); self.active=False; self.demo=False; self.port=None
   self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None
@@ -39,26 +39,27 @@ class App:
   self.flash_state=tk.StringVar(value='Ready. Select board and USB COM port first.')
   ttk.Label(firmware,textvariable=self.flash_state,wraplength=1000).pack(anchor='w',pady=5)
   self.flash_log=tk.Text(firmware,height=18,wrap='word',state='disabled'); self.flash_log.pack(fill='both',expand=True)
-  defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
+  defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('sim_address','Integrated SIM address (1-4)','1'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
   for i,(key,label,default) in enumerate(defaults):
    ttk.Label(setup,text=label).grid(row=i,column=0,sticky='w',pady=3)
    var=tk.StringVar(value=default); self.fields[key]=var
    entry=ttk.Combobox(setup,textvariable=var,values=list(PROFILES),state='readonly',width=48) if key=='profile' else ttk.Entry(setup,textvariable=var,width=51)
    entry.grid(row=i,column=1,sticky='ew',padx=12)
+   if key=='profile': entry.bind('<<ComboboxSelected>>', self.profile_changed)
   self.fields['port']=tk.StringVar()
-  ttk.Label(setup,text='USB serial port').grid(row=14,column=0,sticky='w')
-  self.portbox=ttk.Combobox(setup,textvariable=self.fields['port'],state='readonly',width=48); self.portbox.grid(row=14,column=1,padx=12,sticky='ew')
-  ttk.Button(setup,text='Refresh ports',command=self.refresh_ports).grid(row=14,column=2)
-  buttons=ttk.Frame(setup); buttons.grid(row=15,column=0,columnspan=3,sticky='w',pady=12)
+  ttk.Label(setup,text='USB serial port').grid(row=15,column=0,sticky='w')
+  self.portbox=ttk.Combobox(setup,textvariable=self.fields['port'],state='readonly',width=48); self.portbox.grid(row=15,column=1,padx=12,sticky='ew')
+  ttk.Button(setup,text='Refresh ports',command=self.refresh_ports).grid(row=15,column=2)
+  buttons=ttk.Frame(setup); buttons.grid(row=16,column=0,columnspan=3,sticky='w',pady=12)
   ttk.Button(buttons,text='Start hardware run',command=lambda:self.start(False)).pack(side='left',padx=4)
   ttk.Button(buttons,text='DEMO (simulated)',command=lambda:self.start(True)).pack(side='left',padx=4)
   ttk.Button(buttons,text='Firmware / wiring instructions',command=self.instructions).pack(side='left',padx=4)
-  ttk.Label(setup,text='Review and approve limits BEFORE starting. Settings are frozen for each run.\nGPIO4 is for the isolated ESP32 sensor test only: disconnect SD and other peripherals.\nUse tab 5 to flash bundled QC firmware; restore operational firmware afterwards.',wraplength=900).grid(row=16,column=0,columnspan=3,sticky='w')
+  ttk.Label(setup,text='Review and approve limits BEFORE starting. Settings are frozen for each run.\nGPIO4 is for the isolated ESP32 sensor test only: disconnect SD and other peripherals.\nUse tab 5 to flash bundled QC firmware; restore operational firmware afterwards.',wraplength=900).grid(row=17,column=0,columnspan=3,sticky='w')
   self.status=tk.StringVar(value='Ready - no run started')
   ttk.Label(live,textvariable=self.status,style='Status.TLabel',wraplength=1050).pack(anchor='w')
   self.tree=ttk.Treeview(live,columns=('ch','rom','temp','state'),show='headings',height=5)
   for k,label,w in [('ch','Channel',90),('rom','Sensor ROM',300),('temp','Temperature C',160),('state','Latest status',230)]:
-   self.tree.heading(k,text=label); self.tree.column(k,width=w)
+   self.tree.heading(k,text='Sensor ROM / SIM input' if k=='rom' else label); self.tree.column(k,width=w)
   self.tree.pack(fill='x',pady=10)
   self.canvas=tk.Canvas(live,height=260,bg='#eff5f8',highlightthickness=0); self.canvas.pack(fill='both',expand=True)
   self.log=tk.Text(live,height=6,wrap='word',state='disabled'); self.log.pack(fill='x',pady=8)
@@ -88,16 +89,19 @@ class App:
   root.protocol('WM_DELETE_WINDOW',self.close); root.after(150,self.pump); self.refresh_ports(); self.refresh_history()
  def check_hint(self,event=None): self.hint.set(CHECKS[self.check.get()][1])
  def instructions(self):
-  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUse tab 5 Flash QC firmware. Select board and COM, Detect, then Flash and verify. This replaces current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
+  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nIntegrated Main + Nano: select integrated scope, SIM address, Main COM; use operational pilot.7 / bench.2, not QC firmware. Disconnect Nano USB. Approved assembly power is required.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUse tab 5 Flash QC firmware. Select board and COM, Detect, then Flash and verify. This replaces current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
  def refresh_ports(self):
   try:
    from serial.tools import list_ports
    ports=[p.device for p in list_ports.comports()]; self.portbox['values']=ports
    if ports and self.fields['port'].get() not in ports: self.fields['port'].set(ports[0])
   except ImportError: self.portbox['values']=[]
+ def profile_changed(self,event=None):
+  if self.fields['profile'].get()=='Main + Nano / 4 sensors via RS485': self.fields['stale_s'].set('20')
  def config(self):
   c={k:v.get().strip() for k,v in self.fields.items() if k!='port'}
   for k in ('minimum_c','maximum_c','duration_s','min_samples','max_error_pct','max_span_c','stale_s','tolerance_c'): c[k]=float(c[k])
+  c['sim_address']=int(c['sim_address'])
   c['reference_c']=float(c['reference_c']) if c['reference_c'] else None
   return c
  def start(self,demo):
@@ -111,6 +115,7 @@ class App:
    if not demo and not manual:
     import serial
     if not self.fields['port'].get(): raise ValueError('Select a USB serial port')
+    if PROFILES[c['profile']][0]=='main-rs485' and not messagebox.askokcancel('Integrated operational test','Connect Main USB-UART only to the PC. Both boards require operating firmware, not QC sketches. Confirm approved power/RS485 wiring. Nano USB must be disconnected. Opening COM may reset Main. This test polls Main simscan; it does not flash or commission.'): return
     self.port=serial.Serial(self.fields['port'].get(),115200,timeout=.3)
     self.port.reset_input_buffer()
    self.rid=self.store.start(c,'DEMO' if demo else 'HARDWARE'); self.capture=Capture(self.store,self.rid,time.monotonic)
@@ -119,7 +124,8 @@ class App:
    self.active=True; self.points={}; self.last=time.monotonic(); self.tree.delete(*self.tree.get_children()); self.canvas.delete('all')
    for ch in range(1,PROFILES[c['profile']][1]+1): self.tree.insert('','end',iid=str(ch),values=(ch,'-','-','WAITING'))
    self.stop_event=threading.Event()
-   if not manual: threading.Thread(target=self.worker,args=(self.stop_event,demo,c,self.port,self.rid),daemon=True).start()
+   if not manual:
+    self.worker_thread=threading.Thread(target=self.worker,args=(self.stop_event,demo,c,self.port,self.rid),daemon=True); self.worker_thread.start()
    self.status.set(('DEMO - SIMULATED | ' if demo else 'HARDWARE | ')+self.rid+' | collecting evidence')
    self.tabs.select(2 if manual else 1); self.refresh_history()
   except Exception as e:
@@ -127,11 +133,17 @@ class App:
    messagebox.showerror('Cannot start',str(e))
  def worker(self,stop,demo,c,port,rid):
   seq=0; started=time.monotonic()
+  if not demo and PROFILES[c['profile']][0]=='main-rs485':
+   self.integrated_worker(stop,c,port,rid); return
   try:
    while not stop.is_set():
     if demo:
      seq+=1; board,count=PROFILES[c['profile']]
      f={'protocol':'bioems-qc/1','board':board,'uid':'SIMULATED','firmware':'qc-demo-'+VERSION,'seq':seq,'uptime_ms':int((time.monotonic()-started)*1000),'channels':[{'channel':ch,'rom':f'28000000000000{ch:02x}','status':'ok','temperature_c':24+ch/10+random.uniform(-.08,.08)} for ch in range(1,count+1)]}
+     if board=='main-rs485':
+      f.update(protocol='bioems-main-scan/1',sim_address=c['sim_address'],sequence_source='simulated host scan counter')
+      for item in f['channels']:
+       item.pop('rom',None); item.update(sim_address=c['sim_address'],system_channel=(c['sim_address']-1)*4+item['channel'])
      self.messages.put((rid,'line',json.dumps(f))); stop.wait(2)
     else:
      raw=port.read_until(b'\n',size=4097)
@@ -139,6 +151,21 @@ class App:
       if len(raw)>4096 or not raw.endswith(b'\n'): self.messages.put((rid,'fault','Truncated/oversized serial frame'))
       else: self.messages.put((rid,'line',raw.decode('utf-8',errors='replace').strip()))
   except Exception as e: self.messages.put((rid,'fault','Serial acquisition stopped: '+str(e)))
+ def integrated_worker(self,stop,c,port,rid):
+  from integrated import exchange, identify, frame
+  try:
+   if stop.wait(2): return
+   uid,firmware=identify(exchange(port,'status',stop))
+   seq=0; started=time.monotonic()
+   while not stop.is_set():
+    raw=exchange(port,'simscan',stop)
+    seq+=1
+    f=frame(raw,uid,firmware,c['sim_address'],seq,int((time.monotonic()-started)*1000))
+    if not f['module_responding']: self.messages.put((rid,'fault','Selected SIM did not respond to Main RS485 request'))
+    self.messages.put((rid,'line',json.dumps(f)))
+    if stop.wait(3): return
+  except Exception as exc:
+   if not stop.is_set(): self.messages.put((rid,'fault','Integrated acquisition stopped: '+str(exc)))
  def logline(self,s):
   self.log.configure(state='normal'); self.log.insert('end',s+'\n'); self.log.see('end')
   if int(self.log.index('end-1c').split('.')[0])>200: self.log.delete('1.0','50.0')
@@ -175,7 +202,7 @@ class App:
    for key in self.tree.get_children():
     if key not in received: self.tree.item(key,values=(key,'-','-','MISSING IN FRAME'))
    for ch in f['channels']:
-    key=str(ch['channel']); vals=(key,ch.get('rom','-'),ch.get('temperature_c','-'),ch['status'])
+    key=str(ch['channel']); vals=(key,ch.get('rom', 'SIM '+str(ch['sim_address'])+' / input '+str(ch['channel']) if 'sim_address' in ch else '-'),ch.get('temperature_c','-'),ch['status'])
     if self.tree.exists(key): self.tree.item(key,values=vals)
     else: self.tree.insert('','end',iid=key,values=vals)
     if ch['status']=='ok': self.points.setdefault(key,[]).append((time.monotonic()-self.capture.started,ch['temperature_c'])); self.points[key]=self.points[key][-300:]
@@ -252,6 +279,7 @@ class App:
   if self.diag_running: return messagebox.showinfo('Diagnostics active','Wait for the bounded diagnostic capture to finish before finalizing.')
   if not self.active: return
   if self.stop_event: self.stop_event.set()
+  if self.worker_thread: self.worker_thread.join(timeout=1)
   # Capture any already queued samples before sealing; late data is excluded.
   self.drain()
   if self.port: self.port.close(); self.port=None
