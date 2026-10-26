@@ -1,5 +1,11 @@
 # SIM-D4 Nano USB flashing package
 
+## 26 October testing boundary
+
+Operating Nano firmware remains 0.1.0-bench.2. Standalone Tester 0.3.0 can flash isolated four-probe QC firmware for D2–D5; disconnect HW-519 D0/D1 for USB upload AND reading. QC firmware is a different image: restore bench.2 before operational RS485 testing. Integrated Tester 0.4.0 remains proposed in open #309.
+
+See [26 October checkpoint](../../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 The platform has a separate USB flash action for an ATmega328P Nano. The Windows CI builds the **bench candidate** from `SIM_D4/SIM_D4.ino`, packages its Intel HEX with a SHA-256 manifest, and installs the checksum-pinned AVRDUDE 8.3 tool in the client Setup. This is not a qualified field release.
 
 Release layout under the application root:

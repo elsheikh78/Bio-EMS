@@ -1,5 +1,11 @@
 # BIO-EMS — BIO EGYPT Pilot Hardware Test Protocol
 
+## 26 October execution addendum
+
+Use the current staged procedure before full protocol execution. Test the Nano’s four independent channels explicitly; the older three-sensor HV-03 example does not qualify SIM-D4. Record isolated QC versus operating firmware and exact source/package hashes. Repeating simscan does not supply sensor ROM or conversion-age evidence. Preserve the dated protocol and its acceptance gates.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 **Document ID:** BIO-EMS-HW-TEST-PROTOCOL-001  
 **Status:** APPROVED EXECUTION PROTOCOL  
 **Date:** 2026-08-27  

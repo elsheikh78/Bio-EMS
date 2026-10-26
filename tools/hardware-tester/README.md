@@ -1,5 +1,11 @@
 # BIO-EMS Hardware Tester 0.4.0
 
+## 26 October version boundary
+
+Merged source is 0.3.0. Open PR #309 proposes 0.4.0 integrated Main/RS485/Nano four-probe acquisition using operational pilot.7/bench.2. The direct acquisition/manual diagnostic limits below describe 0.3.0; do not infer continuous integrated acquisition or operational restoration from tab 5.
+
+See [26 October checkpoint](../../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 Standalone Windows QC candidate. No platform services, login, commissioning,
 MQTT, cloud or platform database. English UI and printable English PDF.
 

@@ -1,5 +1,11 @@
 # BIO-EMS Testing Guidelines
 
+## 26 October hardware evidence
+
+Use the staged Hardware Tester procedure and record firmware type, package provenance, approved limits, manual measurements, raw acquisition, failures and linked retests. CI and demo PASS cannot substitute for physical acceptance. Integrated candidate #309 covers one Nano/four probes and does not qualify full network/SD/GSM/RTC/UPS operation.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 | Item | Value |
 |------|-------|
 | Document | Testing Guidelines |

@@ -1,5 +1,11 @@
 # BIO-EMS Monitor — native Android and iOS customer app
 
+## 26 October integration record
+
+PR #306 is merged on main. Confirm the matching Worker mobile API is deployed before device acceptance. Build/export checks and a possible QA artifact are not evidence of physical device or commercial distribution acceptance; company-mobile is a separate application.
+
+See [26 October checkpoint](../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 Version 0.1.0 is an Expo/React Native customer monitoring client, not an embedded browser. It uses the existing BIO-EMS project logo and viewer accounts. It is read-only: no company administration, commissioning, configuration changes or alarm acknowledgement.
 
 ## Implemented

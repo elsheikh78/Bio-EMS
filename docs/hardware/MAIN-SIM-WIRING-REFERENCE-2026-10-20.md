@@ -1,4 +1,10 @@
 # BIO-EMS — Main + SIM-D4 wiring and mounting reference
+
+## 26 October test usage
+
+This Rev B terminal schedule remains an engineering draft. Initial isolated USB tests require different QC pin use and disconnection of interfering peripherals. Restore Main pilot.7 and Nano bench.2 before the integrated path; do not extend isolated USB power approval to the complete assembly. The current checkpoint defines the staged test and evidence limits.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
 Date: 2026-10-20 • Revision B • Status: ENGINEERING DRAFT — NOT RELEASED FOR ENERGISING
 
 ## Scope and release status

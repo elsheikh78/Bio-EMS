@@ -1,5 +1,9 @@
 # Current documentation / التوثيق الحالي
 
+## Documentation checkpoint — 26 October 2026
+
+[Current project checkpoint and staged hardware testing](PROJECT-CHECKPOINT-2026-10-26.md) records merged Tester 0.3.0 QC flashing, open #309 / proposed integrated Tester 0.4.0, merged native customer monitoring, version boundaries and remaining acceptance. `PROJECT_STATE.md` governs current status. Older dated checkpoints below retain historical context; this update does not rebuild external manuals or release packages.
+
 ## 22 October mobile references
 
 - [تطبيق منصة الشركة — التثبيت والتشغيل وحدود الاختبار](COMPANY-MOBILE-APP-AR.md)

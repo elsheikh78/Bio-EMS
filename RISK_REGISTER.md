@@ -1,8 +1,18 @@
 # BIO-EMS Risk Register
 
+## Review — 26 October 2026
+
+- R-20: Isolated QC flashing replaces operating firmware and GPIO4 conflicts with SD. Disconnect peripherals, use the correct voltage/pull-ups, and restore governed pilot.7/bench.2 before integrated operation.
+- R-21: Open #309 / Tester 0.4.0 can be confused with merged 0.3.0. Record PR/commit/package hashes and merge status; successful CI does not establish hardware acceptance.
+- R-22: Integrated scans lack probe ROM, Nano unique ID and conversion-age evidence. Retain physical channel mapping/response tests; never label host counters as device uptime.
+- R-23: Customer native mobile source can be mistaken for deployed/signed distribution or background alert coverage. Verify matching Worker deployment, signed builds and device acceptance; background native push is absent.
+- R-24: USB initial test supply can be mistaken for full assembly power approval. Verify the controlled supply/USB topology and full-load backup test separately.
+
+Current operating boundaries: [26 October checkpoint](docs/current/PROJECT-CHECKPOINT-2026-10-26.md). Earlier dated risks remain open unless evidence explicitly closes them.
+
 ## Current integration risks
 
-- R-17: MAIN-16/SIM-D4 acquisition, Modbus mapping and 2G fallback are not implemented/qualified end to end. Close with versioned main/SIM builds and populated-module/fault/endurance evidence.
+- R-17: Main/Nano acquisition and Modbus mapping are implemented in the bench operating source but not physically qualified end to end. Autonomous 2G alarm fallback is not implemented. Close with populated-module/fault/endurance and actual delivery evidence.
 - R-18: PT100 field baseline versus DS18B20 bench candidate is unresolved; El Manial six/seven count conflicts. Freeze the approved sensor map/BOM before procurement.
 - R-19: Earlier ADMIN topology approval conflicts with current permission policy; Builder threshold controls are incomplete. Reconcile UI/API/product policy before operational manual acceptance.
 
