@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1254" viewBox="0 0 1400 1254">
+<rect width="1400" height="100%" fill="white"/>
+<text x="40" y="48" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#172a3a">BIO-EMS | MAIN / signal terminals</text>
+<text x="40" y="83" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">MC1 = ESP32-S3 N16R8 in 44-pin passive terminal base. Names, never photo positions.</text>
+<text x="40" y="117" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#b92032">REV B / pilot.7 • BENCH DESIGN • Verify actual terminals before connecting</text>
+<rect x="40" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 3V3</text>
+<text x="854" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">LS1 LV</text>
+<path d="M560 174 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="167" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">R01</text>
+<rect x="40" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V / common GND</text>
+<text x="854" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">LS1 HV / both GND terminals</text>
+<path d="M560 222 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="215" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">R02/03</text>
+<rect x="40" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO17 TX -&gt; LS1 LV1</text>
+<text x="854" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">LS1 HV1 -&gt; RS1 RXD</text>
+<path d="M560 270 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="263" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">R04/05</text>
+<rect x="40" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS1 TXD -&gt; LS1 HV2</text>
+<text x="854" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">LS1 LV2 -&gt; MC1 GPIO18 RX</text>
+<path d="M560 318 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="311" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">R06/07</text>
+<rect x="40" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO4</text>
+<text x="854" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">SD1 MOSI</text>
+<path d="M560 366 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="359" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">S01</text>
+<rect x="40" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">SD1 MISO</text>
+<text x="854" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO5</text>
+<path d="M560 414 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="407" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">S02</text>
+<rect x="40" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO6</text>
+<text x="854" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">SD1 SCK</text>
+<path d="M560 462 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="455" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">S03</text>
+<rect x="40" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO7</text>
+<text x="854" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">SD1 CS</text>
+<path d="M560 510 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="503" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">S04</text>
+<rect x="40" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 3V3 / GND</text>
+<text x="854" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RTC1 VCC / GND</text>
+<path d="M560 558 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="551" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">T01/02</text>
+<rect x="40" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO8</text>
+<text x="854" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RTC1 SDA</text>
+<path d="M560 606 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="599" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">T03</text>
+<rect x="40" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO9</text>
+<text x="854" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RTC1 SCL</text>
+<path d="M560 654 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="647" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">T04</text>
+<rect x="40" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO11</text>
+<text x="854" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">W5500 MOSI</text>
+<path d="M560 702 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="695" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">E01</text>
+<rect x="40" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">W5500 MISO</text>
+<text x="854" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO13</text>
+<path d="M560 750 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="743" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">E02</text>
+<rect x="40" y="779" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="779" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="805" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO12</text>
+<text x="854" y="805" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">W5500 SCK</text>
+<path d="M560 798 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="791" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">E03</text>
+<rect x="40" y="827" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="827" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="853" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GPIO10</text>
+<text x="854" y="853" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">W5500 CS</text>
+<path d="M560 846 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="839" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">E04</text>
+<rect x="40" y="875" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="875" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="901" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">MC1 GND</text>
+<text x="854" y="901" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">W5500 GND</text>
+<path d="M560 894 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="887" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">E05</text>
+<rect x="40" y="923" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="923" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="949" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS1 A+</text>
+<text x="854" y="949" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J1.3 -&gt; J2.3 -&gt; RS2 A+</text>
+<path d="M560 942 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="935" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">BUS A</text>
+<rect x="40" y="971" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="971" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="997" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS1 B-</text>
+<text x="854" y="997" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J1.4 -&gt; J2.4 -&gt; RS2 B-</text>
+<path d="M560 990 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="983" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">BUS B</text>
+<text x="40" y="1039" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">LS1 is the symmetric 4-channel LV/HV MOSFET board; channels 3/4 unused. UART1 9600 8N1.</text>
+<text x="40" y="1069" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Confirm HW519 RXD/TXD direction and voltage on the real boards before attaching MC1.</text>
+<text x="40" y="1099" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">SD1 HW125 VCC=5V; verify MISO remains 3.3V logic. Keep SPI short; no MOSFET UART adapter on SPI.</text>
+<text x="40" y="1129" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">W5500 POWER ON HOLD until exact breakout is identified. INT unused; confirm onboard hardware reset.</text>
+<text x="40" y="1159" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">RTC pullups to 3.3V only. Add 4.7k each SDA/SCL only if absent. SQW and 32K unconnected.</text>
+<text x="40" y="1189" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">A/B twisted pair. Confirm onboard termination before adding resistors. HW519 earth terminal unassigned.</text>
+</svg>

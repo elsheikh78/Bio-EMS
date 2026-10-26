@@ -22,6 +22,9 @@
 #include "ethernet.h"
 #include "offline_queue.h"
 #include "sd_storage.h"
+#include "rtc.h"
+#include "gsm.h"
+#include "freertos/semphr.h"
 #include <strings.h>
 #include <stdatomic.h>
 
@@ -33,6 +36,9 @@
 #define MAX_CA_PEM 4096
 
 static atomic_bool clock_trusted;
+static atomic_bool server_time_synced;
+static SemaphoreHandle_t clock_mutex;
+static bool rtc_ready;
 static bool storage_ready;
 static atomic_uint queued_records;
 static char ca_pem[MAX_CA_PEM];
@@ -65,6 +71,24 @@ static bool nvs_get_text(const char *key, char *buffer, size_t size) {
   esp_err_t err = nvs_get_str(handle, key, buffer, &required);
   nvs_close(handle);
   return err == ESP_OK;
+}
+
+// Only USB provisioning or an authenticated HTTPS response may initialise RTC trust.
+// Persist invalidation BEFORE a date write so power loss cannot trust partial registers.
+static bool sync_clock(time_t epoch) {
+  if (!clock_mutex || xSemaphoreTake(clock_mutex, pdMS_TO_TICKS(1500)) != pdTRUE) return false;
+  struct timeval utc = {.tv_sec=epoch, .tv_usec=0};
+  bool ok = settimeofday(&utc, NULL) == 0;
+  if (ok) {
+    atomic_store(&clock_trusted, true);
+    if (rtc_ready) {
+      bool saved = nvs_set_text("rtc_valid", "0") == ESP_OK && bioems_rtc_set(epoch) &&
+        nvs_set_text("rtc_valid", "1") == ESP_OK;
+      if (!saved) ESP_LOGW(TAG, "RTC_WRITE_FAILED: current boot time valid, battery restore not trusted");
+    }
+  }
+  xSemaphoreGive(clock_mutex);
+  return ok;
 }
 
 static void hardware_uid(char out[33]) {
@@ -441,9 +465,8 @@ static bool send_sample(const char *binding, const char *body) {
   esp_err_t result = esp_http_client_perform(client);
   int status = result == ESP_OK ? esp_http_client_get_status_code(client) : 0;
   esp_http_client_cleanup(client);
-  if (status == 202 && server_epoch && !atomic_load(&clock_trusted)) {
-    struct timeval utc = {.tv_sec=server_epoch, .tv_usec=0};
-    if (settimeofday(&utc, NULL) == 0) atomic_store(&clock_trusted, true);
+  if (status == 202 && server_epoch && !atomic_load(&server_time_synced)) {
+    if (sync_clock(server_epoch)) atomic_store(&server_time_synced, true);
   }
   if (status != 202) ESP_LOGW(TAG, "Delivery failed HTTP %d: retaining queued data", status);
   return status == 202;
@@ -571,6 +594,7 @@ static void print_sim_scan(void) {
 
 static void command_loop(void) {
   char line[MAX_LINE];
+  printf("bench: rtc | gsmdiag | gsmtest <+country-number> (sends one SMS)\n");
   printf("commands: status | setwifi <ssid> <password> | setplatform <url> | pair <12-digit-code> | clearbinding\n");
 
   while (true) {
@@ -582,6 +606,25 @@ static void command_loop(void) {
     }
     line[strcspn(line, "\r\n")] = '\0';
 
+    if (strcmp(line, "rtc") == 0) {
+      time_t epoch = 0;
+      bool valid = bioems_rtc_read(&epoch);
+      char commissioned[4] = {0};
+      bool saved = nvs_get_text("rtc_valid", commissioned, sizeof(commissioned)) &&
+        strcmp(commissioned, "1") == 0;
+      printf("RTC readable=%d commissioned=%d UTC=%lld timeTrusted=%d\n",
+        valid, saved, valid ? (long long)epoch : 0, atomic_load(&clock_trusted));
+      continue;
+    }
+    if (strcmp(line, "gsmdiag") == 0) {
+      bioems_gsm_diagnostics();
+      continue;
+    }
+    if (strncmp(line, "gsmtest ", 8) == 0) {
+      if (!bioems_gsm_sms(line + 8, "BIOEMS bench test"))
+        printf("SMS not confirmed. Use international phone format and check gsmdiag.\n");
+      continue;
+    }
     if (strcmp(line, "storage") == 0) {
       printf("SD mounted=%d timeTrusted=%d queued=%u\n",
         storage_ready, atomic_load(&clock_trusted), atomic_load(&queued_records));
@@ -672,12 +715,11 @@ static void command_loop(void) {
       char *end = NULL;
       long long epoch = strtoll(line + 8, &end, 10);
       if (!end || *end != '\0' || epoch < 1760000000LL ||
-          epoch > 4102444800LL) {
+          epoch >= 4102444800LL) {
         printf("invalid UTC epoch\n");
         continue;
       }
-      struct timeval utc = {.tv_sec = (time_t)epoch, .tv_usec = 0};
-      if (settimeofday(&utc, NULL) != 0 ||
+      if (!sync_clock((time_t)epoch) ||
           nvs_set_text("utc_epoch", line + 8) != ESP_OK) {
         printf("UTC time could not be saved\n");
       } else {
@@ -713,6 +755,21 @@ void app_main(void) {
     struct timeval utc = {.tv_sec = epoch, .tv_usec = 0};
     settimeofday(&utc, NULL);
   }
+
+  clock_mutex = xSemaphoreCreateMutex();
+  rtc_ready = bioems_rtc_init();
+  char rtc_valid[4] = {0};
+  time_t rtc_epoch = 0;
+  if (rtc_ready && nvs_get_text("rtc_valid", rtc_valid, sizeof(rtc_valid)) &&
+      strcmp(rtc_valid, "1") == 0 && bioems_rtc_read(&rtc_epoch)) {
+    struct timeval utc = {.tv_sec=rtc_epoch, .tv_usec=0};
+    if (settimeofday(&utc, NULL) == 0) {
+      atomic_store(&clock_trusted, true);
+      ESP_LOGI(TAG, "UTC restored from commissioned DS3231 (battery/OSF valid)");
+    }
+  }
+  if (!atomic_load(&clock_trusted))
+    ESP_LOGW(TAG, "RTC_UNTRUSTED: fresh provisioning or authenticated server time required");
 
   storage_ready = bioems_sd_mount();
   atomic_store(&queued_records, offline_queue_count());

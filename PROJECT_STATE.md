@@ -1,5 +1,15 @@
 # BIO-EMS Project State
 
+## 22 October 2026 — company mobile application
+
+- PR #307 adds the separate `company-mobile/` Android/iOS company administration shell using the original logo and the deployed portal in a restricted WebView. It inherits Arabic/English, customer/site/license management and selected-site System Owner workflows, with existing authentication/MFA and permissions.
+- Original QA build source: `349a7b5b1cbb85da6e4424ec1e182766128dfdae`; [mobile CI run 39842439397](https://github.com/elsheikh78/Bio-EMS/actions/runs/39842439397) passed typecheck, three navigation/error-policy tests, dependency checks, both native project generation and Hermes exports, Android arm64 compilation, APK signature and package verification. Existing backend/frontend/company CI gates also passed in [run 39842439091](https://github.com/elsheikh78/Bio-EMS/actions/runs/39842439091).
+- Delivered `BIOEMS-Company-Pilot-Android-arm64.apk`, app `0.1.0`, package `com.bioemsegypt.company.pilot`, development certificate, SHA-256 `3094561e4eb0e34d7f68e618aeb26a1dc3b4f31d8e2fa54722930e16321b4fd9`. The user reported “نجح التطبيق” on 22 October 2026. This records successful Android app operation, not individual acceptance of every administrative feature.
+- Android language switching, administrative mutations, System Owner/MFA, logout/expiry, network recovery and file handling still need individually recorded device results. No physical iPhone result or signed IPA/TestFlight release exists for this app. iOS source/export preparation does not establish an Xcode/native iOS build or device acceptance; Apple signing/distribution setup remains pending.
+- Company and customer monitoring apps are separate. No store publication, production certificate, new cloud deployment, database migration, Client Setup or firmware change is included. Platform version remains `0.20.0`; app version is independent.
+
+Operations and evidence: [company mobile guide](docs/current/COMPANY-MOBILE-APP-AR.md); developer/build reference: [company-mobile README](company-mobile/README.md). Earlier dated status sections below retain their original scope.
+
 ## 15 October 2026 company customer/activity management
 
 - Adds name-confirmed customer deletion, blocked while any sites remain; transactional

@@ -1,6 +1,8 @@
 # BIO-EMS
 
-Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Native Google Play/App Store apps are phase two and are not built.
+Company mobile app: [Arabic installation and operation](docs/current/COMPANY-MOBILE-APP-AR.md) · [Android/iOS source and build guide](company-mobile/README.md). This separate company administration app opens the existing portal in a restricted WebView. Android QA operation was reported successful by the user on 22 October 2026; iOS source/export is prepared, with signed device distribution pending. See [Project State](PROJECT_STATE.md) for evidence and remaining acceptance.
+
+Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Customer Viewer store publication remains pending; the separate company administration app is documented above.
 
 Company cloud pilot candidate: [Arabic deployment/connection guide](docs/current/COMPANY-CLOUD-PILOT-AR.md) and [Cloudflare source package](company-cloud/README.md). Deployment and installed-client qualification remain separate from source checks.
 
@@ -184,3 +186,7 @@ Company portal customer removal and five-event activity pagination/date-range de
 Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
 See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
 Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.
+
+## Native customer mobile app (Android / iOS)
+
+The read-only customer monitoring client is in [`mobile/`](mobile/README.md). It shares existing viewer accounts, supports Arabic/English and requires the matching company-cloud mobile API. Signed APK/IPA builds and physical-device acceptance remain separate release steps; native background push is not enabled in version 0.1.0.

@@ -1,5 +1,14 @@
 # BIO-EMS Implementation Plan
 
+## Company mobile follow-up — 22 October 2026
+
+1. Integrate PR #307 and its operating/build documentation after successful checks; preserve the tested Android QA artifact identity and user-reported operation in `PROJECT_STATE.md`.
+2. Record Android results for language switching, clients/sites/licenses, selected-site System Owner and MFA, navigation, logout/expiry, offline retry and file handling. Use disposable records for mutations.
+3. Configure the company Apple Developer team and signing/bundle identity, then perform an actual Xcode/signed iOS build and physical iPhone acceptance before TestFlight distribution.
+4. Establish stable production signing and store/distribution arrangements before treating the development-certificate QA app as a commercial release. Customer monitoring and hardware commissioning remain independent workstreams.
+
+See [company mobile operations](docs/current/COMPANY-MOBILE-APP-AR.md). This follow-up does not require a Worker deployment, migration or Windows/firmware package update.
+
 ## Company cloud pilot — 11 October 2026
 
 1. Validate the separate Workers/D1 source and opt-in client connection candidate.

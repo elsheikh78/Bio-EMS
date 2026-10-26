@@ -10,7 +10,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.6`;
+- firmware version: `0.1.0-pilot.7`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -177,3 +177,6 @@ is required before deletion. Missing/full/corrupt media are explicit serial faul
 See [behavior, limits and deployment](../../docs/current/SD-OFFLINE-REPLAY.md) and
 [central battery, four-SIM topology and wiring](../../docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
 This is source implementation, not physical qualification or a guaranteed backup duration.
+
+## pilot.7 RTC and GSM bench wiring
+See [the dated hardware reference](../../docs/hardware/MAIN-SIM-WIRING-REFERENCE-2026-10-20.md) for exact terminal schedules and commissioning holds. DS3231 uses SDA8/SCL9 at 3.3V. SIM800L UART2 uses TX14 through the specified 1k/5.6k divider, RX21 through the specified NPN inverter; RX inversion defaults on. Do not substitute direct wiring. Modem VCC is a separate 4V burst-capable supply. `rtc` inspects commissioning/UTC, `gsmdiag` checks registration, and `gsmtest +<international-number>` sends one real bench SMS. There is no autonomous alarm/fallback SMS policy in this revision. No physical hardware tests have been performed by the build.

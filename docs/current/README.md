@@ -1,5 +1,12 @@
 # Current documentation / التوثيق الحالي
 
+## 22 October mobile references
+
+- [تطبيق منصة الشركة — التثبيت والتشغيل وحدود الاختبار](COMPANY-MOBILE-APP-AR.md)
+- [Company Android/iOS development and builds](../../company-mobile/README.md)
+
+Android QA operation was reported successful by the user; iOS signing/device acceptance remains pending. `PROJECT_STATE.md` controls status.
+
 ## 11 October current references
 
 - [منصة الشركة المركزية — مرشح تجربة Cloudflare](COMPANY-CLOUD-PILOT-AR.md)
@@ -49,3 +56,5 @@ For the merged SIM-D4 integration candidate and current bench limits, see [SIM d
 - [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — deployed pilot; live telemetry and real-phone acceptance pending.
 
 - [Viewer deployment evidence — 14 October 2026](VIEWER-DEPLOYMENT-STATUS-2026-10-14.md) — deployed components, tested package and remaining mobile/field work.
+
+- [Native customer mobile app — Android / iOS](CUSTOMER-MOBILE-ANDROID-IOS.md)

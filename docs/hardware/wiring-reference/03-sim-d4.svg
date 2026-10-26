@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1176" viewBox="0 0 1400 1176">
+<rect width="1400" height="100%" fill="white"/>
+<text x="40" y="48" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#172a3a">BIO-EMS | SIM-D4 / Nano + four probes</text>
+<text x="40" y="83" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">ONE incoming cable: J2.1=24V, J2.2=0V, J2.3=A, J2.4=B. No mains in this box.</text>
+<text x="40" y="117" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#b92032">REV B / pilot.7 • BENCH DESIGN • Verify actual terminals before connecting</text>
+<rect x="40" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="155" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J2.1 +24V</text>
+<text x="854" y="181" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U3 LM2596 IN+</text>
+<path d="M560 174 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="167" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P17</text>
+<rect x="40" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="203" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J2.2 0V</text>
+<text x="854" y="229" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U3 IN-</text>
+<path d="M560 222 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="215" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P18</text>
+<rect x="40" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="251" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U3 OUT+ = 5.00V</text>
+<text x="854" y="277" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano 5V + RS2 VCC + sensor 5V bus</text>
+<path d="M560 270 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="263" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P19</text>
+<rect x="40" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="299" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">U3 OUT- / common GND</text>
+<text x="854" y="325" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano GND + RS2 GND + sensor GND bus</text>
+<path d="M560 318 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="311" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">P20</text>
+<rect x="40" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="347" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D1/TX</text>
+<text x="854" y="373" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS2 RXD</text>
+<path d="M560 366 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="359" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">N01</text>
+<rect x="40" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="395" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS2 TXD</text>
+<text x="854" y="421" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D0/RX</text>
+<path d="M560 414 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="407" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">N02</text>
+<rect x="40" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="443" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">J2.3 / J2.4</text>
+<text x="854" y="469" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">RS2 A+ / B-</text>
+<path d="M560 462 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="455" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">A/B</text>
+<rect x="40" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="491" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D2</text>
+<text x="854" y="517" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH1 DATA + R1 end 1</text>
+<path d="M560 510 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="503" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C01</text>
+<rect x="40" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="539" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D3</text>
+<text x="854" y="565" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH2 DATA + R2 end 1</text>
+<path d="M560 558 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="551" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C02</text>
+<rect x="40" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="587" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D4</text>
+<text x="854" y="613" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH3 DATA + R3 end 1</text>
+<path d="M560 606 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="599" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C03</text>
+<rect x="40" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="635" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">Nano D5</text>
+<text x="854" y="661" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH4 DATA + R4 end 1</text>
+<path d="M560 654 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="647" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C04</text>
+<rect x="40" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="683" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">R1 end 2 (4.7k)</text>
+<text x="854" y="709" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V bus</text>
+<path d="M560 702 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="695" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C14</text>
+<rect x="40" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="731" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">R2 end 2 (4.7k)</text>
+<text x="854" y="757" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V bus</text>
+<path d="M560 750 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="743" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C16</text>
+<rect x="40" y="779" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="779" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="805" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">R3 end 2 (4.7k)</text>
+<text x="854" y="805" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V bus</text>
+<path d="M560 798 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="791" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C18</text>
+<rect x="40" y="827" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="827" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="853" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">R4 end 2 (4.7k)</text>
+<text x="854" y="853" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V bus</text>
+<path d="M560 846 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="839" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C20</text>
+<rect x="40" y="875" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="875" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="901" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">5V bus: FOUR separate branches</text>
+<text x="854" y="901" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH1 / CH2 / CH3 / CH4 VDD</text>
+<path d="M560 894 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="887" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C05-08</text>
+<rect x="40" y="923" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<rect x="840" y="923" width="520" height="37" rx="7" fill="#f1f6fa" stroke="#93a9b8"/>
+<text x="54" y="949" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">GND bus: FOUR separate branches</text>
+<text x="854" y="949" font-family="DejaVu Sans,sans-serif" font-size="18" fill="#172a3a">CH1 / CH2 / CH3 / CH4 GND</text>
+<path d="M560 942 H840" stroke="#075f9b" stroke-width="3"/>
+<text x="650" y="935" font-family="DejaVu Sans,sans-serif" font-size="15" fill="#075f9b">C09-12</text>
+<text x="40" y="991" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Four independent 3-wire probes. Verify actual cable mapping; colours alone do not establish pin function.</text>
+<text x="40" y="1021" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Address 1: D7/D8 floating per Nano firmware; D6 unused. No external 5V to VIN.</text>
+<text x="40" y="1051" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Disconnect Nano D0/D1 from RS2 during USB flashing; disconnect external 5V until power path verified.</text>
+<text x="40" y="1081" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">Use screw terminal adapter and secured pullup carrier; loose wires pushed into bare PCB holes are invalid.</text>
+<text x="40" y="1111" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#172a3a">HW519 automatic direction: no DE/RE control wire. Confirm direction and end termination physically.</text>
+</svg>
