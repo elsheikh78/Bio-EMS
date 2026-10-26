@@ -1,5 +1,11 @@
 # BIO-EMS Pilot Production Runbook
 
+## 26 October artifact selection
+
+Select packages by source SHA, manifest and hash, not product 0.20.0 alone. Main pilot.7 and Nano bench.2 operating images differ from Tester QC images. Merged Tester is 0.3.0; proposed integrated 0.4.0 is open #309 at review. Updating the PC does not restore QC-flashed boards. Customer native API source is merged, but matching Worker deployment must be verified separately.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 ## 10 October Windows update operations
 
 See [network/update guide](../current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) and

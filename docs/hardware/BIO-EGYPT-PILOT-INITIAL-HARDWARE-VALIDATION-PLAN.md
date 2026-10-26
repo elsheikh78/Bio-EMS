@@ -1,5 +1,11 @@
 # BIO-EMS — BIO EGYPT Pilot Initial Hardware Validation Plan
 
+## 26 October execution addendum
+
+Start with isolated ESP32/one probe, Nano/four probes, then Main/RS485/Nano/four probes using the current procedure. QC flashing and software CI do not close physical gates; full-module, fault, power, network and field acceptance require separate records.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 **Status:** APPROVED PLAN / PROCUREMENT GATE NOT YET PASSED  
 **Date:** 2026-08-27  
 **Scope:** Standard V1 / BIO EGYPT temperature pilot  

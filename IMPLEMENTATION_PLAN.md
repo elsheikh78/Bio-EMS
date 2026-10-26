@@ -1,5 +1,16 @@
 # BIO-EMS Implementation Plan
 
+## Current execution order — 26 October 2026
+
+This sequence supersedes older dated restart lists below; those remain historical context.
+
+1. Use [the current checkpoint](docs/current/PROJECT-CHECKPOINT-2026-10-26.md) and record the exact package source/hash. #308 is merged; #309 integrated Tester 0.4.0 is open at review with successful CI and requires its own integration/release decision.
+2. Execute isolated ESP32-S3/one-probe QC using USB supply and Tester QC flashing; then isolated Nano/four-probe QC. Record approved limits, raw data, faults and signed PDF results.
+3. Restore governed pilot.7/bench.2 operating firmware. With the integrated candidate, test Main USB → RS485 → Nano/four probes; tab 5 does not restore operational images. Do not use QC firmware for this stage.
+4. Qualify additional populated modules, network/SD/RTC, explicit 2G SMS receipt, power/fault/endurance and the central battery under the full intended load. Complete commissioning/UAT only after these gates and Windows/restore qualification.
+5. Verify the matching Worker deployment for the merged native customer API, then record Android/iOS device behavior and signed distribution separately. Retain company app Android evidence; complete its remaining feature/iOS gates.
+6. Revise external Word manuals and distributed packages against their actual current contents before calling those artifacts updated. Documentation alone does not replace or rebuild them.
+
 ## Company mobile follow-up — 22 October 2026
 
 1. Integrate PR #307 and its operating/build documentation after successful checks; preserve the tested Android QA artifact identity and user-reported operation in `PROJECT_STATE.md`.

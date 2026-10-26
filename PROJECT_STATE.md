@@ -1,5 +1,16 @@
 # BIO-EMS Project State
 
+## 26 October 2026 — reconciled project checkpoint
+
+- Reviewed main: `cb56a1233073025dffc731f4ec268626780d9474`. #308 is merged: standalone Hardware Tester **0.3.0** includes offline isolated ESP32-S3/Nano QC flashing and runtime verification. Product remains `0.20.0`; Main operating firmware `0.1.0-pilot.7`, Nano `0.1.0-bench.2`. QC images replace operating firmware; restoration is separate.
+- #309 (`66e0fa3aed121ccc329cfb7e80aa1d065b9d8703`) is **open at review**, proposing Tester **0.4.0** continuous Main–RS485–Nano/four-probe acquisition through operational `simscan`. Tester workflow **40319297391** and CI **40319296886** completed successfully. These are build/source checks, not physical acceptance. Main 0.3.0 retains diagnostic/manual integrated checks.
+- #306 is merged: separate native customer monitor and isolated bearer Viewer API. Matching Worker deployment, signed distribution and physical-device acceptance are unverified here. Background native monitoring/remote push is not implemented. The separate company app retains its 22 October evidence below.
+- #301 records the 19 October inventory/preparation evidence; this does not record today's physical test execution. Today's approved sequence is isolated ESP32/one probe → isolated Nano/four probes → operating Main/RS485/Nano/four probes → remaining assembly/field qualification, using Hardware Tester for available scopes.
+- SD replay, RTC and explicit 2G bench commands are implemented source paths; real replay/retention/SMS, four-module acquisition and central battery runtime remain unqualified. Autonomous GSM alarm fallback is not implemented. Earlier descriptions of missing acquisition source are superseded by this distinction.
+- BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**. Documentation changes do not create a binary release or deployment. Historical entries below retain their dated evidence boundaries.
+
+See [26 October checkpoint and staged test procedure](docs/current/PROJECT-CHECKPOINT-2026-10-26.md) for operating constraints, version matrix and remaining gates.
+
 ## 22 October 2026 — company mobile application
 
 - PR #307 adds the separate `company-mobile/` Android/iOS company administration shell using the original logo and the deployed portal in a restricted WebView. It inherits Arabic/English, customer/site/license management and selected-site System Owner workflows, with existing authentication/MFA and permissions.

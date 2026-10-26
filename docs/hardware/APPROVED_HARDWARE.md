@@ -1,5 +1,11 @@
 # BIO-EMS Approved Hardware Register
 
+## 26 October qualification boundary
+
+Main pilot.7/Nano bench.2 acquisition source exists; hardware release remains pending physical evidence. Today’s staged bench procedure uses isolated ESP32/one probe, isolated Nano/four probes, then operating Main/RS485/Nano/four probes. Earlier PT100 references are dated design context, not authority to replace the DS18B20 bench test parts.
+
+See [26 October checkpoint](../current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 ## 30 September source and procurement boundary
 
 Consult `MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md` for the DS18B20 candidate and `BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md` for the PT100 field baseline. Neither a proposed BOM nor pairing firmware proves four-SIM acquisition. Egypt-local stock, sensor selection, populated-module behavior and site counts require recorded qualification before expanded purchases.
