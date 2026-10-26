@@ -1,5 +1,11 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
+## 26 October testing boundary
+
+Current operating firmware is pilot.7. Standalone Tester isolated QC replaces it and uses GPIO4 for the probe (disconnect SD). Restore governed operating firmware before integrated RS485 tests. Open #309 proposes repeated Main USB simscan acquisition; merged Tester 0.3.0 captures diagnostics/manual evidence.
+
+See [26 October checkpoint](../../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+
 ## 30 September hardware integration boundary
 
 This source is the ESP32-S3 pairing/provisioning foundation and now includes the bench-candidate MAIN-16/SIM-D4 Modbus polling, mapping and USB scan path. That acquisition path and the separate SIM-D4 Nano firmware are not physically qualified; integrated SIM800L fallback also remains open. Wi-Fi bootstrap instructions below do not prove the proposed Ethernet bench path. Record exact source SHA and firmware manifest; shared firmware version alone does not identify a binary.

@@ -1,5 +1,9 @@
 # BIO-EMS
 
+## Documentation checkpoint — 26 October 2026
+
+[Current project checkpoint and staged hardware testing](docs/current/PROJECT-CHECKPOINT-2026-10-26.md) records merged Tester 0.3.0 QC flashing, open #309 / proposed integrated Tester 0.4.0, merged native customer monitoring, version boundaries and remaining acceptance. `PROJECT_STATE.md` governs current status. Older dated checkpoints below retain historical context; this update does not rebuild external manuals or release packages.
+
 Company mobile app: [Arabic installation and operation](docs/current/COMPANY-MOBILE-APP-AR.md) · [Android/iOS source and build guide](company-mobile/README.md). This separate company administration app opens the existing portal in a restricted WebView. Android QA operation was reported successful by the user on 22 October 2026; iOS source/export is prepared, with signed device distribution pending. See [Project State](PROJECT_STATE.md) for evidence and remaining acceptance.
 
 Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Customer Viewer store publication remains pending; the separate company administration app is documented above.

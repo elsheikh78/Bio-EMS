@@ -1,5 +1,13 @@
 # BIO-EMS Changelog
 
+### 26 October 2026 — QC flashing, customer monitor and documentation reconciliation
+
+- #308 merged offline QC flashing for ESP32-S3 and both Nano bootloaders in standalone Tester 0.3.0, with package hash checks, tool verification, runtime identity and retained flash evidence. Operating firmware restoration remains separate.
+- #306 merged the native customer monitor and isolated bearer Viewer API. Matching Worker deployment, signed distribution and physical-device acceptance remain separate; native remote push/background monitoring is not implemented.
+- #301 merged dated 19 October hardware inventory/preparation evidence.
+- Reconcile current state, execution, scope, risks, navigation and operating references to [26 October checkpoint](docs/current/PROJECT-CHECKPOINT-2026-10-26.md). Record open #309 / proposed Tester 0.4.0 integrated four-probe scope separately from merged source; successful CI does not grant physical acceptance.
+- Documentation does not change platform `0.20.0`, operating firmware versions, existing packages or cloud deployments. Earlier dated entries retain their historical scope.
+
 ### 22 October 2026 — company Android/iOS app (PR #307)
 
 - Add the independent `company-mobile/` Expo / React Native company administration shell, original logo and restricted WebView for the deployed Arabic/English company portal and selected-site System Owner.

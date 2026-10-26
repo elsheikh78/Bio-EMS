@@ -1,5 +1,9 @@
 # BIO-EMS Documentation Index / فهرس التوثيق
 
+## Documentation checkpoint — 26 October 2026
+
+[Current project checkpoint and staged hardware testing](current/PROJECT-CHECKPOINT-2026-10-26.md) records merged Tester 0.3.0 QC flashing, open #309 / proposed integrated Tester 0.4.0, merged native customer monitoring, version boundaries and remaining acceptance. `PROJECT_STATE.md` governs current status. Older dated checkpoints below retain historical context; this update does not rebuild external manuals or release packages.
+
 ## Company mobile references — 22 October 2026
 
 - [تطبيق منصة الشركة — دليل التشغيل](current/COMPANY-MOBILE-APP-AR.md)
@@ -32,7 +36,7 @@ This reconciliation updates active entry points and operating/design guidance. T
 
 ## Open operational decisions
 
-- MAIN-16/SIM-D4: 1–4 populated modules × 4 sensors; implement/version main and SIM firmware, Modbus map and 2G fallback.
+- MAIN-16/SIM-D4: physically qualify the implemented operating acquisition/map for 1–4 populated modules × 4 sensors; autonomous 2G alarm fallback remains unimplemented.
 - Resolve PT100 field baseline versus DS18B20 bench candidate and El Manial six/seven positions.
 - Reconcile ADMIN topology permissions with prior approval; finish Builder threshold controls.
 - Complete physical USB pairing, sensor acquisition, Windows/restore qualification, live notifications and field UAT.
