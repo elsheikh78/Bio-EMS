@@ -11,7 +11,7 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: tools/hardware-tester
@@ -45,20 +45,39 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old --output-dir firmware/build/nano firmware/QC_Sensors
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --output-dir firmware/build/nano-new firmware/QC_Sensors
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Build Windows EXE
         run: |
           python -m PyInstaller --clean --noconfirm --onefile --windowed --name BIO-EMS-Hardware-Tester app.py
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Build console flash helper
+        run: |
+          python -m PyInstaller --clean --noconfirm --onefile --console --collect-all esptool --name BIOEMS-QC-Flash-Tool esptool_entry.py
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Stage offline flash tools and checksum manifest
+        run: |
+          python build_flash_package.py --arduino-data "$env:LOCALAPPDATA/Arduino15" --source-commit (git rev-parse HEAD)
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          python -c "from flashing import load_target,TARGETS; from pathlib import Path; [load_target(Path('.'),t) for t in TARGETS.values()]"
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Verify bundled EXE can generate PDF without Python
         run: |
           $process = Start-Process -FilePath dist/BIO-EMS-Hardware-Tester.exe -ArgumentList '--self-test', 'exe-smoke' -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw 'EXE self-test failed' }
           if (!(Test-Path exe-smoke/DEMO_QC_Report.pdf)) { throw 'Bundled report missing' }
+      - name: Verify bundled ESP tool entry point
+        run: |
+          $process = Start-Process -FilePath runtime/esptool/BIOEMS-QC-Flash-Tool.exe -ArgumentList 'version' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Bundled esptool failed' }
+          $process = Start-Process -FilePath runtime/avrdude/avrdude.exe -ArgumentList '-C', 'runtime/avrdude/avrdude.conf', '-?' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Bundled AVRDUDE failed' }
       - name: Package standalone deliverable
         run: |
           New-Item -ItemType Directory -Force package | Out-Null
           Copy-Item dist/BIO-EMS-Hardware-Tester.exe, README.md, OPERATOR_GUIDE_AR.txt package/
           Copy-Item firmware package/firmware -Recurse
+          Copy-Item runtime package/runtime -Recurse
           Copy-Item sample-output/DEMO_QC_Report.pdf package/
           git rev-parse HEAD | Set-Content package/SOURCE_COMMIT.txt
           Get-ChildItem package -Recurse -File | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash + '  ' + $_.FullName.Substring((Resolve-Path package).Path.Length+1) } | Set-Content package/SHA256SUMS.txt
