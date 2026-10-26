@@ -9,9 +9,10 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 PROTOCOL = 'bioems-qc/1'
 PROFILES = {'ESP32 / 1 sensor': ('esp32s3', 1), 'Nano / 4 sensors': ('nano', 4),
+            'Main + Nano / 4 sensors via RS485': ('main-rs485', 4),
             'Assembly / manual evidence': ('manual', 0),
             'Main + 1 SIM / Rev B': ('manual', 0)}
 CHECKS = {
@@ -39,6 +40,9 @@ def number(value):
 
 def validate_config(c):
  if c['profile'] not in PROFILES: raise ValueError('Unknown profile')
+ if PROFILES[c['profile']][0] == 'main-rs485':
+  if type(c.get('sim_address')) is not int or c['sim_address'] not in range(1,5): raise ValueError('SIM address must be 1 to 4')
+  if c['stale_s'] < 20: raise ValueError('Integrated polling requires freshness gap >= 20 s')
  for k in ('unit', 'operator', 'procedure'):
   if not str(c.get(k, '')).strip(): raise ValueError('Required: ' + k)
  for k in ('minimum_c','maximum_c','duration_s','min_samples','max_error_pct','max_span_c','stale_s'):
@@ -66,6 +70,7 @@ CREATE TABLE IF NOT EXISTS seals(run_id TEXT PRIMARY KEY, event_count INTEGER, l
   count=PROFILES[config['profile']][1]
   config['checks']=(['visual','continuity','power','response','recovery'] if count else
     [k for k in CHECKS if k!='battery'] if config['profile']=='Main + 1 SIM / Rev B' else list(CHECKS))
+  if PROFILES[config['profile']][0] == 'main-rs485': config['checks'].append('rs485')
   rid = str(uuid.uuid4())
   self.db.execute('INSERT INTO runs VALUES(?,?,?,?,?)', (rid,utc(),None,json.dumps(config,sort_keys=True),mode)); self.db.commit()
   self.append(rid,'run_header',{'config':config,'mode':mode,'id':rid})
@@ -103,7 +108,7 @@ CREATE TABLE IF NOT EXISTS seals(run_id TEXT PRIMARY KEY, event_count INTEGER, l
 
 def parse_frame(line, expected_board):
  frame=json.loads(line)
- if not isinstance(frame,dict) or frame.get('protocol') != PROTOCOL or frame.get('board') != expected_board: raise ValueError('Wrong protocol / board: use supplied QC firmware')
+ if not isinstance(frame,dict) or frame.get('protocol') != ('bioems-main-scan/1' if expected_board=='main-rs485' else PROTOCOL) or frame.get('board') != expected_board: raise ValueError('Wrong protocol / board: use supplied QC firmware')
  if not isinstance(frame.get('uid'),str) or not frame['uid'] or len(frame['uid']) > 64: raise ValueError('Missing board identity')
  if not isinstance(frame.get('firmware'),str) or not frame['firmware']: raise ValueError('Missing firmware identity')
  for k in ('seq','uptime_ms'):
@@ -115,8 +120,8 @@ def parse_frame(line, expected_board):
   seen.add(c['channel'])
   if c.get('status') not in ('ok','missing','crc','invalid','multiple','parasite'): raise ValueError('Unknown channel status')
   if c['status']=='ok':
-   if not isinstance(c.get('rom'),str) or len(c['rom'])!=16 or not c['rom'].lower().startswith('28'): raise ValueError('Invalid DS18B20 ROM')
-   int(c['rom'],16)
+   if expected_board != 'main-rs485' and (not isinstance(c.get('rom'),str) or len(c['rom'])!=16 or not c['rom'].lower().startswith('28')): raise ValueError('Invalid DS18B20 ROM')
+   if expected_board != 'main-rs485': int(c['rom'],16)
    if not -55 <= number(c.get('temperature_c')) <= 125: raise ValueError('Invalid temperature')
  return frame
 
@@ -129,6 +134,7 @@ class Capture:
   try:
    f=parse_frame(line,board)
    identity=(f['board'],f['uid'],f['firmware'])
+   if board=='main-rs485' and f.get('sim_address')!=self.config['sim_address']: raise ValueError('Wrong SIM address')
    if self.identity and self.identity!=identity: raise ValueError('Device/firmware identity changed: start a separate run')
    if self.seq is not None and (f['seq']<=self.seq or f['uptime_ms']<=self.uptime): raise ValueError('Duplicate/out-of-order sample or board reset')
    if self.seq is not None and f['seq']>self.seq+1:
@@ -164,7 +170,7 @@ def analyze(run):
   for e in frames:
    matches=[x for x in e['data']['channels'] if x['channel']==ch]
    if not matches or matches[0]['status']!='ok': bad+=1; continue
-   r=matches[0]; v=r['temperature_c']; values.append(v); roms.add(r['rom'])
+   r=matches[0]; v=r['temperature_c']; values.append(v); roms.add(r['rom']) if r.get('rom') else None
    if c.get('reference_c') is not None: refs.append(abs(v-c['reference_c']))
   rate=100*bad/len(frames) if frames else None
   reasons=[]
@@ -211,9 +217,9 @@ def export_bundle(run, folder):
  stem='QC-'+run['id']; data=dict(run); data['analysis']=analyze(run)
  path=folder/(stem+'.json'); path.write_text(json.dumps(data,indent=2,allow_nan=False),encoding='utf-8')
  with (folder/(stem+'.csv')).open('w',newline='',encoding='utf-8-sig') as f:
-  w=csv.writer(f); w.writerow(['run_id','host_utc','elapsed_s','seq','board','uid','firmware','channel','rom','status','temperature_c'])
+  w=csv.writer(f); w.writerow(['run_id','host_utc','elapsed_s','seq','board','uid','firmware','channel','rom','status','temperature_c','sim_address','system_channel','sequence_source'])
   for e in run['events']:
    if e['kind']=='frame':
     p=e['payload']; d=p['data']
-    for ch in d['channels']: w.writerow([run['id'],e['timestamp'],p['elapsed_s'],d['seq'],d['board'],d['uid'],d['firmware'],ch['channel'],ch.get('rom',''),ch['status'],ch.get('temperature_c','')])
+    for ch in d['channels']: w.writerow([run['id'],e['timestamp'],p['elapsed_s'],d['seq'],d['board'],d['uid'],d['firmware'],ch['channel'],ch.get('rom',''),ch['status'],ch.get('temperature_c',''),ch.get('sim_address',''),ch.get('system_channel',''),d.get('sequence_source','device')])
  return path

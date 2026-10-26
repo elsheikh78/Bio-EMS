@@ -41,11 +41,13 @@ def write_pdf(run,path):
  add(f"Range {c['minimum_c']} to {c['maximum_c']} C; duration >= {c['duration_s']} s; valid samples/channel >= {c['min_samples']}; errors <= {c['max_error_pct']}%; span <= {c['max_span_c']} C; stale timeout {c['stale_s']} s.")
  add('Reference: '+(f"{c['reference_c']} C; maximum absolute deviation {c['tolerance_c']} C" if c.get('reference_c') is not None else 'Not used; accuracy/calibration is NOT established.'))
  add('Limits are operator-approved bench criteria, not manufacturer accuracy specifications. All transport faults block PASS. Missing required checks block PASS. Sensor errors are assessed against the frozen error-rate limit.')
+ if c['profile']=='Main + Nano / 4 sensors via RS485':
+  add('Integrated path: Main USB -> RS485 -> Nano -> four probes. Main hardware UID is observed; sensor ROM and Nano unique identity/sample age are not available in this protocol. Sequence/time are host scan counters, not device uptime. Perform and record individual probe response/recovery; a fresh scan alone does not prove a new sensor conversion. Network, SD, GSM, RTC and UPS are outside this selected scope.')
  if a['channels']: story.append(PageBreak())
  for r in a['channels']:
   add(f"Channel {r['channel']} | {r['status']}",'Heading2')
   def f(v): return '-' if v is None else f'{v:.3f}'
-  table([['ROM / metric','Result'],['Sensor ROM',', '.join(r['roms']) or 'Not detected'],['Valid / faulty samples',f"{r['valid']} / {r['errors']}"],['Minimum / maximum / mean (C)',f"{f(r['minimum'])} / {f(r['maximum'])} / {f(r['mean'])}"],['Span / error rate / max reference error',f"{f(r['span'])} C / {f(r['error_pct'])}% / {f(r['max_reference_error'])} C"],['Analysis','; '.join(r['reasons']) or 'All selected automated criteria met']], [65*mm,109*mm])
+  table([['ROM / metric','Result'],['Sensor ROM',', '.join(r['roms']) or ('Not available via Modbus; SIM '+str(c['sim_address'])+' / input '+str(r['channel']) if c['profile']=='Main + Nano / 4 sensors via RS485' else 'Not detected')],['Valid / faulty samples',f"{r['valid']} / {r['errors']}"],['Minimum / maximum / mean (C)',f"{f(r['minimum'])} / {f(r['maximum'])} / {f(r['mean'])}"],['Span / error rate / max reference error',f"{f(r['span'])} C / {f(r['error_pct'])}% / {f(r['max_reference_error'])} C"],['Analysis','; '.join(r['reasons']) or 'All selected automated criteria met']], [65*mm,109*mm])
   points=[]
   for e in run['events']:
    if e['kind']=='frame':
