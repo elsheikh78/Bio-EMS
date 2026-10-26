@@ -186,3 +186,7 @@ Company portal customer removal and five-event activity pagination/date-range de
 Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
 See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
 Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.
+
+## Native customer mobile app (Android / iOS)
+
+The read-only customer monitoring client is in [`mobile/`](mobile/README.md). It shares existing viewer accounts, supports Arabic/English and requires the matching company-cloud mobile API. Signed APK/IPA builds and physical-device acceptance remain separate release steps; native background push is not enabled in version 0.1.0.

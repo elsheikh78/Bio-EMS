@@ -56,3 +56,5 @@ For the merged SIM-D4 integration candidate and current bench limits, see [SIM d
 - [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — deployed pilot; live telemetry and real-phone acceptance pending.
 
 - [Viewer deployment evidence — 14 October 2026](VIEWER-DEPLOYMENT-STATUS-2026-10-14.md) — deployed components, tested package and remaining mobile/field work.
+
+- [Native customer mobile app — Android / iOS](CUSTOMER-MOBILE-ANDROID-IOS.md)
