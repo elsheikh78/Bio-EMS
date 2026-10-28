@@ -1,4 +1,5 @@
-"""Bounded capture of pilot.7 bench commands. Never flashes, pairs or sends SMS."""
+from security_status import summarize as summarize_security
+"""Bounded capture of pilot.8 bench commands. Never flashes, pairs or sends SMS."""
 import re
 import time
 
@@ -22,5 +23,5 @@ def collect(port, clock=time.monotonic):
     complete=True
     break
   records.append({'command':command,'complete':complete,'output':''.join(chunks)})
- return {'expected_firmware':'0.1.0-pilot.7','source':'USB operational console',
-         'commands':records,'automatic_disposition':False}
+ return {'expected_firmware':'0.1.0-pilot.8','source':'USB operational console',
+         'commands':records,'security_status':summarize_security('\n'.join(r['output'] for r in records if r['command']=='status')),'automatic_disposition':False}

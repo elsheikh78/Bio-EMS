@@ -1,10 +1,14 @@
 # BIO-EMS Project State
 
+## Main TLS, mobile and device protection candidate — 28 October 2026
+
+Main pilot.8 requires endpoint identity checks; provisioning validates exact certificate SAN/validity before flash and credential transfer. Windows supports DNS/IP SAN issuance and non-overwriting candidate preparation. Tester 0.6.1 captures actual Secure Boot/encryption state without granting acceptance; an optional firmware startup gate requires both already enabled. No eFuses or production keys have been changed. Both mobile dependency trees received compatible patches, but retain 3 High / 5 Low Expo-tooling package entries each. Local backend 1111 tests and Tester 78 tests passed; both mobile exports passed. Native CI and physical acceptance are separate. Remote D1 migration remains blocked on Cloudflare authentication. See [TLS rollout](docs/security/MAIN-TLS-ENDPOINT-IDENTITY-WORK-PACKAGE.md), [device/mobile/deployment status](docs/security/DEVICE-PROTECTION-AND-MOBILE-STATUS.md) and [ADR-026](docs/adr/ADR-026-main-tls-identity-and-device-security-gate.md).
+
 ## Security phase two candidate — 28 October 2026
 
 The unmerged security candidate now adds D1-backed company-cookie revocation and migration 0003. Copied cookies are rejected after logout; company key rotation invalidates old sessions. Legacy company cookies require re-login; apply the additive migration before matched Worker deployment. No remote migration/deployment has been performed.
 
-Vitest 5 migration retains all 1101 backend / 357 frontend tests; cloud includes 30 tests. All-dependency npm scans for backend/frontend/company-cloud report zero affected entries in the candidate, including development tools. Mobile/Python/vendor/device-trust work is not certified. Main TLS remains open because installed DNS/IP certificate identity must be reconciled before removing firmware exceptions. See [phase-two guide](docs/security/COMPANY-SESSIONS-AND-TEST-TOOLING-REMEDIATION.md).
+Vitest 5 migration retains all 1101 backend / 357 frontend tests; cloud includes 30 tests. All-dependency npm scans for backend/frontend/company-cloud report zero affected entries in the candidate, including development tools. Mobile/Python/vendor/device-trust work is not certified. The later Main TLS candidate above removes firmware exceptions with certificate identity preflight; installed-site rollout remains open. See [phase-two guide](docs/security/COMPANY-SESSIONS-AND-TEST-TOOLING-REMEDIATION.md).
 
 
 Reviewed 28 October 2026. This is the sole current-state authority; dated evidence is preserved in [the pre-audit snapshot](docs/archive/2026-10-28-pre-audit/PROJECT_STATE.md).

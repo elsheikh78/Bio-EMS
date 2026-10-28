@@ -1,9 +1,9 @@
-# BIO-EMS Hardware Tester 0.6.0
+# BIO-EMS Hardware Tester 0.6.1
 
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/tools/hardware-tester/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
 
-## 0.6.0 standalone qualification
+## 0.6.1 standalone qualification
 
 Hardware qualification has moved out of the System Owner platform. Tab **7
 Qualification guide** contains the reviewed 18-step procedure. Choose **Hardware
@@ -18,7 +18,7 @@ Device provisioning and installation discovery remain platform operations.
 
 ## Operating firmware upload
 
-Tab **6 Operating firmware** installs bundled Main pilot.7 and Nano bench.2 directly
+Tab **6 Operating firmware** installs bundled Main pilot.8 and Nano bench.2 directly
 over USB, including both classic 57600 and new 115200 Nano bootloaders. No platform,
 Arduino IDE, internet or commissioning is required for the integrated bench path.
 The Windows package must contain both firmware manifests and the runtime tools.
@@ -95,7 +95,7 @@ is distributed. Tool hashes detect package damage, not malicious repackaging.
 
 Use tab 6 Operating firmware after isolated tests. This
 version deliberately does not invent or overwrite platform binding credentials.
-Before returning to Main integrated operation, restore pilot.7 using tab 6 or the existing governed workflow and reconnect peripherals with power off.
+Before returning to Main integrated operation, restore pilot.8 using tab 6 or the existing governed workflow and reconnect peripherals with power off.
 
 ## Workflow
 
@@ -135,12 +135,12 @@ Windows CI additionally performs GUI and bundled-EXE report smoke and compiles
 all three board/bootloader targets. Real USB upload, readings, fault injection and printing on
 operator PC remain physical acceptance; source/CI PASS does not establish these.
 
-## pilot.7 / Rev B alignment
+## pilot.8 / Rev B alignment
 Use `Main + 1 SIM / Rev B` for the current integrated assembly: this requires RTC evidence and explicit 2G bench SMS evidence; the unfitted central UPS is outside this selected scope. Legacy records keep their original frozen checks. Existing SQLite records are preserved.
 
-The new **Capture Main pilot.7 USB diagnostics** button records status, storage, rtc, simscan and gsmdiag output into the active manual run and PDF ledger. It uses the operational firmware without reflashing or platform login. It never sends an SMS, pairs, changes credentials or changes the clock. Confirm the USB/external-power path before connecting; COM opening can reset a board. Review the reported firmware identity yourself. Capture timeout/missing output does not establish a pass. Actual receipt, rail measurements, RTC cold-boot retention, SD replay, network delivery and endurance still need recorded physical evidence.
+The new **Capture Main pilot.8 USB diagnostics** button records status, storage, rtc, simscan and gsmdiag output into the active manual run and PDF ledger. It uses the operational firmware without reflashing or platform login. It never sends an SMS, pairs, changes credentials or changes the clock. Confirm the USB/external-power path before connecting; COM opening can reset a board. Review the reported firmware identity yourself. Capture timeout/missing output does not establish a pass. Actual receipt, rail measurements, RTC cold-boot retention, SD replay, network delivery and endurance still need recorded physical evidence.
 
-The isolated sensor sketch remains `qc-sensors-0.1.0` because its wire protocol has not changed. It replaces the operational firmware and requires disconnecting SD from GPIO4; restore the governed pilot.7 firmware after using it. Do not use this isolated sketch as integrated Main firmware.
+The isolated sensor sketch remains `qc-sensors-0.1.0` because its wire protocol has not changed. It replaces the operational firmware and requires disconnecting SD from GPIO4; restore the governed pilot.8 firmware after using it. Do not use this isolated sketch as integrated Main firmware.
 
 ## Flash tool licensing
 AVRDUDE is a separate GPL tool redistributed from the arduino:avr 1.8.6 pinned
@@ -154,7 +154,7 @@ Arduino IDE dependency on the operator PC.
 ## 0.4.0 integrated Main -> RS485 -> Nano -> four probes
 Select `Main + Nano / 4 sensors via RS485`, the expected SIM address (1–4),
 and the Main USB-UART COM port. The freshness gap must be at least 20 seconds.
-Both boards must already have the governed operating firmware: Main pilot.7,
+Both boards must already have the governed operating firmware: Main pilot.8,
 Nano bench.2. Do not use the isolated QC sketches. Use tab 6 to install operating firmware; tab 5 only flashes isolated QC images. No platform login is
 needed for integrated acquisition. Disconnect Nano USB during RS485 operation.
 Confirm the approved supply and USB power path before connecting Main USB.

@@ -1,6 +1,6 @@
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/tools/hardware-tester/OPERATOR_GUIDE_AR.txt>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
-تحديث 0.6.0 — الاختبارات والتأهيل في الهاردوير تيستر فقط
+تحديث 0.6.1 — الاختبارات والتأهيل في الهاردوير تيستر فقط
 تم إزالة Hardware Lab من واجهة System Owner؛ السجلات القديمة محفوظة للقراءة.
 التبويب 7 Qualification guide يشرح 18 خطوة مراجعة وتأهيل.
 اضغط Select staged qualification scope ثم أدخل بيانات التجميع وابدأ الاختبار.
@@ -16,7 +16,7 @@
 للنانو المختبر EMS-S-001 اختر Nano bench.2 new bootloader 115200.
 اترك D7/D8 مفتوحين للعنوان 1، وافصل D0/D1 عن RS485.
 اضغط Detect operating target ثم Flash operating firmware and verify وانتظر SUCCESS.
-كرر للـ Main باختيار Main ESP32-S3 pilot.7 ومنفذ COM الخاص به.
+كرر للـ Main باختيار Main ESP32-S3 pilot.8 ومنفذ COM الخاص به.
 بعد نجاح اللوحتين افصل التغذية وأعد التوصيلات، وافصل USB النانو.
 غذ التجميع بمصدر تم فحصه، ووصل USB الـMain فقط بمسار تغذية موثوق.
 اختر Main + Nano / 4 sensors via RS485 وحدد Main COM والعنوان.
@@ -61,17 +61,17 @@ Nano: أربعة حساسات مستقلة على D2-D5 بمقاومة لكل خ
 راجع README للتوصيل وحدود البرنامج وحفظ السجلات واستعادة فيرموير التشغيل.
 
 
-تحديث 0.2.0 / pilot.7:
+تحديث 0.2.0 / pilot.8:
 للتجميعة الحالية اختر Main + 1 SIM / Rev B. فحص RTC مطلوب في هذا النطاق، وبطارية UPS غير المركبة خارج نطاقه.
-ابدأ سجل HARDWARE يدوي ثم اختر COM الخاص بالـMain واضغط Capture Main pilot.7 USB diagnostics.
-يلزم الفيرموير التشغيلي pilot.7 ومسار تغذية USB آمن. البرنامج يجمع status وstorage وrtc وsimscan وgsmdiag ويحفظ النص في سجل التقرير.
+ابدأ سجل HARDWARE يدوي ثم اختر COM الخاص بالـMain واضغط Capture Main pilot.8 USB diagnostics.
+يلزم الفيرموير التشغيلي pilot.8 ومسار تغذية USB آمن. البرنامج يجمع status وstorage وrtc وsimscan وgsmdiag ويحفظ النص في سجل التقرير.
 زر التقاط التشخيصات لا يغير الساعة ولا يرسل SMS ولا يعمل commissioning أو flashing؛ التفليش له تبويب مستقل. يجب مراجعة رقم الفيرموير الظاهر في الناتج.
 تسجيل تشخيصات USB لا يعطي PASS تلقائيًا؛ يلزم فحص القياسات الفعلية واسترجاع الساعة بعد فصل الكهرباء واستلام رسالة الاختبار يدويًا.
 الـQC sketch للحساسات المنفردة مختلف عن الفيرموير التشغيلي. افصل SD عند اختبار الحساس على GPIO4 وأعد الفيرموير التشغيلي بعد الاختبار.
 
 تحديث 0.4.0: اختبار Main ثم RS485 ثم Nano والأربع حساسات من البرنامج.
 اختر Main + Nano / 4 sensors via RS485 ورقم SIM ثم COM الخاص بالـMain.
-يلزم فيرموير التشغيل pilot.7 للـMain وbench.2 للنانو، وليس QC. تحميل فيرموير التشغيل متاح الآن من التبويب 6 Operating firmware داخل التيستر.
+يلزم فيرموير التشغيل pilot.8 للـMain وbench.2 للنانو، وليس QC. تحميل فيرموير التشغيل متاح الآن من التبويب 6 Operating firmware داخل التيستر.
 افصل USB النانو أثناء RS485 وراجع تغذية التجميعة ومسار USB قبل التشغيل.
 اضغط Start hardware run لعرض القراءات والرسم وحفظها وتحليلها وتصدير التقرير.
 سجل فحص الأسلاك والجهد واستجابة كل حساس والاستعادة في Inspection؛ النواقص تمنع PASS.

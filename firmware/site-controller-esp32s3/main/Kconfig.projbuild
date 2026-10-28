@@ -58,3 +58,13 @@ config BIOEMS_SD_QUEUE_RECORDS
     range 1 20000
     default 20000
 endmenu
+
+menu "BIO-EMS production acceptance policy"
+config BIOEMS_REQUIRE_PRODUCTION_SECURITY
+    bool "Refuse startup without hardware secure boot and flash encryption"
+    default n
+    help
+        Fails closed unless both hardware protections are already enabled.
+        This option does not provision keys or burn eFuses. Do not treat it as
+        manufacturing qualification or use it on ordinary pilot bench boards.
+endmenu

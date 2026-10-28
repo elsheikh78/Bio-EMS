@@ -39,6 +39,12 @@ jobs:
           cc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -I firmware/site-controller-esp32s3/main firmware/site-controller-esp32s3/main/rtc_codec.c firmware/site-controller-esp32s3/main/gsm_protocol.c firmware/site-controller-esp32s3/tests/peripheral_protocol_test.c -o /tmp/peripheral-test
           /tmp/peripheral-test
 
+      - name: Verify HTTPS origin and production security policy
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -I firmware/site-controller-esp32s3/main firmware/site-controller-esp32s3/main/tls_policy.c firmware/site-controller-esp32s3/tests/tls_policy_test.c -o /tmp/tls-policy-test
+          /tmp/tls-policy-test
+          ! grep -E 'skip_cert_common_name_check[[:space:]]*=[[:space:]]*true' firmware/site-controller-esp32s3/main/main.c
+
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:

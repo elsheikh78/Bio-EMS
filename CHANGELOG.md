@@ -1,5 +1,12 @@
 # BIO-EMS Changelog
 
+## Unreleased — Main TLS and protection evidence
+
+- Main pilot.8 requires HTTPS origin and certificate identity checks; local provisioning validates exact SAN/validity before flash or serial credentials. Windows supports explicit DNS/IP SANs and non-overwriting candidate certificate preparation.
+- Tester 0.6.1 reports actual Secure Boot/encryption state without accepting production security; optional firmware startup gate requires both already enabled.
+- Compatible mobile dependency patches retain Expo 57; each tree still has 3 High/5 Low affected package entries. Native/physical acceptance and remote D1 rollout remain separate.
+
+
 ## Unreleased — security phase two
 
 - Add revocable hashed company sessions with additive D1 migration 0003, server-side logout, key-rotation binding and expired-session cleanup. Legacy cookies require re-login; migration precedes Worker deployment.

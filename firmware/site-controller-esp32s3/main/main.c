@@ -7,6 +7,9 @@
 
 #include "cJSON.h"
 #include "esp_event.h"
+#include "esp_secure_boot.h"
+#include "esp_flash_encrypt.h"
+#include "tls_policy.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_mac.h"
@@ -318,6 +321,8 @@ static bool claim_pairing(const char *code) {
     return false;
   }
 
+  if (!bioems_https_origin_valid(base_url)) { printf("platform HTTPS origin invalid\n"); return false; }
+
   char uid[33];
   hardware_uid(uid);
 
@@ -339,11 +344,8 @@ static bool claim_pairing(const char *code) {
       .user_data = &response,
       .timeout_ms = 15000,
       .cert_pem = ca_pem,
-      /*
-       * Pilot-only compatibility with the current customer-local TLS deployment.
-       * Production firmware must replace this with BIO-EMS CA validation + mTLS.
-       */
-      .skip_cert_common_name_check = true,
+      /* Validate the provisioned certificate and the URL's DNS/IP identity. */
+      .skip_cert_common_name_check = false,
   };
   esp_http_client_handle_t client = esp_http_client_init(&config);
   esp_http_client_set_method(client, HTTP_METHOD_POST);
@@ -390,6 +392,9 @@ static void print_status(void) {
   printf("  network-mode: %s\n", ethernet_selected() ? "ethernet" : "wifi");
   printf("  model: %s\n", BIOEMS_CONTROLLER_MODEL);
   printf("  firmware: %s\n", BIOEMS_FIRMWARE_VERSION);
+  printf("  tls-identity-validation: REQUIRED\n");
+  printf("  secure-boot-enabled: %s\n", esp_secure_boot_enabled() ? "true" : "false");
+  printf("  flash-encryption-enabled: %s\n", esp_flash_encryption_enabled() ? "true" : "false");
   printf("  protocol: %s\n", BIOEMS_PROTOCOL_VERSION);
   printf("  binding-schema: %d\n", BIOEMS_BINDING_SCHEMA_VERSION);
   printf("  hardware-uid: %s\n", uid);
@@ -450,11 +455,12 @@ static bool send_sample(const char *binding, const char *body) {
   if (!network_ready() || !nvs_get_text("tele_token", token, sizeof(token)) ||
       !nvs_get_text("platform_url", base, sizeof(base)) ||
       !nvs_get_text("tls_ca", certificate, sizeof(certificate))) return false;
+  if (!bioems_https_origin_valid(base)) { ESP_LOGE(TAG, "HTTPS_REQUIRED: retaining queued data"); return false; }
   char url[MAX_URL + 80];
   snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base, binding);
   time_t server_epoch = 0;
   esp_http_client_config_t config = {.url=url, .cert_pem=certificate,
-    .timeout_ms=2000, .skip_cert_common_name_check=true,
+    .timeout_ms=2000, .skip_cert_common_name_check=false,
     .event_handler=sample_response, .user_data=&server_epoch};
   esp_http_client_handle_t client = esp_http_client_init(&config);
   if (!client) return false;
@@ -663,11 +669,13 @@ static void command_loop(void) {
       continue;
     }
     if (strncmp(line, "setplatform ", 12) == 0) {
-      const char *url = line + 12;
-      if (strlen(url) == 0 || strlen(url) >= MAX_URL) {
+      char *url = line + 12;
+      if (!bioems_https_origin_valid(url)) {
         printf("invalid platform url\n");
         continue;
       }
+      size_t url_length = strlen(url);
+      if (url_length && url[url_length-1] == '/') url[url_length-1] = 0;
       if (nvs_set_text("platform_url", url) == ESP_OK) {
         printf("platform url saved\n");
       }
@@ -738,6 +746,12 @@ static void command_loop(void) {
 }
 
 void app_main(void) {
+#ifdef CONFIG_BIOEMS_REQUIRE_PRODUCTION_SECURITY
+  if (!bioems_security_policy_satisfied(true, esp_secure_boot_enabled(), esp_flash_encryption_enabled())) {
+    ESP_LOGE(TAG, "PRODUCTION_SECURITY_REQUIRED: secure boot and flash encryption are not both enabled; startup refused");
+    return;
+  }
+#endif
   esp_err_t nvs_result = nvs_flash_init();
   if (nvs_result == ESP_ERR_NVS_NO_FREE_PAGES ||
       nvs_result == ESP_ERR_NVS_NEW_VERSION_FOUND) {

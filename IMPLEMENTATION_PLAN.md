@@ -2,7 +2,7 @@
 
 ## Security phase-two execution
 
-Source candidate adds revocable company sessions and the test-tool migration. Complete remote CI/review, controlled D1 backup/migration/Worker deployment and real company login/logout replay checks. Next execute the Main TLS endpoint-identity work package and mobile SDK/tooling dependency review, preserving existing production device-trust gates.
+Source candidate adds revocable company sessions and the test-tool migration. Complete remote CI/review, controlled D1 backup/migration/Worker deployment and real company login/logout replay checks. The later Main TLS/mobile source candidate is implemented; complete native CI, existing-PC certificate rollout, device acceptance and supported Expo advisory closure, preserving existing production device-trust gates.
 
 
 ## Customer-auth security implementation

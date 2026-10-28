@@ -10,8 +10,8 @@ def build(main_package,source_commit,root=Path('.')):
     root=Path(root).resolve();source=Path(main_package).resolve()
     if not re.fullmatch('[0-9a-f]{40}',source_commit):raise ValueError('Invalid source commit')
     main=json.loads((source/'manifest.json').read_text())
-    if main.get('target')!='esp32s3' or main.get('firmwareVersion')!='0.1.0-pilot.7' or main.get('sourceCommit')!=source_commit:
-        raise ValueError('Main package must be pilot.7 from this exact source commit')
+    if main.get('target')!='esp32s3' or main.get('firmwareVersion')!='0.1.0-pilot.8' or main.get('sourceCommit')!=source_commit:
+        raise ValueError('Main package must be pilot.8 from this exact source commit')
     def entry(path):return {'path':path.relative_to(root).as_posix(),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     images=[]
     for segment in main['segments']:
@@ -20,7 +20,7 @@ def build(main_package,source_commit,root=Path('.')):
             raise ValueError('Invalid Main package segment')
         dst=root/'firmware/operating/main'/path.name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,dst)
         images.append(dict(entry(dst),offset=segment['offset']))
-    targets={'esp32s3':{'board':'esp32s3','firmware':'0.1.0-pilot.7','images':images,'flash':main['flash']}}
+    targets={'esp32s3':{'board':'esp32s3','firmware':'0.1.0-pilot.8','images':images,'flash':main['flash']}}
     for target,folder,baud in [('nano-old','nano-old',57600),('nano-new','nano-new',115200)]:
         path=root/'firmware/operating'/folder/'SIM_D4.ino.hex'
         targets[target]={'board':'nano','firmware':'0.1.0-bench.2','baud':baud,'images':[entry(path)]}

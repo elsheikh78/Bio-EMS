@@ -13,7 +13,7 @@ class OperatingTests(unittest.TestCase):
   self.entry=entry
   self.m={'schema':1,'purpose':'integrated-operating-firmware','source_commit':'a'*40,'targets':{},
           'tools':{k:entry('runtime/'+k) for k in ['esptool','avrdude','avrdude_conf']}}
-  self.m['targets']['esp32s3']={'board':'esp32s3','firmware':'0.1.0-pilot.7','flash':{'mode':'dio','frequency':'80m','size':'4MB'},
+  self.m['targets']['esp32s3']={'board':'esp32s3','firmware':'0.1.0-pilot.8','flash':{'mode':'dio','frequency':'80m','size':'4MB'},
     'images':[dict(entry('firmware/main'+str(i)),offset=o) for i,o in enumerate(['0x0','0x8000','0x10000'])]}
   for key,baud in [('nano-old',57600),('nano-new',115200)]:
    self.m['targets'][key]={'board':'nano','firmware':'0.1.0-bench.2','baud':baud,'images':[entry('firmware/'+key)]}
@@ -78,9 +78,9 @@ class OperatingTests(unittest.TestCase):
   self.assertEqual(r['sim_address'],2);serial.Serial.assert_called_once_with('COM7',9600,timeout=.4)
  def test_main_runtime_uses_status_not_provisioning(self):
   serial=MagicMock()
-  with patch.dict(sys.modules,{'serial':serial}),patch('operating.time.sleep'),patch('integrated.exchange',return_value='status') as exchange,patch('integrated.identify',return_value=('a'*12,'0.1.0-pilot.7')):
+  with patch.dict(sys.modules,{'serial':serial}),patch('operating.time.sleep'),patch('integrated.exchange',return_value='status') as exchange,patch('integrated.identify',return_value=('a'*12,'0.1.0-pilot.8')):
    r=operating.verify_runtime('COM3','esp32s3',1)
-  self.assertEqual(r['firmware'],'0.1.0-pilot.7');self.assertEqual(exchange.call_args.args[1],'status')
+  self.assertEqual(r['firmware'],'0.1.0-pilot.8');self.assertEqual(exchange.call_args.args[1],'status')
 
 class OperatingPackageTests(unittest.TestCase):
  setUp=OperatingTests.setUp
@@ -91,7 +91,7 @@ class OperatingPackageTests(unittest.TestCase):
   for i,offset in enumerate(['0x0','0x8000','0x10000']):
    p=source/('image'+str(i)+'.bin');p.write_bytes(b'main fixture')
    segments.append({'offset':offset,'file':p.name,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
-  manifest={'target':'esp32s3','firmwareVersion':'0.1.0-pilot.7','sourceCommit':'a'*40,
+  manifest={'target':'esp32s3','firmwareVersion':'0.1.0-pilot.8','sourceCommit':'a'*40,
             'segments':segments,'flash':{'mode':'dio','frequency':'80m','size':'4MB'}}
   (source/'manifest.json').write_text(json.dumps(manifest))
   (self.root/'firmware/qc-manifest.json').write_text(json.dumps({'tools':self.m['tools'],'tool_files':[]}))

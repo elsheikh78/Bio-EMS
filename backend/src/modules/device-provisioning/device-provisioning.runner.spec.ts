@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { createHash, X509Certificate } from "node:crypto";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -26,7 +26,12 @@ describe("LocalProvisioningRunner", () => {
     const esptoolPath = join(runtime, "esptool.exe");
     writeFileSync(esptoolPath, "controlled-test-tool");
     const tlsCertificatePath = join(root, "bioems-local.cer");
-    writeFileSync(tlsCertificatePath, Buffer.alloc(200, 1));
+    writeFileSync(
+      tlsCertificatePath,
+      new X509Certificate(
+        readFileSync(join(process.cwd(), "src/modules/device-provisioning/test-fixtures/valid.pem"))
+      ).raw
+    );
     return { root, firmware, esptoolPath, tlsCertificatePath };
   }
 
@@ -245,5 +250,41 @@ describe("LocalProvisioningRunner", () => {
     });
     expect(result.toolOutput).not.toContain("secret-pass");
     expect(result.toolOutput).not.toContain("123456789012");
+  });
+});
+
+describe("TLS preflight before serial side effects", () => {
+  it("does not start a serial process when the URL does not match the controlled certificate", async () => {
+    const directory = mkdtempSync(join(tmpdir(), "bioems-tls-preflight-"));
+    try {
+      const path = join(directory, "public.cer");
+      writeFileSync(
+        path,
+        new X509Certificate(
+          readFileSync(
+            join(process.cwd(), "src/modules/device-provisioning/test-fixtures/valid.pem")
+          )
+        ).raw
+      );
+      let invoked = false;
+      const runner = new LocalProvisioningRunner(
+        { applicationRoot: directory, esptoolPath: "unused", tlsCertificatePath: path },
+        async () => {
+          invoked = true;
+          return { stdout: "", stderr: "" };
+        }
+      );
+      await expect(
+        runner.provision("COM7", {
+          platformUrl: "https://192.168.1.21",
+          pairingCode: "123456789012",
+          wifiSsid: "test",
+          wifiPassword: "not-sent",
+        })
+      ).rejects.toThrow(/SAN/);
+      expect(invoked).toBe(false);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 });

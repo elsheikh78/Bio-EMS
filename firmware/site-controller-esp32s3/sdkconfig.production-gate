@@ -1,0 +1,4 @@
+# Acceptance gate only. Does not provision keys, activate encryption, or burn eFuses.
+# It refuses application startup unless actual hardware secure boot and flash
+# encryption have already been enabled through the approved manufacturing process.
+CONFIG_BIOEMS_REQUIRE_PRODUCTION_SECURITY=y

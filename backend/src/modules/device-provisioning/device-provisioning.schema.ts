@@ -56,7 +56,9 @@ const platformUrlSchema = z
           !url.search &&
           !url.hash &&
           (url.pathname === "/" || url.pathname === "") &&
-          !["localhost", "127.0.0.1", "::1"].includes(url.hostname.toLowerCase())
+          !["localhost", "127.0.0.1", "::1"].includes(
+            url.hostname.toLowerCase().replace(/^\[|\]$/g, "")
+          )
         );
       } catch {
         return false;
@@ -189,3 +191,5 @@ export const simScanResultSchema = z
       });
     });
   });
+
+export const localProvisionerTlsSchema = z.object({ platformUrl: platformUrlSchema }).strict();

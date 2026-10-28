@@ -1,3 +1,7 @@
+# Current follow-up — 28 October 2026
+
+A05 has a pilot.8 source fix and exact SAN provisioning preflight; installed Windows/Main acceptance remains pending. Mobile compatible patches retain 3 High/5 Low affected Expo-tooling package entries per app. Device status reporting and the optional startup gate do not activate Secure Boot/encryption or close the PKI/manufacturing/recovery requirements. Remote D1 deployment requires authenticated account access and backup. See PROJECT_STATE and docs/security/DEVICE-PROTECTION-AND-MOBILE-STATUS.md.
+
 # BIO-EMS Risk Register
 
 ## Phase-two security candidate — 28 October 2026
