@@ -1,10 +1,25 @@
-# BIO-EMS Hardware Tester 0.4.0
+# BIO-EMS Hardware Tester 0.6.0
 
-## 26 October version boundary
+## 0.6.0 standalone qualification
 
-Merged source is 0.3.0. Open PR #309 proposes 0.4.0 integrated Main/RS485/Nano four-probe acquisition using operational pilot.7/bench.2. The direct acquisition/manual diagnostic limits below describe 0.3.0; do not infer continuous integrated acquisition or operational restoration from tab 5.
+Hardware qualification has moved out of the System Owner platform. Tab **7
+Qualification guide** contains the reviewed 18-step procedure. Choose **Hardware
+qualification / staged checklist** to record ordered manual evidence with linked
+acquisition run IDs. Missing steps block PASS; the previous step must pass first.
+The frozen plan is included in the report. Sensor, cable and RS485 acquisitions
+remain separate real hardware runs. All prior scopes keep their existing checks.
 
-See [26 October checkpoint](../../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+This does not automate sixteen simultaneous sensor channels or GSM fallback.
+The platform retains read-only historical records and rejects new test writes.
+Device provisioning and installation discovery remain platform operations.
+
+## Operating firmware upload
+
+Tab **6 Operating firmware** installs bundled Main pilot.7 and Nano bench.2 directly
+over USB, including both classic 57600 and new 115200 Nano bootloaders. No platform,
+Arduino IDE, internet or commissioning is required for the integrated bench path.
+The Windows package must contain both firmware manifests and the runtime tools.
+See [operating firmware steps](OPERATING_FIRMWARE_GUIDE.md).
 
 Standalone Windows QC candidate. No platform services, login, commissioning,
 MQTT, cloud or platform database. English UI and printable English PDF.
@@ -22,8 +37,8 @@ by later successful readings. Manual retests retain earlier attempts in ledger.
 Network, SD, GSM, battery and integrated endurance are **manual evidence
 checks** in the assembly profile. RS485 has a separate automated four-probe
 acquisition scope plus physical response/recovery evidence.
-Direct sensor acquisition and the selected Main-to-Nano four-probe path are automated; see the integrated scope below. Built-in USB upload of isolated QC firmware is provided for ESP32-S3 and both Nano bootloaders. Automatic operational firmware restoration is not included. Included QC sketch replaces operational firmware;
-restore governed operating firmware afterwards. Do not erase flash or burn eFuses.
+Direct sensor acquisition and the selected Main-to-Nano four-probe path are automated; see the integrated scope below. Built-in USB upload of isolated QC firmware is provided for ESP32-S3 and both Nano bootloaders. Operating firmware installation is available separately in tab 6. Included QC sketch replaces operational firmware;
+install the bundled operating firmware from tab 6 afterwards. Do not erase flash or burn eFuses.
 The previous plain-text single-sensor sketch is not protocol-compatible.
 
 ## Wiring and firmware
@@ -75,10 +90,9 @@ the EXE alone cannot supply the flash images/tools. Developer source checkouts
 must build the staged flash package before flashing; no fake placeholder image
 is distributed. Tool hashes detect package damage, not malicious repackaging.
 
-Restore the governed operating firmware separately after isolated tests. This
+Use tab 6 Operating firmware after isolated tests. This
 version deliberately does not invent or overwrite platform binding credentials.
-Before returning to Main integrated operation, restore pilot.7 through the
-existing governed workflow and reconnect peripherals with power off.
+Before returning to Main integrated operation, restore pilot.7 using tab 6 or the existing governed workflow and reconnect peripherals with power off.
 
 ## Workflow
 
@@ -88,8 +102,9 @@ existing governed workflow and reconnect peripherals with power off.
 4. Select COM, Start hardware run. Record inspection/continuity/voltage/response/
    recovery in Inspection while active. Voltage PASS requires meter ID, measured
    volts and approved numeric limits; out of range is forced FAIL.
-5. Stop/finalize; select record, Analyze, Export PDF + JSON + CSV.
-6. Print PDF, review/sign under company document control. New attempt = new run;
+5. For integration, install operating firmware with tab 6 before acquisition.
+6. Stop/finalize; select record, Analyze, Export PDF + JSON + CSV.
+7. Print PDF, review/sign under company document control. New attempt = new run;
    reference predecessor ID in procedure. Prior finalized records cannot be edited.
 
 For accuracy use a stable calibrated reference, ID/certificate and uncertainty in
@@ -137,8 +152,7 @@ Arduino IDE dependency on the operator PC.
 Select `Main + Nano / 4 sensors via RS485`, the expected SIM address (1–4),
 and the Main USB-UART COM port. The freshness gap must be at least 20 seconds.
 Both boards must already have the governed operating firmware: Main pilot.7,
-Nano bench.2. Do not use the isolated QC sketches. Operational firmware restoration
-is still separate; tab 5 only flashes isolated QC images. No platform login is
+Nano bench.2. Do not use the isolated QC sketches. Use tab 6 to install operating firmware; tab 5 only flashes isolated QC images. No platform login is
 needed for integrated acquisition. Disconnect Nano USB during RS485 operation.
 Confirm the approved supply and USB power path before connecting Main USB.
 
@@ -157,3 +171,10 @@ Main/Nano uptime. Fresh replies alone cannot prove a fresh sensor conversion;
 record individual physical probe response/recovery. Network, SD, RTC, GSM and
 UPS are outside this four-sensor path scope; use their existing evidence scopes.
 Physical hardware/USB acceptance is still required.
+
+
+Qualification metrics retain the former numeric gates: `sensor_cables` needs
+`success_rate_percent >= 99.99`; `endurance_24h` and `full_population` need
+`unexplained_reboots = 0` and `unrecovered_faults = 0`. Enter these in Metrics JSON.
+Missing/invalid metrics cannot be saved as PASS; out-of-limit values are recorded
+as FAIL. These are operator-entered measurements, not automatically read counters.

@@ -84,25 +84,7 @@ import {
   testCommunicationChannelSchema,
 } from "../modules/communication-channels/communication-channel.schema";
 import { platformBackupScheduleInputSchema } from "../modules/platform-backup/platform-backup-schedule.schema";
-import {
-  createHardwareTestRun,
-  finalizeHardwareTestRun,
-  getHardwareLabProfile,
-  getHardwareTestRun,
-  listHardwareTestRuns,
-  recordHardwareFirmwareEvidence,
-  recordHardwareTestEvent,
-  recordHardwareTestStepResult,
-  startHardwareTestStep,
-} from "../controllers/hardware-lab.controller";
-import {
-  createHardwareTestRunSchema,
-  hardwareFirmwareEvidenceSchema,
-  hardwareTestEventSchema,
-  hardwareTestRunParamsSchema,
-  hardwareTestStepParamsSchema,
-  hardwareTestStepResultSchema,
-} from "../modules/hardware-lab/hardware-lab.schema";
+import { legacyHardwareArchiveRouter } from "./legacy-hardware-archive.route";
 import {
   issueDevicePairingCodeController,
   listDevicePlatformBindingsController,
@@ -131,42 +113,8 @@ const router = Router();
 router.use(platformAuthenticationMiddleware);
 router.use("/company-connection", companyConnectionRouter);
 router.get("/", platformOperationsOverview);
-router.get("/hardware-lab/profile", getHardwareLabProfile);
-router.get("/hardware-lab/runs", listHardwareTestRuns);
-router.post("/hardware-lab/runs", validateBody(createHardwareTestRunSchema), createHardwareTestRun);
-router.get(
-  "/hardware-lab/runs/:runId",
-  validateParams(hardwareTestRunParamsSchema),
-  getHardwareTestRun
-);
-router.post(
-  "/hardware-lab/runs/:runId/steps/:stepCode/start",
-  validateParams(hardwareTestStepParamsSchema),
-  startHardwareTestStep
-);
-router.post(
-  "/hardware-lab/runs/:runId/steps/:stepCode/result",
-  validateParams(hardwareTestStepParamsSchema),
-  validateBody(hardwareTestStepResultSchema),
-  recordHardwareTestStepResult
-);
-router.post(
-  "/hardware-lab/runs/:runId/firmware",
-  validateParams(hardwareTestRunParamsSchema),
-  validateBody(hardwareFirmwareEvidenceSchema),
-  recordHardwareFirmwareEvidence
-);
-router.post(
-  "/hardware-lab/runs/:runId/events",
-  validateParams(hardwareTestRunParamsSchema),
-  validateBody(hardwareTestEventSchema),
-  recordHardwareTestEvent
-);
-router.post(
-  "/hardware-lab/runs/:runId/finalize",
-  validateParams(hardwareTestRunParamsSchema),
-  finalizeHardwareTestRun
-);
+// Historical records remain read-only; all new QC work belongs to the standalone tester.
+router.use("/hardware-lab", legacyHardwareArchiveRouter);
 router.get("/backups/schedule", getOwnerPlatformBackupSchedule);
 router.put(
   "/backups/schedule",

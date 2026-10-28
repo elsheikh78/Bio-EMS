@@ -194,3 +194,8 @@ Backend and controller must be updated together. Physical SD/UPS tests and batte
 ## Native customer mobile app (Android / iOS)
 
 The read-only customer monitoring client is in [`mobile/`](mobile/README.md). It shares existing viewer accounts, supports Arabic/English and requires the matching company-cloud mobile API. Signed APK/IPA builds and physical-device acceptance remain separate release steps; native background push is not enabled in version 0.1.0.
+
+
+## Standalone hardware qualification 28 October 2026
+
+[Hardware testing moved to standalone Tester 0.6.0](docs/current/HARDWARE-TESTING-STANDALONE-2026-10-28.md).

@@ -1,3 +1,5 @@
+// Retired HQT-1 definitions retained for historical database records only.
+// New qualification procedures live in tools/hardware-tester/qualification.py.
 export type HardwareLabExecutionMode = "AUTO" | "MANUAL" | "HYBRID";
 
 export interface HardwareLabStepDefinition {

@@ -14,10 +14,10 @@ from report import write_pdf
 
 class App:
  def __init__(self,root):
-  self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
+  self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1120,720)
   self.home=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'BIO-EMS-Hardware-Tester'
   self.store=Store(self.home/'qc.sqlite'); self.rid=None; self.capture=None; self.stop_event=None; self.messages=queue.Queue(); self.active=False; self.demo=False; self.port=None
-  self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None
+  self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None; self.operating_events=[]
   style=ttk.Style(); style.theme_use('clam'); style.configure('TButton',padding=6); style.configure('Heading.TLabel',font=('Segoe UI',19,'bold')); style.configure('Status.TLabel',font=('Segoe UI',11,'bold'))
   shell=ttk.Frame(root,padding=14); shell.pack(fill='both',expand=True)
   ttk.Label(shell,text='BIO-EMS  /  Hardware Quality Control',style='Heading.TLabel').pack(anchor='w')
@@ -25,6 +25,15 @@ class App:
   tabs=ttk.Notebook(shell); tabs.pack(fill='both',expand=True)
   setup=ttk.Frame(tabs,padding=10); live=ttk.Frame(tabs,padding=10); manual=ttk.Frame(tabs,padding=10); history=ttk.Frame(tabs,padding=10)
   tabs.add(setup,text='1  Test setup'); tabs.add(live,text='2  Live sensors'); tabs.add(manual,text='3  Inspection / evidence'); tabs.add(history,text='4  Records / PDF')
+  # Keep the evidence form usable on smaller operator screens.
+  manual_canvas=tk.Canvas(manual,highlightthickness=0)
+  manual_scroll=ttk.Scrollbar(manual,orient='vertical',command=manual_canvas.yview)
+  manual_scroll.pack(side='right',fill='y');manual_canvas.pack(side='left',fill='both',expand=True)
+  manual_canvas.configure(yscrollcommand=manual_scroll.set)
+  manual=ttk.Frame(manual_canvas)
+  manual_window=manual_canvas.create_window((0,0),window=manual,anchor='nw')
+  manual.bind('<Configure>',lambda event:manual_canvas.configure(scrollregion=manual_canvas.bbox('all')))
+  manual_canvas.bind('<Configure>',lambda event:manual_canvas.itemconfigure(manual_window,width=event.width))
   self.tabs=tabs
   firmware=ttk.Frame(tabs,padding=10); tabs.add(firmware,text='5  Flash QC firmware')
   ttk.Label(firmware,text='Flash isolated test firmware directly over USB',style='Status.TLabel').pack(anchor='w')
@@ -39,6 +48,40 @@ class App:
   self.flash_state=tk.StringVar(value='Ready. Select board and USB COM port first.')
   ttk.Label(firmware,textvariable=self.flash_state,wraplength=1000).pack(anchor='w',pady=5)
   self.flash_log=tk.Text(firmware,height=18,wrap='word',state='disabled'); self.flash_log.pack(fill='both',expand=True)
+  operating=ttk.Frame(tabs,padding=10); tabs.add(operating,text='6  Operating firmware')
+  ttk.Label(operating,text='Install operating firmware for Main and Nano integration',style='Status.TLabel').pack(anchor='w')
+  ttk.Label(operating,text='Offline bundled pilot.7 / bench.2. No platform login or Arduino installation.\nDisconnect external board power and RS485. Connect ONE board over USB.\nNano: D0/D1 disconnected; set SIM address in Test setup to match D7/D8.\nThis changes firmware and may change partition layout. It does not commission or restore credentials.\nUse a bench board; preserve the installation backup before changing a commissioned device.',wraplength=1000).pack(anchor='w',pady=8)
+  import operating as operating_module
+  self.operating_target=tk.StringVar(value='Nano bench.2 new bootloader 115200')
+  ttk.Combobox(operating,textvariable=self.operating_target,values=list(operating_module.TARGETS),state='readonly',width=50).pack(anchor='w',pady=5)
+  ttk.Label(operating,text='Uses unit, operator, COM and SIM address from Test setup. Flash Nano, then Main; reconnect only with power OFF.').pack(anchor='w')
+  actions=ttk.Frame(operating); actions.pack(anchor='w',pady=8)
+  ttk.Button(actions,text='Detect operating target',command=lambda:self.flash_operating(True)).pack(side='left',padx=4)
+  ttk.Button(actions,text='Flash operating firmware and verify',command=lambda:self.flash_operating(False)).pack(side='left',padx=4)
+  self.operating_state=tk.StringVar(value='Ready. Operating images are separate from isolated QC images.')
+  ttk.Label(operating,textvariable=self.operating_state,wraplength=1000).pack(anchor='w',pady=5)
+  self.operating_log=tk.Text(operating,height=18,wrap='word',state='disabled');self.operating_log.pack(fill='both',expand=True)
+  qualification=ttk.Frame(tabs,padding=10);tabs.add(qualification,text='7  Qualification guide')
+  ttk.Label(qualification,text='All hardware qualification is performed in this standalone tester',style='Status.TLabel').pack(anchor='w')
+  ttk.Label(qualification,text='These are MANUAL procedure/evidence steps. Link real acquired runs for sensors, cables and RS485.\nThe current integrated acquisition observes ONE selected SIM, not sixteen simultaneous inputs.\nPower OFF before fault wiring; no automatic GSM fallback is implemented.',wraplength=1000).pack(anchor='w',pady=8)
+  from qualification import STEPS
+  guide=ttk.Treeview(qualification,columns=('step','title'),show='headings',height=10)
+  guide.heading('step',text='Step');guide.heading('title',text='Qualification check');guide.column('step',width=70);guide.column('title',width=800)
+  guide.pack(fill='x')
+  for i,(code,title,instruction) in enumerate(STEPS,1):guide.insert('','end',iid=code,values=(i,title))
+  detail=tk.Text(qualification,height=7,wrap='word',state='disabled');detail.pack(fill='both',expand=True,pady=8)
+  def show_step(event=None):
+   selected=guide.selection()
+   if selected:
+    code=selected[0];entry=next(x for x in STEPS if x[0]==code)
+    detail.configure(state='normal');detail.delete('1.0','end');detail.insert('end',entry[1]+'\n\n'+entry[2]);detail.configure(state='disabled')
+    if code in CHECKS:self.check.set(code);self.check_hint()
+  guide.bind('<<TreeviewSelect>>',show_step)
+  def choose_qualification():
+   if self.active or self.flash_running or self.diag_running:return messagebox.showwarning('Operation active','Finish the current operation first.')
+   from qualification import PROFILE,REVISION
+   self.fields['profile'].set(PROFILE);self.fields['procedure'].set(REVISION);self.check.set('bench_setup');self.check_hint();self.tabs.select(0)
+  ttk.Button(qualification,text='Select staged qualification scope',command=choose_qualification).pack(anchor='w')
   defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('sim_address','Integrated SIM address (1-4)','1'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
   for i,(key,label,default) in enumerate(defaults):
    ttk.Label(setup,text=label).grid(row=i,column=0,sticky='w',pady=3)
@@ -66,13 +109,20 @@ class App:
   ttk.Button(live,text='STOP AND FINALIZE RUN',command=self.finish).pack(anchor='e')
   ttk.Label(manual,text='Record checks before finalizing. Evidence is manual unless acquired automatically.\nUse English in report fields. Earlier attempts remain in the event ledger.',wraplength=1000).pack(anchor='w')
   self.check=tk.StringVar(value='visual'); self.manual_status=tk.StringVar(value='PASS')
-  self.checkbox=ttk.Combobox(manual,textvariable=self.check,values=list(CHECKS),state='readonly'); self.checkbox.pack(fill='x',pady=8); self.checkbox.bind('<<ComboboxSelected>>',self.check_hint)
+  self.checkbox=ttk.Combobox(manual,textvariable=self.check,values=list(CHECKS),state='readonly',width=45); self.checkbox.pack(fill='x',pady=8); self.checkbox.bind('<<ComboboxSelected>>',self.check_hint)
   self.hint=tk.StringVar(); ttk.Label(manual,textvariable=self.hint,wraplength=1000).pack(anchor='w')
   ttk.Combobox(manual,textvariable=self.manual_status,values=['PASS','FAIL','NOT TESTED'],state='readonly').pack(anchor='w',pady=8)
   self.evidence=tk.Text(manual,height=8,wrap='word'); self.evidence.pack(fill='x')
   self.measure={}; row=ttk.Frame(manual); row.pack(fill='x',pady=12)
   for key,label in [('value','Measured V'),('low','Approved min V'),('high','Approved max V'),('instrument','Meter ID')]:
    ttk.Label(row,text=label).pack(side='left'); v=tk.StringVar(); self.measure[key]=v; ttk.Entry(row,textvariable=v,width=14).pack(side='left',padx=4)
+  from qualification import FAULT_CODES
+  self.fault_code=tk.StringVar(value='')
+  ttk.Label(manual,text='Optional observed fault code (not an automatic diagnosis)').pack(anchor='w')
+  ttk.Combobox(manual,textvariable=self.fault_code,values=['']+list(FAULT_CODES),state='readonly',width=45).pack(anchor='w',pady=4)
+  ttk.Label(manual,text='Optional metrics JSON; required for qualification cable and endurance gates').pack(anchor='w',pady=(6,0))
+  self.manual_metrics=tk.Text(manual,height=3,wrap='word');self.manual_metrics.pack(fill='x',pady=4)
+  ttk.Label(manual,text='Cable: {"success_rate_percent":100}   Endurance: {"unexplained_reboots":0,"unrecovered_faults":0}',wraplength=950).pack(anchor='w')
   ttk.Button(manual,text='Save evidence / retest attempt',command=self.manual).pack(anchor='w')
   ttk.Button(manual,text='Capture Main pilot.7 USB diagnostics',command=self.main_diagnostics).pack(anchor='w',pady=8)
   ttk.Label(manual,text='Active manual-scope run only. Captures status / storage / rtc / simscan / gsmdiag. No flashing, commissioning or SMS.\nCaptured output is evidence, not an automatic PASS. Verify RTC cold boot and actual message receipt separately.',wraplength=1000).pack(anchor='w')
@@ -121,6 +171,10 @@ class App:
    self.rid=self.store.start(c,'DEMO' if demo else 'HARDWARE'); self.capture=Capture(self.store,self.rid,time.monotonic)
    if not demo and self.last_flash and self.last_flash['success'] and self.last_flash['operation']=='flash' and self.last_flash['unit']==c['unit'] and self.last_flash['port']==self.fields['port'].get() and self.last_flash.get('runtime',{}).get('board')==PROFILES[c['profile']][0]:
     self.store.append(self.rid,'note',{'qc_firmware_flash':self.last_flash,'evidence_boundary':'Host upload record; streamed version is not cryptographic binary attestation. Verify same physical board.'})
+   if not demo and PROFILES[c['profile']][0]=='main-rs485':
+    for event in self.operating_events:
+     if event.get('success') and event['unit']==c['unit'] and (event['target']!='esp32s3' or event['port']==self.fields['port'].get()):
+      self.store.append(self.rid,'note',{'operating_firmware_flash':event,'evidence_boundary':'Session upload evidence only. Operator must verify same physical boards and wiring.'})
    self.active=True; self.points={}; self.last=time.monotonic(); self.tree.delete(*self.tree.get_children()); self.canvas.delete('all')
    for ch in range(1,PROFILES[c['profile']][1]+1): self.tree.insert('','end',iid=str(ch),values=(ch,'-','-','WAITING'))
    self.stop_event=threading.Event()
@@ -174,6 +228,17 @@ class App:
   while True:
    try: rid,kind,value=self.messages.get_nowait()
    except queue.Empty: break
+   if kind=='operating_log':
+    self.operating_log.configure(state='normal');self.operating_log.insert('end',value+'\n');self.operating_log.see('end');self.operating_log.configure(state='disabled');continue
+   if kind=='operating_done':
+    self.flash_running=False;record,path=value
+    self.operating_state.set(('SUCCESS' if record['success'] else 'FAILED')+' | Evidence: '+str(path))
+    if record['success'] and record['operation']=='flash':
+     self.operating_events.append(record)
+     self.fields['profile'].set('Main + Nano / 4 sensors via RS485');self.profile_changed()
+     messagebox.showinfo('Operating firmware ready','Upload and operating runtime verified. This is not hardware acceptance.\nFinish both boards, power OFF, reconnect RS485, disconnect Nano USB and select Main COM before starting the integrated run. No platform commissioning was performed.')
+    elif not record['success']:messagebox.showerror('Operating firmware failed',record.get('error','See retained log'))
+    continue
    if kind=='flash_log':
     self.flash_log.configure(state='normal'); self.flash_log.insert('end',value+'\n'); self.flash_log.see('end'); self.flash_log.configure(state='disabled'); continue
    if kind=='flash_done':
@@ -242,6 +307,7 @@ class App:
   if target=='esp32s3': text+='\nUse the USB-UART connector. If auto-reset fails, use BOOT/RESET according to the board documentation.'
   else: text+='\nDisconnect HW-519 D0/D1. Confirm the selected bootloader baud.'
   if not messagebox.askokcancel('Confirm board and isolated wiring',text): return
+  if not detect: self.operating_events=[]
   self.flash_running=True; self.flash_state.set('Working. Do not disconnect the board or close the program.')
   def work():
    try:
@@ -249,6 +315,31 @@ class App:
    except Exception as exc:
     record={'success':False,'operation':'detect' if detect else 'flash','error':str(exc)}; path=self.home/'firmware-events'
    self.messages.put((None,'flash_done',(record,path)))
+  threading.Thread(target=work,daemon=True).start()
+ def flash_operating(self,detect):
+  if self.active or self.diag_running or self.flash_running:
+   return messagebox.showwarning('Serial port busy','Finalize the active run and wait for other operations.')
+  from operating import TARGETS,command,perform
+  from flashing import package_root
+  target=TARGETS[self.operating_target.get()];port=self.fields['port'].get()
+  unit=self.fields['unit'].get().strip();operator=self.fields['operator'].get().strip()
+  try:
+   if not unit or not operator:raise ValueError('Enter assembly serial and operator in Test setup')
+   address=int(self.fields['sim_address'].get())
+   if address not in range(1,5):raise ValueError('SIM address must be 1 to 4')
+   command(package_root(),target,port,detect)
+  except Exception as exc:return messagebox.showerror('Operating package or selection invalid',str(exc))
+  text=('Detection may reset the board; no write.' if detect else 'This writes OPERATING firmware, replacing QC/current firmware and possibly changing flash layout. It does not provision credentials. Preserve the backup before changing a commissioned device.')
+  text+='\nSelected: '+self.operating_target.get()+' on '+port+'\nUnit: '+unit+' / SIM address: '+str(address)+'\nConfirm one intended board, USB-only power, external power isolated, RS485 D0/D1 disconnected, other serial programs closed.'
+  if not messagebox.askokcancel('Confirm operating firmware operation',text):return
+  if not detect:
+   self.last_flash=None
+   self.operating_events=[e for e in self.operating_events if e['unit']!=unit or (e['target']=='esp32s3')!=(target=='esp32s3')]
+  self.flash_running=True;self.operating_state.set('Working. Do not unplug or close the program.')
+  def work():
+   try:record,path=perform(package_root(),target,port,unit,operator,self.home/'firmware-events',lambda line:self.messages.put((None,'operating_log',line)),detect,address)
+   except Exception as exc:record={'success':False,'operation':'detect' if detect else 'flash','error':str(exc)};path=self.home/'firmware-events'
+   self.messages.put((None,'operating_done',(record,path)))
   threading.Thread(target=work,daemon=True).start()
  def main_diagnostics(self):
   if not self.active or self.demo or PROFILES[self.capture.config['profile']][1]!=0:
@@ -272,7 +363,7 @@ class App:
   if not self.active: return messagebox.showwarning('No active run','Start a run first. Finalized records cannot be edited.')
   try:
    m={k:(float(v.get()) if v.get().strip() else None) for k,v in self.measure.items() if k!='instrument'}
-   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),**m)
+   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),fault_code=self.fault_code.get(),metrics=json.loads(self.manual_metrics.get('1.0','end').strip() or '{}'),**m)
    messagebox.showinfo('Recorded','Evidence appended. Earlier attempts remain recorded.')
   except Exception as e: messagebox.showerror('Evidence not saved',str(e))
  def finish(self):
