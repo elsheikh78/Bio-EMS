@@ -1,5 +1,8 @@
 # BIO-EMS Full Offline Windows Installer Plan
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/BUILD-RELEASE-AND-RECOVERY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Decision date:** 3 September 2026  
 **Status:** PILOT SETUP CLEAN-INSTALL VERIFIED / FULL LIFECYCLE + MULTI-MACHINE QUALIFICATION OPEN
 **Work package:** DEP-01 — Full Offline Windows Installer and Commissioning Package

@@ -1,5 +1,8 @@
 # ADR-022 — SYSTEM_OWNER Installation Provisioning and Customer RBAC
 
+> Documentation review: 2026-10-28. Architecture decision retained; implementation is assessed separately. [Current implementation guide](<../README.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Date:** 2 September 2026  
 **Status:** APPROVED / IMPLEMENTATION PENDING
 
@@ -119,4 +122,3 @@ CONFIGURATION_ACTIVE -> TECHNICAL_COMMISSIONING -> CUSTOMER_REVIEW -> COMMISSION
 - Audit, revision, controller receipt and Commissioning evidence are mandatory.
 - No installation, device application, Commissioning or customer acceptance is
   claimed until corresponding live evidence exists.
-

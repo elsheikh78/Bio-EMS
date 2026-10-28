@@ -1,0 +1,3096 @@
+{
+  "date": "2026-10-28",
+  "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+  "documents": [
+    {
+      "path": "CHANGELOG.md",
+      "title": "BIO-EMS Changelog",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/CHANGELOG.md",
+      "sha256": "a7815c3e1e25ede4c5e11c8a395b886284c32e1faaa156ddf6444160149d81fc",
+      "bytes": 30830,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "title": "Contributing to BIO-EMS",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/CONTRIBUTING.md",
+      "sha256": "d773798e32e4d8a6025629028c5f1fb5e808cfff58fee8b25013e9825d79c6ad",
+      "bytes": 4989,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "IMPLEMENTATION_PLAN.md",
+      "title": "BIO-EMS Implementation Plan",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/IMPLEMENTATION_PLAN.md",
+      "sha256": "cbbe3e217161e79e9581ebcf220bb670ecfb3a0338d33db796cb920ba7c5cc09",
+      "bytes": 18319,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "PILOT_SCOPE.md",
+      "title": "BIO-EMS Pilot Scope",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/PILOT_SCOPE.md",
+      "sha256": "d45cb85bbb2e77daf0119ad5c4d745c3e46310fdb7dce6812ebac284aff99f14",
+      "bytes": 5108,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "PROJECT_RULES.md",
+      "title": "BIO-EMS Development Rules",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/PROJECT_RULES.md",
+      "sha256": "a7f65c162cc700db4d9aedf607ea2e9884e622251146f832aa7677678ca619fd",
+      "bytes": 7976,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "PROJECT_STATE.md",
+      "title": "BIO-EMS Project State",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/PROJECT_STATE.md",
+      "sha256": "e68ed761bb52e7f1e5f5b0e5fb3be775aaff4b9d2792b5e90642e519d5688866",
+      "bytes": 38931,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "README.md",
+      "title": "BIO-EMS",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/README.md",
+      "sha256": "844adb7be890f329718b610ea283b108fb9fbfcdcb610e1b70235362072281b2",
+      "bytes": 12929,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "RISK_REGISTER.md",
+      "title": "BIO-EMS Risk Register",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/RISK_REGISTER.md",
+      "sha256": "014ef1660bd42579fb32ba451cc7bd51dce5dc5448c19abb06d21e919558b925",
+      "bytes": 5240,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "backend/README.md",
+      "title": "BIO-EMS Backend",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/backend/README.md",
+      "sha256": "18b500c0d9561a0b0bf89a47def281a219141704f44536ddb9cbac9fc536c8bb",
+      "bytes": 2692,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "company-cloud/README.md",
+      "title": "BIO-EMS Company Platform — Cloudflare pilot",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/company-cloud/README.md",
+      "sha256": "c77b169e9d47c603942aca6a948c2cf6aed91644199375b2d9d509692ee64549",
+      "bytes": 6754,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "company-mobile/README.md",
+      "title": "BIO-EMS Company for Android and iOS",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/company-mobile/README.md",
+      "sha256": "d6519b1d8615719ad953d140666c6b5395f2912d0a6f834d93406ad631ddaaf5",
+      "bytes": 5407,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/BIO-EMS-Alarm-Architecture.md",
+      "title": "BIO-EMS Alarm Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/BIO-EMS-Alarm-Architecture.md",
+      "sha256": "5c60ac8dff35692f6c74eae010772cafbe7881fea625e05ba1ac91adba46d72c",
+      "bytes": 2529,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/BIO-EMS-Design-Rules.md",
+      "title": "BIO-EMS Design Rules",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/BIO-EMS-Design-Rules.md",
+      "sha256": "7455cf1a3fe86b17750f364ba9268fa5ce19cf3686882f64f2d3dd504380181f",
+      "bytes": 459,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/BIO-EMS-MQTT-Protocol.md",
+      "title": "BIO-EMS MQTT Protocol",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/BIO-EMS-MQTT-Protocol.md",
+      "sha256": "c9fcc3a0c7f476dc7636c1956f1fa19e27df5bb5e90c206240bdd98af9886519",
+      "bytes": 814,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md",
+      "title": "BIO-EMS Site-Bound Licensing & Anti-Cloning Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/BIO-EMS-SITE-BOUND-LICENSING-ARCHITECTURE.md",
+      "sha256": "4e940573d7feb933a044156bb31c39a85564b9bbe4b8077b0a270fb4a590be2d",
+      "bytes": 13961,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/COMPANY-PILOT-LICENSE-SYNC.md",
+      "title": "Company pilot license synchronization",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/COMPANY-PILOT-LICENSE-SYNC.md",
+      "sha256": "bcfb00eb40f2f457aa0d798acc75fb080491bb084d8c86989a81ccd4e29d9610",
+      "bytes": 2371,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/HARDWARE-V1-MODULAR-COTS-ARCHITECTURE.md",
+      "title": "BIO-EMS Hardware V1 — Modular COTS Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/HARDWARE-V1-MODULAR-COTS-ARCHITECTURE.md",
+      "sha256": "a985c3f8d24e01910d65a07806d7445a03707e9ffb73d82ad35127793fdc3e85",
+      "bytes": 6284,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/PRODUCT_DECISIONS.md",
+      "title": "BIO-EMS Product Decisions",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/PRODUCT_DECISIONS.md",
+      "sha256": "b34f15412a6cf5295d165431cb152e561cafdd4a70c152f3963bbbb50b1f96e1",
+      "bytes": 12029,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/PROJECT-RD-PLANNING.md",
+      "title": "BIO-EMS Project R&D Planning",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/PROJECT-RD-PLANNING.md",
+      "sha256": "af174ddd6e87f69e79f20046264b57f0c846147f6d22e97c8535ebdb90e5cdb9",
+      "bytes": 16994,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/README.md",
+      "title": "BIO-EMS Documentation Index / فهرس التوثيق",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/README.md",
+      "sha256": "42d3d8f5b3f4e99e09b87ea64bda63dc87175745bc60e664e1d8f5d3fb3afa92",
+      "bytes": 38283,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/REALTIME_UI_UPDATE_BACKLOG.md",
+      "title": "Realtime Telemetry UI Update Backlog",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/REALTIME_UI_UPDATE_BACKLOG.md",
+      "sha256": "f39c33f334eb2f580175cd8ed304749408e460a2b5c5499fa97795f93a8a9b0b",
+      "bytes": 4868,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/SPRINT-08-ALARM-LIFECYCLE.md",
+      "title": "Sprint 08 - Alarm Lifecycle Management",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/SPRINT-08-ALARM-LIFECYCLE.md",
+      "sha256": "6159f0901acb2c3ff70a49428208ec51a8697e6f6f990d4a7a4fae6334f6d9ad",
+      "bytes": 3110,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/SPRINT-09-REST-API.md",
+      "title": "Sprint 09 – REST API Foundation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/SPRINT-09-REST-API.md",
+      "sha256": "499cd87e8ded1186853900ebebdee1fe1742c0b7d8df053cad3d6dbe2d9b5363",
+      "bytes": 1905,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/UPF-01-UNIVERSAL-PLATFORM-FOUNDATION.md",
+      "title": "UPF-01 — Universal Platform Foundation",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/UPF-01-UNIVERSAL-PLATFORM-FOUNDATION.md",
+      "sha256": "3b0bfaff9db0ea9c270431c058ef39f96cfca35ff7e48dfa401da79ceaab6a6e",
+      "bytes": 11412,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-001.md",
+      "title": "ADR-001",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-001.md",
+      "sha256": "6153792150d7fb64fe43984f6b5deb0492a5ed1543fe489dc7ef48ce527271bc",
+      "bytes": 168,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-002.md",
+      "title": "ADR-002",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-002.md",
+      "sha256": "7761c50af5d82fa6ddbcd06824e1a19950021420d13ad74962812a8ea80c9a8d",
+      "bytes": 169,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-003.md",
+      "title": "ADR-003",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-003.md",
+      "sha256": "8d11d043a8483cf811b68a6cb703b0d9204b767ef761e89d640eb19672152da0",
+      "bytes": 169,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-004-device-design.md",
+      "title": "ADR-004",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-004-device-design.md",
+      "sha256": "f3c962d89291df236eb1843fbf6f4ca9321878d01497df866209733651979b81",
+      "bytes": 2030,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-005-monitoring-points.md",
+      "title": "ADR-005",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-005-monitoring-points.md",
+      "sha256": "5d2a9bd80d7a0017d5e1f379707268e7de2e6bae61ffb264cd0d571e6b832d55",
+      "bytes": 2045,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-006-domain-naming.md",
+      "title": "ADR-006",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-006-domain-naming.md",
+      "sha256": "c176856256e2f99a3624a24a67328b11391d4cefcc536c779f2aaa368bde4101",
+      "bytes": 2304,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-007-device-abstraction.md",
+      "title": "ADR-007 Device Abstraction",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-007-device-abstraction.md",
+      "sha256": "5127c17424b33a7cb41b6709f06a1e116c8e07acf74999e709ccd9d328f0bc71",
+      "bytes": 1803,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-008-asset-centric-design.md",
+      "title": "ADR-008",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-008-asset-centric-design.md",
+      "sha256": "fa6e37306e2ecfae48f88c51d21d01a2d307fb9c48cfe55ad2bbcf35b00ce3c4",
+      "bytes": 1963,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-009-device-registration-policy.md",
+      "title": "ADR-009",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-009-device-registration-policy.md",
+      "sha256": "89406943fc5f1f2bdc365631f6032e878e18cd97aa6311a5b135a11b84a7521b",
+      "bytes": 2630,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-010-device-onboarding.md",
+      "title": "ADR-010",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-010-device-onboarding.md",
+      "sha256": "ba2f83ae78bbf3c34b4356917c7d8f8f6fa0324295a262e6654043710c873beb",
+      "bytes": 2882,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-011-Zone is an Engineering Concept.md",
+      "title": "ADR-011",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-011-Zone is an Engineering Concept.md",
+      "sha256": "b20cc016feb48a32ceb15357e81f97f8795fb33f1a864702a642ef51df8c8f69",
+      "bytes": 3265,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-012 - Zone Controller Architecture.md",
+      "title": "ADR-012",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-012 - Zone Controller Architecture.md",
+      "sha256": "8d590d4b5871a6dfedb829eb25172a0cb2fbe54e9a84aa2d44a8cf1459d48deb",
+      "bytes": 4220,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-013 -Zone Controller Placement Standard.md",
+      "title": "ADR-013",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-013 -Zone Controller Placement Standard.md",
+      "sha256": "6739562cd8410eb4332d40c66d3abc7b482b4f8539f9e464559aff04fec583be",
+      "bytes": 3097,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-014 -Home Run Wiring Standard.md",
+      "title": "ADR-014",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-014 -Home Run Wiring Standard.md",
+      "sha256": "3cd789d2b00dd977ce5681e83c0664c792e52063ed94df489ea0e1a07e0df52e",
+      "bytes": 3166,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-015-dashboard-aggregation-architecture.md",
+      "title": "ADR-015",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-015-dashboard-aggregation-architecture.md",
+      "sha256": "e293628d885348145e5b6a95757d28a5392acadb87cc7e492737aa8ef4c79ad8",
+      "bytes": 4041,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-016-dashboard-widget-api-architecture.md",
+      "title": "ADR-016",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-016-dashboard-widget-api-architecture.md",
+      "sha256": "d58f84b1e26d0c4bd8ff36ee0d539de36e421dd2b6debf6d95d5fc7235251a54",
+      "bytes": 3182,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-017-generic-telemetry-query-architecture.md",
+      "title": "ADR-017",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-017-generic-telemetry-query-architecture.md",
+      "sha256": "40de4b38e66c64e3a4697395c8fb13f21bfb5a74554bca8f19f9465e62be76a8",
+      "bytes": 3665,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-018-evidence-based-development-rule.md",
+      "title": "ADR-018",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-018-evidence-based-development-rule.md",
+      "sha256": "14f6b38b7aa176a8cb3ded9f2d0ec3bb181280ac6613f9bd722df000c342220e",
+      "bytes": 3681,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-019-frontend-foundation.md",
+      "title": "ADR-019",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-019-frontend-foundation.md",
+      "sha256": "b376928964f5b64e2074efaf5812b832f80ec1fd36819c1530e1f41d86dc9f5a",
+      "bytes": 3851,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-020-frontend-application-shell.md",
+      "title": "ADR-020",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-020-frontend-application-shell.md",
+      "sha256": "7f1f549032ae890640850be7c4e1932e6fd3e75ec005ae13e73b05ec02755596",
+      "bytes": 2918,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-021-frontend-authentication-session.md",
+      "title": "ADR-021: Frontend Authentication Session and Authorization-Aware Routing",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-021-frontend-authentication-session.md",
+      "sha256": "99a4918b505686387aeb8afff8db23c95913a16d3fad13ee0126a07337d3f4c4",
+      "bytes": 45630,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md",
+      "title": "ADR-022 — SYSTEM_OWNER Installation Provisioning and Customer RBAC",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-022-system-owner-installation-provisioning-and-customer-rbac.md",
+      "sha256": "ee1d8062e0270ea0f39102b9439165814fce83d2e2080e77580d9d2d4e7f2fdf",
+      "bytes": 5524,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/adr/ADR-023-customer-viewer-cloud.md",
+      "title": "ADR-023 — Customer read-only cloud monitoring",
+      "classification": "architecture-decision-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/adr/ADR-023-customer-viewer-cloud.md",
+      "sha256": "37ab4422770025e916db89af68f66aba2af41d537b7d4bd134a4103c914d036f",
+      "bytes": 2964,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-Architecture.md",
+      "title": "BIO-EMS Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-Architecture.md",
+      "sha256": "63e45625fac2a5f32684afc1f002e33e903be7cd05eee0dc7a69f2568520e8c6",
+      "bytes": 6022,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-Coding-Standards.md",
+      "title": "BIO-EMS-Coding-Standards.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-Coding-Standards.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-Database.md",
+      "title": "BIO-EMS Database Design",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-Database.md",
+      "sha256": "e00b6696e571aeb50b79a007bf9ef84a31f8dc4202c2f489adee0d80a3496af6",
+      "bytes": 4810,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-Design-Rules.md",
+      "title": "BIO-EMS Design Rules",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-Design-Rules.md",
+      "sha256": "8390ffd3d9818fb3124452335846fd59a58f6a11e90904ceb167848067edb1d8",
+      "bytes": 4859,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-MQTT-Protocol.md",
+      "title": "BIO-EMS MQTT Protocol",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-MQTT-Protocol.md",
+      "sha256": "7c7a718e717f5951e6b678d29512d1952498bbc4cc715664687f8f54ff11efca",
+      "bytes": 8133,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/BIO-EMS-Roadmap.md",
+      "title": "BIO-EMS-Roadmap.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/BIO-EMS-Roadmap.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/PRODUCT-CONFIGURABILITY-GAP-REGISTER.md",
+      "title": "BIO-EMS Product Configurability Gap Register",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/PRODUCT-CONFIGURABILITY-GAP-REGISTER.md",
+      "sha256": "20d0de929e3b376f2c58bd6643f88b9a67983976be40cc9dc53da4a9fa68fe5a",
+      "bytes": 4202,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/PRODUCT-CONFIGURABILITY-PRINCIPLE.md",
+      "title": "BIO-EMS Product Configurability Principle",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/PRODUCT-CONFIGURABILITY-PRINCIPLE.md",
+      "sha256": "0ea0528953ef596b723964d4d4d352f55f1dbd4c915796d32defe505a443e356",
+      "bytes": 4607,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/SYSTEM-OWNER-AUDIT-CONFIGURATION-FOUNDATION.md",
+      "title": "BIO-EMS System Owner, Audit, and Configuration Foundation",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/SYSTEM-OWNER-AUDIT-CONFIGURATION-FOUNDATION.md",
+      "sha256": "eea46d002388cbfaa5ea843a62f98a1dd0a7f5db0c878aeebb32ad8db1a4feda",
+      "bytes": 10351,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/api-design.md",
+      "title": "API Design",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/api-design.md",
+      "sha256": "5978413c3e6e21487e22a59ea369e2c6fd765df3a35e488ddb006c6fb588ff2e",
+      "bytes": 478,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/business-domain.md",
+      "title": "Business Domain",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/business-domain.md",
+      "sha256": "9ab6a2b76fbb07997efd925089b4c4dcc98c5fdd6730d387977bd5e80db9f8d3",
+      "bytes": 519,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/coding-guidelines.md",
+      "title": "coding-guidelines.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/coding-guidelines.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/database-design.md",
+      "title": "Database Design",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/database-design.md",
+      "sha256": "c2aed03a2f583641bf41415d58cc7e64bac91d4a9e3b745908879876a298e957",
+      "bytes": 1781,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/definition-of-done.md",
+      "title": "Definition of Done",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/definition-of-done.md",
+      "sha256": "77364902c47f485a65d0ade8ba7dd43f8302ff8a23c231af8c08545653dcb80d",
+      "bytes": 276,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/domain-driven-design.md",
+      "title": "Domain Driven Design",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/domain-driven-design.md",
+      "sha256": "6fc3ddedb3b46e3da986046d7b37006d20860166b44260727ee0b2d4d30f8a48",
+      "bytes": 897,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/domain-model.md",
+      "title": "BIO-EMS Domain Model",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/domain-model.md",
+      "sha256": "59283d252ce616708783f9217b219f6a3201b651fd00f27e1b31ee69d2562ae4",
+      "bytes": 2231,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/entity-relationships.md",
+      "title": "Entity Relationships",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/entity-relationships.md",
+      "sha256": "a3bbd7d0bf43b9951f1d7e760a69465c104ef53fbb896109fe1baf5233227a59",
+      "bytes": 1178,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/folder-structure.md",
+      "title": "folder-structure.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/folder-structure.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/implementation-boundaries.md",
+      "title": "implementation-boundaries.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/implementation-boundaries.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/mqtt-topics.md",
+      "title": "mqtt-topics.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/mqtt-topics.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/roadmap.md",
+      "title": "BIO-EMS Development Roadmap",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/roadmap.md",
+      "sha256": "2858d4efd9ea7e14925ac9852d50b4cca6e40ffbb39229ab85ecfb4b9adb3652",
+      "bytes": 7533,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/architecture/system-design.md",
+      "title": "BIO-EMS Enterprise Monitoring System",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/architecture/system-design.md",
+      "sha256": "4f0483b4c662bc850aab4baf4400fa1585805a5151702a53930051b8d5edb56e",
+      "bytes": 3237,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/archive/BIO-EMS-FULL-AUDIT-2026-08-17.md",
+      "title": "BIO-EMS Full Audit and Pilot Readiness Review",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/BIO-EMS-FULL-AUDIT-2026-08-17.md",
+      "sha256": "1f767ef3f1e1748a4106fe86e54c916dca4e71ee210f4aa652fa0c672467b910",
+      "bytes": 12179,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/README.md",
+      "title": "Historical documentation / التوثيق التاريخي",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/README.md",
+      "sha256": "f327cd23eaf1204f115fc3f547df27997cf8ddf5fde49dc9a9a812dd6951266d",
+      "bytes": 12871,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/SPRINT_PROGRESS.md",
+      "title": "Sprint Progress — Historical Ledger",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/SPRINT_PROGRESS.md",
+      "sha256": "0a7237fbcc3bd075bcf420e03e82aef7c5450d68584ca36c67dd281491cd9963",
+      "bytes": 6810,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/deployment/S15-07-READINESS-EVIDENCE.md",
+      "title": "S15-07 Deployment and Commissioning Readiness Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/deployment/S15-07-READINESS-EVIDENCE.md",
+      "sha256": "5fd69128f99c8d4e44cf1115cf5d26d09362a7da356a48ffd97f2172984fb19e",
+      "bytes": 2535,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/archive/project-management/BACKEND-FOUNDATION-BF-01-BF-08-CLOSURE.md",
+      "title": "Backend Foundation BF-01 through BF-08 — Final Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BACKEND-FOUNDATION-BF-01-BF-08-CLOSURE.md",
+      "sha256": "6d7d0c2dded3a932651e64930702ba2a18880912a533c1aa31552f4b49653bf5",
+      "bytes": 2141,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-01-SYSTEM-OWNER-BOUNDARY-CLOSURE.md",
+      "title": "BF-01 — SYSTEM_OWNER Authorization Boundary Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-01-SYSTEM-OWNER-BOUNDARY-CLOSURE.md",
+      "sha256": "65f29f076e1b6a803987e03f5d300b6144f5fc76c992364d673538f83a412a83",
+      "bytes": 4817,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-02-AUDIT-FOUNDATION-CLOSURE.md",
+      "title": "BF-02 — Append-only Audit Foundation Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-02-AUDIT-FOUNDATION-CLOSURE.md",
+      "sha256": "76fdfe9163c6ccd4467ed2756d45a290b5daccb58cbdd98b7a5d71647ff3df33",
+      "bytes": 3629,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-06-NOTIFICATION-RECIPIENT-DIRECTORY-CLOSURE.md",
+      "title": "BF-06 — Notification Recipient Directory Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-06-NOTIFICATION-RECIPIENT-DIRECTORY-CLOSURE.md",
+      "sha256": "7198e610e96eb9da5b43abb6c33a96a252a5520b09bbdb1c1966321bc3e7b2ee",
+      "bytes": 1576,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-07-ESCALATION-POLICY-CLOSURE.md",
+      "title": "BF-07 — Escalation Policy Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-07-ESCALATION-POLICY-CLOSURE.md",
+      "sha256": "483ef6aa3d06599ed06e590ceda0dd39c3e1b30ccdf08d066c798a4647f11e07",
+      "bytes": 1267,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-08-SITE-CONTROLLER-CONFIG-SYNC-CLOSURE.md",
+      "title": "BF-08 — Site Controller Configuration Sync Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-08-SITE-CONTROLLER-CONFIG-SYNC-CLOSURE.md",
+      "sha256": "6cbeb145cd1c8922d38df5cc168ebfc2d47757c2a73c234c849cc4b3ad57b4b2",
+      "bytes": 1341,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-01-FRONTEND-READINESS-CLOSURE.md",
+      "title": "BF-09-01 — Frontend Readiness and API Contracts Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-01-FRONTEND-READINESS-CLOSURE.md",
+      "sha256": "b7812f83a818f80926f6e4be4697708dc14b98b936a32d6fa8395a23f2b7ba76",
+      "bytes": 1485,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-02-SENSOR-CONFIGURATION-UI-CLOSURE.md",
+      "title": "BF-09-02 — Sensor Configuration UI Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-02-SENSOR-CONFIGURATION-UI-CLOSURE.md",
+      "sha256": "21b02ce010dc82047cf0d325183a2643cf88e1559ff71fa8ab7d69c7381990ba",
+      "bytes": 1400,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-03-NOTIFICATION-RECIPIENT-UI-CLOSURE.md",
+      "title": "BF-09-03 — Notification Recipient UI Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-03-NOTIFICATION-RECIPIENT-UI-CLOSURE.md",
+      "sha256": "8e4025b6a71a39d25eb59bf696f63b075b66bec26f180f659c9adc6b0312345b",
+      "bytes": 1439,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-04-ESCALATION-POLICY-UI-CLOSURE.md",
+      "title": "BF-09-04 — Escalation Policy UI Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-04-ESCALATION-POLICY-UI-CLOSURE.md",
+      "sha256": "246d32d7e1870940cae63adbea0a32f71638fab9d14baa40d719831430487a8f",
+      "bytes": 1465,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-05-AUDIT-USER-MANAGEMENT-UI-CLOSURE.md",
+      "title": "BF-09-05 — Audit Log and User Management UI Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-05-AUDIT-USER-MANAGEMENT-UI-CLOSURE.md",
+      "sha256": "a6df8ad1146f34074e971ffbd429756251ab48e9c25238b40c5253127cf51cf2",
+      "bytes": 1813,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/BF-09-06-FINAL-CLOSURE.md",
+      "title": "BF-09-06 — Final Frontend Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/BF-09-06-FINAL-CLOSURE.md",
+      "sha256": "3003fe32cf1eced9f1e190a1970e87e83422b31b1b53d234cc58c3e227e05861",
+      "bytes": 1403,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/COM-01-06-IMPLEMENTATION-CLOSURE-2026-09-16.md",
+      "title": "COM-01 through COM-06 — Source Implementation Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/COM-01-06-IMPLEMENTATION-CLOSURE-2026-09-16.md",
+      "sha256": "d21b8c1b781ccfa7abb1b66f8be9a6d25701485a53f6d81b16dc3a05a300ff55",
+      "bytes": 1673,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md",
+      "title": "BIO-EMS Complete Audit and Master Execution Order — 11 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md",
+      "sha256": "3648c55d80396984d1fe401908ebaa3721401c1b9e57864a6bc6ebf5eac83518",
+      "bytes": 12322,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/DEP-01-01-INSTALLER-FOUNDATION-CLOSURE-2026-09-07.md",
+      "title": "DEP-01-01 — Windows Installer Foundation Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DEP-01-01-INSTALLER-FOUNDATION-CLOSURE-2026-09-07.md",
+      "sha256": "7c57acbb5fa6bee0260bf9113c72a49760366eaa7e48185b6c7496b78fe6e0ee",
+      "bytes": 1657,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/DEP-01-02-INPUT-FREEZE-BUILD-CLOSURE-2026-09-08.md",
+      "title": "DEP-01-02 Input Freeze and Build Source Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DEP-01-02-INPUT-FREEZE-BUILD-CLOSURE-2026-09-08.md",
+      "sha256": "55463d3362f1c8f9a17d6804c2eec7e8f62e6c7e99141701d8cf8d92998e9a89",
+      "bytes": 1714,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES-CLOSURE-2026-09-08.md",
+      "title": "DEP-01-03 Protected Configuration and Services Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES-CLOSURE-2026-09-08.md",
+      "sha256": "999881f3e24d6f04cbef934a98f2ea5bb9dcf99dabcf0066d7393b0616e31999",
+      "bytes": 1460,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/DEP-01-04-HTTPS-FIREWALL-HEALTH-CLOSURE-2026-09-08.md",
+      "title": "DEP-01-04 HTTPS, Firewall and Health Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DEP-01-04-HTTPS-FIREWALL-HEALTH-CLOSURE-2026-09-08.md",
+      "sha256": "4aeaa2320c9384339ddd3c49f71b8ab3b5ae09a73a02476ecebee49659f57f4e",
+      "bytes": 1189,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/DEP-01-05-LIFECYCLE-RECOVERY-CLOSURE-2026-09-08.md",
+      "title": "DEP-01-05 Lifecycle Recovery Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DEP-01-05-LIFECYCLE-RECOVERY-CLOSURE-2026-09-08.md",
+      "sha256": "0d50b7c19bbfc6c7bf03df629b57516d05916e7100a5487d82eebff88957b1f1",
+      "bytes": 894,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/archive/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md",
+      "title": "BIO-EMS Documentation State Audit — 1 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/DOCUMENTATION-STATE-AUDIT-2026-09-01.md",
+      "sha256": "2b49953b7919a8f39cd10508189e39b728a625d2dcdaa20d67a94cae5c33ac3f",
+      "bytes": 6107,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/LIC-02-06-LICENSING-CORE-CLOSURE-2026-09-07.md",
+      "title": "LIC-02 through LIC-06 — Licensing Core Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/LIC-02-06-LICENSING-CORE-CLOSURE-2026-09-07.md",
+      "sha256": "1b2b6e928143c0b04ffb9da3522a10b61fbdf1dccbd542e26b078ff15bdd6539",
+      "bytes": 3345,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/archive/project-management/LIC-07-10-LICENSING-GOVERNANCE-CLOSURE-2026-09-07.md",
+      "title": "LIC-07 through LIC-10 — Licensing Governance Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/LIC-07-10-LICENSING-GOVERNANCE-CLOSURE-2026-09-07.md",
+      "sha256": "db64602f7b284f272eedc37a109fc903add7f38eeb66554461f5129e8dc92120",
+      "bytes": 2336,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/archive/project-management/LIC-11-13-PRODUCTION-PROTECTION-CLOSURE-2026-09-07.md",
+      "title": "LIC-11 through LIC-13 — Production Protection Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/LIC-11-13-PRODUCTION-PROTECTION-CLOSURE-2026-09-07.md",
+      "sha256": "be847208f66e5862c7e8f6fe00281aad0007e77b994414c5923ee9527f344a8e",
+      "bytes": 2387,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/LICENSING-ENTITLEMENTS-UI-CLOSURE-2026-09-28.md",
+      "title": "Licensing & Update Entitlements UI Closure — 2026-09-28",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/LICENSING-ENTITLEMENTS-UI-CLOSURE-2026-09-28.md",
+      "sha256": "ab4be7bd86a8001714033fd206aab64e8e0744bdd8beb7d3bd780a211ee74d36",
+      "bytes": 1941,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/archive/project-management/P1-CLOSURE-P2-EXECUTION-BASELINE-2026-08-31.md",
+      "title": "P1 Closure and P2 Execution Baseline — 31 August 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P1-CLOSURE-P2-EXECUTION-BASELINE-2026-08-31.md",
+      "sha256": "439b86c711ab735d134bfa9c48057903a98eea8c768d97dc2c26ffdff5cbfeb9",
+      "bytes": 3975,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P2-SOFTWARE-CLOSURE-2026-08-31.md",
+      "title": "P2 Site Controller Runtime — Software Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P2-SOFTWARE-CLOSURE-2026-08-31.md",
+      "sha256": "b8a72df6714e3cfc18bc1ae6a1eeaaee6a31528c65de4cc883bdc928d6a4f51b",
+      "bytes": 2160,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P3-05-09-COMMISSIONING-TOOLING-CLOSURE-2026-09-01.md",
+      "title": "P3-05 through P3-09 — Commissioning Tooling Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P3-05-09-COMMISSIONING-TOOLING-CLOSURE-2026-09-01.md",
+      "sha256": "3bf4d3206d0156ed96e6bf73991dbed740dfff0fa1cfdc67cf2ff1c58036357b",
+      "bytes": 1376,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P4-PRODUCTION-HARDENING-CLOSURE-2026-09-01.md",
+      "title": "P4 — Production Hardening Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P4-PRODUCTION-HARDENING-CLOSURE-2026-09-01.md",
+      "sha256": "807f5dae42c8977b4b03e8891b75f0cf513b22eb762fe43d94d2df39a83a8d21",
+      "bytes": 725,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P5-COMMERCIAL-OPERATIONS-CLOSURE-2026-09-01.md",
+      "title": "P5 — SYSTEM_OWNER Commercial Operations Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P5-COMMERCIAL-OPERATIONS-CLOSURE-2026-09-01.md",
+      "sha256": "5713c29e296713454085e2de78c48164a38ce5395bcc66b38477b11162822ebb",
+      "bytes": 611,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P6-PRODUCTIZATION-CLOSURE-2026-09-01.md",
+      "title": "P6 Productization / Deployment / Acceptance Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P6-PRODUCTIZATION-CLOSURE-2026-09-01.md",
+      "sha256": "f6333411e0aaefe22af2e7a7cbd338d72652de90e9bbca26aac17c08f2a05b72",
+      "bytes": 1235,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md",
+      "title": "P7-01 — SYSTEM_OWNER Frontend Boundary and Console Shell Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P7-01-SYSTEM-OWNER-CONSOLE-CLOSURE-2026-09-01.md",
+      "sha256": "f8a6d38bdb27bb039455d2b466fd2941923b5c581e2c22cc4a3c44fd2c1b1bf2",
+      "bytes": 2908,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md",
+      "title": "P7-02 — Customer / Site Fleet Management Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P7-02-CUSTOMER-SITE-FLEET-CLOSURE-2026-09-01.md",
+      "sha256": "06009e4858429cd96f1f435cb5604dc1251d9b1575d3d73363fc78fbc0f66eda",
+      "bytes": 3170,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md",
+      "title": "P7-03 through P7-08 — Software Product Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P7-03-08-SOFTWARE-PRODUCT-CLOSURE-2026-09-02.md",
+      "sha256": "3976d1729dae17281995b0ee3978e4be5c637bff99554a7bde2f17fbb1ed3066",
+      "bytes": 2580,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md",
+      "title": "P8-02 through P8-08 Source Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/P8-02-08-SOURCE-CLOSURE-2026-09-02.md",
+      "sha256": "3cfafb985043ed34b8dd17150a4fe2339f2b9d831321ff9c87c24baa1315e7b4",
+      "bytes": 3105,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SESSION-HANDOFF-AUDIT-2026-08-31.md",
+      "title": "BIO-EMS Audit and Session Handoff — 31 August 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SESSION-HANDOFF-AUDIT-2026-08-31.md",
+      "sha256": "f02ea97d6040a34132ec0876d27846857b79197242e09c544c343d691e60eae9",
+      "bytes": 6302,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-11-CLOSURE.md",
+      "title": "Sprint 11 — Engineering Foundation and Alarm Consolidation",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-11-CLOSURE.md",
+      "sha256": "3aa19844436975767a8e40657eb2964249bd561b133f74897fecb5f89e72d53d",
+      "bytes": 1212,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-12-CLOSURE.md",
+      "title": "Sprint 12 — Device Onboarding and Telemetry Trust Boundary",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-12-CLOSURE.md",
+      "sha256": "440e5260486aa448892e4d58a54a5b0556c14693e6d5753e186a4555f50805fd",
+      "bytes": 4137,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-13-CLOSURE.md",
+      "title": "Sprint 13 Closure Evidence",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-13-CLOSURE.md",
+      "sha256": "31d60e738389e0a6dbe55e83676b1f88cf2575f1ac0ac70b1df0b86fe843350f",
+      "bytes": 10350,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-14-CLOSURE.md",
+      "title": "Sprint 14 Closure — Frontend Application",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-14-CLOSURE.md",
+      "sha256": "c01a1d3edab46615ec2ae0f4d38ea0744b177fbe1df5e75d1b1216e460ef4155",
+      "bytes": 10574,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-14-S14-03-CLOSURE.md",
+      "title": "Sprint 14 — S14-03 Authentication and Session Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-14-S14-03-CLOSURE.md",
+      "sha256": "0fc98162e3ec7bec7e6717b5af2546caf78796dff17c68d340f821351482ded7",
+      "bytes": 2081,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-14-S14-04-CLOSURE.md",
+      "title": "Sprint 14 — S14-04 Operational Dashboard Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-14-S14-04-CLOSURE.md",
+      "sha256": "17b0899c0523298491423b4e76d6e7908927ee15b100012fd6b4c4f9bceee8ca",
+      "bytes": 2205,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-CLOSURE.md",
+      "title": "Sprint 15 Closure — Pilot Readiness Foundation",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-CLOSURE.md",
+      "sha256": "2aa6d5b6b181ccf6f0ec36e78a6176cf973a47b927c7b87c4d13900e76f1e4ae",
+      "bytes": 2863,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-01-CLOSURE.md",
+      "title": "S15-01 Closure — Sensor Lifecycle & Calibration Foundation",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-01-CLOSURE.md",
+      "sha256": "9a1fec9ebc4f4aa99022d283db27df569d64e255d040201c55feb0ff29464bbc",
+      "bytes": 3258,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-02-CLOSURE.md",
+      "title": "S15-02 Closure — Calibration History",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-02-CLOSURE.md",
+      "sha256": "cbad0416c45a113ed84ec753dcb4add09d84ebb561faf3ab94b1ac000ecd7778",
+      "bytes": 2874,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-03-CLOSURE.md",
+      "title": "S15-03 Closure — Device / Communication Health",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-03-CLOSURE.md",
+      "sha256": "d11234a041f2b27f0bfa937e04cb9db49b2b8741680fc9be312c872ecec408c6",
+      "bytes": 2839,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-04-CLOSURE.md",
+      "title": "S15-04 Closure — Notification Architecture",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-04-CLOSURE.md",
+      "sha256": "d5f4da71419234c8ca63585da52a130baba24a93b2d0c694f86684330ae638bf",
+      "bytes": 2805,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-05-CLOSURE.md",
+      "title": "S15-05 Closure — SMS Failover Contract",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-05-CLOSURE.md",
+      "sha256": "dc04cc891a0be5fa539baf24a6967b7cc7683c491be163e27988166b359544d4",
+      "bytes": 2769,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-06-CLOSURE.md",
+      "title": "S15-06 Closure — BIO EGYPT Pilot Documentation",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-06-CLOSURE.md",
+      "sha256": "f21d838812acb48317b1b05acbe3098f9539e1f8048f61484a9ada63dee722e4",
+      "bytes": 2819,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-15-S15-07-CLOSURE.md",
+      "title": "S15-07 Closure — Deployment & Commissioning Readiness",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-15-S15-07-CLOSURE.md",
+      "sha256": "176b2c0306ac47663e49b0be3359e03f0d5d1cbcd66bd43ed5d4f4043acc6c24",
+      "bytes": 2560,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-01-CLOSURE.md",
+      "title": "S16-01 Closure — Product, Reporting, Hardware, and Evidence Requirements Baseline",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-01-CLOSURE.md",
+      "sha256": "855ec5317a068a90b007e68a42dfae5fe3d56358cc8899a1925cc53ce0254e84",
+      "bytes": 2579,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-02-CLOSURE.md",
+      "title": "S16-02 Closure — Design System and High-Value Wireframes",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-02-CLOSURE.md",
+      "sha256": "eb8a545c9fcca9aebfa582cacaab7016833777cf12a5bb92633816fa4fa3a373",
+      "bytes": 2957,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-03-CLOSURE.md",
+      "title": "S16-03 Closure — Reporting Catalogue and Architecture",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-03-CLOSURE.md",
+      "sha256": "e1c0d9c57e6bdfc54d36ab28a523fc00183cd5c3c87209382422f40e8fc7af1a",
+      "bytes": 3403,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-04-CLOSURE.md",
+      "title": "S16-04 Closure — Site Controller v1 Hardware Design Review",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-04-CLOSURE.md",
+      "sha256": "b55e662449d96775037868a54f9748ce8d82084f6ce11ca7965df901a1dfffbf",
+      "bytes": 3306,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-06-CLOSURE.md",
+      "title": "S16-06 Closure — Executive Dashboard and Operational Charts",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-06-CLOSURE.md",
+      "sha256": "67bc75263973eb438ae7313403fbdae313d1332a2aa64b565cab998bff8b26b2",
+      "bytes": 3274,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-07-02-CLOSURE.md",
+      "title": "S16-07-02 Closure — Calibration History Preview",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-07-02-CLOSURE.md",
+      "sha256": "d84a65077503d3437751b0148df47c9925048e4b4a06bb63bdf28c4b46d5047f",
+      "bytes": 2610,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-07-03-CLOSURE.md",
+      "title": "S16-07-03 Closure — Reports Center UI and Calibration Preview",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-07-03-CLOSURE.md",
+      "sha256": "880b4bf797e69dd0449e6b3255caaee194cbf3f2ba92ae3ff92d4c5966d95951",
+      "bytes": 3477,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-07-04-CLOSURE.md",
+      "title": "S16-07-04 — Calibration History CSV Export Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-07-04-CLOSURE.md",
+      "sha256": "19575751c17dd626f727f4a6f3e9b99acfcd8562c08383bd46f5c452fa987896",
+      "bytes": 3970,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SPRINT-16-S16-07-05-CLOSURE.md",
+      "title": "SPRINT-16-S16-07-05-CLOSURE",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SPRINT-16-S16-07-05-CLOSURE.md",
+      "sha256": "910872957b7141d05d7389b59d714c71e6e01a030ff6af1c0cc9497d84f85c93",
+      "bytes": 1536,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md",
+      "title": "SYSTEM_OWNER Pilot End-to-End Acceptance — 23 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/SYSTEM-OWNER-E2E-PILOT-ACCEPTANCE-2026-09-23.md",
+      "sha256": "168517e3877feec7054705d163186a30022860423cdd112657c838ecf7dce2a3",
+      "bytes": 5866,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM-CLOSURE-2026-09-07.md",
+      "title": "UX-02 Brand and Shared Design System Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-02-BRAND-SHARED-DESIGN-SYSTEM-CLOSURE-2026-09-07.md",
+      "sha256": "bf026c356b1895da959b4ccf3cdbd17092722efdea7407e51af3872569bcfd13",
+      "bytes": 3460,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-03-OPENING-ENTRY-EXPERIENCE-CLOSURE-2026-09-07.md",
+      "title": "UX-03 Opening / Entry Experience Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-03-OPENING-ENTRY-EXPERIENCE-CLOSURE-2026-09-07.md",
+      "sha256": "814a09fdb92b5a5ab2ddef3cd2fbb9c447f07a9cc342af0ccbdd0f4f565cd512",
+      "bytes": 2416,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-04-COMPACT-OPERATIONAL-DASHBOARD-CLOSURE-2026-09-07.md",
+      "title": "UX-04 Compact Operational Dashboard Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-04-COMPACT-OPERATIONAL-DASHBOARD-CLOSURE-2026-09-07.md",
+      "sha256": "90faa2420320e6cd5a7ebfc368e8a190ad471fae2e1c598e942fed45603d61b7",
+      "bytes": 2795,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-05-MONITORING-AREAS-LIVE-BOARD-CLOSURE-2026-09-07.md",
+      "title": "UX-05 Monitoring Areas Live Board Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-05-MONITORING-AREAS-LIVE-BOARD-CLOSURE-2026-09-07.md",
+      "sha256": "8de87174b5ae75a418f15382dff16e0be65b76698e0c7a20aeadc680d2d5c756",
+      "bytes": 3069,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-06-HIGH-FREQUENCY-OPERATIONS-REFRESH-CLOSURE-2026-09-07.md",
+      "title": "UX-06 High-Frequency Operations Refresh Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-06-HIGH-FREQUENCY-OPERATIONS-REFRESH-CLOSURE-2026-09-07.md",
+      "sha256": "e903f3175a33ec678bd7e57a8412bf01977815185b3a10e0eaea5ab74ee55030",
+      "bytes": 2067,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-07-REMAINING-CUSTOMER-SURFACES-CLOSURE-2026-09-07.md",
+      "title": "UX-07 Remaining Customer Surfaces Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-07-REMAINING-CUSTOMER-SURFACES-CLOSURE-2026-09-07.md",
+      "sha256": "99474c84612c19003301a427f2c8495e32d39b15ff3de725db94c19173c58e27",
+      "bytes": 2015,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-REFRESH-CLOSURE-2026-09-07.md",
+      "title": "UX-08 SYSTEM_OWNER and P8 Workflow Refresh Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-08-SYSTEM-OWNER-P8-WORKFLOW-REFRESH-CLOSURE-2026-09-07.md",
+      "sha256": "fa72721035b7242df97f7bf3884e3b18acbc1b60b8b32c4ee1f4309078e355e7",
+      "bytes": 1926,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md",
+      "title": "UX-09 Full Regression Closure — 7 September 2026",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/project-management/UX-09-FULL-REGRESSION-CLOSURE-2026-09-07.md",
+      "sha256": "d53a25775734673621ce6507441a06e728fa72a6b2b76e2935a437c57a768fba",
+      "bytes": 3118,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/reporting/BF-10-CLOSURE.md",
+      "title": "BF-10 Reporting Software Closure",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/reporting/BF-10-CLOSURE.md",
+      "sha256": "6f443ecbedf98bdd4afc8187b990a2aaf7127cf639805b66a91f6142362a174f",
+      "bytes": 2270,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/archive/reporting/BF-10_READINESS_REVIEW.md",
+      "title": "BIO-EMS BF-10 Readiness & Safety Review",
+      "classification": "historical-immutable",
+      "snapshot_path": "docs/archive/reporting/BF-10_READINESS_REVIEW.md",
+      "sha256": "d903c1dbef023602b77e34d836cc6c56bd1736a69d0bd382465f6471f0ce11f8",
+      "bytes": 3397,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/COMPANY-CLOUD-PILOT-AR.md",
+      "title": "منصة الشركة المركزية — تجربة Cloudflare",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/COMPANY-CLOUD-PILOT-AR.md",
+      "sha256": "b2f2e27538fc111e2c520395558fac50d2b761c0e1fed0dd24fd392deb1dde53",
+      "bytes": 14018,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/current/COMPANY-MOBILE-APP-AR.md",
+      "title": "تطبيق منصة الشركة — Android وiOS",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/COMPANY-MOBILE-APP-AR.md",
+      "sha256": "6063b3ef00bd319edce1faf21aa1a3b7a1a33d20ec3c4d1272dcd41a8d0f8b46",
+      "bytes": 6747,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/current/CUSTOMER-MOBILE-ANDROID-IOS.md",
+      "title": "Customer native mobile app — Android and iOS",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/CUSTOMER-MOBILE-ANDROID-IOS.md",
+      "sha256": "4fe652c79e3fafdee118e1519b1fae60e7299f5065a84837bebcdd26d16f31ec",
+      "bytes": 1747,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/current/CUSTOMER-VIEWER-PORTAL-AR.md",
+      "title": "بوابة متابعة العميل — BIO-EMS Connect",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/CUSTOMER-VIEWER-PORTAL-AR.md",
+      "sha256": "7670959bdd17ab2ba538934c248881d7dfe9e0e0e1abada4e3830b1c968b2da6",
+      "bytes": 13634,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/current/HARDWARE-TESTING-STANDALONE-2026-10-28.md",
+      "title": "Hardware qualification moved to the standalone tester",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/HARDWARE-TESTING-STANDALONE-2026-10-28.md",
+      "sha256": "102b3db772bc6ab649803c3f877832579d0dc39bdcfa310e76889be939760087",
+      "bytes": 3103,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/HW-519-RS485-BENCH-CONTRACT-2026-10-06.md",
+      "title": "BIO-EMS HW-519 RS485 bench interface contract",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/HW-519-RS485-BENCH-CONTRACT-2026-10-06.md",
+      "sha256": "7f452594e3f93926d37a94a724c5ffebe1776827e17487a59a1662f2cca22761",
+      "bytes": 3824,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md",
+      "title": "هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md",
+      "sha256": "d6f37903e7c8bec32d7e5bc0d9665148ba2c251651a45cbeff95c32a2dbf1c59",
+      "bytes": 11783,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md",
+      "title": "استعادة كلمة مرور Admin بملف موقّع من الشركة",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md",
+      "sha256": "1cf47cd492187f785bcbeebe7fe0b167046f2f38cbfb897835dd87e0127658ee",
+      "bytes": 10390,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/current/PILOT-BUILD-NOTES-2026-10-10.md",
+      "title": "Pilot build notes — 10 October 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/PILOT-BUILD-NOTES-2026-10-10.md",
+      "sha256": "ec6747ead03695174e5826fd23e75c07f327975bcfcef4c26c5b2f255bb857e8",
+      "bytes": 4708,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md",
+      "title": "Pilot network selection and client updates",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md",
+      "sha256": "7e2c2d4e0f55d47d2075c16e3debf162ec51562984b49a39f0d13ba998ddcc7d",
+      "bytes": 5649,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/PROJECT-CHECKPOINT-2026-10-26.md",
+      "title": "Project documentation checkpoint — 26 October 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/PROJECT-CHECKPOINT-2026-10-26.md",
+      "sha256": "9309b2f0b31e155de0ca6a7317f53f6870f50bd669fb361db8c64146c9a47ed6",
+      "bytes": 6482,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/README.md",
+      "title": "Current documentation / التوثيق الحالي",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/README.md",
+      "sha256": "edc627abd2a60d137c373cd5c4393acc6e16c11e5be36f898d8315de9c5b5979",
+      "bytes": 5159,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/current/SD-OFFLINE-REPLAY.md",
+      "title": "SD offline telemetry replay — controller pilot.6",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/SD-OFFLINE-REPLAY.md",
+      "sha256": "4f4c291489d1fdb35b8d80111f53c7c6bf2e5d857705d79c3fec7bba905d9c2e",
+      "bytes": 4143,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/current/SD-REPLAY-VALIDATION-2026-10-18.md",
+      "title": "SD replay validation — 18 October 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/SD-REPLAY-VALIDATION-2026-10-18.md",
+      "sha256": "bb5851499fd8fe95d6106a9e4dad77a9c643e5b04af63b67f327564459423762",
+      "bytes": 1872,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/current/SIM-D4-DISCOVERY-AND-MAPPING.md",
+      "title": "SIM-D4 discovery and sensor mapping — integration candidate",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/SIM-D4-DISCOVERY-AND-MAPPING.md",
+      "sha256": "ffabec91bd5a180ece1ca5b7f0cc8c6c6569c5417966c5b038c995e34657967b",
+      "bytes": 2760,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md",
+      "title": "حالة نشر بوابة العميل — 14 أكتوبر 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md",
+      "sha256": "39b1172ff4c04db4d3d51f4b7e78b201be187644301147778a9183b26a4deeab",
+      "bytes": 6280,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "docs/deployment/DEP-01-02-INPUT-FREEZE-AND-BUILD.md",
+      "title": "DEP-01-02 Exact Input Freeze and Deterministic Build Source",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/DEP-01-02-INPUT-FREEZE-AND-BUILD.md",
+      "sha256": "d6d0c20fd82c3783cd2931aa3f1a5b99e34325887647522bc6e5828b6b12dfae",
+      "bytes": 3685,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES.md",
+      "title": "DEP-01-03 Protected Configuration and Windows Services",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES.md",
+      "sha256": "43389cd9465dedea409943c3577509a7e8a789e2597b4ad58bf18e18dc3b8e80",
+      "bytes": 2905,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/DEP-01-04-HTTPS-FIREWALL-HEALTH.md",
+      "title": "DEP-01-04 HTTPS, Firewall and Post-Install Health",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/DEP-01-04-HTTPS-FIREWALL-HEALTH.md",
+      "sha256": "c18cc3dcf983109956d15403fda69e602280e50e1b6c1147c0d43f09c97e840c",
+      "bytes": 1646,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/DEP-01-05-LIFECYCLE-RECOVERY.md",
+      "title": "DEP-01-05 Lifecycle Recovery",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/DEP-01-05-LIFECYCLE-RECOVERY.md",
+      "sha256": "fd050668481dc46b3bff162615c775bc995a1a80ad15968efafa66a7c15e2cc1",
+      "bytes": 1261,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/deployment/DEP-01-WINDOWS-INSTALLER-FOUNDATION.md",
+      "title": "DEP-01 Windows Installer Foundation",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/DEP-01-WINDOWS-INSTALLER-FOUNDATION.md",
+      "sha256": "69c6194a87e159b027e63c767c3adf3eb136a61f67ed7f130fb201aabd5e9667",
+      "bytes": 2211,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md",
+      "title": "BIO-EMS Full Offline Windows Installer Plan",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md",
+      "sha256": "e9be013d8b81d707b60748e9221c7781f84f001dc82e9b6af72c46db8352e676",
+      "bytes": 9214,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/LICENSING-INSTALLER-INTEGRATION.md",
+      "title": "Licensing Installer Integration Contract",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/LICENSING-INSTALLER-INTEGRATION.md",
+      "sha256": "82ec118d819c9056d9067952f1e9db95685064a59251881c0f1bd09f4a93655d",
+      "bytes": 2122,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md",
+      "title": "SYSTEM_OWNER Bootstrap and Platform JWT Runbook",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md",
+      "sha256": "f6a60f6ca8009ead7a911b449f213db00f5344c035733c854350f3b06c199002",
+      "bytes": 7666,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/deployment/deployment-architecture.md",
+      "title": "BIO-EMS Pilot Deployment Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/deployment-architecture.md",
+      "sha256": "2a0366bdeb48b5c3065d418c43f66893a7a697e0b6c840bd4787e230a355629d",
+      "bytes": 2651,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/production-runbook.md",
+      "title": "BIO-EMS Pilot Production Runbook",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/production-runbook.md",
+      "sha256": "214f01804351dd05322e8fc94f3835996011524ee8e6664df11057e0a8e2b947",
+      "bytes": 6298,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/deployment/site-controller-integration-contract.md",
+      "title": "BIO-EMS Site Controller Integration Contract",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/deployment/site-controller-integration-contract.md",
+      "sha256": "c11b9128942a4fdbd951745b52cfe07a464da89fd854bc9dbf859f204a1dc5d1",
+      "bytes": 2833,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "docs/development/API-Development-Standard.md",
+      "title": "BIO-EMS API Development Standard",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/development/API-Development-Standard.md",
+      "sha256": "894052f1c81c7fc7e48501a4bada6d7392728e52f53a3b06137c2186b8a7698c",
+      "bytes": 2934,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/ADR_POLICY.md",
+      "title": "BIO-EMS ADR Policy",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/ADR_POLICY.md",
+      "sha256": "b20129b76e2ddffb2517b9fa27aab58469f2c6b14e7139050150524d173bd378",
+      "bytes": 12245,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/AI_DEVELOPMENT_WORKFLOW.md",
+      "title": "BIO-EMS AI Development Workflow",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/AI_DEVELOPMENT_WORKFLOW.md",
+      "sha256": "95d6be312a2d28770c926824bdae9af746cb6a186c7ffca28dabdf630f11c108",
+      "bytes": 15389,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/ARCHITECTURE_PRINCIPLES.md",
+      "title": "BIO-EMS Architecture Principles",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/ARCHITECTURE_PRINCIPLES.md",
+      "sha256": "a3409df740cc6b73f61d7981529314a976509155199b1933495622a414e5c381",
+      "bytes": 16144,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/CODE_REVIEW_CHECKLIST.md",
+      "title": "BIO-EMS Code Review Checklist",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/CODE_REVIEW_CHECKLIST.md",
+      "sha256": "87a2d1015ce6b14dcdef9991ec3a21a31bf5a3a294ec71520d243c581c491453",
+      "bytes": 11526,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/DOMAIN_GUIDELINES.md",
+      "title": "BIO-EMS Domain Guidelines",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/DOMAIN_GUIDELINES.md",
+      "sha256": "c90e26553c67411e11b216b2fa5b9906e01bead3acc894207a7f2d5be7e679ad",
+      "bytes": 13491,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/ENGINEERING_GLOSSARY.md",
+      "title": "BIO-EMS Engineering Glossary",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/ENGINEERING_GLOSSARY.md",
+      "sha256": "db2d8aec5a3b340af308e3de05e64c34cf28982125083eb279a484ba91be525f",
+      "bytes": 19751,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/ENGINEERING_PLAYBOOK.md",
+      "title": "BIO-EMS Engineering Playbook",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/ENGINEERING_PLAYBOOK.md",
+      "sha256": "5caed92d03de96e9ad99404afe3a7f13e7a89d8a743c9fbb8cfec34c53756884",
+      "bytes": 22018,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/GIT_WORKFLOW.md",
+      "title": "BIO-EMS Git Workflow",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/GIT_WORKFLOW.md",
+      "sha256": "cdaafde4cfc75246ab1667a951aea7b4dad9726238c5f4cd03487f24ff794d04",
+      "bytes": 11527,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/README.md",
+      "title": "BIO-EMS Engineering Handbook",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/README.md",
+      "sha256": "39564aa8687766a68d81cf3640a69dd06ba9c440dc6a70727309bbd070264ad3",
+      "bytes": 8139,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/RELEASE_PROCESS.md",
+      "title": "BIO-EMS Release Process",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/RELEASE_PROCESS.md",
+      "sha256": "047d9ca604225ba62c9f854ec9e852093e85495b2411f194743da4f3e9755fb8",
+      "bytes": 17281,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/engineering/TESTING_GUIDELINES.md",
+      "title": "BIO-EMS Testing Guidelines",
+      "classification": "governance-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/engineering/TESTING_GUIDELINES.md",
+      "sha256": "051abbdf9b560362a31f90fa5766724d4abb191f4b5f75420d40e8ebbb4e9e90",
+      "bytes": 13284,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/DEVELOPER-AND-TESTING.md"
+    },
+    {
+      "path": "docs/hardware/APPROVED_HARDWARE.md",
+      "title": "BIO-EMS Approved Hardware Register",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/APPROVED_HARDWARE.md",
+      "sha256": "3bcc7ed57ee8b468daabede9e1bccc1b2fb44a9d60338642818a98d8fdc53d44",
+      "bytes": 3810,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/BIO-EGYPT-PILOT-HARDWARE-TEST-PROTOCOL.md",
+      "title": "BIO-EMS — BIO EGYPT Pilot Hardware Test Protocol",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/BIO-EGYPT-PILOT-HARDWARE-TEST-PROTOCOL.md",
+      "sha256": "a38ab08da23acf18e6db353994eba63b5949b6a1f656a34c72804a3d22491358",
+      "bytes": 6814,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md",
+      "title": "BIO-EMS — BIO EGYPT Pilot Initial Hardware Validation Plan",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/BIO-EGYPT-PILOT-INITIAL-HARDWARE-VALIDATION-PLAN.md",
+      "sha256": "1c028d575d016bda742e2dd483d354a46a4be3375718c42c9ec96296354471d1",
+      "bytes": 10645,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/BIO-EMS-HARDWARE-SESSION-2026-10-19.md",
+      "title": "BIO-EMS — Hardware Inventory and Preparation Record",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/BIO-EMS-HARDWARE-SESSION-2026-10-19.md",
+      "sha256": "16ca93e9b3a8904ff0bb3c18344516fe3c33de0821ceeaa6aaebcd78dbdb9d32",
+      "bytes": 7023,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md",
+      "title": "BIO-EMS Modular Hardware Architecture — Approved Pilot Baseline",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md",
+      "sha256": "93cfd08b0465dbed6ee1d78506d082be577615627db54190c2bc234654213b98",
+      "bytes": 16106,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/BIO-EMS-PDU-24-S5-STANDARD-2026-09-24.md",
+      "title": "BIO-EMS PDU-24 Standard — Product Architecture",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/BIO-EMS-PDU-24-S5-STANDARD-2026-09-24.md",
+      "sha256": "e8dc35cd34cf87dee8c08cfc64535e6f91b98b462303db4870bc7badedd8af6b",
+      "bytes": 9500,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/HARDWARE-PROTECTION-BOM-CABLE-UPDATE-2026-08-27.md",
+      "title": "BIO-EMS Hardware Protection, BOM and Cable FAT Update — 2026-08-27",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/HARDWARE-PROTECTION-BOM-CABLE-UPDATE-2026-08-27.md",
+      "sha256": "be02d48bbd2c46e129b149b70f42d23c9dd4a6e623eff36b759810d6fba83a8a",
+      "bytes": 6997,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/HW-PWR-01-EL-MANIAL-24V-PDU-DESIGN-2026-09-24.md",
+      "title": "HW-PWR-01 — El Manial 24 VDC Power Budget & PDU-24 Design",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/HW-PWR-01-EL-MANIAL-24V-PDU-DESIGN-2026-09-24.md",
+      "sha256": "0bd475ccc5d7e019b4196eda75faa39c33bd3dcd85840afc9a844fde3113e7f4",
+      "bytes": 11489,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/HW-SIM-01-PILOT-SIM-T4-NO-CUSTOM-PCB-2026-09-24.md",
+      "title": "HW-SIM-01 — BIO-EMS SIM-T4 Pilot Design (No Custom PCB)",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/HW-SIM-01-PILOT-SIM-T4-NO-CUSTOM-PCB-2026-09-24.md",
+      "sha256": "ecf2de3449f101baf61146a936655de35535030b546a32e765363006228f2468",
+      "bytes": 30195,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md",
+      "title": "MAIN-16-2G and SIM-D4 Rev.A bench baseline",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md",
+      "sha256": "de7ffd4152bd9596afecbaa795d2015a506ef6382df6a50eea9d316361f5a588",
+      "bytes": 5023,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md",
+      "title": "Main-unit central backup power and SD storage",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md",
+      "sha256": "4fa2fb234159f0862fdb6f5d335d355322ad854ea1821bd7536975b6c3a52eb1",
+      "bytes": 6874,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/MAIN-SIM-WIRING-REFERENCE-2026-10-20.md",
+      "title": "BIO-EMS — Main + SIM-D4 wiring and mounting reference",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/MAIN-SIM-WIRING-REFERENCE-2026-10-20.md",
+      "sha256": "ba147bba977f137521f464e10a58a3754a13c2ee5659793fc9de38a57a481333",
+      "bytes": 18666,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/PILOT-HARDWARE-DISCUSSION-2026-08-26.md",
+      "title": "BIO-EMS Pilot Hardware Discussion — 2026-08-26",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/PILOT-HARDWARE-DISCUSSION-2026-08-26.md",
+      "sha256": "501c9f8a2dc7e2d2c618e3919c72571118fe7720402767aefede800896490d50",
+      "bytes": 14933,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/installation-guide.md",
+      "title": "installation-guide.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/installation-guide.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/wiring-reference/README.md",
+      "title": "مرجع Main + SIM — 20 أكتوبر 2026",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/wiring-reference/README.md",
+      "sha256": "700e31ad24e9af0dd3ef1e38c0d236d3ff334281338ffde65d2ffc165e890069",
+      "bytes": 4912,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/wiring-standard.md",
+      "title": "wiring-standard.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/wiring-standard.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/zc-16.md",
+      "title": "zc-16.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/zc-16.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/hardware/zone-controller.md",
+      "title": "zone-controller.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/hardware/zone-controller.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BE-002-MARKED-UP-SENSOR-POSITION-PACK.md",
+      "title": "BE-002 — Marked-up Sensor Position Evidence Pack",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BE-002-MARKED-UP-SENSOR-POSITION-PACK.md",
+      "sha256": "7de785c47973572b268da707a75b3f60f779861c09f4eb364c8db128f661b80b",
+      "bytes": 5642,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-COMMISSIONING.md",
+      "title": "BIO EGYPT Pilot — Commissioning and Acceptance Record",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-COMMISSIONING.md",
+      "sha256": "c3d0f542cd742ca071be18f96c5a2fb39c6f205dc52fa61db59d206552759a34",
+      "bytes": 4693,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-CUSTOMER-EVIDENCE-REGISTER-2026-08-31.md",
+      "title": "BIO EGYPT Customer Evidence Register - 31 August 2026",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-CUSTOMER-EVIDENCE-REGISTER-2026-08-31.md",
+      "sha256": "74c039a3f495a2c027fe4d152dc2c78067fbdf5557ecacb24e07845ed2d01db2",
+      "bytes": 3509,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-INSTALLATION-WIRING.md",
+      "title": "BIO EGYPT Pilot — Installation and Wiring Requirements",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-INSTALLATION-WIRING.md",
+      "sha256": "f94038b3f0ffc596b08ee2a86f3d90b88296621825b28347fe50b72fb0579374",
+      "bytes": 3891,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-OPEN-ITEMS.md",
+      "title": "BIO EGYPT Pilot — Open-Items Register",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-OPEN-ITEMS.md",
+      "sha256": "9e1d72cd7f149759c08e8f27d0f2fed60c9afb9108c71cf608ba9985fb94a70e",
+      "bytes": 12581,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-PILOT-SCOPE.md",
+      "title": "BIO EGYPT Pilot — Controlled Scope",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-PILOT-SCOPE.md",
+      "sha256": "fc1800da88b3ae505d87b6ffb7a9d6df3a1fe6421388255611657bf3e14a4e55",
+      "bytes": 2400,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-SENSOR-MAP.md",
+      "title": "BIO EGYPT Pilot — Sensor and Channel Map",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-SENSOR-MAP.md",
+      "sha256": "f1e9a2c7ca9576b1f836d60a552f0419ad75aec2470c6a22c9c141303cbeb892",
+      "bytes": 5052,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-SITE-SURVEY-PACK.md",
+      "title": "BIO EGYPT Pilot — Controlled Site Survey Pack",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-SITE-SURVEY-PACK.md",
+      "sha256": "6e5bceac3a3ab8fa5367fd2e95bb11ef52f15423e286cacfb7e55f31e28209fd",
+      "bytes": 33488,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/BIO-EGYPT-SOFTWARE-UAT-GUIDE.md",
+      "title": "BIO EGYPT Software UAT Guide",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/BIO-EGYPT-SOFTWARE-UAT-GUIDE.md",
+      "sha256": "d1a2b15c85bacc07a0f65392253686dbef18654488099fcc0fa58783d6594867",
+      "bytes": 1555,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md",
+      "title": "BIO EGYPT El Manial — Hardware Design & Procurement Baseline",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md",
+      "sha256": "e91f4d614941bbb40d1b9d07e15e9103d3dd00626b114b65134bdb60002cb4d4",
+      "bytes": 10447,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/pilot/bio-egypt/README.md",
+      "title": "BIO EGYPT Pilot Documentation Package",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/README.md",
+      "sha256": "491099ee34e9a4e6c7b5a6643b5c6ae6fb38380c1432dcedae2f0cfb74478429",
+      "bytes": 2972,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/QUALIFICATION-AND-ACCEPTANCE.md"
+    },
+    {
+      "path": "docs/product/BIO-EMS-ARABIC-PROJECT-GUIDE.md",
+      "title": "BIO-EMS — الشرح التفصيلي للمشروع",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/BIO-EMS-ARABIC-PROJECT-GUIDE.md",
+      "sha256": "bc313a14c15633694209d93ebd02efcb8e0fe44112f17de17c929135c8590b6c",
+      "bytes": 23892,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/product/SPRINT-16-S16-02-DESIGN-SYSTEM-WIREFRAMES.md",
+      "title": "Sprint 16 — S16-02 Design System and High-Value Wireframes",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/SPRINT-16-S16-02-DESIGN-SYSTEM-WIREFRAMES.md",
+      "sha256": "0431fba3c1171b7988b7f3cd8ba5490c07847f5308c0e3515ad71cf09cf28575",
+      "bytes": 15298,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/product/product-principles.md",
+      "title": "Product Principles",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/product-principles.md",
+      "sha256": "21fc20afc80c4a6716bc9f43dd58d453ca10e15e0561381056ca8cbb46698f36",
+      "bytes": 625,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/product/product-vision.md",
+      "title": "product-vision.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/product-vision.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/product/security-roadmap.md",
+      "title": "Security Roadmap",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/security-roadmap.md",
+      "sha256": "83c0350b6a7d0133a5418ae0042605874aabe5b954a6b0b372066026175173c1",
+      "bytes": 497,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/product/user-journey.md",
+      "title": "User Journey",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/product/user-journey.md",
+      "sha256": "9742b253f2ea8cc6abc350b13379469494cb1a08e64799e1e7809d1bfc45cfdb",
+      "bytes": 684,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "docs/project-ideas.md",
+      "title": "Project Ideas",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-ideas.md",
+      "sha256": "c3fca231945199abe39c55d33b8e914cd327975d37346a9e9c89cf4f02788531",
+      "bytes": 655,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BACKEND-FOUNDATION-SYSTEM-OWNER-AUDIT-CONFIGURATION-WORK-PACKAGE.md",
+      "title": "Backend Foundation — SYSTEM_OWNER, Audit Trail, and Commercial Configuration Work Package",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BACKEND-FOUNDATION-SYSTEM-OWNER-AUDIT-CONFIGURATION-WORK-PACKAGE.md",
+      "sha256": "fb9b4a9535aa311ac3968b79c73344c9ce777cf1ba053145d98c9913189a20e9",
+      "bytes": 10840,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-03-USER-AUDIT-INTEGRATION.md",
+      "title": "BF-03 — User Management Audit Integration",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-03-USER-AUDIT-INTEGRATION.md",
+      "sha256": "d040808d6c317eb0a4b25bb8ff08de276d46c77a3e3cf2d9564206e4b200c6f4",
+      "bytes": 5496,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-04-EDITABLE-ALARM-THRESHOLDS.md",
+      "title": "BF-04 — Editable Sensor Alarm Thresholds",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-04-EDITABLE-ALARM-THRESHOLDS.md",
+      "sha256": "4cadf115a751b2ee758a4b2453b3237411daa664004dda5b0cb4a641ef4b5dae",
+      "bytes": 5012,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-05-CONFIGURABLE-ALARM-DELAY.md",
+      "title": "BF-05 — Configurable Alarm Persistence/Delay",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-05-CONFIGURABLE-ALARM-DELAY.md",
+      "sha256": "692ec6370ceabc48c9de76a4ea238628981612b9bb98aa53f9d57831fe510cc9",
+      "bytes": 5130,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-06-NOTIFICATION-RECIPIENT-DIRECTORY.md",
+      "title": "BF-06 — Notification Recipient Directory",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-06-NOTIFICATION-RECIPIENT-DIRECTORY.md",
+      "sha256": "17dc101484158b8ca10f9ee75a260c60557e770792ab0d1ddcf9cd569be34eaf",
+      "bytes": 4008,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-07-ESCALATION-POLICY.md",
+      "title": "BF-07 — Escalation Policy",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-07-ESCALATION-POLICY.md",
+      "sha256": "be6db4b8352e8a41c41a3b51407dbfb91b535dda277d29eefa9507eabfa30c28",
+      "bytes": 2036,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-08-SITE-CONTROLLER-CONFIG-SYNC-CONTRACT.md",
+      "title": "BF-08 — Site Controller Offline-Critical Configuration Sync Contract",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-08-SITE-CONTROLLER-CONFIG-SYNC-CONTRACT.md",
+      "sha256": "805199f6c98db8e6ea391022464c211caca051de1efe7448bd0771f5d504efc7",
+      "bytes": 2579,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/BF-09-FRONTEND-READINESS-WORK-PACKAGE.md",
+      "title": "BF-09 — Frontend Readiness Work Package",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/BF-09-FRONTEND-READINESS-WORK-PACKAGE.md",
+      "sha256": "b41ce591c575091884cb7fffd422d6ae748432c3c1f50f7988dde893fc4816df",
+      "bytes": 4999,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md",
+      "title": "BIO-EMS Communication Channel Administration Work Package",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md",
+      "sha256": "79540cb0b51cbbe761f58bc578647441d2a5a16445685093afb50733ffe5a3ff",
+      "bytes": 10476,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/CONTROLLED-HANDOFF-2026-09-11.md",
+      "title": "BIO-EMS Controlled Handoff — 11 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/CONTROLLED-HANDOFF-2026-09-11.md",
+      "sha256": "8b929f614d5addf5c2967c9bdb84c8358c690892fc81e5c5eabb3de87b9223a0",
+      "bytes": 3035,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/DECISIONS.md",
+      "title": "Engineering Decisions",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/DECISIONS.md",
+      "sha256": "79761cef7cd00cfee0f5963f3f7fc46a1860218d45208cdf1d5f7a2205cd45af",
+      "bytes": 1633,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md",
+      "title": "BIO-EMS Email and Telegram End-to-End Alarm Delivery Evidence",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/EMAIL-TELEGRAM-END-TO-END-EVIDENCE-2026-09-09.md",
+      "sha256": "2aee48555dd421ad1ecaffef1cddb0c9935a2886dee42c65e21d953946a61a9c",
+      "bytes": 3999,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md",
+      "title": "BIO-EMS End-of-Day Handoff — 8 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/END-OF-DAY-HANDOFF-2026-09-08.md",
+      "sha256": "e7ead0e486b2a01becaf49001664e9857f9244ae4138fd07c1bea00e485ac720",
+      "bytes": 5173,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md",
+      "title": "ESP32-S3 Pilot Platform Pairing v1 — Implementation Record",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/ESP32-S3-PILOT-PAIRING-V1-IMPLEMENTATION-2026-09-23.md",
+      "sha256": "b866890c2dd1c52571359818d59b6b9af94fc7442f849e9a125c04586248a80d",
+      "bytes": 11008,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/GLOBAL-LOCALIZATION-AND-P8-01-EMAIL-HANDOFF-2026-09-03.md",
+      "title": "Global Localization and P8-01 Email Handoff",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/GLOBAL-LOCALIZATION-AND-P8-01-EMAIL-HANDOFF-2026-09-03.md",
+      "sha256": "bd2e034a2421db85f12d0c3b733fc0af676cfe50a9bb82a0d891683cef1d632c",
+      "bytes": 2998,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md",
+      "title": "BIO-EMS Installation Builder & Device Provisioning Work Package",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md",
+      "sha256": "3d06e084301be6c85833c702cba0b37f0676ef04db9d574b8fff50cd634f4e07",
+      "bytes": 10933,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/LIC-01-LICENSING-DOMAIN-DATA-MODEL-2026-09-07.md",
+      "title": "LIC-01 — Licensing Domain and Data Model",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/LIC-01-LICENSING-DOMAIN-DATA-MODEL-2026-09-07.md",
+      "sha256": "591f8b79e8b4ce410b8c60d96d617d760892d782b353f162f8cedd8777be2303",
+      "bytes": 1914,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/project-management/MASTER-CONTINUATION-CHECKLIST-2026-09-04.md",
+      "title": "BIO-EMS Master Continuation Checklist — 4 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/MASTER-CONTINUATION-CHECKLIST-2026-09-04.md",
+      "sha256": "b9e690e56176f9c5e4667e4a1485ae67d6a4baadcbec605646d9f2d769872fb2",
+      "bytes": 9418,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md",
+      "title": "BIO-EMS — المطلوب من مالك المنصة في المرحلة التالية",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md",
+      "sha256": "0a750e535e6402a77cfeb9783539863afa8c0d24079ef3c8cba39f0d2501ff72",
+      "bytes": 8319,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-01-SITE-CONTROLLER-RUNTIME-FOUNDATION.md",
+      "title": "P2-01 — Site Controller Runtime Foundation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-01-SITE-CONTROLLER-RUNTIME-FOUNDATION.md",
+      "sha256": "1f911008afeebbdc231f5257cf76668b029f256f59a646c5d60a52df06d8da02",
+      "bytes": 3600,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-02-CONFIGURATION-RECEIPT-INTEGRITY.md",
+      "title": "P2-02 — Configuration Receipt and Integrity",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-02-CONFIGURATION-RECEIPT-INTEGRITY.md",
+      "sha256": "19073a572693011366bb0141b591e6dfaa1bb77deebd6223d23e0dc6b461f870",
+      "bytes": 2363,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-03-DURABLE-LOCAL-CONFIGURATION.md",
+      "title": "P2-03 — Durable Local Configuration",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-03-DURABLE-LOCAL-CONFIGURATION.md",
+      "sha256": "e5e2065be1a6cb278b190c0c5cdeffffc464726c970e2c95923090d881e86b64",
+      "bytes": 2006,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-04-SENSOR-ACQUISITION-2026-08-31.md",
+      "title": "P2-04 — Sensor Acquisition",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-04-SENSOR-ACQUISITION-2026-08-31.md",
+      "sha256": "65c1ca825c8efc924f38d6b632f4651e8907f8fe7e4b99d730a1571522ba7e5c",
+      "bytes": 1630,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-05-OFFLINE-ALARM-EVALUATION-2026-08-31.md",
+      "title": "P2-05 — Offline Alarm Evaluation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-05-OFFLINE-ALARM-EVALUATION-2026-08-31.md",
+      "sha256": "0f52149da38bb517f3a02fdb00df3d7cbc86111f38b3c042ae95a54dd3372c12",
+      "bytes": 1983,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-06-LOCAL-EMERGENCY-SMS-FAILOVER-2026-08-31.md",
+      "title": "P2-06 — Local Emergency SMS Failover",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-06-LOCAL-EMERGENCY-SMS-FAILOVER-2026-08-31.md",
+      "sha256": "2339171aab5afeb0fed10e390a6d0d820f454b3610979da0f3c9151e23363aad",
+      "bytes": 1403,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-07-RECONNECT-RECONCILIATION-2026-08-31.md",
+      "title": "P2-07 — Reconnect Reconciliation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-07-RECONNECT-RECONCILIATION-2026-08-31.md",
+      "sha256": "a7dfe0db6933f5ebfbac19c32e7a158b18e12e03bdc95f9ab0ea83d7d8b3ac76",
+      "bytes": 1405,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-08-CONTROLLER-HEALTH-EVIDENCE-2026-08-31.md",
+      "title": "P2-08 Controller Health Evidence — 2026-08-31",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-08-CONTROLLER-HEALTH-EVIDENCE-2026-08-31.md",
+      "sha256": "9874f4a5b9981ca79edb02ea84a6aa115cbb966928edcbb62e848db6f1af13be",
+      "bytes": 2056,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-09-BENCH-QUALIFICATION-2026-08-31.md",
+      "title": "P2-09 Bench Qualification — 2026-08-31",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-09-BENCH-QUALIFICATION-2026-08-31.md",
+      "sha256": "bf35b190c21989bff54afefd698126095c872497f180bb6e1b2befd50edb4476",
+      "bytes": 3457,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P2-HARDENING-DURABLE-CONFIG-REPLAY-2026-08-31.md",
+      "title": "P2 Durability Hardening — Full BF-08 Configuration and Replay Acceptance",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P2-HARDENING-DURABLE-CONFIG-REPLAY-2026-08-31.md",
+      "sha256": "fa0294c560c759c268d00516903d10838ca0418b5b54c2b1b512971334922294",
+      "bytes": 2865,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P3-01-COMMISSIONING-EVIDENCE-FOUNDATION-2026-09-01.md",
+      "title": "P3-01 — Commissioning Evidence Foundation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P3-01-COMMISSIONING-EVIDENCE-FOUNDATION-2026-09-01.md",
+      "sha256": "7af542bde6a3a4dda40f7a6a31a958bb3ab6c18b65f581ed1a3d7cbf6d832df5",
+      "bytes": 5540,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md",
+      "title": "P3-03 Codex Handoff — Protected Site-scoped Commissioning API",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P3-03-CODEX-HANDOFF-2026-09-01.md",
+      "sha256": "754da63e779fe2bd8e51be0d5654c6a6357ce5d7a426817601e0c9aecdaedc32",
+      "bytes": 9682,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P3-04-CONFIGURATION-READINESS-2026-09-01.md",
+      "title": "P3-04 — Configuration, Sensor Mapping and Calibration Verification",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P3-04-CONFIGURATION-READINESS-2026-09-01.md",
+      "sha256": "e5938f056b0a66b8944f61f1c321fbe493547e8a0807c7d6e8cb5a3d74fc0062",
+      "bytes": 1425,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md",
+      "title": "P7 — Final Product Completion Plan",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P7-FINAL-PRODUCT-COMPLETION-PLAN-2026-09-01.md",
+      "sha256": "c3cf5138bacbde98fb95865396ee47b54051bdfb52edd3080924439ae9645387",
+      "bytes": 10429,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P8-01-WHATSAPP-EMAIL-ALERT-DELIVERY-2026-09-02.md",
+      "title": "P8-01 — WhatsApp and Email Alarm Delivery",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P8-01-WHATSAPP-EMAIL-ALERT-DELIVERY-2026-09-02.md",
+      "sha256": "c198e2e867d011e39feb51c9bd0fe9ed6b033b7384bb35092a6a3c5dec3ed800",
+      "bytes": 4764,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P8-01A-TELEGRAM-INTERIM-ALARM-DELIVERY-2026-09-03.md",
+      "title": "P8-01A — Telegram Interim Alarm Delivery",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P8-01A-TELEGRAM-INTERIM-ALARM-DELIVERY-2026-09-03.md",
+      "sha256": "e079cd8ad37ff7a824d57e754b8834badb382cdc453487b907910c06236e2dea",
+      "bytes": 3729,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md",
+      "title": "P8 — SYSTEM_OWNER Installation Provisioning and RBAC Realignment Plan",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/P8-SYSTEM-OWNER-INSTALLATION-AND-RBAC-PLAN-2026-09-02.md",
+      "sha256": "dbb097e326da574ba75e56c73ded2862de24a45f17d4cc3094ac9e3c8badd9c7",
+      "bytes": 7754,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-01-PLATFORM-INTEGRATION-RECOVERY.md",
+      "title": "PVR-01 — Platform Integration Recovery",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-01-PLATFORM-INTEGRATION-RECOVERY.md",
+      "sha256": "5515ff89f6f6524fca0287b6835d425f810e9c3526ff28c881494308ee8feb7b",
+      "bytes": 2062,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/project-management/PVR-02-OPERATIONAL-WORKSPACE.md",
+      "title": "PVR-02 — Operational Workspace",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-02-OPERATIONAL-WORKSPACE.md",
+      "sha256": "ca87b1cd0b538d530986df4ff3e857222c21987fe2276334d534b1bb3e10fbae",
+      "bytes": 1344,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-03-MONITORED-AREAS-COMPLETION.md",
+      "title": "PVR-03 — Monitored Areas Completion",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-03-MONITORED-AREAS-COMPLETION.md",
+      "sha256": "285779504acc28e2b35ce2d446cf74bcb8f08204c3e411a106db9e9c91e02df9",
+      "bytes": 1055,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-04-ALARMS-UI.md",
+      "title": "PVR-04 — Alarms UI",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-04-ALARMS-UI.md",
+      "sha256": "3ef72ecd241c6fa5705a61e886321a77b7f1aca0252bfd48d0be7fb4e54bed27",
+      "bytes": 635,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-05-DEVICES-UI.md",
+      "title": "PVR-05 — Devices operational UI",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-05-DEVICES-UI.md",
+      "sha256": "315bd0ee9db84b0e57176df66c3455c10074dda0bb4c5dc7755e923f0c55033b",
+      "bytes": 888,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-06-REPORTING-READINESS-AUDIT.md",
+      "title": "PVR-06 — Reporting readiness audit",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-06-REPORTING-READINESS-AUDIT.md",
+      "sha256": "5e712760cde8220ff979c5a86dc6f76f95703347eeeae71068b3c0cf6cee50a0",
+      "bytes": 1877,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/PVR-07-PLATFORM-ACCEPTANCE.md",
+      "title": "PVR-07 — Platform acceptance and release decision",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/PVR-07-PLATFORM-ACCEPTANCE.md",
+      "sha256": "f7ae70c35c9306d593f105b0279ae22d90a68dd719fb15cf4b8da0c79bf83515",
+      "bytes": 6989,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/REPOSITORY-CLEANUP-2026-09-22.md",
+      "title": "Repository Cleanup Record — 22 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/REPOSITORY-CLEANUP-2026-09-22.md",
+      "sha256": "a74a2eff4733fb655ad82b69cdfdca63c0c020d45c9db490c89ec1806e1dc710",
+      "bytes": 4089,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-10-DASHBOARD.md",
+      "title": "SPRINT-10-DASHBOARD.md",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-10-DASHBOARD.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-12-DEVICE-ONBOARDING.md",
+      "title": "Sprint 12 — Device Onboarding and Telemetry Trust Boundary",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-12-DEVICE-ONBOARDING.md",
+      "sha256": "edefba78f9dd9c08265100b27ac418c0d03ae1fd03a1989f3a08f228c1a19d22",
+      "bytes": 17364,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-13-PLAN.md",
+      "title": "Sprint 13 — User Authentication and API Authorization Foundation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-13-PLAN.md",
+      "sha256": "68101c342b0d595c1145f68fe5ea6aad2ad29bb50db2402026869bf938221d16",
+      "bytes": 33236,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-14-PLAN.md",
+      "title": "Sprint 14 Plan — Frontend Application",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-14-PLAN.md",
+      "sha256": "3d9920bde692135aad64abddc666e22845e8ba1599759ae3d0dc8d04f7862533",
+      "bytes": 11467,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-14-S14-02-APPLICATION-SHELL.md",
+      "title": "Sprint 14 — S14-02 Application Shell and Navigation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-14-S14-02-APPLICATION-SHELL.md",
+      "sha256": "308658a63768f53d183dd75611cad8ca992c2143ac326ad889d597aa63788c6b",
+      "bytes": 9691,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-14-S14-05-PROGRESS.md",
+      "title": "Sprint 14 — S14-05 Monitored Areas Final Status",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-14-S14-05-PROGRESS.md",
+      "sha256": "492cfa6b4e4ac0fccce7b3bbd79e27c010545ca249156b6b97061e357846720b",
+      "bytes": 10876,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-01-SENSOR-CALIBRATION-FOUNDATION.md",
+      "title": "Sprint 15 — S15-01 Sensor Lifecycle & Calibration Foundation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-01-SENSOR-CALIBRATION-FOUNDATION.md",
+      "sha256": "8c872196eca8aa83d269405fec2903023884eb7a4a14a808001a9b928de46102",
+      "bytes": 2379,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-02-CALIBRATION-HISTORY.md",
+      "title": "Sprint 15 — S15-02 Calibration History",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-02-CALIBRATION-HISTORY.md",
+      "sha256": "8ef7dfa5034cd284b23e597b922e089ca782cb83dd6df70e4fa8e059d9a6b13f",
+      "bytes": 2417,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-03-DEVICE-COMMUNICATION-HEALTH.md",
+      "title": "Sprint 15 — S15-03 Device / Communication Health",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-03-DEVICE-COMMUNICATION-HEALTH.md",
+      "sha256": "afde1c1d22ec1b60e284743667a586d2c4f9fecc1b4c086b622b3ac7594d21de",
+      "bytes": 2620,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-04-NOTIFICATION-ARCHITECTURE.md",
+      "title": "Sprint 15 — S15-04 Notification Architecture",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-04-NOTIFICATION-ARCHITECTURE.md",
+      "sha256": "b8b03515bd7f81bec2513a1f4c96f3b1ab4f1c2a241a5f2e14111b1e0c52c7eb",
+      "bytes": 2965,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-05-SMS-FAILOVER-CONTRACT.md",
+      "title": "Sprint 15 — S15-05 SMS Failover Contract",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-05-SMS-FAILOVER-CONTRACT.md",
+      "sha256": "53428d1a8f5dbccf2e2b2b6f2be31bb5ef8f1a8464003c5042fa98ae04008478",
+      "bytes": 3364,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-06-BIO-EGYPT-PILOT-DOCUMENTATION.md",
+      "title": "Sprint 15 — S15-06 BIO EGYPT Pilot Documentation",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-06-BIO-EGYPT-PILOT-DOCUMENTATION.md",
+      "sha256": "dacc72fe569e1f90c72e66ca8e25d870a36575d60799c262b8d6750d94e640e6",
+      "bytes": 1366,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-15-S15-07-DEPLOYMENT-COMMISSIONING-READINESS.md",
+      "title": "Sprint 15 — S15-07 Deployment & Commissioning Readiness",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-07-DEPLOYMENT-COMMISSIONING-READINESS.md",
+      "sha256": "36109e60788a8b99a449e65fdc41a13a7032d1fcbf3fa633f2f0fbe97ad24777",
+      "bytes": 1139,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-MASTER-PLAN.md",
+      "title": "Sprint 16 Master Plan — Product Experience, Reporting, Hardware, and Pilot Readiness",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-MASTER-PLAN.md",
+      "sha256": "cf471001796492d2222fa5367f1fd86911c958f93bb871d2bd65d524b00e3203",
+      "bytes": 20726,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-01-REQUIREMENTS-BASELINE.md",
+      "title": "Sprint 16 — S16-01 Product, Reporting, Hardware, and Evidence Requirements Baseline",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-01-REQUIREMENTS-BASELINE.md",
+      "sha256": "8ebda578873a8a8f532cbbbeef11e5358578dd2e90745a33a5272fa31b6d2eef",
+      "bytes": 26664,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-03-REPORTING-ARCHITECTURE.md",
+      "title": "Sprint 16 — S16-03 Reporting Catalogue and Architecture",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-03-REPORTING-ARCHITECTURE.md",
+      "sha256": "d7a0c14e14c57be91a9b9b5deb673cf81d5658d84f3f0ed061be61ca9c44738e",
+      "bytes": 27080,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-04-HARDWARE-DESIGN-REVIEW.md",
+      "title": "Sprint 16 — S16-04 Site Controller v1 Hardware Design Review",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-04-HARDWARE-DESIGN-REVIEW.md",
+      "sha256": "4534b7483e44cac4aed766a2eb9fd553b554d8fbea51dbf42e83745f4931d301",
+      "bytes": 26930,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-06-IMPLEMENTATION-REVIEW.md",
+      "title": "S16-06 — Executive Dashboard and Operational Charts Implementation Review",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-06-IMPLEMENTATION-REVIEW.md",
+      "sha256": "f2ba75200ec144a87b19cec4c603f66a21776009fbc9ff39168f34754b4c3d79",
+      "bytes": 9268,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-07-01-REPORTING-CONTRACTS.md",
+      "title": "S16-07-01 — Reporting Contracts, Catalogue, and Permissions",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-07-01-REPORTING-CONTRACTS.md",
+      "sha256": "4e705258bfc2b2a26fa94ea98a12ed599b4841eaaa9e5df8cca14d48182909f1",
+      "bytes": 2935,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-07-02-CALIBRATION-PREVIEW.md",
+      "title": "S16-07-02 — Calibration History Preview",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-07-02-CALIBRATION-PREVIEW.md",
+      "sha256": "bd926b4a27cd7bfd03b1a812f77861e280c1dbacfd39d9f2a7d49f98ccca4261",
+      "bytes": 1102,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-07-04-CALIBRATION-CSV.md",
+      "title": "S16-07-04 — Calibration History CSV Export",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-07-04-CALIBRATION-CSV.md",
+      "sha256": "b93ee1d133d7bd6d657083f5f0ac53284cd834828cf84fa38b272367c2cea892",
+      "bytes": 1800,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/SPRINT-16-S16-07-05-CALIBRATION-PDF.md",
+      "title": "S16-07-05 — Calibration History PDF Export",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-07-05-CALIBRATION-PDF.md",
+      "sha256": "7ed0a9dde8a803e772c3303d1b1f8b63bea2e7e5e32ebf16f7e059ed5cfc9ca2",
+      "bytes": 10737,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md",
+      "title": "BIO-EMS UI/UX Product Refresh Work Package — 4 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/UI-UX-PRODUCT-REFRESH-WORK-PACKAGE-2026-09-04.md",
+      "sha256": "18361df729e948c7706224543206eafe7f4512335e38fda3c236fde64e782e43",
+      "bytes": 9127,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md",
+      "title": "BIO-EMS UI/UX Visual Design Freeze — 4 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/UI-UX-VISUAL-DESIGN-FREEZE-2026-09-04.md",
+      "sha256": "b58baa0b13316df47e89f617bb6f6a95f46141a59d8987c482e0060f93dda49f",
+      "bytes": 15460,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md",
+      "title": "UX-01 Frontend Inventory and Non-Regression Baseline — 7 September 2026",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/UX-01-FRONTEND-INVENTORY-BASELINE-2026-09-07.md",
+      "sha256": "e4f74a8cf7705fa0e7d818239127ec6d38d859a09a337980d037113cbe4b0f71",
+      "bytes": 6640,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/project-management/WORK-2026-09-04-UI-UX-VISUAL-REFRESH.md",
+      "title": "BIO-EMS Work Record — UI/UX Visual Refresh",
+      "classification": "historical-entrypoint",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/project-management/WORK-2026-09-04-UI-UX-VISUAL-REFRESH.md",
+      "sha256": "00cab9536590726c7f779c024a2b0f093a229ab29235acc84c0b2a9799f5b7c4",
+      "bytes": 8620,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/README.md"
+    },
+    {
+      "path": "docs/requirements/acceptance-criteria.md",
+      "title": "acceptance-criteria.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/acceptance-criteria.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/requirements/business-rules.md",
+      "title": "Business Rules",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/business-rules.md",
+      "sha256": "a2c250b36f0fe88ff9ed22a7c99b7f7809e5c7c3229b687716ff2888d656d9ad",
+      "bytes": 353,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/requirements/functional-requirements.md",
+      "title": "functional-requirements.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/functional-requirements.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/requirements/non-functional-requirements.md",
+      "title": "Non Functional Requirements",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/non-functional-requirements.md",
+      "sha256": "8a81b0cd0f272097021b4763d74cb628e8ced7ec489a1d84796abfb888c3ddb1",
+      "bytes": 651,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/requirements/unctional-requirements.md",
+      "title": "Functional Requirements",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/unctional-requirements.md",
+      "sha256": "0dfe094d54f0fd3558484444328056f219b4d5d3b50b8c1998ffae0606375d78",
+      "bytes": 886,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/requirements/use-cases.md",
+      "title": "use-cases.md",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/requirements/use-cases.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SOFTWARE-ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/security/AUTH-RECOVERY-01-DESIGN.md",
+      "title": "AUTH-RECOVERY-01 — Password Recovery Security Model",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/AUTH-RECOVERY-01-DESIGN.md",
+      "sha256": "eed38f956f898e3e1202296a952b0864c2cf1dffa8bf1bd3970e81fdffe35340",
+      "bytes": 3125,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/LICENSE-SIGNING-KEY-OPERATIONS.md",
+      "title": "License Signing-Key Operations, Backup and Recovery",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/LICENSE-SIGNING-KEY-OPERATIONS.md",
+      "sha256": "6093036d7b4cb0821f376d7e8f582f24d4b755ac551c63f692dd764095e386ad",
+      "bytes": 4271,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/SEC-OWNER-01-STATUS-AND-MERGE-CHECKLIST-AR.md",
+      "title": "حالة SEC-OWNER-01 وخطوات الوصول إلى الدمج",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/SEC-OWNER-01-STATUS-AND-MERGE-CHECKLIST-AR.md",
+      "sha256": "74cc25aa39393b35dab37c556128c63493e4578560ca2922e0b3d94d64c1b5a5",
+      "bytes": 11738,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/SYSTEM-OWNER-COMMISSIONING-OPERATIONS.md",
+      "title": "System Owner Commissioning Security Operations",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/SYSTEM-OWNER-COMMISSIONING-OPERATIONS.md",
+      "sha256": "3477a9f8e2f0797b6aa2d6e177a90bf34d9fac8dcdc778ab1b6daaad28dcc405",
+      "bytes": 7320,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md",
+      "title": "دليل إنشاء وحفظ مفتاح الشركة الخاص بـ SYSTEM_OWNER",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md",
+      "sha256": "66751ce3f04311172fdffe18c8f10d33cf4545b51b5957ac2bcbbd1e6cda890d",
+      "bytes": 6418,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/SYSTEM-OWNER-PROVISIONING-UI-AR.md",
+      "title": "تشغيل تفعيل System Owner من الواجهات",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/SYSTEM-OWNER-PROVISIONING-UI-AR.md",
+      "sha256": "3fa5280b4fc9de03f8a61bce58b0758bb4043a165bf02adc128997ce5f90c1af",
+      "bytes": 3376,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/activation-workflow.md",
+      "title": "BIO-EMS Activation, License Transfer & Host Recovery Workflow",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/activation-workflow.md",
+      "sha256": "593cb2523f0687bb26f2e15141b5f431028934de2c3f188fe881cb68f35fb4ea",
+      "bytes": 6425,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "docs/security/device-registration.md",
+      "title": "BIO-EMS Device Identity, Registration & Platform Trust",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/docs/security/device-registration.md",
+      "sha256": "d7e79798c84d2cecda7709e18a751d5bb4fe8e4df2569bbb7e3fe4897fa85f00",
+      "bytes": 11023,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/SECURITY-AND-IDENTITY.md"
+    },
+    {
+      "path": "firmware/sim-d4-nano/README.md",
+      "title": "SIM-D4 Nano USB flashing package",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/firmware/sim-d4-nano/README.md",
+      "sha256": "0114dbd2082304d063c4200a53faca94d5932e2656e9062839c0f24207185f49",
+      "bytes": 3876,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "firmware/site-controller-esp32s3/README.md",
+      "title": "BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/firmware/site-controller-esp32s3/README.md",
+      "sha256": "2aeeee80cbe25e6da352137348522b624cfe863380602fce151c63b7e4cf3578",
+      "bytes": 11224,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "frontend/README.md",
+      "title": "BIO-EMS Frontend",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/frontend/README.md",
+      "sha256": "992dcab9b77dfd87080d2d415d76d64dd823f5ced942e9c159cab66d73b2cf55",
+      "bytes": 2511,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/PLATFORM-OPERATIONS.md"
+    },
+    {
+      "path": "installer/windows/INTERNAL-SETUP-TESTING.md",
+      "title": "BIO-EMS Signed BIO EGYPT Pilot Setup — Clean-Machine Test",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/installer/windows/INTERNAL-SETUP-TESTING.md",
+      "sha256": "0279be147e80b91751892c1b18df474b0407ee35c0294654ac909eb0a5132c94",
+      "bytes": 3205,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/BUILD-RELEASE-AND-RECOVERY.md"
+    },
+    {
+      "path": "mobile/README.md",
+      "title": "BIO-EMS Monitor — native Android and iOS customer app",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/mobile/README.md",
+      "sha256": "7bf1529b8cdf62cd5016178e24da1bbc48c12889096aba8dcdb8b63c1865061e",
+      "bytes": 6043,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/CLOUD-AND-MOBILE.md"
+    },
+    {
+      "path": "tools/hardware-tester/OPERATING_FIRMWARE_GUIDE.md",
+      "title": "Hardware Tester 0.5.0 operating firmware guide",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/tools/hardware-tester/OPERATING_FIRMWARE_GUIDE.md",
+      "sha256": "9cc2af6dc19ecba32cd38a71187fcfae3be1dcf8376e6c94e082a5ac322d862e",
+      "bytes": 3489,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "tools/hardware-tester/OPERATOR_GUIDE_AR.txt",
+      "title": "تحديث 0.6.0 — الاختبارات والتأهيل في الهاردوير تيستر فقط",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/tools/hardware-tester/OPERATOR_GUIDE_AR.txt",
+      "sha256": "46e214a4fbf902ac55d7b27c709e10941149f4b4bf85f83373eab931ebeff50e",
+      "bytes": 8506,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    },
+    {
+      "path": "tools/hardware-tester/README.md",
+      "title": "BIO-EMS Hardware Tester 0.6.0",
+      "classification": "domain-specification-retained",
+      "snapshot_path": "docs/archive/2026-10-28-pre-audit/tools/hardware-tester/README.md",
+      "sha256": "11421379c3de9605fb952b83c2c0ef880d0b4b5bf86f4a66fba9125c361a01a2",
+      "bytes": 12141,
+      "source_commit": "d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc",
+      "current_reference": "docs/current/HARDWARE-AND-FIRMWARE.md"
+    }
+  ]
+}

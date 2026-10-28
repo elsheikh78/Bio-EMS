@@ -1,0 +1,46 @@
+[
+  {
+    "command": "npm run typecheck",
+    "exit_code": 0,
+    "duration_seconds": 16.25,
+    "log": "frontend-0.log"
+  },
+  {
+    "command": "npm run lint",
+    "exit_code": 0,
+    "duration_seconds": 28.85,
+    "log": "frontend-1.log"
+  },
+  {
+    "command": "npm run format:check",
+    "exit_code": 0,
+    "duration_seconds": 3.14,
+    "log": "frontend-2.log"
+  },
+  {
+    "command": "npm run test:run",
+    "exit_code": 0,
+    "duration_seconds": 24.54,
+    "log": "frontend-3.log"
+  },
+  {
+    "command": "npm run build",
+    "exit_code": 0,
+    "duration_seconds": 4.24,
+    "log": "frontend-4.log"
+  },
+  {
+    "command": "npm audit --json",
+    "exit_code": 1,
+    "duration_seconds": 10.3,
+    "log": "frontend-5.log",
+    "advisories": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 5,
+      "critical": 2,
+      "total": 9
+    }
+  }
+]

@@ -1,69 +1,17 @@
-# Current documentation / التوثيق الحالي
+# Current Documentation Entry Points
 
-## Documentation checkpoint — 26 October 2026
+Use [PROJECT_STATE.md](../../PROJECT_STATE.md) for current state and [the full documentation index](../README.md) for all domains/history.
 
-[Current project checkpoint and staged hardware testing](PROJECT-CHECKPOINT-2026-10-26.md) records merged Tester 0.3.0 QC flashing, open #309 / proposed integrated Tester 0.4.0, merged native customer monitoring, version boundaries and remaining acceptance. `PROJECT_STATE.md` governs current status. Older dated checkpoints below retain historical context; this update does not rebuild external manuals or release packages.
-
-## 22 October mobile references
-
-- [تطبيق منصة الشركة — التثبيت والتشغيل وحدود الاختبار](COMPANY-MOBILE-APP-AR.md)
-- [Company Android/iOS development and builds](../../company-mobile/README.md)
-
-Android QA operation was reported successful by the user; iOS signing/device acceptance remains pending. `PROJECT_STATE.md` controls status.
-
-## 11 October current references
-
-- [منصة الشركة المركزية — مرشح تجربة Cloudflare](COMPANY-CLOUD-PILOT-AR.md)
-
-- [استعادة Admin بملف موقّع من الشركة](OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md)
-
-- [هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل](INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md)
-
-PR #290 checkpoint: `70108f0`; includes copy/export operations and verified main build references.
-
-## 10 October integration references
-
-- [Pilot build notes and artifact hashes](PILOT-BUILD-NOTES-2026-10-10.md)
-- [Network selection and client update operations](PILOT-NETWORK-AND-CLIENT-UPDATES.md)
-
-PR #288 main checkpoint: `98cea57`. The 30 September inventory below is retained
-as a dated inventory; current status is governed by `PROJECT_STATE.md`.
-
-
-Reviewed entry points: 30 September 2026. Source review baseline: `6efd78a`. This is a navigation index, not a second status authority. `PROJECT_STATE.md` controls current state; `IMPLEMENTATION_PLAN.md` controls execution. Linked operational guides must be read with those boundaries. A current guide may retain explicitly dated context.
-
-ابدأ بالحالة الحالية وخطة التنفيذ، ثم دليل المشروع العربي. تاريخ الملف وحده لا يعني أن محتواه هو المعتمد. نتائج الاختبارات القديمة في [الأرشيف التاريخي](../archive/README.md)، والمراجع والقرارات المعمارية في [الفهرس الكامل](../README.md).
-
-| Current entry point | Document |
+| Guide | Purpose |
 | --- | --- |
-| PROJECT_STATE | [PROJECT_STATE.md](../../PROJECT_STATE.md) |
-| IMPLEMENTATION_PLAN | [IMPLEMENTATION_PLAN.md](../../IMPLEMENTATION_PLAN.md) |
-| PILOT_SCOPE | [PILOT_SCOPE.md](../../PILOT_SCOPE.md) |
-| RISK_REGISTER | [RISK_REGISTER.md](../../RISK_REGISTER.md) |
-| BIO-EMS-ARABIC-PROJECT-GUIDE | [docs/product/BIO-EMS-ARABIC-PROJECT-GUIDE.md](../product/BIO-EMS-ARABIC-PROJECT-GUIDE.md) |
-| Backend / الباك إند | [backend/README.md](../../backend/README.md) |
-| Frontend / الواجهة | [frontend/README.md](../../frontend/README.md) |
-| BIO-EMS-Architecture | [docs/architecture/BIO-EMS-Architecture.md](../architecture/BIO-EMS-Architecture.md) |
-| production-runbook | [docs/deployment/production-runbook.md](../deployment/production-runbook.md) |
-| SYSTEM-OWNER-COMMISSIONING-OPERATIONS | [docs/security/SYSTEM-OWNER-COMMISSIONING-OPERATIONS.md](../security/SYSTEM-OWNER-COMMISSIONING-OPERATIONS.md) |
-| SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR | [docs/security/SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md](../security/SYSTEM-OWNER-MANUFACTURER-KEY-GUIDE-AR.md) |
-| SYSTEM-OWNER-PROVISIONING-UI-AR | [docs/security/SYSTEM-OWNER-PROVISIONING-UI-AR.md](../security/SYSTEM-OWNER-PROVISIONING-UI-AR.md) |
-| ESP32-S3 firmware | [firmware/site-controller-esp32s3/README.md](../../firmware/site-controller-esp32s3/README.md) |
-| قاعدة البيانات | [database-design.md](../architecture/database-design.md) |
-| سجل الهاردوير | [APPROVED_HARDWARE.md](../hardware/APPROVED_HARDWARE.md) |
-| مرشح اختبار MAIN-16 / SIM-D4 | [Bench baseline](../hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md) |
-| عقد توصيل HW-519 للاختبارات | [HW-519 RS485 bench contract](HW-519-RS485-BENCH-CONTRACT-2026-10-06.md) |
-| Builder وتجهيز الأجهزة | [Work package](../project-management/INSTALLATION-BUILDER-DEVICE-PROVISIONING-WORK-PACKAGE-2026-09-27.md) |
+| [Architecture](SOFTWARE-ARCHITECTURE.md) | Components, boundaries, database, telemetry and APIs |
+| [Developer/testing](DEVELOPER-AND-TESTING.md) | Repeatable setup and verification |
+| [Platform operations](PLATFORM-OPERATIONS.md) | Customer, owner, provisioning and evidence workflows |
+| [Hardware/firmware](HARDWARE-AND-FIRMWARE.md) | Bench wiring boundaries, flashing, qualification ownership |
+| [Cloud/mobile](CLOUD-AND-MOBILE.md) | Company, Viewer, apps and delivery limits |
+| [Security](SECURITY-AND-IDENTITY.md) | Authentication, secrets, recovery, known gaps |
+| [Release/recovery](BUILD-RELEASE-AND-RECOVERY.md) | Packages, deployment, backup and restore |
+| [Acceptance](QUALIFICATION-AND-ACCEPTANCE.md) | Software, physical and field gates |
+| [Maintenance](DOCUMENTATION-MAINTENANCE.md) | Updating current docs while preserving history |
 
-For the merged SIM-D4 integration candidate and current bench limits, see [SIM discovery and mapping](SIM-D4-DISCOVERY-AND-MAPPING.md).
-
-- [بوابة متابعة العميل Viewer / PWA](CUSTOMER-VIEWER-PORTAL-AR.md) — deployed pilot; live telemetry and real-phone acceptance pending.
-
-- [Viewer deployment evidence — 14 October 2026](VIEWER-DEPLOYMENT-STATUS-2026-10-14.md) — deployed components, tested package and remaining mobile/field work.
-
-- [Native customer mobile app — Android / iOS](CUSTOMER-MOBILE-ANDROID-IOS.md)
-
-
-## Standalone hardware qualification 28 October 2026
-
-[Standalone Tester 0.6.0 and retired platform test UI](HARDWARE-TESTING-STANDALONE-2026-10-28.md).
+Detailed existing operating instructions remain at their original paths with reviewed evidence boundaries. Dated checkpoints and deployment observations are historical pointers, not competing state authorities.

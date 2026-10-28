@@ -1,5 +1,8 @@
 # BIO-EMS Enterprise Monitoring System
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/SOFTWARE-ARCHITECTURE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/architecture/system-design.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Source reconciliation — 30 September 2026
 
 The legacy `Version: 1.0` below is a document revision, not the current product version (`VERSION`: `0.20.0`). Current source uses Express/React, SQLite configuration/operations, InfluxDB telemetry, MQTT ingestion and REST/SSE browser updates. Installation Builder and provisioning form separate logical/physical stages. MAIN-16/SIM-D4 transport remains a bench integration gap. `PROJECT_STATE.md` controls current implementation status.

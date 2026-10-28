@@ -1,5 +1,8 @@
 # Customer native mobile app — Android and iOS
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<CLOUD-AND-MOBILE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/CUSTOMER-MOBILE-ANDROID-IOS.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October integration record
 
 PR #306 is merged at 63f399bb1ba5e08b6eabb1915e0b7651219365ee. This source checkpoint does not establish live Worker deployment, physical Android/iOS acceptance or signed/store distribution. Company app evidence is separate.

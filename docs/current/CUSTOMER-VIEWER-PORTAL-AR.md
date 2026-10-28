@@ -1,5 +1,8 @@
 # بوابة متابعة العميل — BIO-EMS Connect
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<CLOUD-AND-MOBILE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/CUSTOMER-VIEWER-PORTAL-AR.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## النطاق والحالة
 
 تم نشر بوابة العميل على Cloudflare يوم 14 أكتوبر 2026 بعد دمج #296، ودمج إصلاح

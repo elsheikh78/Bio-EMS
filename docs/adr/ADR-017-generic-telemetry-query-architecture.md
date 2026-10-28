@@ -1,5 +1,8 @@
 # ADR-017
 
+> Documentation review: 2026-10-28. Architecture decision retained; implementation is assessed separately. [Current implementation guide](<../README.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/adr/ADR-017-generic-telemetry-query-architecture.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Title
 
 Generic Telemetry Query Architecture

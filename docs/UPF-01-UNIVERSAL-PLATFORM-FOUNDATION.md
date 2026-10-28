@@ -1,5 +1,8 @@
 # UPF-01 — Universal Platform Foundation
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<README.md>) describes the reviewed source baseline; [Project state](<../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<archive/2026-10-28-pre-audit/docs/UPF-01-UNIVERSAL-PLATFORM-FOUNDATION.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Status:** APPROVED / NOT STARTED / BLOCKED BY PRE-UPF CLOSURE GATE  
 **Decision date:** 2026-08-27  
 **Owner:** BIO-EMS Product Owner  

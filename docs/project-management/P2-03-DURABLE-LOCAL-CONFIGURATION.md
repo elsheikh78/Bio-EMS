@@ -1,39 +1,11 @@
 # P2-03 — Durable Local Configuration
 
-## Status
+Historical record; navigation updated 2026-10-28.
 
-Implemented at software / repository level. Hardware power-loss qualification remains part of P2-09 bench evidence.
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/P2-03-DURABLE-LOCAL-CONFIGURATION.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-## Objective
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-Preserve the last acknowledged Site Controller configuration across process restart or power loss without allowing malformed, corrupted, wrong-controller, wrong-Site, stale, or otherwise rejected candidates to replace the known-good state.
-
-## Implemented Controls
-
-- File-backed durable configuration store with an explicit record version.
-- Controller and Site binding on recovery.
-- SHA-256 integrity check over the persisted payload.
-- Strict schema validation before recovered state becomes effective.
-- Atomic replacement through temporary-file write followed by rename.
-- Restrictive file mode request (`0600`) when the local record is created.
-- Runtime recovery from durable state before readiness is derived.
-- Persistence occurs only after P2-02 returns an `APPLIED` acknowledgement.
-- Rejected configuration candidates do not modify durable state.
-- Corrupted durable state fails closed to `NOT_READY_NO_CONFIG` rather than becoming effective.
-
-## Automated Evidence
-
-Host-side tests cover:
-
-1. apply → persist → fresh boot → recover;
-2. corrupted persisted integrity → reject recovery;
-3. rejected stale candidate → known-good file remains unchanged;
-4. wrong controller / wrong Site → reject recovery.
-
-## Boundary
-
-P2-03 persists the acknowledged effective configuration identity used by the current runtime (`site_uuid`, `config_version`, `checksum_sha256`). Sensor acquisition and the local executable alarm configuration are introduced in later P2 slices and must continue to use the same verified/acknowledged persistence rule.
-
-## Non-Claims
-
-This slice does not claim ESP32 flash/NVS qualification, physical power-interruption testing, filesystem wear qualification, sensor acquisition, offline alarm evaluation, or field commissioning. Those remain subsequent P2 and pilot evidence gates.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

@@ -1,13 +1,11 @@
 # PVR-04 — Alarms UI
 
-Status: IMPLEMENTED / VERIFICATION PENDING
-Date: 2026-08-24
-Branch: `agent/pvr-04-alarms-ui`
+Historical record; navigation updated 2026-10-28.
 
-PVR-04 replaces the Alarm placeholder with runtime-validated Active and History views over the
-existing protected Alarm API. Eligible ADMIN/OPERATOR users may acknowledge TRIGGERED Alarms
-through the dedicated permission and endpoint. VIEWER remains read-only. The UI presents severity,
-status, Sensor identity, trigger value, and recorded time with recoverable loading/error states.
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/PVR-04-ALARMS-UI.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-This slice does not implement provider delivery, escalation execution, Alarm comments, field
-commissioning, or customer acceptance.
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
+
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

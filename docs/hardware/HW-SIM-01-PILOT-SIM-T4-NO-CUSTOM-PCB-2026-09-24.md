@@ -1,5 +1,8 @@
 # HW-SIM-01 — BIO-EMS SIM-T4 Pilot Design (No Custom PCB)
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/hardware/HW-SIM-01-PILOT-SIM-T4-NO-CUSTOM-PCB-2026-09-24.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Date:** 24 September 2026  
 **Status:** LOCAL-EGYPT REV.A BENCH CANDIDATE DEFINED / SUPPLIER VARIANT CONFIRMATION + BENCH QUALIFICATION REQUIRED  
 **Sites:** El Manial and CPC / 6th of October  
@@ -783,4 +786,3 @@ The first purchase is deliberately limited to:
 4. existing Nano/ESP32 and 5 V bench supply where available.
 
 Before temperature qualification, obtain the precision local RREF and repeat the accuracy test.
-

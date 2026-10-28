@@ -1,0 +1,881 @@
+{
+  "scope": "Literal router declarations only; mount prefixes and composed/conditional Worker routes require source inspection. Not a generated OpenAPI contract.",
+  "routes": [
+    {
+      "file": "backend/src/routes/alarm.route.ts",
+      "line": 8,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/alarm.route.ts",
+      "line": 10,
+      "method": "GET",
+      "relative_path": "/active"
+    },
+    {
+      "file": "backend/src/routes/alarm.route.ts",
+      "line": 12,
+      "method": "GET",
+      "relative_path": "/:id"
+    },
+    {
+      "file": "backend/src/routes/alarm.route.ts",
+      "line": 14,
+      "method": "POST",
+      "relative_path": "/:id/acknowledge"
+    },
+    {
+      "file": "backend/src/routes/audit-event.route.ts",
+      "line": 10,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 26,
+      "method": "POST",
+      "relative_path": "/admin-recovery/request"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 32,
+      "method": "POST",
+      "relative_path": "/admin-recovery/authorize"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 38,
+      "method": "POST",
+      "relative_path": "/admin-recovery/complete"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 45,
+      "method": "POST",
+      "relative_path": "/login"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 46,
+      "method": "POST",
+      "relative_path": "/forgot-password"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 52,
+      "method": "POST",
+      "relative_path": "/change-password"
+    },
+    {
+      "file": "backend/src/routes/auth.route.ts",
+      "line": 53,
+      "method": "GET",
+      "relative_path": "/me"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 31,
+      "method": "GET",
+      "relative_path": "/sites/:siteId/commissioning-readiness"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 39,
+      "method": "GET",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 46,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/initialize-checks"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 53,
+      "method": "GET",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/export"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 61,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 69,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/checks"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 77,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/evidence"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 85,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/deviations"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 93,
+      "method": "GET",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/deviations"
+    },
+    {
+      "file": "backend/src/routes/commissioning.route.ts",
+      "line": 100,
+      "method": "POST",
+      "relative_path": "/sites/:siteId/commissioning-sessions/:sessionId/decisions"
+    },
+    {
+      "file": "backend/src/routes/communication-channel.route.ts",
+      "line": 18,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/communication-channel.route.ts",
+      "line": 24,
+      "method": "PUT",
+      "relative_path": "/:channel"
+    },
+    {
+      "file": "backend/src/routes/communication-channel.route.ts",
+      "line": 31,
+      "method": "POST",
+      "relative_path": "/:channel/test"
+    },
+    {
+      "file": "backend/src/routes/company-connection.route.ts",
+      "line": 11,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/company-connection.route.ts",
+      "line": 12,
+      "method": "PUT",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/company-connection.route.ts",
+      "line": 39,
+      "method": "DELETE",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/dashboard.route.ts",
+      "line": 12,
+      "method": "GET",
+      "relative_path": "/summary"
+    },
+    {
+      "file": "backend/src/routes/dashboard.route.ts",
+      "line": 18,
+      "method": "GET",
+      "relative_path": "/latest-telemetry"
+    },
+    {
+      "file": "backend/src/routes/dashboard.route.ts",
+      "line": 24,
+      "method": "GET",
+      "relative_path": "/rooms/status"
+    },
+    {
+      "file": "backend/src/routes/dashboard.route.ts",
+      "line": 30,
+      "method": "GET",
+      "relative_path": "/alarm-statistics"
+    },
+    {
+      "file": "backend/src/routes/device-pairing.route.ts",
+      "line": 9,
+      "method": "POST",
+      "relative_path": "/claim"
+    },
+    {
+      "file": "backend/src/routes/device-telemetry.route.ts",
+      "line": 6,
+      "method": "POST",
+      "relative_path": "/:bindingId"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 23,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 30,
+      "method": "GET",
+      "relative_path": "/:deviceId/health"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 37,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 44,
+      "method": "POST",
+      "relative_path": "/:deviceId/activate"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 51,
+      "method": "POST",
+      "relative_path": "/:deviceId/disable"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 58,
+      "method": "GET",
+      "relative_path": "/:deviceId"
+    },
+    {
+      "file": "backend/src/routes/device.route.ts",
+      "line": 65,
+      "method": "PATCH",
+      "relative_path": "/:deviceId"
+    },
+    {
+      "file": "backend/src/routes/escalation-policy.route.ts",
+      "line": 34,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/escalation-policy.route.ts",
+      "line": 40,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/escalation-policy.route.ts",
+      "line": 46,
+      "method": "PATCH",
+      "relative_path": "/:policyUuid"
+    },
+    {
+      "file": "backend/src/routes/escalation-policy.route.ts",
+      "line": 53,
+      "method": "PATCH",
+      "relative_path": "/:policyUuid/status"
+    },
+    {
+      "file": "backend/src/routes/health.route.ts",
+      "line": 5,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/installation-acceptance.route.ts",
+      "line": 17,
+      "method": "GET",
+      "relative_path": "/site/:siteId/acceptance-state"
+    },
+    {
+      "file": "backend/src/routes/installation-acceptance.route.ts",
+      "line": 23,
+      "method": "GET",
+      "relative_path": "/:installationId"
+    },
+    {
+      "file": "backend/src/routes/installation-acceptance.route.ts",
+      "line": 29,
+      "method": "POST",
+      "relative_path": "/:installationId/acceptance"
+    },
+    {
+      "file": "backend/src/routes/notification-delivery.route.ts",
+      "line": 10,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/notification-recipient.route.ts",
+      "line": 35,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/notification-recipient.route.ts",
+      "line": 41,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/notification-recipient.route.ts",
+      "line": 47,
+      "method": "PATCH",
+      "relative_path": "/:recipientUuid"
+    },
+    {
+      "file": "backend/src/routes/notification-recipient.route.ts",
+      "line": 54,
+      "method": "PATCH",
+      "relative_path": "/:recipientUuid/status"
+    },
+    {
+      "file": "backend/src/routes/platform-audit-event.route.ts",
+      "line": 9,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 34,
+      "method": "POST",
+      "relative_path": "/login"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 40,
+      "method": "GET",
+      "relative_path": "/me"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 41,
+      "method": "POST",
+      "relative_path": "/session/refresh"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 42,
+      "method": "POST",
+      "relative_path": "/logout"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 43,
+      "method": "POST",
+      "relative_path": "/mfa/enrollment"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 48,
+      "method": "POST",
+      "relative_path": "/mfa/enrollment/confirm"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 54,
+      "method": "POST",
+      "relative_path": "/mfa/reset"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 60,
+      "method": "GET",
+      "relative_path": "/support-grants"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 61,
+      "method": "POST",
+      "relative_path": "/support-grants"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 67,
+      "method": "POST",
+      "relative_path": "/support-grants/:grantId/revoke"
+    },
+    {
+      "file": "backend/src/routes/platform-auth.route.ts",
+      "line": 74,
+      "method": "POST",
+      "relative_path": "/sessions/revoke-all"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 17,
+      "method": "GET",
+      "relative_path": "/schedule"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 23,
+      "method": "PUT",
+      "relative_path": "/schedule"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 30,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 36,
+      "method": "POST",
+      "relative_path": "/:backupId/restore"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 42,
+      "method": "GET",
+      "relative_path": "/restore-jobs/:jobId"
+    },
+    {
+      "file": "backend/src/routes/platform-backup.route.ts",
+      "line": 48,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 115,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 118,
+      "method": "GET",
+      "relative_path": "/backups/schedule"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 119,
+      "method": "PUT",
+      "relative_path": "/backups/schedule"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 124,
+      "method": "GET",
+      "relative_path": "/backups"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 125,
+      "method": "POST",
+      "relative_path": "/backups"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 126,
+      "method": "POST",
+      "relative_path": "/backups/:backupId/restore"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 127,
+      "method": "POST",
+      "relative_path": "/backups/:backupId/dr-restore"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 128,
+      "method": "GET",
+      "relative_path": "/restore-jobs/:jobId"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 129,
+      "method": "POST",
+      "relative_path": "/customers"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 130,
+      "method": "GET",
+      "relative_path": "/installation-context"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 131,
+      "method": "GET",
+      "relative_path": "/device-provisioning/health"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 132,
+      "method": "POST",
+      "relative_path": "/device-provisioning/sim/detect"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 137,
+      "method": "POST",
+      "relative_path": "/device-provisioning/sim/scan"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 142,
+      "method": "GET",
+      "relative_path": "/device-provisioning/sim/health"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 143,
+      "method": "POST",
+      "relative_path": "/device-provisioning/sim/flash"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 148,
+      "method": "GET",
+      "relative_path": "/device-provisioning/ports"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 149,
+      "method": "GET",
+      "relative_path": "/device-provisioning/targets"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 150,
+      "method": "POST",
+      "relative_path": "/device-provisioning/detect"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 155,
+      "method": "POST",
+      "relative_path": "/device-provisioning/flash"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 160,
+      "method": "POST",
+      "relative_path": "/device-provisioning/flash-bind"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 165,
+      "method": "GET",
+      "relative_path": "/installations"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 166,
+      "method": "GET",
+      "relative_path": "/installations/:installationId"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 171,
+      "method": "GET",
+      "relative_path": "/installations/:installationId/device-bindings"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 176,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/devices/:deviceId/pairing-code"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 181,
+      "method": "POST",
+      "relative_path": "/customers/:customerId/installations"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 187,
+      "method": "GET",
+      "relative_path": "/customers/:customerId/communication-channels"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 193,
+      "method": "PUT",
+      "relative_path": "/customers/:customerId/communication-channels/:channel"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 199,
+      "method": "POST",
+      "relative_path": "/customers/:customerId/communication-channels/:channel/test"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 205,
+      "method": "POST",
+      "relative_path": "/licensing/licenses/:licenseId/devices"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 211,
+      "method": "POST",
+      "relative_path": "/licensing/licenses/:licenseId/validations"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 217,
+      "method": "PATCH",
+      "relative_path": "/licensing/licenses/:licenseId/status"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 223,
+      "method": "POST",
+      "relative_path": "/licensing/licenses/:licenseId/transfer"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 229,
+      "method": "PUT",
+      "relative_path": "/installations/:installationId/draft"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 235,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/validate"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 240,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/queue"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 245,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/send"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 250,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/device-receipt"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 256,
+      "method": "POST",
+      "relative_path": "/installations/:installationId/technical-decision"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 262,
+      "method": "GET",
+      "relative_path": "/customers/:customerId/admins"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 267,
+      "method": "POST",
+      "relative_path": "/customers/:customerId/admins"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 273,
+      "method": "PATCH",
+      "relative_path": "/customers/:customerId/admins/:userId/status"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 279,
+      "method": "PATCH",
+      "relative_path": "/customers/:customerId/admins/:userId/password"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 285,
+      "method": "POST",
+      "relative_path": "/licensing/activation-requests"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 290,
+      "method": "POST",
+      "relative_path": "/licensing/activation-requests/:requestId/approve"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 296,
+      "method": "POST",
+      "relative_path": "/licenses"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 297,
+      "method": "PATCH",
+      "relative_path": "/licenses/:id"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 303,
+      "method": "POST",
+      "relative_path": "/service-events"
+    },
+    {
+      "file": "backend/src/routes/platform-operations.route.ts",
+      "line": 308,
+      "method": "PATCH",
+      "relative_path": "/service-events/:id"
+    },
+    {
+      "file": "backend/src/routes/platform-update.route.ts",
+      "line": 14,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/platform-update.route.ts",
+      "line": 17,
+      "method": "POST",
+      "relative_path": "/upload"
+    },
+    {
+      "file": "backend/src/routes/platform-update.route.ts",
+      "line": 24,
+      "method": "POST",
+      "relative_path": "/:jobId/apply"
+    },
+    {
+      "file": "backend/src/routes/platform-update.route.ts",
+      "line": 27,
+      "method": "DELETE",
+      "relative_path": "/:jobId"
+    },
+    {
+      "file": "backend/src/routes/platform-update.route.ts",
+      "line": 31,
+      "method": "POST",
+      "relative_path": "/internet"
+    },
+    {
+      "file": "backend/src/routes/realtime.route.ts",
+      "line": 8,
+      "method": "GET",
+      "relative_path": "/events"
+    },
+    {
+      "file": "backend/src/routes/report.route.ts",
+      "line": 11,
+      "method": "GET",
+      "relative_path": "/catalogue"
+    },
+    {
+      "file": "backend/src/routes/report.route.ts",
+      "line": 13,
+      "method": "POST",
+      "relative_path": "/preview"
+    },
+    {
+      "file": "backend/src/routes/report.route.ts",
+      "line": 20,
+      "method": "POST",
+      "relative_path": "/exports"
+    },
+    {
+      "file": "backend/src/routes/room.route.ts",
+      "line": 8,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/room.route.ts",
+      "line": 10,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 30,
+      "method": "PATCH",
+      "relative_path": "/:sensorUuid/alarm-delay"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 48,
+      "method": "PATCH",
+      "relative_path": "/:sensorUuid/thresholds"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 66,
+      "method": "POST",
+      "relative_path": "/:sensorUuid/calibrations"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 74,
+      "method": "GET",
+      "relative_path": "/:sensorUuid/calibrations"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 82,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/sensor.route.ts",
+      "line": 89,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/site.route.ts",
+      "line": 8,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/site.route.ts",
+      "line": 10,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 25,
+      "method": "GET",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 26,
+      "method": "GET",
+      "relative_path": "/password-recovery/requests"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 31,
+      "method": "POST",
+      "relative_path": "/password-recovery/requests/:request_id/reset"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 38,
+      "method": "POST",
+      "relative_path": "/"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 44,
+      "method": "PATCH",
+      "relative_path": "/:user_id"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 51,
+      "method": "PATCH",
+      "relative_path": "/:user_id/status"
+    },
+    {
+      "file": "backend/src/routes/user.route.ts",
+      "line": 58,
+      "method": "PUT",
+      "relative_path": "/:user_id/password"
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 # منصة الشركة المركزية — تجربة Cloudflare
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<CLOUD-AND-MOBILE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/COMPANY-CLOUD-PILOT-AR.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## تحديث 22 أكتوبر 2026 — تطبيق منصة الشركة
 
 أصبح للمنصة تطبيق شركة مستقل بواجهة المنصة الحالية داخل نافذة WebView مقيدة. تم تسليم APK تجريبي لنظام Android وأفاد المستخدم بنجاح تشغيل التطبيق. راجع [دليل التطبيق](COMPANY-MOBILE-APP-AR.md) للتثبيت، بيانات الإصدار، وخطوات التحقق المتبقية. كود iOS وتجهيز حزمته متاحان؛ توقيع نسخة iPhone واختبارها ونشرها عبر TestFlight ما زال مطلوبًا. تثبيت التطبيق لا يستلزم إعادة نشر Worker أو تحديث قاعدة البيانات. نتائج الاختبارات القديمة أدناه لا تُعد قبولًا جديدًا لوظائف الموبايل.

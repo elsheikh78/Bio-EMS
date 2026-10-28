@@ -1,5 +1,8 @@
 # BIO-EMS Testing Guidelines
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/DEVELOPER-AND-TESTING.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/engineering/TESTING_GUIDELINES.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October hardware evidence
 
 Use the staged Hardware Tester procedure and record firmware type, package provenance, approved limits, manual measurements, raw acquisition, failures and linked retests. CI and demo PASS cannot substitute for physical acceptance. Integrated candidate #309 covers one Nano/four probes and does not qualify full network/SD/GSM/RTC/UPS operation.

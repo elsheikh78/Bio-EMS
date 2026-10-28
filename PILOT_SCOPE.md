@@ -1,5 +1,8 @@
 # BIO-EMS Pilot Scope
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/PILOT_SCOPE.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Current scope clarification — 26 October 2026
 
 Product remains `0.20.0`; operating Main `0.1.0-pilot.7` and Nano `0.1.0-bench.2`. Standalone Tester 0.3.0 includes isolated QC flashing; the Main/RS485/Nano four-probe continuous acquisition scope is proposed in open #309 (0.4.0), not the reviewed main baseline. One selected four-probe test does not qualify all sixteen channels, network/SD/GSM/RTC or central battery runtime. Native customer app source is merged, with deployment/device/signing gates separate. See [current checkpoint](docs/current/PROJECT-CHECKPOINT-2026-10-26.md). Older version/scope statements below are dated context. BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.

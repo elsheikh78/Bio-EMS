@@ -1,5 +1,8 @@
 # DEP-01 Windows Installer Foundation
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/BUILD-RELEASE-AND-RECOVERY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/deployment/DEP-01-WINDOWS-INSTALLER-FOUNDATION.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Status:** Foundation implemented; runtime freeze and Setup build not yet complete  
 **Target baseline:** Windows 11 Pro x64  
 **Installer technology:** Inno Setup 6, single offline Setup executable
@@ -47,4 +50,3 @@ exist and before activation.
 
 This foundation is not a customer installer and does not change the DEP-01 acceptance
 boundary.
-

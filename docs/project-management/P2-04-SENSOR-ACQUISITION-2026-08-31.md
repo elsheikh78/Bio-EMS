@@ -1,27 +1,11 @@
 # P2-04 — Sensor Acquisition
 
-Date: 2026-08-31
-Status: IMPLEMENTED — CI/merge pending
+Historical record; navigation updated 2026-10-28.
 
-## Objective
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/P2-04-SENSOR-ACQUISITION-2026-08-31.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-Establish a deterministic controller-side acquisition boundary for configured DS18B20 temperature Sensors without claiming physical ESP32 firmware or bench commissioning.
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-## Implemented scope
-
-- Stable identity mapping using `sensor_uuid`, `device_id`, and `channel` from the acknowledged BF-08 configuration bundle.
-- One authoritative timestamp per acquisition cycle.
-- DS18B20 Celsius reader abstraction so hardware-specific firmware/driver code can be supplied later without changing alarm logic.
-- Explicit sample states: `OK`, `DISCONNECTED`, `INVALID`, and `READ_ERROR`.
-- `null` and the conventional `-127 °C` disconnected sentinel are treated as disconnected.
-- Non-finite values and readings outside the DS18B20 operating range of `-55 °C` to `125 °C` are rejected as invalid.
-- A read exception is isolated to the affected Sensor and does not abort the remaining acquisition cycle.
-- Automated tests cover deterministic identity/timestamp behavior, disconnects, invalid values, reader exceptions, and invalid timestamps.
-
-## Boundaries
-
-This slice does not implement ESP32 GPIO/OneWire firmware, physical bus discovery, calibration compensation, MQTT publication, offline alarm evaluation, SMS failover, or field qualification. Those remain later P2 slices and hardware qualification work.
-
-## Next slice
-
-P2-05 — Offline Alarm Evaluation: consume accepted acquisition samples and evaluate configured critical thresholds and activation delays locally while preserving explicit Sensor fault/unknown handling.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

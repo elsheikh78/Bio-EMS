@@ -1,10 +1,13 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
-## 26 October testing boundary
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/firmware/site-controller-esp32s3/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
-Current operating firmware is pilot.7. Standalone Tester isolated QC replaces it and uses GPIO4 for the probe (disconnect SD). Restore governed operating firmware before integrated RS485 tests. Open #309 proposes repeated Main USB simscan acquisition; merged Tester 0.3.0 captures diagnostics/manual evidence.
 
-See [26 October checkpoint](../../docs/current/PROJECT-CHECKPOINT-2026-10-26.md).
+## Current operating/testing boundary — 28 October 2026
+
+Candidate Tester 0.6.0 flashes isolated QC in tab 5 and restores operating pilot.7 in tab 6; tab 7 records the staged manual qualification. Main uses one shared 9600 RS485 bus. Automated integrated Tester acquisition observes one selected Nano/four probes. Physical acceptance remains open. The pilot firmware sends live/replay samples over HTTPS through the device telemetry bridge; native MQTT topic configuration does not prove native MQTT publishing. HTTPS endpoint-name checking is skipped in this pilot source and is an open production security gate.
+
+See [hardware/firmware guide](../../docs/current/HARDWARE-AND-FIRMWARE.md) and [security findings](../../docs/audit/2026-10-28/FINDINGS.md). Older sections below retain their dated boundary.
 
 ## 30 September hardware integration boundary
 

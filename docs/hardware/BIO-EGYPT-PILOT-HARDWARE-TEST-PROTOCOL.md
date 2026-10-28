@@ -1,5 +1,8 @@
 # BIO-EMS — BIO EGYPT Pilot Hardware Test Protocol
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/hardware/BIO-EGYPT-PILOT-HARDWARE-TEST-PROTOCOL.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October execution addendum
 
 Use the current staged procedure before full protocol execution. Test the Nano’s four independent channels explicitly; the older three-sensor HV-03 example does not qualify SIM-D4. Record isolated QC versus operating firmware and exact source/package hashes. Repeating simscan does not supply sensor ROM or conversion-age evidence. Preserve the dated protocol and its acceptance gates.

@@ -1,0 +1,14 @@
+[
+  {
+    "command": "python3 -m unittest discover -s tests -v",
+    "exit_code": 0,
+    "duration_seconds": 1.53,
+    "log": "hardware-tester-0.log"
+  },
+  {
+    "command": "python3 smoke.py <scratch-output>",
+    "exit_code": 0,
+    "duration_seconds": 0.3,
+    "log": "hardware-tester-1.log"
+  }
+]

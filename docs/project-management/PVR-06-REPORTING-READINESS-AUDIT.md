@@ -1,23 +1,11 @@
 # PVR-06 — Reporting readiness audit
 
-## Verdict
+Historical record; navigation updated 2026-10-28.
 
-The Reports Center is **partially accepted**. Calibration Status and History is the only controlled report family currently available for preview, CSV, and PDF. The other four approved catalogue families must remain visibly incomplete until their evidence projections and export contracts are implemented.
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/PVR-06-REPORTING-READINESS-AUDIT.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-| Family                         | Verdict                  | Required closure                                             |
-| ------------------------------ | ------------------------ | ------------------------------------------------------------ |
-| Calibration Status and History | Available                | Production smoke evidence                                    |
-| Temperature Performance        | Partial                  | Bounded historical telemetry range/aggregation contract      |
-| Alarm History                  | Partial                  | Lifecycle projection with actor and transition evidence      |
-| Device Communication Health    | Blocked                  | Durable health-history ledger                                |
-| Audit and Operations           | Ready for implementation | Reporting projection over the existing immutable Audit store |
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-## Corrections
-
-- The catalogue no longer reports `AUDIT_STORE_REQUIRED`; BF-02 provides that store.
-- The remaining Audit dependency is accurately identified as `OPERATIONS_REPORT_PROJECTION_REQUIRED`.
-- The Reports Center renders every approved family, its readiness, preview/export support, and remaining dependency. Incomplete families are no longer hidden behind the Calibration builder.
-
-## Control decision
-
-PVR-06 closes the reporting **audit**, not the missing report implementation. PVR-07 must carry the four unresolved families as release blockers. No readiness or export capability is inferred from an existing data store alone.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

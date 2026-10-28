@@ -1,5 +1,8 @@
 # BIO-EMS Pilot Production Runbook
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/BUILD-RELEASE-AND-RECOVERY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/deployment/production-runbook.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October artifact selection
 
 Select packages by source SHA, manifest and hash, not product 0.20.0 alone. Main pilot.7 and Nano bench.2 operating images differ from Tester QC images. Merged Tester is 0.3.0; proposed integrated 0.4.0 is open #309 at review. Updating the PC does not restore QC-flashed boards. Customer native API source is merged, but matching Worker deployment must be verified separately.

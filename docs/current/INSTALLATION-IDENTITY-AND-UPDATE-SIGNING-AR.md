@@ -1,5 +1,8 @@
 # هوية تثبيت العميل وتوقيع التحديثات — دليل التشغيل
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../README.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 تاريخ المراجعة: 11 أكتوبر 2026. مرجع التنفيذ: PR [#290](https://github.com/elsheikh78/Bio-EMS/pull/290)، مدمج في `main@70108f05bfc0f1826edf44db1eb15bc291e0ea33`. إصدار المنتج ما زال `0.20.0`؛ هذه إضافة للبيلوت وليست إعلان إصدار تجاري جديد.
 
 ## 1. البيانات التي تحدد العميل والتثبيت

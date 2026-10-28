@@ -1,5 +1,8 @@
 # License Signing-Key Operations, Backup and Recovery
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/SECURITY-AND-IDENTITY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/security/LICENSE-SIGNING-KEY-OPERATIONS.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Work package:** LIC-13  
 **Classification:** restricted operational procedure
 
@@ -77,4 +80,3 @@ If no verified backup exists, create a new key and reissue certificates; never i
 or reuse key material. Monitoring continuity remains explicit: trust changes may
 restrict commercial functions but must not silently stop local telemetry, Alarms or
 history collection.
-

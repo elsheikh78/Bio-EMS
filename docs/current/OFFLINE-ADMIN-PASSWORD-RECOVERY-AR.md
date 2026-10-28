@@ -1,5 +1,8 @@
 # استعادة كلمة مرور Admin بملف موقّع من الشركة
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<SECURITY-AND-IDENTITY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 هذه وظيفة استعادة محلية دون خادم cloud. تتطلب Client Setup وManufacturer Tools مبنيين من التعديل نفسه أو إصدار متوافق، وهوية تثبيت سليمة، ومفتاح استعادة عام معتمد على جهاز العميل. إصدار المنتج يبقى `0.20.0`.
 
 ## التجهيز مرة واحدة لدى الشركة

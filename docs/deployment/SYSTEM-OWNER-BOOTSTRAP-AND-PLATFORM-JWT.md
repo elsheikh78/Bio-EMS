@@ -1,5 +1,8 @@
 # SYSTEM_OWNER Bootstrap and Platform JWT Runbook
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/SECURITY-AND-IDENTITY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/deployment/SYSTEM-OWNER-BOOTSTRAP-AND-PLATFORM-JWT.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Date:** 1 September 2026  
 **Scope:** local development and controlled deployment preparation for the isolated BIO-EMS SYSTEM_OWNER trust domain.
 

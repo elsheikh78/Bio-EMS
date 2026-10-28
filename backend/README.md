@@ -1,25 +1,13 @@
 # BIO-EMS Backend
 
-## Current operational boundaries — 30 September 2026
+Reviewed candidate `d151b1f`, 28 October 2026. [Project state](../PROJECT_STATE.md) controls merge/deployment status.
 
-The source includes managed communication channels, isolated owner commissioning/MFA, installation revisions, device pairing/provisioning, licensing and full platform backup/restore. Review `../PROJECT_STATE.md` before interpreting historical closure reports. USB provisioning code does not establish MAIN-16/SIM MCU acquisition support. The Windows installer manages protected runtime configuration; the development `.env` procedure below is not the customer Setup procedure.
+Express/TypeScript local API and durable operational services. SQLite stores configuration/operations/audit; Influx stores time series. Device pilot HTTPS bridge and separate MQTT ingest share telemetry validation. Customer and System Owner authentication are separate. Source version follows root VERSION (0.20.0).
 
-The backend provides authenticated REST APIs, MQTT telemetry ingestion, SQLite
-configuration and operational persistence, InfluxDB time-series writes, Alarm-domain
-evaluation, Device health, calibration evidence, and durable notification events.
+## Verify from this directory
 
-## Development
-
-Install dependencies and start the development server:
-
-```bash
-npm install
-npm run dev
-```
-
-Run the backend quality gates:
-
-```bash
+```sh
+npm ci
 npm run typecheck
 npm run lint
 npm run format:check
@@ -27,42 +15,6 @@ npm run test:run
 npm run build
 ```
 
-## Browser Development
+Development requires configured JWT, SQLite, MQTT and Influx values using the non-secret `.env.example` template. See the developer guide before `npm run dev`. Production validation: `npm run validate:deployment`. The Windows installer manages protected customer configuration; development `.env` editing is not the customer setup procedure. Customer login throttling and credential-change token invalidation remain open audit findings. Legacy Hardware Lab is authenticated read-only history in the candidate; new tests belong in standalone Tester.
 
-The backend and frontend run as separate development processes. Outside production,
-the backend CORS default allows exactly `http://localhost:5173`. Configure a different
-or production origin with a comma-separated exact allowlist:
-
-```dotenv
-BIOEMS_CORS_ALLOWED_ORIGINS=https://ems.example.com
-```
-
-Wildcard origins, origins containing paths or credentials, and malformed URLs are
-rejected during configuration loading. Production with no value uses an empty
-allowlist. Helmet secures JSON API responses; the separate frontend hosting layer is
-responsible for the effective frontend Content Security Policy.
-
-## Deployment Readiness
-
-Copy `.env.example` to an environment-specific configuration and never commit real
-credentials. Production readiness is fail-closed and can be checked before startup:
-
-```bash
-npm run validate:deployment
-```
-
-Production validation requires, among other controls, MQTT over TLS with credentials
-and a stable client ID, HTTPS InfluxDB configuration, an approved CORS origin, a
-strong JWT secret, and absolute persistent SQLite database and backup paths.
-
-MQTT subscriptions use QoS 1. LIVE telemetry is stored and evaluated against current
-Alarm rules. REPLAY telemetry preserves its historical timestamp but does not
-re-trigger historical Alarms. Device health remains based on trusted backend receipt
-time.
-
-The authoritative operational instructions and evidence boundaries are:
-
-- `../docs/deployment/production-runbook.md`;
-- `../docs/deployment/deployment-architecture.md`;
-- `../docs/deployment/site-controller-integration-contract.md`;
-- `../docs/deployment/S15-07-READINESS-EVIDENCE.md`.
+[Current component guide](../docs/current/SOFTWARE-ARCHITECTURE.md) · [Developer/testing guide](../docs/current/DEVELOPER-AND-TESTING.md) · [Audit findings](../docs/audit/2026-10-28/README.md) · [Original pre-audit README](../docs/archive/2026-10-28-pre-audit/backend/README.md)
