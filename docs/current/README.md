@@ -62,3 +62,8 @@ For the merged SIM-D4 integration candidate and current bench limits, see [SIM d
 - [Viewer deployment evidence — 14 October 2026](VIEWER-DEPLOYMENT-STATUS-2026-10-14.md) — deployed components, tested package and remaining mobile/field work.
 
 - [Native customer mobile app — Android / iOS](CUSTOMER-MOBILE-ANDROID-IOS.md)
+
+
+## Standalone hardware qualification 28 October 2026
+
+[Standalone Tester 0.6.0 and retired platform test UI](HARDWARE-TESTING-STANDALONE-2026-10-28.md).

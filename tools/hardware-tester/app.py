@@ -14,7 +14,7 @@ from report import write_pdf
 
 class App:
  def __init__(self,root):
-  self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
+  self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1120,720)
   self.home=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'BIO-EMS-Hardware-Tester'
   self.store=Store(self.home/'qc.sqlite'); self.rid=None; self.capture=None; self.stop_event=None; self.messages=queue.Queue(); self.active=False; self.demo=False; self.port=None
   self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None; self.operating_events=[]
@@ -52,6 +52,27 @@ class App:
   self.operating_state=tk.StringVar(value='Ready. Operating images are separate from isolated QC images.')
   ttk.Label(operating,textvariable=self.operating_state,wraplength=1000).pack(anchor='w',pady=5)
   self.operating_log=tk.Text(operating,height=18,wrap='word',state='disabled');self.operating_log.pack(fill='both',expand=True)
+  qualification=ttk.Frame(tabs,padding=10);tabs.add(qualification,text='7  Qualification guide')
+  ttk.Label(qualification,text='All hardware qualification is performed in this standalone tester',style='Status.TLabel').pack(anchor='w')
+  ttk.Label(qualification,text='These are MANUAL procedure/evidence steps. Link real acquired runs for sensors, cables and RS485.\nThe current integrated acquisition observes ONE selected SIM, not sixteen simultaneous inputs.\nPower OFF before fault wiring; no automatic GSM fallback is implemented.',wraplength=1000).pack(anchor='w',pady=8)
+  from qualification import STEPS
+  guide=ttk.Treeview(qualification,columns=('step','title'),show='headings',height=10)
+  guide.heading('step',text='Step');guide.heading('title',text='Qualification check');guide.column('step',width=70);guide.column('title',width=800)
+  guide.pack(fill='x')
+  for i,(code,title,instruction) in enumerate(STEPS,1):guide.insert('','end',iid=code,values=(i,title))
+  detail=tk.Text(qualification,height=7,wrap='word',state='disabled');detail.pack(fill='both',expand=True,pady=8)
+  def show_step(event=None):
+   selected=guide.selection()
+   if selected:
+    code=selected[0];entry=next(x for x in STEPS if x[0]==code)
+    detail.configure(state='normal');detail.delete('1.0','end');detail.insert('end',entry[1]+'\n\n'+entry[2]);detail.configure(state='disabled')
+    if code in CHECKS:self.check.set(code);self.check_hint()
+  guide.bind('<<TreeviewSelect>>',show_step)
+  def choose_qualification():
+   if self.active or self.flash_running or self.diag_running:return messagebox.showwarning('Operation active','Finish the current operation first.')
+   from qualification import PROFILE,REVISION
+   self.fields['profile'].set(PROFILE);self.fields['procedure'].set(REVISION);self.check.set('bench_setup');self.check_hint();self.tabs.select(0)
+  ttk.Button(qualification,text='Select staged qualification scope',command=choose_qualification).pack(anchor='w')
   defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('sim_address','Integrated SIM address (1-4)','1'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
   for i,(key,label,default) in enumerate(defaults):
    ttk.Label(setup,text=label).grid(row=i,column=0,sticky='w',pady=3)
@@ -79,13 +100,17 @@ class App:
   ttk.Button(live,text='STOP AND FINALIZE RUN',command=self.finish).pack(anchor='e')
   ttk.Label(manual,text='Record checks before finalizing. Evidence is manual unless acquired automatically.\nUse English in report fields. Earlier attempts remain in the event ledger.',wraplength=1000).pack(anchor='w')
   self.check=tk.StringVar(value='visual'); self.manual_status=tk.StringVar(value='PASS')
-  self.checkbox=ttk.Combobox(manual,textvariable=self.check,values=list(CHECKS),state='readonly'); self.checkbox.pack(fill='x',pady=8); self.checkbox.bind('<<ComboboxSelected>>',self.check_hint)
+  self.checkbox=ttk.Combobox(manual,textvariable=self.check,values=list(CHECKS),state='readonly',width=45); self.checkbox.pack(fill='x',pady=8); self.checkbox.bind('<<ComboboxSelected>>',self.check_hint)
   self.hint=tk.StringVar(); ttk.Label(manual,textvariable=self.hint,wraplength=1000).pack(anchor='w')
   ttk.Combobox(manual,textvariable=self.manual_status,values=['PASS','FAIL','NOT TESTED'],state='readonly').pack(anchor='w',pady=8)
   self.evidence=tk.Text(manual,height=8,wrap='word'); self.evidence.pack(fill='x')
   self.measure={}; row=ttk.Frame(manual); row.pack(fill='x',pady=12)
   for key,label in [('value','Measured V'),('low','Approved min V'),('high','Approved max V'),('instrument','Meter ID')]:
    ttk.Label(row,text=label).pack(side='left'); v=tk.StringVar(); self.measure[key]=v; ttk.Entry(row,textvariable=v,width=14).pack(side='left',padx=4)
+  from qualification import FAULT_CODES
+  self.fault_code=tk.StringVar(value='')
+  ttk.Label(manual,text='Optional observed fault code (not an automatic diagnosis)').pack(anchor='w')
+  ttk.Combobox(manual,textvariable=self.fault_code,values=['']+list(FAULT_CODES),state='readonly',width=45).pack(anchor='w',pady=4)
   ttk.Button(manual,text='Save evidence / retest attempt',command=self.manual).pack(anchor='w')
   ttk.Button(manual,text='Capture Main pilot.7 USB diagnostics',command=self.main_diagnostics).pack(anchor='w',pady=8)
   ttk.Label(manual,text='Active manual-scope run only. Captures status / storage / rtc / simscan / gsmdiag. No flashing, commissioning or SMS.\nCaptured output is evidence, not an automatic PASS. Verify RTC cold boot and actual message receipt separately.',wraplength=1000).pack(anchor='w')
@@ -326,7 +351,7 @@ class App:
   if not self.active: return messagebox.showwarning('No active run','Start a run first. Finalized records cannot be edited.')
   try:
    m={k:(float(v.get()) if v.get().strip() else None) for k,v in self.measure.items() if k!='instrument'}
-   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),**m)
+   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),fault_code=self.fault_code.get(),**m)
    messagebox.showinfo('Recorded','Evidence appended. Earlier attempts remain recorded.')
   except Exception as e: messagebox.showerror('Evidence not saved',str(e))
  def finish(self):

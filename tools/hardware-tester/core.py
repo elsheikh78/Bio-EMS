@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = '0.5.0'
+VERSION = '0.6.0'
 PROTOCOL = 'bioems-qc/1'
 PROFILES = {'ESP32 / 1 sensor': ('esp32s3', 1), 'Nano / 4 sensors': ('nano', 4),
             'Main + Nano / 4 sensors via RS485': ('main-rs485', 4),
@@ -29,6 +29,12 @@ CHECKS = {
  'battery': ('Central backup endurance', 'Measure Main + fitted SIM load, interruption duration and minimum rails'),
  'soak': ('Integrated endurance', 'Record duration, population, missing samples, resets and communications faults'),
 }
+
+from qualification import PROFILE as QUALIFICATION_PROFILE, REVISION as QUALIFICATION_REVISION, CHECKS as QUALIFICATION_CHECKS
+BASE_CHECK_KEYS = tuple(CHECKS)
+# Shared power semantics keep numeric meter validation for the qualification scope.
+CHECKS.update({k:v for k,v in QUALIFICATION_CHECKS.items() if k not in CHECKS})
+PROFILES[QUALIFICATION_PROFILE] = ('manual', 0)
 
 def utc():
  return datetime.now(timezone.utc).isoformat(timespec='milliseconds')
@@ -69,8 +75,12 @@ CREATE TABLE IF NOT EXISTS seals(run_id TEXT PRIMARY KEY, event_count INTEGER, l
   validate_config(config)
   count=PROFILES[config['profile']][1]
   config['checks']=(['visual','continuity','power','response','recovery'] if count else
-    [k for k in CHECKS if k!='battery'] if config['profile']=='Main + 1 SIM / Rev B' else list(CHECKS))
+    [k for k in BASE_CHECK_KEYS if k!='battery'] if config['profile']=='Main + 1 SIM / Rev B' else list(BASE_CHECK_KEYS))
   if PROFILES[config['profile']][0] == 'main-rs485': config['checks'].append('rs485')
+  if config['profile']==QUALIFICATION_PROFILE:
+   config['checks']=list(QUALIFICATION_CHECKS)
+   config['qualification_revision']=QUALIFICATION_REVISION
+   config['qualification_plan']=[dict(code=k,title=v[0],instructions=v[1],execution='MANUAL evidence with linked acquisition runs') for k,v in QUALIFICATION_CHECKS.items()]
   rid = str(uuid.uuid4())
   self.db.execute('INSERT INTO runs VALUES(?,?,?,?,?)', (rid,utc(),None,json.dumps(config,sort_keys=True),mode)); self.db.commit()
   self.append(rid,'run_header',{'config':config,'mode':mode,'id':rid})
@@ -188,7 +198,7 @@ def analyze(run):
   results.append({'channel':ch,'status':status,'valid':len(values),'errors':bad,'error_pct':rate,'minimum':min(values) if values else None,'maximum':max(values) if values else None,'mean':statistics.mean(values) if values else None,'span':max(values)-min(values) if values else None,'roms':sorted(roms),'max_reference_error':max(refs) if refs else None,'reasons':reasons})
  manual=[]
  # Legacy records retain their original scope; never add new requirements retroactively.
- required=c.get('checks', ['visual','continuity','power','response','recovery'] if count else [k for k in CHECKS if k!='rtc'])
+ required=c.get('checks', ['visual','continuity','power','response','recovery'] if count else [k for k in BASE_CHECK_KEYS if k!='rtc'])
  for key in required:
   attempts=[e for e in run['events'] if e['kind']=='manual' and e['payload'].get('check')==key]
   last=attempts[-1]['payload'] if attempts else None
@@ -201,10 +211,22 @@ def analyze(run):
  else: overall='PASS - SELECTED SCOPE ONLY'
  return {'overall':overall,'duration_s':duration,'channels':results,'manual':manual,'transport_errors':len(transports),'frames':len(frames)}
 
-def record_manual(store,rid,key,status,evidence,value=None,low=None,high=None,instrument=''):
+def record_manual(store,rid,key,status,evidence,value=None,low=None,high=None,instrument='',fault_code=''):
  if key not in CHECKS or status not in ('PASS','FAIL','NOT TESTED'): raise ValueError('Invalid check/status')
  if status!='NOT TESTED' and not evidence.strip(): raise ValueError('Measured observations/evidence are required')
+ run=store.load(rid)
+ if run['config']['profile']==QUALIFICATION_PROFILE:
+  required=run['config']['checks']
+  if key not in required: raise ValueError('Check is outside this qualification scope')
+  if status=='PASS':
+   for previous in required[:required.index(key)]:
+    attempts=[e['payload'] for e in run['events'] if e['kind']=='manual' and e['payload'].get('check')==previous]
+    if not attempts or attempts[-1]['status']!='PASS': raise ValueError('Previous qualification step must pass first: '+previous)
  payload={'check':key,'status':status,'evidence':evidence.strip()}
+ if fault_code:
+  from qualification import FAULT_CODES
+  if fault_code not in FAULT_CODES: raise ValueError('Unknown fault code')
+  payload['fault_code']=fault_code
  if key=='power' and status=='PASS':
   for x in (value,low,high): number(x)
   if low>=high or not instrument.strip(): raise ValueError('Supply check requires approved limits and instrument ID')

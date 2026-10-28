@@ -1,0 +1,27 @@
+"""Controlled bench procedure; evidence is manual unless linked to an acquired run."""
+PROFILE = 'Hardware qualification / staged checklist'
+REVISION = 'HQT-2 / pilot.7 / bench.2'
+# Code, title and reviewed acceptance/evidence instructions. Never label these AUTO.
+STEPS = [
+ ('bench_setup','Bench setup and identification','Record Main, Nano and probe labels, installed firmware event IDs and isolated QC run IDs. Secure contacts; no mains on breadboard; verify regulated supplies before connection.'),
+ ('power','Power rails','Measure no-load and loaded rails at each fitted load. Record all values, approved limits and meter ID; include modem transmit transient evidence where fitted. No abnormal heating, smell or reset. Separate linked power attempts may be needed for each rail.'),
+ ('single_sensor','Single sensor stability','Link an ESP32 / 1 sensor acquisition lasting at least one hour with unchanged ROM, stable readings and no unexplained reset. Investigate recurring 85 C, missing or CRC faults.'),
+ ('sensor_cables','Sensor cable lengths','Link separate acquired runs for 5 m, 10 m and intended maximum up to 20 m, at least two hours each. Proposed success rate >=99.99%; approve limits before each run. Retain cable type, length and pull-up. Any changed resistor requires electrical review and retest.'),
+ ('sensor_faults','Sensor faults and recovery','Power OFF before changing wiring. Use separate linked baseline, fault and recovery attempts for each input. Record missing probe, supply removal and replacement; verify unrelated channels continue. Do not short powered DATA or power rails.'),
+ ('four_channels','Nano four channel isolation','Link Nano / 4 sensors QC with ROM mapping and individual response. Record CH2 fault and confirm CH1/CH3/CH4 remain operational, then recovery. Integrated scans do not expose ROM.'),
+ ('short_rs485','RS485 short link','Use operating pilot.7 / bench.2, automatic-direction HW-519 and 9600 8N1. Link Main + Nano / 4 sensors via RS485 run; verify selected address, four inputs, communication loss and recovery.'),
+ ('long_rs485','RS485 and power over 20 m','Link at least four hours of integrated polling over the intended 20 m cable. Record loaded far-end rails, missing scans, errors and resets. Power and voltage drop require physical measurements.'),
+ ('ethernet_link','W5500 Ethernet and Wi Fi','For each fitted interface record actual platform delivery and outage/recovery. For Ethernet interrupt only network for two minutes; acquisition must continue. Successful USB acquisition alone does not prove network delivery.'),
+ ('cellular_bench','SIM800L explicit SMS','Record gsmdiag response, signal and registration; send only deliberate gsmtest commands to an authorized number and confirm actual receipt/time. Record supply transients and absence of resets. Automatic GSM alarm fallback is not implemented; do not claim its acceptance.'),
+ ('assembly_operation','Integrated assembly recovery','Record simultaneous fitted RS485, network, SD/RTC and modem operation. Exercise controlled sensor, RS485, network and power restart recovery in separate linked attempts. Unfitted or unverified mandatory functions remain NOT TESTED.'),
+ ('endurance_24h','24 hour endurance','Link at least 24 hours of acquired evidence for the selected population; record communications faults and independent reset evidence. Host scan counters are not device uptime. No unexplained reset or unrecovered fault.'),
+ ('bus_addresses','Shared RS485 bus and four addresses','The current Main uses one shared RS485 bus, not four independent hardware ports. Test unique addresses 1-4 and mapping 1-16. Record each SIM loss/recovery and effects on other modules.'),
+ ('full_population','Sixteen sensors and 48 hour qualification','Test four SIMs and sixteen probes for at least 48 hours. Current automated integrated scope observes ONE selected SIM at a time; retain separate address evidence plus independent full-population logs. Do not claim simultaneous sixteen-channel automated acquisition from this checklist.'),
+ ('calibration_reference','Accuracy and calibration','Use a traceable stable reference; record instrument/certificate, uncertainty, approved tolerance, decision rule and comparison at intended ambient/cold points. Link reference-enabled acquired runs. Hand warming does not establish calibration.'),
+ ('storage_replay','SD storage and replay','Record card mount and trusted UTC, at least 30 minutes offline storage, pending history, reboot retention and replay with original timestamps. Current values returning alone do not prove history recovery.'),
+ ('clock_retention','RTC retention','Commission DS3231 in UTC; record rtc flags and compare against a trusted clock. Power off Main while RTC battery remains, restore and verify retained time. Missing or invalid clock remains NOT TESTED or FAIL.'),
+ ('central_backup','Central battery endurance','Record approved UPS/battery identity and load; run Main plus four SIMs and sixteen sensors for at least 30 minutes after input removal. Record changeover, rails, continuity and recharge. One-SIM evidence cannot approve the full-load requirement.')
+]
+CHECKS = {code:(title,instruction) for code,title,instruction in STEPS}
+FAULT_CODES = ('MISSING_SENSOR','ERROR_CRC_SENSOR','SENSOR_REPLACED','SIM_COMM_LOSS','SIM_POWER_RECOVERY',
+               'DOWN_ETHERNET','CELLULAR_NOT_REGISTERED','FAILED_SEND_SMS','STORAGE_UNAVAILABLE')

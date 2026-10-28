@@ -41,6 +41,12 @@ def write_pdf(run,path):
  add(f"Range {c['minimum_c']} to {c['maximum_c']} C; duration >= {c['duration_s']} s; valid samples/channel >= {c['min_samples']}; errors <= {c['max_error_pct']}%; span <= {c['max_span_c']} C; stale timeout {c['stale_s']} s.")
  add('Reference: '+(f"{c['reference_c']} C; maximum absolute deviation {c['tolerance_c']} C" if c.get('reference_c') is not None else 'Not used; accuracy/calibration is NOT established.'))
  add('Limits are operator-approved bench criteria, not manufacturer accuracy specifications. All transport faults block PASS. Missing required checks block PASS. Sensor errors are assessed against the frozen error-rate limit.')
+ if c.get('qualification_plan'):
+  add('Staged qualification procedure','Heading2')
+  add('MANUAL checklist disposition. Linked sensor/RS485 acquisitions and physical evidence require reviewer verification. No simultaneous sixteen-channel acquisition or automatic GSM fallback is claimed.')
+  add(c.get('qualification_revision',''))
+  for step in c['qualification_plan']:
+   add(step['title'],'Heading3');add(step['instructions'])
  if c['profile']=='Main + Nano / 4 sensors via RS485':
   add('Integrated path: Main USB -> RS485 -> Nano -> four probes. Main hardware UID is observed; sensor ROM and Nano unique identity/sample age are not available in this protocol. Sequence/time are host scan counters, not device uptime. Perform and record individual probe response/recovery; a fresh scan alone does not prove a new sensor conversion. Network, SD, GSM, RTC and UPS are outside this selected scope.')
  if a['channels']: story.append(PageBreak())

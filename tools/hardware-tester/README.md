@@ -1,6 +1,19 @@
-# BIO-EMS Hardware Tester 0.5.0
+# BIO-EMS Hardware Tester 0.6.0
 
-## 0.5.0 operating firmware upload
+## 0.6.0 standalone qualification
+
+Hardware qualification has moved out of the System Owner platform. Tab **7
+Qualification guide** contains the reviewed 18-step procedure. Choose **Hardware
+qualification / staged checklist** to record ordered manual evidence with linked
+acquisition run IDs. Missing steps block PASS; the previous step must pass first.
+The frozen plan is included in the report. Sensor, cable and RS485 acquisitions
+remain separate real hardware runs. All prior scopes keep their existing checks.
+
+This does not automate sixteen simultaneous sensor channels or GSM fallback.
+The platform retains read-only historical records and rejects new test writes.
+Device provisioning and installation discovery remain platform operations.
+
+## Operating firmware upload
 
 Tab **6 Operating firmware** installs bundled Main pilot.7 and Nano bench.2 directly
 over USB, including both classic 57600 and new 115200 Nano bootloaders. No platform,
