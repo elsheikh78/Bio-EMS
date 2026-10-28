@@ -1,9 +1,17 @@
 # BIO-EMS Changelog
 
+## Unreleased — security phase two
+
+- Add revocable hashed company sessions with additive D1 migration 0003, server-side logout, key-rotation binding and expired-session cleanup. Legacy cookies require re-login; migration precedes Worker deployment.
+- Upgrade Vitest/coverage tooling to 5.0.5 and cloud dev tools within supported majors. Preserve existing test assertions and mock-clear behavior; fix constructor/callable/lifecycle fixtures and exclude compiled test duplicates by source scope.
+- Backend/frontend/company-cloud all-dependency npm scans report zero candidate entries; no mobile/vendor clean-security claim or remote deployment.
+- Record Main TLS DNS/IP SAN mismatch and the controlled remediation work package without disabling trust or changing live certificates.
+
+
 ## Unreleased — runtime dependency advisory remediation
 
 - Update backend/frontend affected locked dependency chains; production npm audit reports zero affected package entries in both candidate trees. Development/tooling and other-component findings remain open.
-- Deliberately upgrade Nodemailer9 to10.2.1 with installed-library RFC message regression; retain real SMTP/TLS delivery acceptance as a separate gate. No force upgrade or binary release.
+- Deliberately upgrade Nodemailer 9 to10.2.1 with installed-library RFC message regression; retain real SMTP/TLS delivery acceptance as a separate gate. No force upgrade or binary release.
 
 ## Unreleased — customer authentication audit remediation
 

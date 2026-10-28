@@ -4,124 +4,117 @@ import { describe, expect, it, vi } from "vitest";
 import { errorMiddleware } from "../../middleware/error.middleware";
 
 vi.mock("../../modules/reporting/calibration-report.service", () => ({
-  CalibrationReportService: vi.fn().mockImplementation(() => ({
-    preview: vi.fn(() => ({
-      identity: {
-        reportId: "RPT-20260819-TEST",
-        reportType: "CALIBRATION-HISTORY",
-        contractVersion: "1.0",
-      },
-
-      scope: {
-        sensorUuids: ["sensor-temp-001"],
-        from: "2026-01-01T00:00:00Z",
-        to: "2027-01-01T00:00:00Z",
-        timeZone: "Africa/Cairo",
-        language: "en",
-      },
-
-      provenance: {
-        generatedAt: "2026-08-19T12:00:00Z",
-        source: "SQLITE",
-        rangeSemantics: "[from,to)",
-      },
-
-      quality: {
-        complete: true,
-        warnings: [],
-        unavailableSections: [],
-      },
-
-      summary: {
-        sensors: 1,
-        records: 1,
-        pass: 1,
-        fail: 0,
-        overdue: 0,
-        notCalibrated: 0,
-      },
-
-      sensors: [
-        {
-          uuid: "sensor-temp-001",
-          code: "TEMP-001",
-          name: "Room sensor",
-          sensor_type: "temperature",
-          unit: "°C",
-          site_code: "BIO-EGYPT",
-          site_name: "Bio Egypt",
-          room_code: "CR-1",
-          room_name: "Cold Room 1",
+  CalibrationReportService: vi.fn().mockImplementation(function () {
+    return {
+      preview: vi.fn(() => ({
+        identity: {
+          reportId: "RPT-20260819-TEST",
+          reportType: "CALIBRATION-HISTORY",
+          contractVersion: "1.0",
         },
-      ],
-
-      records: [
-        {
-          sensor_uuid: "sensor-temp-001",
-          result: "PASS",
-          performed_at: "2026-08-19T10:00:00Z",
-          due_at: "2027-08-19T10:00:00Z",
-          offset: 0,
-          certificate_reference: "CERT-1",
-          notes: null,
-          performed_by_username: "admin",
+        scope: {
+          sensorUuids: ["sensor-temp-001"],
+          from: "2026-01-01T00:00:00Z",
+          to: "2027-01-01T00:00:00Z",
+          timeZone: "Africa/Cairo",
+          language: "en",
         },
-      ],
-    })),
-  })),
+        provenance: {
+          generatedAt: "2026-08-19T12:00:00Z",
+          source: "SQLITE",
+          rangeSemantics: "[from,to)",
+        },
+        quality: {
+          complete: true,
+          warnings: [],
+          unavailableSections: [],
+        },
+        summary: {
+          sensors: 1,
+          records: 1,
+          pass: 1,
+          fail: 0,
+          overdue: 0,
+          notCalibrated: 0,
+        },
+        sensors: [
+          {
+            uuid: "sensor-temp-001",
+            code: "TEMP-001",
+            name: "Room sensor",
+            sensor_type: "temperature",
+            unit: "°C",
+            site_code: "BIO-EGYPT",
+            site_name: "Bio Egypt",
+            room_code: "CR-1",
+            room_name: "Cold Room 1",
+          },
+        ],
+        records: [
+          {
+            sensor_uuid: "sensor-temp-001",
+            result: "PASS",
+            performed_at: "2026-08-19T10:00:00Z",
+            due_at: "2027-08-19T10:00:00Z",
+            offset: 0,
+            certificate_reference: "CERT-1",
+            notes: null,
+            performed_by_username: "admin",
+          },
+        ],
+      })),
+    };
+  }),
 }));
 
 vi.mock("../../modules/reporting/temperature-performance-report.service", () => ({
-  TemperaturePerformanceReportService: vi.fn().mockImplementation(() => ({
-    preview: vi.fn(() => ({
-      identity: {
-        reportId: "RPT-TEMP-20260824-TEST",
-        reportType: "TEMP-PERFORMANCE",
-        contractVersion: "1.0",
-      },
-
-      scope: {
-        sensorUuids: ["sensor-temp-001"],
-        from: "2026-08-01T00:00:00Z",
-        to: "2026-08-24T00:00:00Z",
-        timeZone: "Africa/Cairo",
-        language: "en",
-      },
-
-      provenance: {
-        generatedAt: "2026-08-24T12:00:00Z",
-        source: "INFLUXDB",
-        rangeSemantics: "[from,to)",
-      },
-
-      quality: {
-        complete: true,
-        warnings: [],
-        unavailableSections: [],
-      },
-
-      sensors: [
-        {
-          sensor: "sensor-temp-001",
-          unit: "°C",
+  TemperaturePerformanceReportService: vi.fn().mockImplementation(function () {
+    return {
+      preview: vi.fn(() => ({
+        identity: {
+          reportId: "RPT-TEMP-20260824-TEST",
+          reportType: "TEMP-PERFORMANCE",
+          contractVersion: "1.0",
+        },
+        scope: {
+          sensorUuids: ["sensor-temp-001"],
+          from: "2026-08-01T00:00:00Z",
+          to: "2026-08-24T00:00:00Z",
+          timeZone: "Africa/Cairo",
+          language: "en",
+        },
+        provenance: {
+          generatedAt: "2026-08-24T12:00:00Z",
+          source: "INFLUXDB",
+          rangeSemantics: "[from,to)",
+        },
+        quality: {
+          complete: true,
+          warnings: [],
+          unavailableSections: [],
+        },
+        sensors: [
+          {
+            sensor: "sensor-temp-001",
+            unit: "°C",
+            records: 100,
+            minimum: 2,
+            maximum: 8,
+            average: 5,
+            firstReadingAt: "2026-08-01T00:00:00Z",
+            lastReadingAt: "2026-08-24T00:00:00Z",
+          },
+        ],
+        summary: {
+          sensors: 1,
           records: 100,
           minimum: 2,
           maximum: 8,
           average: 5,
-          firstReadingAt: "2026-08-01T00:00:00Z",
-          lastReadingAt: "2026-08-24T00:00:00Z",
         },
-      ],
-
-      summary: {
-        sensors: 1,
-        records: 100,
-        minimum: 2,
-        maximum: 8,
-        average: 5,
-      },
-    })),
-  })),
+      })),
+    };
+  }),
 }));
 
 vi.mock("../../modules/reporting/temperature-performance-csv.renderer", () => ({

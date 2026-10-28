@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-28",
+  "baseline": "0246c0dca477b363721f11cc5e79f70a8903f8db",
+  "scope": "npm audit --json including development dependencies, candidate backend/frontend/company-cloud only; not deployed, no mobile/Python/vendor scan",
+  "components": {
+    "backend": {
+      "counts": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "packages": {}
+    },
+    "frontend": {
+      "counts": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "packages": {}
+    },
+    "company-cloud": {
+      "counts": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "packages": {}
+    }
+  },
+  "verification": {
+    "backend": {
+      "test_files": 164,
+      "tests": 1101,
+      "typecheck": "PASS",
+      "lint": "PASS",
+      "format": "PASS",
+      "build": "PASS"
+    },
+    "frontend": {
+      "test_files": 64,
+      "tests": 357,
+      "typecheck": "PASS",
+      "lint": "PASS",
+      "format": "PASS",
+      "build": "PASS",
+      "coverage_run": "PASS",
+      "coverage_percent": {
+        "statements": 61.16,
+        "branches": 49.17,
+        "functions": 55.4,
+        "lines": 61.8
+      }
+    },
+    "company-cloud": {
+      "tests": 30,
+      "build": "PASS",
+      "wrangler_dry_run": "PASS",
+      "remote_deployment": false
+    }
+  },
+  "lock_sha256": {
+    "backend": "0508a92b657273446bd5c5b2e302d284c52b3497864110e89ffc8cdf3e5ecff6",
+    "frontend": "3dd0f5499fe0c3aeeebefe0fa641c9935fcdc34554578839236b690de1559072",
+    "company-cloud": "57e449ae982f4b14738d38b8966b42709b674e00f48f5fed583401cf875b36a7"
+  }
+}

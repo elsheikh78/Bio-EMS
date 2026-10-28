@@ -9,16 +9,20 @@ const { findByUsername, updatePasswordHash, hashPassword, recordAudit } = vi.hoi
 
 vi.mock("../../database/sqlite/client", () => ({ sqlite: {} }));
 vi.mock("../repositories/user.repository", () => ({
-  UserRepository: vi.fn().mockImplementation(() => ({
-    findByUsername,
-    updatePasswordHash,
-  })),
+  UserRepository: vi.fn().mockImplementation(function () {
+    return {
+      findByUsername,
+      updatePasswordHash,
+    };
+  }),
 }));
 vi.mock("../repositories/audit-event.repository", () => ({
   AuditEventRepository: vi.fn(),
 }));
 vi.mock("../services/audit-event.service", () => ({
-  AuditEventService: vi.fn().mockImplementation(() => ({ record: recordAudit })),
+  AuditEventService: vi.fn().mockImplementation(function () {
+    return { record: recordAudit };
+  }),
 }));
 vi.mock("../services/password.service", () => ({ hashPassword }));
 

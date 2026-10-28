@@ -1,12 +1,19 @@
 # BIO-EMS Project State
 
+## Security phase two candidate — 28 October 2026
+
+The unmerged security candidate now adds D1-backed company-cookie revocation and migration 0003. Copied cookies are rejected after logout; company key rotation invalidates old sessions. Legacy company cookies require re-login; apply the additive migration before matched Worker deployment. No remote migration/deployment has been performed.
+
+Vitest 5 migration retains all 1101 backend / 357 frontend tests; cloud includes 30 tests. All-dependency npm scans for backend/frontend/company-cloud report zero affected entries in the candidate, including development tools. Mobile/Python/vendor/device-trust work is not certified. Main TLS remains open because installed DNS/IP certificate identity must be reconciled before removing firmware exceptions. See [phase-two guide](docs/security/COMPANY-SESSIONS-AND-TEST-TOOLING-REMEDIATION.md).
+
+
 Reviewed 28 October 2026. This is the sole current-state authority; dated evidence is preserved in [the pre-audit snapshot](docs/archive/2026-10-28-pre-audit/PROJECT_STATE.md).
 
-## Customer security remediation candidate — 28 October 2026
+## Phase-one checkpoint (superseded by phase two above) — 28 October 2026
 
-User-authorized A02/A03 fixes are implemented on `fix/customer-auth-audit`, not yet merged/deployed: bounded customer login throttling; credential-bound customer tokens; old token rejection after own/admin/offline password replacement; replacement session installed by the matching frontend. Existing customer sessions must log in again on initial upgrade. Compatible lockfile updates and deliberate Nodemailer10 upgrade reduce backend/frontend production npm audit entries to zero in the candidate; development/tooling and other-component advisories remain open. Company session, Main TLS and production device-trust findings are not closed.
+User-authorized A02/A03 fixes are implemented on `fix/customer-auth-audit`, not yet merged/deployed: bounded customer login throttling; credential-bound customer tokens; old token rejection after own/admin/offline password replacement; replacement session installed by the matching frontend. Existing customer sessions must log in again on initial upgrade. Compatible lockfile updates and deliberate Nodemailer 10 upgrade reduce backend/frontend production npm audit entries to zero in the candidate; Phase-one development/tooling and company-session findings are addressed in the later phase-two source candidate above; Main TLS, mobile dependencies and production device trust remain open.
 
-Local Node24 verification: backend1101 tests/164 files; frontend357 tests/64 files; typecheck/lint/format/build and documentation checks. See [remediation design and rollout](docs/security/CUSTOMER-AUTH-AUDIT-REMEDIATION.md) and [ADR-024](docs/adr/ADR-024-customer-access-token-credential-binding.md). Remote CI and source integration remain separate gates.
+Local Node24 verification: backend 1101 tests/164 files; frontend 357 tests/64 files; typecheck/lint/format/build and documentation checks. See [remediation design and rollout](docs/security/CUSTOMER-AUTH-AUDIT-REMEDIATION.md) and [ADR-024](docs/adr/ADR-024-customer-access-token-credential-binding.md). Remote CI and source integration remain separate gates.
 
 ## Exact source and release boundary
 

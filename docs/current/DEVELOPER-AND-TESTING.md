@@ -44,3 +44,7 @@ The [verification matrix](../audit/2026-10-28/VERIFICATION.md) records exact res
 ## Review and release
 
 Follow PROJECT_RULES and approved ADR/work-package requirements. Re-run only the relevant gates after a change, then release gates on the final merge candidate. Update the source-backed guide, project state when status changes, controlled changelog, and risk/finding evidence. Version/release metadata is not changed for this documentation audit.
+
+## Security candidate test-tool prerequisites
+
+The phase-two candidate uses Vitest 5 with Node>=22.12 and Vite>=6.4. Keep the pinned CI/Windows Node22.23 line or a compatible newer supported runtime. Use npm ci on the matched lockfiles. Source/database tests are discovered explicitly; compiled dist files must not be executed as duplicate CommonJS tests. Preserve assertions when adapting constructor mocks/types; do not suppress runner errors or mark tests skipped to make a migration green.

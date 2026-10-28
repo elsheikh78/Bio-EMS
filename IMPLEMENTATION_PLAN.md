@@ -1,5 +1,10 @@
 # BIO-EMS Implementation Plan
 
+## Security phase-two execution
+
+Source candidate adds revocable company sessions and the test-tool migration. Complete remote CI/review, controlled D1 backup/migration/Worker deployment and real company login/logout replay checks. Next execute the Main TLS endpoint-identity work package and mobile SDK/tooling dependency review, preserving existing production device-trust gates.
+
+
 ## Customer-auth security implementation
 
 A02/A03 source candidate is implemented with tests and rollout documentation on `fix/customer-auth-audit`. Complete remote CI/review/integration and matched backend/frontend validation before describing it as deployed. Continue compatible dependency advisory remediation next; company session revocation and Main certificate-name verification remain separate changes. Production device trust retains its approved staged qualification.

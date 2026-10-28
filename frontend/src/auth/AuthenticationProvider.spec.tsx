@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiResponseError,
+  type ApiClient,
   type ApiClientConfiguration,
   type ApiRequestOptions,
 } from "../api/client";
@@ -97,7 +98,7 @@ function renderProvider({
   });
   const createClient = vi.fn((next: ApiClientConfiguration = {}) => {
     configuration = next;
-    return { request };
+    return { request: request as ApiClient["request"] };
   });
   let authentication: AuthenticationContextValue | undefined;
   const provider = (

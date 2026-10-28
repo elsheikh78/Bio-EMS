@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { migration011 } from "../../../database/sqlite/migrations/011_add_alarm_delay_configuration";
 import { AlarmActivationCandidateRepository } from "../../repositories/alarm-activation-candidate.repository";
-import { AlarmEvaluator, AlarmCheckInput } from "../alarm.evaluator";
+import { AlarmEvaluator, AlarmCheckInput, AlarmEvaluatorDependencies } from "../alarm.evaluator";
 
 const warningHigh: AlarmCheckInput = {
   sensorId: 1,
@@ -19,9 +19,9 @@ describe("configured Alarm activation persistence", () => {
   let database: Database.Database;
   let candidates: AlarmActivationCandidateRepository;
   let currentTime: Date;
-  let createAlarm: ReturnType<typeof vi.fn>;
-  let getActiveAlarm: ReturnType<typeof vi.fn>;
-  let recoverAlarm: ReturnType<typeof vi.fn>;
+  let createAlarm: ReturnType<typeof vi.fn<AlarmEvaluatorDependencies["createAlarm"]>>;
+  let getActiveAlarm: ReturnType<typeof vi.fn<AlarmEvaluatorDependencies["getActiveAlarm"]>>;
+  let recoverAlarm: ReturnType<typeof vi.fn<AlarmEvaluatorDependencies["recoverAlarm"]>>;
 
   beforeEach(() => {
     database = new Database(":memory:");
@@ -31,9 +31,9 @@ describe("configured Alarm activation persistence", () => {
     database.prepare("INSERT INTO sensors (id) VALUES (1)").run();
     candidates = new AlarmActivationCandidateRepository(database);
     currentTime = new Date("2026-08-24T10:00:00.000Z");
-    createAlarm = vi.fn(() => 41);
-    getActiveAlarm = vi.fn(() => undefined);
-    recoverAlarm = vi.fn();
+    createAlarm = vi.fn<AlarmEvaluatorDependencies["createAlarm"]>(() => 41);
+    getActiveAlarm = vi.fn<AlarmEvaluatorDependencies["getActiveAlarm"]>(() => undefined);
+    recoverAlarm = vi.fn<AlarmEvaluatorDependencies["recoverAlarm"]>();
   });
 
   afterEach(() => database.close());
