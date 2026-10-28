@@ -313,6 +313,8 @@ describe("Admin User Management application boundary", () => {
   });
 
   it("changes a password through bcrypt and preserves authentication invalidation", async () => {
+    const oldCustomerToken = auth(3);
+    const currentAdminToken = auth(1);
     const previousHash = (
       database.prepare("SELECT password_hash FROM users WHERE id = 3").get() as {
         password_hash: string;
@@ -338,10 +340,11 @@ describe("Admin User Management application boundary", () => {
       new_values_json: null,
     });
     expect(JSON.stringify(passwordAudit)).not.toMatch(/ReplacementPass1|\$2b\$/i);
+    await request(app).get("/api/v1/auth/me").set(oldCustomerToken).expect(401);
     database.prepare("UPDATE users SET status = 'disabled' WHERE id = 1").run();
-    await request(app).get("/api/v1/users").set(auth(1)).expect(401);
+    await request(app).get("/api/v1/users").set(currentAdminToken).expect(401);
     database.prepare("DELETE FROM users WHERE id = 1").run();
-    await request(app).get("/api/v1/users").set(auth(1)).expect(401);
+    await request(app).get("/api/v1/users").set(currentAdminToken).expect(401);
   });
 
   it.each([

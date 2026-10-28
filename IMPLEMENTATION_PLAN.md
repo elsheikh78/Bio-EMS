@@ -1,5 +1,10 @@
 # BIO-EMS Implementation Plan
 
+## Customer-auth security implementation
+
+A02/A03 source candidate is implemented with tests and rollout documentation on `fix/customer-auth-audit`. Complete remote CI/review/integration and matched backend/frontend validation before describing it as deployed. Continue compatible dependency advisory remediation next; company session revocation and Main certificate-name verification remain separate changes. Production device trust retains its approved staged qualification.
+
+
 ## 28 October2026 audit follow-up ordering
 
 This plan is execution order, not a completion ledger. Current status is only in PROJECT_STATE.

@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
@@ -192,7 +193,9 @@ describe("Authentication middleware", () => {
     };
     const token = jwt.sign(
       { role: "ADMIN", status: "disabled", username: "forged", email: "secret@example.com" },
-      configuration.secret,
+      createHmac("sha256", configuration.secret)
+        .update(JSON.stringify(["bioems-customer-access-v2", 7, "credential-fixture"]))
+        .digest(),
       {
         algorithm: "HS256",
         audience: configuration.audience,
@@ -203,9 +206,17 @@ describe("Authentication middleware", () => {
     );
     const isolatedApp = express();
     isolatedApp.use(
-      createAuthenticationMiddleware(new TokenService(configuration), {
-        findById: () => activeUser({ role: "VIEWER", username: "persisted" }),
-      })
+      createAuthenticationMiddleware(
+        new TokenService(configuration, {
+          findAccessTokenCredential: () => ({
+            passwordHash: "credential-fixture",
+            status: "active",
+          }),
+        }),
+        {
+          findById: () => activeUser({ role: "VIEWER", username: "persisted" }),
+        }
+      )
     );
     isolatedApp.get("/principal", (req, res) => res.json(req.user));
     isolatedApp.use(errorMiddleware);

@@ -2,26 +2,32 @@
 
 Reviewed 28 October 2026. This is the sole current-state authority; dated evidence is preserved in [the pre-audit snapshot](docs/archive/2026-10-28-pre-audit/PROJECT_STATE.md).
 
+## Customer security remediation candidate — 28 October 2026
+
+User-authorized A02/A03 fixes are implemented on `fix/customer-auth-audit`, not yet merged/deployed: bounded customer login throttling; credential-bound customer tokens; old token rejection after own/admin/offline password replacement; replacement session installed by the matching frontend. Existing customer sessions must log in again on initial upgrade. No dependency, company session, Main TLS or production device-trust finding is closed by this candidate.
+
+Local Node24 verification: backend1100 tests/164 files; frontend356 tests/64 files; typecheck/lint/format/build and documentation checks. See [remediation design and rollout](docs/security/CUSTOMER-AUTH-AUDIT-REMEDIATION.md) and [ADR-024](docs/adr/ADR-024-customer-access-token-credential-binding.md). Remote CI and source integration remain separate gates.
+
 ## Exact source and release boundary
 
 | Item | Reviewed state |
 | --- | --- |
-| Merged main | `a9eaa909e3564c0a62b70ceb5bbc5590740b0e57` |
-| Reviewed candidate | `d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc`, PR #311, open at audit |
+| Merged main | `c8d4e4f7b4a19bcc63472f8f706bc708122aa6de` |
+| Historical audit candidate | `d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc`, PR #311, open at audit |
 | Product source / backend / release manifest | `0.20.0` |
 | Latest published tagged source release | `v0.20.0`, published 7 September 2026; not a release of the October candidate |
-| Candidate Hardware Tester | `0.6.0`; merged main has `0.4.0` |
+| Merged Hardware Tester | `0.6.0` |
 | Main / Nano operating firmware | `0.1.0-pilot.7` / `0.1.0-bench.2` |
 | Company / customer mobile app source | Separate apps, each `0.1.0` |
 | Current installed binaries / matching live Worker | Not inspected in this audit |
 
-This documentation audit is based on the candidate tree. PR #311 and this audit must be merged before those changes can be described as merged main. No source version bump, binary publication, deployment, migration or physical acceptance is performed here.
+The documentation audit was based on candidate `d151b1f` before integration. PR #311 and #312 are now merged; no binary publication/deployment/physical acceptance follows automatically. Security remediation above is a separate unmerged candidate. No source version bump, release or migration is performed here.
 
 ## Verified during the audit
 
 Backend: 1091 tests; frontend: 354; company cloud: 27; customer mobile: 3; company mobile: 3; standalone Tester: 73. Total: **1551 routine tests**, all passed. Backend/frontend typecheck, lint, formatting and build; cloud build/dry-run; both Expo typechecks/exports; Tester report smoke; C queue and peripheral protocol host suites passed. Two additional isolated audit probes reproduced the customer authentication findings. Host runtime was Node 24.22.1/npm 11.9.0; normal backend/frontend CI specifies Node 22.
 
-Passing functional gates does not mean security approval. Dependency audit has **open Critical/High findings**, including a Critical affected package entry in backend production dependencies. See [audit findings](docs/audit/2026-10-28/FINDINGS.md) and [dependency evidence](docs/audit/2026-10-28/DEPENDENCIES.md). Exploitability has not been established for every advisory. Customer login throttling and credential-change token invalidation are open code findings. Production approval remains blocked on security review/remediation and acceptance gates.
+Passing functional gates does not mean security approval. Dependency audit has **open Critical/High findings**, including a Critical affected package entry in backend production dependencies. See [audit findings](docs/audit/2026-10-28/FINDINGS.md) and [dependency evidence](docs/audit/2026-10-28/DEPENDENCIES.md). Exploitability has not been established for every advisory. Customer login throttling and credential-change token invalidation were reproduced at the audit baseline and have source fixes in the separate candidate described above; they are not yet deployed. Production approval remains blocked on security review/remediation and acceptance gates.
 
 ## Hardware responsibility and implemented limits
 

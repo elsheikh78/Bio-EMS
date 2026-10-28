@@ -1,5 +1,10 @@
 # BIO-EMS Risk Register
 
+## Customer-auth remediation candidate — 28 October 2026
+
+A02/R-26 and A03/R-27 have source fixes and desired regression tests on `fix/customer-auth-audit`; merge/deployment remain pending. Initial upgrade requires customer re-login and matched backend/frontend rollout. Limits are process-local; restoring old credential data under the same JWT secret can resurrect matching unexpired tokens, and disable/re-enable alone is not permanent revocation. See ADR-024 and the customer-auth remediation guide. Dependencies/company sessions/Main TLS/device trust remain open.
+
+
 ## Current audit risks —28 October2026
 
 | ID | Risk / evidence | Status and next action |

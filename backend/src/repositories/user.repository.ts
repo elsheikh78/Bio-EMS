@@ -84,6 +84,12 @@ export class UserRepository {
       .get(normalizeUsername(username)) as UserCredentialRecord | undefined;
   }
 
+  findAccessTokenCredential(id: number): { passwordHash: string; status: string } | undefined {
+    return this.database
+      .prepare("SELECT password_hash AS passwordHash, status FROM users WHERE id = ? LIMIT 1")
+      .get(id) as { passwordHash: string; status: string } | undefined;
+  }
+
   updateProfileAndRole(id: number, input: UpdateUserRecord): User | undefined {
     return this.database.transaction(() => {
       const current = this.findById(id);

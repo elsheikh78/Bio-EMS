@@ -27,6 +27,11 @@ export const loginResponseSchema = z
   })
   .strict();
 
+export const passwordChangeResponseSchema = loginResponseSchema.extend({
+  success: z.literal(true),
+  password_change_required: z.literal(false),
+});
+
 export const currentUserResponseSchema = z
   .object({ user: authenticatedUserSchema })
   .strict();

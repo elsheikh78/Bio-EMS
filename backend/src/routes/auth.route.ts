@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { customerLoginRateLimitMiddleware } from "../middleware/customer-login-rate-limit.middleware";
 import {
   changePasswordController,
   currentUserController,
@@ -42,7 +43,7 @@ router.post(
   completeAdminRecovery
 );
 
-router.post("/login", validateBody(loginSchema), loginController);
+router.post("/login", customerLoginRateLimitMiddleware, validateBody(loginSchema), loginController);
 router.post(
   "/forgot-password",
   passwordRecoveryRateLimitMiddleware,

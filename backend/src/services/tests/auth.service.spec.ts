@@ -39,7 +39,7 @@ describe("AuthService Login", () => {
       user: { id: 1, username: "admin", role: "ADMIN" },
     });
     expect(findCredentialsByUsername).toHaveBeenCalledWith("admin");
-    expect(issueAccessToken).toHaveBeenCalledWith(1);
+    expect(issueAccessToken).toHaveBeenCalledWith(1, passwordHash);
   });
   it("surfaces the forced password change flag without exposing credential data", async () => {
     findCredentialsByUsername.mockReturnValue(activeUser(1));
@@ -82,5 +82,15 @@ describe("AuthService Login", () => {
     expect(error).not.toHaveBeenCalled();
     log.mockRestore();
     error.mockRestore();
+  });
+  it("returns a generic failure when credentials change while bcrypt verification is in flight", async () => {
+    findCredentialsByUsername.mockReturnValue(activeUser());
+    issueAccessToken.mockImplementationOnce(() => {
+      throw new Error("Credential snapshot changed");
+    });
+    await expect(service.login({ username: "admin", password: PASSWORD })).rejects.toMatchObject({
+      statusCode: 401,
+      code: "INVALID_CREDENTIALS",
+    });
   });
 });

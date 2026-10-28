@@ -1,5 +1,13 @@
 # BIO-EMS Changelog
 
+## Unreleased — customer authentication audit remediation
+
+- Bound customer login attempts to ten/IP/minute with Retry-After and bounded no-eviction limiter shared with the independently counted owner login path.
+- Derive customer access-token signing keys from current credential material and JWT secret; own/admin/offline password replacement rejects older tokens. Prevent issuance against a stale password-verification snapshot.
+- Add fresh session fields to successful own-password-change response and update frontend to validate/store the replacement token/expiry.
+- Compatibility: initial upgrade invalidates old customer tokens; deploy backend/frontend together. No schema migration or published release. Restore/re-enable limits are documented in ADR-024. Other audit findings remain open.
+
+
 ## Unreleased —28 October2026 documentation/code audit
 
 - Preserve309 original text documents with SHA-256 baseline manifest and immutable history; classify active specs/ADRs and historical work.

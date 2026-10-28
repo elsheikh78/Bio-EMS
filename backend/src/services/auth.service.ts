@@ -11,7 +11,7 @@ export interface AuthUserRepository {
 }
 
 export interface AccessTokenIssuer {
-  issueAccessToken(userId: number): IssuedAccessToken;
+  issueAccessToken(userId: number, expectedPasswordHash?: string): IssuedAccessToken;
 }
 
 export interface LoginResponse {
@@ -40,7 +40,13 @@ export class AuthService {
     if (!credentials || !passwordMatches || credentials.status !== "active")
       throw invalidCredentials();
 
-    const issued = this.tokenIssuer.issueAccessToken(credentials.id);
+    let issued: IssuedAccessToken;
+    try {
+      issued = this.tokenIssuer.issueAccessToken(credentials.id, credentials.password_hash);
+    } catch {
+      // A reset/disable during bcrypt verification must not mint a token for newer credentials.
+      throw invalidCredentials();
+    }
     return {
       access_token: issued.accessToken,
       token_type: "bearer",

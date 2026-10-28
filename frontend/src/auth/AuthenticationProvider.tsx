@@ -22,6 +22,7 @@ import {
   currentUserResponseSchema,
   loginRequestSchema,
   loginResponseSchema,
+  passwordChangeResponseSchema,
   type AuthenticatedUser,
   type LoginRequest,
 } from "./contracts";
@@ -172,7 +173,7 @@ class AuthenticationController {
     const generation = this.generation;
     const request = this.createOwnedRequest();
     try {
-      await this.apiClient.request("/auth/change-password", {
+      const response = await this.apiClient.request("/auth/change-password", {
         method: "POST",
         auth: "protected",
         headers: { "Content-Type": "application/json" },
@@ -183,11 +184,19 @@ class AuthenticationController {
         signal: request.controller.signal,
       });
       this.requireAuthenticatedCurrent(generation, request.controller.signal);
-      const refreshed = { ...session, passwordChangeRequired: false };
+      const issued = passwordChangeResponseSchema.parse(response);
+      if (issued.user.id !== session.user.id)
+        throw new AuthenticationFailure("malformed-response");
+      const refreshed = createStoredAuthenticationSession(issued, this.now());
       if (!this.storage.write(refreshed))
         throw new AuthenticationFailure("storage");
       this.session = refreshed;
-      this.update({ ...this.snapshot, passwordChangeRequired: false });
+      this.update({
+        ...this.snapshot,
+        expiresAt: refreshed.expiresAt,
+        passwordChangeRequired: false,
+      });
+      this.scheduleExpiry();
     } finally {
       request.release();
     }
