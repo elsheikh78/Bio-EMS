@@ -211,7 +211,7 @@ def analyze(run):
  else: overall='PASS - SELECTED SCOPE ONLY'
  return {'overall':overall,'duration_s':duration,'channels':results,'manual':manual,'transport_errors':len(transports),'frames':len(frames)}
 
-def record_manual(store,rid,key,status,evidence,value=None,low=None,high=None,instrument='',fault_code=''):
+def record_manual(store,rid,key,status,evidence,value=None,low=None,high=None,instrument='',fault_code='',metrics=None):
  if key not in CHECKS or status not in ('PASS','FAIL','NOT TESTED'): raise ValueError('Invalid check/status')
  if status!='NOT TESTED' and not evidence.strip(): raise ValueError('Measured observations/evidence are required')
  run=store.load(rid)
@@ -222,7 +222,25 @@ def record_manual(store,rid,key,status,evidence,value=None,low=None,high=None,in
    for previous in required[:required.index(key)]:
     attempts=[e['payload'] for e in run['events'] if e['kind']=='manual' and e['payload'].get('check')==previous]
     if not attempts or attempts[-1]['status']!='PASS': raise ValueError('Previous qualification step must pass first: '+previous)
+ if metrics is None: metrics={}
+ if not isinstance(metrics,dict) or len(metrics)>500: raise ValueError('Metrics must be a JSON object with at most 500 values')
+ for name,v in metrics.items():
+  if not isinstance(name,str) or not name.strip() or len(name)>128: raise ValueError('Invalid metric name')
+  if isinstance(v,str):
+   if len(v)>1000: raise ValueError('Metric text is too long')
+  else: number(v)
  payload={'check':key,'status':status,'evidence':evidence.strip()}
+ if metrics: payload['metrics']=dict(metrics)
+ if run['config']['profile']==QUALIFICATION_PROFILE and status=='PASS':
+  if key=='sensor_cables':
+   rate=metrics.get('success_rate_percent');number(rate)
+   if not 0<=rate<=100: raise ValueError('success_rate_percent must be 0 to 100')
+   if rate<99.99: payload['status']='FAIL'
+  if key in ('endurance_24h','full_population'):
+   for name in ('unexplained_reboots','unrecovered_faults'):
+    value=metrics.get(name);number(value)
+    if value<0 or int(value)!=value: raise ValueError(name+' must be a nonnegative integer')
+    if value>0: payload['status']='FAIL'
  if fault_code:
   from qualification import FAULT_CODES
   if fault_code not in FAULT_CODES: raise ValueError('Unknown fault code')

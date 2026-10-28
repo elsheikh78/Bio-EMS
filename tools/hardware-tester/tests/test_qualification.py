@@ -21,7 +21,7 @@ class QualificationTests(unittest.TestCase):
  def test_full_manual_scope_is_explicit_and_preserves_events(self):
   rid=self.store.start(self.config)
   for key in CHECKS:
-   record_manual(self.store,rid,key,'PASS','operator observation with linked run IDs',value=5,low=4.75,high=5.25,instrument='meter')
+   record_manual(self.store,rid,key,'PASS','operator observation with linked run IDs',value=5,low=4.75,high=5.25,instrument='meter',metrics={'success_rate_percent':100,'unexplained_reboots':0,'unrecovered_faults':0})
   self.store.finish(rid);run=self.store.load(rid);self.assertEqual(analyze(run)['overall'],'PASS - SELECTED SCOPE ONLY')
   from report import write_pdf
   path=Path(self.tmp.name)/'qualification.pdf';write_pdf(run,path);self.assertGreater(path.stat().st_size,1000)
@@ -34,3 +34,19 @@ class QualificationTests(unittest.TestCase):
   record_manual(self.store,rid,'bench_setup','FAIL','inspection issue',fault_code='SIM_COMM_LOSS')
   self.assertEqual(self.store.load(rid)['events'][-1]['payload']['fault_code'],'SIM_COMM_LOSS')
   with self.assertRaisesRegex(ValueError,'fault code'):record_manual(self.store,rid,'bench_setup','FAIL','issue',fault_code='invented')
+
+ def test_numeric_gate_rejects_missing_data_and_records_failure(self):
+  rid=self.store.start(self.config)
+  for key in list(CHECKS)[:3]:record_manual(self.store,rid,key,'PASS','evidence',value=5,low=4.75,high=5.25,instrument='meter')
+  with self.assertRaises(ValueError):record_manual(self.store,rid,'sensor_cables','PASS','missing counts')
+  record_manual(self.store,rid,'sensor_cables','PASS','poor cable reads',metrics={'success_rate_percent':99.98})
+  self.assertEqual(self.store.load(rid)['events'][-1]['payload']['status'],'FAIL')
+  with self.assertRaisesRegex(ValueError,'Previous'):record_manual(self.store,rid,'sensor_faults','PASS','later step')
+ def test_endurance_fault_counts_force_fail(self):
+  rid=self.store.start(self.config)
+  for key in list(CHECKS)[:list(CHECKS).index('endurance_24h')]:
+   record_manual(self.store,rid,key,'PASS','evidence',value=5,low=4.75,high=5.25,instrument='meter',metrics={'success_rate_percent':100})
+  for metrics in ({},{'unexplained_reboots':-1,'unrecovered_faults':0},{'unexplained_reboots':False,'unrecovered_faults':0}):
+   with self.assertRaises(ValueError):record_manual(self.store,rid,'endurance_24h','PASS','invalid',metrics=metrics)
+  record_manual(self.store,rid,'endurance_24h','PASS','observed reboot',metrics={'unexplained_reboots':1,'unrecovered_faults':0})
+  self.assertEqual(self.store.load(rid)['events'][-1]['payload']['status'],'FAIL')

@@ -40,3 +40,10 @@ The 18 steps cover bench identification, power, single sensor, cable lengths,
 sensor faults, Nano channel isolation, short/long RS485, network, explicit GSM,
 integrated recovery, 24-hour endurance, bus addresses, 16-probe/48-hour operation,
 reference accuracy, SD replay, RTC retention and central backup endurance.
+
+
+Qualification metrics retain the former numeric gates: `sensor_cables` needs
+`success_rate_percent >= 99.99`; `endurance_24h` and `full_population` need
+`unexplained_reboots = 0` and `unrecovered_faults = 0`. Enter these in Metrics JSON.
+Missing/invalid metrics cannot be saved as PASS; out-of-limit values are recorded
+as FAIL. These are operator-entered measurements, not automatically read counters.

@@ -25,6 +25,15 @@ class App:
   tabs=ttk.Notebook(shell); tabs.pack(fill='both',expand=True)
   setup=ttk.Frame(tabs,padding=10); live=ttk.Frame(tabs,padding=10); manual=ttk.Frame(tabs,padding=10); history=ttk.Frame(tabs,padding=10)
   tabs.add(setup,text='1  Test setup'); tabs.add(live,text='2  Live sensors'); tabs.add(manual,text='3  Inspection / evidence'); tabs.add(history,text='4  Records / PDF')
+  # Keep the evidence form usable on smaller operator screens.
+  manual_canvas=tk.Canvas(manual,highlightthickness=0)
+  manual_scroll=ttk.Scrollbar(manual,orient='vertical',command=manual_canvas.yview)
+  manual_scroll.pack(side='right',fill='y');manual_canvas.pack(side='left',fill='both',expand=True)
+  manual_canvas.configure(yscrollcommand=manual_scroll.set)
+  manual=ttk.Frame(manual_canvas)
+  manual_window=manual_canvas.create_window((0,0),window=manual,anchor='nw')
+  manual.bind('<Configure>',lambda event:manual_canvas.configure(scrollregion=manual_canvas.bbox('all')))
+  manual_canvas.bind('<Configure>',lambda event:manual_canvas.itemconfigure(manual_window,width=event.width))
   self.tabs=tabs
   firmware=ttk.Frame(tabs,padding=10); tabs.add(firmware,text='5  Flash QC firmware')
   ttk.Label(firmware,text='Flash isolated test firmware directly over USB',style='Status.TLabel').pack(anchor='w')
@@ -111,6 +120,9 @@ class App:
   self.fault_code=tk.StringVar(value='')
   ttk.Label(manual,text='Optional observed fault code (not an automatic diagnosis)').pack(anchor='w')
   ttk.Combobox(manual,textvariable=self.fault_code,values=['']+list(FAULT_CODES),state='readonly',width=45).pack(anchor='w',pady=4)
+  ttk.Label(manual,text='Optional metrics JSON; required for qualification cable and endurance gates').pack(anchor='w',pady=(6,0))
+  self.manual_metrics=tk.Text(manual,height=3,wrap='word');self.manual_metrics.pack(fill='x',pady=4)
+  ttk.Label(manual,text='Cable: {"success_rate_percent":100}   Endurance: {"unexplained_reboots":0,"unrecovered_faults":0}',wraplength=950).pack(anchor='w')
   ttk.Button(manual,text='Save evidence / retest attempt',command=self.manual).pack(anchor='w')
   ttk.Button(manual,text='Capture Main pilot.7 USB diagnostics',command=self.main_diagnostics).pack(anchor='w',pady=8)
   ttk.Label(manual,text='Active manual-scope run only. Captures status / storage / rtc / simscan / gsmdiag. No flashing, commissioning or SMS.\nCaptured output is evidence, not an automatic PASS. Verify RTC cold boot and actual message receipt separately.',wraplength=1000).pack(anchor='w')
@@ -351,7 +363,7 @@ class App:
   if not self.active: return messagebox.showwarning('No active run','Start a run first. Finalized records cannot be edited.')
   try:
    m={k:(float(v.get()) if v.get().strip() else None) for k,v in self.measure.items() if k!='instrument'}
-   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),fault_code=self.fault_code.get(),**m)
+   record_manual(self.store,self.rid,self.check.get(),self.manual_status.get(),self.evidence.get('1.0','end'),instrument=self.measure['instrument'].get(),fault_code=self.fault_code.get(),metrics=json.loads(self.manual_metrics.get('1.0','end').strip() or '{}'),**m)
    messagebox.showinfo('Recorded','Evidence appended. Earlier attempts remain recorded.')
   except Exception as e: messagebox.showerror('Evidence not saved',str(e))
  def finish(self):

@@ -171,3 +171,10 @@ Main/Nano uptime. Fresh replies alone cannot prove a fresh sensor conversion;
 record individual physical probe response/recovery. Network, SD, RTC, GSM and
 UPS are outside this four-sensor path scope; use their existing evidence scopes.
 Physical hardware/USB acceptance is still required.
+
+
+Qualification metrics retain the former numeric gates: `sensor_cables` needs
+`success_rate_percent >= 99.99`; `endurance_24h` and `full_population` need
+`unexplained_reboots = 0` and `unrecovered_faults = 0`. Enter these in Metrics JSON.
+Missing/invalid metrics cannot be saved as PASS; out-of-limit values are recorded
+as FAIL. These are operator-entered measurements, not automatically read counters.
