@@ -17,7 +17,7 @@ class App:
   self.worker_thread=None; self.root=root; root.title('BIO-EMS Hardware Tester | Quality Control '+VERSION); root.geometry('1180x820'); root.minsize(1000,720)
   self.home=Path(os.environ.get('LOCALAPPDATA',str(Path.home())))/'BIO-EMS-Hardware-Tester'
   self.store=Store(self.home/'qc.sqlite'); self.rid=None; self.capture=None; self.stop_event=None; self.messages=queue.Queue(); self.active=False; self.demo=False; self.port=None
-  self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None
+  self.fields={}; self.points={}; self.last=None; self.diag_running=False; self.flash_running=False; self.last_flash=None; self.operating_events=[]
   style=ttk.Style(); style.theme_use('clam'); style.configure('TButton',padding=6); style.configure('Heading.TLabel',font=('Segoe UI',19,'bold')); style.configure('Status.TLabel',font=('Segoe UI',11,'bold'))
   shell=ttk.Frame(root,padding=14); shell.pack(fill='both',expand=True)
   ttk.Label(shell,text='BIO-EMS  /  Hardware Quality Control',style='Heading.TLabel').pack(anchor='w')
@@ -39,6 +39,19 @@ class App:
   self.flash_state=tk.StringVar(value='Ready. Select board and USB COM port first.')
   ttk.Label(firmware,textvariable=self.flash_state,wraplength=1000).pack(anchor='w',pady=5)
   self.flash_log=tk.Text(firmware,height=18,wrap='word',state='disabled'); self.flash_log.pack(fill='both',expand=True)
+  operating=ttk.Frame(tabs,padding=10); tabs.add(operating,text='6  Operating firmware')
+  ttk.Label(operating,text='Install operating firmware for Main and Nano integration',style='Status.TLabel').pack(anchor='w')
+  ttk.Label(operating,text='Offline bundled pilot.7 / bench.2. No platform login or Arduino installation.\nDisconnect external board power and RS485. Connect ONE board over USB.\nNano: D0/D1 disconnected; set SIM address in Test setup to match D7/D8.\nThis changes firmware and may change partition layout. It does not commission or restore credentials.\nUse a bench board; preserve the installation backup before changing a commissioned device.',wraplength=1000).pack(anchor='w',pady=8)
+  import operating as operating_module
+  self.operating_target=tk.StringVar(value='Nano bench.2 new bootloader 115200')
+  ttk.Combobox(operating,textvariable=self.operating_target,values=list(operating_module.TARGETS),state='readonly',width=50).pack(anchor='w',pady=5)
+  ttk.Label(operating,text='Uses unit, operator, COM and SIM address from Test setup. Flash Nano, then Main; reconnect only with power OFF.').pack(anchor='w')
+  actions=ttk.Frame(operating); actions.pack(anchor='w',pady=8)
+  ttk.Button(actions,text='Detect operating target',command=lambda:self.flash_operating(True)).pack(side='left',padx=4)
+  ttk.Button(actions,text='Flash operating firmware and verify',command=lambda:self.flash_operating(False)).pack(side='left',padx=4)
+  self.operating_state=tk.StringVar(value='Ready. Operating images are separate from isolated QC images.')
+  ttk.Label(operating,textvariable=self.operating_state,wraplength=1000).pack(anchor='w',pady=5)
+  self.operating_log=tk.Text(operating,height=18,wrap='word',state='disabled');self.operating_log.pack(fill='both',expand=True)
   defaults=[('unit','Assembly / unit serial',''),('operator','Operator name',''),('procedure','Approved procedure / revision / previous run','QC-HW-001 Rev A'),('profile','Selected scope','ESP32 / 1 sensor'),('sim_address','Integrated SIM address (1-4)','1'),('minimum_c','Minimum accepted temperature (C)','-10'),('maximum_c','Maximum accepted temperature (C)','50'),('duration_s','Minimum acquisition duration (s)','60'),('min_samples','Minimum valid samples / channel','20'),('max_error_pct','Maximum sensor errors (%)','0'),('max_span_c','Maximum temperature span (C)','2'),('stale_s','Maximum fresh-data gap (s)','8'),('reference_c','Stable reference temperature (optional)',''),('tolerance_c','Reference tolerance (C)','0.5'),('instrument','Reference instrument ID / certificate','')]
   for i,(key,label,default) in enumerate(defaults):
    ttk.Label(setup,text=label).grid(row=i,column=0,sticky='w',pady=3)
@@ -121,6 +134,10 @@ class App:
    self.rid=self.store.start(c,'DEMO' if demo else 'HARDWARE'); self.capture=Capture(self.store,self.rid,time.monotonic)
    if not demo and self.last_flash and self.last_flash['success'] and self.last_flash['operation']=='flash' and self.last_flash['unit']==c['unit'] and self.last_flash['port']==self.fields['port'].get() and self.last_flash.get('runtime',{}).get('board')==PROFILES[c['profile']][0]:
     self.store.append(self.rid,'note',{'qc_firmware_flash':self.last_flash,'evidence_boundary':'Host upload record; streamed version is not cryptographic binary attestation. Verify same physical board.'})
+   if not demo and PROFILES[c['profile']][0]=='main-rs485':
+    for event in self.operating_events:
+     if event.get('success') and event['unit']==c['unit'] and (event['target']!='esp32s3' or event['port']==self.fields['port'].get()):
+      self.store.append(self.rid,'note',{'operating_firmware_flash':event,'evidence_boundary':'Session upload evidence only. Operator must verify same physical boards and wiring.'})
    self.active=True; self.points={}; self.last=time.monotonic(); self.tree.delete(*self.tree.get_children()); self.canvas.delete('all')
    for ch in range(1,PROFILES[c['profile']][1]+1): self.tree.insert('','end',iid=str(ch),values=(ch,'-','-','WAITING'))
    self.stop_event=threading.Event()
@@ -174,6 +191,17 @@ class App:
   while True:
    try: rid,kind,value=self.messages.get_nowait()
    except queue.Empty: break
+   if kind=='operating_log':
+    self.operating_log.configure(state='normal');self.operating_log.insert('end',value+'\n');self.operating_log.see('end');self.operating_log.configure(state='disabled');continue
+   if kind=='operating_done':
+    self.flash_running=False;record,path=value
+    self.operating_state.set(('SUCCESS' if record['success'] else 'FAILED')+' | Evidence: '+str(path))
+    if record['success'] and record['operation']=='flash':
+     self.operating_events.append(record)
+     self.fields['profile'].set('Main + Nano / 4 sensors via RS485');self.profile_changed()
+     messagebox.showinfo('Operating firmware ready','Upload and operating runtime verified. This is not hardware acceptance.\nFinish both boards, power OFF, reconnect RS485, disconnect Nano USB and select Main COM before starting the integrated run. No platform commissioning was performed.')
+    elif not record['success']:messagebox.showerror('Operating firmware failed',record.get('error','See retained log'))
+    continue
    if kind=='flash_log':
     self.flash_log.configure(state='normal'); self.flash_log.insert('end',value+'\n'); self.flash_log.see('end'); self.flash_log.configure(state='disabled'); continue
    if kind=='flash_done':
@@ -242,6 +270,7 @@ class App:
   if target=='esp32s3': text+='\nUse the USB-UART connector. If auto-reset fails, use BOOT/RESET according to the board documentation.'
   else: text+='\nDisconnect HW-519 D0/D1. Confirm the selected bootloader baud.'
   if not messagebox.askokcancel('Confirm board and isolated wiring',text): return
+  if not detect: self.operating_events=[]
   self.flash_running=True; self.flash_state.set('Working. Do not disconnect the board or close the program.')
   def work():
    try:
@@ -249,6 +278,31 @@ class App:
    except Exception as exc:
     record={'success':False,'operation':'detect' if detect else 'flash','error':str(exc)}; path=self.home/'firmware-events'
    self.messages.put((None,'flash_done',(record,path)))
+  threading.Thread(target=work,daemon=True).start()
+ def flash_operating(self,detect):
+  if self.active or self.diag_running or self.flash_running:
+   return messagebox.showwarning('Serial port busy','Finalize the active run and wait for other operations.')
+  from operating import TARGETS,command,perform
+  from flashing import package_root
+  target=TARGETS[self.operating_target.get()];port=self.fields['port'].get()
+  unit=self.fields['unit'].get().strip();operator=self.fields['operator'].get().strip()
+  try:
+   if not unit or not operator:raise ValueError('Enter assembly serial and operator in Test setup')
+   address=int(self.fields['sim_address'].get())
+   if address not in range(1,5):raise ValueError('SIM address must be 1 to 4')
+   command(package_root(),target,port,detect)
+  except Exception as exc:return messagebox.showerror('Operating package or selection invalid',str(exc))
+  text=('Detection may reset the board; no write.' if detect else 'This writes OPERATING firmware, replacing QC/current firmware and possibly changing flash layout. It does not provision credentials. Preserve the backup before changing a commissioned device.')
+  text+='\nSelected: '+self.operating_target.get()+' on '+port+'\nUnit: '+unit+' / SIM address: '+str(address)+'\nConfirm one intended board, USB-only power, external power isolated, RS485 D0/D1 disconnected, other serial programs closed.'
+  if not messagebox.askokcancel('Confirm operating firmware operation',text):return
+  if not detect:
+   self.last_flash=None
+   self.operating_events=[e for e in self.operating_events if e['unit']!=unit or (e['target']=='esp32s3')!=(target=='esp32s3')]
+  self.flash_running=True;self.operating_state.set('Working. Do not unplug or close the program.')
+  def work():
+   try:record,path=perform(package_root(),target,port,unit,operator,self.home/'firmware-events',lambda line:self.messages.put((None,'operating_log',line)),detect,address)
+   except Exception as exc:record={'success':False,'operation':'detect' if detect else 'flash','error':str(exc)};path=self.home/'firmware-events'
+   self.messages.put((None,'operating_done',(record,path)))
   threading.Thread(target=work,daemon=True).start()
  def main_diagnostics(self):
   if not self.active or self.demo or PROFILES[self.capture.config['profile']][1]!=0:

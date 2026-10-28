@@ -1,15 +1,36 @@
 name: Standalone Hardware QC Tester
 on:
   pull_request:
-    paths: ['tools/hardware-tester/**', '.github/workflows/hardware-tester.yml']
+    paths: ['tools/hardware-tester/**', 'firmware/site-controller-esp32s3/**', 'firmware/sim-d4-nano/**', '.github/workflows/hardware-tester.yml']
   push:
     branches: [main]
-    paths: ['tools/hardware-tester/**', '.github/workflows/hardware-tester.yml']
+    paths: ['tools/hardware-tester/**', 'firmware/site-controller-esp32s3/**', 'firmware/sim-d4-nano/**', '.github/workflows/hardware-tester.yml']
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  operating-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build governed operating Main
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.5
+          target: esp32s3
+          path: firmware/site-controller-esp32s3
+      - name: Package operating Main from this commit
+        run: |
+          python3 firmware/site-controller-esp32s3/package_firmware.py --build-dir firmware/site-controller-esp32s3/build --output-dir main-operating --source-commit "$GITHUB_SHA" --version-header firmware/site-controller-esp32s3/main/bioems_version.h
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tester-Operating-Main
+          path: main-operating/
+          if-no-files-found: error
+          retention-days: 14
   windows:
+    needs: operating-main
     runs-on: windows-latest
     timeout-minutes: 45
     defaults:
@@ -47,6 +68,16 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --output-dir firmware/build/nano-new firmware/QC_Sensors
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Compile operating Nano for both bootloaders
+        run: |
+          arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old --output-dir firmware/operating/nano-old ../../firmware/sim-d4-nano/SIM_D4
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --output-dir firmware/operating/nano-new ../../firmware/sim-d4-nano/SIM_D4
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - uses: actions/download-artifact@v4
+        with:
+          name: Tester-Operating-Main
+          path: tools/hardware-tester/main-operating
       - name: Build Windows EXE
         run: |
           python -m PyInstaller --clean --noconfirm --onefile --windowed --name BIO-EMS-Hardware-Tester app.py
@@ -60,6 +91,12 @@ jobs:
           python build_flash_package.py --arduino-data "$env:LOCALAPPDATA/Arduino15" --source-commit (git rev-parse HEAD)
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           python -c "from flashing import load_target,TARGETS; from pathlib import Path; [load_target(Path('.'),t) for t in TARGETS.values()]"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Stage and verify all operating firmware targets
+        run: |
+          python build_operating_package.py --main-package main-operating --source-commit (git rev-parse HEAD)
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          python -c "from operating import load_target,TARGETS; from pathlib import Path; [load_target(Path('.'),t) for t in TARGETS.values()]"
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Verify bundled EXE can generate PDF without Python
         run: |
@@ -75,7 +112,7 @@ jobs:
       - name: Package standalone deliverable
         run: |
           New-Item -ItemType Directory -Force package | Out-Null
-          Copy-Item dist/BIO-EMS-Hardware-Tester.exe, README.md, OPERATOR_GUIDE_AR.txt package/
+          Copy-Item dist/BIO-EMS-Hardware-Tester.exe, README.md, OPERATOR_GUIDE_AR.txt, OPERATING_FIRMWARE_GUIDE.md package/
           Copy-Item firmware package/firmware -Recurse
           Copy-Item runtime package/runtime -Recurse
           Copy-Item sample-output/DEMO_QC_Report.pdf package/
