@@ -50,7 +50,7 @@ class App:
   self.flash_log=tk.Text(firmware,height=18,wrap='word',state='disabled'); self.flash_log.pack(fill='both',expand=True)
   operating=ttk.Frame(tabs,padding=10); tabs.add(operating,text='6  Operating firmware')
   ttk.Label(operating,text='Install operating firmware for Main and Nano integration',style='Status.TLabel').pack(anchor='w')
-  ttk.Label(operating,text='Offline bundled pilot.8 / bench.2. No platform login or Arduino installation.\nDisconnect external board power and RS485. Connect ONE board over USB.\nNano: D0/D1 disconnected; set SIM address in Test setup to match D7/D8.\nThis changes firmware and may change partition layout. It does not commission or restore credentials.\nUse a bench board; preserve the installation backup before changing a commissioned device.',wraplength=1000).pack(anchor='w',pady=8)
+  ttk.Label(operating,text='Offline bundled pilot.9 / bench.2. No platform login or Arduino installation.\nDisconnect external board power and RS485. Connect ONE board over USB.\nNano: D0/D1 disconnected; set SIM address in Test setup to match D7/D8.\nThis changes firmware and may change partition layout. It does not commission or restore credentials.\nUse a bench board; preserve the installation backup before changing a commissioned device.',wraplength=1000).pack(anchor='w',pady=8)
   import operating as operating_module
   self.operating_target=tk.StringVar(value='Nano bench.2 new bootloader 115200')
   ttk.Combobox(operating,textvariable=self.operating_target,values=list(operating_module.TARGETS),state='readonly',width=50).pack(anchor='w',pady=5)
@@ -124,7 +124,7 @@ class App:
   self.manual_metrics=tk.Text(manual,height=3,wrap='word');self.manual_metrics.pack(fill='x',pady=4)
   ttk.Label(manual,text='Cable: {"success_rate_percent":100}   Endurance: {"unexplained_reboots":0,"unrecovered_faults":0}',wraplength=950).pack(anchor='w')
   ttk.Button(manual,text='Save evidence / retest attempt',command=self.manual).pack(anchor='w')
-  ttk.Button(manual,text='Capture Main pilot.8 USB diagnostics',command=self.main_diagnostics).pack(anchor='w',pady=8)
+  ttk.Button(manual,text='Capture Main pilot.9 USB diagnostics',command=self.main_diagnostics).pack(anchor='w',pady=8)
   ttk.Label(manual,text='Active manual-scope run only. Captures status / storage / rtc / simscan / gsmdiag. No flashing, commissioning or SMS.\nCaptured output is evidence, not an automatic PASS. Verify RTC cold boot and actual message receipt separately.',wraplength=1000).pack(anchor='w')
   self.check_hint()
   self.history=ttk.Treeview(history,columns=('date','unit','mode','end'),show='headings',height=12)
@@ -139,7 +139,7 @@ class App:
   root.protocol('WM_DELETE_WINDOW',self.close); root.after(150,self.pump); self.refresh_ports(); self.refresh_history()
  def check_hint(self,event=None): self.hint.set(CHECKS[self.check.get()][1])
  def instructions(self):
-  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nIntegrated Main + Nano: select integrated scope, SIM address, Main COM; use operational pilot.8 / bench.2, not QC firmware. Disconnect Nano USB. Approved assembly power is required.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUse tab 5 Flash QC firmware. Select board and COM, Detect, then Flash and verify. This replaces current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
+  messagebox.showinfo('QC firmware and wiring','Read README.md and OPERATOR_GUIDE_AR.txt in the delivered package.\nIntegrated Main + Nano: select integrated scope, SIM address, Main COM; use operational pilot.9 / bench.2, not QC firmware. Disconnect Nano USB. Approved assembly power is required.\nESP32 sensor: DQ=GPIO4; VDD=3V3; GND=GND; 4.7k DQ-to-3V3. Disconnect SD.\nNano: independent D2-D5; 5V sensor supply; one 4.7k per data line. Disconnect HW-519 from D0/D1 for USB.\nVerify supplier probe wire functions. Power OFF before rewiring.\nUse tab 5 Flash QC firmware. Select board and COM, Detect, then Flash and verify. This replaces current firmware.\nUSB UART port; serial 115200. No commissioning or platform login needed.')
  def refresh_ports(self):
   try:
    from serial.tools import list_ports
@@ -347,7 +347,7 @@ class App:
   if self.diag_running: return
   name=self.fields['port'].get()
   if not name: return messagebox.showwarning('Select port','Refresh and select the Main USB-UART COM port in Test setup.')
-  if not messagebox.askokcancel('Connect operational Main','Use operational pilot.8 firmware, not the isolated QC sketch. Confirm measured supply rails and the approved USB power path. Opening COM may reset the board. Capture does not send SMS or change commissioning.'): return
+  if not messagebox.askokcancel('Connect operational Main','Use operational pilot.9 firmware, not the isolated QC sketch. Confirm measured supply rails and the approved USB power path. Opening COM may reset the board. Capture does not send SMS or change commissioning.'): return
   self.diag_running=True; rid=self.rid
   def work():
    try:

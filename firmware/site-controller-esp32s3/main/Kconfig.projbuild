@@ -68,3 +68,18 @@ config BIOEMS_REQUIRE_PRODUCTION_SECURITY
         This option does not provision keys or burn eFuses. Do not treat it as
         manufacturing qualification or use it on ordinary pilot bench boards.
 endmenu
+
+menu "BIO-EMS designated-board recovery"
+config BIOEMS_USB_AB_MAINTENANCE
+    bool "Enable USB inactive-slot application update and rollback"
+    default n
+    depends on BOOTLOADER_APP_ROLLBACK_ENABLE
+    help
+        Requires the separately qualified custom two-slot partition layout.
+        Never repartition a field pilot through ordinary Tester flashing.
+config BIOEMS_UPDATE_CONFIRM_SECONDS
+    int "First-boot confirmation deadline in seconds"
+    range 30 600
+    default 180
+    depends on BIOEMS_USB_AB_MAINTENANCE
+endmenu

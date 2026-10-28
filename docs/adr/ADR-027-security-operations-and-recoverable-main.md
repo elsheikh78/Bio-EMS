@@ -1,0 +1,9 @@
+# ADR-027: Controlled security operations and recoverable Main profile
+
+Accepted for the user-authorized security completion work package, 29 October 2026. Source readiness, remote deployment and physical manufacturing acceptance remain separate.
+
+Provide an authenticated, database-identity-checked D1 deployment tool with a protected pre-migration export, Time Travel reference, versioned migrations and schema verification. Windows certificate rotation must validate the candidate, preserve installed paths/password/ACLs, back up both certificates before stopping services, verify the served identity, and restore the prior files automatically on a failed activation. Never log secrets or change manufacturer/license trust.
+
+Keep existing single-app pilot layout compatible. Add a separately built A/B maintenance profile for designated boards, never transparently repartition field devices through the ordinary flasher. It stages an application into the inactive slot through a bounded USB maintenance protocol, verifies SHA256 and ESP-IDF image/signature checks, and requires explicit first-boot confirmation with a rollback deadline. The ordinary pilot package must reject the A/B profile. Initial conversion requires protected configuration backup and board acceptance; existing firmware cannot gain a second slot through an application-only update.
+
+Secure Boot and Flash Encryption remain a controlled manufacturing operation using owner-controlled keys and verified hardware identity. No repository tool burns eFuses or silently enables irreversible settings. Report actual hardware state; a startup gate is not activation. The key-custody/recovery record must distinguish off-device signing keys, per-device encryption keys, future mTLS keys and Windows TLS keys. Test a designated board and its recovery path before locking production boards.

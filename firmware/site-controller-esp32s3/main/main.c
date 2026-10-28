@@ -10,6 +10,7 @@
 #include "esp_secure_boot.h"
 #include "esp_flash_encrypt.h"
 #include "tls_policy.h"
+#include "usb_update.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_mac.h"
@@ -392,6 +393,7 @@ static void print_status(void) {
   printf("  network-mode: %s\n", ethernet_selected() ? "ethernet" : "wifi");
   printf("  model: %s\n", BIOEMS_CONTROLLER_MODEL);
   printf("  firmware: %s\n", BIOEMS_FIRMWARE_VERSION);
+  bioems_update_status();
   printf("  tls-identity-validation: REQUIRED\n");
   printf("  secure-boot-enabled: %s\n", esp_secure_boot_enabled() ? "true" : "false");
   printf("  flash-encryption-enabled: %s\n", esp_flash_encryption_enabled() ? "true" : "false");
@@ -604,6 +606,7 @@ static void command_loop(void) {
   printf("commands: status | setwifi <ssid> <password> | setplatform <url> | pair <12-digit-code> | clearbinding\n");
 
   while (true) {
+    bioems_update_poll();
     printf("bioems> ");
     fflush(stdout);
     if (!fgets(line, sizeof(line), stdin)) {
@@ -612,6 +615,7 @@ static void command_loop(void) {
     }
     line[strcspn(line, "\r\n")] = '\0';
 
+    if (bioems_update_command(line)) continue;
     if (strcmp(line, "rtc") == 0) {
       time_t epoch = 0;
       bool valid = bioems_rtc_read(&epoch);
@@ -746,6 +750,7 @@ static void command_loop(void) {
 }
 
 void app_main(void) {
+  bioems_update_init();
 #ifdef CONFIG_BIOEMS_REQUIRE_PRODUCTION_SECURITY
   if (!bioems_security_policy_satisfied(true, esp_secure_boot_enabled(), esp_flash_encryption_enabled())) {
     ESP_LOGE(TAG, "PRODUCTION_SECURITY_REQUIRED: secure boot and flash encryption are not both enabled; startup refused");
@@ -755,7 +760,12 @@ void app_main(void) {
   esp_err_t nvs_result = nvs_flash_init();
   if (nvs_result == ESP_ERR_NVS_NO_FREE_PAGES ||
       nvs_result == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+#ifdef CONFIG_BIOEMS_USB_AB_MAINTENANCE
+    ESP_LOGE(TAG, "NVS initialization failed; preserving configuration and rebooting for rollback");
+    esp_restart();
+#else
     ESP_ERROR_CHECK(nvs_flash_erase());
+#endif
     ESP_ERROR_CHECK(nvs_flash_init());
   } else {
     ESP_ERROR_CHECK(nvs_result);

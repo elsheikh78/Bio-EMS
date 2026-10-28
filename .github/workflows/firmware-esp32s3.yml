@@ -87,3 +87,26 @@ jobs:
             firmware/site-controller-esp32s3/README.md
             firmware/site-controller-esp32s3/main/bioems_version.h
           retention-days: 14
+
+  maintenance:
+    name: Build separate A/B maintenance profile
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.5
+          target: esp32s3
+          path: firmware/site-controller-esp32s3
+          command: idf.py -B build-maintenance -DIDF_TARGET=esp32s3 -DSDKCONFIG=sdkconfig.maintenance.generated -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.maintenance" build
+      - name: Package designated-board maintenance images separately
+        run: |
+          python3 firmware/site-controller-esp32s3/package_maintenance.py --build-dir firmware/site-controller-esp32s3/build-maintenance --output-dir main-maintenance --source-commit "$GITHUB_SHA"
+          if python3 firmware/site-controller-esp32s3/package_firmware.py --build-dir firmware/site-controller-esp32s3/build-maintenance --output-dir forbidden-pilot-package --source-commit "$GITHUB_SHA" --version-header firmware/site-controller-esp32s3/main/bioems_version.h; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Main-AB-Maintenance-Bench-Only-${{ github.sha }}
+          path: main-maintenance/
+          if-no-files-found: error
+          retention-days: 14

@@ -4,7 +4,7 @@
 
 
 The tester now installs the existing operating firmware without the client platform:
-Main `0.1.0-pilot.8` and Nano `0.1.0-bench.2`. This is separate from tab 5 QC images.
+Main `0.1.0-pilot.9` and Nano `0.1.0-bench.2`. This is separate from tab 5 QC images.
 Use bench boards and retain an installation backup before changing a commissioned
 board. Partition layout may change when returning from QC. The uploader neither
 creates credentials nor binds a device, burns eFuses, or requests whole-chip erase.
@@ -32,11 +32,11 @@ Do not interpret successful upload as restoration of platform commissioning.
 1. Power OFF. Isolate external power and disconnect RS485 and other peripherals.
    Connect only the intended Main USB-UART cable.
 2. Select Main COM in Test setup, retain the assembly serial/operator, then choose
-   **Main ESP32-S3 pilot.8** in tab 6.
+   **Main ESP32-S3 pilot.9** in tab 6.
 3. Detect, then flash and verify. The complete IDF bootloader/partition/app images
    are included. A hash mismatch, wrong target or unsafe layout blocks upload.
 4. SUCCESS requires successful tool verification and a Main `status` response with
-   pilot.8 and valid hardware UID. No network, platform login or pairing is needed.
+   pilot.9 and valid hardware UID. No network, platform login or pairing is needed.
 5. Preserve logs under `%LOCALAPPDATA%/BIO-EMS-Hardware-Tester/firmware-events`.
 
 ## Reconnect and run

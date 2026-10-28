@@ -23,3 +23,5 @@ This source change does not perform steps on a user's existing PC or controller.
 Local X509 tests cover exact DNS/IPv4/IPv6, wrong identity, protocol/path/credentials, expired/future certificates, CN-only and malformed input. Runner regression proves a mismatch invokes no serial executor. A Windows CI test generates a native SAN certificate, validates DNS/IP through Node X509, rejects overwrite and SAN injection, and cleans up its temporary key. Native ESP-IDF build and host TLS-policy tests are separate gates.
 
 Still required on Windows/Main: matching actual SAN/resolution, wrong/expired/replaced certificate rejection on pairing and live/replay, cold-boot UTC, queued-history retention during rejection/outage, renewal and recovery. Full per-device PKI/mTLS, revocation and private-key lifecycle are not provided by endpoint validation.
+
+The 29 October follow-up adds `Invoke-PlatformTlsRotation.ps1` and its snapshot rollback parameter set. Use the [current Arabic execution guide](SECURITY-OPERATIONS-AR.md) for activation, pinned live endpoint verification, secret/ACL retention and controller trust rollout boundaries.

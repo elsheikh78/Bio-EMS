@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = '0.6.1'
+VERSION = '0.6.2'
 PROTOCOL = 'bioems-qc/1'
 PROFILES = {'ESP32 / 1 sensor': ('esp32s3', 1), 'Nano / 4 sensors': ('nano', 4),
             'Main + Nano / 4 sensors via RS485': ('main-rs485', 4),
@@ -24,8 +24,8 @@ CHECKS = {
  'rs485': ('MAIN to SIM RS485', 'Verify module identity, addresses, all fitted channels and fault/recovery; attach raw evidence'),
  'network': ('Wi-Fi / Ethernet', 'Record selected interface, link loss/recovery and actual delivery evidence'),
  'sd': ('SD storage and replay', 'Record storage, power restart and replay without lost/duplicate records'),
- 'gsm': ('2G / explicit bench SMS', 'pilot.8: gsmdiag registration plus explicit gsmtest to an authorized recipient; record receipt/time. No automatic fallback is implemented'),
- 'rtc': ('DS3231 UTC and battery restore', 'pilot.8 GPIO8/9: commission UTC, record rtc flags, cold boot and compare retained UTC against a trusted clock'),
+ 'gsm': ('2G / explicit bench SMS', 'pilot.9: gsmdiag registration plus explicit gsmtest to an authorized recipient; record receipt/time. No automatic fallback is implemented'),
+ 'rtc': ('DS3231 UTC and battery restore', 'pilot.9 GPIO8/9: commission UTC, record rtc flags, cold boot and compare retained UTC against a trusted clock'),
  'battery': ('Central backup endurance', 'Measure Main + fitted SIM load, interruption duration and minimum rails'),
  'soak': ('Integrated endurance', 'Record duration, population, missing samples, resets and communications faults'),
 }

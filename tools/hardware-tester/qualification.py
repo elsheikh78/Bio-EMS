@@ -1,6 +1,6 @@
 """Controlled bench procedure; evidence is manual unless linked to an acquired run."""
 PROFILE = 'Hardware qualification / staged checklist'
-REVISION = 'HQT-2 / pilot.8 / bench.2'
+REVISION = 'HQT-2 / pilot.9 / bench.2'
 # Code, title and reviewed acceptance/evidence instructions. Never label these AUTO.
 STEPS = [
  ('bench_setup','Bench setup and identification','Record Main, Nano and probe labels, installed firmware event IDs and isolated QC run IDs. Secure contacts; no mains on breadboard; verify regulated supplies before connection.'),
@@ -9,7 +9,7 @@ STEPS = [
  ('sensor_cables','Sensor cable lengths','Link separate acquired runs for 5 m, 10 m and intended maximum up to 20 m, at least two hours each. Record metrics JSON success_rate_percent (required, >=99.99%); approve acquisition limits before each run. Retain cable type, length and pull-up. Any changed resistor requires electrical review and retest.'),
  ('sensor_faults','Sensor faults and recovery','Power OFF before changing wiring. Use separate linked baseline, fault and recovery attempts for each input. Record missing probe, supply removal and replacement; verify unrelated channels continue. Do not short powered DATA or power rails.'),
  ('four_channels','Nano four channel isolation','Link Nano / 4 sensors QC with ROM mapping and individual response. Record CH2 fault and confirm CH1/CH3/CH4 remain operational, then recovery. Integrated scans do not expose ROM.'),
- ('short_rs485','RS485 short link','Use operating pilot.8 / bench.2, automatic-direction HW-519 and 9600 8N1. Link Main + Nano / 4 sensors via RS485 run; verify selected address, four inputs, communication loss and recovery.'),
+ ('short_rs485','RS485 short link','Use operating pilot.9 / bench.2, automatic-direction HW-519 and 9600 8N1. Link Main + Nano / 4 sensors via RS485 run; verify selected address, four inputs, communication loss and recovery.'),
  ('long_rs485','RS485 and power over 20 m','Link at least four hours of integrated polling over the intended 20 m cable. Record loaded far-end rails, missing scans, errors and resets. Power and voltage drop require physical measurements.'),
  ('ethernet_link','W5500 Ethernet and Wi Fi','For each fitted interface record actual platform delivery and outage/recovery. For Ethernet interrupt only network for two minutes; acquisition must continue. Successful USB acquisition alone does not prove network delivery.'),
  ('cellular_bench','SIM800L explicit SMS','Record gsmdiag response, signal and registration; send only deliberate gsmtest commands to an authorized number and confirm actual receipt/time. Record supply transients and absence of resets. Automatic GSM alarm fallback is not implemented; do not claim its acceptance.'),

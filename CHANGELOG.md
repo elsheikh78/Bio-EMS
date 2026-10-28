@@ -1,5 +1,13 @@
 # BIO-EMS Changelog
 
+## Unreleased — security operations and recoverable Main
+
+- Add identity-checked D1 export/bookmark/migration/schema/deploy orchestration and protected Windows receipts.
+- Add certificate activation with pinned endpoint verification, retained service secrets/ACLs, protected snapshots and automatic failure restoration.
+- Main pilot.9 adds an opt-in separate A/B USB maintenance build with inactive-slot/hash/image checks and explicit timed boot confirmation; ordinary pilot packages reject maintenance/manufacturing builds. Tester 0.6.2 retains legacy acquisition compatibility.
+- Add owner-side RSA3072 key preparation without device/eFuse modification. Physical recovery/manufacturing, remote deployment and remaining Expo/mTLS findings remain open.
+
+
 ## Unreleased — Main TLS and protection evidence
 
 - Main pilot.8 requires HTTPS origin and certificate identity checks; local provisioning validates exact SAN/validity before flash or serial credentials. Windows supports explicit DNS/IP SANs and non-overwriting candidate certificate preparation.
