@@ -19,6 +19,7 @@ function fixture(options = {}) {
     const sql = args.at(-1);
     if (sql.includes('d1_migrations')) return rows((options.wrongHistory ? ['unknown.sql'] : ['0001_company.sql','0002_viewer.sql',...(migrated ? ['0003_company_sessions.sql'] : [])]).map(name => ({ name })));
     if (sql.includes('sqlite_master')) return rows(options.missingIndex ? [{ name: 'company_sessions', type: 'table' }] : [{ name: 'company_sessions', type: 'table' }, { name: 'company_sessions_expiry', type: 'index' }]);
+    if (sql.includes('index_info')) return rows([{ name: 'expires_at' }]);
     return rows(['token_hash','admin_key_hash','created_at','expires_at'].map(name => ({ name })));
   };
   return { root, run, calls, cleanup: () => rmSync(root, { recursive: true, force: true }) };

@@ -41,7 +41,8 @@ try {
     $result = Invoke-BioemsTlsRotation @parameters
     if ($result.state -ne 'SERVER_ACTIVATED_CONTROLLERS_REQUIRE_TRUST_ROLLOUT') { throw 'Activation did not complete' }
     if ((Get-FileHash -LiteralPath $old.publicCertificatePath).Hash -eq $originalPublicHash) { throw 'Candidate was not activated' }
-    if ((Get-FileHash -LiteralPath (Join-Path $config 'backend.env')).Hash -ne $originalEnvHash -or (Get-Acl -LiteralPath $old.pfxPath).Sddl -ne $originalAcl) { throw 'Rotation changed service secrets or file ACLs' }
+    if ((Get-FileHash -LiteralPath (Join-Path $config 'backend.env')).Hash -ne $originalEnvHash) { throw 'Rotation changed protected environment contents' }
+    if ((Get-Acl -LiteralPath $old.pfxPath).Sddl -ne $originalAcl) { throw 'Rotation changed the installed certificate security descriptor' }
     # A service-start failure must restore both files and metadata without losing the snapshot.
     $beforeFailure = (Get-FileHash -LiteralPath $old.pfxPath).Hash
     $parameters.CandidatePfx = Join-Path (Split-Path $result.receiptPath) 'previous.pfx'
@@ -54,7 +55,7 @@ try {
     $oldCandidate = Join-Path (Split-Path $result.receiptPath) 'previous.pfx'
     $parameters.CandidatePfx = $oldCandidate
     $parameters.StartServices = $start
-    Invoke-BioemsTlsRotation @parameters | Out-Null
+    Restore-BioemsTlsSnapshot -ApplicationRoot $ApplicationRoot -PersistentRoot $temporary -PlatformUrl $url -SnapshotDirectory (Split-Path $result.receiptPath) -ServiceActions @{ StopServices=$stop; StartServices=$start; CheckServices={} } | Out-Null
     if ((Get-FileHash -LiteralPath $old.publicCertificatePath).Hash -ne $originalPublicHash) { throw 'Previous public identity was not recovered' }
     Write-Host 'TLS rotation, pinned live endpoint, retained environment/ACLs and automatic failure recovery PASS'
 } finally {

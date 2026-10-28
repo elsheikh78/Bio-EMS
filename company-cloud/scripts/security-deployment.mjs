@@ -63,6 +63,8 @@ export async function operate({ mode = 'inspect', backupRoot, run = execute, clo
       !objects.some(r => r.name === EXPECTED_OBJECTS[1] && r.type === 'index')) throw new Error('Session table/index verification failed; Worker deployment refused');
   const columns = d1Rows(await query('PRAGMA table_info(company_sessions)'));
   if (['token_hash', 'admin_key_hash', 'created_at', 'expires_at'].some(name => !columns.some(c => c.name === name))) throw new Error('Session schema does not match this Worker');
+  const expiryColumns = d1Rows(await query('PRAGMA index_info(company_sessions_expiry)'));
+  if (expiryColumns.length !== 1 || expiryColumns[0].name !== 'expires_at') throw new Error('Expiry index targets an unexpected column');
   const after = d1Rows(await query('SELECT name FROM d1_migrations ORDER BY id')).map(r => r.name);
   if (!after.includes(SESSION_MIGRATION)) throw new Error('Migration version was not recorded');
   receipt.migrationVerified = true;

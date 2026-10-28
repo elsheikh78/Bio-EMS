@@ -81,8 +81,6 @@ function Invoke-BioemsTlsRotation {
         Copy-Item -LiteralPath $paths.Pfx -Destination (Join-Path $snapshot 'previous.pfx')
         Copy-Item -LiteralPath $paths.Public -Destination (Join-Path $snapshot 'previous.cer')
         if (Test-Path -LiteralPath $paths.Metadata) { Copy-Item -LiteralPath $paths.Metadata -Destination (Join-Path $snapshot 'previous-metadata.json') }
-        $pfxAcl = Get-Acl -LiteralPath $paths.Pfx
-        $publicAcl = Get-Acl -LiteralPath $paths.Public
         $receiptPath = Join-Path $snapshot 'receipt.json'
         $receipt = [ordered]@{ schema = 1; utc = [DateTime]::UtcNow.ToString('o'); platformOrigin = ([uri]$PlatformUrl).GetLeftPart([UriPartial]::Authority); persistentRoot = [IO.Path]::GetFullPath($PersistentRoot); previousPfxSha256 = (Get-FileHash -LiteralPath $paths.Pfx -Algorithm SHA256).Hash; previousPublicSha256 = (Get-FileHash -LiteralPath $paths.Public -Algorithm SHA256).Hash; candidatePublicSha256 = (Get-FileHash -LiteralPath $publicCandidate -Algorithm SHA256).Hash; state = 'BACKED_UP'; controllersUpdated = $false }
         $receipt | ConvertTo-Json | Set-Content -LiteralPath $receiptPath -Encoding UTF8
@@ -94,8 +92,6 @@ function Invoke-BioemsTlsRotation {
             }
             [IO.File]::WriteAllBytes($paths.Pfx,$replacement)
             [IO.File]::WriteAllBytes($paths.Public,$certificate.RawData)
-            Set-Acl -LiteralPath $paths.Pfx -AclObject $pfxAcl
-            Set-Acl -LiteralPath $paths.Public -AclObject $publicAcl
             [IO.File]::WriteAllText($paths.Metadata, (([ordered]@{ schemaVersion = 1; thumbprint = $certificate.Thumbprint }) | ConvertTo-Json), (New-Object Text.UTF8Encoding($false)))
             & $StartServices
             Invoke-BioemsCertificateCheck $Node $ApplicationRoot $paths.Public $PlatformUrl -Probe
@@ -106,8 +102,6 @@ function Invoke-BioemsTlsRotation {
                 & $StopServices
                 [IO.File]::WriteAllBytes($paths.Pfx,[IO.File]::ReadAllBytes((Join-Path $snapshot 'previous.pfx')))
                 [IO.File]::WriteAllBytes($paths.Public,[IO.File]::ReadAllBytes((Join-Path $snapshot 'previous.cer')))
-                Set-Acl -LiteralPath $paths.Pfx -AclObject $pfxAcl
-                Set-Acl -LiteralPath $paths.Public -AclObject $publicAcl
                 if (Test-Path -LiteralPath (Join-Path $snapshot 'previous-metadata.json')) { [IO.File]::WriteAllBytes($paths.Metadata,[IO.File]::ReadAllBytes((Join-Path $snapshot 'previous-metadata.json'))) }
                 if ($addedTrust) { Remove-Item -LiteralPath "Cert:\LocalMachine\Root\$($certificate.Thumbprint)" -Force }
                 & $StartServices
@@ -121,7 +115,7 @@ function Invoke-BioemsTlsRotation {
 }
 function Restore-BioemsTlsSnapshot {
     [CmdletBinding()]
-    param([string]$ApplicationRoot,[string]$PersistentRoot,[string]$PlatformUrl,[string]$SnapshotDirectory,[string]$Node = 'node.exe')
+    param([string]$ApplicationRoot,[string]$PersistentRoot,[string]$PlatformUrl,[string]$SnapshotDirectory,[string]$Node = 'node.exe',[hashtable]$ServiceActions=@{})
     $snapshot = [IO.Path]::GetFullPath($SnapshotDirectory)
     $receipt = Get-Content -LiteralPath (Join-Path $snapshot 'receipt.json') -Raw | ConvertFrom-Json
     $paths = Get-BioemsTlsPaths $PersistentRoot
@@ -130,6 +124,11 @@ function Restore-BioemsTlsSnapshot {
         if ((Get-FileHash -LiteralPath (Join-Path $snapshot $entry[0]) -Algorithm SHA256).Hash -ne $entry[1]) { throw 'Snapshot checksum mismatch' }
     }
     $password = ConvertTo-SecureString $paths.Password -AsPlainText -Force
-    Invoke-BioemsTlsRotation -ApplicationRoot $ApplicationRoot -PersistentRoot $PersistentRoot -PlatformUrl $PlatformUrl -CandidatePfx (Join-Path $snapshot 'previous.pfx') -CandidatePassword $password -BackupParent $snapshot -Node $Node
+    $options = @{ ApplicationRoot=$ApplicationRoot; PersistentRoot=$PersistentRoot; PlatformUrl=$PlatformUrl; CandidatePfx=(Join-Path $snapshot 'previous.pfx'); CandidatePassword=$password; BackupParent=$snapshot; Node=$Node }
+    foreach ($name in $ServiceActions.Keys) {
+        if ($name -notin @('StopServices','StartServices','CheckServices') -or $ServiceActions[$name] -isnot [scriptblock]) { throw 'Invalid service callback' }
+        $options[$name] = $ServiceActions[$name]
+    }
+    Invoke-BioemsTlsRotation @options
 }
 Export-ModuleMember -Function Restore-BioemsTlsSnapshot, Get-BioemsEnvironmentValue,New-BioemsPrivateDirectory,Get-BioemsTlsPaths,Invoke-BioemsCertificateCheck,Invoke-BioemsTlsRotation
