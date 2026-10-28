@@ -146,6 +146,8 @@ class AuthenticationController {
       if (error instanceof ZodError)
         throw new AuthenticationFailure("validation");
       if (error instanceof ApiResponseError) {
+        if (error.status === 429)
+          throw new AuthenticationFailure("rate-limited");
         if (error.status === 401)
           throw new AuthenticationFailure("invalid-credentials");
         if (error.status >= 500) throw new AuthenticationFailure("server");

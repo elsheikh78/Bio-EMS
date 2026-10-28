@@ -16,6 +16,7 @@ export interface TranslationResources {
     restorationTitle: string;
     restorationDescription: string;
     errors: {
+      "rate-limited": string;
       "invalid-credentials": string;
       validation: string;
       network: string;
@@ -295,6 +296,8 @@ export const englishResources = {
       "Protected content remains hidden. Retry verification or log out.",
 
     errors: {
+      "rate-limited":
+        "Too many sign-in attempts. Wait one minute and try again.",
       "invalid-credentials": "The username or password is invalid.",
 
       validation: "Check the entered credentials and try again.",
@@ -617,6 +620,8 @@ export const arabicResources = {
     restorationDescription:
       "يظل المحتوى المحمي مخفيًا. أعد محاولة التحقق أو سجّل الخروج.",
     errors: {
+      "rate-limited":
+        "محاولات تسجيل الدخول كثيرة. انتظر دقيقة ثم حاول مرة أخرى.",
       "invalid-credentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
       validation: "راجع بيانات الدخول ثم حاول مرة أخرى.",
       network: "تعذر الوصول إلى الخدمة. حاول مرة أخرى.",

@@ -6,6 +6,7 @@ export type AuthenticationStatus =
   "bootstrapping" | "unauthenticated" | "authenticated" | "restoration-error";
 
 export type AuthenticationFailureKind =
+  | "rate-limited"
   | "invalid-credentials"
   | "validation"
   | "network"

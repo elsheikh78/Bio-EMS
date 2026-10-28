@@ -6,7 +6,7 @@ const req = (ip: string) =>
   ({
     ip,
     socket: {},
-    headers: { "x-forwarded-for": Math.random().toString() },
+    headers: { "x-forwarded-for": "forged-client" },
   }) as unknown as Request;
 const res = () => ({ setHeader: vi.fn() }) as unknown as Response;
 

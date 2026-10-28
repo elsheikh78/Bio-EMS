@@ -1089,3 +1089,16 @@ describe("password-change session rotation", () => {
     expect(storage.current()?.accessToken).not.toBe("foreign-token");
   });
 });
+
+describe("login throttling feedback", () => {
+  it("surfaces rate limiting separately from invalid credentials", async () => {
+    const provider = renderProvider({ responses: [new ApiResponseError(429)] });
+    await act(async () => {
+      await expect(
+        provider
+          .authentication()
+          .login({ username: "admin", password: "password" }),
+      ).rejects.toMatchObject({ kind: "rate-limited" });
+    });
+  });
+});

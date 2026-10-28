@@ -1,5 +1,10 @@
 # BIO-EMS Changelog
 
+## Unreleased — runtime dependency advisory remediation
+
+- Update backend/frontend affected locked dependency chains; production npm audit reports zero affected package entries in both candidate trees. Development/tooling and other-component findings remain open.
+- Deliberately upgrade Nodemailer9 to10.2.1 with installed-library RFC message regression; retain real SMTP/TLS delivery acceptance as a separate gate. No force upgrade or binary release.
+
 ## Unreleased — customer authentication audit remediation
 
 - Bound customer login attempts to ten/IP/minute with Retry-After and bounded no-eviction limiter shared with the independently counted owner login path.

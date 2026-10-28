@@ -4,9 +4,9 @@ Reviewed 28 October 2026. This is the sole current-state authority; dated eviden
 
 ## Customer security remediation candidate — 28 October 2026
 
-User-authorized A02/A03 fixes are implemented on `fix/customer-auth-audit`, not yet merged/deployed: bounded customer login throttling; credential-bound customer tokens; old token rejection after own/admin/offline password replacement; replacement session installed by the matching frontend. Existing customer sessions must log in again on initial upgrade. No dependency, company session, Main TLS or production device-trust finding is closed by this candidate.
+User-authorized A02/A03 fixes are implemented on `fix/customer-auth-audit`, not yet merged/deployed: bounded customer login throttling; credential-bound customer tokens; old token rejection after own/admin/offline password replacement; replacement session installed by the matching frontend. Existing customer sessions must log in again on initial upgrade. Compatible lockfile updates and deliberate Nodemailer10 upgrade reduce backend/frontend production npm audit entries to zero in the candidate; development/tooling and other-component advisories remain open. Company session, Main TLS and production device-trust findings are not closed.
 
-Local Node24 verification: backend1100 tests/164 files; frontend356 tests/64 files; typecheck/lint/format/build and documentation checks. See [remediation design and rollout](docs/security/CUSTOMER-AUTH-AUDIT-REMEDIATION.md) and [ADR-024](docs/adr/ADR-024-customer-access-token-credential-binding.md). Remote CI and source integration remain separate gates.
+Local Node24 verification: backend1101 tests/164 files; frontend357 tests/64 files; typecheck/lint/format/build and documentation checks. See [remediation design and rollout](docs/security/CUSTOMER-AUTH-AUDIT-REMEDIATION.md) and [ADR-024](docs/adr/ADR-024-customer-access-token-credential-binding.md). Remote CI and source integration remain separate gates.
 
 ## Exact source and release boundary
 

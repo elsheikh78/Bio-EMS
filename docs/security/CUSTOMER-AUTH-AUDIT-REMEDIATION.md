@@ -8,4 +8,10 @@ Password replacement changes the credential-bound JWT signing key and invalidate
 
 The backend and frontend must be deployed together and checked on the intended Windows package. This source change does not alter the owner commissioning/MFA or cloud Viewer session model. Restore of an old credential database under unchanged JWT secret can resurrect matching unexpired old tokens; follow the approved restore/secret rotation policy. This is credential-change invalidation, not a full per-device session/revocation registry.
 
-Source completion requires typecheck/lint/format/test/build gates and desired security regressions. Do not call the change deployed or all security findings closed merely because the PR exists. Dependencies, company-cookie revocation, Main certificate name checking and final device trust remain open.
+Source completion requires typecheck/lint/format/test/build gates and desired security regressions. Do not call the change deployed or all security findings closed merely because the PR exists. Remaining development/mobile/cloud dependency advisories, company-cookie revocation, Main certificate name checking and final device trust remain open.
+
+## Dependency remediation in this candidate
+
+Backend runtime affected entries reduced from9 (one Critical, six High, two Moderate) to0; frontend runtime from one High to0, using npm audit --omit=dev. All-dependency scans still report development/tooling findings around Vitest/Tinypool/mocker (and coverage tooling); these are open and require a separately validated test-runner major migration. This does not certify mobile/cloud/Python/vendor packages. Current [scan evidence](evidence/CUSTOMER-AUTH-DEPENDENCIES-2026-10-28.json) is separate from the immutable original audit snapshot.
+
+Locked updates include Axios1.21.0, compression1.8.2, Zod4.6.7, proxy-addr2.0.8, body-parser2.4.0, follow-redirects1.16.2, qs6.17.0, ip-address10.7.5, Nodemailer10.2.1 and Vite7.3.7. Nodemailer is a deliberate major update; the installed library builds a real RFC email in the offline stream-transport regression. Existing provider/notification contracts and the full platform suites pass. Real SMTP/TLS/provider delivery and the Windows package remain separate acceptance gates. No automatic npm audit force-fix was used.
