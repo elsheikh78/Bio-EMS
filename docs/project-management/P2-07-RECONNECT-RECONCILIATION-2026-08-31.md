@@ -1,26 +1,11 @@
 # P2-07 — Reconnect Reconciliation
 
-Status: IMPLEMENTED — CI/merge pending.
+Historical record; navigation updated 2026-10-28.
 
-## Objective
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/P2-07-RECONNECT-RECONCILIATION-2026-08-31.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-Restore server authority after a controller reconnects without losing offline evidence or replaying accepted data indefinitely.
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-## Implemented
-
-- Reconnect compares the controller's effective configuration identity with the verified BF-08 server envelope.
-- Matching configuration returns `CURRENT / NONE`.
-- Stale controller configuration returns `STALE_VERSION / DELIVER_EFFECTIVE_CONFIG`.
-- No acknowledged controller configuration returns `NEVER_ACKNOWLEDGED / DELIVER_EFFECTIVE_CONFIG`.
-- Same-version checksum conflicts produce an explicit REJECTED acknowledgement and trigger effective-config redelivery.
-- Buffered offline sensor evidence is emitted chronologically with `mode: REPLAY`.
-- Every replay record receives a deterministic SHA-256 replay identity.
-- Replay remains retryable until server acceptance is recorded; accepted replay IDs are then suppressed from subsequent reconnect batches.
-
-## Boundaries
-
-This slice is a deterministic host-side reconciliation/runtime contract. It does not claim persistent replay-ledger storage across controller power loss, actual MQTT transport publication/acknowledgement, firmware flash behavior, deployed broker evidence, or field acceptance. P2-08/P2-09 and commissioning evidence remain separate gates.
-
-## Next
-
-P2-08 — Controller Health Evidence.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

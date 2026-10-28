@@ -1,0 +1,34 @@
+[
+  {
+    "command": "npm test",
+    "exit_code": 0,
+    "duration_seconds": 1.97,
+    "log": "company-cloud-0.log"
+  },
+  {
+    "command": "npm run build",
+    "exit_code": 0,
+    "duration_seconds": 9.07,
+    "log": "company-cloud-1.log"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run",
+    "exit_code": 0,
+    "duration_seconds": 18.17,
+    "log": "company-cloud-2.log"
+  },
+  {
+    "command": "npm audit --json",
+    "exit_code": 1,
+    "duration_seconds": 9.2,
+    "log": "company-cloud-3.log",
+    "advisories": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 1,
+      "critical": 0,
+      "total": 3
+    }
+  }
+]

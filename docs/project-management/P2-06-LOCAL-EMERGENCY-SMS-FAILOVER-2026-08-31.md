@@ -1,26 +1,11 @@
 # P2-06 — Local Emergency SMS Failover
 
-Status: IMPLEMENTED — CI/merge pending.
+Historical record; navigation updated 2026-10-28.
 
-## Objective
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/P2-06-LOCAL-EMERGENCY-SMS-FAILOVER-2026-08-31.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-Provide a deterministic controller-side emergency SMS decision/execution boundary for active CRITICAL alarms while the primary server transport is unavailable, using only the server-owned BF-08 failover configuration.
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-## Implemented
-
-- Failover is disabled unless `sms_failover.enabled` is true.
-- Local SMS is suppressed whenever primary transport is available.
-- Primary outage must persist for `primary_unavailable_after_seconds` before local failover becomes eligible.
-- Only ACTIVE `CRITICAL_LOW` / `CRITICAL_HIGH` evaluations from P2-05 are eligible.
-- BF-08 `critical_escalation_steps` and `sms_targets` determine due recipients.
-- Per alarm/step/recipient deterministic idempotency keys suppress duplicate local sends during the controller process lifetime.
-- Failed gateway sends remain retryable because the idempotency key is marked sent only after gateway success.
-- Primary recovery immediately returns ownership to normal server-side notification delivery.
-
-## Boundaries
-
-This slice does not claim a physical SIM800L implementation, modem AT-command driver, durable idempotency across controller power loss, live carrier delivery, MQTT reconciliation, or field acceptance. Those require later controller integration and P2-09 bench evidence.
-
-## Next
-
-P2-07 — Reconnect Reconciliation.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

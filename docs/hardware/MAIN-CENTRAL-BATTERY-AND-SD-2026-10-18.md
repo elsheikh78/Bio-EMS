@@ -1,5 +1,8 @@
 # Main-unit central backup power and SD storage
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 Decision: 18 October 2026. Bench design requirements; no purchased module or runtime is physically qualified.
 
 ## User-approved scope

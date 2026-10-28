@@ -1,5 +1,8 @@
 # BIO EGYPT El Manial — Hardware Design & Procurement Baseline
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../current/QUALIFICATION-AND-ACCEPTANCE.md>) describes the reviewed source baseline; [Project state](<../../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../archive/2026-10-28-pre-audit/docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Date:** 24 September 2026  
 **Status:** DESIGN BASELINE / PROCUREMENT NOT YET FROZEN  
 **Site:** El Manial  

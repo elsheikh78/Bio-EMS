@@ -1,18 +1,11 @@
 # PVR-05 — Devices operational UI
 
-## Decision
+Historical record; navigation updated 2026-10-28.
 
-PVR-05 replaces the staged Devices route with the existing registry and health contracts. DEVICE_READ users can inspect identity, Site ownership, lifecycle, last communication, and the server-derived health policy. DEVICE_MANAGE users can edit bounded metadata and execute the existing activate/disable transitions.
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/PVR-05-DEVICES-UI.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-## Boundaries
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-- Lifecycle rules remain server-authoritative; the UI does not synthesize a state.
-- Health is loaded per Device and remains distinct from lifecycle status.
-- This review does not claim field commissioning or historical health evidence.
-
-## Acceptance
-
-- Runtime responses are strictly validated.
-- Management controls are hidden without DEVICE_MANAGE.
-- Loading, empty, retry, mutation-conflict, health, and metadata-edit paths are represented.
-- Frontend gates and GitHub CI are required before closure.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

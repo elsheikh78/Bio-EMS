@@ -1,5 +1,21 @@
 # BIO-EMS Implementation Plan
 
+## 28 October2026 audit follow-up ordering
+
+This plan is execution order, not a completion ledger. Current status is only in PROJECT_STATE.
+
+1. Triage Critical/High runtime/tooling advisories and approve compatible remediation changes.
+2. Implement customer login throttling and credential-change token invalidation under reviewed requirements; resolve pilot TLS endpoint-name exception before production.
+3. Decide company session revocation/individual operator policy; preserve owner/Viewer/customer identity separation.
+4. Continue exact-package Windows lifecycle/backup-restore and separate cloud/native distribution qualification.
+5. Execute standalone Tester hardware qualification, approved power/BOM/sensor-map/calibration, populated endurance and field commissioning/UAT.
+6. Complete deferred production device trust/commercial signing under existing approved architecture.
+
+See [audit findings](docs/audit/2026-10-28/FINDINGS.md) for closure tests. This ordering does not silently change approved scope/ADRs or declare older work complete. Earlier planning content below remains a requirement/history record with its original evidence boundary.
+
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/IMPLEMENTATION_PLAN.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Current execution order — 26 October 2026
 
 This sequence supersedes older dated restart lists below; those remain historical context.

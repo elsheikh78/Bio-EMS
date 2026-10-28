@@ -1,3 +1,5 @@
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/tools/hardware-tester/OPERATOR_GUIDE_AR.txt>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
 تحديث 0.6.0 — الاختبارات والتأهيل في الهاردوير تيستر فقط
 تم إزالة Hardware Lab من واجهة System Owner؛ السجلات القديمة محفوظة للقراءة.
 التبويب 7 Qualification guide يشرح 18 خطوة مراجعة وتأهيل.

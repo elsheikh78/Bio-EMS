@@ -1,5 +1,8 @@
 # SIM-D4 Nano USB flashing package
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/firmware/sim-d4-nano/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October testing boundary
 
 Operating Nano firmware remains 0.1.0-bench.2. Standalone Tester 0.3.0 can flash isolated four-probe QC firmware for D2–D5; disconnect HW-519 D0/D1 for USB upload AND reading. QC firmware is a different image: restore bench.2 before operational RS485 testing. Integrated Tester 0.4.0 remains proposed in open #309.

@@ -1,5 +1,8 @@
 # BIO-EMS — الشرح التفصيلي للمشروع
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/PLATFORM-OPERATIONS.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/product/BIO-EMS-ARABIC-PROJECT-GUIDE.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## تحديث 26 أكتوبر 2026
 
 تم دمج التفليش داخل Hardware Tester بإصدار 0.3.0، ودمج تطبيق متابعة العميل المنفصل عن تطبيق الشركة. اختبار Main مع Nano وأربع حساسات بصورة مستمرة عبر RS485 مقترح في PR #309 بإصدار 0.4.0؛ الطلب مفتوح وقت المراجعة رغم نجاح CI. التسلسل: ESP32 وحساس واحد، ثم Nano وأربع حساسات، ثم Main وNano والحساسات بفيرموير التشغيل بعد استعادته. نجاح التفليش أو CI لا يعني قبول الهاردوير. التغذية من USB تخص الاختبارات المعزولة الأولى، وليست اعتمادًا لتغذية التجميع الكامل. المرجع التفصيلي: [توثيق اليوم](../current/PROJECT-CHECKPOINT-2026-10-26.md). الحالة الحالية يحكمها PROJECT_STATE؛ البيانات المؤرخة القديمة أدناه سياق تاريخي.

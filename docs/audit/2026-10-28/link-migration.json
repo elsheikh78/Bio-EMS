@@ -1,0 +1,7 @@
+{
+  "review_date": "2026-10-28",
+  "method": "Supported Markdown links in pre-audit non-archive bytes evaluated relative to original document path. Existing archive excluded. No external URL/fragment validation.",
+  "original_missing_targets": [],
+  "current_missing_targets": [],
+  "note": "No unsafe target substitutions. Any original links survive unchanged in snapshot bytes."
+}

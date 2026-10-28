@@ -1,5 +1,15 @@
 # BIO-EMS Changelog
 
+## Unreleased —28 October2026 documentation/code audit
+
+- Preserve309 original text documents with SHA-256 baseline manifest and immutable history; classify active specs/ADRs and historical work.
+- Refresh authoritative project state, navigation, component guides and operating/testing/security/recovery/acceptance documentation.
+- Record1551 successful routine tests, two security probes and C host checks; preserve dependency advisory evidence and open auth/TLS/session/acceptance findings.
+- Add archive-integrity/local-document-link verification. No application/firmware/database/dependency behavior, version, release or deployment change.
+
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/CHANGELOG.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ### 26 October 2026 — QC flashing, customer monitor and documentation reconciliation
 
 - #308 merged offline QC flashing for ESP32-S3 and both Nano bootloaders in standalone Tester 0.3.0, with package hash checks, tool verification, runtime identity and retained flash evidence. Operating firmware restoration remains separate.

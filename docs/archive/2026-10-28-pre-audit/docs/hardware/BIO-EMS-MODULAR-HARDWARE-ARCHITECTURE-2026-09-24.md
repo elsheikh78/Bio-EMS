@@ -1,0 +1,399 @@
+# BIO-EMS Modular Hardware Architecture — Approved Pilot Baseline
+
+**Decision date:** 24 September 2026  
+**Status:** APPROVED ARCHITECTURE / DETAILED ELECTRICAL DESIGN IN PROGRESS  
+**Applies to:** BIO-EMS Pilot hardware and the first El Manial procurement/design baseline  
+**Supersedes for new Pilot hardware:** direct multi-sensor wiring into one all-in-one Site Controller and the previous direct-DS18B20 Pilot hardware direction
+
+## 1. Decision
+
+BIO-EMS adopts a modular field-hardware architecture built from five product blocks:
+
+1. **BIO-EMS SC** — Site Controller.
+2. **BIO-EMS SIM-T2** — two-channel RTD Sensor Interface Module.
+3. **BIO-EMS SIM-T4** — four-channel RTD Sensor Interface Module.
+4. **BIO-EMS COM-CELL** — independent cellular/SMS communication gateway.
+5. **BIO-EMS PDU-24** — 24 VDC power and protected distribution unit.
+
+The Site Controller is no longer the direct analog/RTD acquisition point. Temperature probes are
+terminated at local Sensor Interface Modules; the SIM layer performs measurement conversion and
+reports digital data to the Site Controller over the field bus.
+
+This decision deliberately separates:
+
+- measurement electronics;
+- site control/processing;
+- cellular communication;
+- power distribution.
+
+The purpose is to reduce long analog sensor runs, isolate failure domains, simplify maintenance,
+allow product-family expansion, and avoid making every Site Controller a customer-specific
+hardware assembly.
+
+## 2. Temperature measurement baseline
+
+The first released SIM family targets:
+
+- **Sensor technology:** PT100 RTD;
+- **Pilot wiring baseline:** 3-wire;
+- **front end:** one MAX31865-class RTD interface per channel;
+- **SIM-T2:** 2 active RTD channels;
+- **SIM-T4:** 4 active RTD channels.
+
+Each RTD channel has an independent measurement front end. The design shall not multiplex several
+PT100 probes through one MAX31865 in Revision 1.
+
+For the **El Manial and CPC / 6th of October Pilot installations**, BIO-EMS will use a
+**no-custom-PCB build strategy**: qualified ready-made electronic modules mounted in serviceable
+enclosures with screw terminals, ferrules and controlled internal wiring. Breadboards and Dupont
+jumpers are bench-only and are not permitted in the field installation.
+
+SIM-T2 and SIM-T4 remain logical BIO-EMS product types. A future production revision may consolidate
+the validated Pilot electronics onto one common four-channel PCB, with SIM-T4 fully populated and
+SIM-T2 using a two-channel population/DNP variant. Custom PCB work is intentionally deferred until
+the two Pilot Sites validate the architecture, power, noise, thermal and service assumptions.
+
+The exact PT100 class, probe construction, reference resistor tolerance/TCR, terminal technology,
+and environmental enclosure are detailed-design/BOM decisions and must pass bench/calibration
+validation before procurement freeze.
+
+## 3. 24 VDC field-power standard
+
+BIO-EMS adopts **24 VDC as the field power backbone**.
+
+Target device input design range:
+
+`18–30 VDC`
+
+Distributed 5 V power is not the field standard. Each device locally converts 24 V to the required
+5 V / 3.3 V rails.
+
+Reasons:
+
+- lower current for a given load;
+- materially lower percentage voltage drop on long field runs;
+- better compatibility with industrial sensors/transmitters and future 4–20 mA modules;
+- simpler power distribution and protection;
+- easier integration with industrial DIN-rail PSU/DC-UPS equipment.
+
+## 4. BIO-EMS SC — Site Controller
+
+The Site Controller is responsible for:
+
+- communication with SIM modules;
+- local device/channel mapping;
+- buffering and recovery;
+- MQTT/Platform communication;
+- controller heartbeat and health;
+- application of configuration revisions;
+- controlled local alarm/emergency logic where later required.
+
+Revision-1 design direction:
+
+- ESP32-S3 family controller;
+- wired Ethernet as the primary platform-network path;
+- Wi-Fi retained as service/fallback capability, not the preferred fixed-site path;
+- two RS485 interfaces:
+  - RS485-A: primary Sensor Interface field bus;
+  - RS485-B: expansion/service/emergency/future bus;
+- 24 VDC input with local protected conversion;
+- hardware watchdog/supervision;
+- RTC/time-retention strategy;
+- local non-volatile buffering/storage sized during detailed design;
+- service USB;
+- status/diagnostic indicators;
+- future secure-element footprint / production Device Trust accommodation.
+
+The Site Controller does not contain the cellular modem in the approved modular architecture.
+
+## 5. BIO-EMS SIM-T2 / SIM-T4
+
+For the no-custom-PCB Pilot, the preferred SIM-T4 implementation is a qualified integrated 4-channel PT100 acquisition module that accepts 24 VDC and exposes RS485/Modbus RTU directly. This removes the need for a separate SIM MCU, four breakout MAX31865 boards, a standalone RS485 board and a separate low-voltage DC/DC module when the selected acquisition module already contains those functions.
+
+The MAX31865-per-channel architecture remains the controlled fallback if no integrated module passes the required accuracy, repeatability and 3-wire compensation qualification.
+
+For Pilot SIM-T4, no internal MCU is required if the selected integrated acquisition module already provides Modbus RTU. A future custom production SIM may use a deliberately small, low-cost MCU and independent RTD front ends after the Pilot architecture is proven.
+
+## 6. Field-bus baseline
+
+The Pilot field-bus design direction is:
+
+- physical layer: RS485;
+- application protocol: Modbus RTU or an explicitly versioned BIO-EMS RTU profile built on the
+  same deterministic master/slave principles;
+- baseline serial rate for bench validation: 19,200 baud, 8N1;
+- topology: trunk/daisy chain where practical;
+- 120-ohm termination only at the two physical ends of the bus;
+- master-side biasing;
+- twisted pair for A/B;
+- 24 V / 0 V carried as a separate power pair where one field cable is used;
+- shield/earth policy finalized after the installation and EMC design is reviewed.
+
+Star wiring and large uncontrolled stubs are not the baseline.
+
+Final cable part number, conductor size, shield termination, galvanic-isolation boundary and surge
+protection are detailed-design outputs and must not be guessed from this architecture document.
+
+## 7. BIO-EMS COM-CELL
+
+Cellular communication is a separate Site device rather than a modem duplicated in every Site
+Controller.
+
+The COM-CELL role includes:
+
+- LTE/SIM interface;
+- SMS transport;
+- cellular signal/operator diagnostics;
+- future cellular IP backup where approved;
+- modem watchdog and hard power-cycle control;
+- communication with the Platform and/or Site Controllers;
+- emergency/fallback path that remains architecturally independent from one specific Site
+  Controller.
+
+Revision-1 direction:
+
+- 24 VDC input;
+- dedicated high-current cellular power stage;
+- LTE Cat-1-class modem, final model selected after Egypt carrier/band/availability review;
+- SIM holder;
+- external antenna connector;
+- Ethernet and/or RS485 interface as finalized in detailed design;
+- MCU supervising the modem and local fallback logic.
+
+The commercial design must not be permanently tied to SIM800L/2G. A 4G-capable part family is the
+preferred direction for a new product design.
+
+## 8. BIO-EMS PDU-24
+
+BIO-EMS adopts a **standard product**, not a project-specific PDU redesign:
+
+**BIO-EMS PDU-24-S5**
+
+Standard product authority:
+
+`docs/hardware/BIO-EMS-PDU-24-S5-STANDARD-2026-09-24.md`
+
+Baseline:
+
+- 230 VAC nominal input, preferably supplied from the customer's backed-up AC source where required;
+- industrial 24 VDC / 5 A power stage;
+- eight protected 24 V outputs;
+- explicit AC/DC power-health status, with upstream UPS/ATS/generator status accepted where available;
+- no mandatory internal battery bank or DC-UPS charger;
+- fixed terminal/branch numbering across Sites.
+
+Per-project engineering shall only verify that the Site load and cable/autonomy requirements fit the
+released S5 envelope. If they fit, the PDU internal design must not change. Larger future loads use
+a defined expansion/higher-power product rather than an ad-hoc project modification.
+
+The PDU-24 is a protected distribution assembly, not merely a power supply.
+
+Baseline structure:
+
+```text
+230 VAC
+   |
+Industrial 24 VDC PSU
+   |
+PDU-24
+   +-- protected branch -> Site Controller(s)
+   +-- protected branch -> SIM field bus(es)
+   +-- protected branch -> COM-CELL
+   +-- protected spare/expansion branch
+```
+
+Each major load group shall have independent protection so that a short circuit in one field
+branch does not remove power from the entire Site.
+
+Detailed design shall define:
+
+- PSU continuous and surge rating;
+- branch fuse/PTC/electronic protection;
+- reverse-polarity protection where applicable;
+- surge/transient protection;
+- terminal blocks;
+- power-good / AC-fail monitoring;
+- enclosure/DIN-rail arrangement;
+- earthing/chassis treatment;
+- upstream UPS/ATS/generator status interface where available.
+
+A nominal **24 V / 5 A** supply is the standard S5 engineering target. Backup duration is a
+customer/Site UPS requirement rather than an internal PDU battery design parameter.
+
+## 9. El Manial first-site hardware allocation
+
+The controlled Pilot scope for El Manial remains seven temperature Sensors:
+
+- Cold Room 01: 2;
+- Anti-chamber 01: 1;
+- Dry Warehouse 01: 4.
+
+The approved modular allocation for detailed design is:
+
+| Area | Interface module | Channels used | Spare |
+| --- | --- | ---: | ---: |
+| Cold Room 01 + Anti-chamber 01 | 1 × SIM-T4 | 3 | 1 |
+| Dry Warehouse 01 | 1 × SIM-T4 | 4 | 0 |
+| **Total** | **2 × SIM-T4** | **7** | **1** |
+
+Site-level equipment baseline:
+
+- 1 × BIO-EMS SC;
+- 2 × BIO-EMS SIM-T4;
+- 1 × BIO-EMS COM-CELL;
+- 1 × BIO-EMS PDU-24;
+- 7 × PT100 3-wire temperature probe assemblies;
+- one protected 24 V field-power system;
+- field cabling, glands, terminations, enclosure/panel hardware and Ethernet accessories sized
+  after the route survey.
+
+El Manial uses one Site Controller in the first Pilot design because seven channels are spread
+across two local SIM-T4 modules and do not justify a second controller solely for channel capacity.
+The Cold Room + Anti-chamber sharing of one SIM-T4 is subject to field-route verification; if the
+actual PT100 routing makes that grouping electrically or mechanically unsuitable, engineering must
+raise a controlled layout revision rather than silently extend the analog runs.
+The architecture permits a second controller later if reliability/risk assessment or field
+layout requires a separate failure domain.
+
+## 10. October scaling direction
+
+The same architecture scales to CPC / 6th of October without changing the fundamental product
+blocks.
+
+The current engineering direction is multiple Site Controllers where useful for fault-domain
+separation, with one independent COM-CELL resource for the Site and local SIM-T2/SIM-T4 modules
+placed according to actual cable routes and environmental constraints.
+
+October final controller/SIM allocation remains a later design exercise after El Manial hardware
+and field-bus behavior are validated.
+
+## 11. Design work packages and order
+
+Detailed hardware design shall proceed in this order:
+
+1. **HW-PWR-01 — 24 V power budget and PDU-24**
+   - load assumptions;
+   - branch architecture;
+   - PSU;
+   - protection;
+   - DC-UPS/autonomy decision.
+
+2. **HW-SIM-01 — SIM-T4 Pilot module design**
+   - first choice: integrated 4-channel PT100 -> RS485/Modbus acquisition module;
+   - bench qualification of accuracy/repeatability/3-wire compensation;
+   - 24 V compatibility;
+   - enclosure/terminal/internal-wiring layout;
+   - versioned SC driver/profile for the selected Modbus register map;
+   - fallback: no-custom-PCB MCU + 4 × MAX31865 + RS485 assembly if the integrated module fails qualification.
+
+3. **HW-SC-01 — Site Controller**
+   - ESP32-S3 implementation;
+   - Ethernet;
+   - dual RS485;
+   - local storage;
+   - watchdog/RTC;
+   - power/protection;
+   - connectors and service interface.
+
+4. **HW-CELL-01 — COM-CELL**
+   - LTE modem selection;
+   - modem power rail;
+   - SIM/antenna;
+   - MCU;
+   - Ethernet/RS485 path;
+   - emergency/failover contract.
+
+5. **HW-MECH-01 — Enclosures, connectors, cable and environmental protection**
+   - IP/environment;
+   - glands;
+   - terminal blocks;
+   - DIN/wall mounting;
+   - labeling;
+   - shielding/earthing.
+
+6. **HW-MNL-BOM-01 — El Manial detailed procurement BOM**
+   - exact manufacturer part numbers;
+   - quantities;
+   - approved alternates;
+   - spares;
+   - local/import sourcing;
+   - unit and total cost.
+
+7. **HW-BENCH-01 — Prototype and qualification**
+   - power;
+   - RTD accuracy/calibration;
+   - RS485 noise/length;
+   - Ethernet;
+   - cellular/SMS;
+   - power-cycle/reconnect;
+   - failure isolation;
+   - endurance.
+
+Procurement freeze occurs only after the applicable electrical/BOM review. Early development
+modules may be purchased separately for prototyping and are not automatically the released
+production BOM.
+
+## 12. Immediate restart point
+
+Start with **HW-PWR-01**.
+
+The first calculation shall define the El Manial power budget for:
+
+- 1 × SC;
+- 2 × SIM-T2;
+- 1 × SIM-T4;
+- 1 × COM-CELL;
+- spare capacity;
+- required DC-UPS autonomy.
+
+That calculation drives the final PSU, branch protection, cable gauge and battery/UPS purchase.
+
+## 13. Design-to-cost principle
+
+Competitive cost is a first-class engineering requirement for BIO-EMS hardware, alongside
+measurement quality, reliability, maintainability and security.
+
+The hardware team shall apply the following rules during detailed design and BOM freeze:
+
+- for the current two Pilot Sites, avoid custom-PCB NRE and revision risk by using qualified ready-made modules;
+- after Pilot validation, prefer one common production PCB and population variants instead of separate boards where practical;
+- avoid ESP32-class compute capability inside simple SIM modules when a lower-cost MCU is sufficient;
+- use one independent COM-CELL gateway per Site where one shared cellular path meets the reliability requirement, rather than duplicating a modem/SIM in every Site Controller;
+- use centralized 24 V field power and local low-voltage conversion instead of multiple distributed adapters;
+- use certified industrial mains PSU/DC-UPS modules for the Pilot rather than designing a low-volume custom mains PSU;
+- select protection, connectors, enclosures and isolation according to the verified environment; do not over-specify every Site as the harshest industrial case;
+- qualify at least one approved alternate for cost-sensitive or supply-risk components where practical;
+- prefer components with reliable Egyptian/regional availability when performance and lifecycle are acceptable;
+- evaluate total installed cost, not PCB BOM alone: enclosure, terminals, glands, cable, installation labor, calibration, spares and service time are part of product cost;
+- avoid saving small BOM cost if it materially increases field failure risk, calibration drift, service visits or downtime;
+- freeze exact cost targets only after the first complete El Manial prototype BOM is priced from real suppliers.
+
+Every detailed work package shall therefore record:
+
+1. functional requirement;
+2. preferred component/design;
+3. lower-cost acceptable alternative where one exists;
+4. technical reason if the higher-cost option is retained;
+5. estimated unit BOM impact;
+6. field-installation/service impact;
+7. decision at BOM freeze.
+
+The objective is not the lowest possible component cost. The objective is the lowest repeatable
+total product cost that still meets BIO-EMS accuracy, reliability, field-service and compliance
+requirements.
+
+## 13. Evidence boundary
+
+This document records an approved architecture and an El Manial design baseline.
+
+It does **not** claim:
+
+- a released PCB;
+- a frozen manufacturer BOM;
+- completed EMC/electrical safety validation;
+- confirmed field cable lengths;
+- purchased/calibrated probes;
+- physical installation;
+- BIO EGYPT commissioning or acceptance.
+
+BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.

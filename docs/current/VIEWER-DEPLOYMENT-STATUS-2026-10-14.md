@@ -1,64 +1,11 @@
 # حالة نشر بوابة العميل — 14 أكتوبر 2026
 
-هذا سجل للأدلة التي تمت مراجعتها في جلسة النشر، وليس شهادة قبول بيلوت BIO EGYPT.
-الإصدار 0.20.0 ثابت؛ تطبيقات المتاجر ليست ضمن الحزمة الحالية.
+Historical record; navigation updated 2026-10-28.
 
-## الروابط
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-- [بوابة الشركة](https://bioems-company.bioems-egypt.workers.dev/)
-- [بوابة العميل — مشاهدة فقط](https://bioems-company.bioems-egypt.workers.dev/viewer/)
-- [دليل التشغيل](CUSTOMER-VIEWER-PORTAL-AR.md)
+- [Current implementation guide](<CLOUD-AND-MOBILE.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-## المنجز والأدلة
-
-| البند | الدليل والحالة |
-| --- | --- |
-| بوابة Viewer وPWA | [#296](https://github.com/elsheikh78/Bio-EMS/pull/296) مدمج؛ commit `97de7a96207e281b7b7b86640053f72248d2ad21` |
-| نسخة D1 الاحتياطية | تصدير قاعدة `bioems-company` نجح قبل الترحيل، والنسخة محفوظة على جهاز المسؤول خارج Git |
-| ترحيل D1 | `0002_viewer.sql` مطبق على القاعدة الحالية؛ Wrangler أفاد بنجاح تنفيذ 8 أوامر |
-| إشعارات Web Push | رفع `VAPID_PUBLIC_KEY` و`VAPID_PRIVATE_KEY` و`VAPID_SUBJECT` نجح؛ القيم السرية غير مدونة هنا |
-| نشر Worker | نجح؛ version ID `03218770-5c4b-476c-b025-eb7508502267`؛ cron كل دقيقة |
-| فحص المنشور | `/viewer/` أعاد HTTP 200؛ `/api/viewer/overview` دون جلسة أعاد HTTP 401 وطلب تسجيل الدخول |
-| واجهة الشركة | مراجعة صور الجلسة أكدت عرض المنيل متصلًا وأكتوبر غير متصل؛ الاتصال ليس إثبات سلامة الحساسات |
-| تحديث محلي أول | صورة `localhost/system-owner` بعد حزمة #296 أكدت ظهور خيار التصدير؛ لم يتم حفظه لأن الرمز القديم غير متاح للمسؤول |
-| إصلاح الرمز المحفوظ | [#297](https://github.com/elsheikh78/Bio-EMS/pull/297) مدمج؛ commit `377ade8b65e8622a60027b541d4ca8c7ff488679`؛ الحفظ لنفس الموقع والعنوان يستخدم الرمز المشفر المحفوظ عند ترك الخانة فارغة |
-| الاختبارات المحلية | بعد #297: 1083 اختبار Backend و356 اختبار واجهة؛ typecheck وlint للملفات المعدلة وبناء الواجهة نجحت. #296: 23 اختبار سحابة وworkerd/D1 محلي وQA متصفح ببيانات صناعية |
-| اختبارات GitHub | [CI](https://github.com/elsheikh78/Bio-EMS/actions/runs/38619388264)، [Windows Setup](https://github.com/elsheikh78/Bio-EMS/actions/runs/38619388403)، [Manufacturer Tools](https://github.com/elsheikh78/Bio-EMS/actions/runs/38619388316): جميعها success |
-| حزمة العميل المسلمة | حزمة #297 من اختبار دمج PR: source `b7c423065d01ffc40f892f0afb22de8849a44296`؛ [artifact](https://github.com/elsheikh78/Bio-EMS/actions/runs/38619388403/artifacts/11922866013). نجاح CI لا يثبت تركيبها على جهاز العميل |
-
-الحزمة المسلمة اسمها `BIO-EMS-Client-Setup-PR297.zip`، وبداخلها
-`BIO-EMS-Setup-0.20.0-x64.exe`. تم فحص سلامة ZIP ومطابقة ملف EXE مع
-`SHA256SUMS.txt`: `d384b95645b727e8d01f4b43ddf659726c5726c16af1053ad5902a69700e4ffa`.
-ملف `build-evidence.json` يسجل بصمة مرحلة التجميع قبل التوقيع؛ بصمة EXE الموقّع
-النهائية هي الموجودة في `SHA256SUMS.txt`. رابط artifact مؤقت بحسب سياسة احتفاظ GitHub.
-
-## المتبقي قبل قبول التشغيل
-
-- التحقق من تركيب حزمة #297 على جهاز المنيل، ثم حفظ خيار التصدير دون إدخال الرمز.
-- التحقق من هوية التثبيت ومطابقة الموقع، ونجاح أول لقطة وظهور الغرف والقراءات الفعلية.
-- التحقق من إنشاء حساب Viewer فعلي وعزل بيانات العملاء في البيئة المنشورة.
-- تجربة دورة إنذار فعلية: اللون والنص والصوت والإسكات والإقرار محليًا والتعافي.
-- اختبار الانقطاع وقدم القراءات، وتصدير موقع أكتوبر عندما يصبح متصلًا ومجهزًا.
-- تثبيت PWA واختبار Push على Android وiPhone فعليين، أثناء الفتح وبعد الإغلاق؛
-  لا يوجد ضمان وصول أو صوت بنسبة 100٪.
-
-## Android وiOS
-
-| التسليم | الحالة |
-| --- | --- |
-| واجهة ويب متجاوبة | منشورة |
-| PWA قابل للإضافة للشاشة الرئيسية | ملفات الواجهة وManifest وService Worker منشورة؛ تأهيل الهواتف الحقيقي متبقٍ |
-| إعداد VAPID بالسحابة | مكتمل؛ وصول إشعارات الهاتف الفعلي غير مقبول بعد |
-| تطبيق Android مستقل وAPK/AAB | مرحلة ثانية، لم يتم بناؤه |
-| تطبيق iOS مستقل وIPA | مرحلة ثانية، لم يتم بناؤه |
-| النشر على Google Play وApp Store | غير منفذ؛ يتطلب حسابات المطور والبناء والتوقيع والمراجعة |
-
-## خطوات المسؤول الحالية
-
-خذ نسخة احتياطية محلية، ثم فك الحزمة وشغّل ملف EXE المعتاد لتحديث التثبيت الحالي.
-افتح System Owner على جهاز الموقع، وحدّث الصفحة بـCtrl + F5. احتفظ بعنوان الشركة
-وكود الموقع، وفعّل تصدير القراءات، واترك الرمز فارغًا ثم احفظ. لا تُعد إنشاء الربط
-لحل غياب الرمز، ولا تغيّر VAPID أو مفاتيح الشركة القائمة لهذا الغرض.
-
-راجع رسالة آخر مزامنة ووقت القراءات في Viewer قبل اعتماد الموقع. دوّن الأدلة الجديدة
-في تحديث لاحق لهذا السجل؛ لا تحوّل البنود المتبقية إلى نجاح اعتمادًا على CI وحده.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

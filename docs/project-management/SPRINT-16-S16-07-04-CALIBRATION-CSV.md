@@ -1,40 +1,11 @@
 # S16-07-04 — Calibration History CSV Export
 
-## Status
+Historical record; navigation updated 2026-10-28.
 
-**IMPLEMENTED / VERIFICATION IN PROGRESS / PRODUCT REVIEW PENDING**
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/SPRINT-16-S16-07-04-CALIBRATION-CSV.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-## Scope
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-This slice adds the first approved export capability to the Reports Center:
-
-- format: CSV only;
-- family: `CALIBRATION-HISTORY` only;
-- endpoint: `POST /api/v1/reports/exports`;
-- permission: `REPORT_EXPORT`;
-- generation: synchronous within the bounded 366-day record-report limit;
-- source: the same backend-owned canonical result used by Preview.
-
-## CSV contract
-
-- UTF-8 with BOM for the approved Windows/Excel Pilot environment;
-- exported CSV files are expected to open directly in Microsoft Excel with fields distributed into separate columns without requiring manual delimiter import;
-- Excel direct-open compatibility is provided via a leading `sep=,` directive, followed by comma-delimited RFC 4180-style quoted data and CRLF line endings;
-- stable English machine column identifiers;
-- ISO 8601 timestamps;
-- report ID, contract version, generated time, source, range, time zone, and generating
-  User repeated as companion columns;
-- Sensor, Site, Room, result, certificate, note, offset, and performer evidence;
-- spreadsheet formula-injection protection for text beginning with `=`, `+`, `-`, `@`,
-  tab, or carriage return;
-- safe normalized filename containing report family, dates, and Report ID.
-
-Numeric values remain numeric text and are not prefixed by formula protection.
-
-## Capability boundary
-
-The export renderer does not query SQLite and does not recalculate report evidence. It
-serializes the canonical Calibration History result created by the existing service.
-
-PDF, asynchronous export lifecycle, retained files, sharing, and other report families
-remain outside this slice. BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

@@ -1,5 +1,8 @@
 # BIO-EMS Signed BIO EGYPT Pilot Setup — Clean-Machine Test
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/BUILD-RELEASE-AND-RECOVERY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/installer/windows/INTERNAL-SETUP-TESTING.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 This artifact is for controlled qualification on a disposable clean Windows 10/11
 x64 computer or virtual machine. It has an internal pilot Authenticode signature,
 not a publicly trusted production code-signing signature.

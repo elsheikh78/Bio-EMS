@@ -1,201 +1,27 @@
 # BIO-EMS
 
-## Documentation checkpoint — 26 October 2026
+Environmental monitoring platform with local operations, controlled installation/provisioning, a separate company cloud and customer Viewer, two mobile applications, ESP32-S3/Nano firmware and a standalone hardware qualification tool.
 
-[Current project checkpoint and staged hardware testing](docs/current/PROJECT-CHECKPOINT-2026-10-26.md) records merged Tester 0.3.0 QC flashing, open #309 / proposed integrated Tester 0.4.0, merged native customer monitoring, version boundaries and remaining acceptance. `PROJECT_STATE.md` governs current status. Older dated checkpoints below retain historical context; this update does not rebuild external manuals or release packages.
+Product source version: **0.20.0**. Published tagged release: **v0.20.0**. Current source, candidate/merged distinctions, security findings and acceptance boundaries are maintained only in [PROJECT_STATE.md](PROJECT_STATE.md).
 
-Company mobile app: [Arabic installation and operation](docs/current/COMPANY-MOBILE-APP-AR.md) · [Android/iOS source and build guide](company-mobile/README.md). This separate company administration app opens the existing portal in a restricted WebView. Android QA operation was reported successful by the user on 22 October 2026; iOS source/export is prepared, with signed device distribution pending. See [Project State](PROJECT_STATE.md) for evidence and remaining acceptance.
+## Start here
 
-Customer Viewer cloud/PWA deployed on 14 October 2026: [open Viewer portal](https://bioems-company.bioems-egypt.workers.dev/viewer/) · [Arabic operations](docs/current/CUSTOMER-VIEWER-PORTAL-AR.md) · [deployment evidence and remaining acceptance](docs/current/VIEWER-DEPLOYMENT-STATUS-2026-10-14.md). PRs #296 and #297 are merged. Latest readings require explicit local export; live telemetry and real Android/iOS Push acceptance remain pending. Customer Viewer store publication remains pending; the separate company administration app is documented above.
-
-Company cloud pilot candidate: [Arabic deployment/connection guide](docs/current/COMPANY-CLOUD-PILOT-AR.md) and [Cloudflare source package](company-cloud/README.md). Deployment and installed-client qualification remain separate from source checks.
-
-System Owner can copy or export the Setup-authoritative customer/site and host installation identity from **Installation configuration** for company customer records. See [installation record instructions](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md#customer-installation-record).
-
-Arabic operations: [customer installation identity and update signing](docs/current/INSTALLATION-IDENTITY-AND-UPDATE-SIGNING-AR.md), including PR #290 validation and main Windows build provenance.
-
-Customer ADMIN offline recovery: [Arabic request/permit operating guide](docs/current/OFFLINE-ADMIN-PASSWORD-RECOVERY-AR.md). Client Setup automatically installs the company-approved public recovery trust when supplied by the company build; customers use only Login request/import/reset controls. Company key generation stays in Manufacturer Tools.
-
-## Documentation navigation
-
-- [Current documentation / التوثيق الحالي](docs/current/README.md)
-- [Historical archive / التوثيق التاريخي](docs/archive/README.md)
-- [Complete documentation index / الفهرس الكامل](docs/README.md)
-
-## Documentation baseline — 10 October 2026
-
-Current integration checkpoint: `main@70108f0` (PR #290). See [Project State](PROJECT_STATE.md) for status and evidence boundaries, [Pilot build notes](docs/current/PILOT-BUILD-NOTES-2026-10-10.md) for exact artifacts, and [network/update operations](docs/current/PILOT-NETWORK-AND-CLIENT-UPDATES.md) for Wi-Fi/Ethernet commissioning and customer updates. Physical hardware and site acceptance remain open.
-
-Enterprise Environmental Monitoring System for regulated and operational environments.
-
-**Current source version:** `0.20.0`  
-**Latest published source release:** `v0.20.0`  
-**Current phase:** Pilot stabilization and qualification
-
-## Read these first
-
-| Question | Authority |
+| Need | Document |
 | --- | --- |
-| Where are all documents and their evidence boundaries? | [Documentation index](docs/README.md) |
-| Where is the project now? | `PROJECT_STATE.md` |
-| What do we execute next? | `IMPLEMENTATION_PLAN.md` |
-| ماذا يجب على مالك المنصة أن يفعل بنفسه الآن؟ | `docs/project-management/NEXT-OPERATOR-ACTIONS-AR-2026-09-16.md` |
-| What did the 11 September complete audit conclude? | `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md` |
-| What is the current Pilot scope? | `PILOT_SCOPE.md` |
-| What are the active project risks? | `RISK_REGISTER.md` |
-| What controls Communication Channel Administration? | `docs/project-management/COMMUNICATION-CHANNEL-ADMIN-CONFIG-WORK-PACKAGE-2026-09-11.md` |
-| What controls the Windows installer? | `docs/deployment/FULL-OFFLINE-WINDOWS-INSTALLER-PLAN.md` |
-| What controls future device trust? | `docs/security/device-registration.md` and `docs/security/activation-workflow.md` |
-| What is the current 2G hardware bench candidate and its open decision? | `docs/hardware/MAIN-16-2G-SIM-D4-REV-A-BENCH-BASELINE-2026-09-28.md` |
+| Current state and evidence limits | [Project state](PROJECT_STATE.md) |
+| All documentation and preserved history | [Documentation index](docs/README.md) |
+| 28 October code/documentation audit | [Audit report](docs/audit/2026-10-28/README.md) |
+| System architecture and data flow | [Software architecture](docs/current/SOFTWARE-ARCHITECTURE.md) |
+| Run/build/test source | [Developer guide](docs/current/DEVELOPER-AND-TESTING.md) |
+| Platform operator responsibilities | [Platform operations](docs/current/PLATFORM-OPERATIONS.md) |
+| Standalone hardware tests and firmware upload | [Hardware guide](docs/current/HARDWARE-AND-FIRMWARE.md) |
+| Cloud, Viewer and mobile applications | [Cloud/mobile guide](docs/current/CLOUD-AND-MOBILE.md) |
+| Security boundaries and recovery | [Security guide](docs/current/SECURITY-AND-IDENTITY.md) |
+| Build, deployment and restore | [Release/recovery guide](docs/current/BUILD-RELEASE-AND-RECOVERY.md) |
+| Qualification and field acceptance | [Acceptance guide](docs/current/QUALIFICATION-AND-ACCEPTANCE.md) |
 
-Historical Sprint/P/BF/UX closure documents remain evidence ledgers. If a historical document conflicts with current status, `PROJECT_STATE.md` and `IMPLEMENTATION_PLAN.md` control.
+## Repository map
 
-## Current position
+`backend/`: Express/TypeScript, SQLite, InfluxDB integration, MQTT and durable operational services. `frontend/`: React/MUI local and System Owner workspaces. `company-cloud/`: Worker/D1 company administration, remote jobs and customer Viewer. `company-mobile/`: restricted company WebView shell. `mobile/`: separate customer monitoring app. `firmware/`: Main and Nano operating source. `tools/hardware-tester/`: offline bench tool. `installer/windows/`: governed Windows setup/update/restore scripts.
 
-The core source platform is mature. The following are historical verification results, not test counts from the 10 October build:
-
-- Backend typecheck/build/lint/format passed; 137 test files / 965 tests passed on the current Windows verification baseline;
-- Frontend typecheck/lint/format/build passed; 56 test files / 311 tests passed on the current verification baseline.
-
-BIO EGYPT remains **NOT COMMISSIONED / NOT ACCEPTED**.
-
-## Current execution order
-
-1. Keep `main` as the authoritative integration line; verify the merged Installation Builder and Flash & Bind flow on physical hardware.
-2. Preserve the passed 23 September SYSTEM_OWNER Pilot-host evidence and continue multi-machine qualification.
-3. Verify the merged Communication Channels configuration and live test actions; complete COM-07 provider/hardware acceptance.
-4. Continue qualification on multiple clean Windows computers, including Repair/Restore evidence.
-5. Execute hardware bench qualification.
-6. Close required SMS/GSM and notification failover evidence.
-7. Install and commission BIO EGYPT Pilot.
-8. Stabilize defects from real operation.
-9. Implement deferred production-grade Device Trust/commercial protection.
-10. Complete Production key ceremony/signing, manuals, presentation and final Production Installer release.
-
-The production Device PKI/mTLS/Secure Boot/host-transfer architecture is approved, but final implementation is intentionally deferred until Pilot Setup and hardware are stable.
-
-## Platform capabilities
-
-BIO-EMS currently includes:
-
-- TypeScript/Express backend.
-- React/TypeScript/Vite frontend.
-- SQLite operational/configuration persistence.
-- InfluxDB telemetry history.
-- MQTT telemetry ingestion and recovery semantics.
-- Alarm thresholds, persistence delays and lifecycle evidence.
-- Dashboard, Monitored Areas and Live Monitoring Wall.
-- Arabic/English with RTL/LTR.
-- JWT/RBAC and isolated SYSTEM_OWNER trust boundary.
-- Audit trail and User Management.
-- Sensor calibration workflows.
-- Notification recipients and escalation policies.
-- Email, Telegram, WhatsApp source providers and SMS failover/provider contracts.
-- Durable notification delivery jobs and operations.
-- Reporting Center with Preview/CSV/PDF.
-- Installation provisioning and commissioning workflows.
-- Existing licensing/anti-copy source controls.
-- Full offline Windows installer source/build pipeline.
-
-## Notification evidence
-
-- Email live delivery: passed.
-- Telegram live delivery: passed.
-- Critical Alarm -> Email + Telegram end-to-end path: passed.
-- Meta WhatsApp live acceptance: open and externally blocked.
-- SMS/GSM live evidence: open.
-- Telegram is the approved interim online Pilot channel while WhatsApp remains blocked.
-
-## Communication Channels configuration
-
-Merged source work (integrated through PR #239) provides:
-
-`Configuration -> Communication Channels`
-
-SYSTEM_OWNER and ADMIN can manage Email, Telegram, WhatsApp and SMS/GSM provider connection settings, secure secrets, test actions and channel failover without rebuilding BIO-EMS or editing PowerShell/deployment files.
-
-## Windows Setup status
-
-Installer source is materially advanced:
-
-- single-EXE internal artifact pipeline;
-- internal Pilot Authenticode signing;
-- one-click elevated launcher;
-- automatic install diagnostics;
-- partial-install/clean-device repair fix.
-
-Current `main` includes the installer/security/backup integration merged through PR #239 plus the Windows portability correction from PR #240. PR #240 CI and Internal Windows Setup both passed, and a separate clean-install exercise verified all three BIO-EMS services and customer ADMIN login.
-
-The PR #288 main build additionally passed install/health, backup/restore and the real client-update Repair round trip; see the build notes above. Repeat physical qualification is still required:
-
-- HTTPS/API/frontend health regression on customer hosts where affected;
-- reboot recovery;
-- Repair/Upgrade/rollback;
-- retained-data Uninstall;
-- repeatability on more than one clean Windows PC;
-- final production signing/publication decision.
-
-## Architecture boundary
-
-The controlled domain remains:
-
-`Site -> Monitored Area (Room) -> Sensor`
-
-Do not create a second competing Monitored Area backend domain.
-
-## Version / release rule
-
-`VERSION`, backend package version and `release-manifest.json` remain at `0.20.0` until an explicit next-release decision.
-
-No documentation merge by itself creates a new release or production-ready claim.
-
-## Evidence boundary
-
-Source/CI completion is not physical or customer acceptance.
-
-Separate evidence is still required for:
-
-- installer qualification;
-- hardware qualification;
-- SMS/GSM live failover;
-- physical installation;
-- calibration;
-- commissioning;
-- customer UAT/acceptance;
-- deferred production-grade security/protection;
-- commercial Production Installer release.
-
-
-## Historical 19 September 2026 integration checkpoint
-
-- Active integration authority: draft PR #239 / `feat/dep-br-backup-restore`; it contains the stacked SEC-OWNER, COM, AUTH-RECOVERY and DEP-BR work carried forward from PRs #233, #235 and #237.
-- Manufacturer owner key `owner-primary-2026` was verified directly against the encrypted offline private key; approved SPKI DER SHA-256 is `495ae8e780a32b671518f06a371612b884327e899b67ca0483a21813be50fb81`.
-- Automated fingerprint pinning, CI and the prior Internal Windows Setup gate passed. Physical commissioning remains open.
-- Physical Windows acceptance on 19 September confirmed services and HTTPS health and exposed a stale browser/frontend shell at bare `/login`; cache-busted navigation loaded the current UI and ADMIN credentials succeeded. PR #239 now carries a cache revalidation fix which must pass CI/Windows and then be physically retested without cache-busting.
-- Do not merge PR #239 until physical SEC-OWNER commissioning/MFA, Repair preservation, Backup/Restore historical telemetry and remaining DEP-BR acceptance are complete.
-- Older stacked PRs #233/#235/#237 are historical integration layers; reconcile/close them only after confirming #239 remains a strict descendant and is the selected merge vehicle. PR #138 is obsolete/conflicted documentation and should not be merged as-is.
-
-## Historical 16 September 2026 status note
-
-- `main`: `653a573` (customer ADMIN Setup provisioning merged via PR #231).
-- SEC-OWNER-01: implemented on PR #233; Production acceptance/merge remains gated by the real manufacturer key ceremony and offline commissioning evidence.
-- Active integration: draft PR #235 / `feat/com-01-06-communication-channels`; COM-01 through COM-06 source implemented and automated Windows Setup gate passed; COM-07 live acceptance remains open.
-- Product version remains `0.20.0`; this documentation sync does not create a new release.
-
-Company portal customer removal and five-event activity pagination/date-range deletion: [Arabic operating guide](docs/current/COMPANY-CLOUD-PILOT-AR.md). Source update dated 15 October; cloud redeployment required.
-
-
-## 18 October 2026 — SD replay and central battery
-
-Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
-See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
-Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.
-
-## Native customer mobile app (Android / iOS)
-
-The read-only customer monitoring client is in [`mobile/`](mobile/README.md). It shares existing viewer accounts, supports Arabic/English and requires the matching company-cloud mobile API. Signed APK/IPA builds and physical-device acceptance remain separate release steps; native background push is not enabled in version 0.1.0.
-
-
-## Standalone hardware qualification 28 October 2026
-
-[Hardware testing moved to standalone Tester 0.6.0](docs/current/HARDWARE-TESTING-STANDALONE-2026-10-28.md).
+Read [PROJECT_RULES.md](PROJECT_RULES.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before changing behavior. Builds do not establish field acceptance. Critical/High dependency advisories remain open; use the audit findings for remediation planning.

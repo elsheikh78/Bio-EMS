@@ -1,5 +1,8 @@
 # BIO-EMS HW-519 RS485 bench interface contract
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/HW-519-RS485-BENCH-CONTRACT-2026-10-06.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Date:** 2026-10-06  
 **Status:** controlled bench wiring contract; not field hardware release  
 **Applies to:** MAIN-16-2G / SIM-D4 breadboard qualification

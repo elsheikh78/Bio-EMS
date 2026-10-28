@@ -76,3 +76,7 @@ mobile/.env
 *.p12
 *.mobileprovision
 mobile/qa-output/
+
+# Python verification/runtime cache
+__pycache__/
+*.py[cod]

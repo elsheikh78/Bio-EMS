@@ -1,5 +1,8 @@
 # Company pilot license synchronization
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<current/SECURITY-AND-IDENTITY.md>) describes the reviewed source baseline; [Project state](<../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<archive/2026-10-28-pre-audit/docs/COMPANY-PILOT-LICENSE-SYNC.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 Company license records are returned on authenticated agent heartbeats (approximately once per minute), scoped to the enrolled company site. The client validates the response and stores the latest snapshot locally. Renewals replace the snapshot; an empty list clears old records. Network failures preserve the last successful snapshot and its timestamp. Changing company origin/site or disabling the connection clears the snapshot. A generation check prevents an old request from repopulating it after disconnect or reconfiguration.
 
 System Owner > Licenses & installations displays these records under Company licenses — pilot tracking, with their identifiers, status, start/expiry dates, sensor/device limits, and last synchronization time. These records are read-only and separate from signed activation evidence. They do not enable licensing enforcement or change local monitoring.

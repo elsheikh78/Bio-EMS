@@ -1,5 +1,8 @@
 # SD offline telemetry replay — controller pilot.6
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/SD-OFFLINE-REPLAY.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 Source implementation added 18 October 2026. Physical card, power-loss and UPS qualification remain mandatory.
 
 The ESP32-S3 Main collects up to four SIM-D4 modules. A timestamped sample that fails HTTPS delivery is stored on its FAT SD card. A checksum-protected record includes its original binding and acquisition timestamp; credentials are never written to the card. After connection returns, at most eight records are replayed per polling cycle as `REPLAY`. A record is removed only after HTTP 202 and successful local acknowledgement. Corrupt records, failed deletions or different installation bindings stop replay rather than silently discard history. Current live samples are attempted before replay.

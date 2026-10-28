@@ -1,0 +1,381 @@
+# BIO-EMS Implementation Plan
+
+## Current execution order — 26 October 2026
+
+This sequence supersedes older dated restart lists below; those remain historical context.
+
+1. Use [the current checkpoint](docs/current/PROJECT-CHECKPOINT-2026-10-26.md) and record the exact package source/hash. #308 is merged; #309 integrated Tester 0.4.0 is open at review with successful CI and requires its own integration/release decision.
+2. Execute isolated ESP32-S3/one-probe QC using USB supply and Tester QC flashing; then isolated Nano/four-probe QC. Record approved limits, raw data, faults and signed PDF results.
+3. Restore governed pilot.7/bench.2 operating firmware. With the integrated candidate, test Main USB → RS485 → Nano/four probes; tab 5 does not restore operational images. Do not use QC firmware for this stage.
+4. Qualify additional populated modules, network/SD/RTC, explicit 2G SMS receipt, power/fault/endurance and the central battery under the full intended load. Complete commissioning/UAT only after these gates and Windows/restore qualification.
+5. Verify the matching Worker deployment for the merged native customer API, then record Android/iOS device behavior and signed distribution separately. Retain company app Android evidence; complete its remaining feature/iOS gates.
+6. Revise external Word manuals and distributed packages against their actual current contents before calling those artifacts updated. Documentation alone does not replace or rebuild them.
+
+## Company mobile follow-up — 22 October 2026
+
+1. Integrate PR #307 and its operating/build documentation after successful checks; preserve the tested Android QA artifact identity and user-reported operation in `PROJECT_STATE.md`.
+2. Record Android results for language switching, clients/sites/licenses, selected-site System Owner and MFA, navigation, logout/expiry, offline retry and file handling. Use disposable records for mutations.
+3. Configure the company Apple Developer team and signing/bundle identity, then perform an actual Xcode/signed iOS build and physical iPhone acceptance before TestFlight distribution.
+4. Establish stable production signing and store/distribution arrangements before treating the development-certificate QA app as a commercial release. Customer monitoring and hardware commissioning remain independent workstreams.
+
+See [company mobile operations](docs/current/COMPANY-MOBILE-APP-AR.md). This follow-up does not require a Worker deployment, migration or Windows/firmware package update.
+
+## Company cloud pilot — 11 October 2026
+
+1. Validate the separate Workers/D1 source and opt-in client connection candidate.
+2. Create the company-owned Cloudflare account, D1 database and runtime secrets;
+   deploy to the actual workers.dev address and test company session protection.
+3. Build/qualify Client Setup from the same source commit before enabling its
+   System Owner company connection UI on a pilot Windows machine.
+4. Enroll one installation, verify real owner MFA and operations, disconnected
+   local monitoring, revoked enrollment and indeterminate command handling.
+5. Exercise monitor-only license expiry/renewal; monitor free-tier request/row
+   usage. Do not enable enforcement or claim signed certificate rollout.
+
+See [company cloud operating guide](docs/current/COMPANY-CLOUD-PILOT-AR.md).
+This sequence adds company management without replacing hardware commissioning.
+
+## Immediate execution order — 10 October 2026
+
+1. Install the verified `main@98cea57` Pilot Client Setup using the company launcher;
+   use **Reinstall / Repair** on existing installations and verify health/data afterward.
+2. Qualify new controller provisioning with matching `0.1.0-pilot.5` firmware on
+   physical Wi-Fi and W5500 DHCP hardware using the documented pin assignment.
+3. Exercise the ADMIN file update page on a separate Pilot PC after trusting the
+   company-supplied build certificate; confirm terminal status and retained identity/data.
+4. Continue SIM-D4/RS485, power, fault and endurance tests and real 2G fallback.
+5. Continue multi-machine qualification and field commissioning/UAT.
+6. Prepare stable production signing and a company HTTPS update endpoint before
+   enabling internet updates. Final device protection remains deferred until Pilot stability.
+
+The earlier dated sequence below is historical context; this checkpoint controls the
+next actions for the network/client-update work. No new product version is created.
+
+
+## Historical execution order — 30 September 2026
+
+1. Verify the merged Builder and Flash & Bind flow on the installed Windows host using the exact matching Setup/firmware commit and manifests.
+2. Reconcile ADMIN topology policy and threshold authoring requirements against the current UI/API; do not infer missing controls from schema fields.
+3. Freeze the 1–4 SIM × 4 channels contract, populated-module behavior, Modbus address/register map and main/SIM firmware versions; implement and test the missing integration before claiming 16-sensor support.
+4. Compare the DS18B20 breadboard candidate with the PT100 field baseline; resolve El Manial positions and Egypt-local sourcing before site procurement.
+5. Execute single-channel, four-channel and four-SIM bench tests, power/cable/fault/endurance tests and real 2G SMS fallback.
+6. Continue multi-machine Windows and Backup/Restore qualification, then field commissioning/UAT.
+7. Complete deferred production protection, key ceremony and final user/owner manuals after Pilot stability.
+
+The dated plan below is retained as context; this sequence controls the restart point.
+
+**Plan date:** 10 October 2026
+**Master audit:** `docs/archive/project-management/COMPLETE-AUDIT-MASTER-EXECUTION-PLAN-2026-09-11.md`
+
+## Historical restart point — 24 September 2026
+
+1. SYSTEM_OWNER Pilot-host commissioning/MFA/login verification is **COMPLETE**.
+2. ESP32-S3 Pilot pairing v1 source implementation is **MERGED / CI GREEN / FIRMWARE BUILD GREEN**; physical pairing remains pending.
+3. Modular Pilot hardware architecture is **APPROVED FOR DETAILED DESIGN**: SC + SIM-T2 + SIM-T4 + independent COM-CELL + PDU-24; 24 VDC field backbone; RS485 Sensor Interface bus; PT100 3-wire measurement baseline.
+4. El Manial is the first detailed hardware/procurement target: 1 × SC, 2 × SIM-T4, 1 × COM-CELL, 1 × PDU-24 and 7 × PT100 probes. The two Pilot Sites use no custom PCB; qualified ready-made modules are assembled into serviceable field enclosures.
+5. HW-PWR-01 architecture is established around the standard PDU-24-S5 and upstream customer/site UPS; complete the executable PDU Rev.A component/terminal design while HW-SIM-01 proceeds.
+6. Execute HW-SIM-01 now with the Egypt-local Rev.A candidate: first confirm the local AD7793 listing is an assembled usable module/breakout, then qualify one 3-wire PT100 channel before building the four-independent-AD7793 SIM-T4. Continue checking the Egyptian industrial market for an integrated 4-channel PT100/RS485 module that could beat Rev.A on total cost without reducing measurement quality. Then continue HW-SC-01 -> HW-CELL-01 -> HW-MECH-01 -> HW-MNL-BOM-01 -> HW-BENCH-01.
+7. In parallel, continue physical Windows qualification and COM-07 where real provider/SIM evidence is available.
+8. BIO EGYPT installation/UAT remains after bench qualification; final Device PKI/mTLS/Secure Boot/Flash Encryption remains deferred until Pilot hardware/software stability.
+
+Detailed hardware authority:
+`docs/hardware/BIO-EMS-MODULAR-HARDWARE-ARCHITECTURE-2026-09-24.md`
+
+El Manial procurement/design authority:
+`docs/pilot/bio-egypt/EL-MANIAL-HARDWARE-DESIGN-PROCUREMENT-BASELINE-2026-09-24.md`
+
+## Objective
+
+Move BIO-EMS from mature source software to a repeatable, field-tested BIO EGYPT Pilot, then implement the final commercial protection layer only after the Pilot software/hardware path is stable.
+
+## Phase 0 — Current security / integration gates
+
+- SEC-OWNER source is integrated into `main`; the physical Pilot-host commissioning -> MFA -> protected console path passed on 23 September 2026 after fixes through PR #251. Production key ceremony/security acceptance remains a separate external gate.
+- Customer ADMIN provisioning during Setup is merged and has been validated in a clean Pilot install.
+- COM-01 through COM-06 are integrated into `main`; COM-07 live provider/hardware acceptance remains open.
+- Do not describe SYSTEM_OWNER Production acceptance, COM-07, or BIO EGYPT commissioning as complete until their external evidence gates close.
+
+## Phase A — Communication Channel Administration
+
+### COM-01 — Secure configuration domain
+
+Status: **MERGED TO MAIN / COM-07 ACCEPTANCE PENDING**
+
+- define channel/provider configuration model;
+- protected/encrypted secret storage;
+- redacted read model;
+- migrations/repository/service;
+- no-secret logging and backup boundary.
+
+### COM-02 — RBAC API
+
+- SYSTEM_OWNER + ADMIN mutation authorization;
+- redacted GET;
+- update/enable/disable endpoints;
+- channel-order/failover contract;
+- negative RBAC and secret disclosure tests.
+
+### COM-03 — Provider runtime integration
+
+- Email managed config;
+- Telegram managed config;
+- WhatsApp managed config;
+- SMS/GSM transport abstraction;
+- safe runtime reload or controlled restart;
+- migration compatibility from existing environment configuration.
+
+### COM-04 — Frontend
+
+- `Configuration -> Communication Channels`;
+- Email/Telegram/WhatsApp/SMS-GSM panels;
+- masked secrets;
+- Save/Cancel/validation;
+- Arabic/English;
+- RTL/LTR;
+- light/dark/responsive.
+
+### COM-05 — Test actions
+
+- Test Email;
+- Test Telegram;
+- Test WhatsApp;
+- Test SMS;
+- secret-safe diagnostics/audit.
+
+### COM-06 — Failover / regression
+
+- ordered channel priority/fallback;
+- recipient/escalation non-regression;
+- durable delivery integration;
+- reboot persistence;
+- full Backend/Frontend quality gates.
+
+### COM-07 — Pilot acceptance
+
+Executed only after the software is installed on the Pilot target and real provider evidence is available.
+
+## Phase B — Fresh Pilot Setup build
+
+Current automated Pilot Setup evidence is integrated on `main`. PR #240 CI and Internal Windows Setup passed after the integration merge. For each controlled Pilot artifact:
+
+1. Build from authoritative `main`.
+2. Generate controlled internal signed Pilot Setup.
+3. Record artifact SHA-256 and certificate fingerprint.
+4. Package one-click launcher and installation diagnostics.
+5. Keep artifact clearly labeled internal/Pilot, not Production.
+
+## Phase C — Installer qualification
+
+Run on clean isolated Windows 10/11 x64 computers.
+
+### IQ-01 Fresh Install
+
+Verify:
+- Setup launches normally;
+- BIOEMS-MQTT installed/running;
+- BIOEMS-InfluxDB installed/running;
+- BIOEMS-Backend installed/running;
+- HTTPS application opens;
+- API health passes;
+- persistent data/config/log paths are correct.
+
+### IQ-02 Reboot recovery
+
+- automatic services;
+- application health;
+- retained configuration;
+- no manual PowerShell requirement for normal use.
+
+### IQ-03 Repair / Upgrade / rollback
+
+- verified backup;
+- controlled service lifecycle;
+- health-gated result;
+- rollback on failure;
+- no data loss.
+
+### IQ-04 Uninstall
+
+- program/services removed as designed;
+- retained customer data/evidence preserved according to policy.
+
+### IQ-05 Repeatability
+
+Repeat on at least one additional clean PC to detect machine-specific assumptions.
+
+## Phase D0 — ESP32-S3 Pilot pairing/bootstrap foundation
+
+Status: **MERGED TO MAIN / PHYSICAL PAIRING PENDING**
+
+Source baseline merged in PR #254:
+
+- common ESP32-S3 firmware `0.1.0-pilot.4`; SIM-D4 Nano bench firmware `0.1.0-bench.2`;
+- protocol `1.3`;
+- binding schema `1`;
+- hardware UID acquisition;
+- SYSTEM_OWNER 12-digit single-use pairing code;
+- 10-minute pairing expiry;
+- hash-only pairing-code persistence;
+- claim rate limiting and replay rejection;
+- stable `platform_binding_id`;
+- logical installation -> Device -> hardware UID binding;
+- firmware/protocol compatibility checks;
+- binding-aware backend telemetry/heartbeat rejection policy;
+- CI-built flashable ESP32-S3 artifact;
+- Windows Setup migration compatibility.
+
+This package is intentionally pre-PKI. It does not close DEV-TRUST, and the current firmware does
+not yet implement the complete MQTT publisher, RS485 sensor acquisition, offline replay, mTLS,
+per-device certificates, Secure Boot or Flash Encryption.
+
+Next gate: **physical board flash + first real pairing + reboot/NVS persistence evidence.**
+
+## Phase D1 — Modular hardware detailed design
+
+Status: **ARCHITECTURE APPROVED / DETAILED DESIGN OPEN**
+
+Approved blocks:
+
+- `BIO-EMS SC` — ESP32-S3 Site Controller, Ethernet primary, dual RS485;
+- `BIO-EMS SIM-T2` — 2 × PT100 RTD channels;
+- `BIO-EMS SIM-T4` — 4 × PT100 RTD channels;
+- `BIO-EMS COM-CELL` — independent LTE/SMS gateway;
+- `BIO-EMS PDU-24` — protected 24 VDC power/distribution.
+
+Power/field baseline:
+
+- 24 VDC field backbone;
+- target device input range 18–30 VDC;
+- local 5 V/3.3 V conversion;
+- RS485 field bus;
+- wired Ethernet primary Site network;
+- future DC-UPS/battery support.
+
+Execution order:
+
+1. HW-PWR-01 — El Manial 24 V budget/PDU;
+2. HW-SIM-01 — common T2/T4 electronics/PCB;
+3. HW-SC-01 — Site Controller electronics;
+4. HW-CELL-01 — cellular gateway;
+5. HW-MECH-01 — enclosures/connectors/cabling/earthing;
+6. HW-MNL-BOM-01 — exact El Manial procurement BOM;
+7. HW-BENCH-01 — integrated bench qualification.
+
+El Manial first-site allocation:
+
+- 1 × SC;
+- 2 × SIM-T2;
+- 1 × SIM-T4;
+- 1 × COM-CELL;
+- 1 × PDU-24;
+- 7 × PT100 probes.
+
+No electronic part number or field quantity beyond the approved architecture quantities is frozen
+until the relevant detailed-design gate closes.
+
+## Phase D — Hardware bench qualification
+
+1. Freeze Pilot BOM.
+2. Assemble Site Controller/Pilot hardware.
+3. Sensor accuracy and calibration checks.
+4. Wiring/protection checks.
+5. Controller registration/mapping.
+6. Real MQTT telemetry.
+7. disconnect/reconnect and buffering/replay.
+8. power-cycle recovery.
+9. real Alarm threshold challenge.
+10. Email/Telegram notification challenge.
+11. SMS/GSM fallback challenge.
+12. endurance gate where applicable.
+
+## Phase E — BIO EGYPT field Pilot
+
+1. install Pilot platform at approved Site computer;
+2. install/map controller and Sensors;
+3. record calibration;
+4. verify all areas/readings;
+5. challenge warning/critical Alarms;
+6. verify recipient/escalation routes;
+7. network/power/reboot tests;
+8. technical Commissioning;
+9. customer ADMIN UAT/acceptance;
+10. close Pilot defects.
+
+Pilot remains **NOT COMMISSIONED / NOT ACCEPTED** until this evidence exists.
+
+## Phase F — Pilot stabilization
+
+- collect real defects;
+- prioritize Severity 1/2;
+- implement/retest;
+- rerun installer/hardware regressions where affected;
+- freeze Pilot-stable baseline.
+
+## Phase G — Deferred commercial protection
+
+Only after Phase F. The merged Pilot pairing/bootstrap foundation from PR #254 may be retained as
+the logical binding layer, but it does not replace the Production trust packages below:
+
+- DEV-TRUST-01 PKI/key-management hierarchy;
+- DEV-TRUST-02 device lifecycle registry;
+- DEV-TRUST-03 protected ESP32 key generation/storage;
+- DEV-TRUST-04 MQTT mTLS/topic authorization;
+- DEV-TRUST-05 secure provisioning;
+- DEV-TRUST-06 revocation/rotation/replacement;
+- DEV-TRUST-07 signed firmware/Secure Boot/Flash Encryption;
+- DEV-TRUST-08 clone detection/security audit;
+- DEV-TRUST-09 offline trust/revocation;
+- DEV-TRUST-10 PC migration integration;
+- DEV-TRUST-11 negative/recovery/field acceptance.
+
+Existing LIC-01 through LIC-13 source work is retained. The deferred phase completes the production-grade device trust/host replacement/commercial protection architecture rather than forcing that moving target into early Pilot-machine testing.
+
+## Phase H — Commercial production release
+
+- final supported Windows matrix;
+- commercial/public Authenticode decision;
+- final Production Installer qualification;
+- licensing/security qualification;
+- backup/restore/DR drills;
+- User Instruction Manual;
+- SYSTEM_OWNER Instruction Manual;
+- commissioning/service documentation;
+- professional product presentation/video;
+- version/tag/release publication.
+
+## Parallel non-blocking work
+
+- Meta WhatsApp onboarding may continue in parallel.
+- Telegram remains the interim online Pilot channel.
+- Documentation/manual content can be prepared incrementally but final screenshots/instructions wait for stable Pilot UI/hardware.
+- Hardware procurement can proceed while COM source implementation is underway if BOM items are already approved.
+
+## Immediate execution order — 16 September 2026
+
+1. Preserve current PR #235 integration branch as the documentation/source authority for unmerged SEC-OWNER + COM work.
+2. Complete the manufacturer private-key ceremony outside GitHub/CI/customer machines and provide only the approved public keyring to the Production build process.
+3. Run end-to-end SEC-OWNER commissioning with the offline-held private key; record negative/security evidence.
+4. Close the intended SEC-OWNER merge gate without weakening the Pilot/Production boundary.
+5. Complete COM-07 with real provider credentials/endpoints and actual SMS/modem/SIM evidence where applicable.
+6. Complete remaining physical Windows qualification: reboot, Repair/Upgrade/rollback, retained-data Uninstall and a second clean PC.
+7. Proceed to hardware bench qualification and BIO EGYPT field commissioning/UAT.
+
+## Definition of done
+
+Every package requires the evidence appropriate to its type:
+
+- source package: code + tests + PR + CI + merge;
+- provider: actual provider delivery;
+- installer: real clean-machine execution;
+- hardware: real bench/field evidence;
+- commissioning: signed/recorded Site evidence;
+- production: security/licensing/signing/release gates.
+
+No package is closed by documentation alone.
+
+
+## 18 October 2026 — SD replay and central battery
+
+Controller source moves to `0.1.0-pilot.6` with SD buffering/replay and original acquisition time.
+See [SD replay](docs/current/SD-OFFLINE-REPLAY.md) and [one Main battery for four SIMs](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
+Backend and controller must be updated together. Physical SD/UPS tests and battery sizing remain open.

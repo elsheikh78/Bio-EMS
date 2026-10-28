@@ -1,5 +1,22 @@
 # BIO-EMS Risk Register
 
+## Current audit risks —28 October2026
+
+| ID | Risk / evidence | Status and next action |
+| --- | --- | --- |
+| R-25 / A01 | Critical/High dependency advisories; production/backend includes conditional proxy-addr finding | OPEN; triage reachability, patch supported versions, rerun gates |
+| R-26 / A02 | Customer login lacks application throttling | OPEN; reviewed rate-limit policy and route/proxy tests |
+| R-27 / A03 | Customer token remains valid after credential replacement | OPEN; revocation/version design and all recovery-path regressions |
+| R-28 / A04 | Copied company cookie survives browser logout until expiry | OPEN; decide pilot acceptance versus revocable operator sessions |
+| R-29 / A05 | Main pilot skips certificate endpoint-name check | OPEN production gate; certificate/hostname provisioning and negative TLS tests |
+| R-30 / A07 | Build/checklist can be mistaken for complete16-channel/field/native acceptance | OPEN; exact-population/physical/deployment evidence |
+| R-31 / D01–D03 | Old status/specs/links mistaken for observed implementation | Documentation controlled; originals hashed, current guides and checker added; formal requirement traceability remains open |
+
+[Audit findings](docs/audit/2026-10-28/FINDINGS.md) give evidence and closure criteria. Earlier R-21 main/candidate values below are historical; use PROJECT_STATE for current refs. No historical risk is closed solely because its document was archived.
+
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/RISK_REGISTER.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Review — 26 October 2026
 
 - R-20: Isolated QC flashing replaces operating firmware and GPIO4 conflicts with SD. Disconnect peripherals, use the correct voltage/pull-ups, and restore governed pilot.7/bench.2 before integrated operation.

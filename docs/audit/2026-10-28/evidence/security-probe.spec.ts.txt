@@ -1,0 +1,51 @@
+import type Database from "better-sqlite3";
+import request from "supertest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.hoisted(() => {
+  process.env.BIOEMS_JWT_SECRET = "s".repeat(32);
+});
+
+vi.mock("./mqtt/client", () => ({ getMqttClient: vi.fn() }));
+
+vi.mock("../database/influx/queries/telemetry.query", () => ({
+  getLatestTelemetry: vi.fn(),
+}));
+
+vi.mock("../database/influx/queries/room-status.query", () => ({
+  getLatestRoomTelemetry: vi.fn(),
+}));
+
+vi.mock("../database/sqlite/client", async () => {
+  const { default: SqliteDatabase } = await import("better-sqlite3");
+  const sqlite = new SqliteDatabase(":memory:");
+  sqlite.pragma("foreign_keys = ON");
+  return { sqlite };
+});
+
+import { sqlite } from "../database/sqlite/client";
+import app from "./app";
+import { config } from "./config/config";
+import { TokenService } from "./services/token.service";
+
+const database = sqlite as Database.Database;
+const tokenService = new TokenService(config.jwt);
+const VALID_BCRYPT_HASH = `$2b$12$${"A".repeat(53)}`;
+
+describe("2026-10-28 isolated audit probes", () => {
+  beforeEach(() => {
+    database.exec("DELETE FROM users");
+    database.prepare("INSERT INTO users (id,username,password_hash,role,status) VALUES (1,'audit-user',?,'ADMIN','active')").run(VALID_BCRYPT_HASH);
+  });
+  afterAll(() => database.close());
+  it("records pre-change customer token remaining accepted after credential replacement", async () => {
+    const token = tokenService.issueAccessToken(1).accessToken;
+    database.prepare("UPDATE users SET password_hash=?,password_change_required=0 WHERE id=1").run(`$2b$12$${"B".repeat(53)}`);
+    await request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${token}`).expect(200);
+  });
+  it("records 21 consecutive failed customer logins without application throttling", async () => {
+    const statuses:number[] = [];
+    for(let i=0;i<21;i++) statuses.push((await request(app).post("/api/v1/auth/login").send({username:"nonexistent-audit-user",password:"WrongPassword123!"})).status);
+    expect(statuses).toEqual(Array(21).fill(401));
+  }, 30000);
+});

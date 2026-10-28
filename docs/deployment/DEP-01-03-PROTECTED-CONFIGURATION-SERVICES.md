@@ -1,5 +1,8 @@
 # DEP-01-03 Protected Configuration and Windows Services
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/BUILD-RELEASE-AND-RECOVERY.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/deployment/DEP-01-03-PROTECTED-CONFIGURATION-SERVICES.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 **Status:** Complete / merged / CI verified through PR #179 and CI #615
 **Target:** Windows 11 Pro x64, fresh installation path
 

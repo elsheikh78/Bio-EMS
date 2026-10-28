@@ -1,32 +1,11 @@
 # Sprint 15 — S15-06 BIO EGYPT Pilot Documentation
 
-## Objective
+Historical record; navigation updated 2026-10-28.
 
-Convert the approved BIO EGYPT baseline into a controlled, field-ready documentation
-package covering scope, Sensor mapping, controller assumptions, installation/wiring,
-commissioning, acceptance, and unresolved gates.
+[Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/project-management/SPRINT-15-S15-06-BIO-EGYPT-PILOT-DOCUMENTATION.md>) preserves this document byte for byte, including its dated decisions, requirements, test evidence and limitations. It is retained for traceability and is not the current implementation or deployment status.
 
-## Delivered package
+- [Current implementation guide](<../README.md>)
+- [Project state](<../../PROJECT_STATE.md>)
+- [2026-10-28 code and documentation audit](<../audit/2026-10-28/README.md>)
 
-The package is indexed at `docs/pilot/bio-egypt/README.md` and contains:
-
-- controlled two-Site, eight-area, 20-Sensor scope;
-- complete 20-row physical Sensor map with proposed traceable Map IDs;
-- controller-placement and field-survey assumptions;
-- installation, wiring, network, labeling, and evidence requirements;
-- end-to-end commissioning and signed acceptance record;
-- blocking open-items register with owners and required evidence.
-
-## Evidence discipline
-
-Confirmed repository facts are recorded as the baseline. Values that require site
-survey, customer decision, hardware release, or commissioning are explicitly marked
-`TBD` and tracked as gates. The package does not invent cable lengths, controller
-locations, serial numbers, thresholds, recipients, credentials, or field acceptance.
-
-## Scope boundaries
-
-- Documentation only; no hardware, firmware, backend, frontend, schema, API, or
-  deployment mutation.
-- No claim that installation, calibration, validation, or Pilot acceptance occurred.
-- Actual readiness execution remains S15-07.
+Active requirements embedded in this record remain requirements until an approved decision changes them. Moving this evidence does not close a work package, approve a feature, or certify field acceptance.

@@ -1,5 +1,8 @@
 # BIO-EMS Engineering Handbook
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/DEVELOPER-AND-TESTING.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/engineering/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 Engineering Handbook Version: 1.0
 
 Status: Approved

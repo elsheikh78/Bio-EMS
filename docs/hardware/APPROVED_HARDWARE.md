@@ -1,5 +1,8 @@
 # BIO-EMS Approved Hardware Register
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/hardware/APPROVED_HARDWARE.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## 26 October qualification boundary
 
 Main pilot.7/Nano bench.2 acquisition source exists; hardware release remains pending physical evidence. Today’s staged bench procedure uses isolated ESP32/one probe, isolated Nano/four probes, then operating Main/RS485/Nano/four probes. Earlier PT100 references are dated design context, not authority to replace the DS18B20 bench test parts.

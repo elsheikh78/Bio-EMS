@@ -1,5 +1,8 @@
 # BIO-EMS Development Rules
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/PROJECT_RULES.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 ## Documentation and release authorities
 
 - `PROJECT_STATE.md` is the **single authoritative current-state document**.

@@ -1,74 +1,20 @@
 # BIO-EMS Frontend
 
-This directory contains the current React/TypeScript/Vite application. Source review: 30 September 2026, `main@6efd78a`. Sprint 14 notes below are historical foundation evidence.
+Reviewed candidate `d151b1f`, 28 October 2026. [Project state](../PROJECT_STATE.md) controls merge/deployment status.
 
-Integrated work:
+React/TypeScript/MUI local operational and System Owner UI. Role-aware navigation supplements server authorization. Candidate removes Hardware Lab testing UI while preserving installation/provisioning operations. Package0.0.0 is not the product release version.
 
-- S14-01 frontend architecture and quality foundation — complete.
-- S14-02 professional responsive AppShell and navigation — complete.
-- S14-03 Login, session lifecycle, and authorization-aware routing — complete.
-- S14-04 operational Dashboard — complete.
-- S14-05 Monitored Areas — complete, merged, and verified.
+## Verify from this directory
 
-## Prerequisites
-
-- Node.js 22 or newer
-- Backend dependencies and environment described in `../backend/README.md`
-
-## Environment
-
-Copy `.env.example` to `.env` and configure:
-
-```dotenv
-VITE_API_BASE_URL=http://localhost:3001/api/v1
+```sh
+npm ci
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test:run
+npm run build
 ```
 
-Only public browser configuration may use the `VITE_` prefix.
+Run `npm run dev` separately from backend for development. Configure approved API origin using the non-secret environment template and exact backend CORS allowlist. Vite dev/preview is not production customer hosting. Build success does not prove browser UAT, deployment headers, every permission path or field acceptance.
 
-## Local Development
-
-Backend:
-
-```powershell
-npm.cmd install
-npm.cmd run dev
-```
-
-Frontend:
-
-```powershell
-npm.cmd install
-npm.cmd run dev
-```
-
-## Quality Commands
-
-```powershell
-npm.cmd run typecheck
-npm.cmd run lint
-npm.cmd run format:check
-npm.cmd run test:run
-npm.cmd run test:coverage
-npm.cmd run build
-```
-
-## Authentication and Authorization Boundary
-
-S14-03 established versioned browser session persistence, restoration, expiry handling, Login/Logout, the authenticated protected-request boundary, generation-scoped invalidation, and authorization-aware routing/navigation. Backend authentication and authorization remain authoritative.
-
-## Current Routes
-
-The application includes `/`, `/dashboard`, `/monitored-areas`, `/alarms`, `/devices`, `/configuration`, and `/users`, subject to the centralized route policy.
-
-Operational routes also include `/live-board`, `/notification-deliveries`, `/sensors-calibration`, `/reports`, `/commissioning` and `/backup-restore`. System Owner has separate login, installation, provisioning, communication, licensing and backup routes under `/system-owner`. Backend authorization remains authoritative. Monitored Area is presentation terminology for
-the existing Room domain.
-
-## S14-05 Delivered Scope
-
-- S14-05A contracts and data access — complete.
-- S14-05B Site and Monitored Area hierarchy — complete.
-- S14-05C Sensor inventory and threshold metadata — complete.
-- S14-05D refresh, retry, integration, and hardening — complete.
-
-The complete S14-05 scope was integrated through PR #19. Sprint 14 closure and current
-quality evidence are recorded in `../docs/project-management/SPRINT-14-CLOSURE.md`.
+[Current component guide](../docs/current/PLATFORM-OPERATIONS.md) · [Developer/testing guide](../docs/current/DEVELOPER-AND-TESTING.md) · [Audit findings](../docs/audit/2026-10-28/README.md) · [Original pre-audit README](../docs/archive/2026-10-28-pre-audit/frontend/README.md)

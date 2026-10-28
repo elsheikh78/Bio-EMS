@@ -1,5 +1,8 @@
 # Contributing to BIO-EMS
 
+> Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<docs/README.md>) describes the reviewed source baseline; [Project state](<PROJECT_STATE.md>) controls current status. [Original pre-audit document](<docs/archive/2026-10-28-pre-audit/CONTRIBUTING.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
+
+
 Thank you for contributing to BIO-EMS.
 
 This document defines the official development workflow, coding standards, documentation requirements, and quality expectations for this project.
