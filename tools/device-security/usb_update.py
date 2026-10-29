@@ -17,6 +17,8 @@ def exchange(stream, command, prefix):
     deadline = time.monotonic() + ACK_TIMEOUT_SECONDS
     while time.monotonic() < deadline:
         line = stream.readline().decode('utf-8', errors='replace').strip()
+        while line.startswith('bioems>'):
+            line = line[len('bioems>'):].lstrip()
         if 'UPDATE_REJECTED' in line or 'UPDATE_ABORTED' in line:
             raise RuntimeError('Controller rejected the transfer; active application was not replaced')
         if line.startswith(prefix):

@@ -2,6 +2,8 @@
 
 ## Unreleased — security operations and recoverable Main
 
+- Retain USB update acknowledgements when the console prompt prefixes a response. Retry interrupted vendor downloads within a fixed limit, verify hashes before publishing cache files and reject checksum mismatches without retry.
+
 - Add identity-checked D1 export/bookmark/migration/schema/deploy orchestration and protected Windows receipts.
 - Add certificate activation with pinned endpoint verification, retained service secrets/ACLs, protected snapshots and automatic failure restoration.
 - Main pilot.9 adds an opt-in separate A/B USB maintenance build with inactive-slot/hash/image checks and explicit timed boot confirmation; ordinary pilot packages reject maintenance/manufacturing builds. Tester 0.6.2 retains legacy acquisition compatibility.

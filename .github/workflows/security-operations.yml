@@ -31,6 +31,9 @@ jobs:
             [Management.Automation.Language.Parser]::ParseFile($file.FullName,[ref]$tokens,[ref]$errors) | Out-Null
             if ($errors.Count) { throw "$($file.Name): $($errors.Message)" }
           }
+      - name: Verified vendor download recovery
+        shell: powershell
+        run: '& .\installer\windows\Test-VendorDownload.ps1'
       - name: Native certificate activation and injected-failure recovery
         shell: powershell
         run: '& .\installer\windows\Test-PlatformTlsRotation.ps1 -ApplicationRoot $PWD.Path'
