@@ -222,6 +222,10 @@ jobs:
         run: |
           & ".\installer\windows\Test-ProvisionerTokenContract.ps1"
 
+      - name: Verify Windows TLS DNS and IP certificate identity
+        shell: powershell
+        run: '& ".\installer\windows\Test-PlatformTlsCertificateIdentity.ps1"'
+
       - name: Verify firmware source contract
         shell: powershell
         run: '& ".\installer\windows\Test-ControllerFirmwareContract.ps1"'

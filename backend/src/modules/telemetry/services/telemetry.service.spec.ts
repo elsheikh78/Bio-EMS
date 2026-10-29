@@ -1,16 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../../repositories/device.repository", () => ({
-  DeviceRepository: vi.fn(() => ({
-    findByDeviceId: vi.fn(),
-    recordCommunication: vi.fn(),
-  })),
+  DeviceRepository: vi.fn(function () {
+    return {
+      findByDeviceId: vi.fn(),
+      recordCommunication: vi.fn(),
+    };
+  }),
 }));
 vi.mock("../../../repositories/site.repository", () => ({
-  SiteRepository: vi.fn(() => ({ findById: vi.fn() })),
+  SiteRepository: vi.fn(function () {
+    return { findById: vi.fn() };
+  }),
 }));
 vi.mock("../../../repositories/sensor.repository", () => ({
-  SensorRepository: vi.fn(() => ({ findByDeviceAndChannel: vi.fn() })),
+  SensorRepository: vi.fn(function () {
+    return { findByDeviceAndChannel: vi.fn() };
+  }),
 }));
 vi.mock("../../../../database/influx/writer", () => ({ writeTelemetryPoint: vi.fn() }));
 vi.mock("../../../services/alarm.evaluator", () => ({ evaluateAlarm: vi.fn() }));

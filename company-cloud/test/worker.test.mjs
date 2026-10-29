@@ -19,6 +19,12 @@ function setup() {
       "utf8",
     ),
   );
+  db.exec(
+    readFileSync(
+      new URL("../migrations/0003_company_sessions.sql", import.meta.url),
+      "utf8",
+    ),
+  );
   const adapter = {
     prepare(sql) {
       let args = [];
@@ -1129,4 +1135,64 @@ test("native viewer bearer sessions isolate customers, ignore cookies, revoke an
     (await native("overview", "GET", undefined, third.token)).status,
     401,
   );
+});
+
+test("company logout revokes a copied cookie without revoking another session", async () => {
+  const s = setup();
+  await s.login();
+  const first = s.getCookie();
+  assert.equal((await s.call("/api/company/overview")).status, 200);
+  await s.login();
+  const second = s.getCookie();
+  s.setCookie(first);
+  assert.equal((await s.call("/api/company/logout", "POST", {})).status, 200);
+  s.setCookie(first);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+  s.setCookie(second);
+  assert.equal((await s.call("/api/company/overview")).status, 200);
+});
+
+test("company cookie requires a current database session, rejects tampering and key rotation", async () => {
+  const s = setup();
+  await s.login();
+  const cookie = s.getCookie();
+  s.setCookie(cookie + ".extra");
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+  s.setCookie(cookie + "; " + cookie);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+  s.setCookie(cookie);
+  s.env.COMPANY_ADMIN_TOKEN = "c".repeat(40);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+});
+
+test("company sessions are stored hashed, reject missing/expired records and preserve origin checks", async () => {
+  const s = setup();
+  await s.login();
+  const cookie = s.getCookie();
+  const row = s.db.prepare("SELECT * FROM company_sessions").get();
+  assert.equal(typeof row.token_hash, "string");
+  assert.ok(!JSON.stringify(row).includes(cookie));
+  assert.ok(!JSON.stringify(row).includes(s.env.COMPANY_ADMIN_TOKEN));
+  assert.equal(
+    (
+      await s.call(
+        "/api/company/logout",
+        "POST",
+        {},
+        { Origin: "https://attacker.invalid" },
+      )
+    ).status,
+    403,
+  );
+  assert.equal((await s.call("/api/company/overview")).status, 200);
+  s.db.prepare("UPDATE company_sessions SET expires_at=?").run(Date.now() - 1);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
+  await worker.scheduled({}, s.env);
+  assert.equal(
+    s.db.prepare("SELECT count(*) AS n FROM company_sessions").get().n,
+    0,
+  );
+  // A correctly signed cookie without a durable record is a legacy/revoked session.
+  s.setCookie(cookie);
+  assert.equal((await s.call("/api/company/overview")).status, 401);
 });

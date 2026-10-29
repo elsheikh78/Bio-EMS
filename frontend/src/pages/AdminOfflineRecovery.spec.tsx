@@ -20,7 +20,9 @@ function choosePermit() {
     target: { files: [file] },
   });
 }
-beforeEach(() => request.mockReset());
+beforeEach(() => {
+  request.mockReset();
+});
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();

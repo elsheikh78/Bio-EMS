@@ -5,7 +5,7 @@
 
 ## Current operating/testing boundary — 28 October 2026
 
-Candidate Tester 0.6.0 flashes isolated QC in tab 5 and restores operating pilot.7 in tab 6; tab 7 records the staged manual qualification. Main uses one shared 9600 RS485 bus. Automated integrated Tester acquisition observes one selected Nano/four probes. Physical acceptance remains open. The pilot firmware sends live/replay samples over HTTPS through the device telemetry bridge; native MQTT topic configuration does not prove native MQTT publishing. HTTPS endpoint-name checking is skipped in this pilot source and is an open production security gate.
+Candidate Tester 0.6.2 flashes isolated QC in tab 5 and restores operating pilot.9 in tab 6; tab 7 records the staged manual qualification. Main uses one shared 9600 RS485 bus. Automated integrated Tester acquisition observes one selected Nano/four probes. Physical acceptance remains open. The pilot firmware sends live/replay samples over HTTPS through the device telemetry bridge; native MQTT topic configuration does not prove native MQTT publishing. HTTPS endpoint-name checking is required in this candidate. Provisioning verifies the controlled certificate SAN against the configured DNS/IP origin before flashing; existing installations need the coordinated rollout in docs/security/MAIN-TLS-ENDPOINT-IDENTITY-WORK-PACKAGE.md.
 
 See [hardware/firmware guide](../../docs/current/HARDWARE-AND-FIRMWARE.md) and [security findings](../../docs/audit/2026-10-28/FINDINGS.md). Older sections below retain their dated boundary.
 
@@ -19,7 +19,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.7`;
+- firmware version: `0.1.0-pilot.9`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -187,5 +187,5 @@ See [behavior, limits and deployment](../../docs/current/SD-OFFLINE-REPLAY.md) a
 [central battery, four-SIM topology and wiring](../../docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md).
 This is source implementation, not physical qualification or a guaranteed backup duration.
 
-## pilot.7 RTC and GSM bench wiring
+## pilot.9 RTC and GSM bench wiring
 See [the dated hardware reference](../../docs/hardware/MAIN-SIM-WIRING-REFERENCE-2026-10-20.md) for exact terminal schedules and commissioning holds. DS3231 uses SDA8/SCL9 at 3.3V. SIM800L UART2 uses TX14 through the specified 1k/5.6k divider, RX21 through the specified NPN inverter; RX inversion defaults on. Do not substitute direct wiring. Modem VCC is a separate 4V burst-capable supply. `rtc` inspects commissioning/UTC, `gsmdiag` checks registration, and `gsmtest +<international-number>` sends one real bench SMS. There is no autonomous alarm/fallback SMS policy in this revision. No physical hardware tests have been performed by the build.

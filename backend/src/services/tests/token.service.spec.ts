@@ -1,4 +1,4 @@
-import { generateKeyPairSync } from "crypto";
+import { createHmac, generateKeyPairSync } from "crypto";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { describe, expect, it } from "vitest";
 import { JwtConfig } from "../../config/jwt.config";
@@ -13,7 +13,7 @@ const configuration: JwtConfig = {
 
 describe("JWT access-token service", () => {
   it("issues an HS256 token with only the approved claims", () => {
-    const issued = new TokenService(configuration).issueAccessToken(7);
+    const issued = serviceFor(configuration).issueAccessToken(7);
     const complete = jwt.decode(issued.accessToken, { complete: true });
     const payload = complete?.payload as JwtPayload;
 
@@ -23,7 +23,7 @@ describe("JWT access-token service", () => {
     expect(payload.iat).toBeUndefined();
     expect(issued.expiresIn).toBe(1800);
     expect(() =>
-      jwt.verify(issued.accessToken, configuration.secret, {
+      jwt.verify(issued.accessToken, signingKey(configuration, 7), {
         algorithms: ["HS256"],
         audience: configuration.audience,
         issuer: configuration.issuer,
@@ -32,7 +32,7 @@ describe("JWT access-token service", () => {
   });
 
   it("applies the configured expiry to the claim and response value", () => {
-    const issued = new TokenService({ ...configuration, expireMinutes: 45 }).issueAccessToken(3);
+    const issued = serviceFor({ ...configuration, expireMinutes: 45 }).issueAccessToken(3);
     const payload = jwt.decode(issued.accessToken) as JwtPayload;
 
     expect(issued.expiresIn).toBe(2700);
@@ -41,7 +41,7 @@ describe("JWT access-token service", () => {
   });
 
   it("verifies an approved HS256 token and returns its canonical User ID", () => {
-    const service = new TokenService(configuration);
+    const service = serviceFor(configuration);
     const issued = service.issueAccessToken(7);
 
     expect(service.verifyAccessToken(issued.accessToken)).toBe(7);
@@ -58,15 +58,13 @@ describe("JWT access-token service", () => {
     ["missing subject", () => signedToken({})],
     ["malformed token", () => "not-a-jwt"],
   ])("rejects %s", (_case, createToken) => {
-    expect(() => new TokenService(configuration).verifyAccessToken(createToken())).toThrow();
+    expect(() => serviceFor(configuration).verifyAccessToken(createToken())).toThrow();
   });
 
   it.each(["", "0", "-1", "+1", "01", "1.0", "1e3", " 1 ", "9007199254740992"])(
     "rejects the non-canonical subject %j",
     (sub) => {
-      expect(() =>
-        new TokenService(configuration).verifyAccessToken(signedToken({ sub }))
-      ).toThrow();
+      expect(() => serviceFor(configuration).verifyAccessToken(signedToken({ sub }))).toThrow();
     }
   );
 
@@ -74,8 +72,8 @@ describe("JWT access-token service", () => {
     const numericSubject = signedToken({ sub: 7 });
     const stringPayload = jwt.sign("payload", configuration.secret, { algorithm: "HS256" });
 
-    expect(() => new TokenService(configuration).verifyAccessToken(numericSubject)).toThrow();
-    expect(() => new TokenService(configuration).verifyAccessToken(stringPayload)).toThrow();
+    expect(() => serviceFor(configuration).verifyAccessToken(numericSubject)).toThrow();
+    expect(() => serviceFor(configuration).verifyAccessToken(stringPayload)).toThrow();
   });
 
   it("rejects HS384, RS256, and none instead of selecting an algorithm dynamically", () => {
@@ -99,7 +97,7 @@ describe("JWT access-token service", () => {
       issuer: configuration.issuer,
     });
 
-    const service = new TokenService(configuration);
+    const service = serviceFor(configuration);
     expect(() => service.verifyAccessToken(hs384)).toThrow();
     expect(() => service.verifyAccessToken(rs256)).toThrow();
     expect(() => service.verifyAccessToken(none)).toThrow();
@@ -107,11 +105,23 @@ describe("JWT access-token service", () => {
 
   it("honors configured issuer and audience overrides during verification", () => {
     const overridden = { ...configuration, issuer: "installation", audience: "installation-api" };
-    const service = new TokenService(overridden);
+    const service = serviceFor(overridden);
     const issued = service.issueAccessToken(9);
 
     expect(service.verifyAccessToken(issued.accessToken)).toBe(9);
-    expect(() => new TokenService(configuration).verifyAccessToken(issued.accessToken)).toThrow();
+    expect(() => serviceFor(configuration).verifyAccessToken(issued.accessToken)).toThrow();
+  });
+  it("rejects legacy globally signed tokens and principals without current credentials", () => {
+    const legacy = jwt.sign({}, configuration.secret, {
+      algorithm: "HS256",
+      subject: "7",
+      audience: configuration.audience,
+      issuer: configuration.issuer,
+      expiresIn: 1800,
+    });
+    expect(() => serviceFor(configuration).verifyAccessToken(legacy)).toThrow();
+    const absent = new TokenService(configuration, { findAccessTokenCredential: () => undefined });
+    expect(() => absent.issueAccessToken(7)).toThrow();
   });
 });
 
@@ -136,5 +146,21 @@ function signedToken(
   if (expiresIn !== undefined) options.expiresIn = expiresIn;
   if (issuer !== undefined) options.issuer = issuer;
 
-  return jwt.sign(payload, overrides.secret ?? configuration.secret, options);
+  return jwt.sign(
+    payload,
+    overrides.secret ?? signingKey(configuration, Number(payload.sub)),
+    options
+  );
+}
+
+const fixtureHash = "$2b$12$" + "A".repeat(53);
+function serviceFor(configuration: JwtConfig) {
+  return new TokenService(configuration, {
+    findAccessTokenCredential: () => ({ passwordHash: fixtureHash, status: "active" }),
+  });
+}
+function signingKey(configuration: JwtConfig, userId: number) {
+  return createHmac("sha256", configuration.secret)
+    .update(JSON.stringify(["bioems-customer-access-v2", userId, fixtureHash]))
+    .digest();
 }

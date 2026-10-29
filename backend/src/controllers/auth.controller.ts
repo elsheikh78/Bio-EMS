@@ -22,7 +22,11 @@ export const changePasswordController = asyncHandler(async (req: Request, res: R
     req.body.current_password,
     req.body.new_password
   );
-  res.status(200).json({ success: true, password_change_required: false });
+  const refreshed = await authService.login({
+    username: req.user!.username,
+    password: req.body.new_password,
+  });
+  res.status(200).json({ success: true, ...refreshed });
 });
 
 export const currentUserController = (req: Request, res: Response): void => {

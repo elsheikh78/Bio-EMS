@@ -15,11 +15,15 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../../repositories/device.repository", () => ({
-  DeviceRepository: vi.fn(() => mocks.deviceRepository),
+  DeviceRepository: vi.fn(function () {
+    return mocks.deviceRepository;
+  }),
 }));
 
 vi.mock("../../repositories/site.repository", () => ({
-  SiteRepository: vi.fn(() => mocks.siteRepository),
+  SiteRepository: vi.fn(function () {
+    return mocks.siteRepository;
+  }),
 }));
 
 import { activateDevice, disableDevice } from "../device.service";

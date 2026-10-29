@@ -110,6 +110,15 @@ export class DeviceProvisioningLocalClient {
     }>("/detect", { method: "POST", body: { port }, timeoutMs: 30_000 });
   }
 
+  validateTls(platformUrl: string) {
+    return this.request<{
+      platformOrigin: string;
+      hostname: string;
+      fingerprint256: string;
+      validTo: string;
+    }>("/validate-tls", { method: "POST", body: { platformUrl } });
+  }
+
   flash(port: string) {
     return this.request<{
       port: string;

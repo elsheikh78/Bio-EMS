@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiResponseError,
+  type ApiClient,
   type ApiClientConfiguration,
   type ApiRequestOptions,
 } from "../api/client";
@@ -97,7 +98,7 @@ function renderProvider({
   });
   const createClient = vi.fn((next: ApiClientConfiguration = {}) => {
     configuration = next;
-    return { request };
+    return { request: request as ApiClient["request"] };
   });
   let authentication: AuthenticationContextValue | undefined;
   const provider = (
@@ -1005,5 +1006,100 @@ describe("authentication session lifecycle", () => {
     expect(queryClient.getQueryData(["dashboard", "alarm-statistics"])).toBe(
       "preserved-dashboard-data",
     );
+  });
+});
+
+describe("password-change session rotation", () => {
+  it("persists the replacement token and expiry returned after a required password change", async () => {
+    const storage = storageAdapter();
+    const user = storedSession.user;
+    const initial = {
+      access_token: "old-token",
+      token_type: "bearer",
+      expires_in: 1800,
+      password_change_required: true,
+      user,
+    };
+    const replacement = {
+      success: true,
+      access_token: "new-token",
+      token_type: "bearer",
+      expires_in: 900,
+      password_change_required: false,
+      user,
+    };
+    const provider = renderProvider({
+      storage: storage.adapter,
+      responses: [initial, replacement],
+    });
+    await act(async () => {
+      await provider
+        .authentication()
+        .login({ username: "login-user", password: "OldPassword123!" });
+    });
+    await act(async () => {
+      await provider.authentication().completePasswordChange!(
+        "OldPassword123!",
+        "NewPassword456!",
+      );
+    });
+    expect(storage.current()).toMatchObject({
+      accessToken: "new-token",
+      expiresAt: 901000,
+      passwordChangeRequired: false,
+    });
+    expect(provider.configuration()?.getAccessToken?.()).toBe("new-token");
+    expect(provider.authentication().passwordChangeRequired).toBe(false);
+  });
+
+  it("does not install a replacement token for a different principal", async () => {
+    const storage = storageAdapter();
+    const initial = {
+      access_token: "old-token",
+      token_type: "bearer",
+      expires_in: 1800,
+      password_change_required: true,
+      user: storedSession.user,
+    };
+    const provider = renderProvider({
+      storage: storage.adapter,
+      responses: [
+        initial,
+        {
+          ...initial,
+          success: true,
+          access_token: "foreign-token",
+          password_change_required: false,
+          user: { ...storedSession.user, id: 99 },
+        },
+      ],
+    });
+    await act(async () => {
+      await provider
+        .authentication()
+        .login({ username: "login-user", password: "OldPassword123!" });
+    });
+    await act(async () => {
+      await expect(
+        provider.authentication().completePasswordChange!(
+          "OldPassword123!",
+          "NewPassword456!",
+        ),
+      ).rejects.toThrow();
+    });
+    expect(storage.current()?.accessToken).not.toBe("foreign-token");
+  });
+});
+
+describe("login throttling feedback", () => {
+  it("surfaces rate limiting separately from invalid credentials", async () => {
+    const provider = renderProvider({ responses: [new ApiResponseError(429)] });
+    await act(async () => {
+      await expect(
+        provider
+          .authentication()
+          .login({ username: "admin", password: "password" }),
+      ).rejects.toMatchObject({ kind: "rate-limited" });
+    });
   });
 });

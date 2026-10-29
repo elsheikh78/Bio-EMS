@@ -6,6 +6,7 @@ import {
   deviceProvisioningDetectSchema,
   localProvisionerFlashSchema,
   localProvisionerProvisionSchema,
+  localProvisionerTlsSchema,
 } from "../modules/device-provisioning/device-provisioning.schema";
 import { LocalProvisioningRunner } from "../modules/device-provisioning/device-provisioning.runner";
 import { SimFlashingRunner } from "../modules/device-provisioning/sim-flashing.runner";
@@ -85,6 +86,14 @@ export function createDeviceProvisionerApp(
     try {
       const input = deviceProvisioningDetectSchema.parse(request.body);
       response.json(await runner.detect(input.port));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post("/validate-tls", (request, response, next) => {
+    try {
+      const input = localProvisionerTlsSchema.parse(request.body);
+      response.json(runner.validateTls(input.platformUrl));
     } catch (error) {
       next(error);
     }

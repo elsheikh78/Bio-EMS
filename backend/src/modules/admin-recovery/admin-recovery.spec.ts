@@ -1,3 +1,5 @@
+import { TokenService } from "../../services/token.service";
+import { UserRepository } from "../../repositories/user.repository";
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -56,10 +58,17 @@ beforeEach(async () => {
 afterEach(() => database.close());
 describe("offline customer ADMIN recovery", () => {
   it("runs request -> encrypted-key signing -> restricted grant -> new password exactly once", async () => {
+    const tokens = new TokenService(
+      { secret: "s".repeat(32), expireMinutes: 30, issuer: "bio-ems", audience: "bio-ems-api" },
+      new UserRepository(database)
+    );
+    const beforeRecovery = tokens.issueAccessToken(1).accessToken;
     const signed = permit(service.request(" ADMIN "));
     expect(JSON.stringify(signed)).not.toMatch(/passwordHash|PRIVATE KEY|OriginalPass/);
     const grant = service.authorize(signed);
     await service.complete(grant.recoveryToken, "ReplacementPass2!");
+    expect(() => tokens.verifyAccessToken(beforeRecovery)).toThrow();
+    expect(tokens.verifyAccessToken(tokens.issueAccessToken(1).accessToken)).toBe(1);
     const result = database.prepare("SELECT password_hash FROM users WHERE id=1").get() as {
       password_hash: string;
     };

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-28",
+  "scope": "Main TLS / mobile compatible updates / hardware reporting candidate",
+  "remote_database_migrated": false,
+  "existing_windows_certificate_rotated": false,
+  "physical_security_enabled": false,
+  "mobile": {
+    "mobile": {
+      "audit_metadata": {
+        "info": 0,
+        "low": 5,
+        "moderate": 0,
+        "high": 3,
+        "critical": 0,
+        "total": 8
+      },
+      "affected_packages": [
+        "@expo/cli",
+        "@expo/config",
+        "@expo/local-build-cache-provider",
+        "@expo/metro-config",
+        "@expo/prebuild-config",
+        "deepmerge",
+        "expo",
+        "zod"
+      ],
+      "expo_compatibility_check": "passed",
+      "android_ios_export": "passed; max-workers 2",
+      "native_acceptance": false
+    },
+    "company-mobile": {
+      "audit_metadata": {
+        "info": 0,
+        "low": 5,
+        "moderate": 0,
+        "high": 3,
+        "critical": 0,
+        "total": 8
+      },
+      "affected_packages": [
+        "@expo/cli",
+        "@expo/config",
+        "@expo/local-build-cache-provider",
+        "@expo/metro-config",
+        "@expo/prebuild-config",
+        "deepmerge",
+        "expo",
+        "zod"
+      ],
+      "expo_compatibility_check": "passed",
+      "android_ios_export": "passed; max-workers 2",
+      "native_acceptance": false
+    }
+  }
+}

@@ -5,7 +5,9 @@ const { processTelemetry } = vi.hoisted(() => ({
 }));
 
 vi.mock("../services/telemetry.service", () => ({
-  TelemetryService: vi.fn().mockImplementation(() => ({ process: processTelemetry })),
+  TelemetryService: vi.fn().mockImplementation(function () {
+    return { process: processTelemetry };
+  }),
 }));
 
 import { handleTelemetry } from "./telemetry.listener";

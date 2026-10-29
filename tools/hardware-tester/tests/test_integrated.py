@@ -9,7 +9,7 @@ UID='aabbccddeeff'
 def scan():
  return {'hardwareUid':UID,'modules':[{'address':a,'responding':a==1,'inputs':[{'input':i,'channel':i,'status':0,'value':24+i/10} for i in range(1,5)] if a==1 else []} for a in range(1,5)]}
 class IntegratedTests(unittest.TestCase):
- def convert(self,data=None,seq=1):return frame(json.dumps(scan() if data is None else data),UID,'0.1.0-pilot.7',1,seq,seq*3000)
+ def convert(self,data=None,seq=1):return frame(json.dumps(scan() if data is None else data),UID,'0.1.0-pilot.9',1,seq,seq*3000)
  def test_no_invented_rom_and_mapping(self):
   f=self.convert();self.assertEqual([c['system_channel'] for c in f['channels']],[1,2,3,4]);self.assertTrue(all('rom' not in c for c in f['channels']))
  def test_absent_module(self):
@@ -19,7 +19,7 @@ class IntegratedTests(unittest.TestCase):
    d=scan();mutate(d)
    with self.assertRaises(ValueError):self.convert(d)
  def test_identity(self):
-  self.assertEqual(identify('hardware-uid: '+UID+'\nfirmware: 0.1.0-pilot.7\n'),(UID,'0.1.0-pilot.7'))
+  self.assertEqual(identify('hardware-uid: '+UID+'\nfirmware: 0.1.0-pilot.9\n'),(UID,'0.1.0-pilot.9'))
   with self.assertRaises(ValueError):identify('hardware-uid: '+UID+'\nfirmware: qc-sensors-0.1.0\n')
  def test_readonly(self):
   class Port:
@@ -46,3 +46,10 @@ class IntegratedTests(unittest.TestCase):
   path=export_bundle(run,folder);write_pdf(run,path.with_suffix('.pdf'));self.assertIn('sim_address',path.with_suffix('.csv').read_text(encoding='utf-8-sig'))
  def test_fault_persists(self):
   run,_=self.run_case(True);self.assertEqual(analyze(run)['overall'],'FAIL')
+
+class FirmwareCompatibilityTests(unittest.TestCase):
+ def test_legacy_operating_firmware_is_readable_without_claiming_strict_tls(self):
+  uid,firmware=identify('hardware-uid: aabbccddeeff\nfirmware: 0.1.0-pilot.7\n')
+  self.assertEqual(firmware,'0.1.0-pilot.7')
+ def test_strict_tls_operating_firmware_is_readable(self):
+  self.assertEqual(identify('hardware-uid: aabbccddeeff\nfirmware: 0.1.0-pilot.9\n')[1],'0.1.0-pilot.9')

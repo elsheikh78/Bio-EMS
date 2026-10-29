@@ -1,5 +1,43 @@
 # BIO-EMS Changelog
 
+## Unreleased — security operations and recoverable Main
+
+- Retain USB update acknowledgements when the console prompt prefixes a response. Retry interrupted vendor downloads within a fixed limit, verify hashes before publishing cache files and reject checksum mismatches without retry.
+
+- Add identity-checked D1 export/bookmark/migration/schema/deploy orchestration and protected Windows receipts.
+- Add certificate activation with pinned endpoint verification, retained service secrets/ACLs, protected snapshots and automatic failure restoration.
+- Main pilot.9 adds an opt-in separate A/B USB maintenance build with inactive-slot/hash/image checks and explicit timed boot confirmation; ordinary pilot packages reject maintenance/manufacturing builds. Tester 0.6.2 retains legacy acquisition compatibility.
+- Add owner-side RSA3072 key preparation without device/eFuse modification. Physical recovery/manufacturing, remote deployment and remaining Expo/mTLS findings remain open.
+
+
+## Unreleased — Main TLS and protection evidence
+
+- Main pilot.8 requires HTTPS origin and certificate identity checks; local provisioning validates exact SAN/validity before flash or serial credentials. Windows supports explicit DNS/IP SANs and non-overwriting candidate certificate preparation.
+- Tester 0.6.1 reports actual Secure Boot/encryption state without accepting production security; optional firmware startup gate requires both already enabled.
+- Compatible mobile dependency patches retain Expo 57; each tree still has 3 High/5 Low affected package entries. Native/physical acceptance and remote D1 rollout remain separate.
+
+
+## Unreleased — security phase two
+
+- Add revocable hashed company sessions with additive D1 migration 0003, server-side logout, key-rotation binding and expired-session cleanup. Legacy cookies require re-login; migration precedes Worker deployment.
+- Upgrade Vitest/coverage tooling to 5.0.5 and cloud dev tools within supported majors. Preserve existing test assertions and mock-clear behavior; fix constructor/callable/lifecycle fixtures and exclude compiled test duplicates by source scope.
+- Backend/frontend/company-cloud all-dependency npm scans report zero candidate entries; no mobile/vendor clean-security claim or remote deployment.
+- Record Main TLS DNS/IP SAN mismatch and the controlled remediation work package without disabling trust or changing live certificates.
+
+
+## Unreleased — runtime dependency advisory remediation
+
+- Update backend/frontend affected locked dependency chains; production npm audit reports zero affected package entries in both candidate trees. Development/tooling and other-component findings remain open.
+- Deliberately upgrade Nodemailer 9 to10.2.1 with installed-library RFC message regression; retain real SMTP/TLS delivery acceptance as a separate gate. No force upgrade or binary release.
+
+## Unreleased — customer authentication audit remediation
+
+- Bound customer login attempts to ten/IP/minute with Retry-After and bounded no-eviction limiter shared with the independently counted owner login path.
+- Derive customer access-token signing keys from current credential material and JWT secret; own/admin/offline password replacement rejects older tokens. Prevent issuance against a stale password-verification snapshot.
+- Add fresh session fields to successful own-password-change response and update frontend to validate/store the replacement token/expiry.
+- Compatibility: initial upgrade invalidates old customer tokens; deploy backend/frontend together. No schema migration or published release. Restore/re-enable limits are documented in ADR-024. Other audit findings remain open.
+
+
 ## Unreleased —28 October2026 documentation/code audit
 
 - Preserve309 original text documents with SHA-256 baseline manifest and immutable history; classify active specs/ADRs and historical work.

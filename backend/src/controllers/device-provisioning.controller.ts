@@ -218,6 +218,7 @@ export const flashAndBindInstallationDevice = asyncHandler(
       return;
     }
 
+    await deviceProvisioningLocalClient.validateTls(String(request.body.platformUrl));
     const detected = await deviceProvisioningLocalClient.detect(port);
     if (!detected.supported || detected.chip !== "ESP32-S3") {
       throw new AppError(

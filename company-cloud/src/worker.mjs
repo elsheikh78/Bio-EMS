@@ -103,16 +103,21 @@ async function admin(req, env) {
     env.COMPANY_ADMIN_TOKEN.length < 32
   )
     fail(503, "Company authentication is not configured");
-  const cookie = req.headers
-    .get("Cookie")
-    ?.split(";")
-    .map((x) => x.trim())
-    .find((x) => x.startsWith("__Host-bioems="))
-    ?.slice(14);
+  const cookies =
+    req.headers
+      .get("Cookie")
+      ?.split(";")
+      .map((part) => part.trim())
+      .filter((part) => part.startsWith("__Host-bioems=")) ?? [];
+  if (cookies.length !== 1) fail(401, "Sign in to the company portal");
+  const cookie = cookies[0].slice(14);
   if (!cookie) fail(401, "Sign in to the company portal");
-  const [expires, nonce, signature] = cookie.split(".");
+  const parts = cookie.split(".");
+  if (parts.length !== 3) fail(401, "Invalid session");
+  const [expires, nonce, signature] = parts;
   if (
-    !expires ||
+    !/^[0-9]+$/.test(expires) ||
+    !Number.isSafeInteger(Number(expires)) ||
     !nonce ||
     !signature ||
     Number(expires) <= Date.now() ||
@@ -126,6 +131,14 @@ async function admin(req, env) {
     ))
   )
     fail(401, "Invalid session");
+  const tokenHash = await hash(cookie);
+  const session = await env.DB.prepare(
+    "SELECT token_hash FROM company_sessions WHERE token_hash=? AND admin_key_hash=? AND expires_at>?",
+  )
+    .bind(tokenHash, await hash(env.COMPANY_ADMIN_TOKEN), Date.now())
+    .first();
+  if (!session) fail(401, "Session expired or revoked");
+  return tokenHash;
 }
 function origin(req) {
   if (
@@ -174,11 +187,23 @@ async function handle(req, env, ctx) {
     const data = await body(req);
     if (!(await same(data.token, env.COMPANY_ADMIN_TOKEN)))
       fail(401, "Invalid company access key");
-    const value = `${Date.now() + SESSION_MS}.${crypto.randomUUID()}`;
+    const expiresAt = Date.now() + SESSION_MS;
+    const value = `${expiresAt}.${crypto.randomUUID()}`;
+    const signedCookie = `${value}.${await sign(value, env.SESSION_SECRET)}`;
+    await env.DB.prepare(
+      "INSERT INTO company_sessions(token_hash,admin_key_hash,created_at,expires_at) VALUES(?,?,?,?)",
+    )
+      .bind(
+        await hash(signedCookie),
+        await hash(env.COMPANY_ADMIN_TOKEN),
+        Date.now(),
+        expiresAt,
+      )
+      .run();
     const response = json({ ok: true });
     response.headers.set(
       "Set-Cookie",
-      `__Host-bioems=${value}.${await sign(value, env.SESSION_SECRET)}; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=1800`,
+      `__Host-bioems=${signedCookie}; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=1800`,
     );
     return response;
   }
@@ -276,7 +301,7 @@ async function handle(req, env, ctx) {
     return json({ ok: true });
   }
   if (path.startsWith("/api/company/")) {
-    await admin(req, env);
+    const companySessionHash = await admin(req, env);
     origin(req);
     const managementResponse = await managementRoutes(
       req,
@@ -296,6 +321,9 @@ async function handle(req, env, ctx) {
     );
     if (viewerAdminResponse) return viewerAdminResponse;
     if (path === "/api/company/logout" && req.method === "POST") {
+      await env.DB.prepare("DELETE FROM company_sessions WHERE token_hash=?")
+        .bind(companySessionHash)
+        .run();
       const response = json({ ok: true });
       response.headers.set(
         "Set-Cookie",
@@ -580,6 +608,9 @@ export default {
   async scheduled(_event, env) {
     await deliverPush(env);
     await env.DB.batch([
+      env.DB.prepare("DELETE FROM company_sessions WHERE expires_at<=?").bind(
+        Date.now(),
+      ),
       env.DB.prepare("DELETE FROM viewer_sessions WHERE expires_at<?").bind(
         Date.now(),
       ),

@@ -51,6 +51,9 @@ def main() -> int:
 
     build_dir = Path(args.build_dir).resolve()
     output_dir = Path(args.output_dir).resolve()
+    config = (build_dir / "config" / "sdkconfig.h").read_text(encoding="utf-8")
+    if any(flag in config for flag in ("#define CONFIG_BIOEMS_USB_AB_MAINTENANCE 1", "#define CONFIG_BIOEMS_REQUIRE_PRODUCTION_SECURITY 1", "#define CONFIG_SECURE_BOOT 1", "#define CONFIG_SECURE_FLASH_ENC_ENABLED 1")):
+        raise RuntimeError("A/B maintenance builds must not be packaged as ordinary pilot firmware")
     version_header = Path(args.version_header).resolve()
 
     if not re.fullmatch(r"[0-9a-f]{40}", args.source_commit):

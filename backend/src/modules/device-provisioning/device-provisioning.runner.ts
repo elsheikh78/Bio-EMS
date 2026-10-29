@@ -1,3 +1,4 @@
+import { validateDeviceTlsCertificate } from "./device-tls-certificate";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
@@ -286,14 +287,24 @@ export class LocalProvisioningRunner {
     return { port, ...simScanResultSchema.parse(JSON.parse(result.stdout.trim())) };
   }
 
-  async provision(portInput: string, input: SerialProvisioningInput) {
-    const port = windowsSerialPortSchema.parse(portInput);
+  private readTlsCertificate(platformUrl: string) {
     const certificatePath = this.config.tlsCertificatePath;
     if (!certificatePath || !existsSync(certificatePath))
       throw new Error("BIO-EMS TLS certificate is not installed for device provisioning");
     const certificate = readFileSync(certificatePath);
-    if (certificate.length < 100 || certificate.length > 2500)
-      throw new Error("BIO-EMS TLS certificate has invalid length");
+    if (certificate[0] !== 0x30)
+      throw new Error("Device TLS requires the exported DER certificate");
+    const identity = validateDeviceTlsCertificate(certificate, platformUrl);
+    return { certificate, identity };
+  }
+
+  validateTls(platformUrl: string) {
+    return this.readTlsCertificate(platformUrl).identity;
+  }
+
+  async provision(portInput: string, input: SerialProvisioningInput) {
+    const port = windowsSerialPortSchema.parse(portInput);
+    const { certificate, identity: tlsIdentity } = this.readTlsCertificate(input.platformUrl);
     const script = [
       "$ErrorActionPreference='Stop'",
       "$portName=$env:BIOEMS_SERIAL_PORT",
@@ -375,7 +386,9 @@ export class LocalProvisioningRunner {
           BIOEMS_WIFI_PASSWORD_B64: Buffer.from(input.wifiPassword ?? "", "utf8").toString(
             "base64"
           ),
-          BIOEMS_PLATFORM_URL_B64: Buffer.from(input.platformUrl, "utf8").toString("base64"),
+          BIOEMS_PLATFORM_URL_B64: Buffer.from(tlsIdentity.platformOrigin, "utf8").toString(
+            "base64"
+          ),
           BIOEMS_PAIRING_CODE: input.pairingCode,
           BIOEMS_CA_DER_B64: certificate.toString("base64"),
         },

@@ -349,7 +349,9 @@ else {
 
 $secureTlsPassword = ConvertTo-SecureString $tlsPassword -AsPlainText -Force
 try {
-    $certificate = New-SelfSignedCertificate -DnsName @("localhost", $env:COMPUTERNAME) -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -NotAfter (Get-Date).AddYears(3)
+    $localAddresses = @("127.0.0.1", "::1") + @(Get-NetIPAddress -AddressFamily IPv4 -AddressState Preferred -ErrorAction Stop | Where-Object { $_.IPAddress -notmatch '^(127\.|169\.254\.|0\.)' } | Select-Object -ExpandProperty IPAddress)
+    $certificateParameters = & (Join-Path $PSScriptRoot "Get-PlatformTlsCertificateParameters.ps1") -DnsNames @("localhost", $env:COMPUTERNAME) -IpAddresses $localAddresses
+    $certificate = New-SelfSignedCertificate @certificateParameters -CertStoreLocation "Cert:\LocalMachine\My" -KeyAlgorithm RSA -KeyLength 3072 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -NotAfter (Get-Date).AddYears(3)
 } catch {
     throw "TLS certificate creation failed: $($_.Exception.Message)"
 }

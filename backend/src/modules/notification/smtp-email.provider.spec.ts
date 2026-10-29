@@ -48,3 +48,36 @@ describe("SmtpEmailProvider", () => {
     ).rejects.toThrow("invalid receipt");
   });
 });
+
+describe("installed Nodemailer compatibility", () => {
+  it("builds a real RFC message with the installed transport without contacting an SMTP server", async () => {
+    const nodemailer = await import("nodemailer");
+    const transport = nodemailer.default.createTransport({ streamTransport: true, buffer: true });
+    let message = "";
+    const provider = new SmtpEmailProvider(
+      "SMTP",
+      "alerts@example.com",
+      { host: "unused.invalid", port: 465, secure: true, username: "unused", password: "unused" },
+      {
+        sendMail: async (options: Parameters<typeof transport.sendMail>[0]) => {
+          const result = await transport.sendMail(options);
+          message = String(result.message);
+          return result;
+        },
+      }
+    );
+    const receipt = await provider.send(
+      {
+        delivery: { severity: "WARNING" },
+        recipient: "quality@example.com",
+        payload: { alarmType: "LOW_TEMPERATURE", triggerValue: 1.2 },
+      } as never,
+      new AbortController().signal
+    );
+    expect(receipt.messageId).toMatch(/@/);
+    expect(message).toContain("To: quality@example.com");
+    expect(message).toContain("Subject: [BIO-EMS WARNING] Environmental alarm");
+    expect(message).toContain("triggerValue: 1.2");
+    transport.close();
+  });
+});

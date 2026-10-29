@@ -1,0 +1,51 @@
+name: Security operations
+on:
+  pull_request:
+    paths: ['installer/windows/**','company-cloud/**','tools/device-security/**','backend/**','.github/workflows/security-operations.yml']
+  push:
+    branches: [main]
+    paths: ['installer/windows/**','company-cloud/**','tools/device-security/**','backend/**','.github/workflows/security-operations.yml']
+permissions:
+  contents: read
+jobs:
+  windows-rotation:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - run: npm run build
+        working-directory: backend
+      - name: Parse security PowerShell tools
+        shell: powershell
+        run: |
+          $files = @(Get-ChildItem installer/windows -Include *.ps1,*.psm1 -Recurse) + @(Get-Item company-cloud/Invoke-SecurityDeployment.ps1,tools/device-security/New-MainSigningKey.ps1)
+          foreach ($file in $files) {
+            $tokens=$null; $errors=$null
+            [Management.Automation.Language.Parser]::ParseFile($file.FullName,[ref]$tokens,[ref]$errors) | Out-Null
+            if ($errors.Count) { throw "$($file.Name): $($errors.Message)" }
+          }
+      - name: Verified vendor download recovery
+        shell: powershell
+        run: '& .\installer\windows\Test-VendorDownload.ps1'
+      - name: Native certificate activation and injected-failure recovery
+        shell: powershell
+        run: '& .\installer\windows\Test-PlatformTlsRotation.ps1 -ApplicationRoot $PWD.Path'
+  recovery-transport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - run: node --test tools/device-security/test_signing_key.cjs
+      - run: python -m unittest discover -s tools/device-security -p 'test_*.py' -v

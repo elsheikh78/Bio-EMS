@@ -1,4 +1,18 @@
+# Current follow-up — 28 October 2026
+
+A05 has a pilot.8 source fix and exact SAN provisioning preflight; installed Windows/Main acceptance remains pending. Mobile compatible patches retain 3 High/5 Low affected Expo-tooling package entries per app. Device status reporting and the optional startup gate do not activate Secure Boot/encryption or close the PKI/manufacturing/recovery requirements. Remote D1 deployment requires authenticated account access and backup. See PROJECT_STATE and docs/security/DEVICE-PROTECTION-AND-MOBILE-STATUS.md.
+
 # BIO-EMS Risk Register
+
+## Phase-two security candidate — 28 October 2026
+
+A04 has a source fix with D1 session revocation tests; rollout requires migration 0003 before Worker deployment and company re-login. A rollback to stateless Worker requires session-secret rotation. Backend/frontend/cloud test-tool advisory entries are zero in the candidate; mobile and unscanned ecosystems remain open. A05 Main TLS is still open: certificate SANs currently cover localhost/computer name, not arbitrary provisioning LAN IPs. No installed certificate/device trust change is claimed.
+
+
+## Customer-auth remediation candidate — 28 October 2026
+
+A02/R-26 and A03/R-27 have source fixes and desired regression tests on `fix/customer-auth-audit`; merge/deployment remain pending. Initial upgrade requires customer re-login and matched backend/frontend rollout. Limits are process-local; restoring old credential data under the same JWT secret can resurrect matching unexpired tokens, and disable/re-enable alone is not permanent revocation. See ADR-024 and the customer-auth remediation guide. Backend/frontend runtime dependency entries are reduced to zero in the source candidate; remaining development/tooling and other-component advisories, company sessions, Main TLS and device trust remain open.
+
 
 ## Current audit risks —28 October2026
 
