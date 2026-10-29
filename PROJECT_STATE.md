@@ -1,6 +1,12 @@
 # BIO-EMS Project State
 
-## Security operations and recoverable Main candidate — 29 October 2026
+## Integrated security source — 29 October 2026
+
+PR #313 is merged at `6e43f7c7822dff9c576ebd4678eaf9740eb7d311`. All nine workflows on reviewed head `acf2b6eaaf0fe47f116f45dfe47d55b787492bbd` passed, including complete Windows Setup install/update/restore/New Install, native certificate rotation/failure recovery, both Main layouts, Tester and mobile workflows. Distributed CI binaries identify the tested PR merge `93c68a6a4a077f089b3aff6e3982a7afe167e462`; these are tested Pilot builds, not a new tagged release or physical acceptance.
+
+Current source: product 0.20.0, Main pilot.9, Nano bench.2, Tester 0.6.2. Protected D1 deployment and Windows certificate/trust maintenance tools are ready; no remote migration/deployment, live-PC certificate replacement, owner production-key creation or eFuse activation was performed. Each mobile dependency tree retains 3 High/5 Low affected Expo-tooling entries. Full device PKI/mTLS, NVS/console security policy, key custody and designated-board recovery/manufacturing acceptance remain open. See [integration evidence](docs/security/evidence/SECURITY-INTEGRATION-2026-10-29.json) and [execution guide](docs/security/SECURITY-OPERATIONS-AR.md).
+
+## Security operations checkpoint before integration — 29 October 2026
 
 All native CI on prior head 6861784 passed, including Windows Setup. The subsequent source candidate adds guarded D1 backup/migration/deployment from PowerShell, transactional Windows TLS activation/recovery, an owner-side signing-key preparation tool, and a separately built Main A/B USB-maintenance profile. Normal Main becomes pilot.9 and Tester 0.6.2; ordinary packages remain single-app. First-boot A/B confirmation has a 180-second deadline and explicit operator acceptance. CI on 0bd43ac verified both ESP-IDF profiles, native Windows certificate activation/failure recovery, backend/frontend/cloud, both mobile builds, Tester and documentation. Windows Setup encountered a vendor transport reset and is being retried; the follow-up adds bounded verified downloads and a USB-console-prompt regression. Designated-board and deployed acceptance remain open. No remote D1/Worker operation, live-PC certificate rotation, owner production-key creation or device/eFuse activation has occurred. See [Arabic execution guide](docs/security/SECURITY-OPERATIONS-AR.md) and [ADR-027](docs/adr/ADR-027-security-operations-and-recoverable-main.md).
 
@@ -27,16 +33,17 @@ Local Node24 verification: backend 1101 tests/164 files; frontend 357 tests/64 f
 
 | Item | Reviewed state |
 | --- | --- |
-| Merged main | `c8d4e4f7b4a19bcc63472f8f706bc708122aa6de` |
+| Security code integration | `6e43f7c7822dff9c576ebd4678eaf9740eb7d311`, PR #313 |
+| Historical audit integration | `c8d4e4f7b4a19bcc63472f8f706bc708122aa6de` |
 | Historical audit candidate | `d151b1f3aba42e4c5d0ad0b34696c71db2cb7cfc`, PR #311, open at audit |
 | Product source / backend / release manifest | `0.20.0` |
 | Latest published tagged source release | `v0.20.0`, published 7 September 2026; not a release of the October candidate |
-| Merged Hardware Tester | `0.6.0` |
-| Main / Nano operating firmware | `0.1.0-pilot.7` / `0.1.0-bench.2` |
+| Current Hardware Tester | `0.6.2` |
+| Main / Nano operating firmware | `0.1.0-pilot.9` / `0.1.0-bench.2` |
 | Company / customer mobile app source | Separate apps, each `0.1.0` |
 | Current installed binaries / matching live Worker | Not inspected in this audit |
 
-The documentation audit was based on candidate `d151b1f` before integration. PR #311 and #312 are now merged; no binary publication/deployment/physical acceptance follows automatically. Security remediation above is a separate unmerged candidate. No source version bump, release or migration is performed here.
+The documentation audit was based on candidate `d151b1f` before integration. PR #311 and #312 are now merged; no binary publication/deployment/physical acceptance follows automatically. Security remediation is now integrated through PR #313; the checkpoints above retain their earlier source/deployment boundaries. No source version bump, release or migration is performed here.
 
 ## Verified during the audit
 
@@ -46,7 +53,7 @@ Passing functional gates does not mean security approval. Dependency audit has *
 
 ## Hardware responsibility and implemented limits
 
-The candidate moves all new hardware qualification to standalone Tester 0.6.0. System Owner retains installation configuration, discovery, provisioning and device binding. Hardware Lab UI is removed; former write endpoints return HTTP 410; authenticated historical GETs and old database rows remain. There is no automatic historical database migration into Tester.
+All new hardware qualification belongs to standalone Tester, currently 0.6.2. System Owner retains installation configuration, discovery, provisioning and device binding. Hardware Lab UI is removed; former write endpoints return HTTP 410; authenticated historical GETs and old database rows remain. There is no automatic historical database migration into Tester.
 
 Tester includes isolated QC flash, separate operating firmware flash and an 18-step qualification checklist. Nano classic uses 57600 for upload; new bootloader uses 115200; QC runtime uses 115200. Operating Main/Nano bus uses 9600 8N1. Main has **one shared RS485 bus and up to four unique Nano addresses**, four channels each. The automated integrated scope observes **one selected Nano/four probes**. Independent full-population evidence is still required for sixteen probes.
 
