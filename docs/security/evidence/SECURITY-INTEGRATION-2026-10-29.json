@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-29",
+  "reviewed_head": "acf2b6eaaf0fe47f116f45dfe47d55b787492bbd",
+  "tested_pr_merge": "93c68a6a4a077f089b3aff6e3982a7afe167e462",
+  "integrated_code_commit": "6e43f7c7822dff9c576ebd4678eaf9740eb7d311",
+  "pull_request": 313,
+  "workflow_runs": {
+    "CI": 40816153773,
+    "Documentation integrity": 40816153784,
+    "Security operations": 40816153849,
+    "ESP32-S3 Firmware": 40816153765,
+    "Windows Manufacturer Tools": 40816153791,
+    "Internal Windows Setup": 40816153827,
+    "Standalone Hardware QC Tester": 40816153803,
+    "Customer mobile": 40816153770,
+    "Company mobile": 40816153788
+  },
+  "all_workflows_passed": true,
+  "routine_tests": {
+    "backend": 1111,
+    "frontend": 357,
+    "company_cloud": 38,
+    "tester": 78,
+    "usb_transport": 4,
+    "signing_key": 1,
+    "documentation_fixtures": 3
+  },
+  "versions": {
+    "product": "0.20.0",
+    "main": "0.1.0-pilot.9",
+    "nano": "0.1.0-bench.2",
+    "tester": "0.6.2"
+  },
+  "artifact_ids": {
+    "setup": 12872898539,
+    "tester": 12872224444,
+    "main": 12872398178
+  },
+  "remote_deployed": false,
+  "existing_pc_certificate_rotated": false,
+  "owner_production_keys_created": false,
+  "physical_security_activated": false,
+  "production_accepted": false,
+  "open": [
+    "mobile Expo-tooling advisories: 3 High/5 Low affected entries per app",
+    "per-device PKI/mTLS and lifecycle",
+    "production NVS and USB-console authorization policy",
+    "owner key custody and backup",
+    "designated-board power-cut/recovery/manufacturing acceptance",
+    "live D1/Worker and site certificate/controller rollout"
+  ]
+}

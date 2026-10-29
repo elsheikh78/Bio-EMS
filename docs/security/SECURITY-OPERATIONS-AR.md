@@ -1,6 +1,6 @@
 # دليل إتمام الترحيل والشهادة وحماية الـMain
 
-29 أكتوبر 2026. هذه أدوات تنفيذ وليست إثباتًا لتطبيقها على حساب Cloudflare أو أجهزة العميل. الحالة المعتمدة في PROJECT_STATE. المصدر المرشح: Main pilot.9 وTester 0.6.2. كل اختبارات الهاردوير والتأهيل تظل داخل Tester؛ أدوات التصنيع والصيانة التالية لا تمنح قبولًا للهاردوير.
+29 أكتوبر 2026. تم دمج الأدوات في PR #313 بعد نجاح الفحوص التسعة. هذه أدوات تنفيذ وليست إثباتًا لتطبيقها على حساب Cloudflare أو أجهزة العميل. الحالة المعتمدة في PROJECT_STATE. المصدر المرشح: Main pilot.9 وTester 0.6.2. كل اختبارات الهاردوير والتأهيل تظل داخل Tester؛ أدوات التصنيع والصيانة التالية لا تمنح قبولًا للهاردوير.
 
 ## 1. ترحيل ونشر Cloudflare من PowerShell
 
@@ -37,8 +37,8 @@
 ```powershell
 $password = Read-Host 'Candidate PFX password' -AsSecureString
 .\installer\windows\Invoke-PlatformTlsRotation.ps1 `
-  -ApplicationRoot 'C:\Program Files\BIOEMS' `
-  -PersistentRoot 'C:\ProgramData\BIOEMS' `
+  -ApplicationRoot 'C:\Program Files\BIO-EMS' `
+  -PersistentRoot 'C:\ProgramData\BIO-EMS' `
   -PlatformUrl 'https://YOUR-STABLE-HOST' `
   -CandidatePfx 'D:\Protected-TLS\next.pfx' `
   -CandidatePassword $password `
@@ -55,8 +55,8 @@ $password = Read-Host 'Candidate PFX password' -AsSecureString
 
 ```powershell
 .\installer\windows\Invoke-PlatformTlsRotation.ps1 `
-  -ApplicationRoot 'C:\Program Files\BIOEMS' `
-  -PersistentRoot 'C:\ProgramData\BIOEMS' `
+  -ApplicationRoot 'C:\Program Files\BIO-EMS' `
+  -PersistentRoot 'C:\ProgramData\BIO-EMS' `
   -PlatformUrl 'https://PREVIOUS-VERIFIED-HOST' `
   -SnapshotDirectory 'D:\BIOEMS-Backups\tls-EXACT-SNAPSHOT-ID'
 ```
@@ -92,3 +92,5 @@ python .\tools\device-security\usb_update.py --port COM5 --uid EXACT_HARDWARE_UI
 قبل تفعيل أي eFuse: سجّل UID ومراجعة الشريحة والفلاش، افحص إعدادات الحماية الحالية مستقلًا، اختبر بناء A/B والتوقيع والاسترجاع على لوحة مخصصة، اعتمد مالك المفتاح وطريقة نسخ مفتاح التوقيع وتدويره، وحدد سياسة مفتاح تشفير مختلف لكل جهاز ومنفذ التحديث بعد القفل. لو ولّد الجهاز مفتاحًا غير قابل للقراءة فلا تعد باسترجاع نسخة منه لاحقًا. اختبر مسار التحديث الموقع واحتفظ بلوحة بديلة عند تلف مسار إقلاع مقفول.
 
 لا تحتوي الأدوات على أوامر حرق eFuse أو تفعيل تلقائي. Secure Boot/Flash Encryption/NVS encryption وإغلاق debug/download تحتاج ملف تصنيع محددًا ومراجعة على الأجهزة، ولا يثبتها نجاح build. بوابة sdkconfig.production-gate تفحص الحماية المفعلة أصلًا فقط. PKI/mTLS وهوية المفاتيح لكل جهاز وإلغاء الشهادات ما زالت مسارًا إنتاجيًا مستقلًا غير مكتمل؛ لا يساويها نجاح pairing أو HTTPS. حماية Nano الكلاسيك تحتاج معالجة منفصلة ولا تُعتمد بتفعيل حماية Main.
+
+سياسة الإنتاج يجب أن تؤمّن أو تعطل أوامر USB التي تغيّر الشبكة والشهادة والربط قبل قفل الأجهزة؛ تفعيل Secure Boot وتشفير الفلاش وحدهما لا يمنحان هذه الأوامر تفويضًا. هذه السياسة وهوية الأجهزة mTLS وقبول العتاد لم تُغلق في هذه الدفعة.

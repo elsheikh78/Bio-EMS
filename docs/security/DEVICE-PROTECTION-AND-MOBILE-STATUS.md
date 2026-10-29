@@ -1,10 +1,10 @@
 # Device protection and mobile dependency status
 
-28 October 2026. Implementation evidence is distinct from production acceptance.
+29 October 2026. Implementation evidence is distinct from production acceptance.
 
 ## Main protection boundary
 
-Main pilot.8 reports actual `secure-boot-enabled` and `flash-encryption-enabled` values through ESP-IDF runtime APIs, plus required TLS identity checking. Tester 0.6.1 captures these fields without modifying the device. Missing, duplicate or malformed values remain unknown; even enabled flags are `REPORTED_ENABLED_NOT_ATTESTED`, never automatic production acceptance.
+Main pilot.9 reports actual `secure-boot-enabled` and `flash-encryption-enabled` values through ESP-IDF runtime APIs, plus required TLS identity checking. Tester 0.6.2 captures these fields without modifying the device. Missing, duplicate or malformed values remain unknown; even enabled flags are `REPORTED_ENABLED_NOT_ATTESTED`, never automatic production acceptance.
 
 The optional `sdkconfig.production-gate` overlay enables `CONFIG_BIOEMS_REQUIRE_PRODUCTION_SECURITY`. That build refuses application startup unless both actual hardware protections report enabled. It does not generate keys, sign images, enable encryption, burn eFuses, disable debug/download access or configure recovery. The default pilot build remains usable for reversible qualification.
 
@@ -21,3 +21,7 @@ Do not apply the registry's suggested Expo 51 downgrade or force Zod 4 into Expo
 Migration `company-cloud/migrations/0003_company_sessions.sql` is additive. Before deployment identify the intended Cloudflare account and configured `bioems-company` D1 database, obtain a recoverable export or Time Travel bookmark and record it privately, inspect pending migrations, then apply 0003 before the matched Worker. Verify table/index presence and login/logout/copied-cookie rejection; retain deployment identifiers and backup evidence without secrets. Old stateless-Worker rollback requires session-secret rotation to invalidate copied legacy cookies.
 
 No remote D1 migration, Worker deployment, existing-PC certificate replacement or physical protection activation has been performed by this source work. Cloudflare authentication is required for the remote steps. Production migration acceptance must record the actual database and deployment result rather than a local test.
+
+## Integrated follow-up
+
+PR #313 is merged. All nine workflows on acf2b6e passed, including native Windows certificate rotation and failure recovery, both Main build profiles and complete installer lifecycle checks. The [execution guide](SECURITY-OPERATIONS-AR.md) covers D1 deployment, certificate/server/controller trust rollout, separate A/B USB maintenance and owner-side signing-key preparation. Physical validation, live operations, key custody, production NVS protection and authenticated/disabled mutating USB-console policy remain open. Secure Boot/encryption flags alone do not close those controls.
