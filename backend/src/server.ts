@@ -1,3 +1,4 @@
+import { startBluetoothBridgeRuntime } from "./modules/controller-runtime/bluetooth-bridge.runtime";
 import { readFileSync } from "node:fs";
 import { createServer as createHttpsServer } from "node:https";
 import app from "./app";
@@ -26,3 +27,6 @@ server.listen(PORT, () => {
 
 startNotificationDeliveryRuntime();
 startCompanyConnection(app);
+
+const stopBluetoothBridge = useTls ? startBluetoothBridgeRuntime() : () => undefined;
+process.once("exit", stopBluetoothBridge);

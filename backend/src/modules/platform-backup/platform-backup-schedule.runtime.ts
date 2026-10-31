@@ -1,3 +1,4 @@
+import { featurePolicyStore } from "../controller-runtime/feature-policy";
 import { createCompletePlatformBackup, prunePlatformBackups } from "./platform-backup.service";
 import {
   claimDuePlatformBackup,
@@ -11,7 +12,7 @@ export function startPlatformBackupScheduleRuntime(): () => void {
   let running = false;
 
   const tick = async () => {
-    if (running) return;
+    if (running || !featurePolicyStore.enabled("backups")) return;
     const schedule = claimDuePlatformBackup();
     if (!schedule) return;
 

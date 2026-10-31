@@ -1,3 +1,4 @@
+import { featurePolicyStore } from "../controller-runtime/feature-policy";
 import { config } from "../../config/config";
 import { HttpSmsProvider } from "./http-sms.provider";
 import { MetaWhatsappProvider } from "./meta-whatsapp.provider";
@@ -49,6 +50,7 @@ export function startNotificationDeliveryRuntime(): (() => void) | undefined {
   );
   const orchestrator = new NotificationEscalationOrchestrator();
   const run = () => {
+    if (!featurePolicyStore.enabled("notifications")) return;
     orchestrator.tick();
     void worker.tick();
   };

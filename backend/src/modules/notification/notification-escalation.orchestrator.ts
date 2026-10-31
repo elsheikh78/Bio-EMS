@@ -23,6 +23,10 @@ export class NotificationEscalationOrchestrator {
   tick(now = new Date()): number {
     let created = 0;
     for (const event of this.events.listPending(100)) {
+      if (event.sourceType === "DEVICE" && typeof event.payload.systemHealthId === "number") {
+        created += this.escalateHealth(event.payload.systemHealthId, event.id, event.sourceId, now);
+        continue;
+      }
       if (event.sourceType !== "ALARM") continue;
       if (event.eventType === "ALARM_ACKNOWLEDGED" || event.eventType === "ALARM_RECOVERED") {
         this.deliveries.cancelOpenForSource("ALARM", event.sourceId, now.toISOString());
@@ -59,6 +63,40 @@ export class NotificationEscalationOrchestrator {
             }
           }
         }
+      }
+    }
+    return created;
+  }
+
+  private escalateHealth(id: number, eventId: number, sourceId: string, now: Date): number {
+    const alarm = this.database
+      .prepare(
+        `SELECT a.status, a.trigger_time AS triggeredAt, d.site_id AS siteId
+      FROM controller_health_alarms a JOIN device_platform_bindings b ON b.platform_binding_id=a.binding_id
+      JOIN devices d ON d.device_id=b.device_identity WHERE a.id=?`
+      )
+      .get(id) as { status: string; triggeredAt: string; siteId: number } | undefined;
+    if (!alarm || alarm.status !== "TRIGGERED") {
+      this.deliveries.cancelOpenForSource("DEVICE", sourceId, now.toISOString());
+      this.events.markConsumed(eventId, now.toISOString());
+      return 0;
+    }
+    // Highest escalation: every eligible CRITICAL recipient immediately; repeat every 5 minutes until ACK/recovery.
+    const window = Math.floor(Math.max(0, now.getTime() - Date.parse(alarm.triggeredAt)) / 300000);
+    let created = 0;
+    for (const channel of ["WHATSAPP", "TELEGRAM", "EMAIL", "SMS"] as const) {
+      for (const recipient of this.recipients.resolveEligible(alarm.siteId, channel, "CRITICAL")) {
+        if (
+          this.deliveries.create({
+            notification_event_id: eventId,
+            site_id: alarm.siteId,
+            recipient_id: recipient.id,
+            channel,
+            severity: "CRITICAL",
+            idempotency_key: `health:${id}:${window}:${recipient.id}:${channel}`,
+          }).created
+        )
+          created++;
       }
     }
     return created;

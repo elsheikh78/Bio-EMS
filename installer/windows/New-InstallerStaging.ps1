@@ -204,6 +204,11 @@ Copy-Item (Join-Path $repository "backend\dist") $backendStage -Recurse
 Copy-Item (Join-Path $repository "backend\package.json") $backendStage
 Copy-Item (Join-Path $repository "backend\package-lock.json") $backendStage
 Invoke-Npm $backendStage @("ci", "--omit=dev")
+$bridgeBuild = Join-Path $repository "tools\bluetooth-bridge\dist\BIOEMS-Bluetooth-Bridge"
+if (-not (Test-Path (Join-Path $bridgeBuild "BIOEMS-Bluetooth-Bridge.exe") -PathType Leaf)) {
+    throw "Bluetooth relay executable is missing; build tools/bluetooth-bridge before staging"
+}
+Copy-Item -LiteralPath $bridgeBuild -Destination (Join-Path $backendStage "bluetooth-bridge") -Recurse
 
 $frontendStage = Join-Path $staging "work\frontend"
 Copy-Item (Join-Path $repository "frontend\dist") $frontendStage -Recurse

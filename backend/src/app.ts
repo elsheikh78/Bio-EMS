@@ -36,6 +36,12 @@ import { resolve } from "node:path";
 import { reconcilePlatformRestoreAudits } from "./modules/platform-backup/platform-backup.service";
 import { startPlatformBackupScheduleRuntime } from "./modules/platform-backup/platform-backup-schedule.runtime";
 
+import controllerHealthRouter from "./routes/controller-health.route";
+import { featurePolicyStore } from "./modules/controller-runtime/feature-policy";
+import featureSettingsRouter from "./routes/feature-settings.route";
+import controllerRuntimeRouter from "./routes/controller-runtime.route";
+import { requireFeature } from "./middleware/feature-gate.middleware";
+
 createTables();
 
 runMigrations();
@@ -60,25 +66,32 @@ app.use(`${config.apiPrefix}/platform-audit-events`, platformAuditEventRouter);
 app.use(`${config.apiPrefix}/platform-operations`, platformOperationsRouter);
 app.use(`${config.apiPrefix}/device-pairing`, devicePairingRouter);
 app.use(`${config.apiPrefix}/device-telemetry`, deviceTelemetryRouter);
+app.use(`${config.apiPrefix}/controller-runtime`, controllerRuntimeRouter);
+app.use(`${config.apiPrefix}/feature-settings`, featureSettingsRouter);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/auth`, authRouter);
+app.get(`${config.apiPrefix}/features`, (_req, res) =>
+  res.json(featurePolicyStore.get("platform").policy)
+);
+app.use(`${config.apiPrefix}/controller-health`, controllerHealthRouter);
 app.use(`${config.apiPrefix}/sites`, siteRouter);
 app.use(`${config.apiPrefix}/devices`, deviceRouter);
 app.use(`${config.apiPrefix}/rooms`, roomRouter);
+app.use(`${config.apiPrefix}/sensors/:sensor/calibrations`, requireFeature("calibration"));
 app.use(`${config.apiPrefix}/sensors`, sensorRouter);
 app.use(`${config.apiPrefix}/alarms`, alarmRouter);
 app.use(`${config.apiPrefix}/dashboard`, dashboardRouter);
 app.use(`${config.apiPrefix}/users`, userRouter);
-app.use(`${config.apiPrefix}/reports`, reportRouter);
+app.use(`${config.apiPrefix}/reports`, requireFeature("reports"), reportRouter);
 app.use(`${config.apiPrefix}/audit-events`, auditEventRouter);
 app.use(`${config.apiPrefix}/notification-recipients`, notificationRecipientRouter);
 app.use(`${config.apiPrefix}/escalation-policies`, escalationPolicyRouter);
 app.use(`${config.apiPrefix}/realtime`, realtimeRouter);
 app.use(`${config.apiPrefix}/notification-deliveries`, notificationDeliveryRouter);
 app.use(`${config.apiPrefix}/communication-channels`, communicationChannelRouter);
-app.use(`${config.apiPrefix}/platform-backups`, platformBackupRouter);
-app.use(`${config.apiPrefix}/platform-updates`, platformUpdateRouter);
+app.use(`${config.apiPrefix}/platform-backups`, requireFeature("backups"), platformBackupRouter);
+app.use(`${config.apiPrefix}/platform-updates`, requireFeature("updates"), platformUpdateRouter);
 app.use(`${config.apiPrefix}/installations`, installationAcceptanceRouter);
 app.use(config.apiPrefix, commissioningRouter);
 

@@ -28,6 +28,12 @@
 #include "sd_storage.h"
 #include "rtc.h"
 #include "gsm.h"
+#include "ble_relay.h"
+#include "relay_crypto.h"
+#include "runtime_policy.h"
+#include "esp_random.h"
+#include "esp_timer.h"
+#include <net/if.h>
 #include "freertos/semphr.h"
 #include <strings.h>
 #include <stdatomic.h>
@@ -51,6 +57,8 @@ static size_t ca_base64_length;
 static const char *TAG = "bioems";
 static EventGroupHandle_t wifi_events;
 static int wifi_retry_count;
+static esp_netif_t *wifi_netif;
+static const char *active_transport="offline";
 
 typedef struct {
   char *data;
@@ -123,6 +131,7 @@ static void wifi_event_handler(
   }
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
     xEventGroupClearBits(wifi_events, WIFI_CONNECTED_BIT);
+    if (!runtime_policy.wifi) return;
     if (wifi_retry_count < 5) {
       wifi_retry_count++;
       esp_wifi_connect();
@@ -152,17 +161,18 @@ static bool connect_wifi(void) {
   nvs_get_text("wifi_pass", password, sizeof(password));
 
   if (wifi_events) {
+    if(xEventGroupGetBits(wifi_events)&WIFI_CONNECTED_BIT)return true;
     esp_wifi_connect();
     return (xEventGroupWaitBits(wifi_events, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE,
-      pdMS_TO_TICKS(20000)) & WIFI_CONNECTED_BIT) != 0;
+      pdMS_TO_TICKS(100)) & WIFI_CONNECTED_BIT) != 0;
   }
   wifi_events = xEventGroupCreate();
-  ESP_ERROR_CHECK(esp_netif_init());
+  /* shared network stack initialized at boot */
   esp_err_t loop_result = esp_event_loop_create_default();
   if (loop_result != ESP_OK && loop_result != ESP_ERR_INVALID_STATE) {
     ESP_ERROR_CHECK(loop_result);
   }
-  esp_netif_create_default_wifi_sta();
+  wifi_netif=esp_netif_create_default_wifi_sta();
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -185,17 +195,21 @@ static bool connect_wifi(void) {
       WIFI_CONNECTED_BIT | WIFI_FAILED_BIT,
       pdFALSE,
       pdFALSE,
-      pdMS_TO_TICKS(20000));
+      pdMS_TO_TICKS(100));
   return (bits & WIFI_CONNECTED_BIT) != 0;
 }
 
 static bool connect_network(void) {
   network_started = true;
-  return ethernet_selected() ? bioems_ethernet_connect() : connect_wifi();
+  if(!runtime_policy.wifi&&wifi_events&&(xEventGroupGetBits(wifi_events)&WIFI_CONNECTED_BIT))esp_wifi_disconnect();
+  bool eth=runtime_policy.ethernet&&bioems_ethernet_connect();
+  bool wifi=runtime_policy.wifi&&connect_wifi();
+  return eth||wifi||(runtime_policy.bluetooth&&bioems_ble_ready());
 }
 static bool network_ready(void) {
-  return ethernet_selected() ? bioems_ethernet_ready() :
-    (wifi_events && (xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT));
+  return (runtime_policy.ethernet&&bioems_ethernet_ready()) ||
+    (runtime_policy.wifi&&wifi_events&&(xEventGroupGetBits(wifi_events)&WIFI_CONNECTED_BIT)) ||
+    (runtime_policy.bluetooth&&bioems_ble_ready());
 }
 static esp_err_t http_event(esp_http_client_event_t *event) {
   http_buffer_t *buffer = (http_buffer_t *)event->user_data;
@@ -438,51 +452,69 @@ static void clear_binding(void) {
   printf("local binding cleared; backend binding must be revoked separately by System Owner\n");
 }
 
-static esp_err_t sample_response(esp_http_client_event_t *event) {
-  if (event->event_id == HTTP_EVENT_ON_HEADER && event->user_data &&
-      event->header_key && event->header_value &&
-      strcasecmp(event->header_key, "x-bioems-utc-epoch") == 0) {
-    char *end = NULL;
-    long long epoch = strtoll(event->header_value, &end, 10);
-    if (end && *end == 0 && epoch >= 1760000000LL && epoch <= 4102444800LL)
-      *(time_t *)event->user_data = (time_t)epoch;
+static bool runtime_exchange(const char *binding,const char *type,const char *body) {
+  char active[40],token[65],base[MAX_URL],certificate[MAX_CA_PEM];
+  if(!nvs_get_text("binding_id",active,sizeof(active))||strcmp(binding,active)||
+     !nvs_get_text("tele_token",token,sizeof(token)))return false;
+  uint32_t random[4];esp_fill_random(random,sizeof(random));char id[33];
+  snprintf(id,sizeof(id),"%08lx%08lx%08lx%08lx",(unsigned long)random[0],(unsigned long)random[1],(unsigned long)random[2],(unsigned long)random[3]);
+  cJSON *message=cJSON_CreateObject(),*payload=cJSON_Parse(body);
+  if(!message||!payload){cJSON_Delete(message);cJSON_Delete(payload);return false;}
+  cJSON_AddStringToObject(message,"id",id);cJSON_AddStringToObject(message,"type",type);
+  cJSON_AddItemToObject(message,"payload",payload);
+  char *plain=cJSON_PrintUnformatted(message);cJSON_Delete(message);
+  char *encrypted=malloc(4096),*response=malloc(4096),*decrypted=malloc(2048);
+  bool ok=false;
+  if(!plain||!encrypted||!response||!decrypted||!relay_encrypt(binding,token,plain,encrypted,4096))goto finish;
+  static int64_t retry_after[2],ready_since[2];
+  int64_t now=esp_timer_get_time();
+  bool ready[2]={runtime_policy.ethernet&&bioems_ethernet_ready(),runtime_policy.wifi&&wifi_events&&(xEventGroupGetBits(wifi_events)&WIFI_CONNECTED_BIT)};
+  for(int i=0;i<2;i++){if(!ready[i])ready_since[i]=0;else if(!ready_since[i])ready_since[i]=now;}
+  for(int path=0;path<3&&!ok;path++) {
+    bool delivered=false;response[0]=0;
+    if(path<2){
+      if(!ready[path]||now<retry_after[path])continue;
+      const char *name=path==0?"ethernet":"wifi";
+      // Require 10 seconds of link stability before upgrading an already working lower-priority path.
+      if(strcmp(active_transport,"offline")&&strcmp(active_transport,name)&&now-ready_since[path]<10000000)continue;
+      if(!nvs_get_text("platform_url",base,sizeof(base))||!nvs_get_text("tls_ca",certificate,sizeof(certificate))||!bioems_https_origin_valid(base))continue;
+      struct ifreq interface={0};esp_netif_t *netif=path==0?bioems_ethernet_netif():wifi_netif;
+      if(!netif||esp_netif_get_netif_impl_name(netif,interface.ifr_name)!=ESP_OK)continue;
+      char url[MAX_URL+64];snprintf(url,sizeof(url),"%s/api/v1/controller-runtime/exchange",base);
+      http_buffer_t buffer={0};
+      esp_http_client_config_t config={.url=url,.cert_pem=certificate,.timeout_ms=2000,
+        .skip_cert_common_name_check=false,.event_handler=http_event,.user_data=&buffer,.if_name=&interface};
+      esp_http_client_handle_t client=esp_http_client_init(&config);
+      if(!client)continue;
+      esp_http_client_set_method(client,HTTP_METHOD_POST);esp_http_client_set_header(client,"Content-Type","application/json");
+      esp_http_client_set_post_field(client,encrypted,strlen(encrypted));
+      delivered=esp_http_client_perform(client)==ESP_OK&&esp_http_client_get_status_code(client)==200&&buffer.data&&buffer.length<4096;
+      if(delivered)strcpy(response,buffer.data);
+      free(buffer.data);esp_http_client_cleanup(client);
+    }else if(runtime_policy.bluetooth)delivered=bioems_ble_exchange(encrypted,response,4096);
+    if(delivered&&relay_decrypt(binding,token,response,decrypted,2048)){
+      cJSON *ack=cJSON_Parse(decrypted),*received=ack?cJSON_GetObjectItem(ack,"id"):NULL;
+      cJSON *accepted=ack?cJSON_GetObjectItem(ack,"accepted"):NULL;
+      ok=cJSON_IsString(received)&&!strcmp(received->valuestring,id)&&cJSON_IsTrue(accepted);
+      if(ok){
+        active_transport=path==0?"ethernet":path==1?"wifi":"bluetooth";
+        runtime_policy_confirm();runtime_policy_offer(ack);
+        cJSON *epoch=cJSON_GetObjectItem(ack,"epoch");
+        if(cJSON_IsNumber(epoch)&&epoch->valuedouble>=1760000000&&epoch->valuedouble<=4102444800&&!atomic_load(&server_time_synced))
+          if(sync_clock((time_t)epoch->valuedouble))atomic_store(&server_time_synced,true);
+      }cJSON_Delete(ack);
+    }
+    if(path<2)retry_after[path]=ok?0:now+15000000;
   }
-  return ESP_OK;
+finish:
+  if(!ok)active_transport="offline";
+  free(plain);free(encrypted);free(response);free(decrypted);return ok;
 }
-
-static bool send_sample(const char *binding, const char *body) {
-  char active[40], token[65], base[MAX_URL], certificate[MAX_CA_PEM];
-  if (!nvs_get_text("binding_id", active, sizeof(active))) return false;
-  if (strcmp(binding, active)) { ESP_LOGE(TAG, "STORAGE_BINDING_MISMATCH: retain card history for original installation"); return false; }
-  if (!network_ready() || !nvs_get_text("tele_token", token, sizeof(token)) ||
-      !nvs_get_text("platform_url", base, sizeof(base)) ||
-      !nvs_get_text("tls_ca", certificate, sizeof(certificate))) return false;
-  if (!bioems_https_origin_valid(base)) { ESP_LOGE(TAG, "HTTPS_REQUIRED: retaining queued data"); return false; }
-  char url[MAX_URL + 80];
-  snprintf(url, sizeof(url), "%s/api/v1/device-telemetry/%s", base, binding);
-  time_t server_epoch = 0;
-  esp_http_client_config_t config = {.url=url, .cert_pem=certificate,
-    .timeout_ms=2000, .skip_cert_common_name_check=false,
-    .event_handler=sample_response, .user_data=&server_epoch};
-  esp_http_client_handle_t client = esp_http_client_init(&config);
-  if (!client) return false;
-  esp_http_client_set_method(client, HTTP_METHOD_POST);
-  esp_http_client_set_header(client, "Content-Type", "application/json");
-  esp_http_client_set_header(client, "x-bioems-device-token", token);
-  esp_http_client_set_post_field(client, body, strlen(body));
-  esp_err_t result = esp_http_client_perform(client);
-  int status = result == ESP_OK ? esp_http_client_get_status_code(client) : 0;
-  esp_http_client_cleanup(client);
-  if (status == 202 && server_epoch && !atomic_load(&server_time_synced)) {
-    if (sync_clock(server_epoch)) atomic_store(&server_time_synced, true);
-  }
-  if (status != 202) ESP_LOGW(TAG, "Delivery failed HTTP %d: retaining queued data", status);
-  return status == 202;
-}
+static bool send_sample(const char *binding,const char *body) {return runtime_exchange(binding,"sample",body);}
 
 static void replay_samples(void) {
   // Bound replay per cycle so live acquisition is never starved by a long backlog.
-  for (int batch = 0; storage_ready && network_ready() && batch < 8; batch++) {
+  for (int batch = 0; runtime_policy.automaticReplay && storage_ready && network_ready() && batch < 8; batch++) {
     char record[OFFLINE_RECORD_MAX];
     int result = offline_queue_peek(record, sizeof(record));
     if (!result) return;
@@ -521,18 +553,102 @@ static void deliver_or_store(const char *readings) {
   if (trusted) snprintf(body, sizeof(body),
     "{\"timestamp\":\"%s\",\"mode\":\"LIVE\",\"signal\":%d,\"sensors\":[%s]}", timestamp, signal, readings);
   else snprintf(body, sizeof(body), "{\"signal\":%d,\"sensors\":[%s]}", signal, readings);
-  if (send_sample(binding, body)) return;
-  if (!trusted) { ESP_LOGE(TAG, "TIME_UNTRUSTED: cannot buffer an accurate historical sample"); return; }
-  if (!storage_ready) { ESP_LOGE(TAG, "STORAGE_UNAVAILABLE: sample could not be retained"); return; }
-  char record[OFFLINE_RECORD_MAX];
-  snprintf(record, sizeof(record), "{\"binding\":\"%s\",\"payload\":%s}", binding, body);
-  if (!offline_queue_append(record)) ESP_LOGE(TAG, "STORAGE_WRITE_FAILED_OR_FULL: manual attention required");
-  atomic_store(&queued_records, offline_queue_count());
+  cJSON *sample=cJSON_Parse(body);unsigned char rnd[16];char sample_id[33];esp_fill_random(rnd,sizeof(rnd));
+  for(int i=0;i<16;i++)snprintf(sample_id+i*2,3,"%02x",rnd[i]);
+  cJSON_AddStringToObject(sample,"sampleId",sample_id);
+  char *identified=cJSON_PrintUnformatted(sample);cJSON_Delete(sample);
+  if(!identified||strlen(identified)>=sizeof(body)){free(identified);return;}
+  strcpy(body,identified);free(identified);
+  bool queued=false;
+  bool was_empty=offline_queue_count()==0;
+  if(trusted&&runtime_policy.offlineStorage&&storage_ready){
+    char record[OFFLINE_RECORD_MAX];
+    snprintf(record,sizeof(record),"{\"binding\":\"%s\",\"payload\":%s}",binding,body);
+    queued=offline_queue_append(record);
+    if(!queued){storage_ready=false;ESP_LOGE(TAG,"STORAGE_WRITE_FAILED_OR_FULL");}
+    atomic_store(&queued_records,offline_queue_count());
+  }
+  if(send_sample(binding,body)){
+    if(queued&&was_empty&&offline_queue_ack())atomic_store(&queued_records,offline_queue_count());
+    return;
+  }
+  if(!queued)ESP_LOGE(TAG,"SAMPLE_NOT_RETAINED: storage disabled/unavailable or time untrusted");
+
+}
+
+static void report_health(void);
+
+// A small independent NVS journal preserves power/card transitions when the SD is unavailable.
+// Never overwrite unacknowledged events. Full journal is an explicit fault, not silent success.
+static void report_health(void) {
+  char binding[40];
+  if(!nvs_get_text("binding_id",binding,sizeof(binding))||!atomic_load(&clock_trusted))return;
+  unsigned disk=0;
+  bool healthy=storage_ready&&bioems_sd_usage(&disk);
+  if(storage_ready&&!healthy)storage_ready=false;
+  static int64_t remount_at;
+  if(!storage_ready&&runtime_policy.offlineStorage&&esp_timer_get_time()>remount_at){
+    remount_at=esp_timer_get_time()+30000000;
+    storage_ready=bioems_sd_mount();healthy=storage_ready&&bioems_sd_usage(&disk);
+  }
+  if(healthy){
+    unsigned queue_percent=(unsigned)((uint64_t)offline_queue_count()*100/CONFIG_BIOEMS_SD_QUEUE_RECORDS);
+    if(queue_percent>disk)disk=queue_percent;
+    if(disk>100)disk=100;
+  }
+  cJSON *health=cJSON_CreateObject();
+  time_t now=time(NULL);struct tm utc;gmtime_r(&now,&utc);char timestamp[32];
+  strftime(timestamp,sizeof(timestamp),"%Y-%m-%dT%H:%M:%SZ",&utc);
+  cJSON_AddStringToObject(health,"timestamp",timestamp);
+  cJSON_AddNumberToObject(health,"appliedRevision",runtime_policy.revision);
+  cJSON_AddStringToObject(health,"transport",active_transport);
+  cJSON_AddStringToObject(health,"storage",!runtime_policy.offlineStorage?"disabled":healthy?"ready":"fault");
+  if(healthy)cJSON_AddNumberToObject(health,"storageUsedPercent",disk);else cJSON_AddNullToObject(health,"storageUsedPercent");
+  cJSON_AddNumberToObject(health,"queued",offline_queue_count());runtime_power_read(health);
+  char signature[80];
+  cJSON *mains=cJSON_GetObjectItem(health,"mains"),*battery=cJSON_GetObjectItem(health,"batteryLow");
+  snprintf(signature,sizeof(signature),"%s:%d:%d:%d:%d:%d",binding,healthy,
+    cJSON_IsNull(mains)?-1:cJSON_IsTrue(mains),cJSON_IsNull(battery)?-1:cJSON_IsTrue(battery),
+    healthy&&disk>=(unsigned)runtime_policy.storageWarningPercent,runtime_policy.offlineStorage);
+  static char previous[80];
+  char *raw=malloc(12288);
+  if(!raw){cJSON_Delete(health);return;}
+  cJSON *journal=nvs_get_text("health_journal",raw,12288)?cJSON_Parse(raw):cJSON_CreateArray();
+  if(!cJSON_IsArray(journal)){ESP_LOGE(TAG,"HEALTH_JOURNAL_CORRUPT: preserve NVS for recovery");free(raw);cJSON_Delete(journal);cJSON_Delete(health);return;}
+  if(strcmp(previous,signature)){
+    if(cJSON_GetArraySize(journal)<24){
+      cJSON *event=cJSON_CreateObject();cJSON_AddStringToObject(event,"binding",binding);
+      cJSON_AddItemToObject(event,"payload",cJSON_Duplicate(health,true));cJSON_AddItemToArray(journal,event);
+      char *saved=cJSON_PrintUnformatted(journal);
+      if(saved&&strlen(saved)<12288&&nvs_set_text("health_journal",saved)==ESP_OK)strcpy(previous,signature);
+      else ESP_LOGE(TAG,"HEALTH_JOURNAL_WRITE_FAILED");
+      free(saved);
+    }else ESP_LOGE(TAG,"HEALTH_JOURNAL_FULL: unacknowledged events preserved; service required");
+  }
+  bool flushed=true;
+  // Bounded journal replay; current health follows only after historical transitions are acknowledged.
+  for(int i=0;i<3&&cJSON_GetArraySize(journal);i++){
+    cJSON *event=cJSON_GetArrayItem(journal,0),*owner=cJSON_GetObjectItem(event,"binding");
+    char *body=cJSON_PrintUnformatted(cJSON_GetObjectItem(event,"payload"));
+    bool accepted=cJSON_IsString(owner)&&!strcmp(owner->valuestring,binding)&&body&&runtime_exchange(binding,"health",body);
+    free(body);
+    if(!accepted){flushed=false;break;}
+    cJSON_DeleteItemFromArray(journal,0);char *saved=cJSON_PrintUnformatted(journal);
+    if(!saved||nvs_set_text("health_journal",saved)!=ESP_OK){free(saved);flushed=false;break;}free(saved);
+  }
+  if(flushed&&!cJSON_GetArraySize(journal)){
+    char *body=cJSON_PrintUnformatted(health);if(body)runtime_exchange(binding,"health",body);free(body);
+  }
+  cJSON_Delete(journal);free(raw);cJSON_Delete(health);
 }
 
 static void sim_poll_task(void *argument) {
   (void)argument;
   while (true) {
+    runtime_policy_check_rollback();
+    bioems_ble_enable(runtime_policy.bluetooth);
+    connect_network();
+    report_health();
     char count_text[2] = {0};
     char mask_text[9] = {0};
     int count = nvs_get_text("sim_count", count_text, sizeof(count_text))
@@ -564,7 +680,7 @@ static void sim_poll_task(void *argument) {
       if (used) deliver_or_store(readings);
     }
     replay_samples();
-    if (!ethernet_selected() && wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
+    if (runtime_policy.wifi && wifi_events && !(xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT))
       esp_wifi_connect();
     vTaskDelay(pdMS_TO_TICKS(5000));
   }
@@ -795,6 +911,10 @@ void app_main(void) {
   if (!atomic_load(&clock_trusted))
     ESP_LOGW(TAG, "RTC_UNTRUSTED: fresh provisioning or authenticated server time required");
 
+  ESP_ERROR_CHECK(esp_netif_init());
+  runtime_policy_init();
+  if(!bioems_ble_init())ESP_LOGE(TAG,"BLE_INIT_FAILED");
+  bioems_ble_enable(runtime_policy.bluetooth);
   storage_ready = bioems_sd_mount();
   atomic_store(&queued_records, offline_queue_count());
   if (!storage_ready) ESP_LOGW(TAG, "STORAGE_UNAVAILABLE: live delivery only");
@@ -804,7 +924,7 @@ void app_main(void) {
   if (nvs_get_text("binding_id", current_binding, sizeof(current_binding)))
     connect_network();
   if (sim_modbus_init())
-    xTaskCreate(sim_poll_task, "sim_modbus", 12288, NULL, 5, NULL);
+    xTaskCreate(sim_poll_task, "sim_modbus", 32768, NULL, 5, NULL);
   else
     ESP_LOGE(TAG, "SIM-D4 UART initialization failed");
   command_loop();

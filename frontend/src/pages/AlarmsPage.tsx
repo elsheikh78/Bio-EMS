@@ -19,6 +19,8 @@ import { hasPermission } from "../authorization/permissions";
 import { useAuthentication } from "../auth/useAuthentication";
 import { useLocalization } from "../localization/useLocalization";
 
+import { ControllerHealthAlarms } from "../alarms/ControllerHealthAlarms";
+
 export function AlarmsPage() {
   const { language } = useLocalization();
   const t = (english: string, arabic: string) =>
@@ -36,6 +38,7 @@ export function AlarmsPage() {
 
   return (
     <Stack spacing={4}>
+      <ControllerHealthAlarms canAcknowledge={canAcknowledge} />
       <Box>
         <Typography variant="overline" color="primary.main">
           {t("Operational Alarm lifecycle", "دورة حياة الإنذارات التشغيلية")}

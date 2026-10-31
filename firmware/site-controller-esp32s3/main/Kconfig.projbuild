@@ -83,3 +83,17 @@ config BIOEMS_UPDATE_CONFIRM_SECONDS
     default 180
     depends on BIOEMS_USB_AB_MAINTENANCE
 endmenu
+
+menu "BIO-EMS power supervision (unwired inputs remain unknown)"
+config BIOEMS_MAINS_GOOD_GPIO
+    int "Isolated low-voltage mains-good input GPIO (-1 disables)"
+    range -1 48
+    default -1
+config BIOEMS_BATTERY_LOW_GPIO
+    int "Battery-low digital input GPIO (-1 disables)"
+    range -1 48
+    default -1
+config BIOEMS_POWER_INPUT_ACTIVE_LOW
+    bool "Power supervision inputs are active low"
+    default n
+endmenu

@@ -35,6 +35,7 @@ const copy = {
       "Manage the platform customer fleet, licenses, update eligibility and service obligations.",
     open: "Open",
     modules: [
+      { key: "settings", label: "System feature settings" },
       { key: "customers", label: "Customer fleet" },
       { key: "admins", label: "Customer ADMIN accounts" },
       { key: "communication-channels", label: "Communication channels" },
@@ -78,6 +79,7 @@ const copy = {
     foundation: "إدارة عملاء المنصة والتراخيص وأهلية التحديث والتزامات الخدمة.",
     open: "فتح",
     modules: [
+      { key: "settings", label: "إعدادات خصائص النظام" },
       { key: "customers", label: "العملاء والمواقع" },
       { key: "admins", label: "إدارة حسابات Admin" },
       { key: "communication-channels", label: "قنوات الاتصال" },

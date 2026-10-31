@@ -39,6 +39,8 @@ import { migration033 } from "./migrations/033_create_admin_offline_recovery";
 import { migration035 } from "./migrations/035_company_license_snapshot";
 import { migration034 } from "./migrations/034_create_company_connection";
 
+import { migration036 } from "./migrations/036_main_resilience";
+
 export interface Migration {
   version: number;
 
@@ -83,6 +85,7 @@ const migrations: Migration[] = [
   migration033,
   migration034,
   migration035,
+  migration036,
 ];
 
 export function runMigrations(

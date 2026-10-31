@@ -9,6 +9,8 @@
 #include "freertos/event_groups.h"
 static EventGroupHandle_t events;
 static bool started;
+static esp_netif_t *ethernet_netif;
+esp_netif_t *bioems_ethernet_netif(void) { return ethernet_netif; }
 static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data) {
   if (base == IP_EVENT && id == IP_EVENT_ETH_GOT_IP) xEventGroupSetBits(events, BIT0);
   if (base == ETH_EVENT && (id == ETHERNET_EVENT_DISCONNECTED || id == ETHERNET_EVENT_STOP)) xEventGroupClearBits(events, BIT0);
@@ -16,7 +18,7 @@ static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data) {
 bool bioems_ethernet_ready(void) { return events && (xEventGroupGetBits(events) & BIT0); }
 bool bioems_ethernet_connect(void) {
   if (!started) {
-    ESP_ERROR_CHECK(esp_netif_init());
+    /* app_main initializes the shared TCP/IP stack once. */
     esp_err_t loop = esp_event_loop_create_default();
     if (loop != ESP_OK && loop != ESP_ERR_INVALID_STATE) return false;
     if (!events) events = xEventGroupCreate();
@@ -37,11 +39,11 @@ bool bioems_ethernet_connect(void) {
     uint8_t addr[6]; ESP_ERROR_CHECK(esp_read_mac(addr, ESP_MAC_WIFI_STA)); addr[0]=(addr[0]|2)&0xfe;
     ESP_ERROR_CHECK(esp_eth_ioctl(handle, ETH_CMD_S_MAC_ADDR, addr));
     esp_netif_config_t nc = ESP_NETIF_DEFAULT_ETH();
-    esp_netif_t *netif=esp_netif_new(&nc);
+    esp_netif_t *netif=esp_netif_new(&nc); ethernet_netif=netif;
     ESP_ERROR_CHECK(esp_netif_attach(netif, esp_eth_new_netif_glue(handle)));
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, on_event, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, on_event, NULL));
     ESP_ERROR_CHECK(esp_eth_start(handle)); started=true;
   }
-  return (xEventGroupWaitBits(events, BIT0, pdFALSE, pdFALSE, pdMS_TO_TICKS(20000)) & BIT0) != 0;
+  return (xEventGroupWaitBits(events, BIT0, pdFALSE, pdFALSE, pdMS_TO_TICKS(100)) & BIT0) != 0;
 }
