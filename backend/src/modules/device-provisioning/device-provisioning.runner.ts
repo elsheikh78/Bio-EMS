@@ -35,7 +35,7 @@ export interface SerialPortInventoryItem {
 }
 
 export interface SerialProvisioningInput {
-  networkMode?: "wifi" | "ethernet";
+  networkMode?: "wifi" | "ethernet" | "auto";
   wifiSsid?: string;
   wifiPassword?: string;
   platformUrl: string;
@@ -347,7 +347,7 @@ export class LocalProvisioningRunner {
       "  $epoch=[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()",
       "  $serial.WriteLine(('settime {0}' -f $epoch))",
       "  if((Read-Window 500) -notmatch 'UTC time saved') { throw 'Controller UTC time was not saved' }",
-      "  if ($env:BIOEMS_NETWORK_MODE -eq 'wifi') {",
+      "  if ($env:BIOEMS_NETWORK_MODE -ne 'ethernet') {",
       "  $serial.WriteLine(('setwifi {0} {1}' -f $ssid,$password))",
       "  $wifi=Read-Window 2500",
       "  Write-Output $wifi",

@@ -1,5 +1,8 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
+> Candidate pilot.10 / PR #316: runtime failover, BLE relay, durable sample receipts and owner policy/health exchange are described in [the current resilience guide](../../docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Older statements below about manual-only network selection describe the retained pilot.9 baseline, not the candidate. Physical acceptance remains open.
+
+
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/firmware/site-controller-esp32s3/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
 

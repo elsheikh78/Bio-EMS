@@ -1,6 +1,6 @@
 """Controlled bench procedure; evidence is manual unless linked to an acquired run."""
 PROFILE = 'Hardware qualification / staged checklist'
-REVISION = 'HQT-2 / pilot.9 / bench.2'
+REVISION = 'HQT-3 / pilot.10 / bench.2'
 # Code, title and reviewed acceptance/evidence instructions. Never label these AUTO.
 STEPS = [
  ('bench_setup','Bench setup and identification','Record Main, Nano and probe labels, installed firmware event IDs and isolated QC run IDs. Secure contacts; no mains on breadboard; verify regulated supplies before connection.'),
@@ -9,9 +9,12 @@ STEPS = [
  ('sensor_cables','Sensor cable lengths','Link separate acquired runs for 5 m, 10 m and intended maximum up to 20 m, at least two hours each. Record metrics JSON success_rate_percent (required, >=99.99%); approve acquisition limits before each run. Retain cable type, length and pull-up. Any changed resistor requires electrical review and retest.'),
  ('sensor_faults','Sensor faults and recovery','Power OFF before changing wiring. Use separate linked baseline, fault and recovery attempts for each input. Record missing probe, supply removal and replacement; verify unrelated channels continue. Do not short powered DATA or power rails.'),
  ('four_channels','Nano four channel isolation','Link Nano / 4 sensors QC with ROM mapping and individual response. Record CH2 fault and confirm CH1/CH3/CH4 remain operational, then recovery. Integrated scans do not expose ROM.'),
- ('short_rs485','RS485 short link','Use operating pilot.9 / bench.2, automatic-direction HW-519 and 9600 8N1. Link Main + Nano / 4 sensors via RS485 run; verify selected address, four inputs, communication loss and recovery.'),
+ ('short_rs485','RS485 short link','Use operating pilot.10 / bench.2, automatic-direction HW-519 and 9600 8N1. Link Main + Nano / 4 sensors via RS485 run; verify selected address, four inputs, communication loss and recovery.'),
  ('long_rs485','RS485 and power over 20 m','Link at least four hours of integrated polling over the intended 20 m cable. Record loaded far-end rails, missing scans, errors and resets. Power and voltage drop require physical measurements.'),
  ('ethernet_link','W5500 Ethernet and Wi Fi','For each fitted interface record actual platform delivery and outage/recovery. For Ethernet interrupt only network for two minutes; acquisition must continue. Successful USB acquisition alone does not prove network delivery.'),
+ ('transport_failover','Ethernet / Wi-Fi / BLE automatic failover','Use USB BLE on the Windows host with the bundled relay. Remove Ethernet, then Wi-Fi, then BLE; record actual platform delivery and timestamps on each path. Restore links and verify priority recovery after stability checks. Measure failover latency rather than claiming zero delay. Test at 5 and 10 m, in the final enclosure.'),
+ ('owner_features','Owner feature settings and rollback','For every optional switch record saved revision and Main applied revision. Verify disabled paths carry no telemetry, replay pauses without deleting history, all three paths cannot be disabled, and an unreachable candidate rolls back. Verify customer roles cannot change settings and change reason/actor are retained.'),
+ ('critical_health','Critical power and storage alarms','With approved low-voltage supervision wired, remove the primary input while backup powers the Main; verify CRITICAL power event and recovery. Test battery-low input, absent/removed card, write failure and warning occupancy. Record immediate highest-priority notification, five-minute repeat and ACK cancellation. Disconnect all transports, then restore and verify retained transition timestamps. Unknown inputs must remain unknown.'),
  ('cellular_bench','SIM800L explicit SMS','Record gsmdiag response, signal and registration; send only deliberate gsmtest commands to an authorized number and confirm actual receipt/time. Record supply transients and absence of resets. Automatic GSM alarm fallback is not implemented; do not claim its acceptance.'),
  ('assembly_operation','Integrated assembly recovery','Record simultaneous fitted RS485, network, SD/RTC and modem operation. Exercise controlled sensor, RS485, network and power restart recovery in separate linked attempts. Unfitted or unverified mandatory functions remain NOT TESTED.'),
  ('endurance_24h','24 hour endurance','Link at least 24 hours of acquired evidence for the selected population; record communications faults and independent reset evidence. Host scan counters are not device uptime. Record required metrics JSON unexplained_reboots and unrecovered_faults; both must be nonnegative integers equal to zero. No unexplained reset or unrecovered fault.'),
@@ -24,4 +27,4 @@ STEPS = [
 ]
 CHECKS = {code:(title,instruction) for code,title,instruction in STEPS}
 FAULT_CODES = ('MISSING_SENSOR','ERROR_CRC_SENSOR','SENSOR_REPLACED','SIM_COMM_LOSS','SIM_POWER_RECOVERY',
-               'DOWN_ETHERNET','CELLULAR_NOT_REGISTERED','FAILED_SEND_SMS','STORAGE_UNAVAILABLE')
+               'DOWN_ETHERNET','CELLULAR_NOT_REGISTERED','FAILED_SEND_SMS','STORAGE_UNAVAILABLE','DOWN_WIFI','DOWN_BLUETOOTH','MAINS_LOST','BATTERY_LOW','SD_NEAR_FULL','POLICY_ROLLBACK')

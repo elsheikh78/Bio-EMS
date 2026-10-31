@@ -35,6 +35,8 @@ import {
   PlatformLoginBoundary,
 } from "./routing/PlatformAuthenticationBoundaries";
 
+import { SystemOwnerFeatureSettingsPage } from "./pages/SystemOwnerFeatureSettingsPage";
+
 export function App() {
   return (
     <Routes>
@@ -87,6 +89,10 @@ export function App() {
         <Route
           path="system-owner/backup-restore"
           element={<SystemOwnerBackupRestorePage />}
+        />
+        <Route
+          path="system-owner/settings"
+          element={<SystemOwnerFeatureSettingsPage />}
         />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>

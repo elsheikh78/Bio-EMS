@@ -4,7 +4,7 @@
 
 
 The tester now installs the existing operating firmware without the client platform:
-Main `0.1.0-pilot.9` and Nano `0.1.0-bench.2`. This is separate from tab 5 QC images.
+Main `0.1.0-pilot.10` and Nano `0.1.0-bench.2`. This is separate from tab 5 QC images.
 Use bench boards and retain an installation backup before changing a commissioned
 board. Partition layout may change when returning from QC. The uploader neither
 creates credentials nor binds a device, burns eFuses, or requests whole-chip erase.
@@ -58,3 +58,5 @@ flash executables. Keep EXE, firmware and runtime together. Operator PCs do not
 need Arduino, Python or internet. Tool/image hashes detect damage, not malicious
 repackaging. Wrong firmware, bad readback and failed runtime verification never
 produce SUCCESS. Real USB flashing and hardware acceptance remain physical tests.
+
+Main pilot.10 requires the matching client backend and BLE relay. New qualification runs use HQT-3 (21 steps); see `docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md`. Do not infer physical pass from a successful flash.

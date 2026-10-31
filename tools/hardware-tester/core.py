@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION = '0.6.2'
+VERSION = '0.7.0'
 PROTOCOL = 'bioems-qc/1'
 PROFILES = {'ESP32 / 1 sensor': ('esp32s3', 1), 'Nano / 4 sensors': ('nano', 4),
             'Main + Nano / 4 sensors via RS485': ('main-rs485', 4),

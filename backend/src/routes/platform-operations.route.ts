@@ -1,3 +1,4 @@
+import { requireFeature } from "../middleware/feature-gate.middleware";
 import { Router } from "express";
 import companyConnectionRouter from "./company-connection.route";
 import {
@@ -111,6 +112,7 @@ import {
 
 const router = Router();
 router.use(platformAuthenticationMiddleware);
+router.use("/backups", requireFeature("backups"));
 router.use("/company-connection", companyConnectionRouter);
 router.get("/", platformOperationsOverview);
 // Historical records remain read-only; all new QC work belongs to the standalone tester.

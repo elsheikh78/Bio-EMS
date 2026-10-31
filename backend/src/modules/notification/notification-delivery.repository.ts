@@ -103,7 +103,9 @@ export class NotificationDeliveryRepository {
           `SELECT * FROM notification_deliveries
         WHERE ((status IN ('PENDING','RETRY_WAIT') AND next_attempt_at <= ?)
           OR (status = 'PROCESSING' AND claimed_at < ?))
-        ORDER BY next_attempt_at, id LIMIT 1`
+        ORDER BY CASE WHEN notification_event_id IN (
+          SELECT id FROM notification_events WHERE json_extract(payload_json,'$.priority')='HIGHEST'
+        ) THEN 0 WHEN severity='CRITICAL' THEN 1 ELSE 2 END, next_attempt_at, id LIMIT 1`
         )
         .get(now, staleBefore) as NotificationDelivery | undefined;
       if (!row) return undefined;

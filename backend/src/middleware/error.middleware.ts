@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../errors/app-error";
 
@@ -17,7 +18,7 @@ export function errorMiddleware(
   res: Response,
   _next: NextFunction
 ): void {
-  if (isMalformedJsonError(error)) {
+  if (error instanceof ZodError || isMalformedJsonError(error)) {
     res.status(400).json({
       success: false,
       error: {

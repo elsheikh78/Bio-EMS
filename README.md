@@ -2,6 +2,8 @@
 
 Environmental monitoring platform with local operations, controlled installation/provisioning, a separate company cloud and customer Viewer, two mobile applications, ESP32-S3/Nano firmware and a standalone hardware qualification tool.
 
+Candidate Main resilience and System Owner feature controls: [implementation and qualification guide](docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md), PR #316.
+
 Product source version: **0.20.0**. Published tagged release: **v0.20.0**. Current source, candidate/merged distinctions, security findings and acceptance boundaries are maintained only in [PROJECT_STATE.md](PROJECT_STATE.md).
 
 ## Start here

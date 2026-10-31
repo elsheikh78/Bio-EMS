@@ -15,6 +15,50 @@ const triggered: NotificationEvent = {
 };
 
 describe("NotificationEscalationOrchestrator", () => {
+  it("immediately escalates Main health to every critical recipient and repeats in five-minute windows", () => {
+    const get = vi
+      .fn()
+      .mockReturnValue({ status: "TRIGGERED", triggeredAt: "2026-08-31T12:00:00Z", siteId: 2 });
+    const event = {
+      ...triggered,
+      sourceType: "DEVICE",
+      sourceId: "health:12",
+      payload: { systemHealthId: 12 },
+    };
+    const events = { listPending: () => [event], markConsumed: vi.fn() };
+    const deliveries = {
+      create: vi.fn().mockReturnValue({ created: true }),
+      cancelOpenForSource: vi.fn(),
+    };
+    const policies = { resolveDue: vi.fn() };
+    const recipients = { resolveEligible: vi.fn().mockReturnValue([{ id: 4 }, { id: 5 }]) };
+    const orchestrator = new NotificationEscalationOrchestrator(
+      { prepare: () => ({ get }) } as never,
+      events as never,
+      deliveries as never,
+      policies as never,
+      recipients as never
+    );
+    expect(orchestrator.tick(new Date("2026-08-31T12:00:00Z"))).toBe(8);
+    expect(policies.resolveDue).not.toHaveBeenCalled();
+    expect(deliveries.create).toHaveBeenCalledWith(
+      expect.objectContaining({ idempotency_key: "health:12:0:4:WHATSAPP", severity: "CRITICAL" })
+    );
+    orchestrator.tick(new Date("2026-08-31T12:05:00Z"));
+    expect(deliveries.create).toHaveBeenCalledWith(
+      expect.objectContaining({ idempotency_key: "health:12:1:4:WHATSAPP" })
+    );
+    get.mockReturnValue({ status: "ACKNOWLEDGED", triggeredAt: "2026-08-31T12:00:00Z", siteId: 2 });
+    deliveries.create.mockClear();
+    expect(orchestrator.tick(new Date("2026-08-31T12:06:00Z"))).toBe(0);
+    expect(deliveries.create).not.toHaveBeenCalled();
+    expect(deliveries.cancelOpenForSource).toHaveBeenCalledWith(
+      "DEVICE",
+      "health:12",
+      "2026-08-31T12:06:00.000Z"
+    );
+    expect(events.markConsumed).toHaveBeenCalledWith(1, "2026-08-31T12:06:00.000Z");
+  });
   it("creates only configured due deliveries and remains idempotent", () => {
     const database = {
       prepare: vi.fn().mockReturnValue({
