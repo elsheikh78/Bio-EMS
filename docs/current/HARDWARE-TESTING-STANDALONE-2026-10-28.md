@@ -3,7 +3,7 @@
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../README.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../archive/2026-10-28-pre-audit/docs/current/HARDWARE-TESTING-STANDALONE-2026-10-28.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
 
-Hardware Tester 0.6.2 is the operator surface for bench testing and hardware
+Hardware Tester 0.7.0 is the operator surface for bench testing and hardware
 qualification. The System Owner console no longer contains Hardware Lab or its
 route. Installation configuration, device provisioning, Flash and Bind and
 operational sensor discovery remain installation operations.
@@ -20,7 +20,7 @@ they are not reclassified as standalone hardware acceptance.
 
 1. Use tabs 5 and 6 for isolated QC or operating firmware, respectively.
 2. Use sensor and integrated acquisition scopes to collect raw sensor evidence.
-3. Open tab 7 Qualification guide. Select each of the 18 steps to read the procedure.
+3. Open tab 7 Qualification guide. Select each of the 21 HQT-3 steps to read the procedure.
 4. Select staged qualification scope, enter assembly/operator and procedure, then
    Start hardware run. This is a manual evidence run; it does not open COM for
    continuous acquisition. Keep raw acquisition attempts as separate linked runs.
@@ -39,8 +39,9 @@ the checklist does not create such telemetry. GSM testing is explicit SMS with
 actual receipt evidence; automatic alarm fallback is not implemented. Unsafe
 powered fault wiring is not prescribed.
 
-The 18 steps cover bench identification, power, single sensor, cable lengths,
-sensor faults, Nano channel isolation, short/long RS485, network, explicit GSM,
+The 21 HQT-3 steps cover bench identification, power, single sensor, cable lengths,
+sensor faults, Nano channel isolation, short/long RS485, network, automatic transport failover,
+Owner policy/rollback, critical power/storage escalation, explicit GSM,
 integrated recovery, 24-hour endurance, bus addresses, 16-probe/48-hour operation,
 reference accuracy, SD replay, RTC retention and central backup endurance.
 
@@ -50,3 +51,5 @@ Qualification metrics retain the former numeric gates: `sensor_cables` needs
 `unexplained_reboots = 0` and `unrecovered_faults = 0`. Enter these in Metrics JSON.
 Missing/invalid metrics cannot be saved as PASS; out-of-limit values are recorded
 as FAIL. These are operator-entered measurements, not automatically read counters.
+
+Current transport, policy and critical-alarm procedures: [Main resilience guide](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Earlier frozen HQT-2 plans remain unchanged; new checks require new linked evidence.

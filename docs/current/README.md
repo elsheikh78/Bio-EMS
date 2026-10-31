@@ -15,3 +15,6 @@ Use [PROJECT_STATE.md](../../PROJECT_STATE.md) for current state and [the full d
 | [Maintenance](DOCUMENTATION-MAINTENANCE.md) | Updating current docs while preserving history |
 
 Detailed existing operating instructions remain at their original paths with reviewed evidence boundaries. Dated checkpoints and deployment observations are historical pointers, not competing state authorities.
+
+- [Main resilience and Owner feature settings](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md)
+- [Central backup, power supervision and SD design](../hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md)

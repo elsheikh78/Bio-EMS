@@ -34,11 +34,11 @@ Do not interpret successful upload as restoration of platform commissioning.
 1. Power OFF. Isolate external power and disconnect RS485 and other peripherals.
    Connect only the intended Main USB-UART cable.
 2. Select Main COM in Test setup, retain the assembly serial/operator, then choose
-   **Main ESP32-S3 pilot.9** in tab 6.
+   **Main ESP32-S3 pilot.10** in tab 6.
 3. Detect, then flash and verify. The complete IDF bootloader/partition/app images
    are included. A hash mismatch, wrong target or unsafe layout blocks upload.
 4. SUCCESS requires successful tool verification and a Main `status` response with
-   pilot.9 and valid hardware UID. No network, platform login or pairing is needed.
+   pilot.10 and valid hardware UID. No network, platform login or pairing is needed.
 5. Preserve logs under `%LOCALAPPDATA%/BIO-EMS-Hardware-Tester/firmware-events`.
 
 ## Reconnect and run

@@ -1,5 +1,12 @@
 # BIO-EMS Changelog
 
+## Unreleased — integrated Main resilience and documentation alignment
+
+- Main pilot.10 / Tester 0.7.0 / HQT-3 (21 checks): Ethernet → Wi-Fi → encrypted BLE, SD write-ahead/replay with durable receipts, critical power/card incidents and audited System Owner optional-feature controls (merged PR #316).
+- Reconcile central 30-minute full-load backup requirements, GPIO/RTC support, current firmware upload and qualification instructions; retain dated archives and earlier frozen run evidence.
+- Record local-only Main health visibility, bounded storage, provider/connectivity requirements and unimplemented autonomous GSM fallback. HW-01–HW-12, DEP-01 and SITE-01 remain open in PROJECT_STATE.md. Documentation changes do not issue a new binary or tagged release.
+
+
 ## Unreleased — security operations and recoverable Main
 
 - Retain USB update acknowledgements when the console prompt prefixes a response. Retry interrupted vendor downloads within a fixed limit, verify hashes before publishing cache files and reject checksum mismatches without retry.

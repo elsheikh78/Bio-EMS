@@ -29,3 +29,5 @@ Open hardware/deployment checks and the required follow-up reminder list are tra
 `backend/`: Express/TypeScript, SQLite, InfluxDB integration, MQTT and durable operational services. `frontend/`: React/MUI local and System Owner workspaces. `company-cloud/`: Worker/D1 company administration, remote jobs and customer Viewer. `company-mobile/`: restricted company WebView shell. `mobile/`: separate customer monitoring app. `firmware/`: Main and Nano operating source. `tools/hardware-tester/`: offline bench tool. `installer/windows/`: governed Windows setup/update/restore scripts.
 
 Read [PROJECT_RULES.md](PROJECT_RULES.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before changing behavior. Builds do not establish field acceptance. Critical/High dependency advisories remain open; use the audit findings for remediation planning.
+
+- [Central Main backup, SD, power supervision and acceptance](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md)
