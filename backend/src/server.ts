@@ -28,5 +28,7 @@ server.listen(PORT, () => {
 startNotificationDeliveryRuntime();
 startCompanyConnection(app);
 
-const stopBluetoothBridge = useTls ? startBluetoothBridgeRuntime() : () => undefined;
+const stopBluetoothBridge = useTls
+  ? startBluetoothBridgeRuntime(`https://localhost:${PORT}`)
+  : () => undefined;
 process.once("exit", stopBluetoothBridge);

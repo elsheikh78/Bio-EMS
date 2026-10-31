@@ -1,5 +1,8 @@
 # Hardware, Firmware and Standalone Tester
 
+> Candidate PR #316 adds Main pilot.10 connection failover, encrypted BLE, critical power/storage supervision and owner feature controls. See [candidate behavior and qualification](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Its new qualification plan is HQT-3 with 21 steps; earlier pilot.9/HQT-2 evidence below remains historical. Hardware acceptance is still open.
+
+
 Reviewed candidate `d151b1f`, 28 October 2026. The [project state](../../PROJECT_STATE.md) records merge status. Main `0.1.0-pilot.9`, Nano `0.1.0-bench.2`, Tester `0.6.2`; these independent versions do not identify a particular binary without commit/image hashes.
 
 ## Responsibility and topology

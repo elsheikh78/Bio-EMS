@@ -7,6 +7,7 @@ import { NotificationEventRepository } from "../notification/notification-event.
 export const healthSchema = z
   .object({
     timestamp: z.string().datetime(),
+    policyError: z.enum(["POLICY_ROLLED_BACK"]).optional(),
     appliedRevision: z.number().int().nonnegative(),
     transport: z.enum(["ethernet", "wifi", "bluetooth", "offline"]),
     storage: z.enum(["ready", "missing", "fault", "disabled"]),
@@ -77,6 +78,8 @@ export class ControllerHealthService {
               systemHealthId: id,
               bindingId: binding,
               code,
+              alarmType: code,
+              occurredAt: health.timestamp,
               severity: "CRITICAL",
               priority: "HIGHEST",
             },

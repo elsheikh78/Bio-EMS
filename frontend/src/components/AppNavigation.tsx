@@ -15,6 +15,11 @@ import { useLocalization } from "../localization/useLocalization";
 import { BrandLogo } from "./BrandLogo";
 import { designTokens } from "../theme/tokens";
 
+import {
+  useFeaturePolicy,
+  featureForPath,
+} from "../configuration/useFeaturePolicy";
+
 interface AppNavigationProps {
   label: string;
   onNavigate?: () => void;
@@ -23,8 +28,12 @@ interface AppNavigationProps {
 export function AppNavigation({ label, onNavigate }: AppNavigationProps) {
   const { language, resources } = useLocalization();
   const { user } = useAuthentication();
+  const features = useFeaturePolicy();
   const permittedItems = navigationItems.filter(
-    (item) => user && hasPermission(user.role, item.permission),
+    (item) =>
+      user &&
+      hasPermission(user.role, item.permission) &&
+      features.data?.[featureForPath[item.path]] !== false,
   );
 
   return (

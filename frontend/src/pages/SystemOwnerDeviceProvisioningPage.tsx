@@ -148,7 +148,9 @@ export function SystemOwnerDeviceProvisioningPage() {
   const ar = language === "ar";
   const [selectedPort, setSelectedPort] = useState("");
   const [selectedTarget, setSelectedTarget] = useState("");
-  const [networkMode, setNetworkMode] = useState<"wifi" | "ethernet">("wifi");
+  const [networkMode, setNetworkMode] = useState<"wifi" | "ethernet" | "auto">(
+    "auto",
+  );
   const [wifiSsid, setWifiSsid] = useState("");
   const [wifiPassword, setWifiPassword] = useState("");
   const [platformUrl, setPlatformUrl] = useState(() => {
@@ -545,17 +547,20 @@ export function SystemOwnerDeviceProvisioningPage() {
               </TextField>
               <TextField
                 select
-                label="Ethernet / Wi-Fi"
+                label={language === "ar" ? "اتصال Main" : "Main connectivity"}
                 value={networkMode}
                 onChange={(event) => {
-                  setNetworkMode(event.target.value as "wifi" | "ethernet");
+                  setNetworkMode(
+                    event.target.value as "wifi" | "ethernet" | "auto",
+                  );
                   flashBind.reset();
                 }}
               >
-                <MenuItem value="wifi">Wi-Fi</MenuItem>
+                <MenuItem value="auto">Ethernet → Wi-Fi → Bluetooth</MenuItem>
+                <MenuItem value="wifi">Wi-Fi bootstrap</MenuItem>
                 <MenuItem value="ethernet">Ethernet — W5500 / DHCP</MenuItem>
               </TextField>
-              {networkMode === "wifi" && (
+              {networkMode !== "ethernet" && (
                 <>
                   <TextField
                     label={text.wifiSsid}
@@ -598,7 +603,7 @@ export function SystemOwnerDeviceProvisioningPage() {
                     deviceId: effectiveTarget.deviceId,
                     port: effectivePort,
                     networkMode,
-                    ...(networkMode === "wifi"
+                    ...(networkMode !== "ethernet"
                       ? { wifiSsid, wifiPassword }
                       : {}),
                     platformUrl,

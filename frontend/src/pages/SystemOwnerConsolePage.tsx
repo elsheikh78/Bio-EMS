@@ -1,3 +1,4 @@
+import { companyCloudMode } from "../api/companyTransport";
 import {
   Alert,
   AppBar,
@@ -281,29 +282,33 @@ export function SystemOwnerConsolePage() {
             gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
           }}
         >
-          {text.modules.map((module) => (
-            <Card
-              key={module.key}
-              variant="outlined"
-              sx={{
-                borderInlineStart: 4,
-                borderInlineStartColor: "primary.main",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <CardContent>
-                <Typography component="h2" variant="h6">
-                  {module.label}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ mt: "auto" }}>
-                <Button component={Link} to={`/system-owner/${module.key}`}>
-                  {text.open}
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
+          {text.modules
+            .filter(
+              (module) => module.key !== "settings" || !companyCloudMode(),
+            )
+            .map((module) => (
+              <Card
+                key={module.key}
+                variant="outlined"
+                sx={{
+                  borderInlineStart: 4,
+                  borderInlineStartColor: "primary.main",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardContent>
+                  <Typography component="h2" variant="h6">
+                    {module.label}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ mt: "auto" }}>
+                  <Button component={Link} to={`/system-owner/${module.key}`}>
+                    {text.open}
+                  </Button>
+                </CardActions>
+              </Card>
+            ))}
           <Card
             variant="outlined"
             sx={{

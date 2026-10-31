@@ -16,7 +16,7 @@ const pending = new Map<string, Promise<unknown>>();
 const requestSchema = z
   .object({
     id: z.string().regex(/^[a-f0-9]{32}$/),
-    type: z.enum(["sample", "health"]),
+    type: z.enum(["sample", "health", "status"]),
     payload: z.unknown(),
   })
   .strict();
@@ -50,7 +50,8 @@ router.post(
           row.key,
           message.payload
         );
-      else new ControllerHealthService().accept(envelope.binding, message.payload);
+      else if (message.type === "health")
+        new ControllerHealthService().accept(envelope.binding, message.payload);
       return encryptRelay(
         envelope.binding,
         {

@@ -51,7 +51,7 @@ export class NotificationEventRepository {
                 payload_json, occurred_at, consumed_at, created_at
          FROM notification_events
          WHERE consumed_at IS NULL
-         ORDER BY id ASC
+         ORDER BY CASE WHEN json_extract(payload_json,'$.priority')='HIGHEST' THEN 0 ELSE 1 END, id ASC
          LIMIT ?`
       )
       .all(limit) as NotificationEventRow[];

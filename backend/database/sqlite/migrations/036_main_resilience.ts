@@ -34,6 +34,10 @@ export const migration036 = {
         binding_id TEXT NOT NULL, sample_id TEXT NOT NULL, payload_hash TEXT NOT NULL,
         accepted_at TEXT NOT NULL, PRIMARY KEY(binding_id, sample_id)
       );
+      CREATE TRIGGER feature_policy_history_no_update BEFORE UPDATE ON feature_policy_history
+        BEGIN SELECT RAISE(ABORT,'feature policy history is append-only'); END;
+      CREATE TRIGGER feature_policy_history_no_delete BEFORE DELETE ON feature_policy_history
+        BEGIN SELECT RAISE(ABORT,'feature policy history is append-only'); END;
     `);
   },
 };

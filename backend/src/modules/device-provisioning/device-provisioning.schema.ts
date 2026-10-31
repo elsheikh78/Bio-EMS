@@ -23,7 +23,7 @@ const wifiPasswordSchema = z
   });
 
 const networkFields = {
-  networkMode: z.enum(["wifi", "ethernet"]).default("wifi"),
+  networkMode: z.enum(["wifi", "ethernet", "auto"]).default("wifi"),
   wifiSsid: wifiSsidSchema.optional(),
   wifiPassword: wifiPasswordSchema.optional(),
 };
@@ -31,7 +31,7 @@ const validateNetwork = (
   value: { networkMode: string; wifiSsid?: string; wifiPassword?: string },
   ctx: z.RefinementCtx
 ) => {
-  if (value.networkMode === "wifi" && (!value.wifiSsid || !value.wifiPassword))
+  if (value.networkMode !== "ethernet" && (!value.wifiSsid || !value.wifiPassword))
     ctx.addIssue({ code: "custom", path: ["wifiSsid"], message: "Wi-Fi credentials are required" });
   if (
     value.networkMode === "ethernet" &&

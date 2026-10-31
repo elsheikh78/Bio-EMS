@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import type { PropsWithChildren } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthentication } from "../auth/useAuthentication";
@@ -8,6 +8,11 @@ import { RestorationErrorPage } from "../pages/RestorationErrorPage";
 import { ForcedPasswordChangePage } from "../pages/ForcedPasswordChangePage";
 import { routePolicies, type AuthorizedRoutePath } from "./routePolicy";
 import { hasPermission } from "../authorization/permissions";
+
+import {
+  useFeaturePolicy,
+  featureForPath,
+} from "../configuration/useFeaturePolicy";
 
 export function AuthenticationBoundary() {
   const authentication = useAuthentication();
@@ -39,8 +44,18 @@ export function PermissionBoundary({
   path,
 }: PropsWithChildren<{ path: AuthorizedRoutePath }>) {
   const { user } = useAuthentication();
+  const features = useFeaturePolicy();
+  const { language } = useLocalization();
   if (!user || !hasPermission(user.role, routePolicies[path]))
     return <NotAuthorizedPage />;
+  if (features.data?.[featureForPath[path]] === false)
+    return (
+      <Alert severity="info">
+        {language === "ar"
+          ? "هذه الخاصية معطلة بواسطة مالك النظام"
+          : "This feature is disabled by the System Owner"}
+      </Alert>
+    );
   return children;
 }
 

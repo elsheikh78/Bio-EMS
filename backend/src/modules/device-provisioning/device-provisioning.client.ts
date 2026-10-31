@@ -132,7 +132,7 @@ export class DeviceProvisioningLocalClient {
   provision(
     port: string,
     input: {
-      networkMode?: "wifi" | "ethernet";
+      networkMode?: "wifi" | "ethernet" | "auto";
       wifiSsid?: string;
       wifiPassword?: string;
       platformUrl: string;

@@ -2,6 +2,12 @@
 
 Reviewed 31 October 2026. This file is the current-state authority. The current summary and remaining gates below take precedence over dated historical checkpoints, which are retained at the end for traceability.
 
+## Main resilience candidate — 31 October 2026
+
+PR #316 adds Main **pilot.10** source, encrypted BLE runtime fallback, Ethernet/Wi-Fi priority switching, SD write-ahead/replay receipts, highest-priority power/storage events and an owner-only feature settings page. Candidate details and limits: [Main resilience and settings](docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). The merged baseline below remains pilot.9; no field upgrade or physical acceptance is implied by this candidate.
+
+The owner page distinguishes saved and applied revisions, retains reason/actor history and prevents disabling every link. Optional local platform switches cover reports, calibration, notification dispatch, backups and client updates; existing per-channel/cloud controls remain on their own pages. Power inputs default to unwired/unknown. Actual backup circuitry, USB BLE adapter/Windows service access, 5/10 m range, changeover timing, SD faults and full-load endurance remain unqualified. Autonomous GSM alarm fallback remains open. Tester candidate is **0.7.0**; qualification becomes **HQT-3 / 21 steps** for new runs; previously saved evidence keeps its frozen plan.
+
 ## Integrated security source — 29 October 2026
 
 PR #313 is merged at `6e43f7c7822dff9c576ebd4678eaf9740eb7d311`. All nine workflows on reviewed head `acf2b6eaaf0fe47f116f45dfe47d55b787492bbd` passed, including complete Windows Setup install/update/restore/New Install, native certificate rotation/failure recovery, both Main layouts, Tester and mobile workflows. Distributed CI binaries identify the tested PR merge `93c68a6a4a077f089b3aff6e3982a7afe167e462`; these are tested Pilot builds, not a new tagged release or physical acceptance.

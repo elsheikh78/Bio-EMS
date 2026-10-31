@@ -133,7 +133,7 @@ export function useFlashAndBindProvisioningDevice() {
       installationId: string;
       deviceId: string;
       port: string;
-      networkMode?: "wifi" | "ethernet";
+      networkMode?: "wifi" | "ethernet" | "auto";
       wifiSsid?: string;
       wifiPassword?: string;
       platformUrl: string;

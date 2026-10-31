@@ -1,9 +1,13 @@
-# BIO-EMS Hardware Tester 0.6.2
+# BIO-EMS Hardware Tester 0.7.0
 
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/tools/hardware-tester/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
 
-## 0.6.2 standalone qualification
+## 0.7.0 Main resilience qualification
+
+New runs use HQT-3 (21 steps), including Ethernet/Wi-Fi/BLE failover, System Owner policy/rollback and critical power/storage alarms. Operating Main is pilot.10 and requires the matching backend. These three added checks require manual linked evidence; they do not establish physical acceptance. Earlier frozen run plans are preserved.
+
+## 0.6.2 standalone qualification (retained baseline)
 
 Hardware qualification has moved out of the System Owner platform. Tab **7
 Qualification guide** contains the reviewed 18-step procedure. Choose **Hardware

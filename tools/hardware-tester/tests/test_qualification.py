@@ -10,7 +10,7 @@ class QualificationTests(unittest.TestCase):
   self.config=dict(unit='unit',operator='operator',procedure=REVISION,profile=PROFILE,minimum_c=-10,maximum_c=50,duration_s=60,min_samples=20,max_error_pct=0,max_span_c=2,stale_s=8,reference_c=None,tolerance_c=.5,instrument='')
  def test_frozen_plan_and_incomplete_missing_steps(self):
   rid=self.store.start(self.config);self.store.finish(rid);run=self.store.load(rid)
-  self.assertEqual(len(run['config']['qualification_plan']),18)
+  self.assertEqual(len(run['config']['qualification_plan']),21)
   self.assertEqual(run['config']['checks'],list(CHECKS));self.assertEqual(analyze(run)['overall'],'INCOMPLETE')
  def test_sequence_and_out_of_scope(self):
   rid=self.store.start(self.config)
