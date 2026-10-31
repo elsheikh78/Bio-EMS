@@ -1,14 +1,14 @@
 # BIO-EMS ESP32-S3 Site Controller Firmware — Pilot Pairing v1
 
-> Integrated pilot.10 / merged PR #316: runtime failover, BLE relay, durable sample receipts and owner policy/health exchange are described in [the current resilience guide](../../docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Older statements below about manual-only network selection describe the retained pilot.9 baseline, not current pilot.10. Software/build evidence is recorded in PROJECT_STATE.md; physical acceptance remains open.
+> Integrated pilot.10 / merged PR #316: runtime failover, BLE relay, durable sample receipts and owner policy/health exchange are described in [the current resilience guide](../../docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Dated hardware sections retain their evidence dates; current commissioning and identity instructions below reflect pilot.10. Software/build evidence is recorded in PROJECT_STATE.md; physical acceptance remains open.
 
 
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/firmware/site-controller-esp32s3/README.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
 
-## Current operating/testing boundary — 28 October 2026
+## Current operating/testing boundary — 31 October 2026
 
-Candidate Tester 0.6.2 flashes isolated QC in tab 5 and restores operating pilot.9 in tab 6; tab 7 records the staged manual qualification. Main uses one shared 9600 RS485 bus. Automated integrated Tester acquisition observes one selected Nano/four probes. Physical acceptance remains open. The pilot firmware sends live/replay samples over HTTPS through the device telemetry bridge; native MQTT topic configuration does not prove native MQTT publishing. HTTPS endpoint-name checking is required in this candidate. Provisioning verifies the controlled certificate SAN against the configured DNS/IP origin before flashing; existing installations need the coordinated rollout in docs/security/MAIN-TLS-ENDPOINT-IDENTITY-WORK-PACKAGE.md.
+Tester 0.7.0 flashes isolated QC in tab 5 and restores operating pilot.10 in tab 6; tab 7 records HQT-3 with 21 ordered checks for new runs. Main uses one shared 9600 RS485 bus. Automated integrated Tester acquisition observes one selected Nano/four probes. Physical acceptance remains open. The pilot firmware sends live/replay samples over HTTPS through the device telemetry bridge; native MQTT topic configuration does not prove native MQTT publishing. HTTPS endpoint-name checking is required in this candidate. Provisioning verifies the controlled certificate SAN against the configured DNS/IP origin before flashing; existing installations need the coordinated rollout in docs/security/MAIN-TLS-ENDPOINT-IDENTITY-WORK-PACKAGE.md.
 
 See [hardware/firmware guide](../../docs/current/HARDWARE-AND-FIRMWARE.md) and [security findings](../../docs/audit/2026-10-28/FINDINGS.md). Older sections below retain their dated boundary.
 
@@ -22,7 +22,7 @@ Status: **Pilot firmware foundation. Not Production device-trust evidence.**
 
 One firmware build is used across the Pilot fleet:
 
-- firmware version: `0.1.0-pilot.9`;
+- firmware version: `0.1.0-pilot.10`;
 - MQTT protocol version: `1.3`;
 - binding schema version: `1`.
 
@@ -47,7 +47,7 @@ The normal Pilot workflow is now orchestrated by BIO-EMS:
 3. Open System Owner -> Device provisioning and connect the ESP32-S3 by USB.
 4. Detect the controlled COM port and supported ESP32-S3.
 5. Select the already-defined logical Device.
-6. Select Wi-Fi (enter its credentials) or W5500 Ethernet (DHCP), and enter the LAN-reachable BIO-EMS HTTPS origin. See the Ethernet bench wiring below; no automatic failover is provided.
+6. Select automatic Ethernet → Wi-Fi → Bluetooth for runtime fallback, enter fallback Wi-Fi credentials and the LAN-reachable BIO-EMS HTTPS origin. Individual Wi-Fi/Ethernet modes remain available. Initial binding requires an IP path; BLE requires the local Windows USB BLE adapter and bundled relay after binding.
 7. Press **Flash & Bind Device**.
 8. BIO-EMS flashes the governed common firmware, issues the short-lived pairing credential
    server-side, sends the bootstrap commands over the local serial connection, verifies the
@@ -87,9 +87,7 @@ transition; after pairing, omission or mismatch is rejected.
 
 The Windows installer generates a customer-local HTTPS certificate. During USB provisioning,
 the provisioner transfers its public certificate to the ESP32, which verifies the HTTPS peer
-against that certificate for pairing and telemetry. The Pilot still skips hostname matching
-because the certificate does not contain the LAN IP address; this is not a final commercial
-identity model. USB provisioning also sets and stores the PC's UTC time so certificate
+against that certificate for pairing and telemetry. Main requires endpoint-name validation; the configured DNS name or IP must match the server certificate SAN. Use the governed certificate/trust maintenance workflow for mismatches. USB provisioning also sets and stores the PC's UTC time so certificate
 validation works after controller reboot. This bench clock can drift; the production design
 needs trusted time synchronization or an RTC. The governed firmware manifest records the
 exact source commit.
@@ -150,15 +148,11 @@ Flash & Bind. Existing sensor channel assignments are preserved; do not delete s
 Hardware tests of detection, USB serial scan, RS485 addressing and missing probes are still
 required. USB diagnostics do not implement a remote network scan.
 
-## Pilot network selection (0.1.0-pilot.5)
+## Network selection and retained W5500 bench wiring
 
-USB commissioning accepts `setnetwork wifi` or `setnetwork ethernet` before pairing.
-Legacy devices without a stored mode default to Wi-Fi. Wi-Fi still uses `setwifi`;
-Ethernet uses the ESP-IDF W5500 driver and DHCP, without Wi-Fi credentials. Pairing
-must reach the HTTPS platform before the device is considered provisioned. Sensor
-polling continues during link loss. Controller pilot.6 adds SD offline replay as described
-below; automatic Ethernet/Wi-Fi failover is not provided. Configure a new device before binding; changing
-an already running device's mode requires a separate reconfiguration/reboot flow.
+Current automatic commissioning configures Ethernet first, Wi-Fi second and encrypted BLE third. The backend accepts a delivery only through an authenticated application acknowledgement. Wi-Fi credentials must be provided for fallback; BLE terminates at the bound local Windows host and does not replace IP-based initial pairing. Upgrade the client before Main and retain binding identity during policy changes.
+
+Use [the resilience guide](../../docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md) for 15-second failed-IP cooldown, 10-second higher-path stability, 60-second candidate policy rollback, SD retention and critical health behavior. These timers are not measured zero-gap sampling or instantaneous failover guarantees.
 
 The following **new bench pin assignment** is configurable through `menuconfig`;
 verify the actual ESP32-S3 board and W5500 module before connecting it. These pins
@@ -192,3 +186,5 @@ This is source implementation, not physical qualification or a guaranteed backup
 
 ## pilot.9 RTC and GSM bench wiring
 See [the dated hardware reference](../../docs/hardware/MAIN-SIM-WIRING-REFERENCE-2026-10-20.md) for exact terminal schedules and commissioning holds. DS3231 uses SDA8/SCL9 at 3.3V. SIM800L UART2 uses TX14 through the specified 1k/5.6k divider, RX21 through the specified NPN inverter; RX inversion defaults on. Do not substitute direct wiring. Modem VCC is a separate 4V burst-capable supply. `rtc` inspects commissioning/UTC, `gsmdiag` checks registration, and `gsmtest +<international-number>` sends one real bench SMS. There is no autonomous alarm/fallback SMS policy in this revision. No physical hardware tests have been performed by the build.
+
+Central backup topology, supervision inputs, SD limits and physical acceptance: [battery and SD design](../../docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md). New Main health incidents are local-only; cloud Viewer export and autonomous GSM alarm fallback are not implemented.

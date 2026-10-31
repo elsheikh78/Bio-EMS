@@ -7,10 +7,10 @@
 
 New runs use HQT-3 (21 steps), including Ethernet/Wi-Fi/BLE failover, System Owner policy/rollback and critical power/storage alarms. Operating Main is pilot.10 and requires the matching backend. These three added checks require manual linked evidence; they do not establish physical acceptance. Earlier frozen run plans are preserved.
 
-## 0.6.2 standalone qualification (retained baseline)
+## Current standalone qualification
 
 Hardware qualification has moved out of the System Owner platform. Tab **7
-Qualification guide** contains the reviewed 18-step procedure. Choose **Hardware
+Qualification guide** contains the HQT-3 21-step procedure. Choose **Hardware
 qualification / staged checklist** to record ordered manual evidence with linked
 acquisition run IDs. Missing steps block PASS; the previous step must pass first.
 The frozen plan is included in the report. Sensor, cable and RS485 acquisitions
@@ -22,7 +22,7 @@ Device provisioning and installation discovery remain platform operations.
 
 ## Operating firmware upload
 
-Tab **6 Operating firmware** installs bundled Main pilot.9 and Nano bench.2 directly
+Tab **6 Operating firmware** installs bundled Main pilot.10 and Nano bench.2 directly
 over USB, including both classic 57600 and new 115200 Nano bootloaders. No platform,
 Arduino IDE, internet or commissioning is required for the integrated bench path.
 The Windows package must contain both firmware manifests and the runtime tools.
@@ -99,7 +99,7 @@ is distributed. Tool hashes detect package damage, not malicious repackaging.
 
 Use tab 6 Operating firmware after isolated tests. This
 version deliberately does not invent or overwrite platform binding credentials.
-Before returning to Main integrated operation, restore pilot.9 using tab 6 or the existing governed workflow and reconnect peripherals with power off.
+Before returning to Main integrated operation, restore pilot.10 using tab 6 or the existing governed workflow and reconnect peripherals with power off.
 
 ## Workflow
 
@@ -139,12 +139,12 @@ Windows CI additionally performs GUI and bundled-EXE report smoke and compiles
 all three board/bootloader targets. Real USB upload, readings, fault injection and printing on
 operator PC remain physical acceptance; source/CI PASS does not establish these.
 
-## pilot.9 / Rev B alignment
+## Operating diagnostics and Rev B alignment
 Use `Main + 1 SIM / Rev B` for the current integrated assembly: this requires RTC evidence and explicit 2G bench SMS evidence; the unfitted central UPS is outside this selected scope. Legacy records keep their original frozen checks. Existing SQLite records are preserved.
 
-The new **Capture Main pilot.9 USB diagnostics** button records status, storage, rtc, simscan and gsmdiag output into the active manual run and PDF ledger. It uses the operational firmware without reflashing or platform login. It never sends an SMS, pairs, changes credentials or changes the clock. Confirm the USB/external-power path before connecting; COM opening can reset a board. Review the reported firmware identity yourself. Capture timeout/missing output does not establish a pass. Actual receipt, rail measurements, RTC cold-boot retention, SD replay, network delivery and endurance still need recorded physical evidence.
+The new **Capture Main pilot.9 USB diagnostics** (retained button label; verify the reported pilot.10 runtime identity) button records status, storage, rtc, simscan and gsmdiag output into the active manual run and PDF ledger. It uses the operational firmware without reflashing or platform login. It never sends an SMS, pairs, changes credentials or changes the clock. Confirm the USB/external-power path before connecting; COM opening can reset a board. Review the reported firmware identity yourself. Capture timeout/missing output does not establish a pass. Actual receipt, rail measurements, RTC cold-boot retention, SD replay, network delivery and endurance still need recorded physical evidence.
 
-The isolated sensor sketch remains `qc-sensors-0.1.0` because its wire protocol has not changed. It replaces the operational firmware and requires disconnecting SD from GPIO4; restore the governed pilot.9 firmware after using it. Do not use this isolated sketch as integrated Main firmware.
+The isolated sensor sketch remains `qc-sensors-0.1.0` because its wire protocol has not changed. It replaces the operational firmware and requires disconnecting SD from GPIO4; restore the governed pilot.10 firmware after using it. Do not use this isolated sketch as integrated Main firmware.
 
 ## Flash tool licensing
 AVRDUDE is a separate GPL tool redistributed from the arduino:avr 1.8.6 pinned
@@ -158,7 +158,7 @@ Arduino IDE dependency on the operator PC.
 ## 0.4.0 integrated Main -> RS485 -> Nano -> four probes
 Select `Main + Nano / 4 sensors via RS485`, the expected SIM address (1–4),
 and the Main USB-UART COM port. The freshness gap must be at least 20 seconds.
-Both boards must already have the governed operating firmware: Main pilot.9,
+Both boards must already have the governed operating firmware: Main pilot.10,
 Nano bench.2. Do not use the isolated QC sketches. Use tab 6 to install operating firmware; tab 5 only flashes isolated QC images. No platform login is
 needed for integrated acquisition. Disconnect Nano USB during RS485 operation.
 Confirm the approved supply and USB power path before connecting Main USB.

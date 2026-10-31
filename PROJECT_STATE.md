@@ -8,6 +8,10 @@ PR [#316](https://github.com/elsheikh78/Bio-EMS/pull/316) is merged at `95ff1c9b
 
 Current merged source: product **0.20.0**, Main **0.1.0-pilot.10**, Nano **0.1.0-bench.2**, Tester **0.7.0**, new-run qualification **HQT-3 / 21 steps**. Implemented: Ethernet → Wi-Fi → encrypted BLE fallback, SD write-ahead/replay with duplicate receipts, highest-priority power/storage events, automatic commissioning and System Owner feature controls. The owner UI distinguishes saved/applied revisions; policies retain actor/reason history and reject disabling every path. Platform optional switches cover reports, calibration, notifications, backups and updates; channel/cloud controls retain their own pages.
 
+### Documentation reconciliation — 31 October 2026
+
+Central backup/SD design now reflects pilot.10 supervision inputs, DS3231 support, connection priority, durable replay, bounded NVS transitions and Owner policy controls. Active firmware and Tester instructions align with pilot.10 / 0.7.0 / HQT-3; immutable archives and security checkpoints retain their original dates. See [central backup and SD specification](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md). The 30-minute complete-load requirement remains unverified; no physical gate below is closed by this documentation review. New Main incidents are local-only, and autonomous GSM fallback remains unimplemented.
+
 ### Completed software/build evidence
 
 - Local backend 1116 tests, frontend 359, Tester 78, BLE bridge 3: **1556 tests passed**. Backend/frontend typecheck, lint, formatting and production builds passed; documentation integrity passed.
