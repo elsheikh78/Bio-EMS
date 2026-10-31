@@ -14,16 +14,17 @@
 // BLE only transports AES-GCM authenticated ciphertext, never tokens or
 // plaintext readings. UUIDs: 4b494f45-4d53-4000-8000-000000000001 service;
 // ...0002 TX; ...0003 RX.
-static const ble_uuid128_t service_uuid = BLE_UUID128_INIT(
-    1, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
-static const ble_uuid128_t tx_uuid = BLE_UUID128_INIT(
-    2, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
-static const ble_uuid128_t rx_uuid = BLE_UUID128_INIT(
-    3, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
+static const ble_uuid128_t service_uuid =
+    BLE_UUID128_INIT(1, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
+static const ble_uuid128_t tx_uuid =
+    BLE_UUID128_INIT(2, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
+static const ble_uuid128_t rx_uuid =
+    BLE_UUID128_INIT(3, 0, 0, 0, 0, 0, 0, 0x80, 0, 0x40, 0x53, 0x4d, 0x45, 0x4f, 0x49, 0x4b);
 static atomic_bool enabled, subscribed;
-static uint16_t connection = BLE_HS_CONN_HANDLE_NONE, tx_handle;
+static atomic_uint_least16_t connection = BLE_HS_CONN_HANDLE_NONE;
+static uint16_t tx_handle;
 static uint8_t address_type;
-static bool synced;
+static atomic_bool synced;
 static SemaphoreHandle_t lock, received;
 static char incoming[4096];
 static size_t used;
@@ -48,8 +49,7 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
   return 0;
 }
 static void advertise(void) {
-  if (!synced || !atomic_load(&enabled) ||
-      connection != BLE_HS_CONN_HANDLE_NONE)
+  if (!synced || !atomic_load(&enabled) || connection != BLE_HS_CONN_HANDLE_NONE)
     return;
   struct ble_hs_adv_fields fields = {0};
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
@@ -61,11 +61,9 @@ static void advertise(void) {
   struct ble_gap_adv_params params = {0};
   params.conn_mode = BLE_GAP_CONN_MODE_UND;
   params.disc_mode = BLE_GAP_DISC_MODE_GEN;
-  ble_gap_adv_start(address_type, NULL, BLE_HS_FOREVER, &params, gap_event,
-                    NULL);
+  ble_gap_adv_start(address_type, NULL, BLE_HS_FOREVER, &params, gap_event, NULL);
 }
-static int access_rx(uint16_t conn, uint16_t attr,
-                     struct ble_gatt_access_ctxt *ctxt, void *arg) {
+static int access_rx(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctxt, void *arg) {
   (void)conn;
   (void)attr;
   (void)arg;
@@ -97,13 +95,10 @@ static const struct ble_gatt_svc_def services[] = {
     {.type = BLE_GATT_SVC_TYPE_PRIMARY,
      .uuid = &service_uuid.u,
      .characteristics =
-         (struct ble_gatt_chr_def[]){{.uuid = &tx_uuid.u,
-                                      .flags = BLE_GATT_CHR_F_NOTIFY,
-                                      .val_handle = &tx_handle},
-                                     {.uuid = &rx_uuid.u,
-                                      .flags = BLE_GATT_CHR_F_WRITE,
-                                      .access_cb = access_rx},
-                                     {0}}},
+         (struct ble_gatt_chr_def[]){
+             {.uuid = &tx_uuid.u, .flags = BLE_GATT_CHR_F_NOTIFY, .val_handle = &tx_handle},
+             {.uuid = &rx_uuid.u, .flags = BLE_GATT_CHR_F_WRITE, .access_cb = access_rx},
+             {0}}},
     {0}};
 static void on_sync(void) {
   if (ble_hs_id_infer_auto(0, &address_type))
@@ -142,9 +137,7 @@ void bioems_ble_enable(bool value) {
       ble_gap_terminate(connection, BLE_ERR_REM_USER_CONN_TERM);
   }
 }
-bool bioems_ble_ready(void) {
-  return atomic_load(&enabled) && atomic_load(&subscribed);
-}
+bool bioems_ble_ready(void) { return atomic_load(&enabled) && atomic_load(&subscribed); }
 bool bioems_ble_exchange(const char *request, char *response, size_t capacity) {
   if (!bioems_ble_ready())
     return false;

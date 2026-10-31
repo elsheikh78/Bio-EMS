@@ -13,3 +13,5 @@ void runtime_policy_check_rollback(void);
 void runtime_power_read(cJSON *health);
 int runtime_policy_applied_revision(void);
 const char *runtime_policy_error(void);
+
+bool runtime_policy_wifi_enabled(void);

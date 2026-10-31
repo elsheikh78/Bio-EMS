@@ -42,7 +42,10 @@ bool bioems_sd_mount(void) {
     return false;
   }
   active_card = card;
-  return offline_queue_open("/sdcard/bioqueue", CONFIG_BIOEMS_SD_QUEUE_RECORDS);
+  if (!offline_queue_open("/sdcard/bioqueue", CONFIG_BIOEMS_SD_QUEUE_RECORDS))
+    return false;
+  char record[OFFLINE_RECORD_MAX];
+  return offline_queue_peek(record, sizeof(record)) >= 0;
 #else
   return false;
 #endif

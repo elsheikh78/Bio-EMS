@@ -1,3 +1,5 @@
+import { controllerHealthLabel } from "./controllerHealthLabels";
+import { useState } from "react";
 import { Alert, Button, Stack, Typography } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthentication } from "../auth/useAuthentication";
@@ -18,6 +20,7 @@ export function ControllerHealthAlarms({
   const { protectedRequest } = useAuthentication();
   const { language } = useLocalization();
   const cache = useQueryClient();
+  const [error, setError] = useState(false);
   const alarms = useQuery({
     queryKey: ["controller-health-alarms"],
     queryFn: () => protectedRequest<HealthAlarm[]>("/controller-health"),
@@ -30,7 +33,7 @@ export function ControllerHealthAlarms({
           ? "إنذارات الكهرباء والتخزين — أولوية قصوى"
           : "Power and storage alarms — highest priority"}
       </Typography>
-      {alarms.isError && (
+      {(alarms.isError || error) && (
         <Alert severity="warning">
           {language === "ar"
             ? "تعذر تحميل إنذارات Main"
@@ -50,11 +53,13 @@ export function ControllerHealthAlarms({
                     void protectedRequest(
                       `/controller-health/${a.id}/acknowledge`,
                       { method: "POST" },
-                    ).then(() =>
-                      cache.invalidateQueries({
-                        queryKey: ["controller-health-alarms"],
-                      }),
-                    );
+                    )
+                      .then(() =>
+                        cache.invalidateQueries({
+                          queryKey: ["controller-health-alarms"],
+                        }),
+                      )
+                      .catch(() => setError(true));
                   }}
                 >
                   {language === "ar" ? "إقرار" : "Acknowledge"}
@@ -62,7 +67,8 @@ export function ControllerHealthAlarms({
               ) : undefined
             }
           >
-            CRITICAL — {a.site}/{a.device} — {a.code} — {a.status} —{" "}
+            CRITICAL — {a.site}/{a.device} —{" "}
+            {controllerHealthLabel(a.code, language === "ar")} — {a.status} —{" "}
             {a.trigger_time}
           </Alert>
         ))}

@@ -3,7 +3,13 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SystemOwnerFeatureSettingsPage } from "./SystemOwnerFeatureSettingsPage";
 const { request, apiClient } = vi.hoisted(() => {
-  const request = vi.fn();
+  const request =
+    vi.fn<
+      (
+        path: string,
+        options?: { method?: string; auth?: string; body?: string },
+      ) => Promise<unknown>
+    >();
   return { request, apiClient: { request } };
 });
 vi.mock("../platform-auth/usePlatformAuthentication", () => ({
@@ -16,12 +22,18 @@ describe("owner feature settings", () => {
   beforeEach(() => {
     request.mockReset();
     request.mockImplementation(
-      async (path: string, options?: { method?: string }) => {
+      (path: string, options?: { method?: string }) => {
         if (path === "/feature-settings")
-          return { controllers: [], alarms: [] };
+          return Promise.resolve({ controllers: [], alarms: [] });
         if (options?.method === "PUT")
-          return { revision: 1, policy: { reports: false, backups: true } };
-        return { revision: 0, policy: { reports: true, backups: true } };
+          return Promise.resolve({
+            revision: 1,
+            policy: { reports: false, backups: true },
+          });
+        return Promise.resolve({
+          revision: 0,
+          policy: { reports: true, backups: true },
+        });
       },
     );
   });
@@ -43,8 +55,8 @@ describe("owner feature settings", () => {
     const call = request.mock.calls.find(
       ([, options]) => options?.method === "PUT",
     );
-    expect(call?.[1].auth).toBe("protected");
-    expect(JSON.parse(call?.[1].body)).toEqual({
+    expect(call?.[1]?.auth).toBe("protected");
+    expect(JSON.parse(call?.[1]?.body ?? "{}")).toEqual({
       expectedRevision: 0,
       reason: "Maintenance window",
       policy: { reports: false, backups: true },

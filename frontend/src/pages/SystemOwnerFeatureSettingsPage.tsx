@@ -1,3 +1,4 @@
+import { controllerHealthLabel } from "../alarms/controllerHealthLabels";
 import {
   Alert,
   Button,
@@ -87,10 +88,6 @@ export function SystemOwnerFeatureSettingsPage() {
   }, [apiClient, ar]);
   useEffect(() => {
     let live = true;
-    setData(null);
-    setReason("");
-    setMessage("");
-    setError("");
     void apiClient
       .request<Policy>(`/feature-settings/${scope}`, { auth: "protected" })
       .then((value) => {
@@ -105,6 +102,18 @@ export function SystemOwnerFeatureSettingsPage() {
     };
   }, [apiClient, scope, ar]);
   const selected = controllers.find((c) => c.id === scope);
+  const health = selected?.healthJson
+    ? (JSON.parse(selected.healthJson) as Record<string, unknown>)
+    : null;
+  const healthFields: [string, string, string][] = [
+    ["transport", "Current connection", "الاتصال الحالي"],
+    ["storage", "Storage state", "حالة الذاكرة"],
+    ["storageUsedPercent", "Storage used %", "المساحة المستخدمة ٪"],
+    ["queued", "Pending records", "القراءات المنتظرة"],
+    ["mains", "Main supply present", "التغذية الرئيسية متاحة"],
+    ["batteryLow", "Backup battery low", "انخفاض البطارية الاحتياطية"],
+    ["policyError", "Settings fault", "خطأ الإعدادات"],
+  ];
   const save = async () => {
     if (!data) return;
     setBusy(true);
@@ -163,7 +172,13 @@ export function SystemOwnerFeatureSettingsPage() {
           select
           label={ar ? "نطاق الإعدادات" : "Settings scope"}
           value={scope}
-          onChange={(e) => setScope(e.target.value)}
+          onChange={(e) => {
+            setScope(e.target.value);
+            setData(null);
+            setReason("");
+            setMessage("");
+            setError("");
+          }}
           disabled={busy}
         >
           <MenuItem value="platform">
@@ -206,21 +221,37 @@ export function SystemOwnerFeatureSettingsPage() {
                       {ar ? "آخر اتصال" : "Last contact"}:{" "}
                       {selected.receivedAt ?? "—"}
                     </Typography>
-                    <Typography
-                      component="pre"
-                      variant="body2"
-                      sx={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
-                    >
-                      {selected.healthJson
-                        ? JSON.stringify(
-                            JSON.parse(selected.healthJson),
-                            null,
-                            2,
-                          )
-                        : ar
+                    {health ? (
+                      healthFields
+                        .filter(([key]) => key in health)
+                        .map(([key, en, arabic]) => (
+                          <Typography key={key} variant="body2">
+                            {ar ? arabic : en}:{" "}
+                            {health[key] === null
+                              ? ar
+                                ? "غير مقاس"
+                                : "Not measured"
+                              : typeof health[key] === "boolean"
+                                ? health[key]
+                                  ? ar
+                                    ? "نعم"
+                                    : "Yes"
+                                  : ar
+                                    ? "لا"
+                                    : "No"
+                                : typeof health[key] === "string" ||
+                                    typeof health[key] === "number"
+                                  ? `${health[key]}`
+                                  : "—"}
+                          </Typography>
+                        ))
+                    ) : (
+                      <Typography>
+                        {ar
                           ? "لم تصل حالة الجهاز بعد"
                           : "No controller health received yet"}
-                    </Typography>
+                      </Typography>
+                    )}
                   </>
                 )}
                 {Object.entries(data.policy)
@@ -342,7 +373,8 @@ export function SystemOwnerFeatureSettingsPage() {
                 ) : undefined
               }
             >
-              {a.code} — CRITICAL — {a.status} — {a.trigger_time}
+              {controllerHealthLabel(a.code, ar)} — CRITICAL — {a.status} —{" "}
+              {a.trigger_time}
             </Alert>
           ))}
       </Stack>

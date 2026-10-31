@@ -124,7 +124,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   }
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
     xEventGroupClearBits(wifi_events, WIFI_CONNECTED_BIT);
-    if (!runtime_policy.wifi)
+    if (!runtime_policy_wifi_enabled())
       return;
     if (wifi_retry_count < 5) {
       wifi_retry_count++;
@@ -571,6 +571,7 @@ static void replay_samples(void) {
     if (!result)
       return;
     if (result < 0) {
+      storage_ready = false;
       ESP_LOGE(TAG, "STORAGE_CORRUPT: replay stopped; preserve card for recovery");
       return;
     }
@@ -579,6 +580,7 @@ static void replay_samples(void) {
     cJSON *payload = root ? cJSON_GetObjectItemCaseSensitive(root, "payload") : NULL;
     if (!cJSON_IsString(binding) || !cJSON_IsObject(payload)) {
       cJSON_Delete(root);
+      storage_ready = false;
       ESP_LOGE(TAG, "STORAGE_CORRUPT: invalid envelope");
       return;
     }
@@ -590,6 +592,7 @@ static void replay_samples(void) {
     if (!accepted)
       return;
     if (!offline_queue_ack()) {
+      storage_ready = false;
       ESP_LOGE(TAG, "STORAGE_ACK_FAILED");
       return;
     }
@@ -643,7 +646,8 @@ static void deliver_or_store(const char *readings) {
     snprintf(record, sizeof(record), "{\"binding\":\"%s\",\"payload\":%s}", binding, body);
     queued = offline_queue_append(record);
     if (!queued) {
-      storage_ready = false;
+      if (offline_queue_count() < CONFIG_BIOEMS_SD_QUEUE_RECORDS)
+        storage_ready = false;
       ESP_LOGE(TAG, "STORAGE_WRITE_FAILED_OR_FULL");
     }
     atomic_store(&queued_records, offline_queue_count());
