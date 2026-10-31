@@ -1,6 +1,6 @@
 # Qualification and Acceptance Gates
 
-Review 28 October 2026. Evidence belongs to a specific source/binary/configuration/assembly, instrument, operator, date and approved procedure. [Project state](../../PROJECT_STATE.md) is the status authority.
+Updated 31 October 2026 after PR #316. Evidence belongs to a specific source/binary/configuration/assembly, instrument, operator, date and approved procedure. [Project state](../../PROJECT_STATE.md) is the status authority.
 
 | Gate | Required evidence | What does not close it |
 | --- | --- | --- |
@@ -23,3 +23,9 @@ The staged plan in `tools/hardware-tester/qualification.py` sets ordered require
 BIO EGYPT commissioning and acceptance remain open. Prior Email/Telegram and company Android observations remain historical evidence; untested WhatsApp/SMS/iOS/background delivery and physical hardware paths require their own results. The code audit does not assign fabricated PASS values, reference measurements, operator signatures or acceptance dates.
 
 When a test fails, keep its original record and raw context, document the cause/change, perform a separately linked retest, and assess regression scope. Never overwrite a failed run with the later result. Missing mandatory evidence is INCOMPLETE/NOT TESTED rather than inferred PASS.
+
+## Main pilot.10 follow-up gate register
+
+The current open checklist is **HW-01–HW-12, DEP-01 and SITE-01** in [project state](../../PROJECT_STATE.md). Read it before release, field testing or acceptance and remind the owner of relevant open IDs. Tester 0.7.0 uses HQT-3 with 21 ordered checks for new runs. Preserve earlier frozen run plans; do not retroactively convert an HQT-2 result into evidence for BLE, owner policy rollback or new power/card alarms.
+
+All seven PR #316 workflows passed, including Windows fresh install/Repair/update/restore/recovery/New Install and artifact upload. These close the recorded exact-package CI gates, not the physical owner PC/USB radio, backup circuit, 30-minute full load, storage fault/replay, actual notifications, populated endurance or signed site UAT. Record source/binary/run and test evidence against each open ID. An owner-reported completion remains evidence-review pending until inspected. Autonomous Main GSM alarm fallback is an implementation hold, not a test awaiting an invented PASS.

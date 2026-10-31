@@ -1,6 +1,6 @@
 # Software Architecture and Data Flow
 
-Source baseline: candidate `d151b1f`; review 28 October 2026. [State authority](../../PROJECT_STATE.md) controls merge/deployment status. This describes observed code, while retained ADRs/specifications describe approved design intent.
+Updated 31 October 2026 after merged PR #316; earlier architectural responsibilities remain subject to current source and the recorded acceptance holds. [State authority](../../PROJECT_STATE.md) controls merge/deployment status. This describes observed code, while retained ADRs/specifications describe approved design intent.
 
 ## Components and trust boundaries
 
@@ -18,9 +18,13 @@ Source baseline: candidate `d151b1f`; review 28 October 2026. [State authority](
 
 The backend mounts platform authentication, owner operations, pairing and device telemetry routes before general customer authentication because they have separate authentication boundaries. Mount order is not permission to bypass their dedicated middleware. Customer ADMIN and platform owner are separate principals. See [security](SECURITY-AND-IDENTITY.md).
 
+## Owner policies and hardware health
+
+Owner-only feature settings persist versioned policy and append-only actor/reason history. Optional platform features have API/runtime gates; Main settings wait for an authenticated applied-revision report and use a rollback trial to avoid stranding a device. Controller health and critical power/storage incidents are distinct from sensor alarms. Unwired power inputs remain unknown; events are escalated at highest priority. A bounded independent NVS transition journal and the SD sample queue have different failure/retention limits. Detailed behavior and limitations: [Main resilience](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md).
+
 ## Telemetry and alarms
 
-Main polls addressed Nano modules over the shared RS485 bus and maps their four channels into the operating sensor model. The current pilot Main sends live/replay samples over HTTPS to `/api/v1/device-telemetry/:bindingId` using `x-bioems-device-token`; the backend bridge validates the active binding and token, then invokes the shared telemetry service with the internal topic identity. The backend also retains its separate MQTT ingestion path. Do not infer a native MQTT publisher in this Main firmware merely because pairing configuration includes MQTT topic names. Shared ingest validates protocol/payload/binding, stores time-series data, updates device health and evaluates live alarms. Review `backend/src/modules/telemetry/listeners/telemetry.listener.ts`, its security tests, telemetry schemas, MQTT source and `modules/telemetry/services/telemetry.service.ts` before changing this boundary.
+Main polls addressed Nano modules over the shared RS485 bus and maps their four channels into the operating sensor model. Main pilot.10 sends authenticated AES-GCM envelopes to `/api/v1/controller-runtime/exchange` over interface-bound HTTPS or through the opaque Windows BLE relay. Ethernet has first priority, then Wi-Fi, then BLE. The backend derives the active device identity from the binding, verifies/decrypts the envelope, processes telemetry or health and returns an authenticated request-matching acknowledgement with policy revision. The legacy `/api/v1/device-telemetry/:bindingId` token route remains for older controllers. The backend also retains its separate MQTT ingestion path. Do not infer a native MQTT publisher in this Main firmware merely because pairing configuration includes MQTT topic names. Shared ingest validates protocol/payload/binding, stores time-series data, updates device health and evaluates live alarms. Review `backend/src/modules/telemetry/listeners/telemetry.listener.ts`, its security tests, telemetry schemas, MQTT source and `modules/telemetry/services/telemetry.service.ts` before changing this boundary.
 
 Live observations and replay are different. Replay retains original acquisition timestamps and does not create historical live-alarm notifications; trusted backend receipt time controls device-health freshness. Main durable SD queue and acknowledgement/retry handling require physical retention and interruption tests. The queue host suite covers FIFO/capacity/reboot/retry/corruption behavior; it is not a proof of every FAT/power-failure condition.
 

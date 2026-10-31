@@ -1,15 +1,14 @@
 # Hardware, Firmware and Standalone Tester
 
-> Candidate PR #316 adds Main pilot.10 connection failover, encrypted BLE, critical power/storage supervision and owner feature controls. See [candidate behavior and qualification](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Its new qualification plan is HQT-3 with 21 steps; earlier pilot.9/HQT-2 evidence below remains historical. Hardware acceptance is still open.
+> PR #316 is merged. Main failover, encrypted BLE, critical power/storage supervision and owner controls are implemented; see [behavior and qualification](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md). Software/Windows CI passed; physical acceptance is open under HW-01–HW-12 in [project state](../../PROJECT_STATE.md).
 
-
-Reviewed candidate `d151b1f`, 28 October 2026. The [project state](../../PROJECT_STATE.md) records merge status. Main `0.1.0-pilot.9`, Nano `0.1.0-bench.2`, Tester `0.6.2`; these independent versions do not identify a particular binary without commit/image hashes.
+Reviewed 31 October 2026 after merge `95ff1c9b519c49fe23fb3ed721b55e8ed559a444`. Main `0.1.0-pilot.10`, Nano `0.1.0-bench.2`, Tester `0.7.0`, HQT-3 / 21 steps. Versions alone do not identify a binary: retain its source/image hashes. Earlier HQT-2/pilot.9 evidence is historical and does not qualify the new features.
 
 ## Responsibility and topology
 
 Tester performs new hardware qualification offline. System Owner retains logical installation, discovery, flash/bind/provisioning and the read-only historical archive. Tester does not require platform login, cloud, MQTT or customer database. New hardware tests cannot be written through the retired platform API. Existing reports are preserved; there is no automatic cross-database import.
 
-The Main operating source uses one shared 9600 8N1 RS485 bus. Nano addresses 1–4 each serve four independent probes, mapped to up to sixteen channels. The integrated automated Tester run selects one address/four probes at a time. The 18-step manual qualification record can link many runs, but cannot itself create simultaneous sixteen-channel acquisition evidence.
+The Main operating source uses one shared 9600 8N1 RS485 bus. Nano addresses 1–4 each serve four independent probes, mapped to up to sixteen channels. The integrated automated Tester run selects one address/four probes at a time. The 21-step HQT-3 manual qualification record can link many runs, but cannot itself create simultaneous sixteen-channel acquisition evidence.
 
 ## Identify modules before wiring
 
@@ -34,7 +33,7 @@ Extract the complete Windows package and keep the EXE, images, runtime tools and
 
 - Tab 5: **Flash QC firmware**. Choose ESP32-S3, Nano classic 57600 or Nano new bootloader 115200. Nano choice must match its installed bootloader. Wrong profile failure is not permission to override device signature/readback checks.
 - QC runtime stream is `bioems-qc/1` at 115200 regardless of Nano upload baud. Tool verification and a matching runtime stream are required for flash success. This does not mean probes passed.
-- Tab 6: **Operating firmware**. Restore bundled Main pilot.9 or Nano bench.2 for integrated bus tests. Uploading QC overwrites operating firmware; using the wrong sketch cannot test the operating path.
+- Tab 6: **Operating firmware**. Restore bundled Main pilot.10 or Nano bench.2 for integrated bus tests. Uploading QC overwrites operating firmware; using the wrong sketch cannot test the operating path.
 - Tab 7: **Qualification guide**. Choose the staged checklist scope, record each required step in order and link actual acquisition runs.
 
 Manifest hashes detect damage and identify the selected package, not malicious repackaging or a unique Nano identity. Nano has no unique serial attestation. No full-chip erase, eFuse programming, signature override or readback disable is part of this procedure. See [operating upload guide](../../tools/hardware-tester/OPERATING_FIRMWARE_GUIDE.md).
@@ -43,7 +42,7 @@ Manifest hashes detect damage and identify the selected package, not malicious r
 
 Run configuration freezes temperature range, duration/sample count, error/span/freshness and optional reference tolerance. These are controlled procedure inputs; defaults are not universally approved acceptance limits. Power evidence needs measured value, ordered approved low/high bounds and instrument ID. Obtain limits for each actual rail/component/load from the approved design/specification; this audit does not invent a blanket ±5% limit. Record no-load/load/transient/far-end behavior, especially modem transmission and backup changeover.
 
-Qualification has 18 ordered steps in `tools/hardware-tester/qualification.py` (revision `HQT-2 / pilot.9 / bench.2`). Required cable metric: `success_rate_percent >= 99.99`. Endurance/full-population metrics `unexplained_reboots` and `unrecovered_faults` must both be nonnegative integers equal to zero. Other required manual evidence, durations, population and linked runs remain necessary. Missing mandatory checks produce incomplete evidence; manual PASS is not independent instrument proof.
+Qualification has 21 ordered steps in `tools/hardware-tester/qualification.py` (revision `HQT-3 / pilot.10 / bench.2`). Required cable metric: `success_rate_percent >= 99.99`. Endurance/full-population metrics `unexplained_reboots` and `unrecovered_faults` must both be nonnegative integers equal to zero. Other required manual evidence, durations, population and linked runs remain necessary. Missing mandatory checks produce incomplete evidence; manual PASS is not independent instrument proof.
 
 The plan requires 5/10/intended maximum up to 20 m sensor-cable runs, short/long RS485, network recovery, explicit SMS, 24-hour selected-population endurance, four bus addresses, 48-hour sixteen-probe population evidence, calibration, at least 30-minute SD offline/replay, RTC retention and at least 30-minute full-load central backup. Record evidence independently for every fitted required function. Do not equate one-SIM USB success with complete assembly acceptance.
 

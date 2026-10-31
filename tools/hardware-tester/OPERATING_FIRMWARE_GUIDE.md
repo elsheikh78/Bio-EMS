@@ -1,7 +1,9 @@
-# Hardware Tester 0.5.0 operating firmware guide
+# Hardware Tester 0.7.0 operating firmware guide
 
 > Documentation review: 2026-10-28. Retained specification/policy; requirements are not proof of implementation. [Current implementation guide](<../../docs/current/HARDWARE-AND-FIRMWARE.md>) describes the reviewed source baseline; [Project state](<../../PROJECT_STATE.md>) controls current status. [Original pre-audit document](<../../docs/archive/2026-10-28-pre-audit/tools/hardware-tester/OPERATING_FIRMWARE_GUIDE.md>) preserves the unmodified earlier text. Claims below retain their original evidence date and do not establish current deployment or acceptance.
 
+
+PR #316 is merged; software/CI completion and open physical checks are tracked in `PROJECT_STATE.md` (HW-01–HW-12, DEP-01). Do not turn a successful flash into an assembly PASS.
 
 The tester now installs the existing operating firmware without the client platform:
 Main `0.1.0-pilot.10` and Nano `0.1.0-bench.2`. This is separate from tab 5 QC images.

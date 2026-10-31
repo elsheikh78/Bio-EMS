@@ -1,6 +1,6 @@
 # Build, Release, Deployment and Recovery
 
-Source-backed guide reviewed28 October 2026. [PROJECT_STATE](../../PROJECT_STATE.md) controls candidate, release and installed-state claims. No new release/deployment is made by this audit.
+Source-backed guide updated 31 October 2026 after PR #316. [PROJECT_STATE](../../PROJECT_STATE.md) controls candidate, release and installed-state claims. The merged source and successful CI packages do not constitute a new tagged release or a field deployment.
 
 ## Version and package authority
 
@@ -13,6 +13,12 @@ CI workflow files define actual build inputs. Backend/frontend quality uses Node
 `installer/windows/Build-Setup.ps1`, `New-InstallerStaging.ps1`, `BioEMS.iss`, `package-contract.json` and vendor-input lock define staging/packaging. Services, protected configuration, pre-start migrations and post-install health are controlled scripts. Update validation checks package/signature/contracts before privileged jobs. The standalone Tester package is separate from Client Setup; neither package silently pairs controllers.
 
 Use the governed Pilot launcher/setup and retain its diagnostics. Manufacturer tools and private signing/recovery responsibilities remain separate from customer client installation. Pilot internal/development certificates must not be represented as commercial production trust. Current physical reboot/repair/upgrade/rollback/uninstall/second-PC results must be attached to the exact installer package.
+
+## Main pilot.10 rollout and evidence
+
+Use the matching client backend (migration 36) **before** flashing Main pilot.10. Retain a coordinated backup and governed pilot.9 rollback package. Windows staging now requires the built BLE relay; it is bundled with the backend and runs under its Windows service process tree. Main/Nano/Tester are pilot.10 / bench.2 / 0.7.0 respectively. Configure Wi-Fi fallback during automatic commissioning, fit the USB BLE adapter and verify saved/applied revisions.
+
+The reviewed PR-head workflows all passed. Exact tested head/CI merge, workflow URLs and Setup artifact identity are recorded in [the integration receipt](../hardware/evidence/MAIN-RESILIENCE-INTEGRATION-2026-10-31.json). Do not relabel those binaries as a later documentation commit or a newly published release. Before installation or declaring readiness, remind the owner about **DEP-01 and HW-01–HW-12** in [project state](../../PROJECT_STATE.md). Actual-PC upgrade, USB radio/service access, battery wiring and full-load/storage tests remain separate evidence.
 
 ## Backups and restore
 

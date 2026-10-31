@@ -1,0 +1,94 @@
+{
+  "reviewedOn": "2026-10-31",
+  "pullRequest": 316,
+  "merged": true,
+  "mergeCommit": "95ff1c9b519c49fe23fb3ed721b55e8ed559a444",
+  "reviewedHead": "13131fd4b5620c7dcc315eabbd21398d957fcb74",
+  "testedPrMerge": "ff8b6ba53c44e74a46707b5daf99f1b808be72e4",
+  "versions": {
+    "product": "0.20.0",
+    "main": "0.1.0-pilot.10",
+    "nano": "0.1.0-bench.2",
+    "tester": "0.7.0",
+    "qualification": "HQT-3 / 21 steps"
+  },
+  "localTests": {
+    "backend": 1116,
+    "frontend": 359,
+    "tester": 78,
+    "bleBridge": 3,
+    "total": 1556
+  },
+  "workflows": [
+    {
+      "id": 41224399645,
+      "name": "Documentation integrity",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399645",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399609,
+      "name": "Security operations",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399609",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399547,
+      "name": "CI",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399547",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399626,
+      "name": "ESP32-S3 Firmware",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399626",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399574,
+      "name": "Windows Manufacturer Tools",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399574",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399546,
+      "name": "Standalone Hardware QC Tester",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399546",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    },
+    {
+      "id": 41224399554,
+      "name": "Internal Windows Setup",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/elsheikh78/Bio-EMS/actions/runs/41224399554",
+      "head": "13131fd4b5620c7dcc315eabbd21398d957fcb74"
+    }
+  ],
+  "setupArtifact": {
+    "id": 13051873619,
+    "name": "BIO-EMS-Setup-ff8b6ba53c44e74a46707b5daf99f1b808be72e4-bio-egypt-pilot-signed",
+    "sizeBytes": 235592966,
+    "runId": 41224399554
+  },
+  "boundary": {
+    "fieldUpgrade": "NOT_VERIFIED",
+    "physicalAcceptance": "OPEN",
+    "bioEgyptCommissioning": "NOT_ACCEPTED",
+    "autonomousMainGsmAlarmFallback": "NOT_IMPLEMENTED",
+    "newTaggedRelease": false
+  },
+  "remainingGates": "PROJECT_STATE.md: HW-01 through HW-12, DEP-01, SITE-01"
+}

@@ -1,6 +1,6 @@
 # Main resilience and System Owner feature settings
 
-Candidate: PR #316, 31 October 2026. Tester `0.7.0`; Main firmware `0.1.0-pilot.10`; product `0.20.0`; Nano remains `0.1.0-bench.2`. This is a source candidate, not evidence of deployment or physical acceptance. The merged pilot.9 baseline remains separately identified in [project state](../../PROJECT_STATE.md).
+Integrated through PR [#316](https://github.com/elsheikh78/Bio-EMS/pull/316) on 31 October 2026 at `95ff1c9b519c49fe23fb3ed721b55e8ed559a444`. Tester `0.7.0`, Main `0.1.0-pilot.10`, product `0.20.0`, Nano `0.1.0-bench.2`. All seven reviewed-head workflows passed, including Windows lifecycle and Setup upload; see [the exact integration receipt](../hardware/evidence/MAIN-RESILIENCE-INTEGRATION-2026-10-31.json). The distributed Pilot packages identify tested PR merge `ff8b6ba53c44e74a46707b5daf99f1b808be72e4`. This does not create a new tagged release, prove a field upgrade or close physical acceptance. Open tests and follow-up reminders are controlled by [project state](../../PROJECT_STATE.md#open-tests-and-follow-up-reminders--do-not-infer-pass-from-ci).
 
 ## Connection and data behavior
 
@@ -22,7 +22,7 @@ Critical conditions are mains loss, battery low, unavailable storage and occupan
 
 A separate NVS journal retains up to 24 power/storage transition snapshots when SD or communications are unavailable. It is bounded and never silently overwrites unacknowledged entries: full/write/corruption conditions are logged and require service. Buffered transitions replay in order before current health. Their original timestamp is preserved. Fresh USB/server time or a valid commissioned DS3231 is required for accurate historical time. Neither NVS nor SD can retain unlimited history.
 
-If all three host transports are lost, remote notification waits for reconnection. Autonomous SIM800L SMS alarm fallback is **not implemented** by this candidate; existing explicit modem diagnostic/test commands remain separate. This work does not build or certify the backup power supply.
+If all three host transports are lost, remote notification waits for reconnection. Autonomous SIM800L SMS alarm fallback is **not implemented** by this Pilot implementation; existing explicit modem diagnostic/test commands remain separate. This work does not build or certify the backup power supply.
 
 ## Power wiring hold
 
@@ -37,7 +37,7 @@ Open **System Owner → System feature settings** (`/system-owner/settings`). Se
 | Main, independently per binding | Ethernet, Wi-Fi, BLE, SD buffering, automatic replay, power alarms, storage alarms, SD warning percentage |
 | Local platform | Reports, calibration, notification dispatch, manual/scheduled backups, client updates |
 
-At least one communication path must remain enabled. Replay requires storage. Firmware tests candidate path settings in RAM, persists them only after another authenticated exchange using the candidate, and rolls back after 60 seconds without confirmation. A rejected revision is not retried until the owner saves a new revision. Saved and applied revisions are displayed separately; rollback details appear in controller health. A disconnected or older-firmware device must not be labelled applied merely because a save succeeded. Reconfiguration cannot be delivered to a device with no functioning path.
+At least one communication path must remain enabled. Replay requires storage. Firmware tests candidate path settings in RAM, persists them only after another authenticated exchange using that candidate, and rolls back after 60 seconds without confirmation. A rejected revision is not retried until the owner saves a new revision. Saved and applied revisions are displayed separately; rollback details appear in controller health. A disconnected or older-firmware device must not be labelled applied merely because a save succeeded. Reconfiguration cannot be delivered to a device with no functioning path.
 
 Platform switches are enforced at API/runtime boundaries as well as optional navigation visibility. Core authentication, audit, owner recovery and transport security cannot be turned off here. Channel credentials/enabled states and cloud controls retain their existing configuration pages. The settings catalog is explicit; it is not a claim that every possible future subsystem has a switch.
 
@@ -46,7 +46,7 @@ Critical Main events are visible in the customer Alarms page and owner settings.
 ## Rollout and qualification
 
 1. Build backend/frontend and Windows BLE relay from the same source; apply migration 36 using the normal migration runner. Back up the installation before upgrade. The Windows setup staging now requires the built BLE relay.
-2. Upgrade the client before flashing Main pilot.10; the candidate uses `/controller-runtime/exchange`. Retain the governed pilot.9 package for coordinated rollback. Do not flash new firmware against an old backend.
+2. Upgrade the client before flashing Main pilot.10; the Pilot implementation uses `/controller-runtime/exchange`. Retain the governed pilot.9 package for coordinated rollback. Do not flash new firmware against an old backend.
 3. Configure Wi-Fi credentials and verify Ethernet. USB provisioning still requires an IP path; BLE is a bound-device runtime fallback, not a replacement for initial pairing.
 4. Fit and qualify the USB BLE adapter. Inspect saved/applied revisions and actual received health before enabling site reliance on fallback.
 5. Use Tester qualification revision **HQT-3**, with 21 mandatory steps. The three new manual evidence steps cover transport failover, owner switches/rollback, and critical power/storage escalation. Existing saved qualification runs retain their frozen plans. A manual checklist entry is not automated acquisition or independent physical proof.

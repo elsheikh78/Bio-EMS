@@ -8,6 +8,8 @@ The [project state](../PROJECT_STATE.md) is the single current-state authority. 
 - [Developer setup and test commands](current/DEVELOPER-AND-TESTING.md)
 - [Platform operations and role boundaries](current/PLATFORM-OPERATIONS.md)
 - [Hardware, Tester and firmware](current/HARDWARE-AND-FIRMWARE.md)
+- [Main failover, critical hardware alarms and owner feature settings](current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md)
+- [Main resilience integration evidence — 31 October 2026](hardware/evidence/MAIN-RESILIENCE-INTEGRATION-2026-10-31.json)
 - [Cloud, Viewer and mobile](current/CLOUD-AND-MOBILE.md)
 - [Security and identity](current/SECURITY-AND-IDENTITY.md)
 - [Build, release and recovery](current/BUILD-RELEASE-AND-RECOVERY.md)

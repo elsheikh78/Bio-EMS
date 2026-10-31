@@ -1,6 +1,6 @@
 # Platform Operations and Responsibilities
 
-Implementation guide for candidate `d151b1f`, 28 October 2026. Use [PROJECT_STATE](../../PROJECT_STATE.md) to determine whether the candidate is merged or installed.
+Updated 31 October 2026 after PR #316. Use [PROJECT_STATE](../../PROJECT_STATE.md) to distinguish merged source, CI packages, installed state and remaining acceptance checks.
 
 ## Identities and daily operation
 
@@ -16,6 +16,14 @@ System Owner defines the logical installation and validates its revision. Provis
 
 Source navigation: `frontend/src/` owner/installation features; `backend/src/modules/installation/`, `modules/device-pairing/`, platform operations routes and provisioning services. Detailed retained operating instructions are in installation identity, provisioning and commissioning documents; their dated evidence is not a new acceptance result.
 
+## System Owner feature settings and critical Main alarms
+
+Open **System Owner → System feature settings** (`/system-owner/settings`). Select the local platform or Main binding, review the warnings, enter a reason and save. Main controls cover the three communication paths, SD buffering/replay, power/storage alarms and occupancy threshold. Platform optional switches cover reports, calibration, notifications, backups and updates. At least one path must stay enabled; replay needs storage. Core authentication, audit and owner recovery remain protected. Credentials/channel/cloud controls retain their existing pages.
+
+A saved revision is not proof of device application: check the applied revision and last contact. An unreachable trial rolls back after 60 seconds; save a new revision to retry a rejected change. Configure automatic Ethernet → Wi-Fi → BLE commissioning with Wi-Fi fallback credentials before relying on it. Customer ADMIN cannot edit these owner policies.
+
+Power/card faults use CRITICAL/highest-priority escalation, immediate eligible-recipient dispatch and five-minute repeats until ACK/recovery. Acknowledge through the authorized customer Alarms page or owner settings; ACK is not measured recovery. Unwired supply inputs stay unknown. No remote alert is immediate while all three host paths are lost, and autonomous controller GSM fallback remains unimplemented. See [operating details](MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md); keep reminding the owner of relevant open HW/DEP IDs in project-state follow-up.
+
 ## Hardware tests
 
 All **new qualification** belongs in [standalone Hardware Tester](HARDWARE-AND-FIRMWARE.md). In the candidate there is no System Owner Hardware Lab test UI. Former API writes are retired (410); historical reads remain authenticated and preserved. Do not call legacy repository mutators directly, delete historical rows, or assume old platform runs have been imported into Tester.
@@ -24,6 +32,6 @@ Tester evidence uses its own local `qc.sqlite`, exported records and PDFs. Link 
 
 ## Recoveries and escalation
 
-Use governed customer password recovery or manufacturer-authorized offline ADMIN recovery. Owner recovery is a separate workflow with separate trust material. Do not expose manufacturer private keys or signing tools on a customer machine. Current customer tokens are not immediately revoked by a password change; treat suspected compromise as a security incident and follow the audit remediation plan, rather than treating password change alone as complete containment.
+Use governed customer password recovery or manufacturer-authorized offline ADMIN recovery. Owner recovery is a separate workflow with separate trust material. Do not expose manufacturer private keys or signing tools on a customer machine. PR #313 added customer credential-change session invalidation. Treat suspected compromise as an incident and verify the deployed version and session revocation; do not use the older pre-remediation statement as current behavior.
 
 Use the [build/recovery guide](BUILD-RELEASE-AND-RECOVERY.md) for backups, restore and signed updates. Do not replace a running database file by hand or assume copying SQLite recovers Influx history. Field commissioning remains gated by the [acceptance matrix](QUALIFICATION-AND-ACCEPTANCE.md).
