@@ -491,11 +491,15 @@ static bool runtime_exchange(const char *binding, const char *type, const char *
     if (path < 2) {
       if (!ready[path] || now < retry_after[path])
         continue;
-      const char *name = path == 0 ? "ethernet" : "wifi";
+      int active_rank = !strcmp(active_transport, "ethernet")    ? 0
+                        : !strcmp(active_transport, "wifi")      ? 1
+                        : !strcmp(active_transport, "bluetooth") ? 2
+                                                                 : 3;
+      bool lower_working =
+          active_rank < 2 ? ready[active_rank] : active_rank == 2 && bioems_ble_ready();
       // Require 10 seconds of link stability before upgrading an already working lower-priority
       // path.
-      if (strcmp(active_transport, "offline") && strcmp(active_transport, name) &&
-          now - ready_since[path] < 10000000)
+      if (lower_working && path < active_rank && now - ready_since[path] < 10000000)
         continue;
       if (!nvs_get_text("platform_url", base, sizeof(base)) ||
           !nvs_get_text("tls_ca", certificate, sizeof(certificate)) ||

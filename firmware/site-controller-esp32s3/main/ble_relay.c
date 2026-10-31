@@ -91,12 +91,22 @@ static int access_rx(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *
   xSemaphoreGive(lock);
   return rc;
 }
+static int notify_only(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+  (void)conn;
+  (void)attr;
+  (void)ctxt;
+  (void)arg;
+  return BLE_ATT_ERR_READ_NOT_PERMITTED;
+}
 static const struct ble_gatt_svc_def services[] = {
     {.type = BLE_GATT_SVC_TYPE_PRIMARY,
      .uuid = &service_uuid.u,
      .characteristics =
          (struct ble_gatt_chr_def[]){
-             {.uuid = &tx_uuid.u, .flags = BLE_GATT_CHR_F_NOTIFY, .val_handle = &tx_handle},
+             {.uuid = &tx_uuid.u,
+              .flags = BLE_GATT_CHR_F_NOTIFY,
+              .access_cb = notify_only,
+              .val_handle = &tx_handle},
              {.uuid = &rx_uuid.u, .flags = BLE_GATT_CHR_F_WRITE, .access_cb = access_rx},
              {0}}},
     {0}};
