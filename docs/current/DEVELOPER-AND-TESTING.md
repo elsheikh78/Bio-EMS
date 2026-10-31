@@ -1,6 +1,6 @@
 # Developer Setup and Verification
 
-Reviewed source: `d151b1f`, 28 October 2026. Install dependencies from committed lockfiles with `npm ci`; avoid unreviewed `npm audit fix --force`. Open advisories are listed in the [dependency report](../audit/2026-10-28/DEPENDENCIES.md).
+Updated 31 October 2026 after PR #316; [project state](../../PROJECT_STATE.md) records exact reviewed/merged heads and remaining field tests. Install dependencies from committed lockfiles with `npm ci`; avoid unreviewed `npm audit fix --force`. Open advisories are listed in the [dependency report](../audit/2026-10-28/DEPENDENCIES.md).
 
 ## Local platform development
 
@@ -30,6 +30,7 @@ Run `frontend/` in a separate development process, after the same install/typech
 | `frontend` | Same named scripts as backend |
 | `company-cloud` | `npm test`, `npm run build`, `npx wrangler deploy --dry-run` after frontend build prerequisites |
 | `mobile`, `company-mobile` | `npm run typecheck`, `npm test`, `npm run export` |
+| `tools/bluetooth-bridge` | `python -m unittest -v` from that directory; Windows `pip install -r requirements.txt` then `python -m PyInstaller --clean --noconfirm --onedir --console --collect-all bleak --name BIOEMS-Bluetooth-Bridge bridge.py` |
 | `tools/hardware-tester` | `python -m unittest discover -s tests -v`; `python smoke.py <scratch-directory>` |
 | Repository | `python tools/project-audit/check_docs.py` |
 
@@ -48,3 +49,9 @@ Follow PROJECT_RULES and approved ADR/work-package requirements. Re-run only the
 ## Security candidate test-tool prerequisites
 
 The phase-two candidate uses Vitest 5 with Node>=22.12 and Vite>=6.4. Keep the pinned CI/Windows Node22.23 line or a compatible newer supported runtime. Use npm ci on the matched lockfiles. Source/database tests are discovered explicitly; compiled dist files must not be executed as duplicate CommonJS tests. Preserve assertions when adapting constructor mocks/types; do not suppress runner errors or mark tests skipped to make a migration green.
+
+## Integrated Main resilience verification
+
+PR #316 local results: backend 1116, frontend 359, Tester 78, BLE bridge 3 (1556 tests); type/lint/format/production builds and documentation checks passed. Seven exact-head workflows passed, including both Main firmware layouts and Windows packages/lifecycle. See [the integration receipt](../hardware/evidence/MAIN-RESILIENCE-INTEGRATION-2026-10-31.json), not older audit counts, for this change. These counts are dated evidence, not a substitute for rerunning checks after source changes.
+
+The BLE bridge's unit tests cover framing bounds/local HTTPS origin; they do not simulate an attached Windows USB radio. Firmware compile/host tests do not prove RF range, GPIO polarity, supply continuity, card power-loss durability or full-population timing. Preserve the open HW/DEP acceptance list and reminder rule in project state.
