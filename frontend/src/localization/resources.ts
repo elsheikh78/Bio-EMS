@@ -63,6 +63,7 @@ export interface TranslationResources {
     reports: string;
     commissioning: string;
     configuration: string;
+    mainNetworkSettings: string;
     users: string;
     backupRestore?: string;
     systemUpdate?: string;
@@ -349,6 +350,7 @@ export const englishResources = {
     reports: "Reports",
     commissioning: "Commissioning",
     configuration: "Configuration",
+    mainNetworkSettings: "Main connections & battery",
     users: "Users",
     backupRestore: "Backup & Restore",
     systemUpdate: "System update",
@@ -660,6 +662,7 @@ export const arabicResources = {
     reports: "التقارير",
     commissioning: "التشغيل المبدئي",
     configuration: "الإعدادات",
+    mainNetworkSettings: "اتصالات Main والبطارية",
     users: "المستخدمون",
     backupRestore: "النسخ الاحتياطي والاستعادة",
     systemUpdate: "تحديث النظام",

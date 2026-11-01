@@ -8,6 +8,7 @@ export const healthSchema = z
   .object({
     timestamp: z.string().datetime(),
     policyError: z.enum(["POLICY_ROLLED_BACK"]).optional(),
+    networkSettingsVersion: z.literal(1).optional(),
     appliedRevision: z.number().int().nonnegative(),
     transport: z.enum(["ethernet", "wifi", "bluetooth", "offline"]),
     storage: z.enum(["ready", "missing", "fault", "disabled"]),
@@ -40,8 +41,13 @@ export class ControllerHealthService {
         .run(binding, health.appliedRevision, JSON.stringify(health), new Date().toISOString());
       const p = policy.policy;
       const faults: Record<string, boolean | null> = {
-        MAINS_LOST: p.powerAlarms ? (health.mains === null ? null : !health.mains) : null,
-        BATTERY_LOW: p.powerAlarms ? health.batteryLow : null,
+        MAINS_LOST:
+          p.centralBatteryInstalled && p.powerAlarms
+            ? health.mains === null
+              ? null
+              : !health.mains
+            : null,
+        BATTERY_LOW: p.centralBatteryInstalled && p.powerAlarms ? health.batteryLow : null,
         SD_UNAVAILABLE:
           p.storageAlarms && p.offlineStorage
             ? health.storage === "missing" || health.storage === "fault"

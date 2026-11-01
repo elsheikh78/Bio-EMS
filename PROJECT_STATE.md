@@ -2,6 +2,10 @@
 
 Reviewed 31 October 2026. This file is the current-state authority. The current summary and remaining gates below take precedence over dated historical checkpoints, which are retained at the end for traceability.
 
+## Admin/Owner network and optional battery candidate — 1 November 2026
+
+A source candidate adds independent network/battery pages for customer ADMIN and System Owner; OPERATOR/VIEWER are denied. It retains bindings, encrypts Wi-Fi secrets, checks concurrent revisions and requires Wi-Fi-specific confirmation with rollback. Optional central backup defaults to not fitted, suppressing power/battery incidents and pausing repeats without inventing recovery. Candidate: Main pilot.11, Tester 0.7.1, HQT-4 (21 steps), client migration 37. The integrated baseline below remains the reference until merge/build qualification. See [operation and rollout](docs/current/MAIN-NETWORK-AND-OPTIONAL-BATTERY.md). Installed versions and HW-01–HW-10 / DEP-01 remain unverified; no live deployment or physical acceptance is claimed.
+
 ## Main resilience integrated — 31 October 2026
 
 PR [#316](https://github.com/elsheikh78/Bio-EMS/pull/316) is merged at `95ff1c9b519c49fe23fb3ed721b55e8ed559a444`. Reviewed PR head: `13131fd4b5620c7dcc315eabbd21398d957fcb74`; all **seven** workflows completed successfully. Their distributed Pilot binaries identify CI merge `ff8b6ba53c44e74a46707b5daf99f1b808be72e4`, not a new tagged release or proof of a field upgrade. See [integration receipt](docs/hardware/evidence/MAIN-RESILIENCE-INTEGRATION-2026-10-31.json) and [behavior, limits and rollout](docs/current/MAIN-RESILIENCE-AND-FEATURE-SETTINGS.md).

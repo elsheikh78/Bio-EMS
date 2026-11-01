@@ -37,6 +37,22 @@ describe("Main resilience", () => {
     expect(db.prepare("SELECT * FROM feature_policy_history").all()).toHaveLength(1);
     db.close();
   });
+  it("does not create battery or mains alarms for a Main without optional central backup", () => {
+    const db = database(),
+      service = new ControllerHealthService(db);
+    service.accept(binding, {
+      timestamp: "2026-10-01T00:00:00Z",
+      appliedRevision: 0,
+      transport: "ethernet",
+      storage: "ready",
+      storageUsedPercent: 10,
+      queued: 0,
+      mains: false,
+      batteryLow: true,
+    });
+    expect(db.prepare("SELECT * FROM controller_health_alarms").all()).toHaveLength(0);
+    db.close();
+  });
   it("authenticates ciphertext, binding identity, and response request identity", () => {
     const key = createHash("sha256").update(token).digest();
     const encrypted = encryptRelay(binding, { id: "a".repeat(32), accepted: true }, key);
@@ -49,6 +65,15 @@ describe("Main resilience", () => {
   it("does not invent power state; creates critical transitions once and preserves recovery", () => {
     const db = database(),
       service = new ControllerHealthService(db);
+    new FeaturePolicyStore(db).save(
+      binding,
+      {
+        expectedRevision: 0,
+        policy: { ...defaultDevicePolicy, centralBatteryInstalled: true },
+        reason: "Battery fitted",
+      },
+      "owner"
+    );
     const healthy = {
       timestamp: "2026-10-01T00:00:00Z",
       appliedRevision: 0,

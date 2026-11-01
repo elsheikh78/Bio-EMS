@@ -42,7 +42,7 @@ def identify(text):
     uid, firmware = field('hardware-uid'), field('firmware')
     if not re.fullmatch(r'[0-9a-fA-F]{12,64}', uid):
         raise ValueError('Invalid Main hardware UID')
-    if firmware not in ('0.1.0-pilot.7','0.1.0-pilot.8','0.1.0-pilot.10'):
+    if firmware not in ('0.1.0-pilot.7','0.1.0-pilot.8','0.1.0-pilot.10','0.1.0-pilot.11'):
         raise ValueError('Integrated acquisition requires validated operational pilot.9 firmware')
     return uid, firmware
 

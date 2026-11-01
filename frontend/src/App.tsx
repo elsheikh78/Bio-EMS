@@ -35,6 +35,10 @@ import {
   PlatformLoginBoundary,
 } from "./routing/PlatformAuthenticationBoundaries";
 
+import {
+  AdminMainNetworkSettingsPage,
+  OwnerMainNetworkSettingsPage,
+} from "./pages/MainNetworkSettingsPage";
 import { SystemOwnerFeatureSettingsPage } from "./pages/SystemOwnerFeatureSettingsPage";
 
 export function App() {
@@ -94,6 +98,10 @@ export function App() {
           path="system-owner/settings"
           element={<SystemOwnerFeatureSettingsPage />}
         />
+        <Route
+          path="system-owner/network-settings"
+          element={<OwnerMainNetworkSettingsPage />}
+        />
         <Route path="system-owner/*" element={<NotFoundPage />} />
       </Route>
 
@@ -108,6 +116,10 @@ export function App() {
 
       <Route element={<AuthenticationBoundary />}>
         <Route element={<AppShell />}>
+          <Route
+            path="network-settings"
+            element={<AdminMainNetworkSettingsPage />}
+          />
           <Route
             index
             element={

@@ -49,6 +49,7 @@ const alternativeResources = {
     reports: "Alt Reports",
     commissioning: "Alt Commissioning",
     configuration: "Alt Configuration",
+    mainNetworkSettings: "Alt Main network",
     users: "Alt Users",
   },
 

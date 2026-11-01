@@ -28,6 +28,10 @@ If all three host transports are lost, remote notification waits for reconnectio
 
 `BIOEMS_MAINS_GOOD_GPIO` and `BIOEMS_BATTERY_LOW_GPIO` default to `-1` (unwired). Before selecting pins, review all existing ESP32-S3, W5500, SD, RTC, RS485 and modem assignments and input-voltage limits. Use properly conditioned low-voltage signals from the approved supply/backup circuit. Never connect mains directly to a GPIO. The optional active-low setting applies to both inputs. Battery-low detection must come from the actual approved battery/BMS or supervision circuit; the software does not invent chemistry-specific voltage limits or charge percentages. Confirm input polarity, stability/debounce requirements, backup changeover and 30-minute full-load endurance physically before accepting power alarms.
 
+## Network/battery candidate follow-up
+
+For the independent ADMIN / System Owner page and optional battery in pilot.11, see [Main network and optional battery](MAIN-NETWORK-AND-OPTIONAL-BATTERY.md). The pilot.10 description below retains its dated integration scope.
+
 ## Owner settings
 
 Open **System Owner → System feature settings** (`/system-owner/settings`). Select the local platform or an active Main binding. Enter a reason and save. Concurrent stale revisions are rejected; actor, reason and before/after values are retained in policy history.

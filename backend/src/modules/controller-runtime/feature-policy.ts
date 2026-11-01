@@ -11,6 +11,7 @@ export const devicePolicySchema = z
     offlineStorage: z.boolean(),
     automaticReplay: z.boolean(),
     powerAlarms: z.boolean(),
+    centralBatteryInstalled: z.boolean().default(false),
     storageAlarms: z.boolean(),
     storageWarningPercent: z.number().int().min(50).max(95),
   })
@@ -37,6 +38,7 @@ export const defaultDevicePolicy = {
   offlineStorage: true,
   automaticReplay: true,
   powerAlarms: true,
+  centralBatteryInstalled: false,
   storageAlarms: true,
   storageWarningPercent: 80,
 };
@@ -56,7 +58,10 @@ export class FeaturePolicyStore {
     return {
       revision: row?.revision ?? 0,
       policy: row
-        ? (JSON.parse(row.policy_json) as Record<string, boolean | number>)
+        ? ({
+            ...(scope === "platform" ? defaultPlatformPolicy : defaultDevicePolicy),
+            ...JSON.parse(row.policy_json),
+          } as Record<string, boolean | number>)
         : { ...(scope === "platform" ? defaultPlatformPolicy : defaultDevicePolicy) },
     };
   }

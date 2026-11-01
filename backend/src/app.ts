@@ -51,6 +51,9 @@ void reconcilePlatformRestoreAudits().catch((error) => {
   console.error("Platform restore audit reconciliation failed", error);
 });
 
+import { createNetworkSettingsRouter, requireNetworkAdmin } from "./routes/network-settings.route";
+import { platformAuthenticationMiddleware } from "./middleware/platform-authentication.middleware";
+
 const app = express();
 
 app.use(createBrowserSecurityMiddleware(config.cors));
@@ -68,9 +71,15 @@ app.use(`${config.apiPrefix}/device-pairing`, devicePairingRouter);
 app.use(`${config.apiPrefix}/device-telemetry`, deviceTelemetryRouter);
 app.use(`${config.apiPrefix}/controller-runtime`, controllerRuntimeRouter);
 app.use(`${config.apiPrefix}/feature-settings`, featureSettingsRouter);
+app.use(
+  `${config.apiPrefix}/owner-network-settings`,
+  platformAuthenticationMiddleware,
+  createNetworkSettingsRouter()
+);
 app.use(`${config.apiPrefix}/health`, healthRouter);
 app.use(config.apiPrefix, authenticationMiddleware);
 app.use(`${config.apiPrefix}/auth`, authRouter);
+app.use(`${config.apiPrefix}/network-settings`, requireNetworkAdmin, createNetworkSettingsRouter());
 app.get(`${config.apiPrefix}/features`, (_req, res) =>
   res.json(featurePolicyStore.get("platform").policy)
 );

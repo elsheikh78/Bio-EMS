@@ -6,6 +6,7 @@ describe("permission-aware navigation registry", () => {
     expect(
       navigationItems.map(({ path, permission }) => [path, permission]),
     ).toEqual([
+      ["/network-settings", "DEVICE_MANAGE"],
       ["/", "DASHBOARD_READ"],
       ["/dashboard", "DASHBOARD_READ"],
       ["/live-board", "DASHBOARD_READ"],
