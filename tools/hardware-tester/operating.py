@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from flashing import checked_file, run_command
 
-TARGETS = {'Main ESP32-S3 pilot.10':'esp32s3', 'Nano bench.2 classic bootloader 57600':'nano-old',
+TARGETS = {'Main ESP32-S3 pilot.11':'esp32s3', 'Nano bench.2 classic bootloader 57600':'nano-old',
            'Nano bench.2 new bootloader 115200':'nano-new'}
 
 def load_target(root, target):
@@ -18,7 +18,7 @@ def load_target(root, target):
     if target not in TARGETS.values() or not re.fullmatch('[0-9a-f]{40}',m.get('source_commit','')):
         raise ValueError('Invalid target or source commit')
     t=m['targets'][target];board='esp32s3' if target=='esp32s3' else 'nano'
-    if t.get('board')!=board or t.get('firmware')!=('0.1.0-pilot.10' if board=='esp32s3' else '0.1.0-bench.2'):
+    if t.get('board')!=board or t.get('firmware')!=('0.1.0-pilot.11' if board=='esp32s3' else '0.1.0-bench.2'):
         raise ValueError('Wrong operating board or firmware version')
     images=[(entry,checked_file(root,entry)) for entry in t['images']]
     if board=='esp32s3':

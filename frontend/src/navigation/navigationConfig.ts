@@ -13,6 +13,13 @@ export interface NavigationItemDefinition {
 
 export const navigationItems = [
   {
+    group: "administration",
+    id: "network-settings",
+    path: "/network-settings",
+    labelKey: "mainNetworkSettings",
+    permission: "DEVICE_MANAGE",
+  },
+  {
     group: "overview",
     id: "workspace",
     path: "/",

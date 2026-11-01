@@ -11,6 +11,8 @@ import {
   relayEnvelopeSchema,
 } from "../modules/controller-runtime/relay-crypto";
 
+import { NetworkSettingsStore } from "../modules/controller-runtime/network-settings";
+
 const router = Router();
 const pending = new Map<string, Promise<unknown>>();
 const requestSchema = z
@@ -58,6 +60,7 @@ router.post(
           id: message.id,
           accepted,
           ...new FeaturePolicyStore().get(envelope.binding),
+          wifiConfig: new NetworkSettingsStore().credentials(envelope.binding),
           epoch: Math.floor(Date.now() / 1000),
         },
         key

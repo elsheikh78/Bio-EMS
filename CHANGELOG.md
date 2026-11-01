@@ -1,5 +1,12 @@
 # BIO-EMS Changelog
 
+## 2026-11-01 — Main network/battery source candidate
+
+- Independent Admin/System Owner network pages; encrypted Wi-Fi replacement, retained binding, revision checks and confirmed Wi-Fi trial/rollback.
+- Optional central backup explicitly not fitted by default; supervision/repeats respect the setting while retaining incident history.
+- Matching client migration 37, Main pilot.11, Tester 0.7.1 / HQT-4; installed/physical acceptance remains separate.
+
+
 ## Unreleased — integrated Main resilience and documentation alignment
 
 - Main pilot.10 / Tester 0.7.0 / HQT-3 (21 checks): Ethernet → Wi-Fi → encrypted BLE, SD write-ahead/replay with durable receipts, critical power/card incidents and audited System Owner optional-feature controls (merged PR #316).

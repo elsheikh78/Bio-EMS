@@ -57,6 +57,7 @@ static size_t ca_base64_length;
 static const char *TAG = "bioems";
 static EventGroupHandle_t wifi_events;
 static int wifi_retry_count;
+static bool wifi_running;
 static esp_netif_t *wifi_netif;
 static const char *active_transport = "offline";
 
@@ -144,13 +145,35 @@ static bool network_started;
 static bool connect_wifi(void) {
   char ssid[33] = {0};
   char password[65] = {0};
-  if (!nvs_get_text("wifi_ssid", ssid, sizeof(ssid))) {
+  bool configured = runtime_policy_wifi_credentials(ssid, sizeof(ssid), password, sizeof(password));
+  if (!configured && !nvs_get_text("wifi_ssid", ssid, sizeof(ssid))) {
+    if (wifi_running) {
+      esp_wifi_stop();
+      wifi_running = false;
+      xEventGroupClearBits(wifi_events, WIFI_CONNECTED_BIT | WIFI_FAILED_BIT);
+    }
     printf("wifi not configured; use: setwifi <ssid> <password>\n");
     return false;
   }
-  nvs_get_text("wifi_pass", password, sizeof(password));
+  if (!configured) nvs_get_text("wifi_pass", password, sizeof(password));
 
   if (wifi_events) {
+    wifi_config_t current = {0};
+    if (esp_wifi_get_config(WIFI_IF_STA, &current) != ESP_OK) return false;
+    if (!wifi_running ||
+        (strncmp((char *)current.sta.ssid, ssid, sizeof(current.sta.ssid)) ||
+         strncmp((char *)current.sta.password, password, sizeof(current.sta.password)))) {
+      esp_wifi_stop();
+      wifi_running = false;
+      xEventGroupClearBits(wifi_events, WIFI_CONNECTED_BIT | WIFI_FAILED_BIT);
+      wifi_retry_count = 0;
+      memset(&current, 0, sizeof(current));
+      memcpy(current.sta.ssid, ssid, strlen(ssid));
+      strlcpy((char *)current.sta.password, password, sizeof(current.sta.password));
+      current.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+      if (esp_wifi_set_config(WIFI_IF_STA, &current) != ESP_OK || esp_wifi_start() != ESP_OK) return false;
+      wifi_running = true;
+    }
     if (xEventGroupGetBits(wifi_events) & WIFI_CONNECTED_BIT)
       return true;
     esp_wifi_connect();
@@ -168,19 +191,21 @@ static bool connect_wifi(void) {
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+  ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
   ESP_ERROR_CHECK(
       esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
   ESP_ERROR_CHECK(
       esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL));
 
   wifi_config_t wifi_config = {0};
-  strlcpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
+  memcpy(wifi_config.sta.ssid, ssid, strlen(ssid));
   strlcpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
   wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
 
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
   ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
   ESP_ERROR_CHECK(esp_wifi_start());
+  wifi_running = true;
 
   EventBits_t bits = xEventGroupWaitBits(wifi_events, WIFI_CONNECTED_BIT | WIFI_FAILED_BIT, pdFALSE,
                                          pdFALSE, pdMS_TO_TICKS(100));
@@ -486,6 +511,8 @@ static bool runtime_exchange(const char *binding, const char *type, const char *
       ready_since[i] = now;
   }
   for (int path = 0; path < 3 && !ok; path++) {
+    // A changed/enabled Wi-Fi path must itself authenticate before committing credentials.
+    if (runtime_policy_requires_wifi_test() && path != 1) continue;
     bool delivered = false;
     response[0] = 0;
     if (path < 2) {
@@ -540,7 +567,7 @@ static bool runtime_exchange(const char *binding, const char *type, const char *
       ok = cJSON_IsString(received) && !strcmp(received->valuestring, id) && cJSON_IsTrue(accepted);
       if (ok) {
         active_transport = path == 0 ? "ethernet" : path == 1 ? "wifi" : "bluetooth";
-        runtime_policy_confirm();
+        runtime_policy_confirm(path == 1);
         runtime_policy_offer(ack);
         cJSON *epoch = cJSON_GetObjectItem(ack, "epoch");
         if (cJSON_IsNumber(epoch) && epoch->valuedouble >= 1760000000 &&
@@ -700,6 +727,7 @@ static void report_health(void) {
   char timestamp[32];
   strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%SZ", &utc);
   cJSON_AddStringToObject(health, "timestamp", timestamp);
+  cJSON_AddNumberToObject(health, "networkSettingsVersion", 1);
   cJSON_AddNumberToObject(health, "appliedRevision", runtime_policy_applied_revision());
   if (runtime_policy_error())
     cJSON_AddStringToObject(health, "policyError", runtime_policy_error());

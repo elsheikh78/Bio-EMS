@@ -49,6 +49,8 @@ export interface Migration {
   up(database: Database.Database): void;
 }
 
+import { migration037 } from "./migrations/037_controller_network_settings";
+
 const migrations: Migration[] = [
   migration001,
   migration002,
@@ -86,6 +88,7 @@ const migrations: Migration[] = [
   migration034,
   migration035,
   migration036,
+  migration037,
 ];
 
 export function runMigrations(

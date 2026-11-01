@@ -59,6 +59,45 @@ describe("NotificationEscalationOrchestrator", () => {
     );
     expect(events.markConsumed).toHaveBeenCalledWith(1, "2026-08-31T12:06:00.000Z");
   });
+  it("pauses optional battery reminders without inventing recovery and resumes when fitted", () => {
+    const get = vi.fn().mockReturnValue({
+      status: "TRIGGERED",
+      code: "BATTERY_LOW",
+      policyJson: JSON.stringify({ centralBatteryInstalled: false, powerAlarms: true }),
+      triggeredAt: "2026-08-31T12:00:00Z",
+      siteId: 2,
+    });
+    const event = {
+      ...triggered,
+      sourceType: "DEVICE",
+      sourceId: "health:12",
+      payload: { systemHealthId: 12 },
+    };
+    const events = { listPending: () => [event], markConsumed: vi.fn() };
+    const deliveries = {
+      create: vi.fn().mockReturnValue({ created: true }),
+      cancelOpenForSource: vi.fn(),
+    };
+    const recipients = { resolveEligible: vi.fn().mockReturnValue([{ id: 4 }]) };
+    const orchestrator = new NotificationEscalationOrchestrator(
+      { prepare: () => ({ get }) } as never,
+      events as never,
+      deliveries as never,
+      {} as never,
+      recipients as never
+    );
+    expect(orchestrator.tick(new Date("2026-08-31T12:00:00Z"))).toBe(0);
+    expect(deliveries.cancelOpenForSource).toHaveBeenCalled();
+    expect(events.markConsumed).not.toHaveBeenCalled();
+    get.mockReturnValue({
+      status: "TRIGGERED",
+      code: "BATTERY_LOW",
+      policyJson: JSON.stringify({ centralBatteryInstalled: true, powerAlarms: true }),
+      triggeredAt: "2026-08-31T12:00:00Z",
+      siteId: 2,
+    });
+    expect(orchestrator.tick(new Date("2026-08-31T12:05:00Z"))).toBe(4);
+  });
   it("creates only configured due deliveries and remains idempotent", () => {
     const database = {
       prepare: vi.fn().mockReturnValue({

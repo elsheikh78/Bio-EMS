@@ -45,6 +45,13 @@ jobs:
           /tmp/tls-policy-test
           ! grep -E 'skip_cert_common_name_check[[:space:]]*=[[:space:]]*true' firmware/site-controller-esp32s3/main/main.c
 
+      - name: Verify network policy rollback and optional battery on host
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libcjson-dev
+          cc -std=c11 -Wall -Wextra -Werror -I /usr/include/cjson -I firmware/site-controller-esp32s3/tests/policy-stubs firmware/site-controller-esp32s3/tests/runtime_policy_test.c -lcjson -o /tmp/runtime-policy-test
+          /tmp/runtime-policy-test
+
       - name: Build ESP32-S3 Site Controller
         uses: espressif/esp-idf-ci-action@v1
         with:

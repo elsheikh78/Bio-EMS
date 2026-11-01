@@ -40,6 +40,10 @@ const labels: Record<string, [string, string]> = {
   bluetooth: ["Bluetooth BLE (third priority)", "بلوتوث — الأولوية الثالثة"],
   offlineStorage: ["microSD buffering", "التخزين على كارت الذاكرة"],
   automaticReplay: ["Automatic replay", "استرجاع البيانات تلقائيًا"],
+  centralBatteryInstalled: [
+    "Central backup battery installed (optional)",
+    "البطارية المركزية مركبة — اختياري",
+  ],
   powerAlarms: ["Critical power alarms", "إنذارات الكهرباء الحرجة"],
   storageAlarms: ["Critical storage alarms", "إنذارات التخزين الحرجة"],
   reports: ["Reports", "التقارير"],
@@ -168,6 +172,11 @@ export function SystemOwnerFeatureSettingsPage() {
             ? "إعدادات المنصة تطبق على هذا التثبيت. إعدادات Main مستقلة لكل جهاز وتنتظر تأكيده. المصادقة وسجل المراجعة وحماية الاتصال تظل إلزامية."
             : "Platform settings apply to this installation. Main settings are per controller and require its acknowledgement. Authentication, audit history and transport security remain mandatory."}
         </Alert>
+        <Button component={Link} to="/system-owner/network-settings">
+          {ar
+            ? "إعداد اتصالات Main والبطارية"
+            : "Main network and optional battery settings"}
+        </Button>
         <TextField
           select
           label={ar ? "نطاق الإعدادات" : "Settings scope"}
@@ -223,7 +232,12 @@ export function SystemOwnerFeatureSettingsPage() {
                     </Typography>
                     {health ? (
                       healthFields
-                        .filter(([key]) => key in health)
+                        .filter(
+                          ([key]) =>
+                            key in health &&
+                            (!["mains", "batteryLow"].includes(key) ||
+                              data.policy.centralBatteryInstalled === true),
+                        )
                         .map(([key, en, arabic]) => (
                           <Typography key={key} variant="body2">
                             {ar ? arabic : en}:{" "}
@@ -274,6 +288,13 @@ export function SystemOwnerFeatureSettingsPage() {
                       }
                     />
                   ))}
+                {selected && data.policy.centralBatteryInstalled !== true && (
+                  <Alert severity="info">
+                    {ar
+                      ? "البطارية المركزية غير مركبة: مراقبة الطاقة والبطارية غير مفعلة. لا يفصل هذا الاختيار الشاحن كهربائيًا."
+                      : "Optional central battery not fitted: power/battery supervision is disabled. This does not electrically switch the charger."}
+                  </Alert>
+                )}
                 {scope !== "platform" && (
                   <TextField
                     type="number"

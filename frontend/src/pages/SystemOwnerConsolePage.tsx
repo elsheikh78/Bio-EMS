@@ -36,6 +36,7 @@ const copy = {
       "Manage the platform customer fleet, licenses, update eligibility and service obligations.",
     open: "Open",
     modules: [
+      { key: "network-settings", label: "Main connections & optional battery" },
       { key: "settings", label: "System feature settings" },
       { key: "customers", label: "Customer fleet" },
       { key: "admins", label: "Customer ADMIN accounts" },
@@ -80,6 +81,7 @@ const copy = {
     foundation: "إدارة عملاء المنصة والتراخيص وأهلية التحديث والتزامات الخدمة.",
     open: "فتح",
     modules: [
+      { key: "network-settings", label: "اتصالات Main والبطارية الاختيارية" },
       { key: "settings", label: "إعدادات خصائص النظام" },
       { key: "customers", label: "العملاء والمواقع" },
       { key: "admins", label: "إدارة حسابات Admin" },

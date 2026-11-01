@@ -10,6 +10,8 @@ def scan():
  return {'hardwareUid':UID,'modules':[{'address':a,'responding':a==1,'inputs':[{'input':i,'channel':i,'status':0,'value':24+i/10} for i in range(1,5)] if a==1 else []} for a in range(1,5)]}
 class IntegratedTests(unittest.TestCase):
  def convert(self,data=None,seq=1):return frame(json.dumps(scan() if data is None else data),UID,'0.1.0-pilot.10',1,seq,seq*3000)
+ def test_pilot11_network_settings_firmware_supported(self):
+  self.assertEqual(identify('hardware-uid: '+UID+'\nfirmware: 0.1.0-pilot.11\n')[1],'0.1.0-pilot.11')
  def test_no_invented_rom_and_mapping(self):
   f=self.convert();self.assertEqual([c['system_channel'] for c in f['channels']],[1,2,3,4]);self.assertTrue(all('rom' not in c for c in f['channels']))
  def test_absent_module(self):

@@ -23,5 +23,5 @@ def collect(port, clock=time.monotonic):
     complete=True
     break
   records.append({'command':command,'complete':complete,'output':''.join(chunks)})
- return {'expected_firmware':'0.1.0-pilot.10','source':'USB operational console',
+ return {'expected_firmware':'0.1.0-pilot.11','source':'USB operational console',
          'commands':records,'security_status':summarize_security('\n'.join(r['output'] for r in records if r['command']=='status')),'automatic_disposition':False}

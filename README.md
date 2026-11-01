@@ -31,3 +31,5 @@ Open hardware/deployment checks and the required follow-up reminder list are tra
 Read [PROJECT_RULES.md](PROJECT_RULES.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before changing behavior. Builds do not establish field acceptance. Critical/High dependency advisories remain open; use the audit findings for remediation planning.
 
 - [Central Main backup, SD, power supervision and acceptance](docs/hardware/MAIN-CENTRAL-BATTERY-AND-SD-2026-10-18.md)
+
+Main network and optional battery settings (Admin/System Owner candidate): [operation and rollout](docs/current/MAIN-NETWORK-AND-OPTIONAL-BATTERY.md).

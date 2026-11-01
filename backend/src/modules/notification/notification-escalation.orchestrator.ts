@@ -71,15 +71,25 @@ export class NotificationEscalationOrchestrator {
   private escalateHealth(id: number, eventId: number, sourceId: string, now: Date): number {
     const alarm = this.database
       .prepare(
-        `SELECT a.status, a.trigger_time AS triggeredAt, d.site_id AS siteId
+        `SELECT a.status, a.code, p.policy_json AS policyJson, a.trigger_time AS triggeredAt, d.site_id AS siteId
       FROM controller_health_alarms a JOIN device_platform_bindings b ON b.platform_binding_id=a.binding_id
-      JOIN devices d ON d.device_id=b.device_identity WHERE a.id=?`
+      JOIN devices d ON d.device_id=b.device_identity LEFT JOIN feature_policies p ON p.scope=a.binding_id WHERE a.id=?`
       )
-      .get(id) as { status: string; triggeredAt: string; siteId: number } | undefined;
+      .get(id) as
+      | { status: string; code?: string; policyJson?: string; triggeredAt: string; siteId: number }
+      | undefined;
     if (!alarm || alarm.status !== "TRIGGERED") {
       this.deliveries.cancelOpenForSource("DEVICE", sourceId, now.toISOString());
       this.events.markConsumed(eventId, now.toISOString());
       return 0;
+    }
+    if (alarm.code === "MAINS_LOST" || alarm.code === "BATTERY_LOW") {
+      const policy = alarm.policyJson ? JSON.parse(alarm.policyJson) : {};
+      if (!policy.centralBatteryInstalled || !policy.powerAlarms) {
+        // Disabled supervision is not measured recovery or acknowledgement. Resume after re-enable.
+        this.deliveries.cancelOpenForSource("DEVICE", sourceId, now.toISOString());
+        return 0;
+      }
     }
     // Highest escalation: every eligible CRITICAL recipient immediately; repeat every 5 minutes until ACK/recovery.
     const window = Math.floor(Math.max(0, now.getTime() - Date.parse(alarm.triggeredAt)) / 300000);
